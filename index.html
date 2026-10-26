@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"><title>Nebeljagd v0.9 – Solo-Lauftest</title>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"><title>Nebeljagd v0.10 – Solo-Lauftest</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1320;color:#f5f0e8;font-family:system-ui,-apple-system,sans-serif;-webkit-user-select:none;user-select:none;touch-action:none}canvas{display:block}#game{position:fixed;inset:0;width:100%;height:100%}
 .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 10%,#324768,#0b1320 72%);z-index:20;padding:16px}.panel{max-width:780px;width:min(92vw,780px);background:linear-gradient(180deg,#162338 0%,#0f1a2d 100%);border:1px solid #987d5d;border-radius:18px;box-shadow:0 25px 70px rgba(0,0,0,.55);padding:24px 28px;color:#e9dfcf}h1{margin:0 0 10px;font:800 clamp(30px,5vw,52px) Georgia,serif;color:#f5d7a0;letter-spacing:.5px}p{line-height:1.45;color:#d8dbe3}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 20px}.chip{border:1px solid #566981;background:#132031;border-radius:11px;padding:10px 12px;font-size:14px}button{font:inherit}.cta{border:0;border-radius:14px;padding:14px 22px;background:linear-gradient(180deg,#d8b06d,#b87434);color:#14181f;font-weight:800;font-size:18px;box-shadow:0 6px 20px rgba(0,0,0,.35)}.minor{background:#22364f;color:#fff;border:1px solid #6885a9;border-radius:12px;padding:10px 14px}
@@ -34,8 +34,8 @@
     <div style="font-weight:800;color:#d7e2ef;margin-bottom:2px">Solo-Lauftest</div>
     <div class="member"><div class="portrait"><img id="p0"></div><div><div class="name">Du · Standardfigur</div><div class="hp" id="hp0">♥♥♥</div></div></div>
     <div class="gait-control">
-      <label for="gaitSpeed">Laufanimation <strong id="gaitDisplay">1,05 s</strong> / Zyklus</label>
-      <input id="gaitSpeed" type="range" min="0.65" max="1.80" step="0.05" value="1.05" aria-label="Dauer eines vollen Laufzyklus in Sekunden"/>
+      <label for="gaitSpeed">Laufanimation <strong id="gaitDisplay">0,85 s</strong> / Zyklus</label>
+      <input id="gaitSpeed" type="range" min="0.65" max="1.80" step="0.05" value="0.85" aria-label="Dauer eines vollen Laufzyklus in Sekunden"/>
       <small>Links schneller · rechts langsamer</small>
     </div>
   </div>
@@ -56,7 +56,7 @@
  Jetzt kannst du die vier Laufrichtungen in Ruhe vergleichen: <b>linkes Bein vor – rechtes Bein vor</b>.</p>
  <div class="grid">
   <div class="chip">Vier Blickrichtungen und echte Lauf-Frames</div>
-  <div class="chip">Deutlich langsamerer Schrittwechsel (1,05 Sekunden je Zyklus)</div>
+  <div class="chip">Flüssiger Schrittwechsel (0,85 Sekunden je Zyklus)</div>
   <div class="chip">Tempo beim Spielen links einstellbar</div>
   <div class="chip">Nebel ohne Schaden, keine Zeitbegrenzung</div>
  </div>
@@ -154,7 +154,7 @@ function prepareWalkFrames(){
  }
 }
 
-let animationCycleSeconds=1.05;
+let animationCycleSeconds=0.85;
 const gaitInput=$('gaitSpeed');
 function updateGaitSpeed(value){
  animationCycleSeconds=Number(value);
@@ -179,8 +179,12 @@ function drawEntity(ent,key,scale=0.28, ring='#5fb9ff'){
  const animation=walkFrames[key]&&walkFrames[key][dir];
  const phase=ent.moving?(1+Math.floor(((ent.walkTime||0)%(Math.PI*2))/(Math.PI*2/3))):0;
  const frame=animation?animation[phase]:null;
- shadow(ent.x,ent.y+25,16,8,.20);
- if(ring){ctx.strokeStyle=ring;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(ent.x,ent.y+31,20,8,0,0,TAU);ctx.stroke();}
+ // Solo-Standardfigur: kein zusätzlicher Bodenschatten und kein ovaler Kollisionsring.
+ // Der im Sprite enthaltene weiche Schatten bleibt erhalten; Kollisionen bleiben unverändert.
+ if(key!=='standard'){
+  shadow(ent.x,ent.y+25,16,8,.20);
+  if(ring){ctx.strokeStyle=ring;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(ent.x,ent.y+31,20,8,0,0,TAU);ctx.stroke();}
+ }
  if(key==='standard'){
   const img=getStandardSpriteFrame(ent);
   if(img){
