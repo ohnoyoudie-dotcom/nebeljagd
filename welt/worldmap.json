@@ -5332,6 +5332,10 @@
     {"id":"chest-obj-house-moorlicht-04","name":"Moorlicht · Haus 4 · Vorratstruhe","kind":"chest","variant":"wood","position":[-274.38,342.29],"rotation":3.14,"scale":1},
     {"id":"chest-obj-house-moorlicht-05","name":"Moorlicht · Haus 5 · Vorratstruhe","kind":"chest","variant":"wood","position":[-306.38,385.29],"rotation":3.14,"scale":1},
     {"id":"chest-obj-house-moorlicht-06","name":"Moorlicht · Haus 6 · Vorratstruhe","kind":"chest","variant":"wood","position":[-373.38,382.29],"rotation":3.14,"scale":1},
-    {"id":"chest-obj-house-moorlicht-07","name":"Moorlicht · Haus 7 · Vorratstruhe","kind":"chest","variant":"wood","position":[-324.38,405.29],"rotation":3.14,"scale":1}
+    {"id":"chest-obj-house-moorlicht-07","name":"Moorlicht · Haus 7 · Vorratstruhe","kind":"chest","variant":"wood","position":[-324.38,405.29],"rotation":3.14,"scale":1},
+    {"id":"obj-mound-auenwacht-east","name":"Auenwacht · Bewachsene Felskuppe","kind":"mound","variant":"knoll","position":[41,-34],"rotation":0.2,"scale":1},
+    {"id":"obj-mound-cottage-east","name":"Kräuterhaus · Bewachsene Felskuppe","kind":"mound","variant":"knoll","position":[47,-58],"rotation":-0.35,"scale":1},
+    {"id":"obj-mound-south-clearing","name":"Südliche Lichtung · Bewachsene Felskante","kind":"mound","variant":"ridge","position":[31,-6],"rotation":-0.2,"scale":1},
+    {"id":"obj-mound-west-meadow","name":"Westliche Wiese · Bewachsene Felskante","kind":"mound","variant":"ridge","position":[-34,-75],"rotation":0.6,"scale":1}
   ]
 }

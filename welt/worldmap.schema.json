@@ -481,6 +481,7 @@
             "flower",
             "grass",
             "rock",
+            "mound",
             "bush",
             "ruin",
             "shrine",
@@ -646,6 +647,28 @@
                 "enum": [
                   "granite",
                   "basalt"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "mound"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "ridge",
+                  "knoll"
                 ]
               }
             }

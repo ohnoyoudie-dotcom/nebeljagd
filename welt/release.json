@@ -1,38 +1,43 @@
 {
-  "name": "Nebeljagd – Graspinsel, Modellvarianten und Kampfgefühl",
+  "name": "Nebeljagd – dichteres Gras, Steinwege, bewachsene Hindernisse und Radiergummi",
   "date": "2026-10-27",
   "files": {
     "nebeljagd.html": {
-      "bytes": 3974463,
-      "sha256": "2ae3bb403c71a5d97196ea95fc84dad35ceef0bb72e639eb504e4dd011e39c47"
+      "bytes": 3985849,
+      "sha256": "46ee7c51b4eb4bb74e62b190e8c9a2c6ba74580741267f56ea17c8b7d62d2da7"
     },
     "map-editor.html": {
-      "bytes": 706850,
-      "sha256": "ae64f5f1e7cf97ade83e5de26df7ac255b69faf68638508e580b91c28c40399b"
+      "bytes": 722052,
+      "sha256": "fd3ba3301fd3005fe2f50cc8c8f22c63a1c19f829ef55b3c7698b2be7cdf881b"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 1767864,
-      "sha256": "98f636f8eec7c925940b55935b93bc0e3bf6bd9068d5167028005e2e7374b3c0"
+      "bytes": 1777806,
+      "sha256": "1898609561661e76556ac02d0c9cd0e760df76d785f72e10b434824c92abc832"
     },
     "worldmap.json": {
-      "bytes": 580340,
-      "sha256": "b85fab4da0348334380da0c415057e2fb540e39e180279e0559351f407124875"
+      "bytes": 580996,
+      "sha256": "82a9fe97cb9d7b32f36ca9f40a5f8dfdc5e3c1904be35a637f11ac959279efb8"
     },
     "worldmap.svg": {
-      "bytes": 1497776,
-      "sha256": "92eb4e8a2a62bc7aeba6ba1272bf66af9a36eb1f9b81693907a453125a26fe61"
+      "bytes": 1500377,
+      "sha256": "49b55d75d0d358521479b83098b49d912a3e3820579704c97e12bdecb8ea79a6"
     },
     "worldmap.schema.json": {
-      "bytes": 18167,
-      "sha256": "15963a4384f28092b197a015147f7571d19678c3fd16339545cf6e599dc99165"
+      "bytes": 18631,
+      "sha256": "72058ef36a56367f03cd71c9554163d4bd74072f16b85573af66b9a777e9c94d"
     }
   },
   "validation": {
-    "nodeTests": 80,
-    "browserScenarios": 7,
-    "brushEditorScenarios": 9,
-    "responsiveLayouts": 6,
-    "source": "docs/polish-game-check.json",
-    "offlineGameAndEditorNoHTTP": true
+    "nodeTests": 95,
+    "worldBrowserScenarios": 6,
+    "eraserEditorScenarios": 9,
+    "grassQualityLevels": 2,
+    "offlineGameAndEditorNoHTTP": true,
+    "sources": [
+      "docs/reference-world-check.json",
+      "docs/object-eraser-check.json",
+      "docs/grass-restoration-check.json",
+      "docs/reference-offline-check.json"
+    ]
   }
 }
