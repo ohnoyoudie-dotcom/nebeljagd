@@ -112,9 +112,10 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
   45 % Deckkraft. Der Status für spätere Verbergung gegenüber anderen Spielern
   ist vorbereitet, aber noch keine Netzwerkfunktion.
 
-- Ein taktischer Sichtradius von 18 Metern begrenzt den Blick. Wände, Felsen und
-  Baumstämme verdecken Figuren dahinter. Heller graublauer Nebel lässt die
-  Landschaft und Gegenstände durchscheinen; Interaktion benötigt weiter Sichtkontakt. Die lokale Minikarte bleibt
+- Der gesamte sichtbare Bildausschnitt bleibt klar. Hügel, Felsen, Baumstämme
+  und Häuser werfen weiche graublaue Sichtschatten auf Gelände und Objekte dahinter.
+  Die Hindernisse selbst bleiben sichtbar; verdeckte Figuren, Lebensbalken und
+  Interaktionen bleiben verborgen. Die lokale Minikarte bleibt
   eine schematische Übersicht; sie verrät keine verdeckten Gegner.
 - Fünf Waffenstufen: Normal (grau), Gewöhnlich (weiß), Ungewöhnlich (grün),
   Selten (blau), Legendär (orange). Höhere Stufen verursachen mehr Schaden.

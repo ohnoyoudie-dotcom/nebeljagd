@@ -9,17 +9,17 @@ in der Karte. Der vorherige Browserstand ist unter
 ## Sicht und Gebäude
 
 Alle 31 Gebäude bleiben ohne Dach; ihre Innenräume sind dauerhaft aktiviert.
-Eine taktische Rundumsicht von 18 Metern, inspiriert von Battlerite, begrenzt
-die lokale Sicht. Ein 3,5 Meter breiter weicher Rand mischt hellen graublauen Nebel ein.
-Landschaft und Gegenstände bleiben als gedämpfte Formen sichtbar.
-Baumstämme, Felsen und Wände werfen Sichtschatten; gedrehte Gebäude verwenden
-ihre tatsächlichen Wandkonturen. Türen erlauben den Blick in den sichtbaren Raum.
+Der volle Bildausschnitt bleibt ohne Sichtweitennebel sichtbar. Hügel, Felsen,
+Baumstämme, Zäune und Wände verdunkeln die Landschaft hinter ihnen in einem
+weichen graublauen Sichtschatten. Die sichtbaren Hindernisoberflächen bleiben
+selbst klar erkennbar. Gedrehte Gebäude und Mauern verwenden ihre tatsächlichen
+Konturen; Türen lassen den Blick durch ihre Öffnung.
 
-`visibility-model.js` berechnet lokale Hindernisse über einen räumlichen Index.
-`vision.js` überträgt 512 Strahlen auf eine kleine GPU-Textur und mischt den Nebel an der
-Weltposition von Gelände, Wasser und Objektmaterialien ein. Figuren außerhalb
-der Sicht werden ganz ausgeblendet; Bodenbeute bleibt durch den Nebel sichtbar,
-lässt sich aber nur in Reichweite mit Sichtkontakt aufnehmen. Verdeckte Übungsgegner zeigen weder Namen
+`visibility-model.js` berechnet Hindernisschatten über einen räumlichen Index.
+`vision.js` überträgt 512 Strahlen auf eine kleine GPU-Textur und mischt den
+Schatten in Gelände- und Objektmaterialien ein. Figuren hinter Hindernissen
+werden ganz ausgeblendet; Bodenbeute bleibt sichtbar, lässt sich aber nur in
+Reichweite mit freier Sicht aufnehmen. Verdeckte Übungsgegner zeigen weder Namen
 noch Lebensbalken. Hoher Bewuchs verbirgt fremde Figuren ebenfalls. Die lokale
 Figur und ihr Balken bleiben zur Orientierung lesbar. Dies ist lokale Sichtlogik;
 später muss ein Multiplayer-Server auch die übertragenen Gegnerdaten begrenzen.

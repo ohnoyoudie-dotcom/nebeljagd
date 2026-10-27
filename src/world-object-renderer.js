@@ -287,7 +287,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     chunkFor(x, z).count++;
     if (kit && object.kind === 'house') {
       const group = new THREE.Group(), roof = new THREE.Group(), frontFacade = new THREE.Group(), interior = new THREE.Group();
-      group.name = `${object.name} · ${object.id}`; roof.name = 'Dach entfernt'; roof.visible = false; interior.name = 'Fachwerkhaus · offener Innenraum';
+      group.name = `${object.name} · ${object.id}`; group.userData.visionBlockerSurface = true; roof.name = 'Dach entfernt'; roof.visible = false; interior.name = 'Fachwerkhaus · offener Innenraum';
       group.position.set(x, groundHeightAt(x, z), z); group.rotation.y = object.rotation; group.scale.setScalar(scale);
       group.add(roof, frontFacade, interior);
       for (const part of kit.parts) { const mesh = new THREE.Mesh(part.geometry, part.material); mesh.castShadow = part.castShadow; mesh.receiveShadow = true; (part.interior ? interior : group).add(mesh); }
@@ -303,7 +303,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     if (object.kind === 'house') {
       const variantIndex = Math.max(0, houseTypes.indexOf(variant)), template = templates.houses[variantIndex];
-      const group = template.group.clone(true); group.name = `${object.name} · ${object.id}`; group.position.set(x, groundHeightAt(x, z), z); group.rotation.y = object.rotation; group.scale.setScalar(scale); group.userData.mapObjectId = object.id;
+      const group = template.group.clone(true); group.name = `${object.name} · ${object.id}`; group.position.set(x, groundHeightAt(x, z), z); group.rotation.y = object.rotation; group.scale.setScalar(scale); group.userData.mapObjectId = object.id; group.userData.visionBlockerSurface = true;
       chunkFor(x, z).group.add(group);
       const localWalls = templates.walls.filter(body => body.minX >= variantIndex * 100 - 12 && body.maxX <= variantIndex * 100 + 12).map(body => ({ ...body, minX: body.minX - variantIndex * 100, maxX: body.maxX - variantIndex * 100 }));
       const structure = addStructure(object, localWalls, group, true);
@@ -387,6 +387,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const part of parts) {
       const mesh = new THREE.InstancedMesh(mode === 'low' && part.lowGeometry ? part.lowGeometry : part.geometry, part.material, batch.placements.length);
       mesh.name = `${batch.key} · ${batch.chunk.id}`; mesh.castShadow = part.castShadow; mesh.receiveShadow = true;
+      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence):/.test(batch.key);
       for (let i = 0; i < batch.placements.length; i++) {
         const p = batch.placements[i]; matrix.position.set(p.x, p.y + (batch.key === 'bed:soil' ? .04 : .01), p.z); matrix.rotation.set(0, p.rotation, 0); matrix.scale.set(...p.scale); matrix.updateMatrix(); mesh.setMatrixAt(i, matrix.matrix);
         if (part.foliage) { tempColor.set('#a0b481'); mesh.setColorAt(i, tempColor); }

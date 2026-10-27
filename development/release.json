@@ -1,14 +1,15 @@
 {
   "branch": "work",
-  "commit": "e78c26d3d316a93cb4c7d4f2623950a921828b5b",
+  "commit": "d3ae7066951c26947f1a5a33c34f132357f11814",
+  "builtAt": "2026-10-27T20:39:46.971418+00:00",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4445973,
-      "sha256": "4ca2dd6943988294e09231cdfe7d85ed0c1a7cc9e45d43e404700eb1ccf3e7b8"
+      "bytes": 4446981,
+      "sha256": "cc64888468171bbc133dbba431c4e5ded49f2f2890436a550c7c66069c210fab"
     },
     "map-editor.html": {
-      "bytes": 3650914,
-      "sha256": "f7a9c381c058e210ee9508839fe34736e11e311763ae695db02b33f1c5ee00aa"
+      "bytes": 3651066,
+      "sha256": "629093cd2d026a226d51223843a490ca438e9860fd95ad827337145b84d2397d"
     },
     "worldmap.json": {
       "bytes": 580996,
@@ -23,9 +24,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3211176,
-      "sha256": "9c1b1c406aa2be1b9e736afe321843ca0e73609a9511333585c4edc2882fc831"
+      "bytes": 3211608,
+      "sha256": "c4300f24a4625c62c7b918d64a5a624a71ac2086a46a0da25eccaa6725dbef9e"
     }
   },
-  "behavior": "Scenery remains fully visible. Occlusion applies to actors and interactions. The dodge animation rolls laterally."
+  "visibility": "128m obstacle shadows; no radial scene fog; blocker surfaces stay visible",
+  "roll": "forward somersault around the lateral axis"
 }
