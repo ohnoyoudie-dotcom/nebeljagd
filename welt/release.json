@@ -1,18 +1,18 @@
 {
-  "name": "Nebeljagd – Sicht, Truhen und Elementarwaffen",
+  "name": "Nebeljagd – Graspinsel, Modellvarianten und Kampfgefühl",
   "date": "2026-10-27",
   "files": {
     "nebeljagd.html": {
-      "bytes": 3954409,
-      "sha256": "307ea036cad2f680841c18963ca4a5f3cc31fc250bb49c1e30ad146501b8235f"
+      "bytes": 3974463,
+      "sha256": "2ae3bb403c71a5d97196ea95fc84dad35ceef0bb72e639eb504e4dd011e39c47"
     },
     "map-editor.html": {
-      "bytes": 575006,
-      "sha256": "0574c8cf0966dc6f4ce2c2c948f7d6d0a857d545f1e36a0923ec90993751909a"
+      "bytes": 706850,
+      "sha256": "ae64f5f1e7cf97ade83e5de26df7ac255b69faf68638508e580b91c28c40399b"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 1677911,
-      "sha256": "acfad9489ecdbefd1fc91dc5e9591fbc0a3be24fa3715b6db9c3861c8d9d1238"
+      "bytes": 1767864,
+      "sha256": "98f636f8eec7c925940b55935b93bc0e3bf6bd9068d5167028005e2e7374b3c0"
     },
     "worldmap.json": {
       "bytes": 580340,
@@ -28,10 +28,11 @@
     }
   },
   "validation": {
-    "nodeTests": 60,
-    "browserScenarios": 10,
-    "editorScenarios": 6,
-    "source": "docs/tactical-loot-smoke.json",
-    "offlineNoHTTP": true
+    "nodeTests": 80,
+    "browserScenarios": 7,
+    "brushEditorScenarios": 9,
+    "responsiveLayouts": 6,
+    "source": "docs/polish-game-check.json",
+    "offlineGameAndEditorNoHTTP": true
   }
 }
