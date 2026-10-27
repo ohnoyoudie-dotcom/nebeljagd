@@ -26,11 +26,13 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       float distanceToViewer = length(delta);
       float angle = atan(delta.y, delta.x) / 6.28318530718;
       float limit = texture2D(uTacticalSight, vec2(fract(angle + .5 / ${samples.toFixed(1)}), .5)).r * uTacticalRadius;
-      float obstacleFade = 1. - smoothstep(limit + .12, limit + .7, distanceToViewer);
+      // Spread the edge over several world metres so cover fades out softly
+      // instead of drawing a sharp wedge across the terrain.
+      float obstacleFade = 1. - smoothstep(limit + .08, limit + 2.8, distanceToViewer);
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
       float luminance = dot(color, vec3(.2126, .7152, .0722));
       vec3 softened = mix(color, vec3(luminance), .3);
-      vec3 shadow = mix(softened, vec3(.075, .105, .145), .84);
+      vec3 shadow = mix(softened, vec3(.035, .045, .06), .9);
       return mix(shadow, color, visibility);
     }
   `;
@@ -80,7 +82,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v3-obstacle-shadow`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v4-soft-dark-shadow`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }

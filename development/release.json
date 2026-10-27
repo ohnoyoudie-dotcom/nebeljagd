@@ -1,11 +1,11 @@
 {
   "branch": "work",
-  "commit": "d6d74003852e9eb8685958dcca43216f98181e4b",
-  "builtAt": "2026-10-27T20:56:37.051Z",
+  "commit": "8257851",
+  "builtAt": "2026-10-27T21:08:59.908Z",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4447901,
-      "sha256": "bd61a11916fc827c41edfd8de5f056c2a54c973e3aa509e2deec78a8cb52894d"
+      "bytes": 4448040,
+      "sha256": "6463e82409523d37dcbbe37bd48d2251c9e9bcc11ff5b6ebcd22ce361981bb95"
     },
     "map-editor.html": {
       "bytes": 3651066,
@@ -24,10 +24,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3211986,
-      "sha256": "e4e92ccd111c973be6bf53b2cb2674e7ebfc2aaa2f0c0555499c5a67dc00550e"
+      "bytes": 3212078,
+      "sha256": "4d267cd266e5e1b8e80d0c336e8ac9f1b4daa91be2f4e2a24f76d26a5dc9e419"
     }
   },
   "roll": "0.72s compact forward somersault with tucked recovery",
-  "vision": "full screen view; larger obstacles block actors and cast soft gray-blue ground shadows; obstacle surfaces remain visible"
+  "vision": "full screen view; obstacle shadows are darker gray-blue with a 2.8m soft edge; blocker surfaces remain visible"
 }
