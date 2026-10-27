@@ -485,9 +485,11 @@
             "ruin",
             "shrine",
             "heart",
-            "crystal",
+            "chest",
             "bow",
-            "sword"
+            "sword",
+            "fireStaff",
+            "iceStaff"
           ]
         },
         "variant": {
@@ -521,6 +523,16 @@
           "type": "number",
           "minimum": 0.25,
           "maximum": 100
+        },
+        "rarity": {
+          "enum": [
+            "normal",
+            "common",
+            "uncommon",
+            "rare",
+            "legendary"
+          ],
+          "description": "Waffenstufe; ältere Karten ohne Stufe erhalten common beim Import."
         }
       },
       "allOf": [
@@ -727,7 +739,7 @@
           "if": {
             "properties": {
               "kind": {
-                "const": "crystal"
+                "const": "chest"
               }
             },
             "required": [
@@ -738,7 +750,7 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "forest"
+                  "wood"
                 ]
               }
             }
@@ -808,6 +820,67 @@
               "radius": {
                 "minimum": 0.5,
                 "maximum": 20
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "fireStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "ember"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "iceStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "frost"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "rarity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "bow",
+                  "sword",
+                  "fireStaff",
+                  "iceStaff"
+                ]
               }
             }
           }

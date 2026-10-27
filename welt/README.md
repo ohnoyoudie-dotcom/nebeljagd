@@ -1,18 +1,20 @@
-# Nebeljagd: große Insel und Objekteditor
+# Nebeljagd · Spielwelt und Editor
 
-- Spiel: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/
-- Editor: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html
-- Download: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip
+- [Spiel öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/)
+- [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html)
+- [ZIP herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip)
 
-Die eigenständigen Browserdateien enthalten die geprüfte generierte Insel
-und den Editor mit gemeinsamen Kartendaten. Im Editor öffnet „In 3D testen“
-den aktuellen Entwurf im Spiel. „JSON speichern“ sichert Änderungen; im Spiel
-liest „Eigene Karte laden“ diese Datei wieder ein.
+Aktuell: offene Häuser, 18-Meter-Sichtradius mit Hindernisdeckung, 48 Truhen,
+Gold, fünf Waffenstufen, Bogen/Schwert/Feuerstab/Eisstab, Lebensbalken und
+Wolkenschatten. Drei beschriftete Übungsgegner machen die Kampfeffekte testbar;
+Multiplayer ist noch nicht enthalten.
 
-ZIP vollständig entpacken; beide HTML-Dateien im selben Ordner lassen.
-Der lokale Browser-Zwischenstand verändert die veröffentlichte Ausgangskarte
-nicht. Multiplayer ist noch nicht implementiert.
+WASD/Pfeile bewegen, Leertaste rollen, E aufnehmen oder Truhe öffnen,
+F angreifen. Auf Touch-Geräten Joystick und Aktionstasten verwenden.
+Im Editor die Waffenstufe wählen und den Entwurf über „In 3D testen“ öffnen.
+Editoränderungen als JSON speichern; sie verändern diese Ausgangskarte nicht automatisch.
 
-Dieser Ordner ist ein erzeugter Browser-Build. Originaldateien auf der
-Repository-Hauptebene bleiben historische Spielstände. Die Prüfsummen des
-veröffentlichten Pakets stehen in release.json.
+Für die lokale Nutzung ZIP entpacken und beide HTML-Dateien im selben Ordner
+lassen. Die Dateien enthalten ihre Browser-Modelle und benötigen zum Spielen
+keine externen Grafikdienste. Dies ist ein erzeugter Browser-Build, kein
+vollständiges Quellcodearchiv. Prüfsummen stehen in release.json.

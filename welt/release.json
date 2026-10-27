@@ -1,35 +1,37 @@
 {
-  "name": "Nebeljagd – generierte Welt und Objekteditor",
+  "name": "Nebeljagd – Sicht, Truhen und Elementarwaffen",
   "date": "2026-10-27",
   "files": {
     "nebeljagd.html": {
-      "bytes": 3913064,
-      "sha256": "344b1ec68f13cf79c991aaa8a50895d525058b3f125685fd049e78ffcba8ccc2"
+      "bytes": 3954409,
+      "sha256": "307ea036cad2f680841c18963ca4a5f3cc31fc250bb49c1e30ad146501b8235f"
     },
     "map-editor.html": {
-      "bytes": 564945,
-      "sha256": "0998f524f05fabcf7593c70c565a58216123a98fb8c6c0cafe74a5721ca226c8"
+      "bytes": 575006,
+      "sha256": "0574c8cf0966dc6f4ce2c2c948f7d6d0a857d545f1e36a0923ec90993751909a"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 1659740,
-      "sha256": "80d11fda2eda172cd4e863162ebc139795ac1fdd6a4488c3a19fffe87c0b49a7"
+      "bytes": 1677911,
+      "sha256": "acfad9489ecdbefd1fc91dc5e9591fbc0a3be24fa3715b6db9c3861c8d9d1238"
     },
     "worldmap.json": {
-      "bytes": 574226,
-      "sha256": "22d88344838a262a82e027177286e1a17c0191f82a1d62de7aca37a05fc12157"
+      "bytes": 580340,
+      "sha256": "b85fab4da0348334380da0c415057e2fb540e39e180279e0559351f407124875"
     },
     "worldmap.svg": {
-      "bytes": 1479694,
-      "sha256": "1d0086cca6d22be2a3a7cd6230b5e8eea90e32c1fd4ea90ce70cc1ff9ed9e35e"
+      "bytes": 1497776,
+      "sha256": "92eb4e8a2a62bc7aeba6ba1272bf66af9a36eb1f9b81693907a453125a26fe61"
     },
     "worldmap.schema.json": {
-      "bytes": 16629,
-      "sha256": "af06e6d661c5f57aad677481a4af266be885e2a9c6a18f329b8053d8684d7241"
+      "bytes": 18167,
+      "sha256": "15963a4384f28092b197a015147f7571d19678c3fd16339545cf6e599dc99165"
     }
   },
   "validation": {
-    "nodeTests": 37,
-    "browserScenarios": 12,
-    "source": "docs/generated-world-smoke.json"
+    "nodeTests": 60,
+    "browserScenarios": 10,
+    "editorScenarios": 6,
+    "source": "docs/tactical-loot-smoke.json",
+    "offlineNoHTTP": true
   }
 }
