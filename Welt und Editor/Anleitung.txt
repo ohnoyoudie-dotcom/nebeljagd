@@ -1,0 +1,21 @@
+NEBELJAGD – SPIELWELT UND EDITOR
+
+1. Dieses ZIP vollständig in einen Ordner entpacken.
+2. nebeljagd.html im Browser öffnen: die große Insel erkunden.
+3. map-editor.html im Browser öffnen: Weltobjekte anlegen und verändern.
+4. Im Editor „In 3D testen“ öffnet deinen aktuellen Entwurf im Spiel.
+   Beide HTML-Dateien müssen dafür im selben Ordner liegen.
+
+Bäume, Häuser, Blumen, Gras und andere Weltobjekte lassen sich auswählen,
+verschieben, drehen, vergrößern, duplizieren und löschen. Mit „Auf Karte
+zeigen“ vergrößerst du ein ausgewähltes Objekt. Gras und Blumen sind
+gemeinsam verschiebbare Flächen, keine einzeln bearbeitbaren Halme.
+
+„JSON speichern“ sichert deinen Entwurf als weiterverwendbare Datei.
+Im Spiel kannst du diese Datei über „Eigene Karte laden“ öffnen.
+Die Editoränderungen verändern die mitgelieferte worldmap.json nicht.
+SVG ist eine zusätzliche Grafik; Änderungen darin ändern JSON nicht.
+
+Das Spiel ist ein Einzelspieler-Erkundungsprototyp. Die Weltgröße und
+Startbereiche sind für später etwa 50 Spieler vorbereitet; Multiplayer
+und Teams sind noch nicht implementiert.

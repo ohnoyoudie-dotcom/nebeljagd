@@ -1,0 +1,94 @@
+{
+  "package": "Nebeljagd Umwelt-Kit v1",
+  "author": "Original procedural assets created for Nebeljagd",
+  "license": "CC0-1.0 for these generated models; game reference screenshots not included",
+  "units": "meters; Blender Z-up after import, GLB glTF Y-up",
+  "format": "GLB glTF 2.0, PBR baseColor, no external textures",
+  "intent": "stylized fantasy world modular assets for Three.js/WebGL and Blender, starter kit not final AAA",
+  "assets": [
+    {
+      "name": "fence_wood_3m",
+      "file": "assets/fence_wood_3m.glb",
+      "sha256": "5c41fd23ce89a1ee6c1a69de7a289bb1849493ec24722147401a842154a028cc",
+      "triangles": 1252,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "wall_stone_3m",
+      "file": "assets/wall_stone_3m.glb",
+      "sha256": "0338c7cd044ee5bce4f94b55b9c27111b99312df5ba2bd1414aac9412164a489",
+      "triangles": 596,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "ruin_arch",
+      "file": "assets/ruin_arch.glb",
+      "sha256": "073cc3372170b391c8905c28c21ed9bceec44b8faef3c4f4e3689f1651848eba",
+      "triangles": 580,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "rock_cluster",
+      "file": "assets/rock_cluster.glb",
+      "sha256": "82fccc698aa3255b6e8c4ab0cf4f0fef915bee8df8b61267910700bf5ccc8d61",
+      "triangles": 1840,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "rock_single",
+      "file": "assets/rock_single.glb",
+      "sha256": "7582b2c7f9eb30f55d8d7a048bc4cea86609b1f0f2fd965c710d3779647ba940",
+      "triangles": 400,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "pine_high",
+      "file": "assets/pine_high.glb",
+      "sha256": "5f34d927a242e75980890a3419953766b5854e258cc8fdabbceec96d358683c3",
+      "triangles": 1344,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "pine_young",
+      "file": "assets/pine_young.glb",
+      "sha256": "c3d9a5c1b6afcc3e1476a40fbf954f9b3f3f08683950db4d7d2d9f175bbb3ef4",
+      "triangles": 1344,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "oak_green",
+      "file": "assets/oak_green.glb",
+      "sha256": "782df28f3a22763de4125c4673c29819c3c4ccefa4fffded4c957998b5ff49e8",
+      "triangles": 2236,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "oak_autumn",
+      "file": "assets/oak_autumn.glb",
+      "sha256": "2cbbf88e6af58528c8f3370f2a81a1a052894316b2f4e066bedcd9b980e2029e",
+      "triangles": 2236,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "grass_tall_patch",
+      "file": "assets/grass_tall_patch.glb",
+      "sha256": "243a6c26da9b6fe94369315b06d8944012579ff430c34c3f1580e357084a03c6",
+      "triangles": 1248,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "crate_wood",
+      "file": "assets/crate_wood.glb",
+      "sha256": "467393a0d9970b3b5689cc37cf0ea0907414f98507be6d0c02570f8f57d949f0",
+      "triangles": 476,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    },
+    {
+      "name": "house_timbersmall",
+      "file": "assets/house_timbersmall.glb",
+      "sha256": "8a25a5801e8a8f8f968fc4f0b8d7da1bb6578cabb97c3bd4c349053046d59d20",
+      "triangles": 2004,
+      "dimensions_hint": "editable GLB meshes with material groups"
+    }
+  ]
+}
