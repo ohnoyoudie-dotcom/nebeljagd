@@ -10,10 +10,13 @@ in der Karte. Der vorherige Browserstand ist unter
 
 Alle 31 Gebäude bleiben ohne Dach; ihre Innenräume sind dauerhaft aktiviert.
 Der volle Bildausschnitt bleibt ohne Sichtweitennebel sichtbar. Hügel, Felsen,
-Baumstämme, Zäune und Wände verdunkeln die Landschaft hinter ihnen in einem
-weichen graublauen Sichtschatten. Die sichtbaren Hindernisoberflächen bleiben
-selbst klar erkennbar. Gedrehte Gebäude und Mauern verwenden ihre tatsächlichen
-Konturen; Türen lassen den Blick durch ihre Öffnung.
+Baumstämme, Zäune und Wände verdunkeln die Landschaft hinter ihnen mit einem
+schwarzen Sichtschatten bei 50 Prozent Deckkraft. Ein kompakter Gauß-Filter
+zeichnet die Kontur in einem einzigen gleichmäßigen Verlauf weich. Auch die
+normalen Szenenschatten nutzen 50 Prozent Intensität und einen weicheren
+Schattenfilter. Die sichtbaren Hindernisoberflächen bleiben selbst klar
+erkennbar. Gedrehte Gebäude und Mauern verwenden ihre tatsächlichen Konturen;
+Türen lassen den Blick durch ihre Öffnung.
 
 `visibility-model.js` berechnet Hindernisschatten über einen räumlichen Index.
 `vision.js` überträgt 512 Strahlen auf eine kleine GPU-Textur und mischt den

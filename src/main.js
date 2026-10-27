@@ -81,7 +81,7 @@ sun.shadow.camera.near = 1;
 sun.shadow.camera.far = 110;
 sun.shadow.bias = -0.00015;
 sun.shadow.normalBias = 0.035;
-sun.shadow.radius = 4;
+sun.shadow.radius = 20;
 scene.add(sun, sun.target);
 
 ui.setLoading?.('Die Insel wird aus der Karte erzeugt …');

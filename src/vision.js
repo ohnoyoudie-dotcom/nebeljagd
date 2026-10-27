@@ -21,15 +21,22 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     uniform vec2 uTacticalOrigin;
     uniform float uTacticalRadius;
     uniform float uTacticalBlockerSurface;
+    float tacticalSightFade(float angleUv, float distanceToViewer) {
+      float limit = texture2D(uTacticalSight, vec2(fract(angleUv), .5)).r * uTacticalRadius;
+      return 1. - smoothstep(limit + .04, limit + 1.0, distanceToViewer);
+    }
     vec3 applyTacticalSight(vec3 color, vec2 point) {
       vec2 delta = point - uTacticalOrigin;
       float distanceToViewer = length(delta);
       float angle = atan(delta.y, delta.x) / 6.28318530718;
-      float limit = texture2D(uTacticalSight, vec2(fract(angle + .5 / ${samples.toFixed(1)}), .5)).r * uTacticalRadius;
-      // One adaptive antialiased band follows the full contour, including its sides.
-      float signedEdgeDistance = distanceToViewer - limit;
-      float edgeWidth = clamp(fwidth(signedEdgeDistance) * 1.5, .3, 1.0);
-      float obstacleFade = 1. - smoothstep(-edgeWidth * .5, edgeWidth * .5, signedEdgeDistance);
+      float angleUv = fract(angle + .5 / ${samples.toFixed(1)});
+      float texel = 1. / ${samples.toFixed(1)};
+      // A compact Gaussian filter softens the silhouette continuously, not in bands.
+      float obstacleFade = .1923 * tacticalSightFade(angleUv, distanceToViewer)
+        + .1731 * (tacticalSightFade(angleUv - texel, distanceToViewer) + tacticalSightFade(angleUv + texel, distanceToViewer))
+        + .125 * (tacticalSightFade(angleUv - 2. * texel, distanceToViewer) + tacticalSightFade(angleUv + 2. * texel, distanceToViewer))
+        + .0769 * (tacticalSightFade(angleUv - 3. * texel, distanceToViewer) + tacticalSightFade(angleUv + 3. * texel, distanceToViewer))
+        + .0288 * (tacticalSightFade(angleUv - 4. * texel, distanceToViewer) + tacticalSightFade(angleUv + 4. * texel, distanceToViewer));
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
       vec3 shadow = mix(color, vec3(0.0), .50);
       return mix(shadow, color, visibility);
@@ -81,7 +88,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v8-black-50-single-feather`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v12-black-50-gaussian-edge`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }

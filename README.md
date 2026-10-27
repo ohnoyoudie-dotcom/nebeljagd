@@ -113,7 +113,8 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
   ist vorbereitet, aber noch keine Netzwerkfunktion.
 
 - Der gesamte sichtbare Bildausschnitt bleibt klar. Hügel, Felsen, Baumstämme
-  und Häuser werfen weiche graublaue Sichtschatten auf Gelände und Objekte dahinter.
+  und Häuser werfen schwarze Sichtschatten mit 50 % Deckkraft und weicher Kante
+  auf Gelände und Objekte dahinter.
   Die Hindernisse selbst bleiben sichtbar; verdeckte Figuren, Lebensbalken und
   Interaktionen bleiben verborgen. Die lokale Minikarte bleibt
   eine schematische Übersicht; sie verrät keine verdeckten Gegner.
