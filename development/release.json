@@ -1,11 +1,11 @@
 {
   "branch": "work",
-  "commit": "d3ae7066951c26947f1a5a33c34f132357f11814",
-  "builtAt": "2026-10-27T20:39:46.971418+00:00",
+  "commit": "cd0ff4fe5f67e035664190d138a2040713ac6afb",
+  "builtAt": "2026-10-27T20:49:23.326981+00:00",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4446981,
-      "sha256": "cc64888468171bbc133dbba431c4e5ded49f2f2890436a550c7c66069c210fab"
+      "bytes": 4447730,
+      "sha256": "8198f516fa54ff4f7dbf5d7d022bef13ef57ab50c0db294993fe97e5a7584fef"
     },
     "map-editor.html": {
       "bytes": 3651066,
@@ -24,10 +24,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3211608,
-      "sha256": "c4300f24a4625c62c7b918d64a5a624a71ac2086a46a0da25eccaa6725dbef9e"
+      "bytes": 3211930,
+      "sha256": "9197e97c06bcc6a12104db91b64f84dc64e4e015d50c0131bc4c0620806c5265"
     }
   },
-  "visibility": "128m obstacle shadows; no radial scene fog; blocker surfaces stay visible",
-  "roll": "forward somersault around the lateral axis"
+  "roll": "0.72s tucked forward somersault with recovery",
+  "vision": "clear scene with darker soft obstacle shadows; blocker surfaces remain visible"
 }

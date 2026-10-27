@@ -30,7 +30,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
       float luminance = dot(color, vec3(.2126, .7152, .0722));
       vec3 softened = mix(color, vec3(luminance), .3);
-      vec3 shadow = mix(softened, vec3(.20, .26, .31), .68);
+      vec3 shadow = mix(softened, vec3(.075, .105, .145), .84);
       return mix(shadow, color, visibility);
     }
   `;

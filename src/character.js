@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import rangerUrl from '../assets/characters/ranger.glb?url&inline';
 import { createLocomotionController } from './locomotion.js';
+import { ROLL_DURATION } from './rules.js';
 
 /** Original Blender-authored skinned traveller; Vite embeds the asset. */
 export async function createCharacter(scene) {
@@ -65,14 +66,31 @@ export async function createCharacter(scene) {
   let dead = false, concealed = false, opacity = 1;
   const locomotion = createLocomotionController();
   let rollRemaining = 0, attackRemaining = 0;
-  const rollDuration = 0.52;
+  const rollDuration = ROLL_DURATION;
   const neck = model.getObjectByName('Neck');
   const chest = model.getObjectByName('Chest');
+  const findBone = names => {
+    const wanted = new Set(names.map(name => name.toLowerCase()));
+    let result = null;
+    model.traverse(node => {
+      if (result || !node.isBone) return;
+      const name = String(node.name || node.userData?.name || '').replace(/[^a-z]/gi, '').toLowerCase();
+      if (wanted.has(name)) result = node;
+    });
+    return result;
+  };
   const armBones = {
     // GLTFLoader sanitises dots in node names; userData.name retains Blender's label.
     left: ['UpperArmL', 'ForearmL', 'HandL'].map(name => model.getObjectByName(name)),
     right: ['UpperArmR', 'ForearmR', 'HandR'].map(name => model.getObjectByName(name)),
   };
+  const rollBones = [
+    [findBone(['thighl']), [-1.05, 0, 0]], [findBone(['shinl']), [1.55, 0, 0]],
+    [findBone(['thighr']), [-1.05, 0, 0]], [findBone(['shinr']), [1.55, 0, 0]],
+    [findBone(['upperarml']), [0, 0, 0.72]], [findBone(['upperarmr']), [0, 0, -.72]],
+    [findBone(['forearml']), [-1.1, 0, 0]], [findBone(['forearmr']), [-1.1, 0, 0]],
+    [chest, [-.25, 0, 0]],
+  ].filter(([bone]) => bone).map(([bone, angles]) => ({ bone, angles, rotation: new THREE.Quaternion() }));
   // Two-bone aiming keeps the held objects in the actual hands instead of
   // floating beside the running rig. Targets use the character's local space.
   const shoulder = new THREE.Vector3(), handTarget = new THREE.Vector3();
@@ -142,8 +160,8 @@ export async function createCharacter(scene) {
     const smoothing = 1 - Math.exp(-delta * 12);
     const movement = locomotion.update(delta, { moving, speed, direction,
       currentYaw: group.rotation.y, rolling: rollRemaining > 0, dead });
-    idle.setEffectiveWeight(1 - movement.walkWeight);
-    walk.setEffectiveWeight(movement.walkWeight);
+    idle.setEffectiveWeight(rollRemaining > 0 ? 1 : 1 - movement.walkWeight);
+    walk.setEffectiveWeight(rollRemaining > 0 ? 0 : movement.walkWeight);
     // Walk is a 2/3 s gait authored at the game's 5.6 units/s reference speed.
     walk.setEffectiveTimeScale(movement.playbackSpeed);
     mixer.update(dead ? 0 : delta);
@@ -151,10 +169,20 @@ export async function createCharacter(scene) {
     if (rollRemaining > 0 && !dead) {
       rollRemaining = Math.max(0, rollRemaining - delta);
       const progress = 1 - rollRemaining / rollDuration;
-      // Rotate forward around the lateral axis, keeping the hips at their normal height.
-      rollPivot.rotation.x = progress * Math.PI * 2;
+      // Crouch/tuck, complete one forward somersault, then open the pose to stand.
+      const tuckIn = THREE.MathUtils.smoothstep(progress, 0, .13);
+      const standUp = 1 - THREE.MathUtils.smoothstep(progress, .82, 1);
+      const bundle = tuckIn * standUp;
+      const rotationProgress = THREE.MathUtils.clamp((progress - .1) / .74, 0, 1);
+      rollPivot.rotation.x = rotationProgress * Math.PI * 2;
       rollPivot.rotation.z = 0;
       rollPivot.position.y = 1.025;
+      const poseEuler = new THREE.Euler();
+      for (const entry of rollBones) {
+        poseEuler.set(entry.angles[0] * bundle, entry.angles[1] * bundle, entry.angles[2] * bundle);
+        entry.rotation.setFromEuler(poseEuler);
+        entry.bone.quaternion.multiply(entry.rotation);
+      }
     } else {
       rollPivot.rotation.x = dead ? THREE.MathUtils.lerp(rollPivot.rotation.x, -Math.PI * 0.43, smoothing) : movement.forwardLean;
       rollPivot.rotation.z = movement.sideLean;

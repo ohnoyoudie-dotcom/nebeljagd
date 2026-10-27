@@ -2,7 +2,7 @@ export const MAX_HEALTH = 100;
 export const START_HEALTH = 72;
 export const WALK_SPEED = 5.6;
 export const ROLL_SPEED = 8.8;
-export const ROLL_DURATION = 0.52;
+export const ROLL_DURATION = 0.72;
 export const ROLL_COOLDOWN = 2.5;
 export const ZONE = { initial: 32, minimum: 10, grace: 40, duration: 180, damage: 11 };
 
