@@ -5336,6 +5336,16 @@
     {"id":"obj-mound-auenwacht-east","name":"Auenwacht · Bewachsene Felskuppe","kind":"mound","variant":"knoll","position":[41,-34],"rotation":0.2,"scale":1},
     {"id":"obj-mound-cottage-east","name":"Kräuterhaus · Bewachsene Felskuppe","kind":"mound","variant":"knoll","position":[47,-58],"rotation":-0.35,"scale":1},
     {"id":"obj-mound-south-clearing","name":"Südliche Lichtung · Bewachsene Felskante","kind":"mound","variant":"ridge","position":[31,-6],"rotation":-0.2,"scale":1},
-    {"id":"obj-mound-west-meadow","name":"Westliche Wiese · Bewachsene Felskante","kind":"mound","variant":"ridge","position":[-34,-75],"rotation":0.6,"scale":1}
+    {"id":"obj-mound-west-meadow","name":"Westliche Wiese · Bewachsene Felskante","kind":"mound","variant":"ridge","position":[-34,-75],"rotation":0.6,"scale":1},
+    {"id":"obj-crate-mondhain-01","name":"Mondhain · Holzkiste am Nordpfad","kind":"crate","variant":"kit-wood","position":[198,-429],"rotation":0.35,"scale":1},
+    {"id":"obj-crate-mondhain-02","name":"Mondhain · Holzkiste am Ostpfad","kind":"crate","variant":"kit-wood","position":[222,-399],"rotation":0.8,"scale":1},
+    {"id":"obj-crate-mooswinkel-01","name":"Mooswinkel · Holzkiste am Nordrand","kind":"crate","variant":"kit-wood","position":[-372,-51],"rotation":0.6,"scale":1},
+    {"id":"obj-crate-mooswinkel-02","name":"Mooswinkel · Holzkiste am Südwestweg","kind":"crate","variant":"kit-wood","position":[-348,-81],"rotation":0.1,"scale":1},
+    {"id":"obj-crate-auenwacht-01","name":"Auenwacht · Holzkiste am Nordostweg","kind":"crate","variant":"kit-wood","position":[6,-39],"rotation":0.45,"scale":1},
+    {"id":"obj-crate-auenwacht-02","name":"Auenwacht · Holzkiste am Südweg","kind":"crate","variant":"kit-wood","position":[18,-90],"rotation":0.9,"scale":1},
+    {"id":"obj-crate-wildheide-01","name":"Wildheide · Holzkiste am Nordwestpfad","kind":"crate","variant":"kit-wood","position":[-111,168],"rotation":0.4,"scale":1},
+    {"id":"obj-crate-wildheide-02","name":"Wildheide · Holzkiste am Ostpfad","kind":"crate","variant":"kit-wood","position":[-48,159],"rotation":0.2,"scale":1},
+    {"id":"obj-crate-moorlicht-01","name":"Moorlicht · Holzkiste am Nordpfad","kind":"crate","variant":"kit-wood","position":[-321,318],"rotation":0.2,"scale":1},
+    {"id":"obj-crate-moorlicht-02","name":"Moorlicht · Holzkiste am Südostpfad","kind":"crate","variant":"kit-wood","position":[-312,381],"rotation":0.6,"scale":1}
   ]
 }
