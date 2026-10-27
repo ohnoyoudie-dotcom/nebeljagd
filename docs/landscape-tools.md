@@ -26,11 +26,13 @@ angefordert und keine Blender-Shader als Laufzeitvoraussetzung eingeführt.
 
 Die zwölf Modelle unter `Blender/nebeljagd_umwelt_kit_v1/assets/` sind ebenfalls
 im gemeinsamen Editor-/Spielkatalog verfügbar: vier Bäume, zwei Felsen, Gras,
-Mauer, Zaun, Ruinenbogen, Fachwerkhaus und Dekokiste. Mauer, Zaun und Kiste
-sind feste Hindernisse. Der Bogen behält eine begehbare Öffnung; das Haus
-bleibt ohne Dach und durch seinen Eingang begehbar. Die Dekokiste ist ein
-Landschaftsobjekt, keine zusätzliche Beutetruhe. Drehung und Skalierung gelten
-für Darstellung und Kollision gemeinsam. Die Quellmodelle bleiben unverändert.
+Mauer, Zaun, Ruinenbogen, Fachwerkhaus und Holzkiste. Mauer, Zaun und Kisten
+blockieren Bewegung und Sicht. Kisten zerbrechen nach mehreren Treffern; danach
+entfallen auch Kollision, Pfeilblockade und Sichtschatten. Ein Rundenneustart
+stellt sie wieder her. Kisten sind Landschaftsobjekte, keine Beutetruhen. Der
+Bogen behält eine begehbare Öffnung; das Haus bleibt ohne Dach und durch seinen
+Eingang begehbar. Drehung und Skalierung gelten für Darstellung und Kollision
+gemeinsam. Die Quellmodelle bleiben unverändert.
 
 ## Bedienung
 
