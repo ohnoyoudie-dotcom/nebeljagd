@@ -44,7 +44,7 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'fence', label: 'Zaun', defaultVariant: 'kit-wood', defaultScale: 1,
     footprintRadius: Math.hypot(1.6, .2), footprintWidth: 3.2, footprintDepth: .4,
     variants: [{ id: 'kit-wood', label: 'Holzzaun · GLB' }] },
-  { kind: 'crate', label: 'Dekokiste', defaultVariant: 'kit-wood', defaultScale: 1,
+  { kind: 'crate', label: 'Holzkiste', defaultVariant: 'kit-wood', defaultScale: 1,
     footprintRadius: Math.hypot(.425, .425), footprintWidth: .85, footprintDepth: .85,
     variants: [{ id: 'kit-wood', label: 'Holzkiste · GLB' }] },
 ].map(definition => Object.freeze({ ...definition,

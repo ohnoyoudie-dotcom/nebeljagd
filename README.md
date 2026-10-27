@@ -167,7 +167,8 @@ Herkunft und Materialanpassungen: [`assets/imported/rei/`](assets/imported/rei/R
 Die hochgeladene Rei-Gras-GLB enthielt keine Halme; die sieben Pinseltypen
 verwenden deshalb Projektgeometrie. Das vorhandene Nebeljagd-Umwelt-Kit ergänzt
 echtes GLB-Gras, vier Bäume einschließlich einer Herbsteiche, zwei Felsen,
-Mauer, Zaun, Ruinenbogen, Fachwerkhaus und Dekokiste. Alle 38 Katalogvarianten
+Mauer, Zaun, Ruinenbogen, Fachwerkhaus und Holzkiste. Zehn Holzkisten sind
+zerstörbar und geben nach Treffern Weg und Sicht frei. Alle 38 Katalogvarianten
 haben echte Modellvorschauen. Die Kit-Quelldateien bleiben unverändert.
 
 ## Prüfen und frühere Stände

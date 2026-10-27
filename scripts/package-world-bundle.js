@@ -26,6 +26,9 @@ einem Rückgängig-Schritt zurücknehmen. Küste, Regionen und Wege bleiben erha
 „Bewachsene Erhöhung“ bietet Felskanten und Felskuppen als feste Hindernisse.
 Du kannst sie verschieben, drehen und skalieren; im Spiel blockieren sie
 Bewegung, Pfeile und die Sicht auf Figuren dahinter.
+Zehn Holzkisten sind auf der Insel verteilt. Sie halten mehreren Treffern stand;
+nach der Zerstörung verschwindet ihre Kollision, und der freie Weg wird sichtbar.
+Bei einem Neustart der Runde sind die Kisten wieder da.
 
 Die sechs Editorbereiche Gelände, Vegetation, Objekte, Wind und Umgebung,
 Biome sowie Karte und Vorschau enthalten die Landschaftswerkzeuge:

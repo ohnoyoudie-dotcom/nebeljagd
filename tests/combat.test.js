@@ -72,6 +72,21 @@ test('walls stop both elemental spells and melee, nearer targets intercept arrow
   assert.equal(front.weapons.telemetry.impacts, 0, 'target receives hit before far wall');
 });
 
+test('a breakable crate can take damage through its own solid collider', () => {
+  const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
+  const combat = createCombat();
+  const crate = combat.addTarget({ id: 'wooden-crate', position: { x: 0, y: 0, z: 1.5 }, radius: .64,
+    height: 1, maxHealth: 100, destructible: true });
+  const world = { heightAt: () => 0, traceProjectile: () => ({ type: 'crate',
+    point: { x: 0, y: .5, z: .9 }, collider: { objectId: 'wooden-crate' } }) };
+  const weapons = createWeapons(scene, actor, world, null, { combat,
+    placements: [{ id: 'test-sword', kind: 'sword', rarity: 'common', position: [0, 0] }] });
+  weapons.interact(actor.position); weapons.attack(actor.position, 0);
+  for (let time = 0; time < .9; time += .04) weapons.update(.04, time, actor.position);
+  assert.equal(crate.health, 100 - weaponStats('sword', 'common').damage);
+  assert.equal(weapons.telemetry.damageHits, 1);
+});
+
 test('swept projectile collision does not skip a thin target at high speed', () => {
   const combat = createCombat();
   combat.addTarget({ id: 'owner', position: { x: 0, y: 0, z: 0 } });

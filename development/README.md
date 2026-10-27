@@ -16,14 +16,17 @@ natürliche Objektverteilung, Wind mit lokalen Zonen und acht Biome. Höhe,
 Dichte, Farben und eigene Vorlagen werden mit der Karte gespeichert.
 Die vorhandenen Modelle bleiben im Objektkatalog auswählbar.
 
-Die mitgelieferte Ausgangskarte enthält unverändert 4.020 Objekte. Änderungen
+Die mitgelieferte Ausgangskarte enthält 4.030 Objekte, darunter zehn
+zerstörbare Holzkisten. Möbel, Häuser und andere feste Objekte blocken
+die Bewegung; Kisten geben nach ihrer Zerstörung auch Sicht und Weg frei.
+Änderungen
 im Browser als JSON oder Editor-HTML sichern; sie überschreiben die Projektdatei
 nicht automatisch. Die SVG ist eine zusätzliche Grafikdatei und wird nicht
 automatisch zurück nach JSON gelesen.
 
-Dieses Paket gehört ausschließlich zum Entwicklungszweig `work`. Die
-öffentlichen GitHub-Pages-Adressen und `main` bleiben unverändert. Eine direkte
-Browser-Veröffentlichung dieser Entwicklungsversion wurde nicht eingerichtet.
+Dieses Paket gehört zum Entwicklungszweig `work`. Für die laufende
+Browser-Version bleiben die festen GitHub-Pages-Adressen erhalten; sie werden
+bei einer Veröffentlichung aktualisiert.
 
 Prüfungen und Bedienung: [Landschaftswerkzeuge](../docs/landscape-tools.md).
 Dateigrößen und SHA-256-Prüfsummen: [release.json](release.json).

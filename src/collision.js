@@ -90,6 +90,7 @@ export function createCollisionIndex(circles, walls, cellSize = 4) {
       }
       let closest = null;
       for (const body of nearby) {
+        if (body.destroyed) continue;
         const height = slabInterval(start.y ?? 0, delta.y,
           (body.minY ?? -Infinity) - projectileRadius, (body.maxY ?? Infinity) + projectileRadius);
         if (!height) continue;
@@ -130,6 +131,7 @@ export function createCollisionIndex(circles, walls, cellSize = 4) {
         }
         let changed = false;
         for (const body of nearby) {
+          if (body.destroyed) continue;
           if ('radius' in body) {
             const dx = position.x - body.x, dz = position.z - body.z;
             const d = Math.hypot(dx, dz), minimum = body.radius + radius;

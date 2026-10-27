@@ -39,3 +39,10 @@ test('all stored bridges are walkable at river intersections while ordinary wate
   assert.equal(spatial.isWater(-60, -215), true);
   assert.equal(spatial.isWater(30, -42), false);
 });
+
+test('ten editable wooden crates are placed on land outside buildings and paths', () => {
+  const crates = map.objects.filter(object => object.kind === 'crate');
+  assert.equal(crates.length, 10);
+  assert.ok(crates.every(crate => crate.variant === 'kit-wood' && spatial.isLand(...crate.position) && !spatial.isWater(...crate.position, .9)));
+  assert.equal(new Set(crates.map(crate => crate.id)).size, crates.length);
+});

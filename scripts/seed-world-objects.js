@@ -163,6 +163,18 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
     if (objects.some(item => distance(position, item.position) < radius + occupiedRadius(item) + 1)) continue;
     add('mound', position, { id, variant, rotation, name }, radius);
   }
+  for (const [id, position, rotation, name] of [
+    ['obj-crate-mondhain-01', [198, -429], .35, 'Mondhain · Holzkiste am Nordpfad'],
+    ['obj-crate-mondhain-02', [222, -399], .8, 'Mondhain · Holzkiste am Ostpfad'],
+    ['obj-crate-mooswinkel-01', [-372, -51], .6, 'Mooswinkel · Holzkiste am Nordrand'],
+    ['obj-crate-mooswinkel-02', [-348, -81], .1, 'Mooswinkel · Holzkiste am Südwestweg'],
+    ['obj-crate-auenwacht-01', [6, -39], .45, 'Auenwacht · Holzkiste am Nordostweg'],
+    ['obj-crate-auenwacht-02', [18, -90], .9, 'Auenwacht · Holzkiste am Südweg'],
+    ['obj-crate-wildheide-01', [-111, 168], .4, 'Wildheide · Holzkiste am Nordwestpfad'],
+    ['obj-crate-wildheide-02', [-48, 159], .2, 'Wildheide · Holzkiste am Ostpfad'],
+    ['obj-crate-moorlicht-01', [-321, 318], .2, 'Moorlicht · Holzkiste am Nordpfad'],
+    ['obj-crate-moorlicht-02', [-312, 381], .6, 'Moorlicht · Holzkiste am Südostpfad'],
+  ]) add('crate', position, { id, variant: 'kit-wood', rotation, name }, .7);
   return objects;
 }
 

@@ -457,6 +457,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const entity = combat?.traceSegment(start, end, radius, ownerId);
     if (!entity) return terrain;
     if (!terrain) return entity;
+    if (entity.target.destructible && terrain.collider?.objectId === entity.target.id) return entity;
     const distance = Math.hypot(end.x - start.x, end.z - start.z);
     const terrainT = distance > 1e-8 ? Math.hypot(terrain.point.x - start.x, terrain.point.z - start.z) / distance : 0;
     return entity.t < terrainT - .0001 ? entity : terrain;
@@ -574,7 +575,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       for (const target of combat?.melee(position, characterGroup.rotation.y, equippedItem.range, Math.PI * .85, ownerId) ?? []) {
         const start = { x: position.x, y: position.y + 1.1, z: position.z };
         const end = { x: target.position.x, y: target.position.y + 1.1, z: target.position.z };
-        if (!world?.traceProjectile?.(start, end, .06)) {
+        const blocker = world?.traceProjectile?.(start, end, .06);
+        if (!blocker || blocker.collider?.objectId === target.id) {
           lastDamage = combat.hit(target, { ...equippedItem, sourceId: ownerId }); damageHits++;
         }
       }

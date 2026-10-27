@@ -31,6 +31,8 @@ test('kit arch and opened house retain traversable centers, but their sides and 
  assert.ok(archIndex.traceSegment({x:arch.walls[0].minX+.3,y:1,z:-4},{x:arch.walls[0].minX+.3,y:1,z:4},.1));
  assert.equal(houseIndex.traceSegment({x:house.interior.centerX,y:1,z:house.floorBounds.maxZ+2},{x:house.interior.centerX,y:1,z:house.interior.centerZ},.1),null);
  assert.ok(houseIndex.traceSegment({x:-5,y:1,z:house.interior.centerZ},{x:0,y:1,z:house.interior.centerZ},.1));
+ const table=house.walls.find(w=>w.type==='furniture');assert.ok(table);
+ assert.ok(houseIndex.traceSegment({x:table.minX-1,y:.5,z:(table.minZ+table.maxZ)/2},{x:table.maxX+1,y:.5,z:(table.minZ+table.maxZ)/2},.05));
  for(const [kind,variant]of[['wall','kit-stone'],['fence','kit-wood'],['crate','kit-wood']]){
   const def=getEnvironmentKitDefinition(kind,variant),index=createCollisionIndex([],def.walls),yaw=Math.PI*.37,scale=1.7;
   const toWorld=p=>({x:10+scale*(Math.cos(yaw)*p.x+Math.sin(yaw)*p.z),z:4+scale*(-Math.sin(yaw)*p.x+Math.cos(yaw)*p.z)});

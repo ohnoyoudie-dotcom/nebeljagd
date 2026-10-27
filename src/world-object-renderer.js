@@ -242,7 +242,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const crystalMaterial = new THREE.MeshStandardMaterial({ color: '#bba5db', emissive: '#674b9b', emissiveIntensity: .7, roughness: .24, metalness: .2 });
   prototypes.set('shrine:magic', [{ geometry: shrineStone, material: granite, castShadow: true }, { geometry: shrineCrystal, material: crystalMaterial, castShadow: false }]);
 
-  const chunks = new Map(), batches = new Map(), circles = [], walls = [], structures = [], trees = [], grassPatches = [], houses = [], projectileObstacles = [];
+  const chunks = new Map(), batches = new Map(), circles = [], walls = [], structures = [], trees = [], grassPatches = [], houses = [], destructibles = [], projectileObstacles = [];
   const matrix = new THREE.Object3D(), tempColor = new THREE.Color(), groundColor = new THREE.Color();
   let grassInstanceCount = 0, grassBudgetUsed = 0, kitGrassInstanceCount = 0;
   function chunkFor(x, z) {
@@ -277,7 +277,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)), minY: y, maxY: y + local.maxY * scale, rotation, oriented: true, corners };
       projectileObstacles.push(worldBody); local.worldBody = worldBody; return local;
     });
-    const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index: createCollisionIndex([], bodies), group, house };
+    const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index: createCollisionIndex([], bodies), bodies, group, house };
     structures.push(entry); return entry;
   }
   for (const object of map.objects ?? []) {
@@ -359,7 +359,12 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
           const body = circleBody(object, circle.radius, circle.maxY, new THREE.Vector3(circle.x, 0, circle.z)); body.imported = true;
           if (object.kind === 'tree') { trees.push({ ...body, asset: `${kit.asset}.glb`, scale }); importedAssets.trees++; }
         }
-        if (kit.walls.length) addStructure(object, kit.walls, null);
+        if (kit.walls.length) {
+          const structure = addStructure(object, kit.walls, null);
+          if (object.kind === 'crate') destructibles.push({ id: object.id, name: object.name, kind: 'crate', x, z,
+            y: structure.y, scale, position: { x, y: structure.y, z }, radius: .64 * scale, height: kit.height * scale,
+            maxHealth: 55, health: 55, destroyed: false, structure, mesh: null, instanceIndex: -1, originalMatrix: null });
+        }
       }
       else if (object.kind === 'tree') {
         const body = circleBody(object, variant === 'birch' ? .24 : .37, variant === 'pine' ? 7.2 : variant === 'rei-tree02' ? 5.2 : variant === 'rei-tree01' ? 5.8 : 6, stems.get(variant)); trees.push({ ...body, asset: variant.startsWith('rei-') ? `${variant.replace('rei-', '')}.glb` : undefined, scale });
@@ -390,6 +395,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence):/.test(batch.key);
       for (let i = 0; i < batch.placements.length; i++) {
         const p = batch.placements[i]; matrix.position.set(p.x, p.y + (batch.key === 'bed:soil' ? .04 : .01), p.z); matrix.rotation.set(0, p.rotation, 0); matrix.scale.set(...p.scale); matrix.updateMatrix(); mesh.setMatrixAt(i, matrix.matrix);
+        if (p.object.kind === 'crate') {
+          const destructible = destructibles.find(item => item.id === p.object.id);
+          if (destructible) { destructible.mesh = mesh; destructible.instanceIndex = i; destructible.originalMatrix = matrix.matrix.clone(); }
+        }
         if (part.foliage) { tempColor.set('#a0b481'); mesh.setColorAt(i, tempColor); }
         if (p.color && part.vegetationTint !== false) { tempColor.fromArray(p.color); mesh.setColorAt(i, tempColor); }
         else if (batch.key === 'grass:tall') {
@@ -425,6 +434,26 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       best = { ...hit, point: structure.toWorld(hit.point), normal: { x: structure.cos * hit.normal.x + structure.sin * hit.normal.z, z: -structure.sin * hit.normal.x + structure.cos * hit.normal.z }, collider: hit.collider.worldBody };
     }
     return best;
+  }
+  function destroyDestructible(id) {
+    const item = destructibles.find(candidate => candidate.id === id);
+    if (!item || item.destroyed) return false;
+    item.destroyed = true; item.health = 0;
+    for (const body of item.structure.bodies) { body.destroyed = true; body.worldBody.destroyed = true; }
+    if (item.mesh && item.instanceIndex >= 0) {
+      matrix.position.set(item.x, item.y + .01, item.z); matrix.rotation.set(0, 0, 0); matrix.scale.setScalar(0); matrix.updateMatrix();
+      item.mesh.setMatrixAt(item.instanceIndex, matrix.matrix); item.mesh.instanceMatrix.needsUpdate = true;
+    }
+    return true;
+  }
+  function resetDestructibles() {
+    for (const item of destructibles) {
+      item.destroyed = false; item.health = item.maxHealth;
+      for (const body of item.structure.bodies) { body.destroyed = false; body.worldBody.destroyed = false; }
+      if (item.mesh && item.instanceIndex >= 0 && item.originalMatrix) {
+        item.mesh.setMatrixAt(item.instanceIndex, item.originalMatrix); item.mesh.instanceMatrix.needsUpdate = true;
+      }
+    }
   }
   function heightAtHouse(x, z) {
     for (const structure of structures) {
@@ -486,7 +515,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   }
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
-  return { trees, grassPatches, houses, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
+  return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
     dispose() { disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
     get shelter() { return shelter; },
     get stats() { return { totalObjects: (map.objects ?? []).length, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [2.25, 2.6], shortHeight: [.22, .42], bendsAwayFromPlayer: false,

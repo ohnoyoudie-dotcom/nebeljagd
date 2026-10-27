@@ -29,6 +29,15 @@ test('trees and rocks cast sight shadows but distant and low objects do not', ()
   assert.equal(sight.distanceAtAngle(0), 4);
 });
 
+test('destroyed crates stop hiding what is behind them after the next sight update', () => {
+  const crate = { minX: 4, maxX: 4.8, minZ: -.4, maxZ: .4, minY: 0, maxY: 1, type: 'crate' };
+  const sight = createSightModel({ obstacles: [crate] });
+  assert.equal(sight.isVisible({ x: 8, z: 0 }), false);
+  crate.destroyed = true;
+  sight.update({ x: 0, y: 0, z: 0 });
+  assert.equal(sight.isVisible({ x: 8, z: 0 }), true);
+});
+
 test('a house doorway admits sight while adjacent walls conceal its rooms', () => {
   const sight = createSightModel({ obstacles: [
     { minX: 5, maxX: 5.4, minZ: -8, maxZ: -1.4 },

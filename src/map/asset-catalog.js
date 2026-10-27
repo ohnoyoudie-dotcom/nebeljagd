@@ -61,7 +61,7 @@ export const ASSET_CATALOG = Object.freeze([
   kit('rock', 'kit-single', 'Einzelfelsen · GLB', 'rock_single', 'Kompakter einzelner Felsen aus dem Umwelt-Kit.'),
   kit('grass', 'kit-tall', 'Hohes Gras · GLB', 'grass_tall_patch', 'Vorhandene GLB-Grasbüschel als editierbare hohe Grasfläche.'),
   kit('house', 'kit-timber', 'Fachwerkhaus · GLB', 'house_timbersmall', 'Kompaktes Fachwerkhaus aus dem bereits eingebundenen Umwelt-Kit.'),
-  kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Dekorative Holzkiste; eigenständiges Hindernis ohne Truhenbeute.'),
+  kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Zerstörbare Holzkiste; blockiert Bewegung, Sicht und Pfeile bis sie kaputt ist.'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
 const byId = new Map(ASSET_CATALOG.map(asset => [asset.id, asset]));

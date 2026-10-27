@@ -106,13 +106,16 @@ def world_checks(browser):
         stats = world['stats']
         assert world['objects'] == SOURCE['objects']
         assert world['bounds'] == SOURCE['bounds']
-        assert stats['totalObjects'] == len(SOURCE['objects']) == 3983
+        assert stats['totalObjects'] == len(SOURCE['objects']) == 4030
         assert stats['treeCount'] == 2601 and stats['houseCount'] == 31
-        assert stats['grassPatchCount'] == 741 and stats['loadedGLBs'] == 5
+        assert stats['grassPatchCount'] == 741 and stats['loadedGLBs'] == 6
+        assert len(world['destructibles']) == 10 and all(item['maxHealth'] > 0 for item in world['destructibles'])
         assert world['importedAssets']['trees'] == 2 and world['importedAssets']['flowers'] > 1000
         assert 0 < stats['visibleTerrainChunks'] < stats['terrainChunks'] / 3
         assert full['position']['x'] == 30 and full['position']['z'] == -42
-        passed('The actual island uses all 3983 persisted props and culls distant terrain sections', stats)
+        passed('The actual island uses all 4030 persisted props and culls distant terrain sections', stats)
+        passed('Ten distributed map-placed Holzkisten are registered as destructible solid objects',
+               {'crates': len(world['destructibles']), 'health': world['destructibles'][0]['maxHealth']})
         capture(page, 'auenwacht')
 
         inspect(page, 30, -42)
@@ -146,6 +149,31 @@ def world_checks(browser):
         assert abs(math.hypot(point['x'] - tree['x'], point['z'] - tree['z']) - tree['radius'] - .055) < .15
         passed('Persisted hearts heal and the persisted bow fires an arrow into the visible tree collider', {
             'healedTo': 85, 'treeId': tree['id'], 'impact': impact['lastImpact']})
+
+        inspect(page, 26, -39)
+        page.keyboard.press('e')
+        page.wait_for_function("window.nebeljagdTestState().equippedWeapon === 'sword'")
+        inspect(page, 7, -39, direction=-math.pi / 2)
+        for hit_index in range(3):
+            previous_health = next(item for item in state(page)['world']['destructibles'] if item['id'] == 'obj-crate-auenwacht-01')['health']
+            page.keyboard.press('f')
+            page.wait_for_function('h => window.nebeljagdTestState().world.destructibles.find(o => o.id === "obj-crate-auenwacht-01").health < h', arg=previous_health)
+            if hit_index < 2:
+                page.wait_for_function('window.nebeljagdTestState().attackCooldown < .02')
+        crate = next(item for item in state(page)['world']['destructibles'] if item['id'] == 'obj-crate-auenwacht-01')
+        assert crate['destroyed'] and crate['health'] == 0, crate
+        crate_bodies = [body for body in state(page, True)['world']['projectileObstacles'] if body.get('objectId') == crate['id']]
+        assert crate_bodies and all(body['destroyed'] for body in crate_bodies), crate_bodies
+        inspect(page, 6, -39)
+        freed = state(page)['position']
+        assert freed['x'] == 6 and freed['z'] == -39, freed
+        passed('Three sword hits destroy a map-placed wooden crate and free its collision and sight blocker',
+               {'crate': crate, 'clearedPosition': freed})
+
+        inspect(page, 30, -56.72)
+        table_stop = state(page)['position']
+        assert math.hypot(table_stop['x'] - 30, table_stop['z'] + 56.72) > .7, table_stop
+        passed('Solid house furniture pushes the player out of the dining-table footprint', table_stop)
 
         # A seeded half-turn house uses a reversed entrance. Walk in through its
         # actual door, then repeat beside that door to verify the wall remains solid.
@@ -368,10 +396,10 @@ def editor_checks(browser):
     page.on('request', lambda request: requests.append(request.url) if request.url.startswith(('http:', 'https:')) else None)
     page.set_content((ROOT / 'dist/nebeljagd.html').read_text(), wait_until='domcontentloaded')
     page.wait_for_function('window.nebeljagdTestState && window.nebeljagdTestState().rendering.calls > 0')
-    assert state(page)['world']['stats']['totalObjects'] == 3983
+    assert state(page)['world']['stats']['totalObjects'] == 4030
     assert not requests, requests
     passed('The complete generated game remains one self-contained HTML with network disabled', {
-        'httpRequests': requests, 'objects': 3983,
+        'httpRequests': requests, 'objects': 4030,
         'harness': 'Exact standalone HTML loaded in an empty-origin page; managed Chromium blocks file navigation'}, 'editor')
     page.close(); offline.close()
 

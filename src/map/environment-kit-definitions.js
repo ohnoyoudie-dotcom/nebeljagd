@@ -33,6 +33,7 @@ const nativeDefinitions = [
     wall(-1.65, 1.65, -1.75, -1.45, 2.65, 'house-wall'),
     wall(-1.65, -.65, 1.45, 1.75, 2.65, 'house-wall'),
     wall(.65, 1.65, 1.45, 1.75, 2.65, 'house-wall'),
+    wall(-1.3, -.5, -.85, -.2, .9, 'furniture'),
   ], [], { roofless: true, floorHeight: .22, interior: { halfWidth: 1.65, halfDepth: 1.45, entranceHalfWidth: .65 },
     insideHalfWidth: 1.65, insideHalfDepth: 1.45, entranceHalfWidth: .65 }),
   entry('crate', 'kit-wood', 'crate_wood', 'Holzkiste', .76, { halfWidth: .475, halfDepth: .475 }, [wall(-.475, .475, -.475, .475, .76, 'crate')]),

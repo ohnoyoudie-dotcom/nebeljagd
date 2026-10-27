@@ -240,9 +240,11 @@ export function createHouses(root, houseSites) {
     box(interior, C, 0, .536, 3.2, 5.2, .035, 3.6, '#c2ac7e');
     box(interior, C, 0, .559, 3.2, 4.85, .025, 3.25, style.linen);
     box(interior, W, 0, 1.38, 3.28, 2.5, .16, 1.46, '#9c7c54');
+    collision(0, 3.28, 2.5, 1.46);
     for (const x of [-1, 1]) for (const z of [2.75, 3.81]) box(interior, W, x, .97, z, .17, .98, .17, style.trim);
     for (const x of [-2.25, 2.25]) {
       box(interior, W, x, .98, 3.28, .55, .17, 1.23, '#92734d');
+      collision(x, 3.28, .62, 1.30);
       for (const z of [2.9, 3.66]) box(interior, W, x, .73, z, .15, .52, .15, style.trim);
       box(interior, W, x, 1.36, 3.8, .55, .72, .10, '#92734d');
     }
@@ -251,11 +253,13 @@ export function createHouses(root, houseSites) {
     cylinder(interior, S, .65, 1.64, 3.35, .12, .17, .36, '#8c9c7c');
     box(interior, S, -5.9, .88, .72, 2.2, .95, 1.45, '#727b6d');
     box(interior, W, -5.9, 1.40, .72, 2.35, .15, 1.6, style.wood);
+    collision(-5.9, .72, 2.4, 1.7);
     box(interior, M, -5.9, 1.0, 1.48, 1.42, .57, .06, '#343e36');
     for (let i = 0; i < 3; i++) cylinder(interior, W, -6.3 + i * .4, .86, 1.47, .10, .11, .7, '#85694a', [0, 0, Math.PI / 2]);
     geometry(interior, L, new THREE.ConeGeometry(.20, .52, 7), -5.9, 1.13, 1.44, '#dca160');
     for (const y of [.85, 1.38, 1.91, 2.44]) box(interior, W, 6.8, y, 1.5, .77, .11, 2.65, style.wood);
     box(interior, W, 7.1, 1.6, 1.5, .13, 2.25, 2.65, style.trim);
+    collision(6.8, 1.5, 1.0, 2.8);
     for (let i = 0; i < 18; i++) box(interior, C, 6.74, 1.08 + Math.floor(i / 6) * .52, .4 + (i % 6) * .38,
       .45, .31 + (i % 3) * .04, .19, ['#7a8060', '#9c7665', '#b6a071'][i % 3]);
     for (const side of [-1, 1]) {
@@ -263,15 +267,18 @@ export function createHouses(root, houseSites) {
       box(interior, C, bedX, .536, -4.3, 4.3, .04, 3.6, '#b19d75');
       box(interior, C, bedX, .561, -4.3, 4.05, .02, 3.34, style.linen);
       box(interior, W, bedX, .77, -5.25, 2.18, .50, 2.8, style.wood);
+      collision(bedX, -5.25, 2.3, 2.9);
       box(interior, W, bedX, 1.15, -6.53, 2.32, 1.12, .17, style.trim);
       box(interior, W, bedX, .94, -3.90, 2.32, .70, .16, style.trim);
       box(interior, C, bedX, 1.09, -5.25, 2.03, .17, 2.57, '#d3c7a6');
       box(interior, C, bedX, 1.20, -5.76, 2.0, .13, 1.26, side < 0 ? style.linen : '#927567');
       box(interior, C, bedX, 1.23, -4.39, 1.4, .15, .49, '#e5d9b7');
       box(interior, W, bedX + side * 2.16, .85, -4.8, .77, .69, .83, style.wood);
+      collision(bedX + side * 2.16, -4.8, .85, .92);
       cylinder(interior, S, bedX + side * 2.16, 1.29, -4.8, .12, .18, .28, '#969e7b');
       cylinder(interior, L, bedX + side * 2.16, 1.50, -4.8, .055, .055, .18, '#dccba3');
       for (const y of [1.28, 1.8, 2.32]) box(interior, W, side * 7.3, y, -2.3, .55, .11, 1.95, style.wood);
+      collision(side * 7.3, -2.3, .65, 2.05);
     }
 
     // The warped eaves, deep shingle relief and different roof pitches give each

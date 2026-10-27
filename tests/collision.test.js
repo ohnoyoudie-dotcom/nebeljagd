@@ -33,3 +33,17 @@ test('spatial grid resolves touching circles across cell boundaries', () => {
   assert.ok(Math.hypot(p.x - 4.05, p.z) >= .92 - 1e-6);
   assert.equal(grid.size, 1);
 });
+
+test('destroyed geometry stops blocking movement and swept projectiles', () => {
+  const wall = { minX: -.5, maxX: .5, minZ: -.5, maxZ: .5, minY: 0, maxY: 1, type: 'crate' };
+  const grid = createCollisionIndex([], [wall]);
+  const blocked = { x: -1, z: 0 };
+  grid.resolve(blocked, .42);
+  assert.ok(blocked.x < -.41);
+  assert.ok(grid.traceSegment({ x: -2, y: .5, z: 0 }, { x: 2, y: .5, z: 0 }, .05));
+  wall.destroyed = true;
+  const freed = { x: 0, z: 0 };
+  grid.resolve(freed, .42);
+  assert.equal(freed.x, 0);
+  assert.equal(grid.traceSegment({ x: -2, y: .5, z: 0 }, { x: 2, y: .5, z: 0 }, .05), null);
+});

@@ -130,7 +130,8 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
         previous.copy(group.position);
         desired.copy(group.position).addScaledVector(actor.axis, actor.direction * actor.speed * target.speedMultiplier * delta);
         const along = (desired.x - actor.site.x) * actor.axis.x + (desired.z - actor.site.z) * actor.axis.z;
-        if (Math.abs(along) > 1.4 || !clearGround(desired.x, desired.z)) actor.direction *= -1;
+        const playerBlocked = player && Math.hypot(desired.x - player.x, desired.z - player.z) < .52 + .42;
+        if (Math.abs(along) > 1.4 || playerBlocked || !clearGround(desired.x, desired.z)) actor.direction *= -1;
         else {
           group.position.copy(desired); world.resolveMovement?.(group.position, .52);
           group.position.y = world.heightAt?.(group.position.x, group.position.z) ?? 0;
@@ -162,6 +163,24 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     }
   }
 
+  function resolvePlayerMovement(position, radius = .42) {
+    for (let pass = 0; pass < 3; pass++) {
+      let moved = false;
+      for (const actor of actors) {
+        if (!actor.target.alive) continue;
+        const dx = position.x - actor.group.position.x, dz = position.z - actor.group.position.z;
+        const distance = Math.hypot(dx, dz), minimum = radius + actor.target.radius;
+        if (distance >= minimum) continue;
+        const nx = distance > 1e-7 ? dx / distance : 1, nz = distance > 1e-7 ? dz / distance : 0;
+        position.x = actor.group.position.x + nx * minimum;
+        position.z = actor.group.position.z + nz * minimum;
+        moved = true;
+      }
+      if (!moved) break;
+    }
+    return position;
+  }
+
   function reset() {
     for (const actor of actors) {
       const { target } = actor;
@@ -172,7 +191,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
   }
 
   return {
-    root, update, reset,
+    root, update, reset, resolvePlayerMovement,
     inspect: () => actors.map(({ id, target, group, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
       alive: target.alive, visible, burnRemaining: target.burnRemaining, slowRemaining: target.slowRemaining,

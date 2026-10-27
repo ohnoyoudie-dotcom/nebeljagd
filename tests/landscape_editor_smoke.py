@@ -89,7 +89,7 @@ def prepare(page, check_original=False):
     page.wait_for_function('window.nebeljagdMapTestState')
     if check_original:
         assert state(page)['map']==DEFAULT, 'Opening the extended editor changed the saved legacy map.'
-        passed('Opening the new editor preserves the complete existing map and all 4020 object placements',{'objects':len(DEFAULT['objects'])})
+        passed('Opening the new editor preserves the complete existing map and all 4030 object placements',{'objects':len(DEFAULT['objects'])})
     page.locator('#json-file-input').set_input_files({'name':'landscape-fixture.json','mimeType':'application/json','buffer':json.dumps(FIXTURE).encode()})
     page.wait_for_function('nebeljagdMapTestState().map.objects.some(o=>o.id==="qa-original-grass")')
     select_feature(page,'qa-original-grass');page.locator('#focus-selection').click()

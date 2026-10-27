@@ -3,23 +3,118 @@
   "checks": [
     {
       "stage": "world",
-      "name": "The actual island uses all 3983 persisted props and culls distant terrain sections",
+      "name": "The actual island uses all 4030 persisted props and culls distant terrain sections",
       "evidence": {
         "source": "worldmap.json",
         "mapId": "nebeljagd-world-v1",
         "terrainChunks": 324,
         "visibleTerrainChunks": 18,
         "terrainTriangles": 229376,
-        "generationMs": 1197,
-        "totalObjects": 3983,
-        "chunks": 297,
+        "generationMs": 2572,
+        "terrainArt": {
+          "ground": "painted-woodland",
+          "mainPaths": "irregular-grey-cobbles",
+          "trailPaths": "earth",
+          "stoneTextureSize": 512,
+          "pathWidthFromMap": true
+        },
+        "terrainPaint": {
+          "stamps": 0,
+          "affectedChunks": 0,
+          "residentChunks": 0,
+          "textureBytes": 0,
+          "textureBudgetBytes": 16777216,
+          "extraDrawCalls": 0,
+          "queuedChunks": 0,
+          "maxBakesPerFrame": 2,
+          "bakedChunksTotal": 0,
+          "totalBakeMs": 0,
+          "maximumTileBakeMs": 0,
+          "maximumTextureSize": 256,
+          "changesCollisionHeight": false
+        },
+        "cloudShadows": {
+          "animated": true,
+          "worldSpace": true,
+          "maximumDimming": 0.27
+        },
+        "totalObjects": 4030,
+        "chunks": 296,
         "visibleChunks": 14,
-        "instanceBatches": 1813,
+        "instanceBatches": 2841,
         "treeCount": 2601,
         "houseCount": 31,
+        "moundCount": 4,
         "grassPatchCount": 741,
-        "collisionBodies": 3252,
-        "loadedGLBs": 5
+        "grassRendering": {
+          "tallHeight": [
+            2.25,
+            2.6
+          ],
+          "shortHeight": [
+            0.22,
+            0.42
+          ],
+          "bendsAwayFromPlayer": false,
+          "sourceVersion": "nebeljagd-3d-v011",
+          "crossedStalksPerInstance": 4,
+          "totalInstances": 300791,
+          "maximumInstances": 500000,
+          "budgetUnitsUsed": 300791,
+          "kitInstances": 0,
+          "maximumKitInstances": 12000,
+          "configuredPatches": 0,
+          "budgetLimitedPatches": 0,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 0.35,
+              "speed": 1,
+              "direction": 0.65,
+              "gusts": true,
+              "gustStrength": 0.35,
+              "gustFrequency": 0.18,
+              "turbulence": 0.2
+            },
+            "time": 0.41669999999999985
+          },
+          "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+          "colorGradient": [
+            "#315e36",
+            "#bbc975"
+          ],
+          "visibleTallGrassBatches": 3,
+          "tallGrassTriangles": 12544
+        },
+        "collisionBodies": 3623,
+        "loadedGLBs": 6,
+        "environmentKit": {
+          "loadedModels": 1,
+          "models": [
+            {
+              "id": "crate:kit-wood",
+              "asset": "crate_wood",
+              "targetHeight": 1,
+              "height": 1.0000000125483466,
+              "parts": 1,
+              "roofRemoved": false
+            }
+          ],
+          "placements": 10
+        }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "Ten distributed map-placed Holzkisten are registered as destructible solid objects",
+      "evidence": {
+        "crates": 10,
+        "health": 55
       }
     },
     {
@@ -38,8 +133,8 @@
         },
         "rolled": {
           "x": 30,
-          "y": 1.309772364461116,
-          "z": -34.09333333333327
+          "y": 1.3199253013516759,
+          "z": -33.35999999999993
         }
       }
     },
@@ -52,15 +147,45 @@
         "impact": {
           "type": "tree",
           "point": {
-            "x": 17.927999919217516,
-            "y": 2.7734481244065705,
-            "z": -41.59616831678617
+            "x": 17.92799991384594,
+            "y": 2.773448126986723,
+            "z": -41.59616831774388
           },
           "normal": {
-            "x": -0.17552433150288616,
-            "z": 0.9844750931590218
+            "x": -0.1755243445979019,
+            "z": 0.9844750908242813
           }
         }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "Three sword hits destroy a map-placed wooden crate and free its collision and sight blocker",
+      "evidence": {
+        "crate": {
+          "id": "obj-crate-auenwacht-01",
+          "name": "Auenwacht · Holzkiste am Nordostweg",
+          "kind": "crate",
+          "x": 6,
+          "z": -39,
+          "health": 0,
+          "maxHealth": 55,
+          "destroyed": true
+        },
+        "clearedPosition": {
+          "x": 6,
+          "y": 1.098478316736598,
+          "z": -39
+        }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "Solid house furniture pushes the player out of the dining-table footprint",
+      "evidence": {
+        "x": 30,
+        "y": 1.600936192460269,
+        "z": -55.57
       }
     },
     {
@@ -82,12 +207,12 @@
         "inside": {
           "x": 57,
           "y": 1.9153116494281572,
-          "z": -44.77999999999999
+          "z": -44.59333333333332
         },
         "wallStop": {
-          "x": 53.00451736358213,
-          "y": 1.3959760743170828,
-          "z": -47.616373076709884
+          "x": 53.00496330583317,
+          "y": 1.395977967049881,
+          "z": -47.616372366477755
         }
       }
     },
@@ -96,7 +221,7 @@
       "name": "Persisted tall grass conceals the traveller and restores normal opacity after leaving",
       "evidence": {
         "grassObjectId": "obj-grass-start",
-        "opacity": 0.49365501986144655
+        "opacity": 0.4936550198614479
       }
     },
     {
@@ -173,9 +298,9 @@
       "name": "River banks and island coast block walking while the actual bridge permits crossing",
       "evidence": {
         "bank": {
-          "x": -76.0301333683657,
-          "y": 4.397613635684546,
-          "z": -447.85351430197943
+          "x": -76.0632358517515,
+          "y": 4.391630668557317,
+          "z": -447.7822166454562
         },
         "bridgeStart": {
           "x": -82,
@@ -183,8 +308,8 @@
           "z": -17
         },
         "bridgeEnd": {
-          "x": -117.28000000000014,
-          "y": 0.738271496179707,
+          "x": -116.90666666666681,
+          "y": 0.7043143529839333,
           "z": -17
         },
         "coastStop": {
@@ -203,85 +328,6 @@
         "finalRadius": 20,
         "damagePerSecond": 11.000000000010232
       }
-    },
-    {
-      "stage": "editor",
-      "name": "Tree editing, flower/house/grass creation, duplication/deletion and JSON export preserve the object document",
-      "evidence": {
-        "tree": {
-          "id": "obj-tree-2451",
-          "name": "Baum 2451",
-          "kind": "tree",
-          "variant": "oak",
-          "position": [
-            20,
-            -40
-          ],
-          "rotation": 0.3000220984178253,
-          "scale": 1.2
-        },
-        "flower": {
-          "id": "object-flower-mvqn731k-1",
-          "name": "QA · Zauberblumen",
-          "kind": "flower",
-          "variant": "rei-white",
-          "position": [
-            33,
-            -46
-          ],
-          "rotation": 0.6457718232379019,
-          "scale": 1.25,
-          "radius": 1.8
-        },
-        "houseId": "object-house-mvqn79di-3",
-        "grassId": "object-grass-mvqn7a8e-4",
-        "objectCount": 3986
-      }
-    },
-    {
-      "stage": "editor",
-      "name": "In 3D testen opens the exact editor document and reconstructs its moved collider and newly placed imported flowers",
-      "evidence": {
-        "source": "editor",
-        "movedTreeCollider": {
-          "id": "obj-tree-2451",
-          "x": 20,
-          "z": -40,
-          "y": 1.1827157168355038,
-          "radius": 0.444,
-          "minY": 1.1827157168355038,
-          "maxY": 8.382715716835502,
-          "type": "tree",
-          "variant": "oak",
-          "imported": false,
-          "asset": null,
-          "scale": 1.2
-        },
-        "flowerId": "object-flower-mvqn731k-1",
-        "objectCount": 3986
-      }
-    },
-    {
-      "stage": "editor",
-      "name": "Game JSON import rebuilds the exported prop document and a changed fog centre",
-      "evidence": {
-        "mapName": "QA · Welt aus JSON",
-        "source": "import",
-        "zoneCenter": [
-          30,
-          -42
-        ],
-        "objectCount": 3986
-      }
-    },
-    {
-      "stage": "editor",
-      "name": "The complete generated game remains one self-contained HTML with network disabled",
-      "evidence": {
-        "httpRequests": [],
-        "objects": 3983,
-        "harness": "Exact standalone HTML loaded in an empty-origin page; managed Chromium blocks file navigation"
-      }
     }
   ],
   "javascript_or_shader_errors": [],
@@ -290,25 +336,6 @@
     "docs/screenshots/generated-world-interior.png",
     "docs/screenshots/generated-world-grass.png",
     "docs/screenshots/generated-world-snow.png",
-    "docs/screenshots/generated-world-volcanic.png",
-    "docs/screenshots/generated-world-editor-objects.png",
-    "docs/screenshots/generated-world-offset-river-fog.png"
-  ],
-  "final_centered_water_shader_recheck": {
-    "htmlSHA256": "344b1ec68f13cf79c991aaa8a50895d525058b3f125685fd049e78ffcba8ccc2",
-    "containsCenteredWaterShader": true,
-    "mapSource": "embedded",
-    "zoneCenter": [
-      140,
-      -140
-    ],
-    "radius": 10,
-    "position": {
-      "x": 140,
-      "y": 1.0929741489957903,
-      "z": -140
-    },
-    "httpRequests": [],
-    "javascriptOrShaderErrors": []
-  }
+    "docs/screenshots/generated-world-volcanic.png"
+  ]
 }

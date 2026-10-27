@@ -119,8 +119,17 @@ const damageFeedback = createDamageFeedback(world.root, {
 });
 const combat = createCombat({ onHit: (result, target) => {
   healthBars.set(target.id, { health: target.health, maxHealth: target.maxHealth });
+  if (target.destructible) {
+    target.destructibleRef.health = target.health;
+    if (result.killed) world.destroyDestructible(target.id);
+  }
   damageFeedback.addHit(result, target);
 } });
+for (const object of world.destructibles ?? []) {
+  const target = combat.addTarget({ id: object.id, name: object.name, position: object.position, radius: object.radius,
+    height: object.height, maxHealth: object.maxHealth, health: object.health, destructible: true });
+  target.destructibleRef = object;
+}
 const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false });
@@ -162,7 +171,7 @@ function reset() {
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
   cameraFocus.copy(player).multiplyScalar(visualScale);
-  pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); character.setConcealed(false);
+  pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); world.resetDestructibles?.(); character.setConcealed(false);
   damageFeedback.reset();
   healthBars.set('player', { health: START_HEALTH, snap: true });
   healthBars.reset();
@@ -242,6 +251,8 @@ function simulate(dt) {
   lastPosition.copy(player);
   const speed = state.rollRemaining > 0 ? ROLL_SPEED : world.map.gameplay.walkSpeedMetersPerSecond * inputLength;
   player.addScaledVector(moveDirection, speed * dt);
+  world.resolveMovement(player, 0.42);
+  practiceActors.resolvePlayerMovement(player, 0.42);
   world.resolveMovement(player, 0.42);
   player.y = world.heightAt(player.x, player.z);
   const travelled = Math.hypot(player.x - lastPosition.x, player.z - lastPosition.z);
@@ -355,6 +366,7 @@ window.nebeljagdTestState = () => ({
   chests: chests.items.map(({ id, x, z, opened, group }) => ({ id, x, z, opened, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
+    destructibles: world.destructibles?.map(({ id, name, kind, x, z, health, maxHealth, destroyed }) => ({ id, name, kind, x, z, health, maxHealth, destroyed })) ?? [],
     landscape: world.map.landscape ?? null,
     importedAssets: world.importedAssets,
     projectileObstacles: new URLSearchParams(location.search).has('inspect') ? world.projectileObstacles : undefined },
@@ -382,6 +394,8 @@ if (new URLSearchParams(location.search).has('inspect')) {
     direction = state.direction } = {}) => {
     clearInput();
     player.set(x, world.heightAt(x, z), z);
+    world.resolveMovement(player, .42);
+    practiceActors.resolvePlayerMovement(player, .42);
     world.resolveMovement(player, .42);
     player.y = world.heightAt(player.x, player.z);
     state.elapsed = Math.max(0, elapsed); state.health = THREE.MathUtils.clamp(health, 1, MAX_HEALTH);

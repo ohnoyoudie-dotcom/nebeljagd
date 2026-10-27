@@ -50,6 +50,17 @@ test('hidden practice actors and bars reveal nothing; defeated actors stop until
   actors.dispose();
 });
 
+test('player and live practice opponents keep solid personal space', () => {
+  const { actors } = fixture();
+  const opponent = actors.inspect()[0], player = { x: opponent.position.x, z: opponent.position.z };
+  actors.update(.1, .1, player);
+  const still = actors.inspect()[0];
+  assert.equal(still.travelled, 0, 'an opponent turns instead of walking through the player');
+  actors.resolvePlayerMovement(player, .42);
+  assert.ok(Math.hypot(player.x - still.position.x, player.z - still.position.z) >= .94 - 1e-6);
+  actors.dispose();
+});
+
 test('an imported island without safe practice space does not create figures in water', () => {
   const combat = createCombat();
   const actors = createPracticeActors(new THREE.Scene(), { world: {

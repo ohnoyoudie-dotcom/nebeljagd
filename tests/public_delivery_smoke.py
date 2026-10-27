@@ -124,7 +124,7 @@ def run(base: str, report_path: Path) -> None:
             snapshot = game_ready(game)
             assert snapshot['objects'] == expected_total, snapshot
             assert snapshot['mounds'] == expected_counts['mound'] == 4, snapshot
-            assert snapshot['glbs'] == 5, snapshot
+            assert snapshot['glbs'] == 6, snapshot
             assert snapshot['roofless'] and snapshot['interiorsVisible'], snapshot
             assert snapshot['visionRadius'] == 18, snapshot
             assert snapshot['visionAppearance'] == 'translucent-blue-grey', snapshot

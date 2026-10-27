@@ -58,7 +58,7 @@ export function createSightModel({ obstacles = [], radius = 18, samples = 512, c
       }
     }
     // A tree or wall far below eye level cannot hide a traveller on a ridge.
-    nearby = [...candidates].filter(body => (body.maxY ?? Infinity) >= observer.y + .85 && (body.minY ?? -Infinity) <= observer.y + 2.3);
+    nearby = [...candidates].filter(body => !body.destroyed && (body.maxY ?? Infinity) >= observer.y + .85 && (body.minY ?? -Infinity) <= observer.y + 2.3);
     for (let i = 0; i < samples; i++) {
       const angle = i / samples * tau;
       distances[i] = rayDistance(Math.cos(angle), Math.sin(angle));
