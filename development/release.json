@@ -1,13 +1,10 @@
 {
-  "name": "Nebeljagd – Landschaftswerkzeuge",
   "branch": "work",
-  "baseCommit": "7ee7349782cc033aa3233752ce32c3aa531a8bed",
-  "packagedAt": "2026-10-27T20:04:40.565986+00:00",
-  "publishedToMain": false,
+  "baseCommit": "ff87070e776b7e3dee90f157bf6aca22db97727f",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4446952,
-      "sha256": "a39db278153bec33906ead7a7fe75dd1097e9e4466a7cc36c3b5cb09c5619514"
+      "bytes": 4446261,
+      "sha256": "1bf915dd62e8083e249261db2d5002b00d90f2e73d17bc4f178f9b2be4f92970"
     },
     "map-editor.html": {
       "bytes": 3650914,
@@ -26,47 +23,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3211546,
-      "sha256": "372fd699ff81097f5f944072c5faa8172112956730695a34f8457c32da48a6be"
+      "bytes": 3211263,
+      "sha256": "943a59a83d3db12f1d55cb320d1e7e16d8a54ea837422a12aae4f905addd33f1"
     }
   },
-  "verification": {
-    "nodeTests": 127,
-    "nodeFailures": 0,
-    "assetVerification": "passed",
-    "mapCheck": "passed",
-    "zipIntegrity": "passed",
-    "originalObjectsUnchanged": 4020,
-    "browser": {
-      "landscape-editor-check": {
-        "status": "passed",
-        "checks": 21,
-        "report": "../docs/landscape-editor-check.json"
-      },
-      "landscape-game-check": {
-        "status": "passed",
-        "checks": 5,
-        "report": "../docs/landscape-game-check.json"
-      },
-      "environment-kit-check": {
-        "status": "passed",
-        "checks": 9,
-        "report": "../docs/environment-kit-check.json"
-      },
-      "landscape-preview-check": {
-        "status": "passed",
-        "checks": 2,
-        "report": "../docs/landscape-preview-check.json"
-      }
-    },
-    "httpPlaytestEntry": {
-      "file": "dist/index.html",
-      "sha256": "421ab949f8823ad48ebbe77106b512662bc340ae44163a070705e046a8feeac6"
-    }
-  },
-  "limits": [
-    "Chromium with software WebGL and emulated touch; no physical iPad/Safari performance test.",
-    "Standalone bytes tested in an offline browser context; direct file navigation is blocked by this cloud browser policy.",
-    "Game remains a local prototype; multiplayer is not implemented."
-  ]
+  "visibility": "full camera view, only obstacle line of sight",
+  "roll": "lateral roll pivot"
 }
