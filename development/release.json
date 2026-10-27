@@ -1,11 +1,11 @@
 {
   "branch": "work",
-  "commit": "ffa01af",
-  "builtAt": "2026-10-27T22:07:00.094Z",
+  "commit": "8f74f20",
+  "builtAt": "2026-10-27T22:15:33.000Z",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4448649,
-      "sha256": "0cd9d688252b88baaedb15a6f4cae59b280f01d450a7abd86e247e37b90404ea"
+      "bytes": 4450695,
+      "sha256": "4c69af6ee79c486c71ecde5b811ce7d93d72891de2a62eb8b0b1bdc50be7f138"
     },
     "map-editor.html": {
       "bytes": 3651066,
@@ -24,10 +24,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3212180,
-      "sha256": "9d2df4b1d4a9717427a2b54e3217d37aa4602d1302cc8ba6c353f541634e739d"
+      "bytes": 3212876,
+      "sha256": "e79a0e49085c54c605bbe20cac7d3e3f86ac45c946cde897d8808b70f1db5b59"
     }
   },
   "roll": "0.72s compact forward somersault with tucked recovery",
-  "vision": "50% black sight shadow; continuous Gaussian-softened contour; scene shadows intensity 50%, radius 20"
+  "vision": "50% black sight shadow; 17-tap dense Gaussian contour with half-float distance precision; scene shadows intensity 50%, radius 20"
 }
