@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import { createSightModel } from './visibility-model.js';
 
-/** A moving awareness circle with true obstacle shadows, inspired by arena
- * battle royales. Static scenery remains visible through pale mist; remote actors and
- * loot use isVisible() so their identity and health never leak through fog. */
+/** Obstacle-only line of sight; remote actors and loot use isVisible() so
+ * concealment and cover still hide their identity and health. */
 export function createVision(scene, world, { radius = 18, samples = 512 } = {}) {
   const sight = createSightModel({ obstacles: world.projectileObstacles, radius, samples });
   const pixels = new Uint8Array(samples * 4);
@@ -25,15 +24,9 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       float distanceToViewer = length(delta);
       float angle = atan(delta.y, delta.x) / 6.28318530718;
       float limit = texture2D(uTacticalSight, vec2(fract(angle + .5 / ${samples.toFixed(1)}), .5)).r * uTacticalRadius;
-      float radiusFade = 1. - smoothstep(uTacticalRadius - 3.5, uTacticalRadius, distanceToViewer);
       float obstacleFade = 1. - smoothstep(limit + .12, limit + .7, distanceToViewer);
-      float visibility = min(radiusFade, obstacleFade);
-      // A translucent blue-grey veil preserves the geography and prop shapes.
-      // Entity secrecy is enforced separately by isVisible(), never by tinting.
-      float luminance = dot(color, vec3(.2126, .7152, .0722));
-      vec3 softened = mix(color, vec3(luminance), .3);
-      vec3 obscured = mix(softened, vec3(.34, .405, .475), .58);
-      return mix(obscured, color, visibility);
+      float visibility = obstacleFade;
+      return mix(vec3(0.), color, visibility);
     }
   `;
   function register(object = scene) {
@@ -100,7 +93,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
   register();
   update({ x: world.spawn.x, z: world.spawn.z, y: world.heightAt(world.spawn.x, world.spawn.z) }, 0);
   return { update, isVisible, register, radius,
-    inspect: () => ({ radius, direction: '360-degree', appearance: 'translucent-blue-grey', sceneryTransmission: .42,
+    inspect: () => ({ radius, direction: '360-degree', appearance: 'clear-obstacle-only', sceneryTransmission: 1,
       blockerCount: sight.nearbyCount, samples, updates, origin: { ...sight.observer }, materials: hooks.size }),
     get stats() { return this.inspect(); },
     dispose() {

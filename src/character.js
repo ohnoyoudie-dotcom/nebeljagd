@@ -151,13 +151,15 @@ export async function createCharacter(scene) {
     if (rollRemaining > 0 && !dead) {
       rollRemaining = Math.max(0, rollRemaining - delta);
       const progress = 1 - rollRemaining / rollDuration;
-      rollPivot.rotation.x = progress * Math.PI * 2;
-      rollPivot.position.y = 1.025 + Math.sin(progress * Math.PI) * 0.06;
+      // A low lateral tumble reads as a dodge roll; avoid pitching through a front flip.
+      rollPivot.rotation.x = movement.forwardLean * (1 - Math.sin(progress * Math.PI));
+      rollPivot.rotation.z = progress * Math.PI * 2;
+      rollPivot.position.y = 0.48 + Math.sin(progress * Math.PI) * 0.12;
     } else {
       rollPivot.rotation.x = dead ? THREE.MathUtils.lerp(rollPivot.rotation.x, -Math.PI * 0.43, smoothing) : movement.forwardLean;
+      rollPivot.rotation.z = movement.sideLean;
       rollPivot.position.y = dead ? THREE.MathUtils.lerp(rollPivot.position.y, 0.35, smoothing) : 1.025;
     }
-    rollPivot.rotation.z = movement.sideLean;
     group.userData.locomotion = { ...movement };
     group.userData.rolling = rollRemaining > 0;
     if (attackRemaining > 0) {

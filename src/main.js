@@ -61,7 +61,8 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#718b8c');
-scene.fog = new THREE.Fog('#718b8c', 48, 115);
+// The full camera view stays clear; obstacle line-of-sight still hides actors behind cover.
+scene.fog = null;
 const camera = new THREE.OrthographicCamera(-20, 20, 17, -17, 0.1, 180);
 const cameraFocus = new THREE.Vector3(-8, 0, 8);
 const cameraTarget = new THREE.Vector3();
@@ -105,7 +106,7 @@ const character = await createCharacter(world.root);
 character.group.scale.setScalar(1.2);
 const player = character.group.position;
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
-const vision = createVision(world.root, world, { radius: 18 });
+const vision = createVision(world.root, world, { radius: 128 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
 const healthBars = createHealthBars(world.root);
