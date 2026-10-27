@@ -16,6 +16,7 @@ export async function createCharacter(scene) {
   model.position.y = -1.025;
   model.name = 'Blender ranger · 18-joint skeleton';
   rollPivot.add(model);
+  const unitScale = new THREE.Vector3(1, 1, 1);
   const materials = new Set();
   const meshes = [];
   model.traverse(part => {
@@ -85,11 +86,11 @@ export async function createCharacter(scene) {
     right: ['UpperArmR', 'ForearmR', 'HandR'].map(name => model.getObjectByName(name)),
   };
   const rollBones = [
-    [findBone(['thighl']), [-1.05, 0, 0]], [findBone(['shinl']), [1.55, 0, 0]],
-    [findBone(['thighr']), [-1.05, 0, 0]], [findBone(['shinr']), [1.55, 0, 0]],
-    [findBone(['upperarml']), [0, 0, 0.72]], [findBone(['upperarmr']), [0, 0, -.72]],
-    [findBone(['forearml']), [-1.1, 0, 0]], [findBone(['forearmr']), [-1.1, 0, 0]],
-    [chest, [-.25, 0, 0]],
+    [findBone(['thighl']), [-1.3, 0, 0]], [findBone(['shinl']), [2.15, 0, 0]],
+    [findBone(['thighr']), [-1.3, 0, 0]], [findBone(['shinr']), [2.15, 0, 0]],
+    [findBone(['upperarml']), [0, 0, -1.15]], [findBone(['upperarmr']), [0, 0, 1.15]],
+    [findBone(['forearml']), [-1.35, 0, 0]], [findBone(['forearmr']), [-1.35, 0, 0]],
+    [chest, [-.38, 0, 0]], [neck, [.28, 0, 0]],
   ].filter(([bone]) => bone).map(([bone, angles]) => ({ bone, angles, rotation: new THREE.Quaternion() }));
   // Two-bone aiming keeps the held objects in the actual hands instead of
   // floating beside the running rig. Targets use the character's local space.
@@ -169,14 +170,17 @@ export async function createCharacter(scene) {
     if (rollRemaining > 0 && !dead) {
       rollRemaining = Math.max(0, rollRemaining - delta);
       const progress = 1 - rollRemaining / rollDuration;
-      // Crouch/tuck, complete one forward somersault, then open the pose to stand.
-      const tuckIn = THREE.MathUtils.smoothstep(progress, 0, .13);
-      const standUp = 1 - THREE.MathUtils.smoothstep(progress, .82, 1);
+      // Fold into a compact shape, somersault toward the facing direction, then stand.
+      const tuckIn = THREE.MathUtils.smoothstep(progress, 0, .2);
+      const standUp = 1 - THREE.MathUtils.smoothstep(progress, .78, 1);
       const bundle = tuckIn * standUp;
-      const rotationProgress = THREE.MathUtils.clamp((progress - .1) / .74, 0, 1);
-      rollPivot.rotation.x = rotationProgress * Math.PI * 2;
+      const rotationProgress = THREE.MathUtils.clamp((progress - .12) / .72, 0, 1);
+      // The ranger faces local +Z, so negative local X is a forward somersault.
+      rollPivot.rotation.x = -rotationProgress * Math.PI * 2;
       rollPivot.rotation.z = 0;
-      rollPivot.position.y = 1.025;
+      rollPivot.position.y = 1.025 - Math.sin(rotationProgress * Math.PI) * .28;
+      model.scale.set(THREE.MathUtils.lerp(1, .82, bundle),
+        THREE.MathUtils.lerp(1, .66, bundle), THREE.MathUtils.lerp(1, .82, bundle));
       const poseEuler = new THREE.Euler();
       for (const entry of rollBones) {
         poseEuler.set(entry.angles[0] * bundle, entry.angles[1] * bundle, entry.angles[2] * bundle);
@@ -187,6 +191,7 @@ export async function createCharacter(scene) {
       rollPivot.rotation.x = dead ? THREE.MathUtils.lerp(rollPivot.rotation.x, -Math.PI * 0.43, smoothing) : movement.forwardLean;
       rollPivot.rotation.z = movement.sideLean;
       rollPivot.position.y = dead ? THREE.MathUtils.lerp(rollPivot.position.y, 0.35, smoothing) : 1.025;
+      model.scale.lerp(unitScale, smoothing);
     }
     group.userData.locomotion = { ...movement };
     group.userData.rolling = rollRemaining > 0;
@@ -224,6 +229,7 @@ export async function createCharacter(scene) {
       locomotion.reset(); rollRemaining = 0; attackRemaining = 0;
       if (Number.isFinite(direction)) group.rotation.y = direction;
       rollPivot.rotation.set(0, 0, 0); rollPivot.position.y = 1.025;
+      model.scale.copy(unitScale);
       group.userData.rolling = false;
       group.userData.locomotion = locomotion.update(0, { direction: group.rotation.y, currentYaw: group.rotation.y });
     },
@@ -242,7 +248,7 @@ export async function createCharacter(scene) {
       const next = Boolean(value);
       if (dead === next) return;
       dead = next; rollRemaining = 0;
-      if (!dead) { rollPivot.rotation.x = 0; rollPivot.position.y = 1.025; locomotion.reset(); }
+      if (!dead) { rollPivot.rotation.x = 0; rollPivot.position.y = 1.025; model.scale.copy(unitScale); locomotion.reset(); }
     },
     setConcealed(value) {
       concealed = Boolean(value);
