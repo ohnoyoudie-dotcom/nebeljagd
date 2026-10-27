@@ -1,12 +1,12 @@
 {
   "name": "Nebeljagd – stabile Entwicklungsvorschau",
   "sourceBranch": "work",
-  "sourceCommit": "d3e3c73",
-  "builtAt": "2026-10-27T22:16:19.000Z",
+  "sourceCommit": "79a5809",
+  "builtAt": "2026-10-27T22:28:56.000Z",
   "files": {
     "index.html": {
-      "bytes": 4450695,
-      "sha256": "4c69af6ee79c486c71ecde5b811ce7d93d72891de2a62eb8b0b1bdc50be7f138"
+      "bytes": 4450992,
+      "sha256": "766ac1fba873a62083303f8bc69d8d2b415fecf35b943878ec9b44017cac23ea"
     },
     "nebeljagd.html": {
       "bytes": 421,
