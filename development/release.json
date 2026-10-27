@@ -1,11 +1,11 @@
 {
   "branch": "work",
-  "commit": "8a0b3b0",
-  "builtAt": "2026-10-27T21:40:00.177Z",
+  "commit": "96082c4",
+  "builtAt": "2026-10-27T21:45:33.356Z",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4447907,
-      "sha256": "84c466ec66281cbf5161b3c6ee5b667bda6633b770be2a7fde3d48df7e45f3b8"
+      "bytes": 4448469,
+      "sha256": "959f914bef348084543271c48bf3dd7de2dba9b760ba55ca225f70afee6a7ab1"
     },
     "map-editor.html": {
       "bytes": 3651066,
@@ -24,10 +24,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3212027,
-      "sha256": "4269e5f1ceeeb0a49e91b22f58da9b11c2fbc1a9ad6ff8623a0dae89afea8942"
+      "bytes": 3212155,
+      "sha256": "ac06e4742d28ba2326446fce90a4da6e7ff2c8bf87b3b688d9283a24aef8ccc2"
     }
   },
   "roll": "0.72s compact forward somersault with tucked recovery",
-  "vision": "full screen view; black obstacle shadows at 30% opacity with a 2.8m soft edge; blocker surfaces remain visible"
+  "vision": "30% black sight overlay with 8m depth feather and softened angular edges; scene shadows are 30% intensity with radius 8; blockers stay visible"
 }

@@ -21,14 +21,24 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     uniform vec2 uTacticalOrigin;
     uniform float uTacticalRadius;
     uniform float uTacticalBlockerSurface;
+    float tacticalShadowFade(float angleUv, float distanceToViewer) {
+      float limit = texture2D(uTacticalSight, vec2(fract(angleUv), .5)).r * uTacticalRadius;
+      return 1. - smoothstep(limit + .08, limit + 8.0, distanceToViewer);
+    }
     vec3 applyTacticalSight(vec3 color, vec2 point) {
       vec2 delta = point - uTacticalOrigin;
       float distanceToViewer = length(delta);
       float angle = atan(delta.y, delta.x) / 6.28318530718;
-      float limit = texture2D(uTacticalSight, vec2(fract(angle + .5 / ${samples.toFixed(1)}), .5)).r * uTacticalRadius;
-      // Spread the edge over several world metres so cover fades out softly
-      // instead of drawing a sharp wedge across the terrain.
-      float obstacleFade = 1. - smoothstep(limit + .08, limit + 2.8, distanceToViewer);
+      float angleUv = fract(angle + .5 / ${samples.toFixed(1)});
+      float texel = 1. / ${samples.toFixed(1)};
+      float centerFade = tacticalShadowFade(angleUv, distanceToViewer);
+      // Feather both the depth edge and the sides of each projected shadow.
+      float angularFade = .50 * centerFade
+        + .18 * (tacticalShadowFade(angleUv - 4. * texel, distanceToViewer)
+          + tacticalShadowFade(angleUv + 4. * texel, distanceToViewer))
+        + .07 * (tacticalShadowFade(angleUv - 8. * texel, distanceToViewer)
+          + tacticalShadowFade(angleUv + 8. * texel, distanceToViewer));
+      float obstacleFade = angularFade;
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
       vec3 shadow = mix(color, vec3(0.0), .30);
       return mix(shadow, color, visibility);
@@ -80,7 +90,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v5-black-30-shadow`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v7-extra-feathered-shadow`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }
