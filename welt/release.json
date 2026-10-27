@@ -1,0 +1,38 @@
+{
+  "name": "Nebeljagd – Graspinsel, Modellvarianten und Kampfgefühl",
+  "date": "2026-10-27",
+  "files": {
+    "nebeljagd.html": {
+      "bytes": 3974463,
+      "sha256": "2ae3bb403c71a5d97196ea95fc84dad35ceef0bb72e639eb504e4dd011e39c47"
+    },
+    "map-editor.html": {
+      "bytes": 706850,
+      "sha256": "ae64f5f1e7cf97ade83e5de26df7ac255b69faf68638508e580b91c28c40399b"
+    },
+    "nebeljagd-welt-und-editor.zip": {
+      "bytes": 1767864,
+      "sha256": "98f636f8eec7c925940b55935b93bc0e3bf6bd9068d5167028005e2e7374b3c0"
+    },
+    "worldmap.json": {
+      "bytes": 580340,
+      "sha256": "b85fab4da0348334380da0c415057e2fb540e39e180279e0559351f407124875"
+    },
+    "worldmap.svg": {
+      "bytes": 1497776,
+      "sha256": "92eb4e8a2a62bc7aeba6ba1272bf66af9a36eb1f9b81693907a453125a26fe61"
+    },
+    "worldmap.schema.json": {
+      "bytes": 18167,
+      "sha256": "15963a4384f28092b197a015147f7571d19678c3fd16339545cf6e599dc99165"
+    }
+  },
+  "validation": {
+    "nodeTests": 80,
+    "browserScenarios": 7,
+    "brushEditorScenarios": 9,
+    "responsiveLayouts": 6,
+    "source": "docs/polish-game-check.json",
+    "offlineGameAndEditorNoHTTP": true
+  }
+}
