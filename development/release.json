@@ -1,11 +1,11 @@
 {
   "branch": "work",
-  "commit": "96082c4",
-  "builtAt": "2026-10-27T21:45:33.356Z",
+  "commit": "8ea9468",
+  "builtAt": "2026-10-27T21:55:20.903Z",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4448469,
-      "sha256": "959f914bef348084543271c48bf3dd7de2dba9b760ba55ca225f70afee6a7ab1"
+      "bytes": 4448027,
+      "sha256": "710d4bdc524c7ee5c4598b3898d73cd285287d168e9541874241a0ae4f62aa20"
     },
     "map-editor.html": {
       "bytes": 3651066,
@@ -24,10 +24,10 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3212155,
-      "sha256": "ac06e4742d28ba2326446fce90a4da6e7ff2c8bf87b3b688d9283a24aef8ccc2"
+      "bytes": 3212056,
+      "sha256": "53f44d898b29ec0eec897e2844855d0a31dc0f1bd7c4e99dee5d1f456ff91e57"
     }
   },
   "roll": "0.72s compact forward somersault with tucked recovery",
-  "vision": "30% black sight overlay with 8m depth feather and softened angular edges; scene shadows are 30% intensity with radius 8; blockers stay visible"
+  "vision": "50% black sight shadow; one adaptive 0.3–1.0m feather at the contour; scene shadows intensity 50%, radius 4"
 }

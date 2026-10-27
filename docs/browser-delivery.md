@@ -1,15 +1,26 @@
 # Öffentliche Browser- und Download-Adressen
 
+## Separate Browser-Vorschau für die aktuelle Entwicklung
+
+Die aktuelle Entwicklung ist unter einem eigenen, stabilen GitHub-Pages-Pfad
+erreichbar; die bestehende Hauptseite und `welt/` bleiben erhalten:
+
+- Spiel: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html
+- Kurzlink: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/
+- Editor: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html
+
+Der veröffentlichte Ordner `preview/` enthält nur den eigenständigen Build und
+Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
+`work`. Neue Builds aktualisieren ausschließlich diese Vorschau-Dateien.
+
 ## Aktuelle Entwicklung: Landschaftswerkzeuge auf `work`
 
 Die neue Landschaftserweiterung wird ausdrücklich **nur auf `work`** gesichert.
-`main` und die bestehenden Dateien unter `welt/` bleiben unverändert. Der
-geprüfte Entwicklungsbuild steht im Verzeichnis `development/`; sein
-[ZIP-Download](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/development/nebeljagd-welt-und-editor.zip)
-enthält Spiel, Editor und Kartendaten. Nach dem Entpacken `map-editor.html`
-oder `nebeljagd.html` öffnen. Das ist eine Downloadadresse, keine zusätzliche
-GitHub-Pages-Veröffentlichung. Die unten beschriebenen Pages-Links zeigen
-weiter den veröffentlichten Stand auf `main`.
+`main` enthält dafür ausschließlich die zusätzlich veröffentlichte
+`preview/`-Ausgabe; die bestehende Spielseite, `welt/` und die Quelldateien
+bleiben unverändert. Der geprüfte Entwicklungsbuild steht im Verzeichnis
+`development/`; sein [ZIP-Download](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/development/nebeljagd-welt-und-editor.zip)
+enthält Spiel, Editor und Kartendaten für die Offline-Nutzung.
 
 ## Bestehende Veröffentlichung
 
@@ -37,16 +48,15 @@ für die Offline-Nutzung. `welt/release.json` hält Größen und SHA-256-Werte f
 
 Die URLs bleiben bei Aktualisierungen desselben Verzeichnisses gleich.
 Ein lokaler Build veröffentlicht noch nichts: nach `npm run build` müssen die
-neuen Dateien bewusst in `welt/` auf dem Pages-Quellbranch übernommen werden.
-Dazu eine separate Arbeitskopie vom aktuellen `origin/main` verwenden, damit
-die laufenden Quellcodeänderungen dieser Arbeitskopie erhalten bleiben.
+neuen Dateien bewusst nur in `preview/` auf dem Pages-Quellbranch übernommen
+werden. Dazu eine separate Arbeitskopie vom aktuellen `origin/main` verwenden,
+damit die laufenden Quellcodeänderungen dieser Arbeitskopie erhalten bleiben.
 
-Zu übernehmen sind `dist/nebeljagd.html` zusätzlich als `welt/index.html`,
-`dist/map-editor.html`, das ZIP, JSON, SVG und JSON-Schema. Die Prüfsummen in
-`release.json` aktualisieren. Nach dem Push auf die Bereitstellung warten und
-die wirklichen HTTPS-Dateien auf Status, Prüfsummen, ZIP-Integrität und den
-Editor-zu-Spiel-Übergang prüfen. Erst danach neue öffentliche Links als geprüft
-angeben. Der Nutzer muss Änderungen im Browser-Editor weiterhin als JSON
+Zu übernehmen sind `dist/nebeljagd.html` als `preview/nebeljagd.html` und
+`preview/index.html`, `dist/map-editor.html`, JSON, SVG und JSON-Schema. Die
+Prüfsummen in `preview/release.json` aktualisieren. Nach dem Push auf die
+Bereitstellung warten und die HTTPS-Dateien sowie den Editor-zu-Spiel-Übergang
+prüfen. Der Nutzer muss Änderungen im Browser-Editor weiterhin als JSON
 speichern; sie verändern die veröffentlichte Ausgangskarte nicht automatisch.
 
 Commit `4b5812a` aktualisiert denselben Pfad um den Graspinsel, 24 Modellvorschauen,

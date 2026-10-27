@@ -1,5 +1,8 @@
 # Nebeljagd – Landschaftswerkzeuge auf `work`
 
+[Spiel dauerhaft im Browser öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html) ·
+[Editor dauerhaft öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html)
+
 [Spiel und Editor herunterladen](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/development/nebeljagd-welt-und-editor.zip)
 
 1. Das ZIP vollständig in einen Ordner entpacken.

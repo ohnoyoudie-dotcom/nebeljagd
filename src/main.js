@@ -72,7 +72,7 @@ scene.add(new THREE.HemisphereLight('#c8dfdf', '#34594a', 1.9));
 const sun = new THREE.DirectionalLight('#fff0d8', 2.15);
 sun.position.set(-22, 42, 20);
 sun.castShadow = true;
-sun.shadow.intensity = 0.3;
+sun.shadow.intensity = 0.5;
 sun.shadow.camera.left = -35;
 sun.shadow.camera.right = 35;
 sun.shadow.camera.top = 35;
@@ -81,7 +81,7 @@ sun.shadow.camera.near = 1;
 sun.shadow.camera.far = 110;
 sun.shadow.bias = -0.00015;
 sun.shadow.normalBias = 0.035;
-sun.shadow.radius = 8;
+sun.shadow.radius = 4;
 scene.add(sun, sun.target);
 
 ui.setLoading?.('Die Insel wird aus der Karte erzeugt …');
