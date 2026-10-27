@@ -121,10 +121,10 @@ const combat = createCombat({ onHit: (result, target) => {
   healthBars.set(target.id, { health: target.health, maxHealth: target.maxHealth });
   damageFeedback.addHit(result, target);
 } });
-const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: true });
+const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
-  { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: true });
-const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: true,
+  { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false });
+const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   onDrop: (item, launch) => {
     if (item.kind === 'gold' || item.type === 'gold') pickups.addDrop(item, launch);
     else weapons.addDrop(item, launch);
@@ -352,7 +352,7 @@ window.nebeljagdTestState = () => ({
   combat: weapons.telemetry,
   vision: vision.inspect(), healthBars: healthBars.inspect(), practiceActors: practiceActors.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
-  chests: chests.items.map(({ id, x, z, opened }) => ({ id, x, z, opened })),
+  chests: chests.items.map(({ id, x, z, opened, group }) => ({ id, x, z, opened, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
     landscape: world.map.landscape ?? null,
@@ -360,7 +360,7 @@ window.nebeljagdTestState = () => ({
     projectileObstacles: new URLSearchParams(location.search).has('inspect') ? world.projectileObstacles : undefined },
   nearWeapon: weapons.nearest(player)?.type ?? null,
   nearChest: chests.nearest(player)?.id ?? null,
-  weaponDrops: weapons.items.map(({ id, type, rarity, x, z, collected }) => ({ id, type, rarity, x, z, collected })),
+  weaponDrops: weapons.items.map(({ id, type, rarity, x, z, collected, group }) => ({ id, type, rarity, x, z, collected, visible: group.visible })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
     locomotion: character.group.userData.locomotion },
@@ -368,7 +368,7 @@ window.nebeljagdTestState = () => ({
   houses: world.houses.map(({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight, roof, interior }) => ({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight,
     roofVisible: roof.visible, interiorVisible: interior.visible })),
   zone: { ...currentZone, inDanger: state.inDanger },
-  pickups: pickups.items.map(({ id, type, x, z, collected }) => ({ id, type, x, z, collected })),
+  pickups: pickups.items.map(({ id, type, x, z, collected, group }) => ({ id, type, x, z, collected, visible: group.visible })),
   camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z } },
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
@@ -377,7 +377,7 @@ window.nebeljagdTestState = () => ({
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
 if (new URLSearchParams(location.search).has('inspect')) {
-  window.nebeljagdInspectVisibility = point => vision.isVisible(point);
+  window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
     direction = state.direction } = {}) => {
     clearInput();

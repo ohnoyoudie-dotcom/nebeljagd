@@ -84,3 +84,8 @@ und nutzt einen dichteren 17-Punkt-Gaußfilter. Das reduziert sichtbare
 Entfernungsstufen an langen Hindernisschatten. Der 50-Prozent-Schwarzwert bleibt
 erhalten. Der Build wurde mit 127 Node-Tests und einem lokalen WebGL-Browserlauf
 ohne Shader- oder Konsolenfehler geprüft.
+
+Der folgende Sichtbuild skaliert die Winkelweichzeichnung mit der Entfernung,
+damit Hindernisschatten auch in der Ferne ihre dunkle Deckkraft behalten. Truhen,
+Waffen und Sammelgegenstände erscheinen nur noch bei freier Sicht; das Gelände
+und die übrige Umgebung bleiben sichtbar.
