@@ -490,7 +490,10 @@
             "bow",
             "sword",
             "fireStaff",
-            "iceStaff"
+            "iceStaff",
+            "wall",
+            "fence",
+            "crate"
           ]
         },
         "variant": {
