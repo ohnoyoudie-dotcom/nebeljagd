@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "models": {
+    "ready": true,
+    "models": [
+      {
+        "variant": "ridge",
+        "parts": 3,
+        "triangles": 1142
+      },
+      {
+        "variant": "knoll",
+        "parts": 3,
+        "triangles": 722
+      }
+    ],
+    "calls": 13,
+    "triangles": 3730
+  },
+  "errors": []
+}

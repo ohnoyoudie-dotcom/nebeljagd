@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5173",
+  "checks": [
+    {
+      "name": "Former guard leaves stale preset B after returning to A",
+      "evidence": {
+        "requestedType": "short",
+        "type": "flowers",
+        "height": 2,
+        "renderVariant": "short",
+        "frames": 15,
+        "calls": 4,
+        "error": null
+      }
+    },
+    {
+      "name": "Corrected preview finishes at the latest requested preset A after an in-flight GLB load",
+      "evidence": {
+        "requestedType": "short",
+        "type": "short",
+        "height": 1,
+        "renderVariant": "short",
+        "frames": 23,
+        "calls": 2,
+        "error": null
+      }
+    }
+  ],
+  "errors": [],
+  "note": "Real Chromium/SwiftShader preview with a delayed GLB fetch; no runtime files altered."
+}

@@ -1,0 +1,376 @@
+{
+  "created": "2026-10-27",
+  "coordinateSystem": "glTF 2.0 right-handed, +Y up, metres",
+  "rights": "User-uploaded files; no independent public redistribution license metadata was supplied.",
+  "outputs": [
+    {
+      "name": "tree01",
+      "originalFile": "/workspace/attachments/d1a116db-f52a-411b-aa03-90d3aa4c1f9f/Rei_treeLeavesGN.glb",
+      "sourceSHA256": "a6fe4e7bd888cb8c02ce71056a8d74f3f317289cc5c530f19518ba4067e7f018",
+      "originalNodeNames": [
+        "leavesSphere_Sample",
+        "treeTrunk_Sample"
+      ],
+      "originalSelection": {
+        "triangles": 23640,
+        "vertices": 14984,
+        "meshes": [
+          {
+            "name": "leavesSphere_Sample",
+            "triangles": 792,
+            "vertices": 501,
+            "material": "Rei_Foliage"
+          },
+          {
+            "name": "treeTrunk_Sample",
+            "triangles": 22848,
+            "vertices": 14483,
+            "material": "Rei_Bark"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -3.0693336725234985,
+            0,
+            -2.219775438308716
+          ],
+          "max": [
+            2.7253406047821045,
+            7.254600286483765,
+            2.0155143439769745
+          ],
+          "size": [
+            5.794674277305603,
+            7.254600286483765,
+            4.23528978228569
+          ]
+        }
+      },
+      "normalizationTranslation": {
+        "x": 0.17199653387069702,
+        "y": 0,
+        "z": 0.10213054716587067
+      },
+      "trunkOrigin": [
+        0.17199653387069702,
+        0,
+        0.10213054716587067
+      ],
+      "output": {
+        "file": "tree01.glb",
+        "sha256": "de032ff636a0ffadc7b3c47c510fbf2aeb0670514927a07d5d6887ac26f0ac3c",
+        "bytes": 624440,
+        "triangles": 23640,
+        "vertices": 14984,
+        "meshes": [
+          {
+            "name": "leavesSphere_Sample",
+            "triangles": 792,
+            "vertices": 501,
+            "material": "Rei_Foliage"
+          },
+          {
+            "name": "treeTrunk_Sample",
+            "triangles": 22848,
+            "vertices": 14483,
+            "material": "Rei_Bark"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -2.8973371386528015,
+            0,
+            -2.117644891142845
+          ],
+          "max": [
+            2.8973371386528015,
+            7.254600286483765,
+            2.117644891142845
+          ],
+          "size": [
+            5.794674277305603,
+            7.254600286483765,
+            4.23528978228569
+          ]
+        }
+      },
+      "topologyPreserved": true,
+      "materialPolicy": "Simple white named MeshStandardMaterial surfaces; original GLB contains no exported textures/colors. Integration assigns runtime materials."
+    },
+    {
+      "name": "tree02",
+      "originalFile": "/workspace/attachments/4f25d79e-a346-4186-8dc6-37edab3df21f/Rei_treeLeavesGN_samples.glb",
+      "sourceSHA256": "ea9d87324749667cdf8a8f522cbebce3b1a24a164614739338a27a02b14c0917",
+      "originalNodeNames": [
+        "leavesSphere_Sample02",
+        "treeTrunk_Sample02"
+      ],
+      "originalSelection": {
+        "triangles": 14352,
+        "vertices": 8932,
+        "meshes": [
+          {
+            "name": "leavesSphere_Sample02",
+            "triangles": 1920,
+            "vertices": 1148,
+            "material": "Rei_Foliage"
+          },
+          {
+            "name": "treeTrunk_Sample02",
+            "triangles": 12432,
+            "vertices": 7784,
+            "material": "Rei_Bark"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -7.08578085899353,
+            0,
+            1.2994656562805176
+          ],
+          "max": [
+            -1.492584228515625,
+            5.771265983581543,
+            7.641542673110962
+          ],
+          "size": [
+            5.593196630477905,
+            5.771265983581543,
+            6.342077016830444
+          ]
+        }
+      },
+      "normalizationTranslation": {
+        "x": 4.289182543754578,
+        "y": 0,
+        "z": -4.47050416469574
+      },
+      "trunkOrigin": [
+        -0.07442152500152588,
+        0,
+        0.008194565773010254
+      ],
+      "output": {
+        "file": "tree02.glb",
+        "sha256": "c92e5c02b5c6c18a03010c86ff2cba43d1459eb9b291b68f226c31b1904956e0",
+        "bytes": 375096,
+        "triangles": 14352,
+        "vertices": 8932,
+        "meshes": [
+          {
+            "name": "leavesSphere_Sample02",
+            "triangles": 1920,
+            "vertices": 1148,
+            "material": "Rei_Foliage"
+          },
+          {
+            "name": "treeTrunk_Sample02",
+            "triangles": 12432,
+            "vertices": 7784,
+            "material": "Rei_Bark"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -2.7965983152389526,
+            0,
+            -3.171038508415222
+          ],
+          "max": [
+            2.7965983152389526,
+            5.771265983581543,
+            3.171038508415222
+          ],
+          "size": [
+            5.593196630477905,
+            5.771265983581543,
+            6.342077016830444
+          ]
+        }
+      },
+      "topologyPreserved": true,
+      "materialPolicy": "Simple white named MeshStandardMaterial surfaces; original GLB contains no exported textures/colors. Integration assigns runtime materials."
+    },
+    {
+      "name": "bush",
+      "originalFile": "/workspace/attachments/4f25d79e-a346-4186-8dc6-37edab3df21f/Rei_treeLeavesGN_samples.glb",
+      "sourceSHA256": "ea9d87324749667cdf8a8f522cbebce3b1a24a164614739338a27a02b14c0917",
+      "originalNodeNames": [
+        "leavesSphere_Sample03",
+        "treeTrunk_Sample03"
+      ],
+      "originalSelection": {
+        "triangles": 11088,
+        "vertices": 6930,
+        "meshes": [
+          {
+            "name": "leavesSphere_Sample03",
+            "triangles": 480,
+            "vertices": 287,
+            "material": "Rei_Foliage"
+          },
+          {
+            "name": "treeTrunk_Sample03",
+            "triangles": 10608,
+            "vertices": 6643,
+            "material": "Rei_Bark"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -2.7964727878570557,
+            -0.15622937679290771,
+            -0.7121142745018005
+          ],
+          "max": [
+            -0.35916924476623535,
+            1.291074514389038,
+            1.3271453976631165
+          ],
+          "size": [
+            2.4373035430908203,
+            1.4473038911819458,
+            2.039259672164917
+          ]
+        }
+      },
+      "normalizationTranslation": {
+        "x": 1.5778210163116455,
+        "y": 0.15622937679290771,
+        "z": -0.30751556158065796
+      },
+      "trunkOrigin": [
+        0.2374817132949829,
+        0.039897575974464417,
+        0.07995307445526123
+      ],
+      "output": {
+        "file": "bush.glb",
+        "bytes": 119272,
+        "sha256": "da24a0e4c10467baad83ee6e8095282ba62a49e46a79e276c2f5475be6cd03d3",
+        "triangles": 3980,
+        "vertices": 2875,
+        "meshes": [
+          {
+            "name": "leavesSphere_Sample03",
+            "triangles": 480,
+            "vertices": 287,
+            "material": "Rei_Foliage"
+          },
+          {
+            "name": "treeTrunk_Sample03",
+            "triangles": 3500,
+            "vertices": 2588,
+            "material": "Rei_Bark"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -1.2186517715454102,
+            0,
+            -1.0196298360824585
+          ],
+          "max": [
+            1.2186517715454102,
+            1.4473038911819458,
+            1.0196298360824585
+          ],
+          "size": [
+            2.4373035430908203,
+            1.4473038911819458,
+            2.039259672164917
+          ]
+        }
+      },
+      "topologyPreserved": false,
+      "materialPolicy": "Simple white named MeshStandardMaterial surfaces; original GLB contains no exported textures/colors. Integration assigns runtime materials.",
+      "derivation": {
+        "method": "Blender DECIMATE COLLAPSE, trunk only",
+        "ratio": 0.33,
+        "canopyUnchanged": true,
+        "additionalNormalization": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      }
+    },
+    {
+      "name": "bed-ground",
+      "originalFile": "/workspace/attachments/9959994c-ca3e-4b58-8c88-9c232869bc8e/grassGN3_3_v2_Rei.glb",
+      "sourceSHA256": "ae42e66d8c65140454fe9f8821336136d970b8ea67e5e420eabd6f644d43bbd4",
+      "originalNodeNames": [
+        "grassGround"
+      ],
+      "originalSelection": {
+        "triangles": 2,
+        "vertices": 4,
+        "meshes": [
+          {
+            "name": "grassGround",
+            "triangles": 2,
+            "vertices": 4,
+            "material": "Rei_BedGround"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -8.5,
+            0,
+            -8.5
+          ],
+          "max": [
+            8.5,
+            0,
+            8.5
+          ],
+          "size": [
+            17,
+            0,
+            17
+          ]
+        }
+      },
+      "normalizationTranslation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "trunkOrigin": null,
+      "output": {
+        "file": "bed-ground.glb",
+        "sha256": "f7fa3ed9a8cb26aa1875f644ced06554d9d5f645e8f975de111efcd65eff5daf",
+        "bytes": 1688,
+        "triangles": 2,
+        "vertices": 4,
+        "meshes": [
+          {
+            "name": "grassGround",
+            "triangles": 2,
+            "vertices": 4,
+            "material": "Rei_BedGround"
+          }
+        ],
+        "bounds": {
+          "min": [
+            -8.5,
+            0,
+            -8.5
+          ],
+          "max": [
+            8.5,
+            0,
+            8.5
+          ],
+          "size": [
+            17,
+            0,
+            17
+          ]
+        }
+      },
+      "topologyPreserved": true,
+      "materialPolicy": "Simple white named MeshStandardMaterial surfaces; original GLB contains no exported textures/colors. Integration assigns runtime materials."
+    }
+  ]
+}

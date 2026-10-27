@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "standaloneSHA256": "307ea036cad2f680841c18963ca4a5f3cc31fc250bb49c1e30ad146501b8235f",
+  "rendered": {
+    "phase": "playing",
+    "objects": 4016,
+    "chests": 48,
+    "vision": 18,
+    "practiceActors": 3,
+    "roofless": true
+  },
+  "httpRequests": [],
+  "errors": [],
+  "method": "Exact standalone HTML bytes via set_content with HTTP/S blocked; managed Chromium file navigation not used."
+}

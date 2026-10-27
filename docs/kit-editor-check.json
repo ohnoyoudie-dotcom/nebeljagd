@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5173/map-editor.html",
+  "checks": [
+    "GLB grass remains kit-tall after actual height and density editing",
+    "Duplicated GLB grass preserves variant and vegetation settings",
+    "Intentional type change uses procedural meadow; explicit GLB model choice restores tall type",
+    "wall: palette placement, selection, rotation and scale",
+    "fence: palette placement, selection, rotation and scale",
+    "crate: palette placement, selection, rotation and scale",
+    "Selected GLB grass preview follows uncommitted inspector height150% and density60% and passes kit-tall to the shared renderer"
+  ],
+  "errors": [],
+  "selectedPreview": {
+    "settings": {
+      "height": 1.5,
+      "density": 0.6,
+      "heightVariation": 0.12,
+      "color": "#799754",
+      "groundColor": false,
+      "groundBlend": 0.55,
+      "brightness": 1,
+      "saturation": 1,
+      "colorVariation": 0.14,
+      "edgeSoftness": 0.3,
+      "seed": 1,
+      "type": "tall"
+    },
+    "patchVariant": "kit-tall",
+    "calls": 2,
+    "errors": [],
+    "renderVariantAtCheck": "tall",
+    "note": "UI parameters and requested variant verified; final renderer GLB compatibility is checked separately after the renderer update."
+  }
+}

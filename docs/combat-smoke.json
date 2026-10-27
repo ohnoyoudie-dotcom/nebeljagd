@@ -1,0 +1,372 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "Updated world exposes sparse trees and varied hiding patches",
+      "evidence": {
+        "treeCount": 34,
+        "grassPatchCount": 12,
+        "grassPatchSizes": [
+          [
+            2.25,
+            0.75
+          ],
+          [
+            4.2,
+            0.72
+          ],
+          [
+            2.7,
+            0.7
+          ],
+          [
+            3.4,
+            0.75
+          ],
+          [
+            1.5,
+            0.65
+          ],
+          [
+            2.1,
+            1.2
+          ],
+          [
+            3.5,
+            0.58
+          ],
+          [
+            1.9,
+            0.7
+          ],
+          [
+            3.2,
+            0.78
+          ],
+          [
+            1.6,
+            1.2
+          ],
+          [
+            2.5,
+            0.7
+          ],
+          [
+            1.45,
+            0.9
+          ]
+        ]
+      }
+    },
+    {
+      "name": "E equips bow in front of body; F visibly draws string before one released arrow",
+      "evidence": {
+        "drawPose": {
+          "attackPhase": "draw",
+          "bowDraw": 0.4027286923645928,
+          "swordSweep": 0,
+          "shotsFired": 0,
+          "impacts": 0,
+          "lastImpact": null,
+          "arrowsActive": 0,
+          "arrowsFlying": 0,
+          "heldPose": {
+            "bow": {
+              "x": 0.060000075298676236,
+              "y": 1.3400000845118094,
+              "z": 0.09579989688586799
+            },
+            "sword": {
+              "x": -0.22,
+              "y": 1.2,
+              "z": 0.42
+            },
+            "swordTip": {
+              "x": -0.22,
+              "y": 2.4429999999999996,
+              "z": 0.42
+            }
+          }
+        },
+        "maxDraw": 0.9533985370263829,
+        "phases": [
+          "idle",
+          "draw",
+          "release",
+          "recover"
+        ]
+      }
+    },
+    {
+      "name": "Rolling during the bow windup cancels the pending arrow",
+      "evidence": {
+        "attackPhase": "idle",
+        "bowDraw": 0,
+        "swordSweep": 0,
+        "shotsFired": 1,
+        "impacts": 0,
+        "lastImpact": null,
+        "arrowsActive": 0,
+        "arrowsFlying": 0,
+        "heldPose": {
+          "bow": {
+            "x": 0.06000007424109466,
+            "y": 1.340000085257289,
+            "z": 0.09579988883147528
+          },
+          "sword": {
+            "x": -0.22,
+            "y": 1.2,
+            "z": 0.42
+          },
+          "swordTip": {
+            "x": -0.22,
+            "y": 2.4429999999999996,
+            "z": 0.42
+          }
+        }
+      }
+    },
+    {
+      "name": "Arrow sweeps into solid Mooswinkel wall and becomes a bouncing/falling projectile",
+      "evidence": {
+        "attackPhase": "recover",
+        "bowDraw": 0,
+        "swordSweep": 0,
+        "shotsFired": 2,
+        "impacts": 1,
+        "lastImpact": {
+          "type": "house",
+          "point": {
+            "x": -8.072000085466735,
+            "y": 1.608000143773487,
+            "z": 2.245
+          },
+          "normal": {
+            "x": 0,
+            "z": 1
+          }
+        },
+        "arrowsActive": 1,
+        "arrowsFlying": 0,
+        "heldPose": {
+          "bow": {
+            "x": 0.060000068866412626,
+            "y": 1.3400000867271387,
+            "z": 0.09579988805247441
+          },
+          "sword": {
+            "x": -0.22,
+            "y": 1.2,
+            "z": 0.42
+          },
+          "swordTip": {
+            "x": -0.22,
+            "y": 2.4429999999999996,
+            "z": 0.42
+          }
+        }
+      }
+    },
+    {
+      "name": "Arrow hits actual visible tree trunk at its cylinder boundary and bounces",
+      "evidence": {
+        "target": {
+          "tree": {
+            "x": 2.9875401207245886,
+            "y": 2.4621025572712083e-08,
+            "z": -1.4876575833186507,
+            "radius": 0.36522937511033376
+          },
+          "origin": {
+            "x": 2.9875401207245886,
+            "y": 6.441779395652156e-09,
+            "z": -3.087657583318651
+          },
+          "direction": 0
+        },
+        "impact": {
+          "attackPhase": "release",
+          "bowDraw": 0.44242148384160174,
+          "swordSweep": 0,
+          "shotsFired": 3,
+          "impacts": 2,
+          "lastImpact": {
+            "type": "tree",
+            "point": {
+              "x": 3.0595402039708905,
+              "y": 1.6080001092448584,
+              "z": -1.9016729401813488
+            },
+            "normal": {
+              "x": 0.17133519813410913,
+              "z": -0.9852127942126745
+            }
+          },
+          "arrowsActive": 1,
+          "arrowsFlying": 0,
+          "heldPose": {
+            "bow": {
+              "x": 0.060000069371918485,
+              "y": 1.3400000856692325,
+              "z": 0.09579989667348188
+            },
+            "sword": {
+              "x": -0.22,
+              "y": 1.2,
+              "z": 0.42
+            },
+            "swordTip": {
+              "x": -0.22,
+              "y": 2.4429999999999996,
+              "z": 0.42
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "A sufficiently tall rock blocks and deflects the arrow at weapon height",
+      "evidence": {
+        "target": {
+          "rock": {
+            "x": 14.582671760581434,
+            "z": 33.180386130698025,
+            "radius": 1.176047975947149,
+            "minY": 0.008009461186887055,
+            "maxY": 1.7290552796461296,
+            "type": "rock"
+          },
+          "origin": {
+            "x": 17.258719736528583,
+            "y": 0.055814324741277045,
+            "z": 33.180386130698025
+          },
+          "direction": -1.5707963267948966,
+          "estimatedArrowY": 1.6638142968191223
+        },
+        "impact": {
+          "attackPhase": "release",
+          "bowDraw": 0.44242148384160174,
+          "swordSweep": 0,
+          "shotsFired": 4,
+          "impacts": 3,
+          "lastImpact": {
+            "type": "rock",
+            "point": {
+              "x": 15.811612403063505,
+              "y": 1.6638142997266276,
+              "z": 33.25238624416548
+            },
+            "normal": {
+              "x": 0.9982881792535695,
+              "z": 0.05848684606467717
+            }
+          },
+          "arrowsActive": 1,
+          "arrowsFlying": 0,
+          "heldPose": {
+            "bow": {
+              "x": 0.06000009455621225,
+              "y": 1.3399999791544588,
+              "z": 0.0957999075546192
+            },
+            "sword": {
+              "x": -0.22,
+              "y": 1.2,
+              "z": 0.42
+            },
+            "swordTip": {
+              "x": -0.22,
+              "y": 2.4429999999999996,
+              "z": 0.42
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Sword follows a broad physical arc in front of the body, with windup/strike/follow-through",
+      "evidence": {
+        "strike": {
+          "attackPhase": "strike",
+          "bowDraw": 0,
+          "swordSweep": 0.5561440677206324,
+          "shotsFired": 4,
+          "impacts": 3,
+          "lastImpact": {
+            "type": "rock",
+            "point": {
+              "x": 15.811612403063505,
+              "y": 1.6638142997266276,
+              "z": 33.25238624416548
+            },
+            "normal": {
+              "x": 0.9982881792535695,
+              "z": 0.05848684606467717
+            }
+          },
+          "arrowsActive": 0,
+          "arrowsFlying": 0,
+          "heldPose": {
+            "bow": {
+              "x": 0.0600000638691629,
+              "y": 1.3400000879796843,
+              "z": 0.09579988709628018
+            },
+            "sword": {
+              "x": 0.006124758587541912,
+              "y": 1.3672182549911194,
+              "z": 0.38141314499704837
+            },
+            "swordTip": {
+              "x": 0.6495805393047469,
+              "y": 1.6109906109678824,
+              "z": 1.416588828986559
+            }
+          }
+        },
+        "minSweep": -0.9035646003131347,
+        "maxSweep": 1.155965389440109,
+        "minimumForwardTip": 0.8174440413604633,
+        "phases": [
+          "windup",
+          "strike",
+          "follow-through"
+        ]
+      }
+    },
+    {
+      "name": "Relocated irregular grass patch preserves 45% local concealment",
+      "evidence": {
+        "patch": {
+          "x": -2,
+          "z": 13,
+          "radius": 2.25,
+          "aspect": 0.75,
+          "yaw": 0.35
+        },
+        "opacity": 0.45
+      }
+    }
+  ],
+  "javascript_or_shader_errors": [],
+  "screenshots": [
+    "combat-village-current.png",
+    "combat-bow-draw.png",
+    "combat-house-impact.png",
+    "combat-tree-impact.png",
+    "combat-rock-impact.png",
+    "combat-sword-strike.png",
+    "combat-grass-current.png",
+    "combat-clearing-current.png",
+    "combat-river-current.png"
+  ],
+  "rendering": {
+    "calls": 334,
+    "triangles": 541551,
+    "geometries": 204,
+    "textures": 25,
+    "frameMs": 759.6
+  }
+}

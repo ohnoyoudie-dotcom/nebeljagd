@@ -1,0 +1,72 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "scene": "village",
+      "position": {
+        "x": 30,
+        "y": 1.20030524489562,
+        "z": -42
+      },
+      "art": {
+        "ground": "painted-woodland",
+        "mainPaths": "irregular-grey-cobbles",
+        "trailPaths": "earth",
+        "stoneTextureSize": 512,
+        "pathWidthFromMap": true
+      },
+      "rendering": {
+        "calls": 518,
+        "triangles": 600829,
+        "geometries": 167,
+        "textures": 27,
+        "frameMs": 746.6400000000001
+      }
+    },
+    {
+      "scene": "path",
+      "position": {
+        "x": 22,
+        "y": 1.3014797341192155,
+        "z": -27
+      },
+      "art": {
+        "ground": "painted-woodland",
+        "mainPaths": "irregular-grey-cobbles",
+        "trailPaths": "earth",
+        "stoneTextureSize": 512,
+        "pathWidthFromMap": true
+      },
+      "rendering": {
+        "calls": 412,
+        "triangles": 483905,
+        "geometries": 176,
+        "textures": 27,
+        "frameMs": 697.5928571428573
+      }
+    },
+    {
+      "scene": "woodland",
+      "position": {
+        "x": 10,
+        "y": 1.1746594167475406,
+        "z": -30
+      },
+      "art": {
+        "ground": "painted-woodland",
+        "mainPaths": "irregular-grey-cobbles",
+        "trailPaths": "earth",
+        "stoneTextureSize": 512,
+        "pathWidthFromMap": true
+      },
+      "rendering": {
+        "calls": 385,
+        "triangles": 459014,
+        "geometries": 185,
+        "textures": 27,
+        "frameMs": 647.475
+      }
+    }
+  ],
+  "errors": []
+}

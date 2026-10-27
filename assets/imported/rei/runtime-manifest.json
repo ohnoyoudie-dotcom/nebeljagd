@@ -1,0 +1,152 @@
+{
+  "format": "Local preparation record, not a game-dev canonical package receipt",
+  "runtime": [
+    {
+      "file": "runtime/tree01.glb",
+      "bytes": 624440,
+      "sha256": "de032ff636a0ffadc7b3c47c510fbf2aeb0670514927a07d5d6887ac26f0ac3c",
+      "triangles": 23640,
+      "sourceFile": "source/Rei_treeLeavesGN.glb",
+      "sourceSHA256": "a6fe4e7bd888cb8c02ce71056a8d74f3f317289cc5c530f19518ba4067e7f018",
+      "sourceNodes": [
+        "leavesSphere_Sample",
+        "treeTrunk_Sample"
+      ],
+      "topologyPreserved": true,
+      "derivation": {},
+      "bounds": {
+        "min": [
+          -2.8973371386528015,
+          0,
+          -2.117644891142845
+        ],
+        "max": [
+          2.8973371386528015,
+          7.254600286483765,
+          2.117644891142845
+        ],
+        "size": [
+          5.794674277305603,
+          7.254600286483765,
+          4.23528978228569
+        ]
+      }
+    },
+    {
+      "file": "runtime/tree02.glb",
+      "bytes": 375096,
+      "sha256": "c92e5c02b5c6c18a03010c86ff2cba43d1459eb9b291b68f226c31b1904956e0",
+      "triangles": 14352,
+      "sourceFile": "source/Rei_treeLeavesGN_samples.glb",
+      "sourceSHA256": "ea9d87324749667cdf8a8f522cbebce3b1a24a164614739338a27a02b14c0917",
+      "sourceNodes": [
+        "leavesSphere_Sample02",
+        "treeTrunk_Sample02"
+      ],
+      "topologyPreserved": true,
+      "derivation": {},
+      "bounds": {
+        "min": [
+          -2.7965983152389526,
+          0,
+          -3.171038508415222
+        ],
+        "max": [
+          2.7965983152389526,
+          5.771265983581543,
+          3.171038508415222
+        ],
+        "size": [
+          5.593196630477905,
+          5.771265983581543,
+          6.342077016830444
+        ]
+      }
+    },
+    {
+      "file": "runtime/bush.glb",
+      "bytes": 119272,
+      "sha256": "da24a0e4c10467baad83ee6e8095282ba62a49e46a79e276c2f5475be6cd03d3",
+      "triangles": 3980,
+      "sourceFile": "source/Rei_treeLeavesGN_samples.glb",
+      "sourceSHA256": "ea9d87324749667cdf8a8f522cbebce3b1a24a164614739338a27a02b14c0917",
+      "sourceNodes": [
+        "leavesSphere_Sample03",
+        "treeTrunk_Sample03"
+      ],
+      "topologyPreserved": false,
+      "derivation": {
+        "method": "Blender DECIMATE COLLAPSE, trunk only",
+        "ratio": 0.33,
+        "canopyUnchanged": true,
+        "additionalNormalization": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "bounds": {
+        "min": [
+          -1.2186517715454102,
+          0,
+          -1.0196298360824585
+        ],
+        "max": [
+          1.2186517715454102,
+          1.4473038911819458,
+          1.0196298360824585
+        ],
+        "size": [
+          2.4373035430908203,
+          1.4473038911819458,
+          2.039259672164917
+        ]
+      }
+    },
+    {
+      "file": "runtime/bed-ground.glb",
+      "bytes": 1688,
+      "sha256": "f7fa3ed9a8cb26aa1875f644ced06554d9d5f645e8f975de111efcd65eff5daf",
+      "triangles": 2,
+      "sourceFile": "source/grassGN3_3_v2_Rei.glb",
+      "sourceSHA256": "ae42e66d8c65140454fe9f8821336136d970b8ea67e5e420eabd6f644d43bbd4",
+      "sourceNodes": [
+        "grassGround"
+      ],
+      "topologyPreserved": true,
+      "derivation": {},
+      "bounds": {
+        "min": [
+          -8.5,
+          0,
+          -8.5
+        ],
+        "max": [
+          8.5,
+          0,
+          8.5
+        ],
+        "size": [
+          17,
+          0,
+          17
+        ]
+      }
+    },
+    {
+      "file": "runtime/flowers.glb",
+      "bytes": 149392,
+      "sha256": "8ab0afa810ac282d1dd56529062090c69c8c0478795b800d62bec08f2b399a82",
+      "triangles": 3475,
+      "sourceFile": "source/Rei_flowersGN_sample.blend",
+      "sourceSHA256": "a320b798284e1a7f5b7dc141c4c34318735313dc9b21d96fbedb6c46cc96c6b5",
+      "sourceNodes": [
+        "Flower.001",
+        "Flower.002",
+        "Flower.003"
+      ],
+      "topologyPreserved": false,
+      "derivation": "Original ShaderToRGB toon network replaced by original RGB/height-ColorRamp values in vertex colors plus rough Principled PBR; lighting-dependent toon ramps are not portable. Geometry is realized from the original nodes, not recreated. Flower-head decimation, intact stems; normalized to 1m."
+    }
+  ]
+}

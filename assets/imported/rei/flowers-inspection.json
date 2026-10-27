@@ -1,0 +1,1709 @@
+{
+  "version": [
+    3,
+    3,
+    6
+  ],
+  "objects": [
+    {
+      "name": "Flower.002",
+      "type": "MESH",
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dimensions": [
+        0.004000000189989805,
+        0.04332561045885086,
+        0.14500202238559723
+      ],
+      "hide_render": false,
+      "modifiers": [
+        {
+          "name": "GeometryNodes",
+          "type": "NODES",
+          "show_render": true,
+          "show_viewport": true,
+          "node_group": "FlowerBuild_GN",
+          "props": {
+            "Input_9": "<bpy_struct, Material(\"Flower_petal.002\") at 0x7f442cba1760>",
+            "Input_3": "3.0",
+            "Input_3_use_attribute": "0",
+            "Input_3_attribute_name": "",
+            "Input_6": "2.0",
+            "Input_6_use_attribute": "0",
+            "Input_6_attribute_name": "",
+            "Input_45": "1.5",
+            "Input_45_use_attribute": "0",
+            "Input_45_attribute_name": "",
+            "Input_11": "-0.5",
+            "Input_11_use_attribute": "0",
+            "Input_11_attribute_name": "",
+            "Input_19": "9",
+            "Input_19_use_attribute": "0",
+            "Input_19_attribute_name": "",
+            "Input_20": "4.0",
+            "Input_20_use_attribute": "0",
+            "Input_20_attribute_name": "",
+            "Input_21": "-9.75",
+            "Input_21_use_attribute": "0",
+            "Input_21_attribute_name": "",
+            "Input_39": "True",
+            "Input_39_use_attribute": "0",
+            "Input_39_attribute_name": "",
+            "Input_40": "1.5",
+            "Input_40_use_attribute": "0",
+            "Input_40_attribute_name": "",
+            "Input_41": "2.0",
+            "Input_41_use_attribute": "0",
+            "Input_41_attribute_name": "",
+            "Input_42": "2.0",
+            "Input_42_use_attribute": "0",
+            "Input_42_attribute_name": "",
+            "Input_12": "<bpy_struct, Material(\"Flower_disk.002\") at 0x7f442cb5b2e0>",
+            "Input_13": "0.11999999731779099",
+            "Input_13_use_attribute": "0",
+            "Input_13_attribute_name": "",
+            "Input_24": "<bpy_struct, Material(\"Flower_stem\") at 0x7f442cbe8620>",
+            "Input_25": "1.5",
+            "Input_25_use_attribute": "0",
+            "Input_25_attribute_name": "",
+            "Input_30": "0.20000000298023224",
+            "Input_30_use_attribute": "0",
+            "Input_30_attribute_name": "",
+            "Input_27": "3.5699996948242188",
+            "Input_27_use_attribute": "0",
+            "Input_27_attribute_name": "",
+            "Input_28": "8",
+            "Input_28_use_attribute": "0",
+            "Input_28_attribute_name": "",
+            "Input_29": "4",
+            "Input_29_use_attribute": "0",
+            "Input_29_attribute_name": "",
+            "Input_31": "0.05000000074505806",
+            "Input_31_use_attribute": "0",
+            "Input_31_attribute_name": "",
+            "Input_43": "True",
+            "Input_43_use_attribute": "0",
+            "Input_43_attribute_name": "",
+            "Input_36": "2.0",
+            "Input_36_use_attribute": "0",
+            "Input_36_attribute_name": "",
+            "Input_38": "1.0",
+            "Input_38_use_attribute": "0",
+            "Input_38_attribute_name": "",
+            "Input_37": "0.35999998450279236",
+            "Input_37_use_attribute": "0",
+            "Input_37_attribute_name": ""
+          }
+        }
+      ],
+      "materials": [
+        "Flower_petal.002",
+        "Flower_disk.002",
+        "Flower_stem"
+      ],
+      "base_mesh": {
+        "verts": 1,
+        "polygons": 0
+      },
+      "evaluated_mesh": {
+        "verts": 32,
+        "polygons": 30,
+        "triangles": 60
+      }
+    },
+    {
+      "name": "Flower.003",
+      "type": "MESH",
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dimensions": [
+        0.004399999976158142,
+        0.0248826015740633,
+        0.08789991587400436
+      ],
+      "hide_render": false,
+      "modifiers": [
+        {
+          "name": "GeometryNodes",
+          "type": "NODES",
+          "show_render": true,
+          "show_viewport": true,
+          "node_group": "FlowerBuild_GN",
+          "props": {
+            "Input_9": "<bpy_struct, Material(\"Flower_petal.003\") at 0x7f442cbe5fa0>",
+            "Input_3": "2.0",
+            "Input_3_use_attribute": "0",
+            "Input_3_attribute_name": "",
+            "Input_6": "0.30000001192092896",
+            "Input_6_use_attribute": "0",
+            "Input_6_attribute_name": "",
+            "Input_45": "1.0",
+            "Input_45_use_attribute": "0",
+            "Input_45_attribute_name": "",
+            "Input_11": "0.5999999642372131",
+            "Input_11_use_attribute": "0",
+            "Input_11_attribute_name": "",
+            "Input_19": "300",
+            "Input_19_use_attribute": "0",
+            "Input_19_attribute_name": "",
+            "Input_20": "12.440000534057617",
+            "Input_20_use_attribute": "0",
+            "Input_20_attribute_name": "",
+            "Input_21": "-6.779999732971191",
+            "Input_21_use_attribute": "0",
+            "Input_21_attribute_name": "",
+            "Input_39": "True",
+            "Input_39_use_attribute": "0",
+            "Input_39_attribute_name": "",
+            "Input_40": "2.5",
+            "Input_40_use_attribute": "0",
+            "Input_40_attribute_name": "",
+            "Input_41": "2.0",
+            "Input_41_use_attribute": "0",
+            "Input_41_attribute_name": "",
+            "Input_42": "2.0",
+            "Input_42_use_attribute": "0",
+            "Input_42_attribute_name": "",
+            "Input_12": "<bpy_struct, Material(\"Flower_disk.003\") at 0x7f442cb9b560>",
+            "Input_13": "0.10000000149011612",
+            "Input_13_use_attribute": "0",
+            "Input_13_attribute_name": "",
+            "Input_24": "<bpy_struct, Material(\"Flower_stem\") at 0x7f442cbe8620>",
+            "Input_25": "0.8999999761581421",
+            "Input_25_use_attribute": "0",
+            "Input_25_attribute_name": "",
+            "Input_30": "0.2199999988079071",
+            "Input_30_use_attribute": "0",
+            "Input_30_attribute_name": "",
+            "Input_27": "-4.639999866485596",
+            "Input_27_use_attribute": "0",
+            "Input_27_attribute_name": "",
+            "Input_28": "8",
+            "Input_28_use_attribute": "0",
+            "Input_28_attribute_name": "",
+            "Input_29": "4",
+            "Input_29_use_attribute": "0",
+            "Input_29_attribute_name": "",
+            "Input_31": "-1.0",
+            "Input_31_use_attribute": "0",
+            "Input_31_attribute_name": "",
+            "Input_43": "True",
+            "Input_43_use_attribute": "0",
+            "Input_43_attribute_name": "",
+            "Input_36": "2.0",
+            "Input_36_use_attribute": "0",
+            "Input_36_attribute_name": "",
+            "Input_38": "1.0",
+            "Input_38_use_attribute": "0",
+            "Input_38_attribute_name": "",
+            "Input_37": "0.0",
+            "Input_37_use_attribute": "0",
+            "Input_37_attribute_name": ""
+          }
+        }
+      ],
+      "materials": [
+        "Flower_petal.003",
+        "Flower_disk.003",
+        "Flower_stem"
+      ],
+      "base_mesh": {
+        "verts": 1,
+        "polygons": 0
+      },
+      "evaluated_mesh": {
+        "verts": 32,
+        "polygons": 30,
+        "triangles": 60
+      }
+    },
+    {
+      "name": "Flowers_ground",
+      "type": "MESH",
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dimensions": [
+        20.0,
+        20.0,
+        0.0
+      ],
+      "hide_render": false,
+      "modifiers": [
+        {
+          "name": "Flower_GN",
+          "type": "NODES",
+          "show_render": true,
+          "show_viewport": true,
+          "node_group": "Flower_Scatter_GN",
+          "props": {
+            "Input_36": "<bpy_struct, Collection(\"Flowers_Instances\") at 0x7f442c8c0b60>",
+            "Input_37": "5.0",
+            "Input_37_use_attribute": "0",
+            "Input_37_attribute_name": "",
+            "Input_49": "0",
+            "Input_49_use_attribute": "0",
+            "Input_49_attribute_name": "",
+            "Input_33": "10.0",
+            "Input_33_use_attribute": "0",
+            "Input_33_attribute_name": "",
+            "Input_34": "3.0",
+            "Input_34_use_attribute": "0",
+            "Input_34_attribute_name": "",
+            "Input_51": "0.30000001192092896",
+            "Input_51_use_attribute": "0",
+            "Input_51_attribute_name": "",
+            "Input_52": "0.75",
+            "Input_52_use_attribute": "0",
+            "Input_52_attribute_name": "",
+            "Input_53": "0.0",
+            "Input_53_use_attribute": "0",
+            "Input_53_attribute_name": "",
+            "Input_38": "1.5",
+            "Input_38_use_attribute": "0",
+            "Input_38_attribute_name": "",
+            "Input_39": "0.5",
+            "Input_39_use_attribute": "0",
+            "Input_39_attribute_name": "",
+            "Input_42": "0.0",
+            "Input_42_use_attribute": "0",
+            "Input_42_attribute_name": "",
+            "Input_56": "1.0",
+            "Input_56_use_attribute": "0",
+            "Input_56_attribute_name": "",
+            "Input_57": "1.0",
+            "Input_57_use_attribute": "0",
+            "Input_57_attribute_name": "",
+            "Input_58": "0.0",
+            "Input_58_use_attribute": "0",
+            "Input_58_attribute_name": "",
+            "Input_59": "1.5",
+            "Input_59_use_attribute": "0",
+            "Input_59_attribute_name": "",
+            "Input_60": "1.0",
+            "Input_60_use_attribute": "0",
+            "Input_60_attribute_name": ""
+          }
+        }
+      ],
+      "materials": [
+        null
+      ],
+      "base_mesh": {
+        "verts": 4,
+        "polygons": 1
+      },
+      "evaluated_mesh": {
+        "verts": 0,
+        "polygons": 0,
+        "triangles": 0
+      }
+    },
+    {
+      "name": "Sun",
+      "type": "LIGHT",
+      "location": [
+        0.0,
+        0.0,
+        3.616069793701172
+      ],
+      "dimensions": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hide_render": false,
+      "modifiers": [],
+      "materials": []
+    },
+    {
+      "name": "Flower.001",
+      "type": "MESH",
+      "location": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dimensions": [
+        0.003000000026077032,
+        0.010717041790485382,
+        0.10979653149843216
+      ],
+      "hide_render": false,
+      "modifiers": [
+        {
+          "name": "GeometryNodes",
+          "type": "NODES",
+          "show_render": true,
+          "show_viewport": true,
+          "node_group": "FlowerBuild_GN",
+          "props": {
+            "Input_9": "<bpy_struct, Material(\"Flower_petal.001\") at 0x7f442cb9f7e0>",
+            "Input_3": "2.619999885559082",
+            "Input_3_use_attribute": "0",
+            "Input_3_attribute_name": "",
+            "Input_6": "0.30000001192092896",
+            "Input_6_use_attribute": "0",
+            "Input_6_attribute_name": "",
+            "Input_45": "0.0",
+            "Input_45_use_attribute": "0",
+            "Input_45_attribute_name": "",
+            "Input_11": "-0.5",
+            "Input_11_use_attribute": "0",
+            "Input_11_attribute_name": "",
+            "Input_19": "26",
+            "Input_19_use_attribute": "0",
+            "Input_19_attribute_name": "",
+            "Input_20": "1.28000009059906",
+            "Input_20_use_attribute": "0",
+            "Input_20_attribute_name": "",
+            "Input_21": "-1.5399999618530273",
+            "Input_21_use_attribute": "0",
+            "Input_21_attribute_name": "",
+            "Input_39": "True",
+            "Input_39_use_attribute": "0",
+            "Input_39_attribute_name": "",
+            "Input_40": "2.0",
+            "Input_40_use_attribute": "0",
+            "Input_40_attribute_name": "",
+            "Input_41": "2.0",
+            "Input_41_use_attribute": "0",
+            "Input_41_attribute_name": "",
+            "Input_42": "2.0",
+            "Input_42_use_attribute": "0",
+            "Input_42_attribute_name": "",
+            "Input_12": "<bpy_struct, Material(\"Flower_disk.001\") at 0x7f442c8c2060>",
+            "Input_13": "0.10000000149011612",
+            "Input_13_use_attribute": "0",
+            "Input_13_attribute_name": "",
+            "Input_24": "<bpy_struct, Material(\"Flower_stem\") at 0x7f442cbe8620>",
+            "Input_25": "1.100000023841858",
+            "Input_25_use_attribute": "0",
+            "Input_25_attribute_name": "",
+            "Input_30": "0.15000000596046448",
+            "Input_30_use_attribute": "0",
+            "Input_30_attribute_name": "",
+            "Input_27": "1.4699997901916504",
+            "Input_27_use_attribute": "0",
+            "Input_27_attribute_name": "",
+            "Input_28": "8",
+            "Input_28_use_attribute": "0",
+            "Input_28_attribute_name": "",
+            "Input_29": "4",
+            "Input_29_use_attribute": "0",
+            "Input_29_attribute_name": "",
+            "Input_31": "0.05000000074505806",
+            "Input_31_use_attribute": "0",
+            "Input_31_attribute_name": "",
+            "Input_43": "True",
+            "Input_43_use_attribute": "0",
+            "Input_43_attribute_name": "",
+            "Input_36": "2.0",
+            "Input_36_use_attribute": "0",
+            "Input_36_attribute_name": "",
+            "Input_38": "1.0",
+            "Input_38_use_attribute": "0",
+            "Input_38_attribute_name": "",
+            "Input_37": "0.0",
+            "Input_37_use_attribute": "0",
+            "Input_37_attribute_name": ""
+          }
+        }
+      ],
+      "materials": [
+        "Flower_petal.001",
+        "Flower_disk.001",
+        "Flower_stem"
+      ],
+      "base_mesh": {
+        "verts": 1,
+        "polygons": 0
+      },
+      "evaluated_mesh": {
+        "verts": 32,
+        "polygons": 30,
+        "triangles": 60
+      }
+    }
+  ],
+  "materials": [
+    {
+      "name": "Dots Stroke",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": []
+    },
+    {
+      "name": "Flower_disk.001",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame.001",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.006",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.005",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.004",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Mapping",
+          "type": "ShaderNodeMapping"
+        },
+        {
+          "name": "Texture Coordinate",
+          "type": "ShaderNodeTexCoord"
+        },
+        {
+          "name": "Gradient Texture",
+          "type": "ShaderNodeTexGradient"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Geometry.001",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Reroute.001",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Math.001",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Mix.005",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "RGB.001",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Shader to RGB.001",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Mix.007",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "ColorRamp.002",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Diffuse BSDF.001",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Vector Math.001",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Mix.006",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "ColorRamp.001",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Normal",
+          "type": "ShaderNodeNormal"
+        },
+        {
+          "name": "Mix.002",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "RGB",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.004",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    },
+    {
+      "name": "Flower_disk.002",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame.001",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.006",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.005",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.004",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Mapping",
+          "type": "ShaderNodeMapping"
+        },
+        {
+          "name": "Texture Coordinate",
+          "type": "ShaderNodeTexCoord"
+        },
+        {
+          "name": "Gradient Texture",
+          "type": "ShaderNodeTexGradient"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Geometry.001",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Reroute.001",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Math.001",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Mix.005",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "RGB.001",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Shader to RGB.001",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Mix.007",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "ColorRamp.002",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Diffuse BSDF.001",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Vector Math.001",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Mix.006",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.004",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.002",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Normal",
+          "type": "ShaderNodeNormal"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "ColorRamp.001",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "RGB",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    },
+    {
+      "name": "Flower_disk.003",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame.001",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.006",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.005",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.004",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Mapping",
+          "type": "ShaderNodeMapping"
+        },
+        {
+          "name": "Texture Coordinate",
+          "type": "ShaderNodeTexCoord"
+        },
+        {
+          "name": "Gradient Texture",
+          "type": "ShaderNodeTexGradient"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Geometry.001",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Reroute.001",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Math.001",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Mix.005",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "RGB.001",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Shader to RGB.001",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Mix.007",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "ColorRamp.002",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Diffuse BSDF.001",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Vector Math.001",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Mix.006",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "ColorRamp.001",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Normal",
+          "type": "ShaderNodeNormal"
+        },
+        {
+          "name": "Mix.002",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "RGB",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.004",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    },
+    {
+      "name": "Flower_petal.001",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Mix.002",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Normal",
+          "type": "ShaderNodeNormal"
+        },
+        {
+          "name": "RGB",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    },
+    {
+      "name": "Flower_petal.002",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Normal",
+          "type": "ShaderNodeNormal"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Mix.002",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Math.001",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "ColorRamp.001",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Mapping",
+          "type": "ShaderNodeMapping"
+        },
+        {
+          "name": "Gradient Texture",
+          "type": "ShaderNodeTexGradient"
+        },
+        {
+          "name": "Separate XYZ",
+          "type": "ShaderNodeSeparateXYZ"
+        },
+        {
+          "name": "Texture Coordinate",
+          "type": "ShaderNodeTexCoord"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    },
+    {
+      "name": "Flower_petal.003",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Normal",
+          "type": "ShaderNodeNormal"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "Mix.002",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Gradient Texture",
+          "type": "ShaderNodeTexGradient"
+        },
+        {
+          "name": "Mapping",
+          "type": "ShaderNodeMapping"
+        },
+        {
+          "name": "Separate XYZ",
+          "type": "ShaderNodeSeparateXYZ"
+        },
+        {
+          "name": "ColorRamp.001",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Texture Coordinate",
+          "type": "ShaderNodeTexCoord"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    },
+    {
+      "name": "Flower_stem",
+      "diffuse_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "nodes": [
+        {
+          "name": "Frame",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.003",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Frame.002",
+          "type": "NodeFrame"
+        },
+        {
+          "name": "Shader to RGB",
+          "type": "ShaderNodeShaderToRGB"
+        },
+        {
+          "name": "Diffuse BSDF",
+          "type": "ShaderNodeBsdfDiffuse"
+        },
+        {
+          "name": "Vector Math",
+          "type": "ShaderNodeVectorMath"
+        },
+        {
+          "name": "ColorRamp",
+          "type": "ShaderNodeValToRGB"
+        },
+        {
+          "name": "Geometry",
+          "type": "ShaderNodeNewGeometry"
+        },
+        {
+          "name": "RGB",
+          "type": "ShaderNodeRGB"
+        },
+        {
+          "name": "Math",
+          "type": "ShaderNodeMath"
+        },
+        {
+          "name": "Mix",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.001",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Mix.003",
+          "type": "ShaderNodeMix"
+        },
+        {
+          "name": "Reroute",
+          "type": "NodeReroute"
+        },
+        {
+          "name": "Material Output",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Material Output.001",
+          "type": "ShaderNodeOutputMaterial"
+        },
+        {
+          "name": "Mix Shader",
+          "type": "ShaderNodeMixShader"
+        },
+        {
+          "name": "Light Path",
+          "type": "ShaderNodeLightPath"
+        },
+        {
+          "name": "Transparent BSDF",
+          "type": "ShaderNodeBsdfTransparent"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "name": "Render Result",
+      "source": "VIEWER",
+      "filepath": "",
+      "packed": false,
+      "size": [
+        0,
+        0
+      ]
+    }
+  ],
+  "texts": [],
+  "collections": [
+    {
+      "name": "Flowers_Instances",
+      "objects": [
+        "Flower.003",
+        "Flower.001",
+        "Flower.002"
+      ],
+      "children": []
+    },
+    {
+      "name": "FlowersScatter",
+      "objects": [
+        "Flowers_ground"
+      ],
+      "children": [
+        "Flowers_Instances"
+      ]
+    }
+  ],
+  "node_groups": [
+    {
+      "name": "Flower_Scatter_GN",
+      "type": "GeometryNodeTree",
+      "nodes": [
+        "FunctionNodeRandomValue",
+        "GeometryNodeCollectionInfo",
+        "GeometryNodeDistributePointsOnFaces",
+        "GeometryNodeInputPosition",
+        "GeometryNodeInstanceOnPoints",
+        "GeometryNodeRotateInstances",
+        "NodeFrame",
+        "NodeGroupInput",
+        "NodeGroupOutput",
+        "ShaderNodeCombineXYZ",
+        "ShaderNodeMapRange",
+        "ShaderNodeMath",
+        "ShaderNodeTexNoise",
+        "ShaderNodeVectorMath"
+      ],
+      "interface": [
+        {
+          "name": "Geometry",
+          "in_out": "OUTPUT",
+          "socket_type": "NodeSocketGeometry"
+        },
+        {
+          "name": "Geometry",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketGeometry"
+        },
+        {
+          "name": "Collection",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketCollection"
+        },
+        {
+          "name": "Flower Density",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Seed",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketInt"
+        },
+        {
+          "name": "Flowers Scale",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Scale Random",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Scale Noise Scale",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Scale Noise Contrast",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Scale Noise Trans",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Cluster Noise Scale",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Cluster Contrast",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Cluster Seed",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Noise Scale",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Influence",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Direction",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Speed",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Rotation Random",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        }
+      ]
+    },
+    {
+      "name": "FlowerBuild_GN",
+      "type": "GeometryNodeTree",
+      "nodes": [
+        "FunctionNodeAlignEulerToVector",
+        "FunctionNodeInputVector",
+        "FunctionNodeRandomValue",
+        "FunctionNodeRotateEuler",
+        "GeometryNodeCurveEndpointSelection",
+        "GeometryNodeCurvePrimitiveCircle",
+        "GeometryNodeCurvePrimitiveLine",
+        "GeometryNodeCurveQuadraticBezier",
+        "GeometryNodeCurveToMesh",
+        "GeometryNodeCurveToPoints",
+        "GeometryNodeInputIndex",
+        "GeometryNodeInputPosition",
+        "GeometryNodeInputTangent",
+        "GeometryNodeInstanceOnPoints",
+        "GeometryNodeJoinGeometry",
+        "GeometryNodeMeshIcoSphere",
+        "GeometryNodeRealizeInstances",
+        "GeometryNodeResampleCurve",
+        "GeometryNodeRotateInstances",
+        "GeometryNodeSetCurveRadius",
+        "GeometryNodeSetMaterial",
+        "GeometryNodeSetPosition",
+        "GeometryNodeSetShadeSmooth",
+        "GeometryNodeSplineParameter",
+        "GeometryNodeStoreNamedAttribute",
+        "GeometryNodeSubdivisionSurface",
+        "GeometryNodeSwitch",
+        "GeometryNodeTransform",
+        "NodeFrame",
+        "NodeGroupInput",
+        "NodeGroupOutput",
+        "NodeReroute",
+        "ShaderNodeCombineXYZ",
+        "ShaderNodeFloatCurve",
+        "ShaderNodeMapRange",
+        "ShaderNodeMath",
+        "ShaderNodeTexNoise",
+        "ShaderNodeValToRGB",
+        "ShaderNodeValue",
+        "ShaderNodeVectorMath",
+        "ShaderNodeVectorRotate"
+      ],
+      "interface": [
+        {
+          "name": "Geometry",
+          "in_out": "OUTPUT",
+          "socket_type": "NodeSocketGeometry"
+        },
+        {
+          "name": "---------- PETALS ----------",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketMaterial"
+        },
+        {
+          "name": "Petal Length",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Width",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Shape",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Bend",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Number ",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketInt"
+        },
+        {
+          "name": "Orient Random",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Closing",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Petals ?",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketBool"
+        },
+        {
+          "name": "Wind Speed",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Scale",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Influence",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "---------- DISK ----------",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketMaterial"
+        },
+        {
+          "name": "Radius",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "---------- STEM ----------",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketMaterial"
+        },
+        {
+          "name": "Length",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Width",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Curvature",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Length Res",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketInt"
+        },
+        {
+          "name": "Profile Res",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketInt"
+        },
+        {
+          "name": "Scale Flower",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Stem ?",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketBool"
+        },
+        {
+          "name": "Wind Speed",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Influence",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        },
+        {
+          "name": "Wind Offset",
+          "in_out": "INPUT",
+          "socket_type": "NodeSocketFloat"
+        }
+      ]
+    }
+  ],
+  "instances": 201
+}

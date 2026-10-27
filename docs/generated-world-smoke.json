@@ -1,0 +1,314 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "stage": "world",
+      "name": "The actual island uses all 3983 persisted props and culls distant terrain sections",
+      "evidence": {
+        "source": "worldmap.json",
+        "mapId": "nebeljagd-world-v1",
+        "terrainChunks": 324,
+        "visibleTerrainChunks": 18,
+        "terrainTriangles": 229376,
+        "generationMs": 1197,
+        "totalObjects": 3983,
+        "chunks": 297,
+        "visibleChunks": 14,
+        "instanceBatches": 1813,
+        "treeCount": 2601,
+        "houseCount": 31,
+        "grassPatchCount": 741,
+        "collisionBodies": 3252,
+        "loadedGLBs": 5
+      }
+    },
+    {
+      "stage": "world",
+      "name": "WASD movement and the space roll work at the map-derived spawn",
+      "evidence": {
+        "walkStart": {
+          "x": 30,
+          "y": 1.20030524489562,
+          "z": -42
+        },
+        "walkEnd": {
+          "x": 30,
+          "y": 1.2468241557396416,
+          "z": -38.639999999999986
+        },
+        "rolled": {
+          "x": 30,
+          "y": 1.309772364461116,
+          "z": -34.09333333333327
+        }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "Persisted hearts heal and the persisted bow fires an arrow into the visible tree collider",
+      "evidence": {
+        "healedTo": 85,
+        "treeId": "obj-tree-2451",
+        "impact": {
+          "type": "tree",
+          "point": {
+            "x": 17.927999919217516,
+            "y": 2.7734481244065705,
+            "z": -41.59616831678617
+          },
+          "normal": {
+            "x": -0.17552433150288616,
+            "z": 0.9844750931590218
+          }
+        }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "A rotated house has a usable entrance, an elevated floor, roof cutaway and solid neighbouring wall",
+      "evidence": {
+        "object": {
+          "id": "obj-house-auenwacht-03",
+          "name": "Auenwacht · Haus 3",
+          "kind": "house",
+          "variant": "herbal",
+          "position": [
+            57,
+            -40
+          ],
+          "rotation": 3.14,
+          "scale": 1
+        },
+        "inside": {
+          "x": 57,
+          "y": 1.9153116494281572,
+          "z": -44.77999999999999
+        },
+        "wallStop": {
+          "x": 53.00451736358213,
+          "y": 1.3959760743170828,
+          "z": -47.616373076709884
+        }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "Persisted tall grass conceals the traveller and restores normal opacity after leaving",
+      "evidence": {
+        "grassObjectId": "obj-grass-start",
+        "opacity": 0.49365501986144655
+      }
+    },
+    {
+      "stage": "world",
+      "name": "All seven mapped landscapes render at their actual world coordinates, including elevated terrain",
+      "evidence": [
+        {
+          "biome": "snow",
+          "position": {
+            "x": -285,
+            "y": 13.682981702019708,
+            "z": -400
+          },
+          "visibleChunks": 17
+        },
+        {
+          "biome": "heath",
+          "position": {
+            "x": 300,
+            "y": 2.4422270544132436,
+            "z": -310
+          },
+          "visibleChunks": 17
+        },
+        {
+          "biome": "meadow",
+          "position": {
+            "x": 30,
+            "y": 1.20030524489562,
+            "z": -42
+          },
+          "visibleChunks": 18
+        },
+        {
+          "biome": "forest",
+          "position": {
+            "x": -385,
+            "y": 2.9104016113957605,
+            "z": 70
+          },
+          "visibleChunks": 16
+        },
+        {
+          "biome": "marsh",
+          "position": {
+            "x": -310,
+            "y": 0.7507495564245563,
+            "z": 425
+          },
+          "visibleChunks": 17
+        },
+        {
+          "biome": "volcanic",
+          "position": {
+            "x": 360,
+            "y": 8.267459457906924,
+            "z": 130
+          },
+          "visibleChunks": 16
+        },
+        {
+          "biome": "dunes",
+          "position": {
+            "x": 140,
+            "y": 2.62726017579208,
+            "z": 580
+          },
+          "visibleChunks": 16
+        }
+      ]
+    },
+    {
+      "stage": "world",
+      "name": "River banks and island coast block walking while the actual bridge permits crossing",
+      "evidence": {
+        "bank": {
+          "x": -76.0301333683657,
+          "y": 4.397613635684546,
+          "z": -447.85351430197943
+        },
+        "bridgeStart": {
+          "x": -82,
+          "y": 1.0775545565961546,
+          "z": -17
+        },
+        "bridgeEnd": {
+          "x": -117.28000000000014,
+          "y": 0.738271496179707,
+          "z": -17
+        },
+        "coastStop": {
+          "x": 529.4702760256212,
+          "y": 0.52,
+          "z": -154.88674639072255
+        }
+      }
+    },
+    {
+      "stage": "world",
+      "name": "Map-defined fog gives three minutes exploration, shrinks over twenty minutes and applies timed damage",
+      "evidence": {
+        "graceRadius": 800,
+        "middleRadius": 439.9000000000001,
+        "finalRadius": 20,
+        "damagePerSecond": 11.000000000010232
+      }
+    },
+    {
+      "stage": "editor",
+      "name": "Tree editing, flower/house/grass creation, duplication/deletion and JSON export preserve the object document",
+      "evidence": {
+        "tree": {
+          "id": "obj-tree-2451",
+          "name": "Baum 2451",
+          "kind": "tree",
+          "variant": "oak",
+          "position": [
+            20,
+            -40
+          ],
+          "rotation": 0.3000220984178253,
+          "scale": 1.2
+        },
+        "flower": {
+          "id": "object-flower-mvqn731k-1",
+          "name": "QA · Zauberblumen",
+          "kind": "flower",
+          "variant": "rei-white",
+          "position": [
+            33,
+            -46
+          ],
+          "rotation": 0.6457718232379019,
+          "scale": 1.25,
+          "radius": 1.8
+        },
+        "houseId": "object-house-mvqn79di-3",
+        "grassId": "object-grass-mvqn7a8e-4",
+        "objectCount": 3986
+      }
+    },
+    {
+      "stage": "editor",
+      "name": "In 3D testen opens the exact editor document and reconstructs its moved collider and newly placed imported flowers",
+      "evidence": {
+        "source": "editor",
+        "movedTreeCollider": {
+          "id": "obj-tree-2451",
+          "x": 20,
+          "z": -40,
+          "y": 1.1827157168355038,
+          "radius": 0.444,
+          "minY": 1.1827157168355038,
+          "maxY": 8.382715716835502,
+          "type": "tree",
+          "variant": "oak",
+          "imported": false,
+          "asset": null,
+          "scale": 1.2
+        },
+        "flowerId": "object-flower-mvqn731k-1",
+        "objectCount": 3986
+      }
+    },
+    {
+      "stage": "editor",
+      "name": "Game JSON import rebuilds the exported prop document and a changed fog centre",
+      "evidence": {
+        "mapName": "QA · Welt aus JSON",
+        "source": "import",
+        "zoneCenter": [
+          30,
+          -42
+        ],
+        "objectCount": 3986
+      }
+    },
+    {
+      "stage": "editor",
+      "name": "The complete generated game remains one self-contained HTML with network disabled",
+      "evidence": {
+        "httpRequests": [],
+        "objects": 3983,
+        "harness": "Exact standalone HTML loaded in an empty-origin page; managed Chromium blocks file navigation"
+      }
+    }
+  ],
+  "javascript_or_shader_errors": [],
+  "screenshots": [
+    "docs/screenshots/generated-world-auenwacht.png",
+    "docs/screenshots/generated-world-interior.png",
+    "docs/screenshots/generated-world-grass.png",
+    "docs/screenshots/generated-world-snow.png",
+    "docs/screenshots/generated-world-volcanic.png",
+    "docs/screenshots/generated-world-editor-objects.png",
+    "docs/screenshots/generated-world-offset-river-fog.png"
+  ],
+  "final_centered_water_shader_recheck": {
+    "htmlSHA256": "344b1ec68f13cf79c991aaa8a50895d525058b3f125685fd049e78ffcba8ccc2",
+    "containsCenteredWaterShader": true,
+    "mapSource": "embedded",
+    "zoneCenter": [
+      140,
+      -140
+    ],
+    "radius": 10,
+    "position": {
+      "x": 140,
+      "y": 1.0929741489957903,
+      "z": -140
+    },
+    "httpRequests": [],
+    "javascriptOrShaderErrors": []
+  }
+}

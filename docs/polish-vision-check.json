@@ -1,0 +1,376 @@
+{
+  "status": "passed",
+  "errors": [],
+  "checks": [
+    {
+      "label": "start",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "appearance": "translucent-blue-grey",
+        "sceneryTransmission": 0.42,
+        "blockerCount": 36,
+        "samples": 512,
+        "updates": 9,
+        "origin": {
+          "x": 30,
+          "y": 1.20030524489562,
+          "z": -42
+        },
+        "materials": 368
+      },
+      "position": {
+        "x": 30,
+        "y": 1.20030524489562,
+        "z": -42
+      },
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false
+      },
+      "hidden": false,
+      "healthBars": [
+        {
+          "id": "player",
+          "health": 100,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-1",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-2",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        }
+      ]
+    },
+    {
+      "label": "grass",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "appearance": "translucent-blue-grey",
+        "sceneryTransmission": 0.42,
+        "blockerCount": 14,
+        "samples": 512,
+        "updates": 13,
+        "origin": {
+          "x": 10,
+          "y": 1.1746594167475406,
+          "z": -30
+        },
+        "materials": 368
+      },
+      "position": {
+        "x": 10,
+        "y": 1.1746594167475406,
+        "z": -30
+      },
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false
+      },
+      "hidden": true,
+      "healthBars": [
+        {
+          "id": "player",
+          "health": 100,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-1",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-2",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        }
+      ]
+    },
+    {
+      "label": "interior",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "appearance": "translucent-blue-grey",
+        "sceneryTransmission": 0.42,
+        "blockerCount": 26,
+        "samples": 512,
+        "updates": 17,
+        "origin": {
+          "x": 25,
+          "y": 1.600936192460269,
+          "z": -56
+        },
+        "materials": 368
+      },
+      "position": {
+        "x": 25,
+        "y": 1.600936192460269,
+        "z": -56
+      },
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false
+      },
+      "hidden": false,
+      "healthBars": [
+        {
+          "id": "player",
+          "health": 100,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-1",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-2",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        }
+      ]
+    },
+    {
+      "label": "snow",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "appearance": "translucent-blue-grey",
+        "sceneryTransmission": 0.42,
+        "blockerCount": 3,
+        "samples": 512,
+        "updates": 21,
+        "origin": {
+          "x": -300,
+          "y": 14.93174824168822,
+          "z": -380
+        },
+        "materials": 368
+      },
+      "position": {
+        "x": -300,
+        "y": 14.93174824168822,
+        "z": -380
+      },
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false
+      },
+      "hidden": false,
+      "healthBars": [
+        {
+          "id": "player",
+          "health": 100,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-1",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-2",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        }
+      ]
+    },
+    {
+      "label": "river",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "appearance": "translucent-blue-grey",
+        "sceneryTransmission": 0.42,
+        "blockerCount": 0,
+        "samples": 512,
+        "updates": 25,
+        "origin": {
+          "x": -53.22918081209906,
+          "y": -0.22100495316308,
+          "z": -218.0351948083694
+        },
+        "materials": 368
+      },
+      "position": {
+        "x": -53.22918081209906,
+        "y": -0.22100495316308,
+        "z": -218.0351948083694
+      },
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false
+      },
+      "hidden": false,
+      "healthBars": [
+        {
+          "id": "player",
+          "health": 100,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-1",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-2",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false,
+          "displayedRatio": 1,
+          "flash": 0
+        }
+      ]
+    }
+  ],
+  "visibility": {
+    "sameRoom": true,
+    "behindWall": false,
+    "outside": false
+  }
+}

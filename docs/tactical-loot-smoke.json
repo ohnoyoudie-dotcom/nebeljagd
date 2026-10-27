@@ -1,0 +1,478 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174/nebeljagd.html",
+  "checks": [
+    {
+      "name": "Roofless furnished buildings, local 18m sight and above-head bars load without shader errors",
+      "evidence": {
+        "houses": 31,
+        "vision": {
+          "radius": 18,
+          "direction": "360-degree",
+          "blockerCount": 36,
+          "samples": 512,
+          "updates": 7,
+          "origin": {
+            "x": 30,
+            "y": 1.20030524489562,
+            "z": -42
+          },
+          "materials": 314
+        },
+        "healthBars": [
+          {
+            "id": "player",
+            "health": 72,
+            "maxHealth": 100,
+            "local": true,
+            "visible": true
+          },
+          {
+            "id": "practice-1",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": true
+          },
+          {
+            "id": "practice-2",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": true
+          },
+          {
+            "id": "practice-3",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": true
+          }
+        ],
+        "chests": 48,
+        "weapons": 33
+      }
+    },
+    {
+      "name": "E opens a chest once, launches two coin piles and one weapon; collected gold updates the HUD",
+      "evidence": {
+        "chest": "obj-chest-start",
+        "gold": 25,
+        "drop": {
+          "id": "obj-chest-start-weapon",
+          "type": "iceStaff",
+          "rarity": "normal",
+          "x": 27.0385529817632,
+          "z": -36.53353175093428,
+          "collected": false
+        }
+      }
+    },
+    {
+      "name": "Restart resets chests, gold, target health and removes dynamic chest drops",
+      "evidence": {
+        "gold": 0,
+        "weaponDrops": 33,
+        "pickups": 17
+      }
+    },
+    {
+      "name": "bow equips with its rarity and deals real damage",
+      "evidence": {
+        "weapon": {
+          "type": "bow",
+          "label": "Holzbogen",
+          "damage": 22,
+          "cooldown": 0.62,
+          "range": 25,
+          "effect": null,
+          "rarity": "common",
+          "rarityLabel": "Gewöhnlich",
+          "color": "#f1eee3",
+          "name": "Holzbogen · Gewöhnlich",
+          "burn": null,
+          "slow": null
+        },
+        "hit": {
+          "targetId": "practice-1",
+          "damage": 22,
+          "health": 118,
+          "killed": false,
+          "sourceId": "player",
+          "type": "bow"
+        },
+        "actor": {
+          "id": "practice-1",
+          "name": "Übungsgegner 1",
+          "practice": true,
+          "position": {
+            "x": 26.218390000000014,
+            "y": 1.2907712150418145,
+            "z": -33
+          },
+          "health": 118,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": true,
+          "burnRemaining": 0,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 1.2183900000000136
+        },
+        "bar": {
+          "id": "practice-1",
+          "health": 118,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true
+        }
+      }
+    },
+    {
+      "name": "sword equips with its rarity and deals real damage",
+      "evidence": {
+        "weapon": {
+          "type": "sword",
+          "label": "Eisenschwert",
+          "damage": 22,
+          "cooldown": 0.58,
+          "range": 2.35,
+          "effect": null,
+          "rarity": "normal",
+          "rarityLabel": "Normal",
+          "color": "#a2a6ac",
+          "name": "Eisenschwert · Normal",
+          "burn": null,
+          "slow": null
+        },
+        "hit": {
+          "targetId": "practice-2",
+          "damage": 22,
+          "health": 118,
+          "killed": false,
+          "sourceId": "player",
+          "type": "sword"
+        },
+        "actor": {
+          "id": "practice-2",
+          "name": "Übungsgegner 2",
+          "practice": true,
+          "position": {
+            "x": 35,
+            "y": 1.3903382177611443,
+            "z": -28.909194999999986
+          },
+          "health": 118,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": true,
+          "burnRemaining": 0,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 1.0908050000000138
+        },
+        "bar": {
+          "id": "practice-2",
+          "health": 118,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true
+        }
+      }
+    },
+    {
+      "name": "fireStaff equips with its rarity and deals real damage with continuing burn",
+      "evidence": {
+        "weapon": {
+          "type": "fireStaff",
+          "label": "Feuerstab",
+          "damage": 26,
+          "cooldown": 0.8,
+          "range": 23,
+          "effect": "burn",
+          "rarity": "rare",
+          "rarityLabel": "Selten",
+          "color": "#5aa5ff",
+          "name": "Feuerstab · Selten",
+          "burn": {
+            "duration": 3,
+            "damagePerSecond": 6.4
+          },
+          "slow": null
+        },
+        "hit": {
+          "targetId": "practice-3",
+          "damage": 26,
+          "health": 114,
+          "killed": false,
+          "sourceId": "player",
+          "type": "fireStaff"
+        },
+        "actor": {
+          "id": "practice-3",
+          "name": "Übungsgegner 3",
+          "practice": true,
+          "position": {
+            "x": 41.26330499999999,
+            "y": 1.376489068666226,
+            "z": -38
+          },
+          "health": 112.71999999999997,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": true,
+          "burnRemaining": 2.8000000000000007,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 0.9066950000000134
+        },
+        "bar": {
+          "id": "practice-3",
+          "health": 112.71999999999997,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true
+        },
+        "continuingBurn": {
+          "id": "practice-3",
+          "name": "Übungsgegner 3",
+          "practice": true,
+          "position": {
+            "x": 40.66830499999998,
+            "y": 1.374722144204362,
+            "z": -38
+          },
+          "health": 107.59999999999985,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": true,
+          "burnRemaining": 2.0000000000000036,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 1.5016950000000193
+        }
+      }
+    },
+    {
+      "name": "iceStaff equips with its rarity and deals real damage and temporary movement slow",
+      "evidence": {
+        "weapon": {
+          "type": "iceStaff",
+          "label": "Eisstab",
+          "damage": 24,
+          "cooldown": 0.85,
+          "range": 23,
+          "effect": "slow",
+          "rarity": "uncommon",
+          "rarityLabel": "Ungewöhnlich",
+          "color": "#66d780",
+          "name": "Eisstab · Ungewöhnlich",
+          "burn": null,
+          "slow": {
+            "duration": 2.5,
+            "multiplier": 0.5
+          }
+        },
+        "hit": {
+          "targetId": "practice-1",
+          "damage": 24,
+          "health": 116,
+          "killed": false,
+          "sourceId": "player",
+          "type": "iceStaff"
+        },
+        "actor": {
+          "id": "practice-1",
+          "name": "Übungsgegner 1",
+          "practice": true,
+          "position": {
+            "x": 26.02000000000001,
+            "y": 1.289090031937346,
+            "z": -33
+          },
+          "health": 116,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": true,
+          "burnRemaining": 0,
+          "slowRemaining": 2.3000000000000007,
+          "speedMultiplier": 0.5,
+          "baseSpeed": 0.85,
+          "travelled": 1.0200000000000102
+        },
+        "bar": {
+          "id": "practice-1",
+          "health": 116,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true
+        },
+        "slowedTravel": 0.297500000000003,
+        "recovered": 1
+      }
+    },
+    {
+      "name": "Out-of-radius actors and their health bars are hidden; the local 47/100 bar remains visible",
+      "evidence": {
+        "position": {
+          "x": 30,
+          "y": 1.0158659221496056,
+          "z": -75
+        },
+        "actors": [
+          {
+            "id": "practice-1",
+            "name": "Übungsgegner 1",
+            "practice": true,
+            "position": {
+              "x": 25.340000000000003,
+              "y": 1.2833276219820133,
+              "z": -33
+            },
+            "health": 140,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": false,
+            "burnRemaining": 0,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 0.3400000000000034
+          },
+          {
+            "id": "practice-2",
+            "name": "Übungsgegner 2",
+            "practice": true,
+            "position": {
+              "x": 35,
+              "y": 1.386792366657807,
+              "z": -29.659999999999997
+            },
+            "health": 140,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": false,
+            "burnRemaining": 0,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 0.3400000000000034
+          },
+          {
+            "id": "practice-3",
+            "name": "Übungsgegner 3",
+            "practice": true,
+            "position": {
+              "x": 41.915,
+              "y": 1.3784243557875275,
+              "z": -38
+            },
+            "health": 140,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": false,
+            "burnRemaining": 0,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 0.25500000000000256
+          }
+        ],
+        "bars": [
+          {
+            "id": "player",
+            "health": 47,
+            "maxHealth": 100,
+            "local": true,
+            "visible": true
+          },
+          {
+            "id": "practice-1",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": false
+          },
+          {
+            "id": "practice-2",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": false
+          },
+          {
+            "id": "practice-3",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "A house wall hides a real practice actor and its bar even within the 18m radius",
+      "evidence": {
+        "room": "Auenwacht · Haus 3",
+        "player": {
+          "x": 52.0000063413623,
+          "y": 1.9153116494281572,
+          "z": -40.007963264582436
+        },
+        "actor": {
+          "id": "practice-3",
+          "name": "Übungsgegner 3",
+          "practice": true,
+          "position": {
+            "x": 40.72499999999999,
+            "y": 1.3748905068637998,
+            "z": -38
+          },
+          "health": 140,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": false,
+          "burnRemaining": 0,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 1.4450000000000145
+        },
+        "distance": 11.452409548635298,
+        "bar": {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": false
+        }
+      }
+    },
+    {
+      "name": "Tall grass retains concealment while preserving the local health bar",
+      "evidence": {
+        "concealed": true,
+        "bar": {
+          "id": "player",
+          "health": 61,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true
+        }
+      }
+    }
+  ],
+  "javascript_or_shader_errors": [],
+  "screenshots": [
+    "docs/screenshots/tactical-loot-start.png",
+    "docs/screenshots/tactical-loot-chest-pop.png",
+    "docs/screenshots/tactical-loot-fire.png",
+    "docs/screenshots/tactical-loot-ice.png",
+    "docs/screenshots/tactical-loot-room-shadow.png",
+    "docs/screenshots/tactical-loot-grass.png"
+  ]
+}

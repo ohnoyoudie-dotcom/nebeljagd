@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "checks": [
+    "ZIP CRC and five payload files match dist exactly",
+    {
+      "standalone": "nebeljagd.html",
+      "sha256": "46ee7c51b4eb4bb74e62b190e8c9a2c6ba74580741267f56ea17c8b7d62d2da7",
+      "loadedOffline": true
+    },
+    {
+      "standalone": "map-editor.html",
+      "sha256": "fd3ba3301fd3005fe2f50cc8c8f22c63a1c19f829ef55b3c7698b2be7cdf881b",
+      "loadedOffline": true
+    }
+  ],
+  "errors": [],
+  "httpRequests": []
+}

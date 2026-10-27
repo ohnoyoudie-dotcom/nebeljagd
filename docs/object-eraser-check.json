@@ -1,0 +1,57 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174",
+  "checks": [
+    {
+      "name": "Fast mouse sweep removes touched object centers while preserving wide nearby objects and all geography",
+      "evidence": {
+        "removed": [
+          "qa-flower-line",
+          "qa-grass-line",
+          "qa-house-line",
+          "qa-mound-line",
+          "qa-tree-line"
+        ],
+        "remaining": [
+          "qa-grass-wide",
+          "qa-house-away",
+          "qa-rock-away"
+        ]
+      }
+    },
+    {
+      "name": "One undo or redo restores the entire eraser gesture, including the original object ordering",
+      "evidence": null
+    },
+    {
+      "name": "Grass-only eraser leaves trees, houses, flowers and raised cover at the same painted locations intact",
+      "evidence": null
+    },
+    {
+      "name": "Escape rolls an unfinished eraser stroke back completely",
+      "evidence": null
+    },
+    {
+      "name": "Space-drag pans without erasing and preserves the active eraser mode",
+      "evidence": null
+    },
+    {
+      "name": "Erased objects remain removed after JSON export and import",
+      "evidence": null
+    },
+    {
+      "name": "In 3D testen receives the exact retained document and does not regenerate erased objects",
+      "evidence": null
+    },
+    {
+      "name": "Real touch drag erases all crossed centers and one undo restores them",
+      "evidence": null
+    },
+    {
+      "name": "A cancelled native touch gesture restores all pending removals",
+      "evidence": null
+    }
+  ],
+  "errors": [],
+  "served_editor_sha256": "fd3ba3301fd3005fe2f50cc8c8f22c63a1c19f829ef55b3c7698b2be7cdf881b"
+}

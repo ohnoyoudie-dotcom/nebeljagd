@@ -1,0 +1,73 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "viewport": [
+        1366,
+        900
+      ],
+      "touch": false,
+      "canvasWidth": 240,
+      "markers": 3,
+      "panelsDoNotOverlap": true,
+      "toggle": "passed"
+    },
+    {
+      "viewport": [
+        1024,
+        768
+      ],
+      "touch": true,
+      "canvasWidth": 200,
+      "markers": 3,
+      "panelsDoNotOverlap": true,
+      "toggle": "passed"
+    },
+    {
+      "viewport": [
+        768,
+        1024
+      ],
+      "touch": true,
+      "canvasWidth": 200,
+      "markers": 3,
+      "panelsDoNotOverlap": true,
+      "toggle": "passed"
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "touch": true,
+      "canvasWidth": 150,
+      "markers": 3,
+      "panelsDoNotOverlap": true,
+      "toggle": "passed"
+    },
+    {
+      "viewport": [
+        350,
+        760
+      ],
+      "touch": true,
+      "canvasWidth": 136,
+      "markers": 3,
+      "panelsDoNotOverlap": true,
+      "toggle": "passed"
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "touch": true,
+      "canvasWidth": 136,
+      "markers": 3,
+      "panelsDoNotOverlap": true,
+      "toggle": "passed"
+    }
+  ],
+  "errors": [],
+  "note": "Focused UI rendering against Vite; final production game checked separately."
+}

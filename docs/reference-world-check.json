@@ -1,0 +1,209 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174/nebeljagd.html",
+  "checks": [
+    {
+      "name": "The actual map renders both editable raised obstacle variants with the existing world",
+      "evidence": {
+        "mounds": [
+          {
+            "id": "obj-mound-auenwacht-east",
+            "name": "Auenwacht · Bewachsene Felskuppe",
+            "kind": "mound",
+            "variant": "knoll",
+            "position": [
+              41,
+              -34
+            ],
+            "rotation": 0.2,
+            "scale": 1
+          },
+          {
+            "id": "obj-mound-cottage-east",
+            "name": "Kräuterhaus · Bewachsene Felskuppe",
+            "kind": "mound",
+            "variant": "knoll",
+            "position": [
+              47,
+              -58
+            ],
+            "rotation": -0.35,
+            "scale": 1
+          },
+          {
+            "id": "obj-mound-south-clearing",
+            "name": "Südliche Lichtung · Bewachsene Felskante",
+            "kind": "mound",
+            "variant": "ridge",
+            "position": [
+              31,
+              -6
+            ],
+            "rotation": -0.2,
+            "scale": 1
+          },
+          {
+            "id": "obj-mound-west-meadow",
+            "name": "Westliche Wiese · Bewachsene Felskante",
+            "kind": "mound",
+            "variant": "ridge",
+            "position": [
+              -34,
+              -75
+            ],
+            "rotation": 0.6,
+            "scale": 1
+          }
+        ],
+        "stats": {
+          "source": "worldmap.json",
+          "mapId": "nebeljagd-world-v1",
+          "terrainChunks": 324,
+          "visibleTerrainChunks": 18,
+          "terrainTriangles": 229376,
+          "generationMs": 2446,
+          "terrainArt": {
+            "ground": "painted-woodland",
+            "mainPaths": "irregular-grey-cobbles",
+            "trailPaths": "earth",
+            "stoneTextureSize": 512,
+            "pathWidthFromMap": true
+          },
+          "cloudShadows": {
+            "animated": true,
+            "worldSpace": true,
+            "maximumDimming": 0.27
+          },
+          "totalObjects": 4020,
+          "chunks": 296,
+          "visibleChunks": 14,
+          "instanceBatches": 2832,
+          "treeCount": 2601,
+          "houseCount": 31,
+          "moundCount": 4,
+          "grassPatchCount": 741,
+          "grassRendering": {
+            "tallHeight": [
+              2.25,
+              2.6
+            ],
+            "shortHeight": [
+              0.22,
+              0.42
+            ],
+            "bendsAwayFromPlayer": false,
+            "sourceVersion": "nebeljagd-3d-v011",
+            "crossedStalksPerInstance": 4,
+            "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+            "colorGradient": [
+              "#315e36",
+              "#bbc975"
+            ],
+            "visibleTallGrassBatches": 3,
+            "tallGrassTriangles": 12544
+          },
+          "collisionBodies": 3272,
+          "loadedGLBs": 5
+        }
+      }
+    },
+    {
+      "name": "Walking and the space roll cannot climb or tunnel through the raised knoll",
+      "evidence": {
+        "walkStop": {
+          "x": 37.63228649592576,
+          "y": 1.3781054078156778,
+          "z": -33.398414690209464
+        },
+        "rollStop": {
+          "x": 37.590711952767265,
+          "y": 1.3774293171379444,
+          "z": -33.6035083504921
+        }
+      }
+    },
+    {
+      "name": "The visible cliff blocks actual arrows and line of sight behind it",
+      "evidence": {
+        "impact": {
+          "type": "mound",
+          "point": {
+            "x": 37.86826968343559,
+            "y": 2.9595586091325226,
+            "z": -34.07200011204397
+          },
+          "normal": {
+            "x": -0.9800665778412417,
+            "z": 0.19866933079506124
+          }
+        },
+        "behindVisible": false
+      }
+    },
+    {
+      "name": "The surrounding open ground remains traversable around the raised obstacle",
+      "evidence": {
+        "x": 45.64000000000004,
+        "y": 1.4209877887872973,
+        "z": -28.999999999999986
+      }
+    },
+    {
+      "name": "A position inside a raised object resolves to its outer edge without internal seam traps",
+      "evidence": {
+        "x": 40.603953212183086,
+        "y": 1.395420470286429,
+        "z": -31.330802063560597
+      }
+    },
+    {
+      "name": "Restored tall cover uses the actual generated grass patch and still conceals the local avatar",
+      "evidence": {
+        "patch": {
+          "id": "obj-grass-start",
+          "x": 10,
+          "z": -30,
+          "radius": 3.5,
+          "aspect": 0.72,
+          "yaw": 2.19,
+          "height": 2.425,
+          "minBladeHeight": 2.25125368705485,
+          "maxBladeHeight": 2.599768316978589,
+          "crossedStalksPerInstance": 4,
+          "variant": "tall",
+          "instanceCount": 245,
+          "crossedStalkCount": 980
+        },
+        "rendering": {
+          "tallHeight": [
+            2.25,
+            2.6
+          ],
+          "shortHeight": [
+            0.22,
+            0.42
+          ],
+          "bendsAwayFromPlayer": false,
+          "sourceVersion": "nebeljagd-3d-v011",
+          "crossedStalksPerInstance": 4,
+          "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+          "colorGradient": [
+            "#315e36",
+            "#bbc975"
+          ],
+          "visibleTallGrassBatches": 2,
+          "tallGrassTriangles": 7840
+        },
+        "localOpacity": 0.5471560334357981
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/screenshots/reference-world-spawn-path.png",
+    "docs/screenshots/reference-world-mound-cover.png",
+    "docs/screenshots/reference-world-dense-grass.png",
+    "docs/screenshots/reference-world-ridge-and-path.png"
+  ],
+  "served_html_sha256": "46ee7c51b4eb4bb74e62b190e8c9a2c6ba74580741267f56ea17c8b7d62d2da7"
+}

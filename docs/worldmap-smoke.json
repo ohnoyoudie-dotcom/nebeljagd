@@ -1,0 +1,207 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "Large schematic base has seven biomes and distributed capacity for 50 players",
+      "evidence": {
+        "regions": 7,
+        "places": 17,
+        "spawnAreas": 10,
+        "bounds": {
+          "minX": -600,
+          "minZ": -720,
+          "maxX": 600,
+          "maxZ": 720
+        }
+      }
+    },
+    {
+      "name": "Coastline vertices can be dragged, undone and redone using actual controls",
+      "evidence": {
+        "before": [
+          -380,
+          -640
+        ],
+        "after": [
+          -368,
+          -632
+        ]
+      }
+    },
+    {
+      "name": "Self-intersecting coastline edit is rejected without corrupting the saved map",
+      "evidence": "Verschieben nicht übernommen: Ort Eiswacht liegt außerhalb der Insel. Startbereich Auen · Mitte liegt teilweise außerhalb der Insel."
+    },
+    {
+      "name": "Region can be renamed, recolored and moved as a whole",
+      "evidence": {
+        "name": "Herzauen · Lernwiese",
+        "color": "#91b87a",
+        "vertexBefore": [
+          -90,
+          -300
+        ],
+        "vertexAfter": [
+          -65,
+          -285
+        ]
+      }
+    },
+    {
+      "name": "Path and river control points and path width remain independently editable",
+      "evidence": {
+        "pathWidth": 12,
+        "riverStart": [
+          196,
+          -342
+        ]
+      }
+    },
+    {
+      "name": "New place can be positioned and dragged; exported JSON imports with no data loss",
+      "evidence": {
+        "newPlace": {
+          "id": "place-mvqleeua",
+          "name": "Mein Entdeckungsort",
+          "kind": "landmark",
+          "position": [
+            75,
+            60
+          ]
+        },
+        "bytes": 19041
+      }
+    },
+    {
+      "name": "Malformed imports preserve data; hostile label is inert text in browser and valid SVG export",
+      "evidence": {
+        "svgGroups": [
+          "feature-path-aschenweg",
+          "feature-path-auenweg",
+          "feature-path-bruecke-01",
+          "feature-path-bruecke-02",
+          "feature-path-bruecke-03",
+          "feature-path-bruecke-04",
+          "feature-path-bruecke-05",
+          "feature-path-bruecke-06",
+          "feature-path-bruecke-07",
+          "feature-path-goldbogen",
+          "feature-path-goldweg",
+          "feature-path-hafenpfad",
+          "feature-path-mondweg",
+          "feature-path-moorweg",
+          "feature-path-nordweg",
+          "feature-path-sonnenweg",
+          "feature-path-suedbogen",
+          "feature-path-uferpfad",
+          "feature-path-westweg",
+          "feature-place-aschenfeste",
+          "feature-place-auenwacht",
+          "feature-place-eiswacht",
+          "feature-place-frostschrein",
+          "feature-place-glutschrein",
+          "feature-place-goldruinen",
+          "feature-place-heideschrein",
+          "feature-place-mondhain",
+          "feature-place-moorlicht",
+          "feature-place-moorschrein",
+          "feature-place-mooswinkel",
+          "feature-place-osthafen",
+          "feature-place-place-mvqleeua",
+          "feature-place-sonnentempel",
+          "feature-place-suedhafen",
+          "feature-place-versunkener-hof",
+          "feature-place-wanderstein",
+          "feature-place-wildheide",
+          "feature-region-aschenhoehen",
+          "feature-region-dunkelhain",
+          "feature-region-frostkamm",
+          "feature-region-goldheide",
+          "feature-region-herzauen",
+          "feature-region-nebelmoor",
+          "feature-region-sonnenduene",
+          "feature-river-goldbach",
+          "feature-river-silberlauf",
+          "feature-spawn-asche-ost",
+          "feature-spawn-auen-mitte",
+          "feature-spawn-duene-sued",
+          "feature-spawn-frost-ost",
+          "feature-spawn-frost-west",
+          "feature-spawn-heide-nord",
+          "feature-spawn-heide-ost",
+          "feature-spawn-moor-ost",
+          "feature-spawn-moor-west",
+          "feature-spawn-wald-west",
+          "frame",
+          "island",
+          "labels",
+          "paths",
+          "places",
+          "regions",
+          "rivers",
+          "sea",
+          "spawn-areas",
+          "zone"
+        ],
+        "scriptExecuted": false
+      }
+    },
+    {
+      "name": "Layers, zoom, panning and full 20-minute shrinking-zone preview respond to controls",
+      "evidence": {
+        "zoneRadii": [
+          800,
+          440,
+          20
+        ],
+        "initialView": {
+          "x": -600,
+          "y": -720,
+          "width": 1200,
+          "height": 1440
+        }
+      }
+    },
+    {
+      "name": "Reload preserves an undecided draft even when the fresh source map is edited first",
+      "evidence": {
+        "restoredPlaceCount": 18
+      }
+    },
+    {
+      "name": "Standalone bytes work with network offline; saved editor HTML retains edits and escapes script-like labels",
+      "evidence": {
+        "httpRequests": [],
+        "savedEditorBytes": 75535,
+        "harness": "Exact standalone HTML bytes loaded into empty-origin page because managed Chromium blocks file:// navigation",
+        "storageAvailable": false
+      }
+    },
+    {
+      "name": "Actual touchscreen coastline drag works; tablet and phone layouts fit the viewport",
+      "evidence": {
+        "tablet": "820×1180",
+        "phone": "390×844",
+        "horizontalOverflow": false,
+        "touchVertexBefore": [
+          -380,
+          -640
+        ],
+        "touchVertexAfter": [
+          -350,
+          -620
+        ],
+        "tabletCanvasWidthPx": 820,
+        "phoneCanvasWidthPx": 390,
+        "responsiveRevision": "Full-width portrait canvas with tools and properties below; targeted retest after final CSS build"
+      }
+    }
+  ],
+  "javascript_errors": [],
+  "screenshots": [
+    "docs/screenshots/worldmap-editor.png",
+    "docs/screenshots/worldmap-edited.png",
+    "docs/screenshots/worldmap-tablet.png",
+    "docs/screenshots/worldmap-phone.png"
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "name": "Nebeljagd – Landschaftswerkzeuge",
+  "branch": "work",
+  "baseCommit": "7ee7349782cc033aa3233752ce32c3aa531a8bed",
+  "packagedAt": "2026-10-27T20:04:40.565986+00:00",
+  "publishedToMain": false,
+  "files": {
+    "nebeljagd.html": {
+      "bytes": 4446952,
+      "sha256": "a39db278153bec33906ead7a7fe75dd1097e9e4466a7cc36c3b5cb09c5619514"
+    },
+    "map-editor.html": {
+      "bytes": 3650914,
+      "sha256": "f7a9c381c058e210ee9508839fe34736e11e311763ae695db02b33f1c5ee00aa"
+    },
+    "worldmap.json": {
+      "bytes": 580996,
+      "sha256": "82a9fe97cb9d7b32f36ca9f40a5f8dfdc5e3c1904be35a637f11ac959279efb8"
+    },
+    "worldmap.svg": {
+      "bytes": 1501704,
+      "sha256": "06430c861c632f435a2b6fb2af433a1b96641fec4f7b9323e4fa61036574ee51"
+    },
+    "worldmap.schema.json": {
+      "bytes": 33761,
+      "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
+    },
+    "nebeljagd-welt-und-editor.zip": {
+      "bytes": 3211546,
+      "sha256": "372fd699ff81097f5f944072c5faa8172112956730695a34f8457c32da48a6be"
+    }
+  },
+  "verification": {
+    "nodeTests": 127,
+    "nodeFailures": 0,
+    "assetVerification": "passed",
+    "mapCheck": "passed",
+    "zipIntegrity": "passed",
+    "originalObjectsUnchanged": 4020,
+    "browser": {
+      "landscape-editor-check": {
+        "status": "passed",
+        "checks": 21,
+        "report": "../docs/landscape-editor-check.json"
+      },
+      "landscape-game-check": {
+        "status": "passed",
+        "checks": 5,
+        "report": "../docs/landscape-game-check.json"
+      },
+      "environment-kit-check": {
+        "status": "passed",
+        "checks": 9,
+        "report": "../docs/environment-kit-check.json"
+      },
+      "landscape-preview-check": {
+        "status": "passed",
+        "checks": 2,
+        "report": "../docs/landscape-preview-check.json"
+      }
+    },
+    "httpPlaytestEntry": {
+      "file": "dist/index.html",
+      "sha256": "421ab949f8823ad48ebbe77106b512662bc340ae44163a070705e046a8feeac6"
+    }
+  },
+  "limits": [
+    "Chromium with software WebGL and emulated touch; no physical iPad/Safari performance test.",
+    "Standalone bytes tested in an offline browser context; direct file navigation is blocked by this cloud browser policy.",
+    "Game remains a local prototype; multiplayer is not implemented."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "asset": "Nebeljagd original ranger",
+  "generator": "scripts/build-character.py",
+  "blender": "4.3.2",
+  "vertices": 5548,
+  "triangles": 10123,
+  "materials": 3,
+  "bones": 18,
+  "clips": [
+    "Idle",
+    "Walk"
+  ],
+  "height_metres": 2.051,
+  "source": "Original local Blender geometry; no third-party models, textures or motion capture.",
+  "runtime_inspection": {
+    "format": "glTF 2.0 binary",
+    "bytes": 684748,
+    "sha256": "73991f31736c923d9a14626e781c9e38c759e140295f8991dc23e6e8fcb89e59",
+    "skins": 1,
+    "joints": 18,
+    "primitives": 3,
+    "exported_vertices": 10358,
+    "animations": [
+      "Idle",
+      "Walk"
+    ],
+    "vertex_attributes": [
+      "POSITION",
+      "NORMAL",
+      "COLOR_0",
+      "JOINTS_0",
+      "WEIGHTS_0"
+    ]
+  }
+}

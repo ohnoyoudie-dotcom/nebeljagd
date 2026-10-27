@@ -1,0 +1,144 @@
+{
+  "status": "passed",
+  "errors": [],
+  "checks": [
+    {
+      "label": "interior",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "blockerCount": 26,
+        "samples": 512,
+        "updates": 10,
+        "origin": {
+          "x": 25,
+          "y": 1.600936192460269,
+          "z": -56
+        },
+        "materials": 314
+      },
+      "position": {
+        "x": 25,
+        "y": 1.600936192460269,
+        "z": -56
+      },
+      "shelter": "Auenwacht · Kräuterhaus",
+      "houses": [
+        {
+          "id": "obj-house-auenwacht-01",
+          "name": "Auenwacht · Kräuterhaus",
+          "x": 30,
+          "y": 1.100936192460269,
+          "z": -60,
+          "halfWidth": 8,
+          "halfDepth": 7,
+          "rotation": 0,
+          "scale": 1,
+          "floorHeight": 0.5,
+          "roofVisible": false,
+          "interiorVisible": true
+        },
+        {
+          "id": "obj-house-mondhain-01",
+          "name": "Mondhain · Haus 1",
+          "x": 203,
+          "y": 2.015627180688953,
+          "z": -448,
+          "halfWidth": 8,
+          "halfDepth": 7,
+          "rotation": 0,
+          "scale": 1,
+          "floorHeight": 0.5,
+          "roofVisible": false,
+          "interiorVisible": true
+        }
+      ]
+    },
+    {
+      "label": "snow",
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "blockerCount": 3,
+        "samples": 512,
+        "updates": 16,
+        "origin": {
+          "x": -300,
+          "y": 14.93174824168822,
+          "z": -380
+        },
+        "materials": 314
+      },
+      "position": {
+        "x": -300,
+        "y": 14.93174824168822,
+        "z": -380
+      },
+      "shelter": null,
+      "houses": [
+        {
+          "id": "obj-house-auenwacht-01",
+          "name": "Auenwacht · Kräuterhaus",
+          "x": 30,
+          "y": 1.100936192460269,
+          "z": -60,
+          "halfWidth": 8,
+          "halfDepth": 7,
+          "rotation": 0,
+          "scale": 1,
+          "floorHeight": 0.5,
+          "roofVisible": false,
+          "interiorVisible": true
+        },
+        {
+          "id": "obj-house-mondhain-01",
+          "name": "Mondhain · Haus 1",
+          "x": 203,
+          "y": 2.015627180688953,
+          "z": -448,
+          "halfWidth": 8,
+          "halfDepth": 7,
+          "rotation": 0,
+          "scale": 1,
+          "floorHeight": 0.5,
+          "roofVisible": false,
+          "interiorVisible": true
+        }
+      ]
+    },
+    {
+      "interiorSameRoom": true,
+      "interiorBehindWall": false,
+      "outsideRadius": false
+    },
+    {
+      "label": "river_shader",
+      "errors": [],
+      "vision": {
+        "radius": 18,
+        "direction": "360-degree",
+        "blockerCount": 0,
+        "samples": 512,
+        "updates": 12,
+        "origin": {
+          "x": -53.22918081209906,
+          "y": -0.22100495316308,
+          "z": -218.0351948083694
+        },
+        "materials": 314
+      },
+      "position": {
+        "x": -53.22918081209906,
+        "y": -0.22100495316308,
+        "z": -218.0351948083694
+      },
+      "rendering": {
+        "calls": 60,
+        "triangles": 380531,
+        "geometries": 166,
+        "textures": 24,
+        "frameMs": 568.0298333333334
+      }
+    }
+  ]
+}

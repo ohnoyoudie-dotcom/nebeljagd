@@ -1,0 +1,468 @@
+{
+  "method": "256x192 WebGL renders of the actual current runtime object models; editor thumbnails only.",
+  "source": "assets/catalog/preview.html",
+  "generator": "scripts/capture-asset-previews.py",
+  "variants": [
+    {
+      "kind": "tree",
+      "variant": "oak",
+      "label": "Eiche",
+      "file": "assets/catalog/tree-oak.webp",
+      "bytes": 7870,
+      "sha256": "17086a5e8352b45998585a1f834a0e7192ec3d82b5ca7d42c657add5fb9f3eac"
+    },
+    {
+      "kind": "tree",
+      "variant": "birch",
+      "label": "Birke",
+      "file": "assets/catalog/tree-birch.webp",
+      "bytes": 7092,
+      "sha256": "c498c4b6058b52d719992e96b1de55853804e568d35c584294bb106d2531a250"
+    },
+    {
+      "kind": "tree",
+      "variant": "pine",
+      "label": "Kiefer",
+      "file": "assets/catalog/tree-pine.webp",
+      "bytes": 9150,
+      "sha256": "0d6642b8b5cc9ee9740411a63674b2467b8f8a2c09f2e08bf7274c9437bba10c"
+    },
+    {
+      "kind": "tree",
+      "variant": "rei-tree01",
+      "label": "Rei-Laubbaum 1",
+      "file": "assets/catalog/tree-rei-tree01.webp",
+      "bytes": 2586,
+      "sha256": "db8e603fbc40d5823446b3fa295025fcea5bb810c27167532ac0541a3ce32187"
+    },
+    {
+      "kind": "tree",
+      "variant": "rei-tree02",
+      "label": "Rei-Laubbaum 2",
+      "file": "assets/catalog/tree-rei-tree02.webp",
+      "bytes": 3070,
+      "sha256": "27e896245bcdb7a0b89ebc73566b583844cf5d5baca4b9e3b8e2a733317168c6"
+    },
+    {
+      "kind": "house",
+      "variant": "herbal",
+      "label": "Kräuterhaus",
+      "file": "assets/catalog/house-herbal.webp",
+      "bytes": 6694,
+      "sha256": "85ef8c9219af09c9a7d74c8c0a2468bd19f0ecdded563357f2f261991f8b45d5"
+    },
+    {
+      "kind": "house",
+      "variant": "inn",
+      "label": "Waldgasthaus",
+      "file": "assets/catalog/house-inn.webp",
+      "bytes": 6616,
+      "sha256": "276637dd34edfb6ff9651c5ba97acfb42bb1398ebcc05b14a1a0a18cf3f0d979"
+    },
+    {
+      "kind": "house",
+      "variant": "hunter",
+      "label": "Jägerhaus",
+      "file": "assets/catalog/house-hunter.webp",
+      "bytes": 6638,
+      "sha256": "73244c74361b74cce52ba22562cff8b72a6b58cf068db6593a77077d76ffec25"
+    },
+    {
+      "kind": "flower",
+      "variant": "rei-white",
+      "label": "Rei-Blumen · Weiß",
+      "file": "assets/catalog/flower-rei-white.webp",
+      "bytes": 2494,
+      "sha256": "a975f1352084bbab000cb79c093c10c6fc8c55a626b899bef1ad77b694378422"
+    },
+    {
+      "kind": "flower",
+      "variant": "rei-red",
+      "label": "Rei-Blumen · Rot",
+      "file": "assets/catalog/flower-rei-red.webp",
+      "bytes": 2768,
+      "sha256": "21f8488acd0633968fb94fde71560ffa3061fb9b0cb486b172d13d69d2e0f5a1"
+    },
+    {
+      "kind": "flower",
+      "variant": "rei-gold",
+      "label": "Rei-Blumen · Gold",
+      "file": "assets/catalog/flower-rei-gold.webp",
+      "bytes": 2582,
+      "sha256": "58273d29f543de7592c8bcbad95558cd5817c9a7e1d005ac0c71c6265187a664"
+    },
+    {
+      "kind": "grass",
+      "variant": "short",
+      "label": "Niedriges Gras",
+      "file": "assets/catalog/grass-short.webp",
+      "bytes": 3534,
+      "sha256": "a2ea5219c56a039b1e16772cd40b3523119c740a5d09c7e7d6077a6e052facf4"
+    },
+    {
+      "kind": "rock",
+      "variant": "granite",
+      "label": "Granit",
+      "file": "assets/catalog/rock-granite.webp",
+      "bytes": 1976,
+      "sha256": "da73e6dd0feff62a594c597d319398f07730c7c715d2c3976c9fe563b16df7eb"
+    },
+    {
+      "kind": "rock",
+      "variant": "basalt",
+      "label": "Dunkler Basalt",
+      "file": "assets/catalog/rock-basalt.webp",
+      "bytes": 1970,
+      "sha256": "397f5f22b2d3657faf99235575bdcce905e7128e52bca1612b151ed31e780ff2"
+    },
+    {
+      "kind": "bush",
+      "variant": "rei-bush",
+      "label": "Rei-Strauch",
+      "file": "assets/catalog/bush-rei-bush.webp",
+      "bytes": 2558,
+      "sha256": "85c39dabf9c375174315f6dcaddc2e1ba91c4748e0fa5e4223272a444b3c10ed"
+    },
+    {
+      "kind": "ruin",
+      "variant": "stone",
+      "label": "Steinruine",
+      "file": "assets/catalog/ruin-stone.webp",
+      "bytes": 3516,
+      "sha256": "1e70842aa8fca0834e0576fe9cb7134c4698db04c8181bef78c132069ee35865"
+    },
+    {
+      "kind": "shrine",
+      "variant": "magic",
+      "label": "Magischer Schrein",
+      "file": "assets/catalog/shrine-magic.webp",
+      "bytes": 2534,
+      "sha256": "2ec3dedb1e4bcbd8e8fda06aed1f088f305d3a95e19337a7019bc9d9e6c40123"
+    },
+    {
+      "kind": "heart",
+      "variant": "healing",
+      "label": "Heilendes Herz",
+      "file": "assets/catalog/heart-healing.webp",
+      "bytes": 1678,
+      "sha256": "900c2aade55394719c2000eacab2b0c048d02985f80ebcf62b36eb5c3a00b12c"
+    },
+    {
+      "kind": "chest",
+      "variant": "wood",
+      "label": "Holztruhe mit Gold und Beute",
+      "file": "assets/catalog/chest-wood.webp",
+      "bytes": 3538,
+      "sha256": "8f8a47c9ec1e23dc351e968c3891f67f0c145cc646ac77bfd43c430320cba212"
+    },
+    {
+      "kind": "bow",
+      "variant": "wood",
+      "label": "Holzbogen",
+      "file": "assets/catalog/bow-wood.webp",
+      "bytes": 1538,
+      "sha256": "71f11a4babd43a2e1aaa31c97f1f97024d6c2a2ce416bd1a43c0d156b8af1ac7"
+    },
+    {
+      "kind": "sword",
+      "variant": "steel",
+      "label": "Stahlschwert",
+      "file": "assets/catalog/sword-steel.webp",
+      "bytes": 1270,
+      "sha256": "76a77ffc0a3ee2ddb989e0087928bd4701aa8fc8eb4213524633078e2fe3e8c3"
+    },
+    {
+      "kind": "fireStaff",
+      "variant": "ember",
+      "label": "Glutstab · Verbrennung",
+      "file": "assets/catalog/fireStaff-ember.webp",
+      "bytes": 1402,
+      "sha256": "0f228689f02af2e20e7dd48304fea359c1ce0499baa563602671079b29f8d073"
+    },
+    {
+      "kind": "iceStaff",
+      "variant": "frost",
+      "label": "Froststab · Verlangsamung",
+      "file": "assets/catalog/iceStaff-frost.webp",
+      "bytes": 1384,
+      "sha256": "d175d6d861c9dd5eed9ae1a001348121e36b567cd8007d3c0bf06f07be711649"
+    },
+    {
+      "kind": "grass",
+      "variant": "tall",
+      "label": "Hohes Versteckgras",
+      "file": "assets/catalog/grass-tall.webp",
+      "bytes": 4714,
+      "sha256": "c62f68d5575f4497b6ecf4cc4838b187ba6008b2f1a9cf2d7ac3239834cca2f8"
+    },
+    {
+      "kind": "mound",
+      "variant": "ridge",
+      "label": "Bewachsene Felskante",
+      "file": "assets/catalog/mound-ridge.webp",
+      "bytes": 2806,
+      "sha256": "37efbd34886c1541c40afe61e0f333f659bb4378a98b00827677225bbc3d84e4"
+    },
+    {
+      "kind": "mound",
+      "variant": "knoll",
+      "label": "Bewachsene Felskuppe",
+      "file": "assets/catalog/mound-knoll.webp",
+      "bytes": 2056,
+      "sha256": "a5208aa733e0112c4958f863afbafbd31520ce486d26bfe64639aef1dc5e96e7"
+    },
+    {
+      "kind": "tree",
+      "variant": "kit-pine-high",
+      "label": "Große Kiefer · GLB",
+      "file": "assets/catalog/tree-kit-pine-high.webp",
+      "bytes": 2196,
+      "sha256": "43243f1c065f07c60841e0609ed8abcc47a7aa7cef1ab7c79557d65fea39b941",
+      "renderedBounds": {
+        "min": [
+          398.09622383117676,
+          0.009999999776482582,
+          -1.886572003364563
+        ],
+        "max": [
+          401.90377616882324,
+          7.209999809041619,
+          1.886572003364563
+        ],
+        "span": 10.053462616888595
+      }
+    },
+    {
+      "kind": "tree",
+      "variant": "kit-pine-young",
+      "label": "Junge Kiefer · GLB",
+      "file": "assets/catalog/tree-kit-pine-young.webp",
+      "bytes": 2144,
+      "sha256": "0fd23dc3dcfd61cacb718c4745e15e5eb4830dddf6d059276dcbc5cf3c443545",
+      "renderedBounds": {
+        "min": [
+          478.88448107242584,
+          0.009999999776482582,
+          -1.1534321308135986
+        ],
+        "max": [
+          481.11551892757416,
+          4.209999809041619,
+          1.1534321308135986
+        ],
+        "span": 5.920039784719795
+      }
+    },
+    {
+      "kind": "tree",
+      "variant": "kit-oak-green",
+      "label": "Grüne Eiche · GLB",
+      "file": "assets/catalog/tree-kit-oak-green.webp",
+      "bytes": 2002,
+      "sha256": "80c7ea68e875dac7de5fee1ce0c13a79235032534b779250e5ba7616b9303356",
+      "renderedBounds": {
+        "min": [
+          557.0759267807007,
+          0.009999999776482582,
+          -3.029533624649048
+        ],
+        "max": [
+          562.9240732192993,
+          5.810000190511346,
+          3.029533624649048
+        ],
+        "span": 11.452136365970272
+      }
+    },
+    {
+      "kind": "tree",
+      "variant": "kit-oak-autumn",
+      "label": "Herbsteiche · GLB",
+      "file": "assets/catalog/tree-kit-oak-autumn.webp",
+      "bytes": 1988,
+      "sha256": "8ae7d5ade1dca5ea947ceb88af85095fe75aca4e5e39b7844e03954744bcecf3",
+      "renderedBounds": {
+        "min": [
+          637.0367801189423,
+          0.009999999776482582,
+          -2.9710938930511475
+        ],
+        "max": [
+          642.9632198810577,
+          5.810000190511346,
+          2.9710938930511475
+        ],
+        "span": 11.425772435543774
+      }
+    },
+    {
+      "kind": "house",
+      "variant": "kit-timber",
+      "label": "Fachwerkhaus · GLB",
+      "file": "assets/catalog/house-kit-timber.webp",
+      "bytes": 3708,
+      "sha256": "65164fd9a09351d4d7c62029f18746bf2013122fec693405b7c9f2ee1cbb4be1",
+      "renderedBounds": {
+        "min": [
+          956.9205558300018,
+          0,
+          -2.6729774475097656
+        ],
+        "max": [
+          963.0794441699982,
+          3.7516088485717773,
+          2.7154483795166016
+        ],
+        "span": 10.08258857441539
+      }
+    },
+    {
+      "kind": "grass",
+      "variant": "kit-tall",
+      "label": "Hohes Gras · GLB",
+      "file": "assets/catalog/grass-kit-tall.webp",
+      "bytes": 3206,
+      "sha256": "764bdf407c139fb9a3949ac40bd81353b412f777d7c4bdc16431731c7f09203a",
+      "renderedBounds": {
+        "min": [
+          1436.8814198703749,
+          0.009999999776482582,
+          -3.2175093874000424
+        ],
+        "max": [
+          1443.414226798311,
+          1.9600000474601984,
+          3.2371889388905366
+        ],
+        "span": 10.515076145742414
+      }
+    },
+    {
+      "kind": "rock",
+      "variant": "kit-cluster",
+      "label": "Felsgruppe · GLB",
+      "file": "assets/catalog/rock-kit-cluster.webp",
+      "bytes": 1714,
+      "sha256": "d2aa80c4dab03e9c191c2d08d597763c96b339681a5a26d91df846d02eabe388",
+      "renderedBounds": {
+        "min": [
+          1678.2146315574646,
+          0.009999999776482582,
+          -1.3655763864517212
+        ],
+        "max": [
+          1681.7853684425354,
+          1.7100000474601984,
+          1.3655763864517212
+        ],
+        "span": 5.382920591090135
+      }
+    },
+    {
+      "kind": "rock",
+      "variant": "kit-single",
+      "label": "Einzelfelsen · GLB",
+      "file": "assets/catalog/rock-kit-single.webp",
+      "bytes": 1604,
+      "sha256": "542cb7011e0e46e93bbab882edc2a54cbaaaad3d18a57bc7e84347be5ea0f6fb",
+      "renderedBounds": {
+        "min": [
+          1758.5183320045471,
+          0.009999999776482582,
+          -1.1248236894607544
+        ],
+        "max": [
+          1761.4816679954529,
+          1.6100000236183405,
+          1.1248236894607544
+        ],
+        "span": 4.535968695308442
+      }
+    },
+    {
+      "kind": "ruin",
+      "variant": "kit-arch",
+      "label": "Ruinenbogen · GLB",
+      "file": "assets/catalog/ruin-kit-arch.webp",
+      "bytes": 1614,
+      "sha256": "3470e3dc7ee7fedf5a990f073bde84e3c7c517ed998ed47ff7e38447c251f143",
+      "renderedBounds": {
+        "min": [
+          2157.391768217087,
+          0.009999999776482582,
+          -0.7519930601119995
+        ],
+        "max": [
+          2162.608231782913,
+          3.5099999997764826,
+          0.7519930601119995
+        ],
+        "span": 7.234494884327666
+      }
+    },
+    {
+      "kind": "wall",
+      "variant": "kit-stone",
+      "label": "Steinmauer · GLB",
+      "file": "assets/catalog/wall-kit-stone.webp",
+      "bytes": 1688,
+      "sha256": "c4225df8f277a2c4f74c1eacce7d64339256436ec1a63942b86f0461cb9eb964",
+      "renderedBounds": {
+        "min": [
+          2798.1478449106216,
+          0.009999999776482582,
+          -0.3855501413345337
+        ],
+        "max": [
+          2801.8521550893784,
+          1.5099999997764826,
+          0.3855501413345337
+        ],
+        "span": 4.558621455546643
+      }
+    },
+    {
+      "kind": "fence",
+      "variant": "kit-wood",
+      "label": "Holzzaun · GLB",
+      "file": "assets/catalog/fence-kit-wood.webp",
+      "bytes": 2260,
+      "sha256": "536e11e114301e4d3303ce4eee360625cfa8ce92655eb5d9e2ae2c202ad3f26f",
+      "renderedBounds": {
+        "min": [
+          2878.4723076820374,
+          0.009999999776482582,
+          -0.17495675384998322
+        ],
+        "max": [
+          2881.5276923179626,
+          1.5099999997764826,
+          0.17495675384998322
+        ],
+        "span": 3.8322686238361268
+      }
+    },
+    {
+      "kind": "crate",
+      "variant": "kit-wood",
+      "label": "Holzkiste · GLB",
+      "file": "assets/catalog/crate-kit-wood.webp",
+      "bytes": 2926,
+      "sha256": "fbdd3c37bb766e6e559c9a74a833364afcf2314578065a94d703e44ecbdef0fc",
+      "renderedBounds": {
+        "min": [
+          2959.375,
+          0.009999999776482582,
+          -0.625
+        ],
+        "max": [
+          2960.625,
+          1.0099999997764826,
+          0.625
+        ],
+        "span": 2.274730753298069
+      }
+    }
+  ],
+  "errors": []
+}

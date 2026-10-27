@@ -1,0 +1,740 @@
+{
+  "presets": [
+    {
+      "type": "short",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 0,
+        "grassRendering": {
+          "totalInstances": 159,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 0.32,
+        "minBladeHeight": 0.2820152277171612,
+        "maxBladeHeight": 0.35687099081873896,
+        "crossedStalksPerInstance": 1,
+        "variant": "short",
+        "type": "short",
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.12,
+          "color": "#719c52",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "short"
+        },
+        "instanceCount": 159,
+        "crossedStalkCount": 159,
+        "requestedInstances": 159,
+        "budgetLimited": false,
+        "renderVariant": "short",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#6e954f",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#6b8f4c",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#6e944f",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      }
+    },
+    {
+      "type": "meadow",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 0,
+        "grassRendering": {
+          "totalInstances": 245,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 0.85,
+        "minBladeHeight": 0.6806538290157914,
+        "maxBladeHeight": 1.017308938326314,
+        "crossedStalksPerInstance": 4,
+        "variant": "short",
+        "type": "meadow",
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.2,
+          "color": "#87a35d",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "meadow"
+        },
+        "instanceCount": 245,
+        "crossedStalkCount": 980,
+        "requestedInstances": 245,
+        "budgetLimited": false,
+        "renderVariant": "tall",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#7c9956",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#789353",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#7c9956",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      }
+    },
+    {
+      "type": "tall",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 0,
+        "grassRendering": {
+          "totalInstances": 245,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 2.425,
+        "minBladeHeight": 2.1351192014329134,
+        "maxBladeHeight": 2.7113935356056316,
+        "crossedStalksPerInstance": 4,
+        "variant": "tall",
+        "type": "tall",
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.12,
+          "color": "#799754",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "tall"
+        },
+        "instanceCount": 245,
+        "crossedStalkCount": 980,
+        "requestedInstances": 245,
+        "budgetLimited": false,
+        "renderVariant": "tall",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#739251",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#708c4d",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#739150",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      }
+    },
+    {
+      "type": "dry",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 0,
+        "grassRendering": {
+          "totalInstances": 245,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 1.05,
+        "minBladeHeight": 0.9244846026822925,
+        "maxBladeHeight": 1.1740054484065623,
+        "crossedStalksPerInstance": 4,
+        "variant": "short",
+        "type": "dry",
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.12,
+          "color": "#b6a363",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 1,
+          "saturation": 0.75,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "dry"
+        },
+        "instanceCount": 245,
+        "crossedStalkCount": 980,
+        "requestedInstances": 245,
+        "budgetLimited": false,
+        "renderVariant": "tall",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#959363",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#8f8c5f",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#949262",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      }
+    },
+    {
+      "type": "forest",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 0,
+        "grassRendering": {
+          "totalInstances": 159,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 0.6,
+        "minBladeHeight": 0.5287785519696772,
+        "maxBladeHeight": 0.6691331077851356,
+        "crossedStalksPerInstance": 1,
+        "variant": "short",
+        "type": "forest",
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.12,
+          "color": "#426b46",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 0.85,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "forest"
+        },
+        "instanceCount": 159,
+        "crossedStalkCount": 159,
+        "requestedInstances": 159,
+        "budgetLimited": false,
+        "renderVariant": "short",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#49663d",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#47623b",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#49663d",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      }
+    },
+    {
+      "type": "swamp",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 0,
+        "grassRendering": {
+          "totalInstances": 245,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 1.65,
+        "minBladeHeight": 1.2390864968765527,
+        "maxBladeHeight": 2.055970217997674,
+        "crossedStalksPerInstance": 4,
+        "variant": "short",
+        "type": "swamp",
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.25,
+          "color": "#71884d",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "swamp"
+        },
+        "instanceCount": 245,
+        "crossedStalkCount": 980,
+        "requestedInstances": 245,
+        "budgetLimited": false,
+        "renderVariant": "tall",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#6e894c",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#6b8349",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#6e884c",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 2,
+        "textures": 1
+      }
+    },
+    {
+      "type": "flowers",
+      "stats": {
+        "previewOnly": true,
+        "totalObjects": 1,
+        "grassPatchCount": 1,
+        "loadedGLBs": 1,
+        "grassRendering": {
+          "totalInstances": 119,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 1,
+              "speed": 1,
+              "direction": 1.1,
+              "gusts": true,
+              "gustStrength": 1,
+              "gustFrequency": 0.3,
+              "turbulence": 0.4
+            },
+            "time": 5
+          }
+        }
+      },
+      "patch": {
+        "id": "preview-grass",
+        "x": 0,
+        "z": 0,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 0.7,
+        "height": 0.6,
+        "minBladeHeight": 0.45162198327016084,
+        "maxBladeHeight": 0.7440273078856989,
+        "crossedStalksPerInstance": 1,
+        "variant": "short",
+        "type": "flowers",
+        "settings": {
+          "height": 1,
+          "density": 0.75,
+          "heightVariation": 0.25,
+          "color": "#7c9c59",
+          "groundColor": true,
+          "groundBlend": 0.6,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "flowers"
+        },
+        "instanceCount": 119,
+        "crossedStalkCount": 119,
+        "requestedInstances": 119,
+        "budgetLimited": false,
+        "renderVariant": "short",
+        "rootAnchored": true,
+        "colorSamples": [
+          {
+            "position": [
+              0.6914653510307922,
+              0.22781878563758323
+            ],
+            "ground": "#657f46",
+            "vegetation": "#759554",
+            "rootY": 0
+          },
+          {
+            "position": [
+              2.340039692689457,
+              -1.6258497660769278
+            ],
+            "ground": "#657f46",
+            "vegetation": "#728f50",
+            "rootY": 0
+          },
+          {
+            "position": [
+              1.2657469531200334,
+              -1.1707522166084665
+            ],
+            "ground": "#657f46",
+            "vegetation": "#759453",
+            "rootY": 0
+          }
+        ],
+        "rootHeightRange": [
+          0,
+          0
+        ]
+      },
+      "animatedPixels": true,
+      "memory": {
+        "geometries": 5,
+        "textures": 1
+      }
+    }
+  ],
+  "disabledReallyStill": true,
+  "memoryAfterDispose": {
+    "geometries": 1,
+    "textures": 1
+  },
+  "status": "passed",
+  "errors": [],
+  "url": "http://127.0.0.1:5173"
+}

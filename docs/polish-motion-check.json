@@ -1,0 +1,140 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5180",
+  "errors": [],
+  "checks": {
+    "start": {
+      "position": {
+        "x": 30,
+        "y": 1.20030524489562,
+        "z": -42
+      },
+      "direction": 0,
+      "moving": false,
+      "locomotion": {
+        "speed": 0,
+        "walkWeight": 0,
+        "playbackSpeed": 0.42,
+        "yaw": 0,
+        "turnRate": 0,
+        "forwardLean": 0,
+        "sideLean": 0
+      },
+      "rollRemaining": 0
+    },
+    "walk": {
+      "position": {
+        "x": 30,
+        "y": 1.2468241557396416,
+        "z": -38.639999999999986
+      },
+      "direction": 0,
+      "moving": true,
+      "locomotion": {
+        "speed": 5.599308905097137,
+        "walkWeight": 0.9992534141916233,
+        "playbackSpeed": 0.9998765901959175,
+        "yaw": 0,
+        "turnRate": 0,
+        "forwardLean": 0.034730930310627336,
+        "sideLean": 0
+      },
+      "rollRemaining": 0
+    },
+    "turn": {
+      "position": {
+        "x": 31.120000000000005,
+        "y": 1.255894828930663,
+        "z": -38.639999999999986
+      },
+      "direction": 1.5707963267948966,
+      "moving": true,
+      "locomotion": {
+        "speed": 5.599965592410844,
+        "walkWeight": 0.9999322712635091,
+        "playbackSpeed": 0.9999938557876508,
+        "yaw": 1.5278763239403261,
+        "turnRate": 2.1673088358717787,
+        "forwardLean": 0.03495516293290845,
+        "sideLean": -0.023691597280381248
+      },
+      "rollRemaining": 0
+    },
+    "turnSettled": {
+      "position": {
+        "x": 32.80000000000001,
+        "y": 1.269500838717195,
+        "z": -38.639999999999986
+      },
+      "direction": 1.5707963267948966,
+      "moving": true,
+      "locomotion": {
+        "speed": 5.599999617766234,
+        "walkWeight": 0.9999981493988024,
+        "playbackSpeed": 0.9999999317439704,
+        "yaw": 1.5706024751279468,
+        "turnRate": 0.00978882578485457,
+        "forwardLean": 0.03499697799417919,
+        "sideLean": -0.000983465331917305
+      },
+      "rollRemaining": 0
+    },
+    "stopBlend": {
+      "position": {
+        "x": 32.80000000000001,
+        "y": 1.269500838717195,
+        "z": -38.639999999999986
+      },
+      "direction": 1.5707963267948966,
+      "moving": false,
+      "locomotion": {
+        "speed": 0.6204976444763612,
+        "walkWeight": 0.04978697623185559,
+        "playbackSpeed": 0.42,
+        "yaw": 1.5707910300457528,
+        "turnRate": 0.00026746715883036685,
+        "forwardLean": 0.010897271874821476,
+        "sideLean": -8.990033310149309e-05
+      },
+      "rollRemaining": 0
+    },
+    "idle": {
+      "position": {
+        "x": 32.80000000000001,
+        "y": 1.269500838717195,
+        "z": -38.639999999999986
+      },
+      "direction": 1.5707963267948966,
+      "moving": false,
+      "locomotion": {
+        "speed": 0.00028097820033612397,
+        "walkWeight": 0,
+        "playbackSpeed": 0.42,
+        "yaw": 1.5707963267770357,
+        "turnRate": 9.019039300117709e-10,
+        "forwardLean": 3.439137855575103e-05,
+        "sideLean": -2.02179483129257e-08
+      },
+      "rollRemaining": 0
+    },
+    "existingRollPreserved": {
+      "position": {
+        "x": 32.80000000000001,
+        "y": 1.269500838717195,
+        "z": -38.639999999999986
+      },
+      "direction": 1.5707963267948966,
+      "moving": false,
+      "locomotion": {
+        "speed": 0.00028097820033612397,
+        "walkWeight": 0,
+        "playbackSpeed": 0.42,
+        "yaw": 1.5707963267770357,
+        "turnRate": 9.019039300117709e-10,
+        "forwardLean": 3.439137855575103e-05,
+        "sideLean": -2.02179483129257e-08
+      },
+      "rollRemaining": 0.52
+    }
+  }
+}

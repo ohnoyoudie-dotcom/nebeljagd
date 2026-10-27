@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174",
+  "checks": [
+    "Mouse brush interpolates editable tall-grass patches; one undo/redo restores the whole stroke",
+    "Retracing the same stroke does not stack duplicate dense patches",
+    "Escape cancels an unfinished stroke without changing the saved map",
+    "Space-drag pans the map without painting",
+    "Painted grass survives JSON export and reimport as ordinary editable map objects",
+    "Asset model previews and source labels follow the selected existing variant",
+    "In 3D testen generates the exact painted document; tall patches match saved positions and conceal the player",
+    "Real touch drag paints a continuous stroke and one undo removes it",
+    "Cancelled touch gesture rolls back all pending grass patches"
+  ],
+  "errors": [],
+  "mouseStrokePatches": 10,
+  "touchStrokePatches": 10
+}

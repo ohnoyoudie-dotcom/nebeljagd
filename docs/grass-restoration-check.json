@@ -1,0 +1,111 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174",
+  "captures": [
+    {
+      "quality": "low",
+      "hiddenInGrass": true,
+      "hiddenFromOtherPlayers": true,
+      "opacity": 0.45,
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false,
+        "sourceVersion": "nebeljagd-3d-v011",
+        "crossedStalksPerInstance": 4,
+        "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+        "colorGradient": [
+          "#315e36",
+          "#bbc975"
+        ],
+        "visibleTallGrassBatches": 2,
+        "tallGrassTriangles": 7840
+      },
+      "patch": {
+        "id": "obj-grass-start",
+        "x": 10,
+        "z": -30,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 2.19,
+        "height": 2.425,
+        "minBladeHeight": 2.25125368705485,
+        "maxBladeHeight": 2.599768316978589,
+        "crossedStalksPerInstance": 4,
+        "variant": "tall",
+        "instanceCount": 245,
+        "crossedStalkCount": 980
+      },
+      "rendering": {
+        "calls": 378,
+        "triangles": 456538,
+        "geometries": 185,
+        "textures": 27,
+        "frameMs": 1245.0470588235294
+      },
+      "servedHTMLSHA256": "46ee7c51b4eb4bb74e62b190e8c9a2c6ba74580741267f56ea17c8b7d62d2da7"
+    },
+    {
+      "quality": "high",
+      "hiddenInGrass": true,
+      "hiddenFromOtherPlayers": true,
+      "opacity": 0.45,
+      "grass": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false,
+        "sourceVersion": "nebeljagd-3d-v011",
+        "crossedStalksPerInstance": 4,
+        "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+        "colorGradient": [
+          "#315e36",
+          "#bbc975"
+        ],
+        "visibleTallGrassBatches": 3,
+        "tallGrassTriangles": 39744
+      },
+      "patch": {
+        "id": "obj-grass-start",
+        "x": 10,
+        "z": -30,
+        "radius": 3.5,
+        "aspect": 0.72,
+        "yaw": 2.19,
+        "height": 2.425,
+        "minBladeHeight": 2.25125368705485,
+        "maxBladeHeight": 2.599768316978589,
+        "crossedStalksPerInstance": 4,
+        "variant": "tall",
+        "instanceCount": 245,
+        "crossedStalkCount": 980
+      },
+      "rendering": {
+        "calls": 378,
+        "triangles": 483626,
+        "geometries": 186,
+        "textures": 27,
+        "frameMs": 641.1464705882353
+      },
+      "servedHTMLSHA256": "46ee7c51b4eb4bb74e62b190e8c9a2c6ba74580741267f56ea17c8b7d62d2da7"
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/screenshots/restored-grass-low.png",
+    "docs/screenshots/restored-grass-high.png"
+  ],
+  "historicalSource": "archive/nebeljagd-3d-v011-source.zip/src/world.js",
+  "note": "Chromium software-WebGL, not a physical iPad performance claim."
+}

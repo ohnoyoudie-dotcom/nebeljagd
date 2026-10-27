@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "checks": [
+    "fireStaff placement, rarity edit, damage hint and undo",
+    "iceStaff placement, rarity edit, damage hint and undo",
+    "bow placement, rarity edit, damage hint and undo",
+    "sword placement, rarity edit, damage hint and undo",
+    "chest placement and complete JSON export",
+    "legacy JSON crystal to chest and common weapon migration"
+  ],
+  "errors": [],
+  "objectCount": 4016,
+  "chests": 48,
+  "sceneryPreserved": true
+}

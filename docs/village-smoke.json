@@ -1,0 +1,173 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "WebGL2 production build loads original skinned GLB with Idle and Walk",
+      "evidence": {
+        "format": "GLB",
+        "skinned": true,
+        "joints": 18,
+        "clips": [
+          "Idle",
+          "Walk"
+        ],
+        "opacity": 1
+      }
+    },
+    {
+      "name": "Actual WASD/arrow movement and key release"
+    },
+    {
+      "name": "Space executes a moving roll and activates cooldown"
+    },
+    {
+      "name": "E picks up bow/sword, HUD updates and F triggers both attacks"
+    },
+    {
+      "name": "Hearts heal 50 → 75 → 100; crystal pickup remains functional"
+    },
+    {
+      "name": "Tall grass fades local character to 45%; gameplay concealment is independent and restores on exit"
+    },
+    {
+      "name": "All three houses reveal roofs and elevated floors; both Mooswinkel bedroom thresholds are walkable",
+      "evidence": [
+        {
+          "name": "Mooswinkel",
+          "floorY": 0.5,
+          "roofVisible": false
+        },
+        {
+          "name": "Mondhain",
+          "floorY": 0.5,
+          "roofVisible": false
+        },
+        {
+          "name": "Wildheide",
+          "floorY": 0.5,
+          "roofVisible": false
+        }
+      ]
+    },
+    {
+      "name": "Fog outside safe radius damages health; returning to safe area stops damage"
+    },
+    {
+      "name": "Tablet touch joystick, release, roll, pickup/attack buttons and responsive HUD"
+    },
+    {
+      "name": "Standalone HTML embeds the skinned GLB and makes no additional HTTP requests"
+    }
+  ],
+  "javascript_or_shader_errors": [],
+  "screenshots": [
+    "village-desktop.png",
+    "village-grass.png",
+    "village-interior.png",
+    "village-danger.png",
+    "village-tablet.png"
+  ],
+  "desktop_rendering": {
+    "calls": 291,
+    "triangles": 598388,
+    "geometries": 221,
+    "textures": 23,
+    "frameMs": 859.4088888888889
+  },
+  "tablet_rendering": {
+    "calls": 317,
+    "triangles": 610824,
+    "geometries": 194,
+    "textures": 23,
+    "frameMs": 777.2048780487805
+  },
+  "final_visual_check": {
+    "status": "passed",
+    "quality": "low",
+    "scenes": [
+      {
+        "name": "village",
+        "position": {
+          "x": -8,
+          "y": 1.256794402241258e-08,
+          "z": 8
+        },
+        "opacity": 1,
+        "hiddenInGrass": false,
+        "shelter": null,
+        "inDanger": false,
+        "rendering": {
+          "calls": 339,
+          "triangles": 611823,
+          "geometries": 182,
+          "textures": 25,
+          "frameMs": 992.5555555555555
+        }
+      },
+      {
+        "name": "danger",
+        "position": {
+          "x": -34,
+          "y": 0.0034177998770083284,
+          "z": 0
+        },
+        "opacity": 1,
+        "hiddenInGrass": false,
+        "shelter": null,
+        "inDanger": true,
+        "rendering": {
+          "calls": 269,
+          "triangles": 604595,
+          "geometries": 182,
+          "textures": 25,
+          "frameMs": 996.8375000000001
+        }
+      },
+      {
+        "name": "interior",
+        "position": {
+          "x": -13,
+          "y": 0.5,
+          "z": -3
+        },
+        "opacity": 1,
+        "hiddenInGrass": false,
+        "shelter": "Mooswinkel",
+        "inDanger": false,
+        "rendering": {
+          "calls": 303,
+          "triangles": 617071,
+          "geometries": 188,
+          "textures": 25,
+          "frameMs": 920.7958333333335
+        }
+      },
+      {
+        "name": "grass",
+        "position": {
+          "x": -2,
+          "y": 1.5761332417257707e-07,
+          "z": 8
+        },
+        "opacity": 0.45265678907299234,
+        "hiddenInGrass": true,
+        "shelter": null,
+        "inDanger": false,
+        "rendering": {
+          "calls": 346,
+          "triangles": 611238,
+          "geometries": 189,
+          "textures": 25,
+          "frameMs": 912.002777777778
+        }
+      }
+    ],
+    "javascript_or_shader_errors": [],
+    "screenshots": [
+      "village-desktop-final.png",
+      "village-visibility-final.png",
+      "village-interior-final.png",
+      "village-grass-final.png"
+    ]
+  }
+}

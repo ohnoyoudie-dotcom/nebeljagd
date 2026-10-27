@@ -1,0 +1,156 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174",
+  "checks": [
+    {
+      "name": "low: imported settings render all grass types, exact density, varied heights, anchored roots and bounded painted terrain",
+      "evidence": {
+        "quality": "low",
+        "denseCount": 80,
+        "sparseCount": 20,
+        "lowHeight": 0.08,
+        "highRange": [
+          3.6925402556487823,
+          10.718893969617783
+        ],
+        "wind": {
+          "gpu": true,
+          "rootAnchored": true,
+          "worldSpaceDirection": true,
+          "zones": 2,
+          "maximumZones": 32,
+          "settings": {
+            "enabled": true,
+            "strength": 0.7,
+            "speed": 1.3,
+            "direction": 1.5707963267948966,
+            "gusts": true,
+            "gustStrength": 0.35,
+            "gustFrequency": 0.18,
+            "turbulence": 0.2
+          },
+          "time": 0.8331999999999997
+        },
+        "paint": {
+          "stamps": 2,
+          "affectedChunks": 1,
+          "residentChunks": 1,
+          "textureBytes": 130350,
+          "textureBudgetBytes": 16777216,
+          "extraDrawCalls": 0,
+          "queuedChunks": 0,
+          "maxBakesPerFrame": 2,
+          "bakedChunksTotal": 1,
+          "totalBakeMs": 5.399999999994179,
+          "maximumTileBakeMs": 5.399999999994179,
+          "maximumTextureSize": 256,
+          "changesCollisionHeight": false
+        },
+        "rendering": {
+          "calls": 132,
+          "triangles": 94502,
+          "geometries": 46,
+          "textures": 14,
+          "frameMs": 471.6406
+        }
+      }
+    },
+    {
+      "name": "A zero-density grass patch does not create invisible cover",
+      "evidence": null
+    },
+    {
+      "name": "Changing saved soil automatically retints ground-matched grass, preserves manual grass colors and leaves collision height unchanged",
+      "evidence": {
+        "matchedBefore": {
+          "position": [
+            -43.566319539016085,
+            30.100708305460316
+          ],
+          "ground": "#d5b066",
+          "vegetation": "#b7a55d",
+          "rootY": 1.1288488059524346
+        },
+        "matchedAfter": {
+          "position": [
+            -43.566319539016085,
+            30.100708305460316
+          ],
+          "ground": "#503a4b",
+          "vegetation": "#59624a",
+          "rootY": 1.1288488059524346
+        },
+        "manualBefore": "#668f48",
+        "manualAfter": "#668f48",
+        "windDisabled": true
+      }
+    },
+    {
+      "name": "high: imported settings render all grass types, exact density, varied heights, anchored roots and bounded painted terrain",
+      "evidence": {
+        "quality": "high",
+        "denseCount": 80,
+        "sparseCount": 20,
+        "lowHeight": 0.08,
+        "highRange": [
+          3.6925402556487823,
+          10.718893969617783
+        ],
+        "wind": {
+          "gpu": true,
+          "rootAnchored": true,
+          "worldSpaceDirection": true,
+          "zones": 2,
+          "maximumZones": 32,
+          "settings": {
+            "enabled": true,
+            "strength": 0.7,
+            "speed": 1.3,
+            "direction": 1.5707963267948966,
+            "gusts": true,
+            "gustStrength": 0.35,
+            "gustFrequency": 0.18,
+            "turbulence": 0.2
+          },
+          "time": 0.8332999999999983
+        },
+        "paint": {
+          "stamps": 2,
+          "affectedChunks": 1,
+          "residentChunks": 1,
+          "textureBytes": 519820,
+          "textureBudgetBytes": 33554432,
+          "extraDrawCalls": 0,
+          "queuedChunks": 0,
+          "maxBakesPerFrame": 2,
+          "bakedChunksTotal": 1,
+          "totalBakeMs": 18.5,
+          "maximumTileBakeMs": 18.5,
+          "maximumTextureSize": 512,
+          "changesCollisionHeight": false
+        },
+        "rendering": {
+          "calls": 132,
+          "triangles": 117430,
+          "geometries": 46,
+          "textures": 14,
+          "frameMs": 654.9680000000001
+        }
+      }
+    },
+    {
+      "name": "Low detail keeps identical cover/density/color but uses fewer visible tall-grass triangles",
+      "evidence": {
+        "low": 18560,
+        "high": 37120
+      }
+    }
+  ],
+  "errors": [],
+  "captures": [
+    "docs/screenshots/landscape-game-low.png",
+    "docs/screenshots/landscape-game-high.png"
+  ],
+  "note": "Software WebGL2 in Chromium; low/high rendering and budgets checked, not physical iPad FPS.",
+  "served_game_sha256": "a39db278153bec33906ead7a7fe75dd1097e9e4466a7cc36c3b5cb09c5619514"
+}

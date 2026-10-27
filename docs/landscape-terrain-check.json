@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5199",
+  "errors": [],
+  "checks": [
+    {
+      "name": "actual JSON import renders painted ground and preserves all existing world objects/triangles",
+      "stats": {
+        "stamps": 6,
+        "affectedChunks": 5,
+        "residentChunks": 4,
+        "textureBytes": 416840,
+        "textureBudgetBytes": 16777216,
+        "extraDrawCalls": 0,
+        "queuedChunks": 0,
+        "maxBakesPerFrame": 2,
+        "bakedChunksTotal": 4,
+        "totalBakeMs": 13.599999994039536,
+        "maximumTileBakeMs": 6.199999988079071,
+        "maximumTextureSize": 256,
+        "changesCollisionHeight": false
+      }
+    },
+    {
+      "name": "distant painted ground is loaded on arrival and old paint textures released",
+      "stats": {
+        "stamps": 6,
+        "affectedChunks": 5,
+        "residentChunks": 1,
+        "textureBytes": 121500,
+        "textureBudgetBytes": 16777216,
+        "extraDrawCalls": 0,
+        "queuedChunks": 0,
+        "maxBakesPerFrame": 2,
+        "bakedChunksTotal": 5,
+        "totalBakeMs": 15.599999994039536,
+        "maximumTileBakeMs": 6.199999988079071,
+        "maximumTextureSize": 256,
+        "changesCollisionHeight": false
+      }
+    },
+    {
+      "name": "painted ground remains after game reload from saved import document",
+      "objects": 4020
+    }
+  ],
+  "hardwareNote": "Chromium SwiftShader on cloud CPU; these are functional and allocation measurements, not physical iPad FPS."
+}

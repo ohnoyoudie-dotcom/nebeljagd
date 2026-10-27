@@ -1,0 +1,113 @@
+{
+  "source": "/workspace/attachments/01fb75ea-9ff0-49b8-b58e-adb79d216625/Rei_flowersGN_sample.blend",
+  "source_sha256": "a320b798284e1a7f5b7dc141c4c34318735313dc9b21d96fbedb6c46cc96c6b5",
+  "source_blender_version": [
+    3,
+    3,
+    6
+  ],
+  "export_blender_version": [
+    4,
+    3,
+    2
+  ],
+  "original_modified": false,
+  "external_images": [],
+  "variants": [
+    {
+      "name": "Rei_Flower_White",
+      "source_object": "Flower.001",
+      "source_height_m": 0.1176982894558023,
+      "normalized_height_m": 1.0,
+      "source_bounds_blender": [
+        [
+          -0.029942883178591728,
+          0.029109636321663857
+        ],
+        [
+          -0.03698132187128067,
+          0.01874326542019844
+        ],
+        [
+          -1.6525389582966454e-05,
+          0.11768176406621933
+        ]
+      ],
+      "vertices": 1023,
+      "triangles": 1379,
+      "source_realized_triangles": 1804,
+      "normalization": "Realize GN, convert original palette, normalize height, preserve stem geometry, simplify flower head only if above1400triangles",
+      "source_materials": [
+        "Flower_disk.001",
+        "Flower_petal.001",
+        "Flower_stem"
+      ],
+      "export_offset_x": -0.800000011920929
+    },
+    {
+      "name": "Rei_Flower_Red",
+      "source_object": "Flower.002",
+      "source_height_m": 0.1756720263074385,
+      "normalized_height_m": 1.0,
+      "source_bounds_blender": [
+        [
+          -0.02740355208516121,
+          0.02796928957104683
+        ],
+        [
+          -0.07051790505647659,
+          0.0019984787795692682
+        ],
+        [
+          -7.799449667800218e-05,
+          0.1755940318107605
+        ]
+      ],
+      "vertices": 479,
+      "triangles": 716,
+      "source_realized_triangles": 716,
+      "normalization": "Realize GN, convert original palette, normalize height, preserve stem geometry, simplify flower head only if above1400triangles",
+      "source_materials": [
+        "Flower_disk.002",
+        "Flower_petal.002",
+        "Flower_stem"
+      ],
+      "export_offset_x": 0.0
+    },
+    {
+      "name": "Rei_Flower_Gold",
+      "source_object": "Flower.003",
+      "source_height_m": 0.10372761132748565,
+      "normalized_height_m": 1.0,
+      "source_bounds_blender": [
+        [
+          -0.0186719112098217,
+          0.01954391412436962
+        ],
+        [
+          -0.0021986698266118765,
+          0.04077174514532089
+        ],
+        [
+          -7.649006874999031e-05,
+          0.10365112125873566
+        ]
+      ],
+      "vertices": 1952,
+      "triangles": 1380,
+      "source_realized_triangles": 19340,
+      "normalization": "Realize GN, convert original palette, normalize height, preserve stem geometry, simplify flower head only if above1400triangles",
+      "source_materials": [
+        "Flower_disk.003",
+        "Flower_petal.003",
+        "Flower_stem"
+      ],
+      "export_offset_x": 0.800000011920929
+    }
+  ],
+  "triangles_total": 3475,
+  "material_conversion": "Original ShaderToRGB toon network replaced by original RGB/height-ColorRamp values in vertex colors plus rough Principled PBR; lighting-dependent toon ramps are not portable. Geometry is realized from the original nodes, not recreated.",
+  "output": "/tmp/nebeljagd-import/flowers.glb",
+  "output_bytes": 149392,
+  "output_sha256": "8ab0afa810ac282d1dd56529062090c69c8c0478795b800d62bec08f2b399a82"
+}

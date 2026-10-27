@@ -1,0 +1,638 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174",
+  "checks": [
+    {
+      "name": "Opening the new editor preserves the complete existing map and all 4020 object placements",
+      "evidence": {
+        "objects": 4020
+      }
+    },
+    {
+      "name": "Six existing-editor sections expose seven vegetation types, nine soils and eight biome presets",
+      "evidence": null
+    },
+    {
+      "name": "A fast real mouse stroke paints configured height/density/ground matching and is one undo/redo action",
+      "evidence": {
+        "patches": 6,
+        "settings": {
+          "height": 1.5,
+          "density": 0.6,
+          "heightVariation": 0.5,
+          "color": "#799754",
+          "groundColor": true,
+          "groundBlend": 0.8,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1940099657,
+          "type": "tall"
+        }
+      }
+    },
+    {
+      "name": "Existing painted grass height and density can be changed without moving or enlarging its ground footprint",
+      "evidence": null
+    },
+    {
+      "name": "The vegetation eraser removes painted patches while keeping existing nearby scenery; undo restores them",
+      "evidence": null
+    },
+    {
+      "name": "Escape cancels a pending vegetation stroke and restores all prior settings and objects",
+      "evidence": null
+    },
+    {
+      "name": "Soil strokes have soft edges, one-step undo and editable saved colors in the same map",
+      "evidence": null
+    },
+    {
+      "name": "Soil erasing affects painted ground only and is reversible",
+      "evidence": null
+    },
+    {
+      "name": "Biome painting saves actual editable soil, plant objects and its preset record in one gesture",
+      "evidence": null
+    },
+    {
+      "name": "Natural scatter uses the chosen existing GLB, varied scale/rotation and minimum spacing while preserving original objects",
+      "evidence": {
+        "trees": 1
+      }
+    },
+    {
+      "name": "The draggable compass saves world wind direction; local sheltered zones retain their editable radius and falloff",
+      "evidence": null
+    },
+    {
+      "name": "Named landscape settings are saved inside the map and restore vegetation, terrain, scatter and wind controls",
+      "evidence": null
+    },
+    {
+      "name": "A saved custom landscape preset can be painted as an editable biome and undone",
+      "evidence": null
+    },
+    {
+      "name": "The editor renders an animated WebGL vegetation preview using the shared runtime",
+      "evidence": {
+        "ready": true,
+        "frames": 11,
+        "visible": true,
+        "running": true,
+        "error": null,
+        "position": [
+          -55,
+          20
+        ],
+        "settings": {
+          "height": 1,
+          "density": 1,
+          "heightVariation": 0.12,
+          "color": "#799754",
+          "groundColor": false,
+          "groundBlend": 0.55,
+          "brightness": 1,
+          "saturation": 1,
+          "colorVariation": 0.14,
+          "edgeSoftness": 0.3,
+          "seed": 1,
+          "type": "tall"
+        },
+        "wind": {
+          "gpu": true,
+          "rootAnchored": true,
+          "worldSpaceDirection": true,
+          "zones": 1,
+          "maximumZones": 32,
+          "settings": {
+            "enabled": true,
+            "strength": 0.65,
+            "speed": 1.5,
+            "direction": 1.5707963267948966,
+            "gusts": true,
+            "gustStrength": 0.55,
+            "gustFrequency": 0.18,
+            "turbulence": 0.35
+          },
+          "time": 0.26670000000000077
+        },
+        "windRoot": {
+          "x": 0,
+          "z": 0
+        },
+        "windTip": {
+          "x": 0.08410757133366517,
+          "z": 0.003648251889037093
+        },
+        "grass": {
+          "totalInstances": 125,
+          "maximumInstances": 500000,
+          "rootAnchored": true,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 1,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 0.65,
+              "speed": 1.5,
+              "direction": 1.5707963267948966,
+              "gusts": true,
+              "gustStrength": 0.55,
+              "gustFrequency": 0.18,
+              "turbulence": 0.35
+            },
+            "time": 0.26670000000000077
+          }
+        },
+        "patch": {
+          "id": "landscape-preview-grass",
+          "x": -55,
+          "z": 20,
+          "radius": 2.5,
+          "aspect": 0.72,
+          "yaw": 0.2,
+          "height": 2.425,
+          "minBladeHeight": 2.1378119809175837,
+          "maxBladeHeight": 2.71351740121888,
+          "crossedStalksPerInstance": 4,
+          "variant": "tall",
+          "type": "tall",
+          "settings": {
+            "height": 1,
+            "density": 1,
+            "heightVariation": 0.12,
+            "color": "#799754",
+            "groundColor": false,
+            "groundBlend": 0.55,
+            "brightness": 1,
+            "saturation": 1,
+            "colorVariation": 0.14,
+            "edgeSoftness": 0.3,
+            "seed": 1,
+            "type": "tall"
+          },
+          "instanceCount": 125,
+          "crossedStalkCount": 500,
+          "requestedInstances": 125,
+          "budgetLimited": false,
+          "renderVariant": "tall",
+          "rootAnchored": true,
+          "colorSamples": [
+            {
+              "position": [
+                -55.57668134148729,
+                18.62711710349826
+              ],
+              "ground": "#588e5f",
+              "vegetation": "#7a9955",
+              "rootY": 1.1333126929550266
+            },
+            {
+              "position": [
+                -53.37068537474271,
+                20.301224342617424
+              ],
+              "ground": "#5a9061",
+              "vegetation": "#7a9855",
+              "rootY": 1.1214102991483272
+            },
+            {
+              "position": [
+                -55.746415109917734,
+                19.803229241642878
+              ],
+              "ground": "#588f60",
+              "vegetation": "#7d9d57",
+              "rootY": 1.1301503903358976
+            }
+          ],
+          "rootHeightRange": [
+            1.1200156931980054,
+            1.1355857158422769
+          ]
+        },
+        "loadedGLBs": 0,
+        "calls": 2,
+        "pending": false
+      }
+    },
+    {
+      "name": "The live preview stops requesting/rendering frames while outside the visible editor area",
+      "evidence": null
+    },
+    {
+      "name": "Every landscape field survives JSON download/import and a browser reload with draft restoration",
+      "evidence": null
+    },
+    {
+      "name": "Saved standalone editor HTML reopens offline with exact landscape data, working WebGL preview and no duplicated controls or HTTP requests",
+      "evidence": null
+    },
+    {
+      "name": "In 3D testen transfers the exact landscape settings and object document to the existing game",
+      "evidence": {
+        "objects": 11,
+        "terrain": 7,
+        "stats": {
+          "source": "worldmap.json",
+          "mapId": "nebeljagd-world-v1",
+          "terrainChunks": 324,
+          "visibleTerrainChunks": 24,
+          "terrainTriangles": 229376,
+          "generationMs": 833,
+          "terrainArt": {
+            "ground": "painted-woodland",
+            "mainPaths": "irregular-grey-cobbles",
+            "trailPaths": "earth",
+            "stoneTextureSize": 512,
+            "pathWidthFromMap": true
+          },
+          "terrainPaint": {
+            "stamps": 7,
+            "affectedChunks": 1,
+            "residentChunks": 1,
+            "textureBytes": 519820,
+            "textureBudgetBytes": 33554432,
+            "extraDrawCalls": 0,
+            "queuedChunks": 0,
+            "maxBakesPerFrame": 2,
+            "bakedChunksTotal": 1,
+            "totalBakeMs": 19.5,
+            "maximumTileBakeMs": 19.5,
+            "maximumTextureSize": 512,
+            "changesCollisionHeight": false
+          },
+          "cloudShadows": {
+            "animated": true,
+            "worldSpace": true,
+            "maximumDimming": 0.27
+          },
+          "totalObjects": 11,
+          "chunks": 1,
+          "visibleChunks": 1,
+          "instanceBatches": 8,
+          "treeCount": 2,
+          "houseCount": 1,
+          "moundCount": 0,
+          "grassPatchCount": 8,
+          "grassRendering": {
+            "tallHeight": [
+              2.25,
+              2.6
+            ],
+            "shortHeight": [
+              0.22,
+              0.42
+            ],
+            "bendsAwayFromPlayer": false,
+            "sourceVersion": "nebeljagd-3d-v011",
+            "crossedStalksPerInstance": 4,
+            "totalInstances": 341,
+            "maximumInstances": 500000,
+            "budgetUnitsUsed": 341,
+            "kitInstances": 0,
+            "maximumKitInstances": 12000,
+            "configuredPatches": 7,
+            "budgetLimitedPatches": 0,
+            "wind": {
+              "gpu": true,
+              "rootAnchored": true,
+              "worldSpaceDirection": true,
+              "zones": 1,
+              "maximumZones": 32,
+              "settings": {
+                "enabled": true,
+                "strength": 0.65,
+                "speed": 1.5,
+                "direction": 1.5707963267948966,
+                "gusts": true,
+                "gustStrength": 0.55,
+                "gustFrequency": 0.18,
+                "turbulence": 0.35
+              },
+              "time": 0.1
+            },
+            "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+            "colorGradient": [
+              "#315e36",
+              "#bbc975"
+            ],
+            "visibleTallGrassBatches": 0,
+            "tallGrassTriangles": 0
+          },
+          "collisionBodies": 13,
+          "loadedGLBs": 5,
+          "environmentKit": {
+            "loadedModels": 0,
+            "models": [],
+            "placements": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "Selected GLB hiding grass renders its actual animated kit clusters; uncommitted height/density changes preview correctly and choosing meadow switches renderer",
+      "evidence": {
+        "original": {
+          "ready": true,
+          "frames": 51,
+          "visible": true,
+          "running": true,
+          "error": null,
+          "position": [
+            -55,
+            20
+          ],
+          "settings": {
+            "height": 1,
+            "density": 1,
+            "heightVariation": 0.12,
+            "color": "#799754",
+            "groundColor": false,
+            "groundBlend": 0.55,
+            "brightness": 1,
+            "saturation": 1,
+            "colorVariation": 0.14,
+            "edgeSoftness": 0.3,
+            "seed": 1,
+            "type": "tall"
+          },
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 1,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 0.65,
+              "speed": 1.5,
+              "direction": 1.5707963267948966,
+              "gusts": true,
+              "gustStrength": 0.55,
+              "gustFrequency": 0.18,
+              "turbulence": 0.35
+            },
+            "time": 1.2332080000000032
+          },
+          "windRoot": {
+            "x": 0,
+            "z": 0
+          },
+          "windTip": {
+            "x": 0.10447761276952168,
+            "z": 0.00566966644460225
+          },
+          "grass": {
+            "totalInstances": 6,
+            "maximumInstances": 500000,
+            "rootAnchored": true,
+            "wind": {
+              "gpu": true,
+              "rootAnchored": true,
+              "worldSpaceDirection": true,
+              "zones": 1,
+              "maximumZones": 32,
+              "settings": {
+                "enabled": true,
+                "strength": 0.65,
+                "speed": 1.5,
+                "direction": 1.5707963267948966,
+                "gusts": true,
+                "gustStrength": 0.55,
+                "gustFrequency": 0.18,
+                "turbulence": 0.35
+              },
+              "time": 1.2332080000000032
+            }
+          },
+          "patch": {
+            "id": "landscape-preview-grass",
+            "x": -55,
+            "z": 20,
+            "radius": 2.5,
+            "aspect": 0.72,
+            "yaw": 0.2,
+            "variant": "tall",
+            "assetVariant": "kit-tall",
+            "type": "tall",
+            "renderVariant": "kit-tall",
+            "height": 1.95,
+            "minBladeHeight": 1.7539824332725256,
+            "maxBladeHeight": 2.14853802405484,
+            "settings": {
+              "height": 1,
+              "density": 1,
+              "heightVariation": 0.12,
+              "color": "#799754",
+              "groundColor": false,
+              "groundBlend": 0.55,
+              "brightness": 1,
+              "saturation": 1,
+              "colorVariation": 0.14,
+              "edgeSoftness": 0.3,
+              "seed": 1,
+              "type": "tall"
+            },
+            "instanceCount": 6,
+            "crossedStalksPerInstance": 0,
+            "crossedStalkCount": 0,
+            "modelTrianglesPerInstance": 1248,
+            "requestedInstances": 6,
+            "budgetLimited": false,
+            "rootAnchored": true,
+            "colorSamples": [
+              {
+                "position": [
+                  -55.35755010438159,
+                  19.148794338166198
+                ],
+                "ground": "#598f60",
+                "vegetation": "#7b9a56",
+                "rootY": 1.1308746445117406
+              },
+              {
+                "position": [
+                  -55.527591238306016,
+                  19.122234661992266
+                ],
+                "ground": "#588f60",
+                "vegetation": "#7b9a56",
+                "rootY": 1.1315512179809697
+              },
+              {
+                "position": [
+                  -55.428726857330524,
+                  19.60128260645894
+                ],
+                "ground": "#598f60",
+                "vegetation": "#7c9d57",
+                "rootY": 1.1296996807543522
+              }
+            ],
+            "rootHeightRange": [
+              1.1253491840124998,
+              1.1315512179809697
+            ]
+          },
+          "loadedGLBs": 1,
+          "calls": 3,
+          "pending": false
+        },
+        "changed": {
+          "ready": true,
+          "frames": 62,
+          "visible": true,
+          "running": true,
+          "error": null,
+          "position": [
+            -55,
+            20
+          ],
+          "settings": {
+            "height": 2,
+            "density": 0.4,
+            "heightVariation": 0.12,
+            "color": "#799754",
+            "groundColor": false,
+            "groundBlend": 0.55,
+            "brightness": 1,
+            "saturation": 1,
+            "colorVariation": 0.14,
+            "edgeSoftness": 0.3,
+            "seed": 1,
+            "type": "tall"
+          },
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 1,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 0.65,
+              "speed": 1.5,
+              "direction": 1.5707963267948966,
+              "gusts": true,
+              "gustStrength": 0.55,
+              "gustFrequency": 0.18,
+              "turbulence": 0.35
+            },
+            "time": 1.5331080000000088
+          },
+          "windRoot": {
+            "x": 0,
+            "z": 0
+          },
+          "windTip": {
+            "x": 0.10720173814495781,
+            "z": 0.0029866924788178994
+          },
+          "grass": {
+            "totalInstances": 2,
+            "maximumInstances": 500000,
+            "rootAnchored": true,
+            "wind": {
+              "gpu": true,
+              "rootAnchored": true,
+              "worldSpaceDirection": true,
+              "zones": 1,
+              "maximumZones": 32,
+              "settings": {
+                "enabled": true,
+                "strength": 0.65,
+                "speed": 1.5,
+                "direction": 1.5707963267948966,
+                "gusts": true,
+                "gustStrength": 0.55,
+                "gustFrequency": 0.18,
+                "turbulence": 0.35
+              },
+              "time": 1.5331080000000088
+            }
+          },
+          "patch": {
+            "id": "landscape-preview-grass",
+            "x": -55,
+            "z": 20,
+            "radius": 2.5,
+            "aspect": 0.72,
+            "yaw": 0.2,
+            "variant": "tall",
+            "assetVariant": "kit-tall",
+            "type": "tall",
+            "renderVariant": "kit-tall",
+            "height": 3.9,
+            "minBladeHeight": 3.507964866545051,
+            "maxBladeHeight": 3.7904435231275855,
+            "settings": {
+              "height": 2,
+              "density": 0.4,
+              "heightVariation": 0.12,
+              "color": "#799754",
+              "groundColor": false,
+              "groundBlend": 0.55,
+              "brightness": 1,
+              "saturation": 1,
+              "colorVariation": 0.14,
+              "edgeSoftness": 0.3,
+              "seed": 1,
+              "type": "tall"
+            },
+            "instanceCount": 2,
+            "crossedStalksPerInstance": 0,
+            "crossedStalkCount": 0,
+            "modelTrianglesPerInstance": 1248,
+            "requestedInstances": 2,
+            "budgetLimited": false,
+            "rootAnchored": true,
+            "colorSamples": [
+              {
+                "position": [
+                  -55.35755010438159,
+                  19.148794338166198
+                ],
+                "ground": "#598f60",
+                "vegetation": "#7b9a56",
+                "rootY": 1.1308746445117406
+              },
+              {
+                "position": [
+                  -55.527591238306016,
+                  19.122234661992266
+                ],
+                "ground": "#588f60",
+                "vegetation": "#7b9a56",
+                "rootY": 1.1315512179809697
+              }
+            ],
+            "rootHeightRange": [
+              1.1308746445117406,
+              1.1315512179809697
+            ]
+          },
+          "loadedGLBs": 1,
+          "calls": 3,
+          "pending": false
+        }
+      }
+    },
+    {
+      "name": "Native tablet-touch vegetation painting works and remains one undo action",
+      "evidence": null
+    },
+    {
+      "name": "A cancelled native touch terrain stroke restores the full pre-gesture document",
+      "evidence": null
+    }
+  ],
+  "errors": [],
+  "note": "Chromium/SwiftShader and emulated native touch; no physical iPad frame-rate claim.",
+  "served_editor_sha256": "f7a9c381c058e210ee9508839fe34736e11e311763ae695db02b33f1c5ee00aa"
+}

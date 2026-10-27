@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "WebGL2 production build loads original skinned GLB with Idle and Walk",
+      "evidence": {
+        "format": "GLB",
+        "skinned": true,
+        "joints": 18,
+        "clips": [
+          "Idle",
+          "Walk"
+        ],
+        "opacity": 1
+      }
+    },
+    {
+      "name": "Actual WASD/arrow movement and key release"
+    },
+    {
+      "name": "Space executes a moving roll and activates cooldown"
+    },
+    {
+      "name": "E picks up bow/sword, HUD updates and F triggers both attacks"
+    },
+    {
+      "name": "Hearts heal 50 → 75 → 100; crystal pickup remains functional"
+    },
+    {
+      "name": "Tall grass fades local character to 45%; gameplay concealment is independent and restores on exit"
+    },
+    {
+      "name": "All three houses reveal roofs and elevated floors; both Mooswinkel bedroom thresholds are walkable",
+      "evidence": [
+        {
+          "name": "Mooswinkel",
+          "floorY": 0.5,
+          "roofVisible": false
+        },
+        {
+          "name": "Mondhain",
+          "floorY": 0.5,
+          "roofVisible": false
+        },
+        {
+          "name": "Wildheide",
+          "floorY": 0.5,
+          "roofVisible": false
+        }
+      ]
+    },
+    {
+      "name": "Fog outside safe radius damages health; returning to safe area stops damage"
+    },
+    {
+      "name": "Bridge crosses at correct height; village gate is open while adjacent fence blocks movement"
+    },
+    {
+      "name": "Tablet touch joystick, release, roll, pickup/attack buttons and responsive HUD"
+    },
+    {
+      "name": "Standalone HTML embeds the skinned GLB and makes no additional HTTP requests"
+    }
+  ],
+  "javascript_or_shader_errors": [],
+  "screenshots": [
+    "village-desktop.png",
+    "village-grass.png",
+    "village-interior.png",
+    "village-danger.png",
+    "village-bridge.png",
+    "village-gate.png",
+    "village-tablet.png"
+  ],
+  "desktop_rendering": {
+    "calls": 274,
+    "triangles": 589760,
+    "geometries": 232,
+    "textures": 28,
+    "frameMs": 811.0788888888887
+  },
+  "tablet_rendering": {
+    "calls": 336,
+    "triangles": 614733,
+    "geometries": 205,
+    "textures": 28,
+    "frameMs": 780.3128205128205
+  }
+}

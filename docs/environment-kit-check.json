@@ -1,0 +1,380 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174",
+  "checks": [
+    {
+      "name": "The existing editor imports all twelve kit variants and shows their real embedded model previews",
+      "evidence": [
+        "tree:kit-pine-high",
+        "tree:kit-pine-young",
+        "tree:kit-oak-green",
+        "tree:kit-oak-autumn",
+        "wall:kit-stone",
+        "fence:kit-wood",
+        "ruin:kit-arch",
+        "rock:kit-cluster",
+        "rock:kit-single",
+        "grass:kit-tall",
+        "house:kit-timber",
+        "crate:kit-wood"
+      ]
+    },
+    {
+      "name": "Exported kit JSON reaches the game unchanged and all twelve kit GLBs load alongside the five existing Rei GLBs",
+      "evidence": {
+        "source": "worldmap.json",
+        "mapId": "nebeljagd-world-v1",
+        "terrainChunks": 324,
+        "visibleTerrainChunks": 16,
+        "terrainTriangles": 229376,
+        "generationMs": 747,
+        "terrainArt": {
+          "ground": "painted-woodland",
+          "mainPaths": "irregular-grey-cobbles",
+          "trailPaths": "earth",
+          "stoneTextureSize": 512,
+          "pathWidthFromMap": true
+        },
+        "terrainPaint": {
+          "stamps": 0,
+          "affectedChunks": 0,
+          "residentChunks": 0,
+          "textureBytes": 0,
+          "textureBudgetBytes": 16777216,
+          "extraDrawCalls": 0,
+          "queuedChunks": 0,
+          "maxBakesPerFrame": 2,
+          "bakedChunksTotal": 0,
+          "totalBakeMs": 0,
+          "maximumTileBakeMs": 0,
+          "maximumTextureSize": 256,
+          "changesCollisionHeight": false
+        },
+        "cloudShadows": {
+          "animated": true,
+          "worldSpace": true,
+          "maximumDimming": 0.27
+        },
+        "totalObjects": 13,
+        "chunks": 2,
+        "visibleChunks": 2,
+        "instanceBatches": 16,
+        "treeCount": 4,
+        "houseCount": 1,
+        "moundCount": 0,
+        "grassPatchCount": 1,
+        "grassRendering": {
+          "tallHeight": [
+            2.25,
+            2.6
+          ],
+          "shortHeight": [
+            0.22,
+            0.42
+          ],
+          "bendsAwayFromPlayer": false,
+          "sourceVersion": "nebeljagd-3d-v011",
+          "crossedStalksPerInstance": 4,
+          "totalInstances": 4,
+          "maximumInstances": 500000,
+          "budgetUnitsUsed": 40,
+          "kitInstances": 4,
+          "maximumKitInstances": 12000,
+          "configuredPatches": 0,
+          "budgetLimitedPatches": 0,
+          "wind": {
+            "gpu": true,
+            "rootAnchored": true,
+            "worldSpaceDirection": true,
+            "zones": 0,
+            "maximumZones": 32,
+            "settings": {
+              "enabled": true,
+              "strength": 0.35,
+              "speed": 1,
+              "direction": 0.65,
+              "gusts": true,
+              "gustStrength": 0.35,
+              "gustFrequency": 0.18,
+              "turbulence": 0.2
+            },
+            "time": 0.5501000000000004
+          },
+          "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+          "colorGradient": [
+            "#315e36",
+            "#bbc975"
+          ],
+          "visibleTallGrassBatches": 2,
+          "tallGrassTriangles": 3360
+        },
+        "collisionBodies": 16,
+        "loadedGLBs": 17,
+        "environmentKit": {
+          "loadedModels": 12,
+          "models": [
+            {
+              "id": "tree:kit-pine-high",
+              "asset": "pine_high",
+              "targetHeight": 7.2,
+              "height": 7.200000319443,
+              "parts": 2,
+              "roofRemoved": false
+            },
+            {
+              "id": "tree:kit-pine-young",
+              "asset": "pine_young",
+              "targetHeight": 4.2,
+              "height": 4.20000012584118,
+              "parts": 2,
+              "roofRemoved": false
+            },
+            {
+              "id": "tree:kit-oak-green",
+              "asset": "oak_green",
+              "targetHeight": 5.8,
+              "height": 5.800760089837637,
+              "parts": 2,
+              "roofRemoved": false
+            },
+            {
+              "id": "tree:kit-oak-autumn",
+              "asset": "oak_autumn",
+              "targetHeight": 5.8,
+              "height": 5.8104705479164975,
+              "parts": 2,
+              "roofRemoved": false
+            },
+            {
+              "id": "wall:kit-stone",
+              "asset": "wall_stone_3m",
+              "targetHeight": 1.5,
+              "height": 1.5071715221587463,
+              "parts": 1,
+              "roofRemoved": false
+            },
+            {
+              "id": "fence:kit-wood",
+              "asset": "fence_wood_3m",
+              "targetHeight": 1.5,
+              "height": 1.5000000132047213,
+              "parts": 1,
+              "roofRemoved": false
+            },
+            {
+              "id": "ruin:kit-arch",
+              "asset": "ruin_arch",
+              "targetHeight": 3.5,
+              "height": 3.2202345696526167,
+              "parts": 1,
+              "roofRemoved": false
+            },
+            {
+              "id": "rock:kit-cluster",
+              "asset": "rock_cluster",
+              "targetHeight": 1.7,
+              "height": 1.8015281492910342,
+              "parts": 1,
+              "roofRemoved": false
+            },
+            {
+              "id": "rock:kit-single",
+              "asset": "rock_single",
+              "targetHeight": 1.6,
+              "height": 1.6667268816925302,
+              "parts": 1,
+              "roofRemoved": false
+            },
+            {
+              "id": "grass:kit-tall",
+              "asset": "grass_tall_patch",
+              "targetHeight": 1.95,
+              "height": 1.9514162020541976,
+              "parts": 2,
+              "roofRemoved": false
+            },
+            {
+              "id": "house:kit-timber",
+              "asset": "house_timbersmall",
+              "targetHeight": 5.5,
+              "height": 3.751608760818051,
+              "parts": 2,
+              "roofRemoved": true
+            },
+            {
+              "id": "crate:kit-wood",
+              "asset": "crate_wood",
+              "targetHeight": 1,
+              "height": 1.0000000125483466,
+              "parts": 1,
+              "roofRemoved": false
+            }
+          ],
+          "placements": 12
+        }
+      }
+    },
+    {
+      "name": "Rotated and scaled wall blocks real walking, rolling and arrows at its visible body",
+      "evidence": {
+        "walkLocal": [
+          0.005847135047037222,
+          0.7212318142193382
+        ],
+        "rollLocal": [
+          0.00584713504700507,
+          0.7212318142193382
+        ],
+        "impact": {
+          "type": "wall",
+          "point": {
+            "x": -81.66635265953485,
+            "y": 2.7224036156129596,
+            "z": 44.4251344758736
+          },
+          "normal": {
+            "x": 0.7071067811865475,
+            "z": 0.7071067811865476
+          }
+        }
+      }
+    },
+    {
+      "name": "Rotated and scaled fence blocks real walking, rolling and arrows at its visible body",
+      "evidence": {
+        "walkLocal": [
+          -5.38458166943201e-14,
+          0.4841875188412623
+        ],
+        "rollLocal": [
+          -5.38458166943201e-14,
+          0.4841875188412623
+        ],
+        "impact": {
+          "type": "fence",
+          "point": {
+            "x": -70.27213894304874,
+            "y": 2.6981407305007488,
+            "z": 44.170315484913004
+          },
+          "normal": {
+            "x": -0.7071067811865475,
+            "z": 0.7071067811865476
+          }
+        }
+      }
+    },
+    {
+      "name": "Rotated and scaled crate blocks real walking, rolling and arrows at its visible body",
+      "evidence": {
+        "walkLocal": [
+          5.434370219239154e-17,
+          0.8875000078427142
+        ],
+        "rollLocal": [
+          5.434370219239154e-17,
+          0.8875000078427142
+        ],
+        "impact": {
+          "type": "crate",
+          "point": {
+            "x": -48.94499998745165,
+            "y": 2.755486933316096,
+            "z": 57.07200010935415
+          },
+          "normal": {
+            "x": 1,
+            "z": 6.123233995736766e-17
+          }
+        }
+      }
+    },
+    {
+      "name": "The GLB ruin arch has a traversable center while its actual pillar remains solid",
+      "evidence": {
+        "centerCrossing": [
+          -0.23312243291525075,
+          -2.415456663774549
+        ],
+        "pillarStop": [
+          -1.8294615207902551,
+          1.067876669558802
+        ]
+      }
+    },
+    {
+      "name": "The timber GLB house stays roofless and its visible front opening leads to the interior",
+      "evidence": {
+        "localPosition": [
+          0.7416988349682345,
+          0.03979776065431564
+        ],
+        "house": {
+          "id": "qa-kit-timber-house",
+          "name": "Fachwerkhaus",
+          "x": -66,
+          "y": 1.056843588842075,
+          "z": 62,
+          "halfWidth": 4.140926651091623,
+          "halfDepth": 3.7480694768924527,
+          "rotation": 0.2,
+          "scale": 1.5,
+          "floorHeight": 0.46718146832828583,
+          "roofVisible": false,
+          "interiorVisible": true
+        }
+      }
+    },
+    {
+      "name": "The kit grass remains an editable rendered hiding area",
+      "evidence": {
+        "id": "qa-kit-tall-grass",
+        "x": -82,
+        "z": 57,
+        "radius": 2.4,
+        "aspect": 0.72,
+        "yaw": 0.2,
+        "variant": "tall",
+        "assetVariant": "kit-tall",
+        "type": "tall",
+        "renderVariant": "kit-tall",
+        "height": 2.34,
+        "minBladeHeight": 2.34,
+        "maxBladeHeight": 2.34,
+        "settings": null,
+        "instanceCount": 4,
+        "crossedStalksPerInstance": 0,
+        "crossedStalkCount": 0,
+        "modelTrianglesPerInstance": 1248,
+        "requestedInstances": 4,
+        "budgetLimited": false,
+        "rootAnchored": true,
+        "colorSamples": [],
+        "rootHeightRange": [
+          1.0582443696911459,
+          1.0654319260551346
+        ]
+      }
+    },
+    {
+      "name": "Standalone game bytes import and render all twelve kit models offline without external resource requests",
+      "evidence": {
+        "source": "standalone HTML served only by an in-memory route in an offline browser context",
+        "limitation": "Managed Chromium blocks file:// navigation; no actual file:// opening is claimed.",
+        "sha256": "a39db278153bec33906ead7a7fe75dd1097e9e4466a7cc36c3b5cb09c5619514",
+        "models": 12,
+        "inMemoryDocumentNavigations": 2,
+        "externalResourceRequests": []
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/screenshots/environment-kit-trees.png",
+    "docs/screenshots/environment-kit-house.png",
+    "docs/screenshots/environment-kit-props.png"
+  ],
+  "note": "Actual Chromium WebGL2 and keyboard input; fixture contains every existing kit variant, not new source assets.",
+  "served_editor_sha256": "f7a9c381c058e210ee9508839fe34736e11e311763ae695db02b33f1c5ee00aa",
+  "served_game_sha256": "421ab949f8823ad48ebbe77106b512662bc340ae44163a070705e046a8feeac6"
+}

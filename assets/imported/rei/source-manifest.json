@@ -1,0 +1,30 @@
+{
+  "source": "User supplied the four attached files and explicitly requested local project integration.",
+  "license": "No license or author-rights document was supplied. No independent public license or ownership claim is made.",
+  "originals": [
+    {
+      "file": "assets/imported/rei/source/Rei_flowersGN_sample.blend",
+      "bytes": 204191,
+      "sha256": "a320b798284e1a7f5b7dc141c4c34318735313dc9b21d96fbedb6c46cc96c6b5"
+    },
+    {
+      "file": "assets/imported/rei/source/Rei_treeLeavesGN.glb",
+      "bytes": 626060,
+      "sha256": "a6fe4e7bd888cb8c02ce71056a8d74f3f317289cc5c530f19518ba4067e7f018"
+    },
+    {
+      "file": "assets/imported/rei/source/Rei_treeLeavesGN_samples.glb",
+      "bytes": 2088344,
+      "sha256": "ea9d87324749667cdf8a8f522cbebce3b1a24a164614739338a27a02b14c0917"
+    },
+    {
+      "file": "assets/imported/rei/source/grassGN3_3_v2_Rei.glb",
+      "bytes": 2768,
+      "sha256": "ae42e66d8c65140454fe9f8821336136d970b8ea67e5e420eabd6f644d43bbd4"
+    }
+  ],
+  "limitations": [
+    "Tree GLBs lack original Blender shader colours/textures; use separately documented replacement runtime materials.",
+    "grassGN3_3_v2_Rei.glb contains a ground plane and helper cube but no grass blades."
+  ]
+}

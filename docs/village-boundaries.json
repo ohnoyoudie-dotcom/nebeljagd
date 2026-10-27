@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "Actual keyboard crossing of the wooden bridge",
+      "evidence": {
+        "midpoint": {
+          "x": 10.74000000000002,
+          "y": 0.28,
+          "z": 5.5
+        },
+        "end": {
+          "x": 16.900000000000045,
+          "y": 0.0009944359799692788,
+          "z": 5.5
+        }
+      }
+    },
+    {
+      "name": "Gate opening is passable and closed fence blocks movement",
+      "evidence": {
+        "gateEnd": {
+          "x": -21.99999999999999,
+          "y": 0.0014788631919010467,
+          "z": -6
+        },
+        "fenceEnd": {
+          "x": -24.150000000000002,
+          "y": 0.08337526929034249,
+          "z": -10
+        }
+      }
+    }
+  ],
+  "javascript_or_shader_errors": [],
+  "screenshots": [
+    "village-bridge.png",
+    "village-gate.png"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "status": "completed_baseline_and_candidate_high_low_deferred",
+  "environment": {
+    "browser": "Headless system Chromium",
+    "renderer": "ANGLE SwiftShader software rasterizer",
+    "viewport": {
+      "width": 1024,
+      "height": 768,
+      "deviceScaleFactor": 1
+    },
+    "camera": "Unmodified actual game camera at default spawn (-8,8), same orthographic framing",
+    "sampling": "12 warmup frames and 24 requestAnimationFrame intervals per captured scenario"
+  },
+  "evidence_limits": [
+    "A separate QA browser ran concurrently during part of these captures. Software timings therefore are not a controlled performance comparison.",
+    "No iPad, Safari, hardware GPU, 30 FPS or 60 FPS completion claim is supported.",
+    "Battlerite reference screenshots were mentioned but were not supplied.",
+    "Candidate low was intentionally cancelled before capture at parent request, to release software-renderer capacity for functional QA."
+  ],
+  "scenarios": [
+    {
+      "name": "baseline_high",
+      "url": "http://127.0.0.1:4173/versions/nebeljagd-3d-v011.html",
+      "screenshot": "test-results/art-baseline.png",
+      "rendering": {
+        "calls": 405,
+        "triangles": 601712,
+        "geometries": 152,
+        "textures": 4
+      },
+      "software_timing_ms": {
+        "sample_frames": 24,
+        "mean": 1454.1083333333331,
+        "median": 1391.7000000000007,
+        "p95": 2033.300000000003,
+        "minimum": 16.599999999998545,
+        "maximum": 4699.800000000003
+      },
+      "javascript_or_shader_errors": []
+    },
+    {
+      "name": "candidate_high",
+      "url": "http://127.0.0.1:4173/?inspect=1&quality=high",
+      "screenshot": "test-results/art-candidate_high.png",
+      "rendering": {
+        "calls": 317,
+        "triangles": 1008450,
+        "geometries": 182,
+        "textures": 23,
+        "frameMs": 1791.9068181818182
+      },
+      "software_timing_ms": {
+        "sample_frames": 24,
+        "mean": 1427.720833333333,
+        "median": 1258.3499999999913,
+        "p95": 2499.9000000000087,
+        "minimum": 16.79999999998836,
+        "maximum": 2883.199999999997
+      },
+      "javascript_or_shader_errors": []
+    }
+  ],
+  "submitted_work_delta": {
+    "calls_percent": -21.7283950617284,
+    "triangles_percent": 67.59679049113197,
+    "interpretation": "Candidate submits fewer draw calls and more triangles; there is no demonstrated hardware frame-rate improvement."
+  },
+  "visual_review": {
+    "improvements": [
+      "Primitive faceted canopy masses replaced by spatial leaf-and-branch crowns with distinct birch, broadleaf and conifer silhouettes.",
+      "Buildings have visible roof-shingle texture, stone foundation, timber framing, window boxes, porch details and distinct roof palettes.",
+      "Ground, foliage and lighting form a more restrained forest palette; character proportions are more human.",
+      "Spawn, gameplay HUD, hearts, weapon loot and minimap remain visible in actual gameplay view."
+    ],
+    "remaining_limits": [
+      "Tall-grass patches still have conspicuous compact geometric edge profiles rather than a fully natural meadow transition.",
+      "Some leaf sprig repetition is visible on close inspection; generated foliage is an art pass, not hand-painted production foliage.",
+      "Roof texture repetition is visible at this camera distance, though material detail is substantially improved."
+    ],
+    "defects_observed": "No missing textures, broken shaders, black geometry or obscured player observed in these spawn captures."
+  }
+}

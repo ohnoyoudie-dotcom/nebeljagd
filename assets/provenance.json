@@ -1,0 +1,67 @@
+{
+  "origin": "Original Nebeljagd assets and procedural sources, plus separately attributed user-supplied Rei assets.",
+  "external_asset_sources": [
+    {
+      "source": "User uploaded Rei files",
+      "manifest": "assets/imported/rei/source-manifest.json",
+      "derivations": "assets/imported/rei/runtime-manifest.json",
+      "licensing": "No separate rights or license document supplied; user requested local integration."
+    }
+  ],
+  "licensing": "Original project-created sources follow project licensing. Imported Rei geometry is user-supplied and attributed separately; no ownership or independent public-license claim is made.",
+  "sources": [
+    {
+      "path": "src/houses.js",
+      "sha256": "4a8a13f4ddcb4c536b2bf35f63e49c11f8089bd2dd145f2da000c5b513b1e6a2"
+    },
+    {
+      "path": "src/vegetation.js",
+      "sha256": "4a7be629a07f12155362becbf850e2ca5bdf0b912d87d7105b2db3c5435ef353"
+    },
+    {
+      "path": "src/village-details.js",
+      "sha256": "bbe18ecd243196b0c5c6f4d5d5344ad90ccc47b2e4a171402357a08d39e63330"
+    },
+    {
+      "path": "src/terrain-art.js",
+      "sha256": "300afa23dde40b53b5f68a6827f2afc02ebd6251764c63872ad748074e076a83"
+    },
+    {
+      "path": "src/stone-art.js",
+      "sha256": "3a0b6acb564ca9d3cf8d6b954f5460c464b615fad593513705c5d19978e767d4"
+    },
+    {
+      "path": "scripts/build-character.py",
+      "sha256": "5d5d60c4670e8fea42e51cb6d61cffc3660ecb3f7c2d6e2ef64a94228694f5b0"
+    },
+    {
+      "path": "assets/characters/ranger.glb",
+      "sha256": "73991f31736c923d9a14626e781c9e38c759e140295f8991dc23e6e8fcb89e59"
+    },
+    {
+      "path": "assets/characters/ranger.blend",
+      "sha256": "fb591c8ccf058071b800e0bfc8984bce0a27c94551acd5e6b34f0a454c008c59"
+    },
+    {
+      "path": "src/water.js",
+      "sha256": "73fcc7d53308fc2099e77f54a198eda3156d31f69fc844056c91ae80a7c3f69f"
+    },
+    {
+      "path": "src/character.js",
+      "sha256": "df7746ebfda9d2b1a05b18508cee87d81225d2435c48a18ff337711fef48510c"
+    },
+    {
+      "path": "src/weapons.js",
+      "sha256": "b1d821a0fb374bd940b47a0a2c777a3de9b0c9451fce8ddd20bf15dcac00e26a"
+    },
+    {
+      "path": "src/collision.js",
+      "sha256": "576657c65b45accccea9c97148589c3b4a56c6bced167ce1488d64c340ebf49e"
+    },
+    {
+      "path": "src/imported-garden.js",
+      "sha256": "54d1200a891474d2716a213ddc4d625496f4311e83b8c9fe672465f03af6ee36"
+    }
+  ],
+  "evidence": "Direct Blender export/GLB inspection and browser captures; no game-dev CLI package receipt is available."
+}

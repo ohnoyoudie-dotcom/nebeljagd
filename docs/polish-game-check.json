@@ -1,0 +1,469 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4174/nebeljagd.html",
+  "checks": [
+    {
+      "name": "Pale translucent fog, taller grass and a larger sharp minimap load without render errors",
+      "evidence": {
+        "vision": {
+          "radius": 18,
+          "direction": "360-degree",
+          "appearance": "translucent-blue-grey",
+          "sceneryTransmission": 0.42,
+          "blockerCount": 36,
+          "samples": 512,
+          "updates": 8,
+          "origin": {
+            "x": 30,
+            "y": 1.20030524489562,
+            "z": -42
+          },
+          "materials": 368
+        },
+        "grass": {
+          "tallHeight": [
+            2.25,
+            2.6
+          ],
+          "shortHeight": [
+            0.22,
+            0.42
+          ],
+          "bendsAwayFromPlayer": false
+        },
+        "minimap": {
+          "mode": "local",
+          "canvasPixels": 512,
+          "displayWidth": 240,
+          "spanMeters": 160,
+          "center": {
+            "x": 30,
+            "z": -42
+          },
+          "player": {
+            "x": 128,
+            "y": 128,
+            "direction": 3.141592653589793
+          },
+          "markers": [
+            {
+              "id": "obj-chest-start",
+              "kind": "chest",
+              "x": 124.8,
+              "y": 139.2
+            },
+            {
+              "id": "chest-obj-house-auenwacht-01",
+              "kind": "chest",
+              "x": 135.04,
+              "y": 114.72
+            },
+            {
+              "id": "obj-bow-start",
+              "kind": "bow",
+              "x": 134.4,
+              "y": 132.8
+            },
+            {
+              "id": "obj-sword-start",
+              "kind": "sword",
+              "x": 121.6,
+              "y": 132.8
+            },
+            {
+              "id": "obj-bow-0008",
+              "kind": "bow",
+              "x": 147.2,
+              "y": 126.4
+            },
+            {
+              "id": "obj-fireStaff-start",
+              "kind": "fireStaff",
+              "x": 136,
+              "y": 140.8
+            },
+            {
+              "id": "obj-iceStaff-start",
+              "kind": "iceStaff",
+              "x": 116.8,
+              "y": 139.2
+            },
+            {
+              "id": "obj-heart-start",
+              "kind": "heart",
+              "x": 140.8,
+              "y": 128
+            },
+            {
+              "id": "obj-heart-0008",
+              "kind": "heart",
+              "x": 147.2,
+              "y": 120
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Walking over the first bow equips automatically; an equipped weapon changes only on E",
+      "evidence": {
+        "automatic": {
+          "type": "bow",
+          "label": "Holzbogen",
+          "damage": 22,
+          "cooldown": 0.62,
+          "range": 25,
+          "effect": null,
+          "rarity": "common",
+          "rarityLabel": "Gewöhnlich",
+          "color": "#f1eee3",
+          "name": "Holzbogen · Gewöhnlich",
+          "burn": null,
+          "slow": null
+        },
+        "beforeE": "bow",
+        "afterE": {
+          "type": "fireStaff",
+          "label": "Feuerstab",
+          "damage": 26,
+          "cooldown": 0.8,
+          "range": 23,
+          "effect": "burn",
+          "rarity": "rare",
+          "rarityLabel": "Selten",
+          "color": "#5aa5ff",
+          "name": "Feuerstab · Selten",
+          "burn": {
+            "duration": 3,
+            "damagePerSecond": 6.4
+          },
+          "slow": null
+        }
+      }
+    },
+    {
+      "name": "Real WASD input blends idle, walk, turn and stop without freezing the fading gait",
+      "evidence": {
+        "walking": {
+          "speed": 5.596902727527195,
+          "walkWeight": 0.9975212478233336,
+          "playbackSpeed": 0.9994469156298563,
+          "yaw": 0,
+          "turnRate": 0,
+          "forwardLean": 0.034344499881590475,
+          "sideLean": 0
+        },
+        "turn": {
+          "elapsed": 2.6166666666666623,
+          "moving": true,
+          "position": {
+            "x": 30.560000000000002,
+            "y": 1.2436063405278155,
+            "z": -39.19999999999999
+          },
+          "direction": 1.5707963267948966,
+          "speed": 5.599308905097137,
+          "walkWeight": 0.9992534141916233,
+          "playbackSpeed": 0.9998765901959175,
+          "yaw": 1.3111454403531482,
+          "turnRate": 13.11145440353148,
+          "forwardLean": 0.034730930310627336,
+          "sideLean": -0.03843431834482889
+        },
+        "stopped": {
+          "speed": 0.0025358166434743964,
+          "walkWeight": 0,
+          "playbackSpeed": 0.42,
+          "yaw": 1.5707963028717002,
+          "turnRate": 1.2080370731628773e-06,
+          "forwardLean": 0.00019397325028683166,
+          "sideLean": -2.117633833699324e-06
+        }
+      }
+    },
+    {
+      "name": "A real fire hit updates HP immediately, flashes and eases the bar, and floats readable coalesced damage numbers",
+      "evidence": {
+        "firstHit": {
+          "elapsed": 4.016666666666658,
+          "actor": {
+            "id": "practice-3",
+            "name": "Übungsgegner 3",
+            "practice": true,
+            "position": {
+              "x": 41.886779999999995,
+              "y": 1.378340553084479,
+              "z": -38
+            },
+            "health": 114,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 3,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 3.173220000000036
+          },
+          "bar": {
+            "id": "practice-3",
+            "health": 114,
+            "maxHealth": 140,
+            "local": false,
+            "visible": true,
+            "displayedRatio": 0.8715535311807937,
+            "flash": 0.07999999999999999
+          },
+          "feedback": {
+            "capacity": 32,
+            "active": [
+              {
+                "targetId": "practice-3",
+                "amount": 26,
+                "text": "26",
+                "type": "fireStaff",
+                "age": 0.1,
+                "remaining": 0.85,
+                "position": {
+                  "x": 41.886779999999995,
+                  "y": 1.378340553084479,
+                  "z": -38
+                }
+              }
+            ],
+            "pending": [],
+            "emitted": 1
+          }
+        },
+        "laterFeedback": {
+          "capacity": 32,
+          "active": [
+            {
+              "targetId": "practice-3",
+              "amount": 26,
+              "text": "26",
+              "type": "fireStaff",
+              "age": 0.866600000000002,
+              "remaining": 0.08339999999999798,
+              "position": {
+                "x": 41.886779999999995,
+                "y": 1.378340553084479,
+                "z": -38
+              }
+            },
+            {
+              "targetId": "practice-3",
+              "amount": 2.2400000000000517,
+              "text": "2.2",
+              "type": "burn",
+              "age": 0.4166000000000022,
+              "remaining": 0.5333999999999979,
+              "position": {
+                "x": 41.886779999999995,
+                "y": 1.378340553084479,
+                "z": -38
+              }
+            },
+            {
+              "targetId": "practice-3",
+              "amount": 2.6666666666667282,
+              "text": "2.7",
+              "type": "burn",
+              "age": 0,
+              "remaining": 0.95,
+              "position": {
+                "x": 41.589279999999995,
+                "y": 1.377457090853547,
+                "z": -38
+              }
+            }
+          ],
+          "pending": [],
+          "emitted": 3
+        },
+        "laterBar": {
+          "id": "practice-3",
+          "health": 109.09333333333322,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 0.7812911934034715,
+          "flash": 0
+        }
+      }
+    },
+    {
+      "name": "Walls and range conceal actors, bars and pending/active damage numbers while actual burning continues",
+      "evidence": {
+        "wallDistance": 11.452242179909344,
+        "wallHealthBefore": 105.25333333333313,
+        "wallHealthAfter": 102.05333333333306,
+        "wallFeedback": {
+          "capacity": 32,
+          "active": [],
+          "pending": [],
+          "emitted": 4
+        },
+        "outsideBars": [
+          {
+            "id": "player",
+            "health": 61,
+            "maxHealth": 100,
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.6470847399410359,
+            "flash": 0
+          },
+          {
+            "id": "practice-1",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": false,
+            "displayedRatio": 1,
+            "flash": 0
+          },
+          {
+            "id": "practice-2",
+            "health": 140,
+            "maxHealth": 140,
+            "local": false,
+            "visible": false,
+            "displayedRatio": 1,
+            "flash": 0
+          },
+          {
+            "id": "practice-3",
+            "health": 98.74666666666631,
+            "maxHealth": 140,
+            "local": false,
+            "visible": false,
+            "displayedRatio": 0.7053333333333308,
+            "flash": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "Raised high grass hides the body without parting and preserves local health readability",
+      "evidence": {
+        "height": {
+          "tallHeight": [
+            2.25,
+            2.6
+          ],
+          "shortHeight": [
+            0.22,
+            0.42
+          ],
+          "bendsAwayFromPlayer": false
+        },
+        "concealment": 1,
+        "opacity": 0.4936899578506688
+      }
+    },
+    {
+      "name": "The larger minimap follows position and heading, marks places, and toggles between local and island views",
+      "evidence": {
+        "local": {
+          "mode": "local",
+          "canvasPixels": 512,
+          "displayWidth": 240,
+          "spanMeters": 160,
+          "center": {
+            "x": 30,
+            "z": -42
+          },
+          "player": {
+            "x": 128,
+            "y": 128,
+            "direction": 1.5707963267948966
+          },
+          "markers": [
+            {
+              "id": "obj-chest-start",
+              "kind": "chest",
+              "x": 124.8,
+              "y": 139.2
+            },
+            {
+              "id": "chest-obj-house-auenwacht-01",
+              "kind": "chest",
+              "x": 135.04,
+              "y": 114.72
+            },
+            {
+              "id": "obj-bow-start",
+              "kind": "bow",
+              "x": 134.4,
+              "y": 132.8
+            },
+            {
+              "id": "obj-sword-start",
+              "kind": "sword",
+              "x": 121.6,
+              "y": 132.8
+            },
+            {
+              "id": "obj-bow-0008",
+              "kind": "bow",
+              "x": 147.2,
+              "y": 126.4
+            },
+            {
+              "id": "obj-fireStaff-start",
+              "kind": "fireStaff",
+              "x": 136,
+              "y": 140.8
+            },
+            {
+              "id": "obj-iceStaff-start",
+              "kind": "iceStaff",
+              "x": 116.8,
+              "y": 139.2
+            },
+            {
+              "id": "obj-heart-start",
+              "kind": "heart",
+              "x": 140.8,
+              "y": 128
+            },
+            {
+              "id": "obj-heart-0008",
+              "kind": "heart",
+              "x": 147.2,
+              "y": 120
+            }
+          ]
+        },
+        "island": {
+          "mode": "island",
+          "canvasPixels": 512,
+          "displayWidth": 240,
+          "spanMeters": 1440,
+          "center": {
+            "x": 0,
+            "z": 0
+          },
+          "player": {
+            "x": 132.83333333333334,
+            "y": 121.23333333333333,
+            "direction": 1.5707963267948966
+          },
+          "markers": []
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/screenshots/polish-game-overview.png",
+    "docs/screenshots/polish-game-rarity.png",
+    "docs/screenshots/polish-game-hit-number.png",
+    "docs/screenshots/polish-game-burn-number.png",
+    "docs/screenshots/polish-game-cover.png",
+    "docs/screenshots/polish-game-grass.png",
+    "docs/screenshots/polish-game-minimap-island.png"
+  ],
+  "served_html_sha256": "2ae3bb403c71a5d97196ea95fc84dad35ceef0bb72e639eb504e4dd011e39c47"
+}

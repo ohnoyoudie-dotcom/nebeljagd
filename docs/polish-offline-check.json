@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "file": "nebeljagd.html",
+      "sha256": "2ae3bb403c71a5d97196ea95fc84dad35ceef0bb72e639eb504e4dd011e39c47",
+      "evidence": {
+        "objects": 4016,
+        "vision": {
+          "radius": 18,
+          "direction": "360-degree",
+          "appearance": "translucent-blue-grey",
+          "sceneryTransmission": 0.42,
+          "blockerCount": 36,
+          "samples": 512,
+          "updates": 5,
+          "origin": {
+            "x": 30,
+            "y": 1.20030524489562,
+            "z": -42
+          },
+          "materials": 368
+        },
+        "minimap": "local"
+      }
+    },
+    {
+      "file": "map-editor.html",
+      "sha256": "ae64f5f1e7cf97ade83e5de26df7ac255b69faf68638508e580b91c28c40399b",
+      "evidence": {
+        "objects": 4016,
+        "mode": "brush",
+        "brush": {
+          "radius": 4,
+          "activeStroke": false,
+          "pendingObjects": 0
+        }
+      }
+    }
+  ],
+  "httpRequests": [],
+  "errors": [],
+  "zipCRCAndContents": "passed",
+  "method": "Exact standalone HTML bytes via set_content with HTTP/S blocked; no direct file:// navigation claim."
+}

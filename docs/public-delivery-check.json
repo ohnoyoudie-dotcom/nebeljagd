@@ -1,0 +1,458 @@
+{
+  "status": "passed",
+  "checkedAt": "2026-10-27T16:51:03.480930+00:00",
+  "baseURL": "https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/",
+  "expectedObjects": 4020,
+  "expectedObjectCounts": {
+    "house": 31,
+    "ruin": 5,
+    "shrine": 4,
+    "tree": 2601,
+    "flower": 125,
+    "bush": 130,
+    "bow": 17,
+    "sword": 14,
+    "heart": 17,
+    "chest": 48,
+    "rock": 281,
+    "grass": 741,
+    "fireStaff": 1,
+    "iceStaff": 1,
+    "mound": 4
+  },
+  "http": [
+    {
+      "url": "https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/",
+      "status": 200,
+      "bytes": 3985849,
+      "contentType": "text/html; charset=utf-8",
+      "sha256": "46ee7c51b4eb4bb74e62b190e8c9a2c6ba74580741267f56ea17c8b7d62d2da7",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html",
+      "status": 200,
+      "bytes": 722052,
+      "contentType": "text/html; charset=utf-8",
+      "sha256": "fd3ba3301fd3005fe2f50cc8c8f22c63a1c19f829ef55b3c7698b2be7cdf881b",
+      "matchesLocal": true
+    },
+    {
+      "url": "https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip",
+      "status": 200,
+      "bytes": 1777806,
+      "contentType": "application/x-zip-compressed",
+      "sha256": "1898609561661e76556ac02d0c9cd0e760df76d785f72e10b434824c92abc832",
+      "matchesLocal": true,
+      "zipIntegrity": null,
+      "zipFiles": [
+        "nebeljagd.html",
+        "map-editor.html",
+        "worldmap.json",
+        "worldmap.svg",
+        "worldmap.schema.json",
+        "Anleitung.txt"
+      ],
+      "zipContentsMatchLocal": true
+    }
+  ],
+  "javascriptOrShaderErrors": [],
+  "browserHarnessNote": "Ephemeral Chromium context ignores the execution environment TLS proxy certificate; urllib HTTPS download validation uses its normal certificate verification.",
+  "gameBrowser": {
+    "source": "project",
+    "objects": 4020,
+    "trees": 2601,
+    "houses": 31,
+    "mounds": 4,
+    "glbs": 5,
+    "phase": "ready",
+    "renderCalls": 523,
+    "roofless": true,
+    "interiorsVisible": true,
+    "visionRadius": 18,
+    "visionDirection": "360-degree",
+    "visionAppearance": "translucent-blue-grey",
+    "sceneryTransmission": 0.42,
+    "minimap": {
+      "mode": "local",
+      "canvasPixels": 512,
+      "displayWidth": 0,
+      "spanMeters": 160,
+      "center": {
+        "x": 30,
+        "z": -42
+      },
+      "player": {
+        "x": 128,
+        "y": 128,
+        "direction": 3.141592653589793
+      },
+      "markers": [
+        {
+          "id": "obj-chest-start",
+          "kind": "chest",
+          "x": 124.8,
+          "y": 139.2
+        },
+        {
+          "id": "chest-obj-house-auenwacht-01",
+          "kind": "chest",
+          "x": 135.04,
+          "y": 114.72
+        },
+        {
+          "id": "obj-bow-start",
+          "kind": "bow",
+          "x": 134.4,
+          "y": 132.8
+        },
+        {
+          "id": "obj-sword-start",
+          "kind": "sword",
+          "x": 121.6,
+          "y": 132.8
+        },
+        {
+          "id": "obj-bow-0008",
+          "kind": "bow",
+          "x": 147.2,
+          "y": 126.4
+        },
+        {
+          "id": "obj-fireStaff-start",
+          "kind": "fireStaff",
+          "x": 136,
+          "y": 140.8
+        },
+        {
+          "id": "obj-iceStaff-start",
+          "kind": "iceStaff",
+          "x": 116.8,
+          "y": 139.2
+        },
+        {
+          "id": "obj-heart-start",
+          "kind": "heart",
+          "x": 140.8,
+          "y": 128
+        },
+        {
+          "id": "obj-heart-0008",
+          "kind": "heart",
+          "x": 147.2,
+          "y": 120
+        }
+      ]
+    },
+    "chests": 48,
+    "crystalObjects": 0,
+    "crystalPickups": 0,
+    "healthBars": [
+      {
+        "id": "player",
+        "health": 72,
+        "maxHealth": 100,
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.72,
+        "flash": 0
+      },
+      {
+        "id": "practice-1",
+        "health": 140,
+        "maxHealth": 140,
+        "local": false,
+        "visible": true,
+        "displayedRatio": 1,
+        "flash": 0
+      },
+      {
+        "id": "practice-2",
+        "health": 140,
+        "maxHealth": 140,
+        "local": false,
+        "visible": true,
+        "displayedRatio": 1,
+        "flash": 0
+      },
+      {
+        "id": "practice-3",
+        "health": 140,
+        "maxHealth": 140,
+        "local": false,
+        "visible": true,
+        "displayedRatio": 1,
+        "flash": 0
+      }
+    ]
+  },
+  "hostedStaffPickup": {
+    "mapObject": "obj-fireStaff-start",
+    "type": "fireStaff",
+    "automaticWhenUnarmed": true,
+    "rarity": "rare",
+    "damage": 26,
+    "burn": {
+      "duration": 3,
+      "damagePerSecond": 6.4
+    }
+  },
+  "manualWeaponSwap": {
+    "automaticReplacementBlocked": true,
+    "key": "E",
+    "equipped": "sword"
+  },
+  "minimapViews": {
+    "local": {
+      "mode": "local",
+      "canvasPixels": 512,
+      "displayWidth": 240,
+      "spanMeters": 160,
+      "center": {
+        "x": 26,
+        "z": -39
+      },
+      "player": {
+        "x": 128,
+        "y": 128,
+        "direction": 3.141592653589793
+      },
+      "markers": [
+        {
+          "id": "obj-chest-start",
+          "kind": "chest",
+          "x": 131.2,
+          "y": 134.4
+        },
+        {
+          "id": "chest-obj-house-auenwacht-01",
+          "kind": "chest",
+          "x": 141.44,
+          "y": 109.92
+        },
+        {
+          "id": "obj-bow-start",
+          "kind": "bow",
+          "x": 140.8,
+          "y": 128
+        },
+        {
+          "id": "obj-sword-start",
+          "kind": "sword",
+          "x": 128,
+          "y": 128
+        },
+        {
+          "id": "obj-bow-0008",
+          "kind": "bow",
+          "x": 153.6,
+          "y": 121.6
+        },
+        {
+          "id": "obj-iceStaff-start",
+          "kind": "iceStaff",
+          "x": 123.2,
+          "y": 134.4
+        },
+        {
+          "id": "obj-heart-start",
+          "kind": "heart",
+          "x": 147.2,
+          "y": 123.2
+        },
+        {
+          "id": "obj-heart-0008",
+          "kind": "heart",
+          "x": 153.6,
+          "y": 115.2
+        }
+      ]
+    },
+    "island": {
+      "mode": "island",
+      "canvasPixels": 512,
+      "displayWidth": 240,
+      "spanMeters": 1440,
+      "center": {
+        "x": 0,
+        "z": 0
+      },
+      "player": {
+        "x": 132.1888888888889,
+        "y": 121.71666666666667,
+        "direction": 3.141592653589793
+      },
+      "markers": []
+    },
+    "actualButtonsWork": true
+  },
+  "editorTools": {
+    "grassBrushToggle": true,
+    "eraserToggle": true,
+    "moundVariantAvailable": true,
+    "assetPreviewLoaded": true,
+    "assetVariant": "rei-tree01"
+  },
+  "editorBrowser": {
+    "url": "https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html",
+    "baseObjects": 4020,
+    "editedObjects": 4022,
+    "addedObjects": [
+      {
+        "id": "object-chest-mvqxaepf-1",
+        "name": "Holztruhe",
+        "kind": "chest",
+        "variant": "wood",
+        "position": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "scale": 1
+      },
+      {
+        "id": "object-iceStaff-mvqxaj8s-2",
+        "name": "Eisstab",
+        "kind": "iceStaff",
+        "variant": "frost",
+        "position": [
+          0,
+          0
+        ],
+        "rotation": 0,
+        "scale": 1,
+        "rarity": "legendary"
+      }
+    ],
+    "popupURL": "https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/index.html?mapSource=editor",
+    "popupGame": {
+      "source": "editor",
+      "objects": 4022,
+      "trees": 2601,
+      "houses": 31,
+      "mounds": 4,
+      "glbs": 5,
+      "phase": "ready",
+      "renderCalls": 523,
+      "roofless": true,
+      "interiorsVisible": true,
+      "visionRadius": 18,
+      "visionDirection": "360-degree",
+      "visionAppearance": "translucent-blue-grey",
+      "sceneryTransmission": 0.42,
+      "minimap": {
+        "mode": "local",
+        "canvasPixels": 512,
+        "displayWidth": 0,
+        "spanMeters": 160,
+        "center": {
+          "x": 30,
+          "z": -42
+        },
+        "player": {
+          "x": 128,
+          "y": 128,
+          "direction": 3.141592653589793
+        },
+        "markers": [
+          {
+            "id": "obj-chest-start",
+            "kind": "chest",
+            "x": 124.8,
+            "y": 139.2
+          },
+          {
+            "id": "chest-obj-house-auenwacht-01",
+            "kind": "chest",
+            "x": 135.04,
+            "y": 114.72
+          },
+          {
+            "id": "obj-bow-start",
+            "kind": "bow",
+            "x": 134.4,
+            "y": 132.8
+          },
+          {
+            "id": "obj-sword-start",
+            "kind": "sword",
+            "x": 121.6,
+            "y": 132.8
+          },
+          {
+            "id": "obj-bow-0008",
+            "kind": "bow",
+            "x": 147.2,
+            "y": 126.4
+          },
+          {
+            "id": "obj-fireStaff-start",
+            "kind": "fireStaff",
+            "x": 136,
+            "y": 140.8
+          },
+          {
+            "id": "obj-iceStaff-start",
+            "kind": "iceStaff",
+            "x": 116.8,
+            "y": 139.2
+          },
+          {
+            "id": "obj-heart-start",
+            "kind": "heart",
+            "x": 140.8,
+            "y": 128
+          },
+          {
+            "id": "obj-heart-0008",
+            "kind": "heart",
+            "x": 147.2,
+            "y": 120
+          }
+        ]
+      },
+      "chests": 49,
+      "crystalObjects": 0,
+      "crystalPickups": 0,
+      "healthBars": [
+        {
+          "id": "player",
+          "health": 72,
+          "maxHealth": 100,
+          "local": true,
+          "visible": true,
+          "displayedRatio": 0.72,
+          "flash": 0
+        },
+        {
+          "id": "practice-1",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-2",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        },
+        {
+          "id": "practice-3",
+          "health": 140,
+          "maxHealth": 140,
+          "local": false,
+          "visible": true,
+          "displayedRatio": 1,
+          "flash": 0
+        }
+      ]
+    },
+    "exactObjectDocumentReceived": true
+  }
+}
