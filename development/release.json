@@ -1,10 +1,10 @@
 {
   "branch": "work",
-  "baseCommit": "ff87070e776b7e3dee90f157bf6aca22db97727f",
+  "commit": "e78c26d3d316a93cb4c7d4f2623950a921828b5b",
   "files": {
     "nebeljagd.html": {
-      "bytes": 4446261,
-      "sha256": "1bf915dd62e8083e249261db2d5002b00d90f2e73d17bc4f178f9b2be4f92970"
+      "bytes": 4445973,
+      "sha256": "4ca2dd6943988294e09231cdfe7d85ed0c1a7cc9e45d43e404700eb1ccf3e7b8"
     },
     "map-editor.html": {
       "bytes": 3650914,
@@ -23,10 +23,9 @@
       "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 3211263,
-      "sha256": "943a59a83d3db12f1d55cb320d1e7e16d8a54ea837422a12aae4f905addd33f1"
+      "bytes": 3211176,
+      "sha256": "9c1b1c406aa2be1b9e736afe321843ca0e73609a9511333585c4edc2882fc831"
     }
   },
-  "visibility": "full camera view, only obstacle line of sight",
-  "roll": "lateral roll pivot"
+  "behavior": "Scenery remains fully visible. Occlusion applies to actors and interactions. The dodge animation rolls laterally."
 }
