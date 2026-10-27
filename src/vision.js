@@ -20,13 +20,9 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     uniform vec2 uTacticalOrigin;
     uniform float uTacticalRadius;
     vec3 applyTacticalSight(vec3 color, vec2 point) {
-      vec2 delta = point - uTacticalOrigin;
-      float distanceToViewer = length(delta);
-      float angle = atan(delta.y, delta.x) / 6.28318530718;
-      float limit = texture2D(uTacticalSight, vec2(fract(angle + .5 / ${samples.toFixed(1)}), .5)).r * uTacticalRadius;
-      float obstacleFade = 1. - smoothstep(limit + .12, limit + .7, distanceToViewer);
-      float visibility = obstacleFade;
-      return mix(vec3(0.), color, visibility);
+      // Leave scenery completely clear. Cover is enforced for actors, health bars,
+      // interaction and combat by isVisible() below.
+      return color;
     }
   `;
   function register(object = scene) {
