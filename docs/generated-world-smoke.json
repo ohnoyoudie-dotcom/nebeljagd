@@ -10,7 +10,7 @@
         "terrainChunks": 324,
         "visibleTerrainChunks": 18,
         "terrainTriangles": 229376,
-        "generationMs": 2572,
+        "generationMs": 2603,
         "terrainArt": {
           "ground": "painted-woodland",
           "mainPaths": "irregular-grey-cobbles",
@@ -81,7 +81,7 @@
               "gustFrequency": 0.18,
               "turbulence": 0.2
             },
-            "time": 0.41669999999999985
+            "time": 0.4166000000000004
           },
           "crossedStalkDensityPerSquareMeter": 35.367765131532295,
           "colorGradient": [
@@ -114,6 +114,7 @@
       "name": "Ten distributed map-placed Holzkisten are registered as destructible solid objects",
       "evidence": {
         "crates": 10,
+        "breakableDiningTables": 31,
         "health": 55
       }
     },
@@ -147,13 +148,13 @@
         "impact": {
           "type": "tree",
           "point": {
-            "x": 17.92799991384594,
-            "y": 2.773448126986723,
-            "z": -41.59616831774388
+            "x": 17.927999915902763,
+            "y": 2.773448127416763,
+            "z": -41.59616831737716
           },
           "normal": {
-            "x": -0.1755243445979019,
-            "z": 0.9844750908242813
+            "x": -0.17552433958370706,
+            "z": 0.9844750917182737
           }
         }
       }
@@ -190,6 +191,28 @@
     },
     {
       "stage": "world",
+      "name": "Three sword hits break the house dining table and remove its collision and sight blockers",
+      "evidence": {
+        "table": {
+          "id": "obj-house-auenwacht-01-furniture-dining-table",
+          "name": "Auenwacht · Kräuterhaus · Esstisch",
+          "kind": "furniture",
+          "x": 30,
+          "z": -56.72,
+          "health": 0,
+          "maxHealth": 66,
+          "destroyed": true
+        },
+        "freedBodies": 3,
+        "freedPosition": {
+          "x": 30,
+          "y": 1.600936192460269,
+          "z": -56.72
+        }
+      }
+    },
+    {
+      "stage": "world",
       "name": "A rotated house has a usable entrance, an elevated floor, roof cutaway and solid neighbouring wall",
       "evidence": {
         "object": {
@@ -205,14 +228,14 @@
           "scale": 1
         },
         "inside": {
-          "x": 57,
+          "x": 57.00048311305353,
           "y": 1.9153116494281572,
-          "z": -44.59333333333332
+          "z": -44.430004849021735
         },
         "wallStop": {
-          "x": 53.00496330583317,
-          "y": 1.395977967049881,
-          "z": -47.616372366477755
+          "x": 53.00451736358213,
+          "y": 1.3959760743170828,
+          "z": -47.616373076709884
         }
       }
     },
@@ -308,14 +331,14 @@
           "z": -17
         },
         "bridgeEnd": {
-          "x": -116.90666666666681,
-          "y": 0.7043143529839333,
+          "x": -117.09333333333348,
+          "y": 0.7212929245818201,
           "z": -17
         },
         "coastStop": {
-          "x": 529.4702760256212,
+          "x": 529.461590825576,
           "y": 0.52,
-          "z": -154.88674639072255
+          "z": -154.94535383673852
         }
       }
     },

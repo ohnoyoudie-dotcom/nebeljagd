@@ -83,7 +83,7 @@ export function createHouses(root, houseSites) {
     { kind: 'Waldgasthaus', wall: '#d8c9a9', wood: '#78604a', roof: '#637482', trim: '#493d36', rise: 3.0, linen: '#8b6762', symbol: 'moon' },
     { kind: 'Jägerhaus', wall: '#a2a390', wood: '#887151', roof: '#a37758', trim: '#4f4838', rise: 2.1, linen: '#77836b', symbol: 'antlers' },
   ];
-  const walls = [], houses = [];
+  const walls = [], houses = [], furniture = [];
   const halfWidth = 8, halfDepth = 7, floorHeight = .50, wallHeight = 3.35;
   const tint = new THREE.Color(), transform = new THREE.Object3D();
   const yAxis = new THREE.Vector3(0, 1, 0);
@@ -129,7 +129,10 @@ export function createHouses(root, houseSites) {
     function cylinder(parent, mat, x, y, z, radiusTop, radiusBottom, height, color, rotation = [0, 0, 0], segments = 12) {
       geometry(parent, mat, new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments), x, y, z, color, rotation);
     }
-    function collision(x, z, w, d) { walls.push({ minX: site.x + x - w / 2, maxX: site.x + x + w / 2, minZ: site.z + z - d / 2, maxZ: site.z + z + d / 2 }); }
+    function collision(x, z, w, d, type = 'house-wall', furnitureId = undefined, minY = 0, maxY = 4.2) {
+      walls.push({ minX: site.x + x - w / 2, maxX: site.x + x + w / 2,
+        minZ: site.z + z - d / 2, maxZ: site.z + z + d / 2, type, furnitureId, minY, maxY });
+    }
     function wall(parent, x, z, w, d, height = wallHeight, stone = false) {
       box(parent, stone ? materials.stone : materials.plaster, x, .37 + height / 2, z, w, height, d, style.wall);
       collision(x, z, w, d);
@@ -239,18 +242,21 @@ export function createHouses(root, houseSites) {
     for (const x of [-4, 4]) box(interior, W, x, 3.05, dividingZ, 2.5, .2, .33, style.trim);
     box(interior, C, 0, .536, 3.2, 5.2, .035, 3.6, '#c2ac7e');
     box(interior, C, 0, .559, 3.2, 4.85, .025, 3.25, style.linen);
-    box(interior, W, 0, 1.38, 3.28, 2.5, .16, 1.46, '#9c7c54');
-    collision(0, 3.28, 2.5, 1.46);
-    for (const x of [-1, 1]) for (const z of [2.75, 3.81]) box(interior, W, x, .97, z, .17, .98, .17, style.trim);
+    const diningTable = new THREE.Group(); diningTable.name = 'Möbel · Esstisch'; interior.add(diningTable);
+    box(diningTable, W, 0, 1.38, 3.28, 2.5, .16, 1.46, '#9c7c54');
+    collision(0, 3.28, 2.5, 1.46, 'furniture', 'dining-table', .5, 1.9);
+    for (const x of [-1, 1]) for (const z of [2.75, 3.81]) box(diningTable, W, x, .97, z, .17, .98, .17, style.trim);
     for (const x of [-2.25, 2.25]) {
-      box(interior, W, x, .98, 3.28, .55, .17, 1.23, '#92734d');
-      collision(x, 3.28, .62, 1.30);
-      for (const z of [2.9, 3.66]) box(interior, W, x, .73, z, .15, .52, .15, style.trim);
-      box(interior, W, x, 1.36, 3.8, .55, .72, .10, '#92734d');
+      box(diningTable, W, x, .98, 3.28, .55, .17, 1.23, '#92734d');
+      collision(x, 3.28, .62, 1.30, 'furniture', 'dining-table', .5, 1.9);
+      for (const z of [2.9, 3.66]) box(diningTable, W, x, .73, z, .15, .52, .15, style.trim);
+      box(diningTable, W, x, 1.36, 3.8, .55, .72, .10, '#92734d');
     }
-    cylinder(interior, C, -.45, 1.485, 3.2, .3, .3, .06, '#d6c9a5');
-    geometry(interior, C, new THREE.SphereGeometry(.17, 8, 6), -.42, 1.58, 3.2, '#bca16a');
-    cylinder(interior, S, .65, 1.64, 3.35, .12, .17, .36, '#8c9c7c');
+    cylinder(diningTable, C, -.45, 1.485, 3.2, .3, .3, .06, '#d6c9a5');
+    geometry(diningTable, C, new THREE.SphereGeometry(.17, 8, 6), -.42, 1.58, 3.2, '#bca16a');
+    cylinder(diningTable, S, .65, 1.64, 3.35, .12, .17, .36, '#8c9c7c');
+    furniture.push({ houseIndex, id: 'dining-table', name: 'Esstisch', groupName: diningTable.name,
+      x: 0, z: 3.28, y: .5, radius: 2.8, height: 1.2 });
     box(interior, S, -5.9, .88, .72, 2.2, .95, 1.45, '#727b6d');
     box(interior, W, -5.9, 1.40, .72, 2.35, .15, 1.6, style.wood);
     collision(-5.9, .72, 2.4, 1.7);
@@ -361,5 +367,5 @@ export function createHouses(root, houseSites) {
     interior.visible = true;
     houses.push({ name: site.name, x: site.x, z: site.z, halfWidth, halfDepth, floorHeight, group, roof, frontFacade, interior, kind: style.kind });
   }
-  return { houses, walls };
+  return { houses, walls, furniture };
 }

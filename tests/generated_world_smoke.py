@@ -109,13 +109,16 @@ def world_checks(browser):
         assert stats['totalObjects'] == len(SOURCE['objects']) == 4030
         assert stats['treeCount'] == 2601 and stats['houseCount'] == 31
         assert stats['grassPatchCount'] == 741 and stats['loadedGLBs'] == 6
-        assert len(world['destructibles']) == 10 and all(item['maxHealth'] > 0 for item in world['destructibles'])
+        crates = [item for item in world['destructibles'] if item['kind'] == 'crate']
+        furniture = [item for item in world['destructibles'] if item['kind'] == 'furniture']
+        assert len(crates) == 10 and len(furniture) == stats['houseCount']
+        assert all(item['maxHealth'] > 0 for item in world['destructibles'])
         assert world['importedAssets']['trees'] == 2 and world['importedAssets']['flowers'] > 1000
         assert 0 < stats['visibleTerrainChunks'] < stats['terrainChunks'] / 3
         assert full['position']['x'] == 30 and full['position']['z'] == -42
         passed('The actual island uses all 4030 persisted props and culls distant terrain sections', stats)
         passed('Ten distributed map-placed Holzkisten are registered as destructible solid objects',
-               {'crates': len(world['destructibles']), 'health': world['destructibles'][0]['maxHealth']})
+               {'crates': len(crates), 'breakableDiningTables': len(furniture), 'health': crates[0]['maxHealth']})
         capture(page, 'auenwacht')
 
         inspect(page, 30, -42)
@@ -174,6 +177,24 @@ def world_checks(browser):
         table_stop = state(page)['position']
         assert math.hypot(table_stop['x'] - 30, table_stop['z'] + 56.72) > .7, table_stop
         passed('Solid house furniture pushes the player out of the dining-table footprint', table_stop)
+        page.wait_for_function('window.nebeljagdTestState().attackCooldown < .02')
+        inspect(page, 30, -54.7, direction=math.pi)
+        table_id = 'obj-house-auenwacht-01-furniture-dining-table'
+        for hit_index in range(3):
+            previous_health = next(item for item in state(page)['world']['destructibles'] if item['id'] == table_id)['health']
+            page.keyboard.press('f')
+            page.wait_for_function('args => window.nebeljagdTestState().world.destructibles.find(o => o.id === args[0]).health < args[1]', arg=[table_id, previous_health])
+            if hit_index < 2:
+                page.wait_for_function('window.nebeljagdTestState().attackCooldown < .02')
+        table = next(item for item in state(page)['world']['destructibles'] if item['id'] == table_id)
+        assert table['destroyed'] and table['health'] == 0, table
+        furniture_bodies = [body for body in state(page, True)['world']['projectileObstacles'] if body.get('destructibleId') == table_id]
+        assert furniture_bodies and all(body['destroyed'] for body in furniture_bodies), furniture_bodies
+        inspect(page, 30, -56.72)
+        table_freed = state(page)['position']
+        assert table_freed['x'] == 30 and table_freed['z'] == -56.72, table_freed
+        passed('Three sword hits break the house dining table and remove its collision and sight blockers',
+               {'table': table, 'freedBodies': len(furniture_bodies), 'freedPosition': table_freed})
 
         # A seeded half-turn house uses a reversed entrance. Walk in through its
         # actual door, then repeat beside that door to verify the wall remains solid.

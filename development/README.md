@@ -18,11 +18,11 @@ Die vorhandenen Modelle bleiben im Objektkatalog auswählbar.
 
 Die mitgelieferte Ausgangskarte enthält 4.030 Objekte, darunter zehn
 zerstörbare Holzkisten. Möbel, Häuser und andere feste Objekte blocken
-die Bewegung; Kisten geben nach ihrer Zerstörung auch Sicht und Weg frei.
-Änderungen
-im Browser als JSON oder Editor-HTML sichern; sie überschreiben die Projektdatei
-nicht automatisch. Die SVG ist eine zusätzliche Grafikdatei und wird nicht
-automatisch zurück nach JSON gelesen.
+die Bewegung; Holzkisten und die Esstische in den 31 Häusern geben nach
+Zerstörung auch Sicht und Weg frei. Änderungen im Browser als JSON oder
+Editor-HTML sichern; sie überschreiben die Projektdatei nicht automatisch.
+Die SVG ist eine zusätzliche Grafikdatei und wird nicht automatisch zurück
+nach JSON gelesen.
 
 Dieses Paket gehört zum Entwicklungszweig `work`. Für die laufende
 Browser-Version bleiben die festen GitHub-Pages-Adressen erhalten; sie werden

@@ -452,12 +452,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   let damageHits = 0, lastDamage = null;
+  const blocksTarget = (collider, target) => collider?.objectId === target.id || collider?.destructibleId === target.id;
   function firstHit(start, end, radius) {
     const terrain = world?.traceProjectile?.(start, end, radius);
     const entity = combat?.traceSegment(start, end, radius, ownerId);
     if (!entity) return terrain;
     if (!terrain) return entity;
-    if (entity.target.destructible && terrain.collider?.objectId === entity.target.id) return entity;
+    if (entity.target.destructible && blocksTarget(terrain.collider, entity.target)) return entity;
     const distance = Math.hypot(end.x - start.x, end.z - start.z);
     const terrainT = distance > 1e-8 ? Math.hypot(terrain.point.x - start.x, terrain.point.z - start.z) / distance : 0;
     return entity.t < terrainT - .0001 ? entity : terrain;
@@ -576,7 +577,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
         const start = { x: position.x, y: position.y + 1.1, z: position.z };
         const end = { x: target.position.x, y: target.position.y + 1.1, z: target.position.z };
         const blocker = world?.traceProjectile?.(start, end, .06);
-        if (!blocker || blocker.collider?.objectId === target.id) {
+        if (!blocker || blocksTarget(blocker.collider, target)) {
           lastDamage = combat.hit(target, { ...equippedItem, sourceId: ownerId }); damageHits++;
         }
       }

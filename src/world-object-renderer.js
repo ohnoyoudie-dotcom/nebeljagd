@@ -274,7 +274,9 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     const bodies = localWalls.map((body, index) => {
       const local = { ...body, type: body.type ?? (house ? 'house-wall' : object.kind), minY: body.minY ?? 0, maxY: body.maxY ?? (house ? 4.2 : 3.6) };
       const corners = [[body.minX, body.minZ], [body.maxX, body.minZ], [body.maxX, body.maxZ], [body.minX, body.maxZ]].map(([a, b]) => toWorld({ x: a, z: b }));
-      const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)), minY: y, maxY: y + local.maxY * scale, rotation, oriented: true, corners };
+      const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, destructibleId: local.furnitureId ? `${object.id}-furniture-${local.furnitureId}` : undefined,
+        type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
+        minY: y + local.minY * scale, maxY: y + local.maxY * scale, rotation, oriented: true, corners };
       projectileObstacles.push(worldBody); local.worldBody = worldBody; return local;
     });
     const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index: createCollisionIndex([], bodies), bodies, group, house };
@@ -309,6 +311,16 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const structure = addStructure(object, localWalls, group, true);
       const record = { id: object.id, name: object.name, kind: template.kind, x, z, y: structure.y, halfWidth: 8 * scale, halfDepth: 7 * scale, rotation: object.rotation, scale, floorHeight: .5 * scale, group, roof: group.children.find(child => child.name === template.roof.name), frontFacade: group.children.find(child => child.name === template.frontFacade.name), interior: group.children.find(child => child.name === template.interior.name) };
       structure.record = record; houses.push(record);
+      for (const definition of templates.furniture.filter(item => item.houseIndex === variantIndex)) {
+        const furnitureGroup = group.getObjectByName(definition.groupName);
+        const bodies = structure.bodies.filter(body => body.furnitureId === definition.id);
+        if (!furnitureGroup || !bodies.length) continue;
+        const position = structure.toWorld({ x: definition.x, z: definition.z, y: definition.y });
+        const id = `${object.id}-furniture-${definition.id}`;
+        destructibles.push({ id, name: `${object.name} · ${definition.name}`, kind: 'furniture', x: position.x, z: position.z,
+          y: position.y, scale, position, radius: definition.radius * scale, height: definition.height * scale,
+          maxHealth: 66, health: 66, destroyed: false, structure, bodies, group: furnitureGroup, mesh: null, instanceIndex: -1, originalMatrix: null });
+      }
       continue;
     }
     if (object.kind === 'flower') {
@@ -439,7 +451,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     const item = destructibles.find(candidate => candidate.id === id);
     if (!item || item.destroyed) return false;
     item.destroyed = true; item.health = 0;
-    for (const body of item.structure.bodies) { body.destroyed = true; body.worldBody.destroyed = true; }
+    for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = true; body.worldBody.destroyed = true; }
+    if (item.group) item.group.visible = false;
     if (item.mesh && item.instanceIndex >= 0) {
       matrix.position.set(item.x, item.y + .01, item.z); matrix.rotation.set(0, 0, 0); matrix.scale.setScalar(0); matrix.updateMatrix();
       item.mesh.setMatrixAt(item.instanceIndex, matrix.matrix); item.mesh.instanceMatrix.needsUpdate = true;
@@ -449,7 +462,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function resetDestructibles() {
     for (const item of destructibles) {
       item.destroyed = false; item.health = item.maxHealth;
-      for (const body of item.structure.bodies) { body.destroyed = false; body.worldBody.destroyed = false; }
+      for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = false; body.worldBody.destroyed = false; }
+      if (item.group) item.group.visible = true;
       if (item.mesh && item.instanceIndex >= 0 && item.originalMatrix) {
         item.mesh.setMatrixAt(item.instanceIndex, item.originalMatrix); item.mesh.instanceMatrix.needsUpdate = true;
       }
