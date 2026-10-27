@@ -30,9 +30,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       // instead of drawing a sharp wedge across the terrain.
       float obstacleFade = 1. - smoothstep(limit + .08, limit + 2.8, distanceToViewer);
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
-      float luminance = dot(color, vec3(.2126, .7152, .0722));
-      vec3 softened = mix(color, vec3(luminance), .3);
-      vec3 shadow = mix(softened, vec3(.035, .045, .06), .9);
+      vec3 shadow = mix(color, vec3(0.0), .30);
       return mix(shadow, color, visibility);
     }
   `;
@@ -82,7 +80,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v4-soft-dark-shadow`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v5-black-30-shadow`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }
