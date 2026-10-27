@@ -5,8 +5,10 @@ import { createSightModel } from './visibility-model.js';
  * health bars, loot and interactions. */
 export function createVision(scene, world, { radius = 18, samples = 512 } = {}) {
   const sight = createSightModel({ obstacles: world.projectileObstacles, radius, samples });
-  const pixels = new Uint8Array(samples * 4);
-  const mask = new THREE.DataTexture(pixels, samples, 1, THREE.RGBAFormat);
+  // Half-float preserves the sight distance without visible 8-bit depth bands
+  // at the large match radius.
+  const pixels = new Uint16Array(samples * 4);
+  const mask = new THREE.DataTexture(pixels, samples, 1, THREE.RGBAFormat, THREE.HalfFloatType);
   mask.minFilter = mask.magFilter = THREE.LinearFilter;
   mask.wrapS = THREE.RepeatWrapping; mask.wrapT = THREE.ClampToEdgeWrapping;
   mask.generateMipmaps = false;
@@ -31,12 +33,17 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       float angle = atan(delta.y, delta.x) / 6.28318530718;
       float angleUv = fract(angle + .5 / ${samples.toFixed(1)});
       float texel = 1. / ${samples.toFixed(1)};
-      // A compact Gaussian filter softens the silhouette continuously, not in bands.
-      float obstacleFade = .1923 * tacticalSightFade(angleUv, distanceToViewer)
-        + .1731 * (tacticalSightFade(angleUv - texel, distanceToViewer) + tacticalSightFade(angleUv + texel, distanceToViewer))
-        + .125 * (tacticalSightFade(angleUv - 2. * texel, distanceToViewer) + tacticalSightFade(angleUv + 2. * texel, distanceToViewer))
-        + .0769 * (tacticalSightFade(angleUv - 3. * texel, distanceToViewer) + tacticalSightFade(angleUv + 3. * texel, distanceToViewer))
-        + .0288 * (tacticalSightFade(angleUv - 4. * texel, distanceToViewer) + tacticalSightFade(angleUv + 4. * texel, distanceToViewer));
+      float halfTexel = .5 * texel;
+      // A dense Gaussian filter keeps distant shadow contours smooth without bands.
+      float obstacleFade = .08995 * tacticalSightFade(angleUv, distanceToViewer)
+        + .08802 * (tacticalSightFade(angleUv - halfTexel, distanceToViewer) + tacticalSightFade(angleUv + halfTexel, distanceToViewer))
+        + .08248 * (tacticalSightFade(angleUv - 2. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 2. * halfTexel, distanceToViewer))
+        + .07399 * (tacticalSightFade(angleUv - 3. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 3. * halfTexel, distanceToViewer))
+        + .06357 * (tacticalSightFade(angleUv - 4. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 4. * halfTexel, distanceToViewer))
+        + .05229 * (tacticalSightFade(angleUv - 5. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 5. * halfTexel, distanceToViewer))
+        + .04118 * (tacticalSightFade(angleUv - 6. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 6. * halfTexel, distanceToViewer))
+        + .03106 * (tacticalSightFade(angleUv - 7. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 7. * halfTexel, distanceToViewer))
+        + .02243 * (tacticalSightFade(angleUv - 8. * halfTexel, distanceToViewer) + tacticalSightFade(angleUv + 8. * halfTexel, distanceToViewer));
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
       vec3 shadow = mix(color, vec3(0.0), .50);
       return mix(shadow, color, visibility);
@@ -88,7 +95,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v12-black-50-gaussian-edge`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v14-black-50-half-float-dense-gaussian-edge`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }
@@ -108,8 +115,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     if (timeSeconds - lastSampleTime < .065 && timeSeconds >= lastSampleTime && distance < .16) return;
     sight.update(player); origin.value.set(player.x, player.z);
     for (let i = 0; i < samples; i++) {
-      const value = Math.round(sight.distances[i] / radius * 255);
-      pixels[i * 4] = value; pixels[i * 4 + 1] = value; pixels[i * 4 + 2] = value; pixels[i * 4 + 3] = 255;
+      pixels[i * 4] = THREE.DataUtils.toHalfFloat(sight.distances[i] / radius);
     }
     mask.needsUpdate = true; lastSampleTime = timeSeconds; updates++;
   }

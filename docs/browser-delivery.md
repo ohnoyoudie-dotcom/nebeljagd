@@ -78,3 +78,9 @@ wurden geprüft. Berichte: `reference-world-check.json`, `object-eraser-check.js
 Vor Veröffentlichung wurden die zwischenzeitlich auf `main` ergänzten Ordner
 `Blender/` und `Welt und Editor/` per Fast-forward übernommen. Die Aktualisierung
 ändert ausschließlich die erzeugten Dateien unter `welt/`.
+
+Der aktuelle Schattenbuild speichert Sichtentfernungen mit Half-Float-Präzision
+und nutzt einen dichteren 17-Punkt-Gaußfilter. Das reduziert sichtbare
+Entfernungsstufen an langen Hindernisschatten. Der 50-Prozent-Schwarzwert bleibt
+erhalten. Der Build wurde mit 127 Node-Tests und einem lokalen WebGL-Browserlauf
+ohne Shader- oder Konsolenfehler geprüft.
