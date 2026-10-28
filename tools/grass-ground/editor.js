@@ -11,7 +11,7 @@ function reiEditorSync() {
   reiEditorLabels();
 }
 function reiEditorLabels(){
-  const format={height:v=>Number(v).toFixed(2)+' m',density:v=>Number(v).toFixed(1)+'×',groundBlend:v=>Math.round(v*100)+' %',windStrength:v=>Math.round(v*100)+' %',windSpeed:v=>Number(v).toFixed(1)+'×',windDirection:v=>v+'°'};
+  const format={height:v=>Number(v).toFixed(2)+' m',density:v=>Number(v).toFixed(1)+' / m²',groundBlend:v=>Math.round(v*100)+' %',windStrength:v=>Math.round(v*100)+' %',windSpeed:v=>Number(v).toFixed(1)+'×',windDirection:v=>v+'°'};
   for(const [key,fn]of Object.entries(format)){const output=document.getElementById('rei-'+key+'-value');if(output)output.textContent=fn(document.getElementById('rei-'+key).value);}
 }
 function reiPaintMap(svg,map) {
@@ -33,14 +33,14 @@ function reiPaintMap(svg,map) {
 function reiEditorMount(){
   if(!document.getElementById('rei-ground-panel')){
     const panel=document.createElement('section');panel.className='tool-section rei-ground-panel';panel.id='rei-ground-panel';
-    panel.innerHTML=`<div class="section-heading"><h2>Untergrund</h2><span class="count-badge">NEU · GRAS</span></div>
-      <label for="rei-type">Bodenstil</label><select id="rei-type"><option value="existing">Bisheriger Boden</option><option value="rei-grass">Rei-Wiese · mit Wind</option></select>
-      <canvas id="rei-ground-preview" width="320" height="120" aria-label="Schematische Materialvorschau des Grases"></canvas>
+    panel.innerHTML=`<div class="section-heading"><h2>Untergrund</h2><span class="count-badge">DICHTE WIESE</span></div>
+      <label for="rei-type">Bodenstil</label><select id="rei-type"><option value="existing">Bisheriger Boden</option><option value="rei-grass">Dichte Rei-Wiese · mit Wind</option></select>
+      <canvas id="rei-ground-preview" width="320" height="120" aria-label="Schematische Grasvorschau – das 3D-Spiel zeigt die echte Wiese"></canvas>
       <p id="rei-ground-status" class="small-note" role="status"></p>
       <details open><summary>Wiese einstellen</summary>
       <label for="rei-scope">Gras automatisch verteilen</label><select id="rei-scope" data-rei-dependent><option value="green">Wiese, Wald, Heide und Moor</option><option value="all">Alle Landregionen</option></select>
       <label for="rei-height">Grashöhe <output id="rei-height-value"></output></label><input id="rei-height" type="range" min="0.15" max="2" step="0.05" data-rei-dependent>
-      <label for="rei-density">Dichte <output id="rei-density-value"></output></label><input id="rei-density" type="range" min="0.35" max="3" step="0.05" data-rei-dependent>
+      <label for="rei-density">Dichte <output id="rei-density-value"></output></label><input id="rei-density" type="range" min="2" max="18" step="0.5" data-rei-dependent>
       <label for="rei-color">Grasfarbe</label><input id="rei-color" type="color" data-rei-dependent>
       <label for="rei-groundBlend">Bodenfarbe übernehmen <output id="rei-groundBlend-value"></output></label><input id="rei-groundBlend" type="range" min="0" max="1" step="0.05" data-rei-dependent>
       </details><details><summary>Wind</summary>
@@ -77,7 +77,7 @@ function reiEditorMount(){
       const s=reiGroundSettings(M),enabled=s.type==='rei-grass';ctx.fillStyle=enabled?s.color:'#899a70';ctx.fillRect(0,0,320,120);
       if(!enabled){ctx.fillStyle='#edf2e6';ctx.font='13px Segoe UI';ctx.fillText('Rei-Wiese oben auswählen',70,67);return;}
       const colored=document.createElement('canvas');colored.width=colored.height=256;const cctx=colored.getContext('2d');cctx.drawImage(tinted,0,0);cctx.globalCompositeOperation='source-in';const gradient=cctx.createLinearGradient(0,0,0,256);gradient.addColorStop(0,'#b9d767');gradient.addColorStop(.5,s.color);gradient.addColorStop(1,'#547b3e');cctx.fillStyle=gradient;cctx.fillRect(0,0,256,256);
-      for(let i=0;i<64;i++){const x=(i*67)%354-17,y=55+Math.floor(i/16)*22,h=(29+(i*11)%29)*(s.height/.65)**.45,w=38;const bend=s.windEnabled?Math.sin(now*.0017*s.windSpeed+x*.017)*s.windStrength*.22:0;ctx.save();ctx.translate(x,y);ctx.transform(1,0,bend,1,0,0);ctx.drawImage(colored,(i%2)*128,Math.floor(i%4/2)*128,128,128,-w/2,-h,w,h);ctx.restore();}
+      for(let i=0;i<130;i++){const x=(i*67)%354-17,y=55+Math.floor(i/16)*22,h=(29+(i*11)%29)*(s.height/.85)**.45,w=38;const bend=s.windEnabled?Math.sin(now*.0017*s.windSpeed+x*.017)*s.windStrength*.22:0;ctx.save();ctx.translate(x,y);ctx.transform(1,0,bend,1,0,0);ctx.drawImage(colored,(i%2)*128,Math.floor(i%4/2)*128,128,128,-w/2,-h,w,h);ctx.restore();}
     }requestAnimationFrame(draw);
   };
 }

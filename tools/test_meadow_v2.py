@@ -2,7 +2,7 @@ from pathlib import Path
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from functools import partial
 from playwright.sync_api import sync_playwright
-import threading,json,traceback,math,copy
+import threading,json,traceback,math,copy,base64
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'grass-test-v2';OUT.mkdir(exist_ok=True)
 class Quiet(SimpleHTTPRequestHandler):
  def log_message(self,*args):pass
@@ -76,8 +76,13 @@ try:
   results['windTimeAdvances']=True;results['grass']=game.evaluate('nebeljagdGrassGroundState()');results['vision']=game.evaluate('nebeljagdTestState().vision')
   assert results['grass']['visibleInstances']>10000
   assert results['vision']['appearance']=='soft-transparent-charcoal'
-  game.screenshot(path=str(OUT/'meadow.png'),timeout=60000)
-  game.wait_for_timeout(900);game.screenshot(path=str(OUT/'meadow-wind.png'),timeout=60000)
+  data=game.evaluate('nebeljagdCaptureFrame()')
+  (OUT/'meadow.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
+  before=game.evaluate('nebeljagdGrassGroundState().windTime')
+  game.wait_for_function('(t)=>nebeljagdGrassGroundState().windTime>t',arg=before,polling=250,timeout=30000)
+  data=game.evaluate('nebeljagdCaptureFrame()')
+  (OUT/'meadow-wind.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
+  results['renderedWindTimes']=[before,game.evaluate('nebeljagdGrassGroundState().windTime')]
   results['render']=game.evaluate('nebeljagdTestState().rendering')
   if errors:raise AssertionError(errors)
   results['passed']=True;browser.close()

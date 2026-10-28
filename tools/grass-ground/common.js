@@ -3,10 +3,10 @@ function reiGroundSettings(map) {
   const s = map && map.groundCover || {};
   const number = (v, fallback, min, max) => Number.isFinite(v) ? Math.max(min, Math.min(max, v)) : fallback;
   return {
-    version: 1, type: s.type === 'rei-grass' ? 'rei-grass' : 'existing',
-    height: number(s.height, .65, .15, 2.0), density: number(s.density, 1.6, .35, 3),
-    color: /^#[\da-f]{6}$/i.test(s.color || '') ? s.color : '#78ab43',
-    groundBlend: number(s.groundBlend, .55, 0, 1),
+    version: 2, type: s.type === 'rei-grass' ? 'rei-grass' : 'existing',
+    height: number(s.height, .85, .15, 2.0), density: number(s.version === 2 ? s.density : Number.isFinite(s.density) ? s.density * 6 : 9.6, 9.6, 2, 18),
+    color: /^#[\da-f]{6}$/i.test(s.color || '') ? s.color : '#659a36',
+    groundBlend: number(s.groundBlend, .35, 0, 1),
     scope: s.scope === 'all' ? 'all' : 'green',
     windEnabled: s.windEnabled !== false,
     windStrength: number(s.windStrength, .45, 0, 1),
@@ -45,7 +45,7 @@ function reiGrassExclusions(map) {
         const key=x+','+z; if(!bins.has(key)) bins.set(key,[]); bins.get(key).push(shape);
       }
   };
-  for(const line of [...map.paths,...map.rivers]) {
+  for(const line of [...(map.paths||[]),...(map.rivers||[])]) {
     const radius=line.width/2+.65;
     for(let i=1;i<line.points.length;i++) {
       const a=line.points[i-1],b=line.points[i];
@@ -53,11 +53,12 @@ function reiGrassExclusions(map) {
     }
   }
   for(const obj of map.objects||[]) {
-    if(obj.kind!=='house') continue;
+    if(!['house','chest','crate','rock','mound','shrine'].includes(obj.kind)) continue;
     const scale=obj.scale||1,tavern=obj.variant?.startsWith('tavern-');
     // Uploaded taverns are normalized by the existing loader to a <=24 m footprint.
-    const hx=(tavern?12.35:obj.variant==='kit-timber'?3.7:8.5)*scale;
-    const hz=(tavern?12.35:obj.variant==='kit-timber'?4.0:7.5)*scale;
+    const extents={chest:[1.02,.77],crate:[.76,.76],rock:[1.35,1.35],shrine:[1,1],mound:obj.variant==='knoll'?[3.3,2.8]:[6.3,3.3]};
+    const hx=(extents[obj.kind]?.[0]??(tavern?12.35:obj.variant==='kit-timber'?3.7:8.5))*scale;
+    const hz=(extents[obj.kind]?.[1]??(tavern?12.35:obj.variant==='kit-timber'?4.0:7.5))*scale;
     const [x,z]=obj.position,rotation=obj.rotation||0,c=Math.cos(rotation),s=Math.sin(rotation),r=Math.hypot(hx,hz);
     insert({x,z,hx,hz,c,s},x-r,z-r,x+r,z+r);
   }

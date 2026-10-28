@@ -12,7 +12,7 @@ def source(name):
         url=f'https://raw.githubusercontent.com/ohnoyoudie-dotcom/nebeljagd/{BASE}/welt/{name}'
         text=urllib.request.urlopen(url,timeout=30).read().decode()
     return text
-image=Image.open(ROOT/'Blender/Gras/textures/grass4_mask_01.png').convert('L').resize((1024,1024),Image.Resampling.LANCZOS)
+image=Image.open(ROOT/'Blender/Gras/textures/grass4_mask_02.png').convert('L').resize((1024,1024),Image.Resampling.LANCZOS)
 buf=io.BytesIO();image.save(buf,format='PNG',optimize=True)
 texture="const REI_GRASS_MASK_DATA='data:image/png;base64,"+base64.b64encode(buf.getvalue()).decode()+"';\n"
 common=(SRC/'common.js').read_text()
@@ -36,6 +36,7 @@ game=once(game,'ne.setQuality(p),m=-1/0','ne.setQuality(p),reiGround.setQuality(
 game=once(game,'mapId:t.id,terrainChunks:c.length','mapId:t.id,groundCover:reiGround.inspect(),terrainChunks:c.length')
 game=once(game,'...ne.stats}},dispose(){let t=new Set,n=new Set;','...ne.stats}},dispose(){reiGround.dispose();let t=new Set,n=new Set;')
 game=once(game,'for(let e of t.objects??[]){if([`heart`,`crystal`,`bow`,`sword`].includes(e.kind))continue;','const reiCoverMap=t;for(let e of t.objects??[]){if(e.kind===`grass`&&e.variant===`short`&&reiRegionHasGrass(reiCoverMap,reiRegionAt(reiCoverMap,...e.position)))continue;if([`heart`,`crystal`,`bow`,`sword`].includes(e.kind))continue;')
+exec((SRC/'regression_patch.py').read_text(),globals())
 for name,content in [('map-editor.html',editor),('nebeljagd.html',game)]:
     (OUT/name).write_text(content)
     script=re.search('<script type="module">([\\s\\S]*?)</script>',content).group(1)
