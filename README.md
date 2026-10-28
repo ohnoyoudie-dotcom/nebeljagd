@@ -6,8 +6,10 @@ sowie eine animierte Vegetationsvorschau. Höhe, Dichte, Farbwerte und eigene
 Vorlagen werden mit der Karte gespeichert. Anleitung und Prüfgrenzen:
 [`docs/landscape-tools.md`](docs/landscape-tools.md).
 Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
-Der neue Stand ist als [Entwicklungspaket zum Herunterladen](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/development/nebeljagd-welt-und-editor.zip)
-verfügbar: entpacken und `map-editor.html` oder `nebeljagd.html` öffnen.
+Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
+[`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
+[`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel. Die zentrale Projektkarte
+bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
