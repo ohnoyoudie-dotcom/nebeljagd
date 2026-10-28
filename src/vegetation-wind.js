@@ -11,7 +11,7 @@ const direction = angle => ({ x: Math.sin(angle), z: -Math.cos(angle) });
  * Local circles are priority ordered, with soft borders, including wind shadows.
  */
 export function createVegetationWind(map = {}) {
-  const maxZones = LANDSCAPE_LIMITS.windZones;
+  const maxZones = LANDSCAPE_LIMITS.windZones, maxInteractors = 8;
   const uniforms = {
     uVegetationTime: { value: 0 }, uVegetationEnabled: { value: 1 },
     uVegetationWind: { value: new THREE.Vector2() },
@@ -19,6 +19,8 @@ export function createVegetationWind(map = {}) {
     uVegetationTurbulence: { value: .2 }, uVegetationZoneCount: { value: 0 },
     uVegetationZoneArea: { value: Array.from({ length: maxZones }, () => new THREE.Vector4()) },
     uVegetationZoneWind: { value: Array.from({ length: maxZones }, () => new THREE.Vector2()) },
+    uVegetationInteractorCount: { value: 0 },
+    uVegetationInteractors: { value: Array.from({ length: maxInteractors }, () => new THREE.Vector3(99999, 99999, 0)) },
   };
   let settings, zones;
   function configure(nextMap) {
@@ -44,6 +46,22 @@ uniform vec3 uVegetationGust;
 uniform int uVegetationZoneCount;
 uniform vec4 uVegetationZoneArea[${maxZones}];
 uniform vec2 uVegetationZoneWind[${maxZones}];
+uniform int uVegetationInteractorCount;
+uniform vec3 uVegetationInteractors[${maxInteractors}];
+vec2 vegetationInteractionAt(vec2 p) {
+  vec2 push = vec2(0.);
+  for (int i = 0; i < ${maxInteractors}; i++) {
+    if (i >= uVegetationInteractorCount) break;
+    vec3 actor = uVegetationInteractors[i];
+    vec2 delta = p - actor.xy;
+    float d = length(delta);
+    float radius = max(.25, actor.z);
+    float influence = 1. - smoothstep(radius * .28, radius, d);
+    vec2 direction = d > .001 ? delta / d : vec2(1., 0.);
+    push += direction * influence * .58;
+  }
+  return push;
+}
 vec2 vegetationWindAt(vec2 p) {
   vec2 wind = uVegetationWind;
   for (int i = 0; i < ${maxZones}; i++) {
@@ -67,11 +85,11 @@ vec2 vegetationWindAt(vec2 p) {
   return (wind * (wave + gust) + vec2(-direction.y, direction.x) * strength * crossWave) * .18;
 }
 `;
-  function apply(material, { response = 1, height = 1, replaceLegacySway = true } = {}) {
+  function apply(material, { response = 1, height = 1, replaceLegacySway = true, interactionResponse = 0 } = {}) {
     if (material.userData.nebeljagdWind === uniforms) return material;
     const previous = material.onBeforeCompile;
     const previousKey = material.customProgramCacheKey.bind(material);
-    const responseLiteral = Number(response).toFixed(5), heightLiteral = Math.max(.001, height).toFixed(5);
+    const responseLiteral = Number(response).toFixed(5), heightLiteral = Math.max(.001, height).toFixed(5), interactionLiteral = Math.max(0, Number(interactionResponse) || 0).toFixed(5);
     material.onBeforeCompile = (shader, renderer) => {
       previous?.call(material, shader, renderer);
       // Retain canopy transparency around the player while replacing only its
@@ -88,16 +106,18 @@ vec2 vegetationWindAt(vec2 p) {
         float vegetationHeight = clamp(position.y / ${heightLiteral}, 0., 1.);
         vec2 vegetationOffset = vegetationWindAt(vegetationRoot.xz)
           * vegetationHeight * vegetationHeight * ${responseLiteral} * length(vegetationBasis[1].xyz);
-        vec3 vegetationWorldOffset = vec3(vegetationOffset.x, 0., vegetationOffset.y);
+        vec2 vegetationInteraction = vegetationInteractionAt(vegetationRoot.xz)
+          * pow(vegetationHeight, 1.25) * ${interactionLiteral};
+        vec3 vegetationWorldOffset = vec3(vegetationOffset.x + vegetationInteraction.x, 0., vegetationOffset.y + vegetationInteraction.y);
         // Convert the world direction into the instance's rotated/scaled basis.
         // Translation is excluded; y=0 roots are exactly unchanged.
         transformed.x += dot(vegetationWorldOffset, vegetationBasis[0].xyz) / max(.0001, dot(vegetationBasis[0].xyz, vegetationBasis[0].xyz));
         transformed.z += dot(vegetationWorldOffset, vegetationBasis[2].xyz) / max(.0001, dot(vegetationBasis[2].xyz, vegetationBasis[2].xyz));
       `);
     };
-    material.customProgramCacheKey = () => `${previousKey()}|nebeljagd-wind-v1:${responseLiteral}:${heightLiteral}:${replaceLegacySway}`;
+    material.customProgramCacheKey = () => `${previousKey()}|nebeljagd-wind-v2-interaction:${responseLiteral}:${heightLiteral}:${interactionLiteral}:${replaceLegacySway}`;
     material.userData.nebeljagdWind = uniforms;
-    material.userData.nebeljagdWindParameters = { response, height };
+    material.userData.nebeljagdWindParameters = { response, height, interactionResponse };
     material.needsUpdate = true;
     return material;
   }
@@ -121,8 +141,16 @@ vec2 vegetationWindAt(vec2 p) {
     return { x: (wx * (wave + gust) - dz * strength * crossWave) * .18,
       z: (wz * (wave + gust) + dx * strength * crossWave) * .18 };
   }
+  function setInteractors(values = []) {
+    const count = Math.min(maxInteractors, values.length);
+    uniforms.uVegetationInteractorCount.value = count;
+    for (let i = 0; i < maxInteractors; i++) {
+      const value = i < count ? values[i] : null;
+      uniforms.uVegetationInteractors.value[i].set(value?.x ?? 99999, value?.z ?? 99999, value?.radius ?? 0);
+    }
+  }
   configure(map);
-  return { configure, apply, sample, uniforms,
+  return { configure, apply, sample, uniforms, setInteractors,
     update(time) { uniforms.uVegetationTime.value = Number.isFinite(time) ? time : 0; },
     sampleVertex(x, z, y, time, { height = 1, response = 1 } = {}) {
       const offset = sample(x, z, time), weight = clamp(y / height, 0, 1) ** 2 * response;
@@ -130,6 +158,7 @@ vec2 vegetationWindAt(vec2 p) {
       return { x: offset.x * weight, z: offset.z * weight };
     },
     get stats() { return { gpu: true, rootAnchored: true, worldSpaceDirection: true,
-      zones: zones.length, maximumZones: maxZones, settings: { ...settings }, time: uniforms.uVegetationTime.value }; },
+      zones: zones.length, maximumZones: maxZones, settings: { ...settings }, time: uniforms.uVegetationTime.value,
+      interactors: uniforms.uVegetationInteractorCount.value, maximumInteractors: maxInteractors }; },
   };
 }
