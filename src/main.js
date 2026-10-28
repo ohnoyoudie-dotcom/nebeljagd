@@ -141,6 +141,7 @@ const chests = createChests(world.root, { placements: world.map.objects, heightA
   },
 });
 const practiceActors = createPracticeActors(world.root, { world, combat, healthBars, vision });
+const grassInteractors = [];
 vision.register();
 const zone = createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius });
 const inactivePlayer = new THREE.Vector3(1000, 0, 1000);
@@ -448,6 +449,10 @@ function frame(now) {
     direction: state.direction, health: state.health, inDanger: state.inDanger });
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
+  grassInteractors.length = 0;
+  grassInteractors.push({ x: player.x, z: player.z, radius: 1.12 });
+  practiceActors.appendGrassInteractors(grassInteractors);
+  world.setGrassInteractors?.(grassInteractors);
   chests.update(playDelta, time, player);
   weapons.update(playDelta, time, player);
   if (state.phase === 'playing') {
