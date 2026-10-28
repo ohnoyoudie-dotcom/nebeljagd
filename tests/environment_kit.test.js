@@ -6,10 +6,10 @@ import {ENVIRONMENT_KIT_DEFINITIONS,getEnvironmentKitDefinition} from '../src/ma
 import {createCollisionIndex} from '../src/collision.js';
 import {buildKitGrassPatch,MAX_KIT_GRASS_INSTANCES} from '../src/vegetation-patches.js';
 
-test('all twelve embedded kit sources retain the recorded CC0 bytes and published model heights',async()=>{
+test('the environment kit keeps its published sources and the user tavern remains a separate GLB asset',async()=>{
  const root=new URL('../Blender/nebeljagd_umwelt_kit_v1/',import.meta.url);
  const manifest=JSON.parse(await readFile(new URL('manifest.json',root),'utf8'));
- assert.match(manifest.license,/CC0-1\.0/);assert.equal(ENVIRONMENT_KIT_DEFINITIONS.length,12);
+ assert.match(manifest.license,/CC0-1\.0/);assert.equal(ENVIRONMENT_KIT_DEFINITIONS.length,13);
  for(const item of manifest.assets){
   const bytes=await readFile(new URL(item.file,root));
   assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256,item.file);
@@ -21,6 +21,10 @@ test('all twelve embedded kit sources retain the recorded CC0 bytes and publishe
   const transformedHeight=(definition.nativeBounds.max[1]-definition.nativeBounds.min[1])*definition.normalization.scale;
   assert.ok(Math.abs(transformedHeight-definition.targetHeight)<1e-8,item.file);
  }
+ const tavern=getEnvironmentKitDefinition('house','kit-taverne');
+ assert.equal(tavern.asset,'taverne');assert.equal(tavern.roofless,true);assert.equal(tavern.targetHeight,4.065);
+ assert.equal(tavern.normalization.scale,1);assert.equal(tavern.normalization.offset[1],0);
+ assert.ok(tavern.walls.length>=10);assert.ok(tavern.interior.halfWidth>10);
 });
 
 test('kit arch and opened house retain traversable centers, but their sides and rotated module boxes stop players',()=>{
@@ -40,6 +44,15 @@ test('kit arch and opened house retain traversable centers, but their sides and 
   const point=toLocal(toWorld({x:0,z:0}));index.resolve(point,.42/scale);
   assert.ok(!def.walls.some(w=>point.x>w.minX&&point.x<w.maxX&&point.z>w.minZ&&point.z<w.maxZ),kind);
  }
+});
+
+test('the open-roof tavern keeps its front doorway and room entrances passable while stopping movement at walls',()=>{
+ const tavern=getEnvironmentKitDefinition('house','kit-taverne'),index=createCollisionIndex([],tavern.walls);
+ assert.equal(index.traceSegment({x:-1.5,y:.9,z:10},{x:-1.5,y:.9,z:7},.08),null,'the double main doorway stays open');
+ assert.ok(index.traceSegment({x:5,y:.9,z:10},{x:5,y:.9,z:7},.08),'the remaining front wall blocks movement');
+ assert.equal(index.traceSegment({x:0,y:.9,z:0},{x:6,y:.9,z:0},.08),null,'the central room doorway stays open');
+ assert.ok(index.traceSegment({x:0,y:.9,z:3},{x:6,y:.9,z:3},.08),'room partitions block movement');
+ assert.equal(tavern.roofless,true);
 });
 
 test('authored grass uses a bounded number of complete clusters and keeps height independent of its footprint',()=>{

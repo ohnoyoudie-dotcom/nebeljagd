@@ -2,7 +2,7 @@ import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, getWorldmapStats, zoneAt, pointInPolygon } from './model.js';
 import { renderWorldmapSvg } from './render.js';
-import { OBJECT_CATALOG, getObjectDefinition, makeWorldObject, normalizeWorldmap } from './objects.js';
+import { OBJECT_CATALOG, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
 import { canPaintGrass } from './grass-brush.js';
 import { createLandscapePanel } from './landscape-panel.js';
 import { getLandscape, ensureLandscape } from './landscape.js';
@@ -151,8 +151,7 @@ function renderMap(rebuild = true) {
   $('zone-radius').textContent = `${Math.round(zone.radius)} m sicherer Radius`;
 }
 function objectFootprint(object) {
-  const definition = getObjectDefinition(object.kind);
-  const radius = object.radius ?? (object.kind === 'tree' ? 3 : definition?.footprintRadius ?? 1);
+  const radius = object.radius ?? (object.kind === 'tree' ? 3 : getObjectFootprintRadius(object.kind, object.variant));
   return radius * object.scale;
 }
 function updatePlacementPreview() {
@@ -163,7 +162,7 @@ function updatePlacementPreview() {
   if (!svg || !placementModes.includes(mode) || !hoverPoint || spaceHeld) return;
   const definition = getObjectDefinition($('palette-kind').value);
   const point = mode === 'place' ? snapped(hoverPoint) : hoverPoint;
-  const radius = mode === 'erase' ? Number($('eraser-radius').value) : mode !== 'place' ? landscapePanel?.radius(mode) ?? 4 : definition.defaultRadius ?? definition.footprintRadius;
+  const radius = mode === 'erase' ? Number($('eraser-radius').value) : mode !== 'place' ? landscapePanel?.radius(mode) ?? 4 : definition.defaultRadius ?? getObjectFootprintRadius(definition.kind, $('palette-variant').value);
   const circle = document.createElementNS(SVG_NS, 'circle');
   const valid = ['erase','terrainErase'].includes(mode) || (mode === 'brush' ? canPaintGrass(point, map.island.points, radius) : pointInPolygon(point, map.island.points));
   const pixel = 1 / (svg.getScreenCTM()?.a || 1);
@@ -616,7 +615,7 @@ function paintLandscapeSample(point) {
     for (const item of [...added.terrain, ...added.objects]) {
       const patch = document.createElementNS(SVG_NS, 'circle');
       patch.setAttribute('cx', item.position[0]); patch.setAttribute('cy', item.position[1]);
-      patch.setAttribute('r', item.radius ?? getObjectDefinition(item.kind)?.footprintRadius ?? 1);
+      patch.setAttribute('r', item.radius ?? getObjectFootprintRadius(item.kind, item.variant));
       patch.setAttribute('fill', item.color ?? item.vegetation?.color ?? '#759c4b'); patch.setAttribute('fill-opacity', '.65');
       patch.setAttribute('stroke', '#d0e1a4'); patch.setAttribute('stroke-width', '.7'); patch.setAttribute('vector-effect', 'non-scaling-stroke'); preview.append(patch);
     }

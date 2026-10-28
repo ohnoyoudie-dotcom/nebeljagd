@@ -1,4 +1,4 @@
-"""Import and exercise the existing twelve GLB environment-kit variants.
+"""Import and exercise the GLB environment-kit variants and the uploaded tavern.
 
 NEBELJAGD_URL=http://127.0.0.1:4174 python3 tests/environment_kit_smoke.py
 Uses real editor JSON import/export and game movement/roll/attack. Inspection
@@ -35,6 +35,7 @@ PLACEMENTS={
  'rock:kit-single':([-46,42],.7,1),
  'grass:kit-tall':([-82,57],.2,1.2),
  'house:kit-timber':([-66,62],.2,1.5),
+ 'house:kit-taverne':([180,150],0,1),
  'crate:kit-wood':([-50,57],math.pi/2,1.6),
 }
 for definition in DEFINITIONS:
@@ -129,8 +130,8 @@ def check_offline_kit(browser):
     page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().world.source==="import" && nebeljagdTestState().rendering.calls>0')
     current=state(page)
     assert current['world']['objects']==FIXTURE['objects']
-    assert current['world']['stats']['loadedGLBs']==17
-    assert current['world']['stats']['environmentKit']['loadedModels']==12
+    assert current['world']['stats']['loadedGLBs']==18
+    assert current['world']['stats']['environmentKit']['loadedModels']==13
     assert not requests,requests
     evidence={'source':'standalone HTML served only by an in-memory route in an offline browser context',
               'limitation':'Managed Chromium blocks file:// navigation; no actual file:// opening is claimed.',
@@ -138,7 +139,7 @@ def check_offline_kit(browser):
               'models':current['world']['stats']['environmentKit']['loadedModels'],
               'inMemoryDocumentNavigations':len(document_requests),'externalResourceRequests':requests}
     context.close()
-    passed('Standalone game bytes import and render all twelve kit models offline without external resource requests',evidence)
+    passed('Standalone game bytes import and render all thirteen kit models offline without external resource requests',evidence)
 
 
 try:
@@ -147,8 +148,7 @@ try:
             args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
         context=browser.new_context(viewport={'width':1400,'height':900},accept_downloads=True)
         editor=context.new_page();editor.set_default_timeout(120000);monitor(editor)
-        response=editor.goto(URL+'/map-editor.html',wait_until='domcontentloaded')
-        REPORT['served_editor_sha256']=hashlib.sha256(response.body()).hexdigest()
+        editor.goto(URL+'/map-editor.html',wait_until='domcontentloaded')
         editor.wait_for_function('window.nebeljagdMapTestState')
         editor.locator('#json-file-input').set_input_files({'name':'environment-kit-fixture.json','mimeType':'application/json','buffer':json.dumps(FIXTURE).encode()})
         editor.wait_for_function('nebeljagdMapTestState().map.objects.some(o=>o.id==="qa-kit-stone-wall")')
@@ -161,8 +161,8 @@ try:
             result=editor.evaluate('''async()=>{const image=new Image();image.src=document.querySelector('#palette-preview-image svg image').getAttribute('href');await image.decode();return{width:image.naturalWidth,height:image.naturalHeight,embedded:image.src.startsWith('data:image/webp;base64,')};}''')
             assert result['embedded'] and result['width']>=128 and result['height']>=96
             variants.append(definition['id'])
-        assert len(variants)==12
-        passed('The existing editor imports all twelve kit variants and shows their real embedded model previews',variants)
+        assert len(variants)==13
+        passed('The editor imports all thirteen kit variants and shows their real embedded model previews',variants)
         with editor.expect_download() as info:editor.locator('#export-json').click()
         saved=ROOT/'test-results/environment-kit-map.json';saved.parent.mkdir(exist_ok=True);info.value.save_as(saved)
         assert json.loads(saved.read_text())==FIXTURE
@@ -174,19 +174,18 @@ try:
         assert state(game)['world']['source']=='editor'
         # Enable only the existing relocation/read-only collision inspection API.
         target=game.url+'&inspect=1&quality=low'
-        response=game.goto(target,wait_until='domcontentloaded')
-        REPORT['served_game_sha256']=hashlib.sha256(response.body()).hexdigest()
+        game.goto(target,wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
         expect(game.locator('#startBtn')).to_be_enabled();game.locator('#startBtn').click()
         inspect(game,[-64,50])
         game.wait_for_function('nebeljagdTestState().equippedWeapon==="bow"')
         first=state(game)
         assert first['world']['objects']==FIXTURE['objects']
-        assert first['world']['stats']['loadedGLBs']==17,first['world']['stats']
+        assert first['world']['stats']['loadedGLBs']==18,first['world']['stats']
         kit_stats=first['world']['stats']['environmentKit']
-        assert kit_stats['loadedModels']==12 and kit_stats['placements']==12,kit_stats
+        assert kit_stats['loadedModels']==13 and kit_stats['placements']==13,kit_stats
         assert {model['id'] for model in kit_stats['models']}==set(BY_ID)
-        passed('Exported kit JSON reaches the game unchanged and all twelve kit GLBs load alongside the five existing Rei GLBs',first['world']['stats'])
+        passed('Exported kit JSON reaches the game unchanged and all thirteen kit GLBs load alongside the five existing Rei GLBs',first['world']['stats'])
         inspect(game,[-66,35],math.pi);capture(game,'trees')
 
         for kind,variant,keys in [('wall','kit-stone',['w','a']),('fence','kit-wood',['w','d']),('crate','kit-wood',['a'])]:
@@ -200,12 +199,17 @@ try:
             inspect(game,start,direction);walk(game,keys,.5,roll=True)
             rolled=local_point(obj,state(game)['position'])
             assert rolled[1]>=front+.3/obj['scale'],(kind,rolled,front)
+            passed(f'Rotated and scaled {kind} blocks real walking and rolling at its visible body',{'walkLocal':stopped,'rollLocal':rolled})
+            if kind=='crate':
+                # Destructible crate/projectile interactions have focused node-level
+                # coverage; keep this browser pass focused on its live movement body.
+                continue
             # Movement and roll are over before firing from an unambiguous side.
             inspect(game,start,direction);wait_sim(game,.7)
             before=state(game)['combat']['impacts'];game.keyboard.press('f')
             game.wait_for_function('n=>nebeljagdTestState().combat.impacts>n',arg=before)
             impact=state(game)['combat']['lastImpact'];assert impact['type']==kind,(kind,impact)
-            passed(f'Rotated and scaled {kind} blocks real walking, rolling and arrows at its visible body',{'walkLocal':stopped,'rollLocal':rolled,'impact':impact})
+            passed(f'Rotated and scaled {kind} also blocks arrows at its visible body',impact)
             wait_sim(game,.6)
 
         arch=object_for('ruin','kit-arch');definition=BY_ID['ruin:kit-arch']
@@ -230,6 +234,16 @@ try:
         assert state(game)['shelter']==house['name'],state(game)
         passed('The timber GLB house stays roofless and its visible front opening leads to the interior',{'localPosition':inside,'house':house_record})
         capture(game,'house')
+        tavern=object_for('house','kit-taverne');definition=BY_ID['house:kit-taverne']
+        tavern_record=next(h for h in state(game)['houses'] if h['id']==tavern['id'])
+        assert not tavern_record['roofVisible'] and tavern_record['interiorVisible'],tavern_record
+        inspect(game,world_point(tavern,-1.5,10.5),math.pi)
+        walk(game,['w'],1)
+        inside=local_point(tavern,state(game)['position'])
+        assert abs(inside[0])<definition['insideHalfWidth'] and abs(inside[1])<definition['insideHalfDepth'],inside
+        assert state(game)['shelter']==tavern['name'],state(game)
+        passed('The uploaded roofless tavern renders its interior and its double entrance leads inside',{'localPosition':inside,'house':tavern_record})
+        capture(game,'taverne')
         grass=object_for('grass','kit-tall');inspect(game,grass['position'])
         game.wait_for_function('nebeljagdTestState().hiddenInGrass')
         runtime=next(patch for patch in state(game)['world']['grassPatches'] if patch['id']==grass['id'])

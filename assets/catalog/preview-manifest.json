@@ -462,6 +462,27 @@
         ],
         "span": 2.274730753298069
       }
+    },
+    {
+      "kind": "house",
+      "variant": "kit-taverne",
+      "label": "Taverne · GLB",
+      "file": "assets/catalog/house-kit-taverne.webp",
+      "bytes": 6374,
+      "sha256": "6a33cc4aa3fbd5d562ab9c43cec88274ad51cc1956b0d2cfb220fc777f893f46",
+      "renderedBounds": {
+        "min": [
+          1028.75,
+          -0.949999988079071,
+          -8.75
+        ],
+        "max": [
+          1051.25,
+          3.115000009536743,
+          11.087566375732422
+        ],
+        "span": 33.90296174716752
+      }
     }
   ],
   "errors": []

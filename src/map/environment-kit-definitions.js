@@ -36,6 +36,23 @@ const nativeDefinitions = [
     wall(-1.3, -.5, -.85, -.2, .9, 'furniture'),
   ], [], { roofless: true, floorHeight: .22, interior: { halfWidth: 1.65, halfDepth: 1.45, entranceHalfWidth: .65 },
     insideHalfWidth: 1.65, insideHalfDepth: 1.45, entranceHalfWidth: .65 }),
+  entry('house', 'kit-taverne', 'taverne', 'Taverne', 3.115, { halfWidth: 11.25, halfDepth: 9.92 }, [
+    wall(-11.2, 11.2, -8.7, -8.3, 3.05, 'house-wall'),
+    wall(-11.2, -10.8, -8.7, 8.7, 1.55, 'house-wall'),
+    wall(10.8, 11.2, -8.7, 8.7, 1.15, 'house-wall'),
+    // The broad, double entrance remains open on the south side.
+    wall(-11.2, -3.45, 8.3, 8.7, 1.15, 'house-wall'),
+    wall(.25, 11.2, 8.3, 8.7, 1.15, 'house-wall'),
+    // The internal divider has three deliberate doorways to the guest rooms.
+    wall(3.18, 3.52, -8.35, -6.35, 1.15, 'house-wall'),
+    wall(3.18, 3.52, -4.05, -1.15, 1.15, 'house-wall'),
+    wall(3.18, 3.52, 1.15, 4.05, 1.15, 'house-wall'),
+    wall(3.18, 3.52, 6.35, 8.35, 1.15, 'house-wall'),
+    // Low cross-walls separate the kitchen, store room and guest rooms.
+    wall(4.8, 10.9, -2.96, -2.64, 1.15, 'house-wall'),
+    wall(4.8, 10.9, 2.64, 2.96, 1.15, 'house-wall'),
+  ], [], { roofless: true, anchorY: 0, anchorXZ: [0, 0], floorHeight: 0, interior: { halfWidth: 10.9, halfDepth: 8.2, entranceHalfWidth: 1.85 },
+    insideHalfWidth: 10.9, insideHalfDepth: 8.2, entranceHalfWidth: 1.85 }),
   entry('crate', 'kit-wood', 'crate_wood', 'Holzkiste', .76, { halfWidth: .475, halfDepth: .475 }, [wall(-.475, .475, -.475, .475, .76, 'crate')]),
 ];
 
@@ -54,16 +71,18 @@ const nativeBounds = {
   rock_cluster: { min: [-1.202743649482727, -.09022360295057297, -.7767540216445923], max: [1.0572478771209717, .9857407808303833, .9518477916717529] },
   rock_single: { min: [-1.0055701732635498, -.08905074000358582, -.7659748196601868], max: [1.0195907354354858, 1.0043984651565552, .7714471220970154] },
   ruin_arch: { min: [-1.6366324424743652, -.018988467752933502, -.6278529167175293], max: [1.9579108953475952, 2.39277982711792, .4085088074207306] },
+  taverne: { min: [-11.25, -.95, -8.75], max: [11.25, 3.115, 11.087566837183354] },
   wall_stone_3m: { min: [-1.682736873626709, .04500000178813934, -.3480740785598755], max: [1.6721457242965698, 1.4035049676895142, .3502883017063141] },
 };
 const targetHeights = { pine_high: 7.2, pine_young: 4.2, oak_green: 5.8, oak_autumn: 5.8,
   wall_stone_3m: 1.5, fence_wood_3m: 1.5, ruin_arch: 3.5, rock_cluster: 1.7,
-  rock_single: 1.6, grass_tall_patch: 1.95, house_timbersmall: 5.5, crate_wood: 1 };
+  rock_single: 1.6, grass_tall_patch: 1.95, house_timbersmall: 5.5, taverne: 4.065, crate_wood: 1 };
 
 export const ENVIRONMENT_KIT_DEFINITIONS = freeze(nativeDefinitions.map(definition => {
   const bounds = nativeBounds[definition.asset], targetHeight = targetHeights[definition.asset];
   const scale = targetHeight / (bounds.max[1] - bounds.min[1]);
-  const offset = [(bounds.min[0] + bounds.max[0]) / 2, bounds.min[1], (bounds.min[2] + bounds.max[2]) / 2];
+  const anchor = definition.anchorXZ;
+  const offset = [anchor?.[0] ?? (bounds.min[0] + bounds.max[0]) / 2, definition.anchorY ?? bounds.min[1], anchor?.[1] ?? (bounds.min[2] + bounds.max[2]) / 2];
   const x = value => (value - offset[0]) * scale, y = value => (value - offset[1]) * scale, z = value => (value - offset[2]) * scale;
   const footprint = { halfWidth: Math.max(Math.abs(x(-definition.footprint.halfWidth)), Math.abs(x(definition.footprint.halfWidth))),
     halfDepth: Math.max(Math.abs(z(-definition.footprint.halfDepth)), Math.abs(z(definition.footprint.halfDepth))) };

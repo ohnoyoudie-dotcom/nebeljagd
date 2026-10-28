@@ -8,7 +8,7 @@ export const OBJECT_CATALOG = Object.freeze([
       { id: 'kit-oak-green', label: 'Grüne Eiche · GLB' }, { id: 'kit-oak-autumn', label: 'Herbsteiche · GLB' }] },
   { kind: 'house', label: 'Haus', defaultVariant: 'herbal', defaultScale: 1, footprintRadius: 11,
     variants: [{ id: 'herbal', label: 'Kräuterhaus' }, { id: 'inn', label: 'Waldgasthaus' }, { id: 'hunter', label: 'Jägerhaus' },
-      { id: 'kit-timber', label: 'Fachwerkhaus · GLB' }] },
+      { id: 'kit-timber', label: 'Fachwerkhaus · GLB' }, { id: 'kit-taverne', label: 'Taverne · GLB', footprintRadius: 14.5 }] },
   { kind: 'flower', label: 'Blumenbeet', defaultVariant: 'rei-white', defaultScale: 1, footprintRadius: 1.3, defaultRadius: 1.5,
     variants: [{ id: 'rei-white', label: 'Rei-Blumen · Weiß' }, { id: 'rei-red', label: 'Rei-Blumen · Rot' }, { id: 'rei-gold', label: 'Rei-Blumen · Gold' }] },
   { kind: 'grass', label: 'Grasfläche', defaultVariant: 'tall', defaultScale: 1, footprintRadius: 3, defaultRadius: 3.5,
@@ -56,6 +56,10 @@ export const OBJECT_CATALOG = Object.freeze([
 const definitions = new Map(OBJECT_CATALOG.map(item => [item.kind, item]));
 let objectCounter = 0;
 export function getObjectDefinition(kind) { return definitions.get(kind) ?? null; }
+export function getObjectFootprintRadius(kind, variant) {
+  const definition = getObjectDefinition(kind);
+  return definition?.variants.find(entry => entry.id === variant)?.footprintRadius ?? definition?.footprintRadius ?? 1;
+}
 
 /** No provider calls or randomness beyond a new editor object's unique ID. */
 export function makeWorldObject(kind, position, options = {}) {

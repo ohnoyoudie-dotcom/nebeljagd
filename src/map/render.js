@@ -17,6 +17,7 @@ const objectSymbols = [
   '<g id="world-object-fence"><path d="M-1.6,-.16H1.6M-1.6,.16H1.6M-1.4,-.28V.28M0,-.28V.28M1.4,-.28V.28" stroke="#b08b54" stroke-width=".2"/></g>',
   '<g id="world-object-crate"><rect x="-.43" y="-.43" width=".86" height=".86" fill="#9e784d" stroke="#5e4931" stroke-width=".12"/><path d="M-.35,-.35 .35,.35M-.35,.35 .35,-.35" stroke="#e0bd7e" stroke-width=".1"/></g>',
   '<g id="world-object-house-kit"><rect x="-1.86" y="-1.565" width="3.72" height="3.13" fill="#b59161" stroke="#654d35" stroke-width=".2"/><path d="M-.45,1.565H.45" stroke="#e8d6ad" stroke-width=".28"/></g>',
+  '<g id="world-object-house-taverne"><rect x="-11" y="-8.5" width="22" height="17" rx=".35" fill="#8d6544" stroke="#493a2e" stroke-width=".45"/><path d="M-10.8,-8.3H10.8M-10.8,8.3H-3.5M.3,8.3H10.8M-10.8,-8.3V8.3M10.8,-8.3V8.3M3.35,-8.2V-6.3M3.35,-4.1V-1.1M3.35,1.1V4.1M3.35,6.3V8.2M4.8,-2.8H10.8M4.8,2.8H10.8" fill="none" stroke="#d1ad77" stroke-width=".28"/><path d="M-3.4,8.52H.25" stroke="#f0dcb3" stroke-width=".65"/><path d="M-8,-6.5H-.8V-.7H-8ZM5,-7H9V-3H5ZM5,3H9V7H5Z" fill="none" stroke="#654c38" stroke-width=".22"/></g>',
   '<g id="world-object-ruin-kit"><rect x="-1.45" y="-.385" width=".7" height=".77" fill="#89907e" stroke="#535c50" stroke-width=".12"/><rect x=".75" y="-.385" width=".7" height=".77" fill="#89907e" stroke="#535c50" stroke-width=".12"/><path d="M-1.1,0H1.1" stroke="#b3b79e" stroke-width=".35" stroke-dasharray=".3 .2"/></g>',
   '<g id="world-object-tree-autumn"><circle r="2.3" fill="#a46636" stroke="#754f30" stroke-width=".3"/><circle cx="-.7" cy="-.5" r="1.5" fill="#d79846"/><circle cx=".7" cy=".6" r="1.3" fill="#b87c37"/></g>',
   '<g id="world-object-tree"><circle r="2.7" fill="#356448" stroke="#244735" stroke-width=".5"/><circle cx="-.8" cy="-.8" r="1.7" fill="#568158"/><circle cx=".8" cy=".7" r="1.25" fill="#456f48"/></g>',
@@ -41,6 +42,7 @@ const objectSymbols = [
 ];
 
 function objectSymbol(item) {
+  if (item.kind === 'house' && item.variant === 'kit-taverne') return 'house-taverne';
   if (item.kind === 'house' && item.variant === 'kit-timber') return 'house-kit';
   if (item.kind === 'ruin' && item.variant === 'kit-arch') return 'ruin-kit';
   if (item.kind === 'tree' && item.variant === 'kit-oak-autumn') return 'tree-autumn';
@@ -55,7 +57,7 @@ function objectSymbol(item) {
 
 function objectSvg(item) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
-  const radius = item.radius ?? (item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
+  const radius = item.radius ?? (item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : item.variant === 'kit-taverne' ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
   const patch = item.kind === 'grass' || item.kind === 'flower';
   const tint = item.kind === 'flower' ? ({ 'rei-red': '#c77c7c', 'rei-gold': '#e0bd64' }[item.variant] ?? '#e7e4cb') : undefined;
   const tier = WEAPON_TYPES.includes(item.kind) ? (RARITIES[item.rarity] ?? RARITIES.common) : null;

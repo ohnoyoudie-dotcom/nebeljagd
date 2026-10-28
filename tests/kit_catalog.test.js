@@ -19,7 +19,7 @@ const kit = [
   ['house', 'kit-timber', 'house_timbersmall'], ['crate', 'kit-wood', 'crate_wood'],
 ];
 
-test('all twelve existing environment-kit variants preserve map imports and match structural schema enums', () => {
+test('the twelve original environment-kit variants preserve map imports and match structural schema enums', () => {
   const map = structuredClone(base);
   for (const [kind, variant] of kit) {
     const object = makeWorldObject(kind, [30, -42], { variant, id: `kit-test-${kind}-${variant}` });
@@ -32,8 +32,31 @@ test('all twelve existing environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 38);
-  assert.equal(ASSET_CATALOG.length, 38);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 39);
+  assert.equal(ASSET_CATALOG.length, 39);
+});
+
+test('the uploaded tavern GLB is a valid selectable map asset with a traversable main entrance', () => {
+  const bytes = read('Blender/Taverne.glb');
+  assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
+  assert.equal(bytes.readUInt32LE(4), 2);
+  assert.equal(bytes.readUInt32LE(8), bytes.length);
+  const gltf = JSON.parse(bytes.subarray(20, 20 + bytes.readUInt32LE(12)).toString());
+  assert.ok((gltf.buffers ?? []).every(buffer => !buffer.uri), 'The project keeps a self-contained GLB source');
+  assert.equal(gltf.images?.length ?? 0, 0);
+  let triangles = 0;
+  for (const mesh of gltf.meshes) for (const primitive of mesh.primitives) {
+    triangles += (primitive.indices === undefined ? gltf.accessors[primitive.attributes.POSITION].count : gltf.accessors[primitive.indices].count) / 3;
+  }
+  assert.ok(triangles > 100_000 && triangles < 150_000, `Unexpected source triangle count: ${triangles}`);
+  const asset = getVariantAsset('house', 'kit-taverne');
+  assert.equal(asset.format, 'glb');
+  assert.deepEqual(asset.sourcePaths, ['Blender/Taverne.glb']);
+  const tavern = makeWorldObject('house', [30, -42], { variant: 'kit-taverne', id: 'kit-test-taverne' });
+  const map = structuredClone(base); map.objects.push(tavern);
+  assert.deepEqual(validateWorldmap(map).errors, []);
+  const definition = getObjectDefinition('house');
+  assert.ok(definition.variants.some(variant => variant.id === tavern.variant));
 });
 
 test('kit catalogue sources match the committed manifest bytes and the package footprint hints', () => {

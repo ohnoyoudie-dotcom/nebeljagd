@@ -6,6 +6,7 @@ import pineHigh from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_high.glb?ur
 import pineYoung from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_young.glb?url&inline';
 import oakGreen from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_green.glb?url&inline';
 import oakAutumn from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_autumn.glb?url&inline';
+import tavern from '../Blender/Taverne.glb?url&inline';
 import timberHouse from '../Blender/nebeljagd_umwelt_kit_v1/assets/house_timbersmall.glb?url&inline';
 import tallGrass from '../Blender/nebeljagd_umwelt_kit_v1/assets/grass_tall_patch.glb?url&inline';
 import rockCluster from '../Blender/nebeljagd_umwelt_kit_v1/assets/rock_cluster.glb?url&inline';
@@ -18,6 +19,7 @@ import woodCrate from '../Blender/nebeljagd_umwelt_kit_v1/assets/crate_wood.glb?
 const urls = {
   'tree:kit-pine-high': pineHigh, 'tree:kit-pine-young': pineYoung,
   'tree:kit-oak-green': oakGreen, 'tree:kit-oak-autumn': oakAutumn,
+  'house:kit-taverne': tavern,
   'house:kit-timber': timberHouse, 'grass:kit-tall': tallGrass,
   'rock:kit-cluster': rockCluster, 'rock:kit-single': rockSingle,
   'ruin:kit-arch': ruinArch, 'wall:kit-stone': stoneWall,
@@ -77,6 +79,27 @@ function nativeBox(x, y, z, width, height, depth) {
   const geometry = new THREE.BoxGeometry(width, height, depth); geometry.translate(x, y, z); return geometry;
 }
 
+const tavernMaterialTints = [
+  ['blackened beams', '#514030'], ['warm smoked heartwood', '#805638'], ['honey-worn plank', '#b58954'],
+  ['cut end growth rings', '#a97845'], ['blackened hand forged', '#414544'], ['cool weathered grey', '#858477'],
+  ['warm hearth sandstone', '#b19a72'], ['midnight blue flagstone', '#474a55'], ['aged warm limewash', '#c8b995'],
+  ['muted sage foliage', '#72885c'], ['warm old vellum', '#d0bc8d'], ['oxblood woven wool', '#783b43'],
+  ['deep peacock linen', '#3d7371'], ['antique golden wear', '#b18a4d'], ['warm hammered patina', '#a36c3c'],
+  ['mottled sea-green glaze', '#558078'], ['creamy beeswax', '#e8d69b'], ['golden blistered crust', '#c88945'],
+  ['golden farmhouse cheese', '#dfb94f'], ['saddle-brown hide', '#76543a'],
+];
+function tintTavernMaterial(source) {
+  const material = source.clone(), name = source.name.toLowerCase();
+  // The Blender source uses named node materials but exports near-white base
+  // factors. Apply a restrained palette from those names while preserving the
+  // source's roughness, metalness, transparency and emissive properties.
+  if (material.color.r > .96 && material.color.g > .96 && material.color.b > .96) {
+    const tint = tavernMaterialTints.find(([token]) => name.includes(token));
+    if (tint) material.color.set(tint[1]);
+  }
+  return material;
+}
+
 function removeMirroredFaces(geometry) {
   // Authored grass sheets contain front AND reversed back triangles. A
   // DoubleSide material can display one copy, preserving every blade exactly.
@@ -106,6 +129,36 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
     const gltf = await new GLTFLoader().loadAsync(urls[key]); gltf.scene.updateWorldMatrix(true, true);
     const { scale, offset } = definition.normalization;
     const transform = new THREE.Matrix4().makeScale(scale, scale, scale).multiply(new THREE.Matrix4().makeTranslation(-offset[0], -offset[1], -offset[2]));
+    if (key === 'house:kit-taverne') {
+      // The user asset is a detailed, already roofless tavern. Drop only its
+      // 200 m presentation floor and merge its 3,247 source pieces by material
+      // so the runtime renders a few dozen meshes instead of thousands.
+      const batches = new Map();
+      gltf.scene.traverse(mesh => {
+        if (!mesh.isMesh) return;
+        const sourceMaterial = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+        if (mesh.name === 'Studio_Boden' || /Praesentation/i.test(sourceMaterial?.name ?? '')) return;
+        if (!sourceMaterial) return;
+        const source = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld).applyMatrix4(transform);
+        const key = sourceMaterial.uuid;
+        if (!batches.has(key)) batches.set(key, { material: tintTavernMaterial(sourceMaterial), geometries: [] });
+        batches.get(key).geometries.push(source);
+      });
+      const parts = [];
+      for (const { material, geometries } of batches.values()) {
+        const geometry = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries);
+        if (geometries.length > 1) geometries.forEach(piece => piece.dispose());
+        if (!geometry) { material.dispose(); continue; }
+        geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+        parts.push({ geometry, material, castShadow: true, interior: false, vegetationTint: false });
+      }
+      gltf.scene.traverse(mesh => {
+        if (!mesh.isMesh) return;
+        mesh.geometry.dispose(); for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) material.dispose();
+      });
+      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true });
+      return;
+    }
     const groups = new Map();
     function add(group, geometry, color) {
       if (!groups.has(group)) groups.set(group, []);

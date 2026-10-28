@@ -61,6 +61,11 @@ export const ASSET_CATALOG = Object.freeze([
   kit('rock', 'kit-single', 'Einzelfelsen · GLB', 'rock_single', 'Kompakter einzelner Felsen aus dem Umwelt-Kit.'),
   kit('grass', 'kit-tall', 'Hohes Gras · GLB', 'grass_tall_patch', 'Vorhandene GLB-Grasbüschel als editierbare hohe Grasfläche.'),
   kit('house', 'kit-timber', 'Fachwerkhaus · GLB', 'house_timbersmall', 'Kompaktes Fachwerkhaus aus dem bereits eingebundenen Umwelt-Kit.'),
+  { id: 'house:kit-taverne', kind: 'house', variant: 'kit-taverne', label: 'Taverne · GLB', format: 'glb',
+    sourceLabel: 'Eigene Blender-Datei · GitHub main', sourcePaths: ['Blender/Taverne.glb'],
+    renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render',
+    notes: 'Große, offene Taverne mit mehreren Räumen und Einrichtung; das Dach ist bereits aus dem Modell entfernt.',
+    provenance: 'Blender/Taverne.glb' },
   kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Zerstörbare Holzkiste; blockiert Bewegung, Sicht und Pfeile bis sie kaputt ist.'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
