@@ -1,32 +1,32 @@
 {
   "name": "Nebeljagd – stabile Entwicklungsvorschau",
   "sourceBranch": "work",
-  "sourceCommit": "923a404",
-  "builtAt": "2026-10-27T23:17:45Z",
+  "sourceCommit": "b060c9e",
+  "builtAt": "2026-10-28T00:01:37.063Z",
   "files": {
     "index.html": {
-      "bytes": 4455980,
-      "sha256": "a409434dae5bb79e52ffcd64fa15fdd6046726cec91b1f1897431d477d3aee02"
+      "bytes": 13950801,
+      "sha256": "d1bdd6532018f949dba929f14d854cfb545b4fdcc043d16b9b4d577796ce5f9b"
     },
     "nebeljagd.html": {
       "bytes": 421,
       "sha256": "01a484495fd20fe5df8058a0525d9f5aa68b1a8fc028194f03bb1b9df6103b03"
     },
     "map-editor.html": {
-      "bytes": 3654821,
-      "sha256": "d7a7d83c12679002dd24907c1425646d3ad52f5feaeb9e2fd1b7bacf1df38680"
+      "bytes": 13159314,
+      "sha256": "839db048836d48f12fe888cfded8e2ce93f56076f261d312271b45fdb9aca0ae"
     },
     "worldmap.json": {
       "bytes": 582641,
       "sha256": "8dc5b281b7e14a044701cfaa67079dee43a0e50eaa072ada9143ef76f5332ec2"
     },
     "worldmap.svg": {
-      "bytes": 1505715,
-      "sha256": "0256c012418c73cafca5c10bb03f38523613cd61689492943d694af3e69571ae"
+      "bytes": 1506247,
+      "sha256": "349e7e3368ca72629c07e58a7b66c3f6daa1b17f8237caab8a9f364410a2a27c"
     },
     "worldmap.schema.json": {
-      "bytes": 33761,
-      "sha256": "e98fbea215aced812c9172764793008401123e74ebd1c1655ad27ada5725dbab"
+      "bytes": 33794,
+      "sha256": "cd413dd6a6336f5428e50be4ef7b09132346cc66931983e02d5ba774b9cb9f28"
     }
   }
 }
