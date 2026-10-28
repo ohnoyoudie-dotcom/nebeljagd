@@ -76,6 +76,7 @@ try:
   results['windTimeAdvances']=True;results['grass']=game.evaluate('nebeljagdGrassGroundState()');results['vision']=game.evaluate('nebeljagdTestState().vision')
   assert results['grass']['visibleInstances']>10000
   assert results['vision']['appearance']=='soft-transparent-charcoal'
+  assert results['vision']['blockerCount']==1, 'Only the tall rock blocks sight; low crates stay solid for movement.'
   data=game.evaluate('nebeljagdCaptureFrame()')
   (OUT/'meadow.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
   before=game.evaluate('nebeljagdGrassGroundState().windTime')

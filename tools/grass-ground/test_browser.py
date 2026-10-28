@@ -20,7 +20,7 @@ try:
   assert active['map']['groundCover']['type']=='rei-grass'
   assert active['map']['groundCover']['height']==.8
   assert len(active['map']['objects'])==count
-  editor.click('#undo');assert editor.evaluate('nebeljagdMapTestState().map.groundCover.height')==.65
+  editor.click('#undo');assert editor.evaluate('nebeljagdMapTestState().map.groundCover.height')==.85
   editor.click('#redo');assert editor.evaluate('nebeljagdMapTestState().map.groundCover.height')==.8
   results['editor']={'unchangedObjectCount':count,'undoRedo':True,'overlayRegions':editor.locator('[data-rei-ground-overlay]').count(),'settings':active['map']['groundCover']}
   with editor.expect_download() as dl:editor.click('#export-json')

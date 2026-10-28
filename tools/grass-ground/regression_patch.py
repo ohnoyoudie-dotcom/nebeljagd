@@ -46,3 +46,5 @@ if(new URLSearchParams(location.search).has('inspect')){
 end=game.index('</script>');game=game[:end]+extra+game[end:]
 
 game=once(game,'window.nebeljagdPhysicsState=()=>',"window.nebeljagdCaptureFrame=()=>{Jm.render(Ym,Xm);return Jm.domElement.toDataURL('image/png')};window.nebeljagdPhysicsState=()=>")
+
+game=once(game,'let s=_m({obstacles:r.projectileObstacles,radius:i,samples:a})','let s=_m({obstacles:r.projectileObstacles.filter(b=>![`chest`,`crate`].includes(b.type)),radius:i,samples:a})')
