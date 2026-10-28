@@ -41,7 +41,7 @@ try:
   variants=editor.locator('#palette-variant option').evaluate_all('(options)=>options.map(o=>o.value)')
   assert 'tavern-file' in variants and 'tavern-nebeljagd' in variants
   results['editor']={'undoRedo':True,'jsonRoundTrip':True,'objectsPreserved':True,'tavernVariants':variants}
-  editor.evaluate('()=>{const original=window.open;window.open=(url,...args)=>original.call(window,url+"&inspect=1",...args)}')
+  editor.evaluate('()=>{const original=window.open;window.open=(url,...args)=>original.call(window,url+"&inspect=1&quality=low",...args)}')
   with editor.expect_popup() as pp:editor.click('#playtest-world')
   game=pp.value;game.set_viewport_size({'width':720,'height':480});game.bring_to_front()
   game.on('pageerror',lambda e:errors.append('game: '+str(e)))
