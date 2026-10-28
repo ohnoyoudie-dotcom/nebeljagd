@@ -35,9 +35,19 @@ jobs:
           text=p.read_text()
           fix="game=once(game,'if(r.opened||!i(u(r)))continue;','if(r.opened)continue;')\n"
           if fix not in text:
-              # Nearby interactions already have an occlusion ray that ignores
-              # only the target chest itself. Its center must not self-occlude.
-              p.write_text(fix+text)
+              text=fix+text
+          capture="game=once(game,'window.nebeljagdPhysicsState=()=>',\"window.nebeljagdCaptureFrame=()=>{Jm.render(Ym,Xm);return Jm.domElement.toDataURL('image/png')};window.nebeljagdPhysicsState=()=>\")\n"
+          if capture not in text:
+              text+='\n'+capture
+          p.write_text(text)
+          p=Path('tools/test_meadow_v2.py'); text=p.read_text()
+          if 'nebeljagdCaptureFrame()' not in text:
+              text=text.replace('import threading,json,traceback,math,copy','import threading,json,traceback,math,copy,base64')
+              old="  game.screenshot(path=str(OUT/'meadow.png'),timeout=60000)\n  game.wait_for_timeout(900);game.screenshot(path=str(OUT/'meadow-wind.png'),timeout=60000)"
+              new="  data=game.evaluate('nebeljagdCaptureFrame()')\n  (OUT/'meadow.png').write_bytes(base64.b64decode(data.split(',',1)[1]))\n  before=game.evaluate('nebeljagdGrassGroundState().windTime')\n  game.wait_for_function('(t)=>nebeljagdGrassGroundState().windTime>t',arg=before,polling=250,timeout=30000)\n  data=game.evaluate('nebeljagdCaptureFrame()')\n  (OUT/'meadow-wind.png').write_bytes(base64.b64decode(data.split(',',1)[1]))\n  results['renderedWindTimes']=[before,game.evaluate('nebeljagdGrassGroundState().windTime')]"
+              assert text.count(old)==1
+              text=text.replace(old,new)
+              p.write_text(text)
           PY
           python tools/grass-ground/build.py
           node --check grass-build/map-editor.html.mjs
@@ -54,7 +64,7 @@ jobs:
           cp grass-build/nebeljagd.html 'Welt und Editor/nebeljagd.html'
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tools/grass-ground welt/map-editor.html welt/nebeljagd.html welt/index.html 'Welt und Editor/map-editor.html' 'Welt und Editor/nebeljagd.html'
+          git add tools/grass-ground tools/test_meadow_v2.py welt/map-editor.html welt/nebeljagd.html welt/index.html 'Welt und Editor/map-editor.html' 'Welt und Editor/nebeljagd.html'
           git diff --cached --quiet || git commit -m 'fix: dense animated meadow, solid crates and actors, soft charcoal vision'
           git push origin HEAD:feature/rei-grass-ground
       - uses: actions/upload-artifact@v4
