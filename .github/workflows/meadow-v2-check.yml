@@ -18,7 +18,6 @@ jobs:
         with:
           sparse-checkout: |
             welt
-            Welt und Editor
             tools
             Blender/Gras/textures
             Blender/nebeljagd_umwelt_kit_v1/assets
@@ -66,11 +65,9 @@ jobs:
           cp grass-build/map-editor.html welt/map-editor.html
           cp grass-build/nebeljagd.html welt/nebeljagd.html
           cp grass-build/nebeljagd.html welt/index.html
-          cp grass-build/map-editor.html 'Welt und Editor/map-editor.html'
-          cp grass-build/nebeljagd.html 'Welt und Editor/nebeljagd.html'
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tools/grass-ground tools/test_meadow_v2.py welt/map-editor.html welt/nebeljagd.html welt/index.html 'Welt und Editor/map-editor.html' 'Welt und Editor/nebeljagd.html'
+          git add tools/grass-ground tools/test_meadow_v2.py welt/map-editor.html welt/nebeljagd.html welt/index.html
           git diff --cached --quiet || git commit -m 'fix: dense animated meadow, solid crates and actors, soft charcoal vision'
           git push origin HEAD:feature/rei-grass-ground
       - uses: actions/upload-artifact@v4
