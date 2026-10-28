@@ -12,7 +12,7 @@ export function groundGrassSettings(map = {}) {
     enabled: explicitType ? source.type === 'rei-grass' : source.enabled !== false,
     height: number(source.height, .82, .25, 1.6),
     density: number(source.density, 8.8, 2, 16),
-    color: /^#[\da-f]{6}$/i.test(source.color ?? '') ? source.color : '#64963d',
+    color: /^#[\da-f]{6}$/i.test(source.color ?? '') ? source.color : '#4b7331',
     groundBlend: number(source.groundBlend, .30, 0, 1),
     windEnabled: source.windEnabled !== false,
     windStrength: number(source.windStrength, .42, 0, 1),
@@ -164,8 +164,8 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       ${shader.fragmentShader}`.replace('#include <alphatest_fragment>', `
         diffuseColor.a*=1.-smoothstep(uGrassDistance-10.,uGrassDistance,distance(vGrassRoot,uGrassViewer));
         float grassHeightMix=smoothstep(0.,1.,vGrassHeight);
-        diffuseColor.rgb*=mix(vec3(.84,.93,.74),vec3(1.08,1.10,.88),grassHeightMix);
-        diffuseColor.rgb=max(diffuseColor.rgb,vec3(.075,.17,.04));
+        diffuseColor.rgb*=mix(vec3(.70,.79,.60),vec3(.94,.98,.79),grassHeightMix);
+        diffuseColor.rgb=max(diffuseColor.rgb,vec3(.055,.12,.03));
         #include <alphatest_fragment>
       `);
   };
@@ -200,7 +200,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       dummy.scale.set(w, h, w); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
       colorAt(x, z, ground);
       const patch = .92 + .10 * Math.sin(x * .12 + Math.sin(z * .09)) + .06 * Math.cos(z * .18 - x * .05);
-      tint.copy(base).lerp(ground, settings.groundBlend * .45).multiplyScalar(patch * (.92 + hash(gx, gz, 97) * .16));
+      tint.copy(base).lerp(ground, settings.groundBlend * .42).multiplyScalar(patch * (.80 + hash(gx, gz, 97) * .14));
       mesh.setColorAt(i, tint);
     }
     mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
