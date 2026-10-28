@@ -153,8 +153,8 @@ function hash(x, z, salt = 0) {
 }
 
 export function createMeadowGround(root, { map, heightAt, colorAt, spatial, quality = 'high' }) {
-  const settings = groundGrassSettings(map);
-  const empty = { update() {}, setQuality() {}, dispose() {}, inspect: () => ({ enabled: false, settings }) };
+  const settings = groundGrassSettings(map), maxInteractors = 8;
+  const empty = { update() {}, setQuality() {}, setInteractors() {}, dispose() {}, inspect: () => ({ enabled: false, settings, interactorCount: 0 }) };
   if (!settings.enabled || typeof document === 'undefined') return empty;
 
   const texture = grassAlphaTexture(), geometry = tuftGeometry(), detailGeometry = detailBladeGeometry(), group = new THREE.Group();
@@ -165,7 +165,24 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     uGrassTime: { value: 0 }, uGrassWind: { value: settings.windEnabled ? settings.windStrength : 0 },
     uGrassSpeed: { value: settings.windSpeed }, uGrassDirection: { value: windDirection },
     uGrassViewer: { value: new THREE.Vector2() }, uGrassDistance: { value: 42 },
+    uGrassInteractorCount: { value: 0 },
+    uGrassInteractors: { value: Array.from({ length: maxInteractors }, () => new THREE.Vector3(99999, 99999, 0)) },
   };
+  const interactionGLSL = `uniform int uGrassInteractorCount; uniform vec3 uGrassInteractors[${maxInteractors}];
+    vec2 grassInteractionAt(vec2 p) {
+      vec2 push = vec2(0.);
+      for (int i = 0; i < ${maxInteractors}; i++) {
+        if (i >= uGrassInteractorCount) break;
+        vec3 actor = uGrassInteractors[i];
+        vec2 delta = p - actor.xy;
+        float d = length(delta);
+        float radius = max(.25, actor.z);
+        float influence = 1. - smoothstep(radius * .28, radius, d);
+        vec2 direction = d > .001 ? delta / d : vec2(1.,0.);
+        push += direction * influence * .60;
+      }
+      return push;
+    }`;
   const material = new THREE.MeshBasicMaterial({
     color: '#ffffff', side: THREE.DoubleSide, alphaMap: texture, alphaTest: .20,
     alphaToCoverage: true, vertexColors: true, toneMapped: true,
@@ -173,7 +190,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   material.dithering = true;
   material.onBeforeCompile = shader => {
     Object.assign(shader.uniforms, uniforms);
-    shader.vertexShader = `uniform float uGrassTime,uGrassWind,uGrassSpeed;uniform vec2 uGrassDirection;
+    shader.vertexShader = `${interactionGLSL}\nuniform float uGrassTime,uGrassWind,uGrassSpeed;uniform vec2 uGrassDirection;
       varying float vGrassHeight;varying vec2 vGrassRoot;
       ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
         vec2 grassRoot=instanceMatrix[3].xz;
@@ -183,6 +200,9 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         float bend=pow(uv.y,1.7)*uGrassWind*(.18+gust*.31)*wave;
         vec2 localWind=vec2(dot(normalize(instanceMatrix[0].xz),uGrassDirection),dot(normalize(instanceMatrix[2].xz),uGrassDirection));
         transformed.xz+=localWind*bend;
+        vec2 worldPush=grassInteractionAt(grassRoot);
+        vec2 localPush=vec2(dot(normalize(instanceMatrix[0].xz),worldPush),dot(normalize(instanceMatrix[2].xz),worldPush));
+        transformed.xz+=localPush*pow(uv.y,1.25);
         vGrassHeight=uv.y;vGrassRoot=grassRoot;
       `);
     shader.fragmentShader = `uniform vec2 uGrassViewer;uniform float uGrassDistance;
@@ -195,7 +215,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         #include <alphatest_fragment>
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v2-color-preserving';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v3-character-parting';
 
   const detailMaterial = new THREE.MeshBasicMaterial({
     color: '#58753a', side: THREE.DoubleSide, toneMapped: true,
@@ -203,7 +223,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   detailMaterial.dithering = true;
   detailMaterial.onBeforeCompile = shader => {
     Object.assign(shader.uniforms, uniforms);
-    shader.vertexShader = `uniform float uGrassTime,uGrassWind,uGrassSpeed;uniform vec2 uGrassDirection;
+    shader.vertexShader = `${interactionGLSL}\nuniform float uGrassTime,uGrassWind,uGrassSpeed;uniform vec2 uGrassDirection;
       varying float vDetailHeight;
       ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
         vec2 grassRoot=instanceMatrix[3].xz;
@@ -213,6 +233,9 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         float bend=pow(uv.y,1.75)*uGrassWind*(.12+gust*.22)*wave;
         vec2 localWind=vec2(dot(normalize(instanceMatrix[0].xz),uGrassDirection),dot(normalize(instanceMatrix[2].xz),uGrassDirection));
         transformed.xz+=localWind*bend;
+        vec2 worldPush=grassInteractionAt(grassRoot);
+        vec2 localPush=vec2(dot(normalize(instanceMatrix[0].xz),worldPush),dot(normalize(instanceMatrix[2].xz),worldPush));
+        transformed.xz+=localPush*pow(uv.y,1.25);
         vDetailHeight=uv.y;
       `);
     shader.fragmentShader = `varying float vDetailHeight;
@@ -221,7 +244,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         diffuseColor.rgb*=mix(vec3(.78,.86,.68),vec3(1.08,1.10,.88),smoothstep(0.,1.,vDetailHeight));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-near-meadow-solid-blades-v2-fixed-green';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-near-meadow-solid-blades-v3-character-parting';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -323,12 +346,23 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     }
   }
 
+  function setInteractors(values = []) {
+    const count = Math.min(maxInteractors, values.length);
+    uniforms.uGrassInteractorCount.value = count;
+    for (let i = 0; i < maxInteractors; i++) {
+      const value = i < count ? values[i] : null;
+      uniforms.uGrassInteractors.value[i].set(value?.x ?? 99999, value?.z ?? 99999, value?.radius ?? 0);
+    }
+  }
+
   return {
     update,
+    setInteractors,
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, visibleDetailInstances, cachedChunks: chunks.size,
       pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit',
-      colorVariation: 'per-tuft-hsl', nearDetail: 'solid-geometry-blades-fixed-green' }),
+      colorVariation: 'per-tuft-hsl', nearDetail: 'solid-geometry-blades-fixed-green', characterParting: true,
+      interactorCount: uniforms.uGrassInteractorCount.value, maximumInteractors: maxInteractors }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
 }
