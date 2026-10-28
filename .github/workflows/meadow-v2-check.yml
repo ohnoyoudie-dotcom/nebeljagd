@@ -1,0 +1,86 @@
+name: Dense meadow and gameplay checks
+on:
+  push:
+    branches: ['feature/rei-grass-ground']
+    paths: ['tools/upgrade_meadow_v2.py', 'tools/test_meadow_v2.py', 'tools/grass-ground/**', '.github/workflows/meadow-v2-check.yml']
+permissions:
+  contents: write
+concurrency:
+  group: meadow-v2-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/feature/rei-grass-ground'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            welt
+            Welt und Editor
+            tools
+            Blender/Gras/textures
+            Blender/nebeljagd_umwelt_kit_v1/assets
+      - name: Prepare browser tests
+        run: |
+          python -m pip install --quiet pillow playwright
+          python -m playwright install --with-deps chromium
+      - name: Apply guarded upgrade and build
+        run: |
+          python tools/upgrade_meadow_v2.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/grass-ground/regression_patch.py')
+          text=p.read_text()
+          fix="game=once(game,'if(r.opened||!i(u(r)))continue;','if(r.opened)continue;')\n"
+          if fix not in text:
+              text=fix+text
+          capture="game=once(game,'window.nebeljagdPhysicsState=()=>',\"window.nebeljagdCaptureFrame=()=>{Jm.render(Ym,Xm);return Jm.domElement.toDataURL('image/png')};window.nebeljagdPhysicsState=()=>\")\n"
+          if capture not in text:
+              text+='\n'+capture
+          vision="game=once(game,'let s=_m({obstacles:r.projectileObstacles,radius:i,samples:a})','let s=_m({obstacles:r.projectileObstacles.filter(b=>![`chest`,`crate`].includes(b.type)),radius:i,samples:a})')\n"
+          if vision not in text:
+              text+='\n'+vision
+          p.write_text(text)
+          p=Path('tools/grass-ground/test_browser.py');text=p.read_text();text=text.replace(".map.groundCover.height')==.65",".map.groundCover.height')==.85");p.write_text(text)
+          p=Path('tools/test_meadow_v2.py'); text=p.read_text()
+          if 'nebeljagdCaptureFrame()' not in text:
+              text=text.replace('import threading,json,traceback,math,copy','import threading,json,traceback,math,copy,base64')
+              old="  game.screenshot(path=str(OUT/'meadow.png'),timeout=60000)\n  game.wait_for_timeout(900);game.screenshot(path=str(OUT/'meadow-wind.png'),timeout=60000)"
+              new="  data=game.evaluate('nebeljagdCaptureFrame()')\n  (OUT/'meadow.png').write_bytes(base64.b64decode(data.split(',',1)[1]))\n  before=game.evaluate('nebeljagdGrassGroundState().windTime')\n  game.wait_for_function('(t)=>nebeljagdGrassGroundState().windTime>t',arg=before,polling=250,timeout=30000)\n  data=game.evaluate('nebeljagdCaptureFrame()')\n  (OUT/'meadow-wind.png').write_bytes(base64.b64decode(data.split(',',1)[1]))\n  results['renderedWindTimes']=[before,game.evaluate('nebeljagdGrassGroundState().windTime')]"
+              assert text.count(old)==1
+              text=text.replace(old,new)
+          if "assert results['vision']['blockerCount']==1" not in text:
+              text=text.replace("  assert results['vision']['appearance']=='soft-transparent-charcoal'","  assert results['vision']['appearance']=='soft-transparent-charcoal'\n  assert results['vision']['blockerCount']==1, 'Only the tall rock blocks sight; low crates stay solid for movement.'")
+          p.write_text(text)
+          PY
+          python tools/grass-ground/build.py
+          node --check grass-build/map-editor.html.mjs
+          node --check grass-build/nebeljagd.html.mjs
+      - name: Test editor, grass, collisions, opening chests and vision
+        run: python tools/test_meadow_v2.py
+      - name: Publish verified files on development branch only
+        run: |
+          test "$GITHUB_REF" = refs/heads/feature/rei-grass-ground
+          cp grass-build/map-editor.html welt/map-editor.html
+          cp grass-build/nebeljagd.html welt/nebeljagd.html
+          cp grass-build/nebeljagd.html welt/index.html
+          cp grass-build/map-editor.html 'Welt und Editor/map-editor.html'
+          cp grass-build/nebeljagd.html 'Welt und Editor/nebeljagd.html'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tools/grass-ground tools/test_meadow_v2.py welt/map-editor.html welt/nebeljagd.html welt/index.html 'Welt und Editor/map-editor.html' 'Welt und Editor/nebeljagd.html'
+          git diff --cached --quiet || git commit -m 'fix: dense animated meadow, solid crates and actors, soft charcoal vision'
+          git push origin HEAD:feature/rei-grass-ground
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: meadow-v2-verified
+          path: |
+            grass-build/*.html
+            grass-test-v2
+            tools/grass-ground
+            tools/test_meadow_v2.py
+            Blender/nebeljagd_umwelt_kit_v1/assets/crate_wood.glb
+          retention-days: 3
