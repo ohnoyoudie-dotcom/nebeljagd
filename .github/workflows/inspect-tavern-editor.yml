@@ -17,27 +17,38 @@ jobs:
           REF: ${{ github.sha }}
         run: |
           python3 - <<'PY'
-          import base64, json, os, pathlib, re, urllib.request
+          import base64, json, os, pathlib, urllib.request
           out = pathlib.Path('editor-sources')
           out.mkdir()
-          paths = ['welt/map-editor.html', 'welt/index.html', 'Welt und Editor/map-editor.html', 'Welt und Editor/index.html']
-          for index, path in enumerate(paths):
-              url = 'https://api.github.com/repos/' + os.environ['REPO'] + '/contents/' + urllib.parse.quote(path) + '?ref=' + os.environ['REF']
-              req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
-              with urllib.request.urlopen(req) as response:
-                  data = json.load(response)
-              text = base64.b64decode(data['content']).decode('utf-8')
-              (out / (str(index) + '.html')).write_text(text, encoding='utf-8')
-              print('\nFILE', path, 'SHA', data['sha'], 'SIZE', len(text))
-              compact = re.sub(r'data:[^\s\x22\x27\x60]*;base64,[A-Za-z0-9+/=]+', '[EMBEDDED ASSET]', text)
-              for pattern in ['Taverne', 'taverne', 'Blender', '.glb', 'variants:', 'house:']:
-                  matches = list(re.finditer(re.escape(pattern), compact))
-                  print('PATTERN', pattern, 'COUNT', len(matches))
-                  for match in matches[:12]:
-                      print(compact[max(0, match.start()-300):match.end()+600])
+          base = 'https://api.github.com/repos/' + os.environ['REPO']
+          def read(endpoint):
+              request = urllib.request.Request(base + endpoint, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(request, timeout=90) as response:
+                  return json.load(response)
+          tree = read('/git/trees/' + os.environ['REF'] + '?recursive=1')
+          assert not tree.get('truncated'), 'Repository tree was truncated'
+          (out / 'tree.json').write_text(json.dumps(tree), encoding='utf-8')
+          paths = []
+          for item in tree['tree']:
+              path = item['path']
+              if item['type'] != 'blob':
+                  continue
+              selected = (path.endswith('.html') and (path.startswith('welt/') or path.startswith('Welt und Editor/'))) or (path.startswith('src/') and path.endswith(('.js', '.json')))
+              if not selected:
+                  continue
+              blob = read('/git/blobs/' + item['sha'])
+              assert blob['encoding'] == 'base64'
+              raw = base64.b64decode(blob['content'])
+              assert len(raw) == item['size'], 'Incomplete file: ' + path
+              target = out / path
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(raw)
+              paths.append(path)
+              print('SOURCE', path, 'SHA', item['sha'], 'BYTES', len(raw))
+          print('MODELS', [(item['path'], item.get('size')) for item in tree['tree'] if 'tavern' in item['path'].lower()])
           (out / 'paths.json').write_text(json.dumps(paths), encoding='utf-8')
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: editor-sources
           path: editor-sources
