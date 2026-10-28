@@ -9,7 +9,7 @@ threading.Thread(target=server.serve_forever,daemon=True).start()
 results={};errors=[]
 try:
  with sync_playwright() as p:
-  browser=p.chromium.launch(headless=True,args=['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
+  browser=p.chromium.launch(headless=True,args=['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-background-timer-throttling','--disable-renderer-backgrounding'])
   context=browser.new_context(viewport={'width':1440,'height':900},accept_downloads=True)
   editor=context.new_page();editor.on('pageerror',lambda e:errors.append('editor: '+str(e)))
   editor.goto('http://127.0.0.1:8765/grass-build/map-editor.html');editor.wait_for_function('!!window.nebeljagdMapTestState')
@@ -30,9 +30,8 @@ try:
   results['editor']['jsonRoundtrip']=True
   editor.locator('.sidebar').evaluate('e=>e.scrollTop=250')
   editor.screenshot(path=str(REPORT/'editor-grass.png'))
-  # Start the real integrated 3D test through the editor, preserving the full map.
   with editor.expect_popup() as pop:editor.click('#playtest-world')
-  game=pop.value
+  game=pop.value;game.bring_to_front()
   game.on('pageerror',lambda e:errors.append('game: '+str(e)))
   game.on('console',lambda m: errors.append('console: '+m.text[:6000]) if m.type=='error' and 'favicon' not in m.text else None)
   game.wait_for_function('!!window.nebeljagdTestState',timeout=90000)
@@ -42,16 +41,19 @@ try:
   assert results['game']['groundCover']['enabled']
   assert results['game']['groundCover']['visibleInstances']>0
   assert results['game']['groundCover']['settings']['height']==.8
-  first=game.evaluate('nebeljagdGrassGroundState().windTime');game.wait_for_timeout(800)
-  assert game.evaluate('nebeljagdGrassGroundState().windTime')>first
-  results['game']['windTimeAdvances']=True
   game.screenshot(path=str(REPORT/'game-intro.png'))
-  # Inspect mode is the game's existing testing interface; teleport into open meadow.
+  # The intro can deliberately pause world animation. Enter actual gameplay for wind checks.
   game.goto('http://127.0.0.1:8765/grass-build/nebeljagd.html?mapSource=editor&inspect')
-  game.wait_for_function('!!window.nebeljagdInspect',timeout=90000)
+  game.bring_to_front();game.wait_for_function('!!window.nebeljagdInspect',timeout=90000)
   game.evaluate('nebeljagdInspect({x:-12,z:-95})');game.wait_for_timeout(3500)
   game.screenshot(path=str(REPORT/'grass-meadow.png'))
   results['meadow']=game.evaluate('nebeljagdGrassGroundState()')
+  first=game.evaluate('nebeljagdGrassGroundState().windTime')
+  game.wait_for_function('(first)=>nebeljagdGrassGroundState().windTime>first',arg=first,timeout=15000)
+  results['game']['windTimeAdvances']=True
+  results['game']['windTimes']=[first,game.evaluate('nebeljagdGrassGroundState().windTime')]
+  game.wait_for_timeout(1000)
+  game.screenshot(path=str(REPORT/'grass-meadow-wind.png'))
   if errors:raise AssertionError('Browser errors: '+repr(errors))
   results['passed']=True
   browser.close()
