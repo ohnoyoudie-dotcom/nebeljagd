@@ -72,7 +72,8 @@ function createGrassPrototypes(wind) {
   const tallGrassGeo = createHidingGrassGeometry(), tallGrassLowGeo = createHidingGrassGeometry({ low: true });
   for (const variant of ['short', 'tall']) {
     const material = wind.apply(new THREE.MeshStandardMaterial({ color: variant === 'tall' ? '#ffffff' : '#759552',
-      vertexColors: variant === 'tall', side: THREE.DoubleSide, roughness: 1, forceSinglePass: true }));
+      vertexColors: variant === 'tall', side: THREE.DoubleSide, roughness: 1, forceSinglePass: true }),
+      { interactionResponse: variant === 'tall' ? 1.15 : .9 });
     result.set(`grass:${variant}`, [{ geometry: variant === 'tall' ? tallGrassGeo : grassGeo,
       lowGeometry: variant === 'tall' ? tallGrassLowGeo : undefined, material, castShadow: false }]);
   }
@@ -534,9 +535,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
   return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
+    setGrassInteractors(values){ wind.setInteractors(values); },
     dispose() { disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
     get shelter() { return shelter; },
-    get stats() { return { totalObjects: (map.objects ?? []).length, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [2.25, 2.6], shortHeight: [.22, .42], bendsAwayFromPlayer: false,
+    get stats() { return { totalObjects: (map.objects ?? []).length, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [2.25, 2.6], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
         sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: 4,
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,
