@@ -198,7 +198,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v2-color-preserving';
 
   const detailMaterial = new THREE.MeshBasicMaterial({
-    color: '#ffffff', side: THREE.DoubleSide, vertexColors: true, toneMapped: true,
+    color: '#58753a', side: THREE.DoubleSide, toneMapped: true,
   });
   detailMaterial.dithering = true;
   detailMaterial.onBeforeCompile = shader => {
@@ -221,11 +221,11 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         diffuseColor.rgb*=mix(vec3(.78,.86,.68),vec3(1.08,1.10,.88),smoothstep(0.,1.,vDetailHeight));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-near-meadow-solid-blades-v1';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-near-meadow-solid-blades-v2-fixed-green';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
-  const chunks = new Map(), dummy = new THREE.Object3D(), base = new THREE.Color(settings.color), ground = new THREE.Color(), tint = new THREE.Color(), detailTint = new THREE.Color();
+  const chunks = new Map(), dummy = new THREE.Object3D(), base = new THREE.Color(settings.color), ground = new THREE.Color(), tint = new THREE.Color();
 
   const allowed = (x, z) => spatial.isLand(x, z) && !spatial.isWater(x, z) && !excluded(x, z)
     && regionHasGroundGrass(spatial.regionAt(x, z), settings);
@@ -265,7 +265,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere(); if (mesh.boundingSphere) mesh.boundingSphere.radius += settings.height + .8;
 
-    const detailData = data.filter(({ gx, gz }) => hash(gx, gz, 173) < (mode === 'low' ? .10 : .16));
+    const detailData = data.filter(({ gx, gz }) => hash(gx, gz, 173) < (mode === 'low' ? .07 : .11));
     const detailMesh = detailData.length ? new THREE.InstancedMesh(detailGeometry, detailMaterial, detailData.length) : null;
     if (detailMesh) {
       detailMesh.name = `Wiesen-Detailhalme ${key}`; detailMesh.castShadow = detailMesh.receiveShadow = false;
@@ -273,16 +273,10 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         const { x, z, gx, gz } = detailData[i];
         dummy.position.set(x, heightAt(x, z) - .015, z);
         dummy.rotation.set(0, hash(gx, gz, 181) * Math.PI * 2, 0);
-        const h = settings.height * (.82 + .36 * hash(gx, gz, 191)), w = .9 + .18 * hash(gx, gz, 199);
+        const h = settings.height * (.68 + .24 * hash(gx, gz, 191)), w = .86 + .12 * hash(gx, gz, 199);
         dummy.scale.set(w, h, w); dummy.updateMatrix(); detailMesh.setMatrixAt(i, dummy.matrix);
-        colorAt(x, z, ground);
-        detailTint.copy(base)
-          .offsetHSL((hash(gx,gz,211)-.5)*.026,(hash(gx,gz,223)-.5)*.08,(hash(gx,gz,227)-.5)*.06)
-          .lerp(ground, settings.groundBlend * .30)
-          .multiplyScalar(.92 + hash(gx,gz,229) * .16);
-        detailMesh.setColorAt(i, detailTint);
       }
-      detailMesh.instanceMatrix.needsUpdate = true; if (detailMesh.instanceColor) detailMesh.instanceColor.needsUpdate = true;
+      detailMesh.instanceMatrix.needsUpdate = true;
       detailMesh.computeBoundingSphere(); group.add(detailMesh);
     }
     group.add(mesh); chunks.set(key, { mesh, detailMesh, cx, cz, count: data.length, detailCount: detailData.length, touched: frame }); createdChunks++;
@@ -334,7 +328,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, visibleDetailInstances, cachedChunks: chunks.size,
       pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit',
-      colorVariation: 'per-tuft-hsl', nearDetail: 'solid-geometry-blades' }),
+      colorVariation: 'per-tuft-hsl', nearDetail: 'solid-geometry-blades-fixed-green' }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
 }
