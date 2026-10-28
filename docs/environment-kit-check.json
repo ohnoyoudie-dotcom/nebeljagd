@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "url": "http://127.0.0.1:5191",
+  "url": "http://127.0.0.1:5200",
   "checks": [
     {
       "name": "The editor imports all thirteen kit variants and shows their real embedded model previews",
@@ -21,206 +21,16 @@
       ]
     },
     {
-      "name": "Exported kit JSON reaches the game unchanged and all thirteen kit GLBs load alongside the five existing Rei GLBs",
+      "name": "The roofless tavern loads at full wall height with its selected dressing cut applied",
       "evidence": {
-        "source": "worldmap.json",
-        "mapId": "nebeljagd-world-v1",
-        "terrainChunks": 324,
-        "visibleTerrainChunks": 16,
-        "terrainTriangles": 229376,
-        "generationMs": 958,
-        "terrainArt": {
-          "ground": "painted-woodland",
-          "mainPaths": "irregular-grey-cobbles",
-          "trailPaths": "earth",
-          "stoneTextureSize": 512,
-          "pathWidthFromMap": true
-        },
-        "terrainPaint": {
-          "stamps": 0,
-          "affectedChunks": 0,
-          "residentChunks": 0,
-          "textureBytes": 0,
-          "textureBudgetBytes": 16777216,
-          "extraDrawCalls": 0,
-          "queuedChunks": 0,
-          "maxBakesPerFrame": 2,
-          "bakedChunksTotal": 0,
-          "totalBakeMs": 0,
-          "maximumTileBakeMs": 0,
-          "maximumTextureSize": 256,
-          "changesCollisionHeight": false
-        },
-        "cloudShadows": {
-          "animated": true,
-          "worldSpace": true,
-          "maximumDimming": 0.27
-        },
-        "totalObjects": 14,
-        "chunks": 3,
-        "visibleChunks": 2,
-        "instanceBatches": 16,
-        "treeCount": 4,
-        "houseCount": 2,
-        "moundCount": 0,
-        "grassPatchCount": 1,
-        "grassRendering": {
-          "tallHeight": [
-            2.25,
-            2.6
-          ],
-          "shortHeight": [
-            0.22,
-            0.42
-          ],
-          "bendsAwayFromPlayer": false,
-          "sourceVersion": "nebeljagd-3d-v011",
-          "crossedStalksPerInstance": 4,
-          "totalInstances": 4,
-          "maximumInstances": 500000,
-          "budgetUnitsUsed": 40,
-          "kitInstances": 4,
-          "maximumKitInstances": 12000,
-          "configuredPatches": 0,
-          "budgetLimitedPatches": 0,
-          "wind": {
-            "gpu": true,
-            "rootAnchored": true,
-            "worldSpaceDirection": true,
-            "zones": 0,
-            "maximumZones": 32,
-            "settings": {
-              "enabled": true,
-              "strength": 0.35,
-              "speed": 1,
-              "direction": 0.65,
-              "gusts": true,
-              "gustStrength": 0.35,
-              "gustFrequency": 0.18,
-              "turbulence": 0.2
-            },
-            "time": 0.6333000000000011
-          },
-          "crossedStalkDensityPerSquareMeter": 35.367765131532295,
-          "colorGradient": [
-            "#315e36",
-            "#bbc975"
-          ],
-          "visibleTallGrassBatches": 2,
-          "tallGrassTriangles": 3360
-        },
-        "collisionBodies": 28,
-        "loadedGLBs": 18,
-        "environmentKit": {
-          "loadedModels": 13,
-          "models": [
-            {
-              "id": "tree:kit-pine-high",
-              "asset": "pine_high",
-              "targetHeight": 7.2,
-              "height": 7.200000319443,
-              "parts": 2,
-              "roofRemoved": false
-            },
-            {
-              "id": "tree:kit-pine-young",
-              "asset": "pine_young",
-              "targetHeight": 4.2,
-              "height": 4.20000012584118,
-              "parts": 2,
-              "roofRemoved": false
-            },
-            {
-              "id": "tree:kit-oak-green",
-              "asset": "oak_green",
-              "targetHeight": 5.8,
-              "height": 5.800760089837637,
-              "parts": 2,
-              "roofRemoved": false
-            },
-            {
-              "id": "tree:kit-oak-autumn",
-              "asset": "oak_autumn",
-              "targetHeight": 5.8,
-              "height": 5.8104705479164975,
-              "parts": 2,
-              "roofRemoved": false
-            },
-            {
-              "id": "wall:kit-stone",
-              "asset": "wall_stone_3m",
-              "targetHeight": 1.5,
-              "height": 1.5071715221587463,
-              "parts": 1,
-              "roofRemoved": false
-            },
-            {
-              "id": "fence:kit-wood",
-              "asset": "fence_wood_3m",
-              "targetHeight": 1.5,
-              "height": 1.5000000132047213,
-              "parts": 1,
-              "roofRemoved": false
-            },
-            {
-              "id": "ruin:kit-arch",
-              "asset": "ruin_arch",
-              "targetHeight": 3.5,
-              "height": 3.2202345696526167,
-              "parts": 1,
-              "roofRemoved": false
-            },
-            {
-              "id": "rock:kit-cluster",
-              "asset": "rock_cluster",
-              "targetHeight": 1.7,
-              "height": 1.8015281492910342,
-              "parts": 1,
-              "roofRemoved": false
-            },
-            {
-              "id": "rock:kit-single",
-              "asset": "rock_single",
-              "targetHeight": 1.6,
-              "height": 1.6667268816925302,
-              "parts": 1,
-              "roofRemoved": false
-            },
-            {
-              "id": "grass:kit-tall",
-              "asset": "grass_tall_patch",
-              "targetHeight": 1.95,
-              "height": 1.9514162020541976,
-              "parts": 2,
-              "roofRemoved": false
-            },
-            {
-              "id": "house:kit-timber",
-              "asset": "house_timbersmall",
-              "targetHeight": 5.5,
-              "height": 3.751608760818051,
-              "parts": 2,
-              "roofRemoved": true
-            },
-            {
-              "id": "house:kit-taverne",
-              "asset": "taverne",
-              "targetHeight": 4.065,
-              "height": 3.115,
-              "parts": 29,
-              "roofRemoved": true
-            },
-            {
-              "id": "crate:kit-wood",
-              "asset": "crate_wood",
-              "targetHeight": 1,
-              "height": 1.0000000125483466,
-              "parts": 1,
-              "roofRemoved": false
-            }
-          ],
-          "placements": 13
-        }
+        "id": "house:kit-taverne",
+        "asset": "taverne",
+        "targetHeight": 4.065,
+        "height": 4.8,
+        "parts": 29,
+        "roofRemoved": true,
+        "reducedDressing": true,
+        "omittedDetailMeshes": 27
       }
     },
     {
@@ -241,9 +51,9 @@
       "evidence": {
         "type": "wall",
         "point": {
-          "x": -81.66635265746332,
-          "y": 2.7265820489995445,
-          "z": 44.42513447380208
+          "x": -81.66635265916595,
+          "y": 2.7224036158023868,
+          "z": 44.4251344755047
         },
         "normal": {
           "x": 0.7071067811865475,
@@ -269,9 +79,9 @@
       "evidence": {
         "type": "fence",
         "point": {
-          "x": -70.27213894374025,
-          "y": 2.698511598126731,
-          "z": 44.170315484221504
+          "x": -70.27213894304879,
+          "y": 2.6985115982079453,
+          "z": 44.17031548491297
         },
         "normal": {
           "x": -0.7071067811865475,
@@ -297,7 +107,7 @@
       "evidence": {
         "centerCrossing": [
           -0.97153544737548,
-          -2.354436972685896
+          -2.5877703060192303
         ],
         "pillarStop": [
           -1.8294615207902551,
@@ -309,8 +119,8 @@
       "name": "The timber GLB house stays roofless and its visible front opening leads to the interior",
       "evidence": {
         "localPosition": [
-          0.7416988349682345,
-          0.03979776065431564
+          0.7664221294671756,
+          -0.08216608014370604
         ],
         "house": {
           "id": "qa-kit-timber-house",
@@ -335,7 +145,7 @@
       "evidence": {
         "localPosition": [
           -1.5,
-          4.899999999999977
+          4.619999999999976
         ],
         "house": {
           "id": "qa-kit-taverne-house",
@@ -391,7 +201,7 @@
       "evidence": {
         "source": "standalone HTML served only by an in-memory route in an offline browser context",
         "limitation": "Managed Chromium blocks file:// navigation; no actual file:// opening is claimed.",
-        "sha256": "8f2f0ee7eb25ec12a0bcfa0cb8758a4447dc7d7b075ea96ed5b29a3e57c5c209",
+        "sha256": "495aa4e5434e85ac1418707f006123c61909d0dc4be3b33a4024aca83719f9aa",
         "models": 13,
         "inMemoryDocumentNavigations": 2,
         "externalResourceRequests": []

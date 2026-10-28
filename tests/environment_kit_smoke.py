@@ -185,7 +185,9 @@ try:
         kit_stats=first['world']['stats']['environmentKit']
         assert kit_stats['loadedModels']==13 and kit_stats['placements']==13,kit_stats
         assert {model['id'] for model in kit_stats['models']}==set(BY_ID)
-        passed('Exported kit JSON reaches the game unchanged and all thirteen kit GLBs load alongside the five existing Rei GLBs',first['world']['stats'])
+        tavern_model=next(model for model in kit_stats['models'] if model['id']=='house:kit-taverne')
+        assert tavern_model['height']==4.8 and tavern_model['reducedDressing'] and tavern_model['omittedDetailMeshes']>0,tavern_model
+        passed('The roofless tavern loads at full wall height with its selected dressing cut applied',tavern_model)
         inspect(game,[-66,35],math.pi);capture(game,'trees')
 
         for kind,variant,keys in [('wall','kit-stone',['w','a']),('fence','kit-wood',['w','d']),('crate','kit-wood',['a'])]:

@@ -214,7 +214,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     prototypes.set(`tree:${variant}`, [{ geometry: trunk.geometry, material: trunk.material, castShadow: true }, { geometry: near.geometry, lowGeometry: far.geometry, material: near.material, castShadow: true, foliage: true }]);
   }
   const importedAssets = { loaded: true, loadedGLBs: 5 + kitModels.size, trees: 0, bushes: 0, flowers: 0, beds: 0, placements: [], sources: ['Rei_treeLeavesGN.glb', 'Rei_treeLeavesGN_samples.glb', 'Rei_flowersGN_sample.blend', 'grassGN3_3_v2_Rei.glb', ...[...kitModels.values()].map(model => `${model.asset}.glb`)], grassSourceContainsBlades: false,
-    environmentKit: [...kitModels.values()].map(model => ({ id: model.id, asset: model.asset, targetHeight: model.targetHeight, height: model.height, parts: model.parts.length, roofRemoved: model.roofRemoved })) };
+    environmentKit: [...kitModels.values()].map(model => ({ id: model.id, asset: model.asset, targetHeight: model.targetHeight, height: model.height, parts: model.parts.length,
+      roofRemoved: model.roofRemoved, reducedDressing: model.reducedDressing, omittedDetailMeshes: model.omittedDetailMeshes })) };
   const stems = new Map();
   for (const [variant, gltf, nativeHeight, stem] of [['rei-tree01', tree01, 5.8, [.1719965339, 0, .1021305472]], ['rei-tree02', tree02, 5.2, [-.074421525, 0, .008194566]], ['rei-bush', bush, 1.1, null]]) {
     const model = normalizedParts(gltf.scene, nativeHeight, mesh => /leaf|leaves|foliage|crown/i.test(`${mesh.name} ${mesh.material?.name}`) ? (stem ? foliage : bushFoliage) : bark);

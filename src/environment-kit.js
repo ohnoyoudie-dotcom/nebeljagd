@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
+import { shouldOmitTavernDetail, TAVERN_DRESSING } from './map/tavern-dressing.js';
 import pineHigh from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_high.glb?url&inline';
 import pineYoung from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_young.glb?url&inline';
 import oakGreen from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_green.glb?url&inline';
@@ -173,8 +174,12 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
       // 200 m presentation floor and merge its 3,247 source pieces by material
       // so the runtime renders a few dozen meshes instead of thousands.
       const batches = new Map();
+      let omittedDetailMeshes = 0;
       gltf.scene.traverse(mesh => {
         if (!mesh.isMesh) return;
+        const ancestors = [];
+        for (let parent = mesh.parent; parent && parent !== gltf.scene; parent = parent.parent) ancestors.push(parent.name);
+        if (shouldOmitTavernDetail(mesh.name, ancestors)) { omittedDetailMeshes++; return; }
         const sourceMaterial = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
         if (mesh.name === 'Studio_Boden' || /Praesentation/i.test(sourceMaterial?.name ?? '')) return;
         if (!sourceMaterial) return;
@@ -198,7 +203,8 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
         if (!mesh.isMesh) return;
         mesh.geometry.dispose(); for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) material.dispose();
       });
-      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true, raisedWalls: true });
+      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true, raisedWalls: true,
+        reducedDressing: true, omittedDetailMeshes, dressingRootsOmitted: TAVERN_DRESSING.omittedRoots.length });
       return;
     }
     const groups = new Map();

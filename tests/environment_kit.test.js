@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {ENVIRONMENT_KIT_DEFINITIONS,getEnvironmentKitDefinition} from '../src/map/environment-kit-definitions.js';
 import {createCollisionIndex} from '../src/collision.js';
 import {buildKitGrassPatch,MAX_KIT_GRASS_INSTANCES} from '../src/vegetation-patches.js';
+import {TAVERN_DRESSING,shouldOmitTavernDetail} from '../src/map/tavern-dressing.js';
 
 test('the environment kit keeps its published sources and the user tavern remains a separate GLB asset',async()=>{
  const root=new URL('../Blender/nebeljagd_umwelt_kit_v1/',import.meta.url);
@@ -58,6 +59,18 @@ test('the open-roof tavern keeps its front doorway and room entrances passable w
  assert.ok(index.traceSegment({x:0,y:3.3,z:3},{x:6,y:3.3,z:3},.08),'3.8 m partitions block movement and shots');
  assert.equal(tavern.walls[0].maxY,4.8);assert.equal(tavern.walls[1].maxY,4.8);assert.equal(tavern.walls[5].maxY,3.8);
  assert.equal(tavern.roofless,true);
+});
+
+test('the tavern keeps its landmarks while selective dressing opens sightlines and floor space',()=>{
+ assert.equal(TAVERN_DRESSING.omittedRoots.length,22);
+ assert.ok(shouldOmitTavernDetail('Stool seat',['Round stool_026']));
+ assert.ok(shouldOmitTavernDetail('Vintage bottle glass',['Vintage bottle_013']));
+ assert.ok(shouldOmitTavernDetail('Barrel stave',['Oak ale barrel_004']));
+ assert.ok(shouldOmitTavernDetail('Spielbrett_Feld.004'));
+ assert.ok(!shouldOmitTavernDetail('Stool seat',['Round stool_001']));
+ assert.ok(!shouldOmitTavernDetail('Vintage bottle glass',['Vintage bottle_012']));
+ assert.ok(!shouldOmitTavernDetail('Curved barrel stave',['Oak ale barrel_001']));
+ assert.ok(!shouldOmitTavernDetail('Runder_Tisch_Brettplatte'));
 });
 
 test('authored grass uses a bounded number of complete clusters and keeps height independent of its footprint',()=>{
