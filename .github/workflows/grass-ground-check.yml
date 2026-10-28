@@ -4,25 +4,51 @@ on:
     branches: ['feature/rei-grass-ground']
     paths: ['.github/workflows/grass-ground-check.yml', 'tools/grass-ground/**']
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: terrain-grass-validation
+  cancel-in-progress: true
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: feature/rei-grass-ground
           sparse-checkout: |
             welt
             Blender/Gras/textures
             tools/grass-ground
-      - name: Gather source files
+      - name: Install test dependencies
         run: |
-          mkdir -p grass-input/Blender/Gras/textures grass-input/welt
-          cp Blender/Gras/textures/*.png grass-input/Blender/Gras/textures/
-          cp welt/map-editor.html welt/nebeljagd.html grass-input/welt/
+          python -m pip install pillow playwright
+          python -m playwright install --with-deps chromium
+      - name: Build standalone editor and game
+        run: |
+          python tools/grass-ground/build.py
+          node --check grass-build/map-editor.html.mjs
+          node --check grass-build/nebeljagd.html.mjs
+      - name: Browser integration test
+        run: python tools/grass-ground/test_browser.py
+      - name: Publish tested pages on development branch only
+        run: |
+          cp grass-build/map-editor.html welt/map-editor.html
+          cp grass-build/nebeljagd.html welt/nebeljagd.html
+          cp grass-build/nebeljagd.html welt/index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add welt/map-editor.html welt/nebeljagd.html welt/index.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'build: publish tested Rei grass terrain editor and game'
+            git push origin HEAD:feature/rei-grass-ground
+          fi
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: grass-ground-input
-          path: grass-input
-          retention-days: 1
+          name: grass-editor-tested
+          path: |
+            grass-build/*.html
+            grass-test
+            tools/grass-ground
+          retention-days: 3
