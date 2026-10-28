@@ -62,10 +62,13 @@ test('the open-roof tavern keeps its front doorway and room entrances passable w
 });
 
 test('the tavern keeps its landmarks while selective dressing opens sightlines and floor space',()=>{
- assert.equal(TAVERN_DRESSING.omittedRoots.length,24);
+ assert.equal(TAVERN_DRESSING.omittedRoots.length,32);
  assert.ok(shouldOmitTavernDetail('Stool seat',['Round stool_026']));
  assert.ok(shouldOmitTavernDetail('Vintage bottle glass',['Vintage bottle_013']));
  assert.ok(shouldOmitTavernDetail('Barrel stave',['Oak ale barrel_004']));
+ assert.ok(shouldOmitTavernDetail('Table top',['Trestle table_002']));
+ assert.ok(shouldOmitTavernDetail('Bench seat',['Trestle bench_003']));
+ assert.ok(shouldOmitTavernDetail('Ale tankard glass',['Ale tankard_006']));
  assert.ok(shouldOmitTavernDetail('Spielbrett_Feld.004'));
  assert.ok(shouldOmitTavernDetail('Ale tankard glass',['Ale tankard_029.001']));
  assert.ok(shouldOmitTavernDetail('Lit candle wick',['Lit candle_030']));
