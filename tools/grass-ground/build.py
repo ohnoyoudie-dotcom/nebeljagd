@@ -35,7 +35,7 @@ game=once(game,'v.value=n,y.value=i,ne.update(e,n,r,i);','v.value=n,y.value=i,ne
 game=once(game,'ne.setQuality(p),m=-1/0','ne.setQuality(p),reiGround.setQuality(p),m=-1/0')
 game=once(game,'mapId:t.id,terrainChunks:c.length','mapId:t.id,groundCover:reiGround.inspect(),terrainChunks:c.length')
 game=once(game,'...ne.stats}},dispose(){let t=new Set,n=new Set;','...ne.stats}},dispose(){reiGround.dispose();let t=new Set,n=new Set;')
-game=once(game,'for(let e of t.objects??[]){if([`heart`,`crystal`,`bow`,`sword`].includes(e.kind))continue;','for(let e of t.objects??[]){if(e.kind===`grass`&&e.variant===`short`&&reiRegionHasGrass(t,reiRegionAt(t,...e.position)))continue;if([`heart`,`crystal`,`bow`,`sword`].includes(e.kind))continue;')
+game=once(game,'for(let e of t.objects??[]){if([`heart`,`crystal`,`bow`,`sword`].includes(e.kind))continue;','const reiCoverMap=t;for(let e of t.objects??[]){if(e.kind===`grass`&&e.variant===`short`&&reiRegionHasGrass(reiCoverMap,reiRegionAt(reiCoverMap,...e.position)))continue;if([`heart`,`crystal`,`bow`,`sword`].includes(e.kind))continue;')
 for name,content in [('map-editor.html',editor),('nebeljagd.html',game)]:
     (OUT/name).write_text(content)
     script=re.search('<script type="module">([\\s\\S]*?)</script>',content).group(1)
