@@ -140,9 +140,9 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     uGrassSpeed: { value: settings.windSpeed }, uGrassDirection: { value: windDirection },
     uGrassViewer: { value: new THREE.Vector2() }, uGrassDistance: { value: 42 },
   };
-  const material = new THREE.MeshStandardMaterial({
-    color: '#ffffff', roughness: 1, side: THREE.DoubleSide, alphaMap: texture, alphaTest: .20,
-    alphaToCoverage: true, vertexColors: true, emissive: new THREE.Color('#18310f'), emissiveIntensity: .28,
+  const material = new THREE.MeshBasicMaterial({
+    color: '#ffffff', side: THREE.DoubleSide, alphaMap: texture, alphaTest: .20,
+    alphaToCoverage: true, vertexColors: true, toneMapped: true,
   });
   material.dithering = true;
   material.onBeforeCompile = shader => {
@@ -163,15 +163,13 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       varying float vGrassHeight;varying vec2 vGrassRoot;
       ${shader.fragmentShader}`.replace('#include <alphatest_fragment>', `
         diffuseColor.a*=1.-smoothstep(uGrassDistance-10.,uGrassDistance,distance(vGrassRoot,uGrassViewer));
-        diffuseColor.rgb*=mix(vec3(.78,.88,.61),vec3(1.22,1.20,.92),smoothstep(0.,1.,vGrassHeight));
+        float grassHeightMix=smoothstep(0.,1.,vGrassHeight);
+        diffuseColor.rgb*=mix(vec3(.92,1.00,.82),vec3(1.16,1.18,.96),grassHeightMix);
+        diffuseColor.rgb=max(diffuseColor.rgb,vec3(.09,.20,.045));
         #include <alphatest_fragment>
-      `).replace('#include <normal_fragment_begin>', `
-        #include <normal_fragment_begin>
-        normal=normalize(vNormal);
-        nonPerturbedNormal=normal;
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v1';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v2-color-preserving';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -193,7 +191,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     const key = `${cx},${cz}`;
     if (!data.length) { chunks.set(key, { mesh: null, cx, cz, count: 0, touched: frame }); return; }
     const mesh = new THREE.InstancedMesh(geometry, material, data.length);
-    mesh.name = `Dichte Wiese ${key}`; mesh.castShadow = false; mesh.receiveShadow = true;
+    mesh.name = `Dichte Wiese ${key}`; mesh.castShadow = false; mesh.receiveShadow = false;
     for (let i = 0; i < data.length; i++) {
       const { x, z, gx, gz } = data[i];
       dummy.position.set(x, heightAt(x, z) - .035, z);
@@ -247,7 +245,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     update,
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, cachedChunks: chunks.size,
-      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3 }),
+      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit' }),
     dispose() { clear(); root.remove(group); geometry.dispose(); material.dispose(); texture.dispose(); },
   };
 }
