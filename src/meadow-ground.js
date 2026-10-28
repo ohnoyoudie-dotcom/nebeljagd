@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { distanceToSegment, pointInPolygon } from './map/model.js';
+import { distanceToSegment } from './map/model.js';
 
 const GREEN_BIOMES = new Set(['meadow', 'forest', 'heath', 'marsh']);
 const CHUNK_SIZE = 10;
@@ -211,7 +211,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   }
 
   function clear() {
-    for (const chunk of chunks.values()) if (chunk.mesh) { group.remove(chunk.mesh); chunk.mesh.dispose(); }
+    for (const chunk of chunks.values()) if (chunk.mesh) group.remove(chunk.mesh);
     chunks.clear(); queue = []; lastCellX = lastCellZ = Infinity;
   }
 
@@ -237,7 +237,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       if (chunk.mesh) chunk.mesh.visible = near;
       if (near) { chunk.touched = frame; if (chunk.mesh) { visibleChunks++; visibleInstances += chunk.count; } }
       if (distance > radius + CHUNK_SIZE * 3) {
-        if (chunk.mesh) { group.remove(chunk.mesh); chunk.mesh.dispose(); }
+        if (chunk.mesh) group.remove(chunk.mesh);
         chunks.delete(key);
       }
     }
