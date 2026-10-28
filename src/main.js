@@ -108,7 +108,7 @@ const character = await createCharacter(world.root);
 character.group.scale.setScalar(1.2);
 const player = character.group.position;
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
-const vision = createVision(world.root, world, { radius: 128, samples: 1024 });
+const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
 const healthBars = createHealthBars(world.root);
