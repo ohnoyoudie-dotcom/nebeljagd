@@ -28,8 +28,7 @@ try:
   editor.select_option('#rei-type','existing');editor.set_input_files('#json-file-input',str(REPORT/'worldmap-grass.json'))
   editor.wait_for_function('nebeljagdMapTestState().map.groundCover.type==="rei-grass"')
   results['editor']['jsonRoundtrip']=True
-  editor.locator('.sidebar').evaluate('e=>e.scrollTop=250');editor.screenshot(path=str(REPORT/'editor-grass.png'))
-  # Full-map editor tests above. GPU CI uses a smaller test map, not a weaker shader.
+  # Editor screenshots are checked separately; CI concentrates on the real GPU result.
   small=copy.deepcopy(active['map']);square=[[-60,-60],[60,-60],[60,60],[-60,60]]
   small.update(id='rei-grass-render-test',name='Rei-Gras · Testwiese',bounds={'minX':-70,'minZ':-70,'maxX':70,'maxZ':70},objects=[],places=[],rivers=[])
   small['island']['points']=square
@@ -40,7 +39,6 @@ try:
   (REPORT/'testwiese.json').write_text(json.dumps(small))
   editor.set_input_files('#json-file-input',str(REPORT/'testwiese.json'))
   editor.wait_for_function('nebeljagdMapTestState().map.id==="rei-grass-render-test"')
-  # Launch through the actual editor handoff; lower resolution only for software GPU.
   with editor.expect_popup() as pop:editor.click('#playtest-world')
   game=pop.value;game.set_viewport_size({'width':720,'height':480});game.bring_to_front()
   game.on('pageerror',lambda e:errors.append('game: '+str(e)))
@@ -52,7 +50,6 @@ try:
   assert results['game']['groundCover']['enabled']
   assert results['game']['groundCover']['visibleInstances']>0
   assert results['game']['groundCover']['settings']['height']==.8
-  # Enter normal gameplay using the user-facing start button.
   game.locator('#startBtn').click(force=True)
   first=game.evaluate('nebeljagdGrassGroundState().windTime')
   game.wait_for_function('(first)=>nebeljagdGrassGroundState().windTime>first',arg=first,timeout=20000)
