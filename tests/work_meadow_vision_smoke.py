@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import base64
 from playwright.sync_api import sync_playwright
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -27,7 +28,8 @@ with sync_playwright() as p:
     assert state['shadows']['type']=='VSM'
     assert state['shadows']['mapSize']==2048
     assert state['shadows']['normalBias']<=.015
-    page.screenshot(path=str(OUT/'work-meadow-vision.png'))
+    data=page.evaluate('nebeljagdCaptureFrame()')
+    (OUT/'work-meadow-vision.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
     report={'passed':not errors,'errors':errors,'state':state}
     browser.close()
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
