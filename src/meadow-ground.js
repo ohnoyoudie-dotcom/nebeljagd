@@ -75,31 +75,43 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
 }
 
 function grassAlphaTexture() {
-  const size = 256, canvas = document.createElement('canvas'); canvas.width = canvas.height = size;
-  const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, size, size); ctx.lineCap = 'round';
+  // Crisp tapered blades instead of soft painted strokes. Fewer, sharper
+  // silhouettes keep individual grass leaves readable from the top-down camera.
+  const size = 512, canvas = document.createElement('canvas'); canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, size, size);
   let seed = 9137;
   const random = () => { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 4294967296; };
-  for (let i = 0; i < 42; i++) {
-    const rootX = 22 + random() * 212, rootY = 250 + random() * 3;
-    const height = 92 + random() * 148, bend = (random() - .5) * 76;
-    const width = 2.2 + random() * 4.5;
-    const gradient = ctx.createLinearGradient(rootX, rootY, rootX + bend, rootY - height);
-    gradient.addColorStop(0, 'rgba(255,255,255,.92)');
-    gradient.addColorStop(.58, 'rgba(255,255,255,.98)');
-    gradient.addColorStop(1, 'rgba(255,255,255,.18)');
-    ctx.strokeStyle = gradient; ctx.lineWidth = width;
-    ctx.beginPath(); ctx.moveTo(rootX, rootY);
-    ctx.bezierCurveTo(rootX + bend * .12, rootY - height * .38, rootX + bend * .66, rootY - height * .74, rootX + bend, rootY - height);
-    ctx.stroke();
+  const blade = (rootX, rootY, height, bend, width, alpha = .98) => {
+    const tipX = rootX + bend, tipY = rootY - height;
+    const control1X = rootX + bend * .18, control1Y = rootY - height * .40;
+    const control2X = rootX + bend * .72, control2Y = rootY - height * .78;
+    const nx = height / Math.max(1, Math.hypot(bend, height)), ny = bend / Math.max(1, Math.hypot(bend, height));
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.beginPath();
+    ctx.moveTo(rootX - width * .5, rootY);
+    ctx.bezierCurveTo(control1X - width * .45 * nx, control1Y - width * .45 * ny,
+      control2X - width * .16 * nx, control2Y - width * .16 * ny, tipX, tipY);
+    ctx.bezierCurveTo(control2X + width * .16 * nx, control2Y + width * .16 * ny,
+      control1X + width * .45 * nx, control1Y + width * .45 * ny, rootX + width * .5, rootY);
+    ctx.closePath(); ctx.fill();
+  };
+  for (let i = 0; i < 22; i++) {
+    const rootX = 36 + random() * 440, rootY = 505 - random() * 5;
+    const height = 170 + random() * 310, bend = (random() - .5) * 118;
+    const width = 3.2 + random() * 6.4;
+    blade(rootX, rootY, height, bend, width, .92 + random() * .08);
+  }
+  for (let i = 0; i < 10; i++) {
+    const rootX = 45 + random() * 420, rootY = 505 - random() * 4;
+    blade(rootX, rootY, 95 + random() * 150, (random() - .5) * 70, 2.6 + random() * 4.2, .92);
   }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.NoColorSpace;
   texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter;
-  texture.generateMipmaps = true;
-  texture.name = 'Nebeljagd · dense meadow grass alpha';
+  texture.generateMipmaps = true; texture.anisotropy = 8;
+  texture.name = 'Nebeljagd · crisp tapered meadow blades';
   return texture;
 }
-
 function tuftGeometry() {
   const geometry = new THREE.BufferGeometry(), positions = [], normals = [], uvs = [], indices = [];
   for (let card = 0; card < 3; card++) {
@@ -141,7 +153,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     uGrassViewer: { value: new THREE.Vector2() }, uGrassDistance: { value: 42 },
   };
   const material = new THREE.MeshBasicMaterial({
-    color: '#ffffff', side: THREE.DoubleSide, alphaMap: texture, alphaTest: .20,
+    color: '#ffffff', side: THREE.DoubleSide, alphaMap: texture, alphaTest: .48,
     alphaToCoverage: true, vertexColors: true, toneMapped: true,
   });
   material.dithering = true;
@@ -169,7 +181,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         #include <alphatest_fragment>
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v2-color-preserving';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v3-crisp-blades';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -196,7 +208,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       const { x, z, gx, gz } = data[i];
       dummy.position.set(x, heightAt(x, z) - .035, z);
       dummy.rotation.set(0, hash(gx, gz, 49) * Math.PI * 2, 0);
-      const h = settings.height * (.72 + .54 * hash(gx, gz, 63)), w = .62 + .34 * hash(gx, gz, 73);
+      const h = settings.height * (.78 + .50 * hash(gx, gz, 63)), w = .54 + .26 * hash(gx, gz, 73);
       dummy.scale.set(w, h, w); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
       colorAt(x, z, ground);
       const patch = .92 + .10 * Math.sin(x * .12 + Math.sin(z * .09)) + .06 * Math.cos(z * .18 - x * .05);
@@ -252,7 +264,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     update,
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, cachedChunks: chunks.size,
-      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit', colorVariation: 'per-tuft-hsl' }),
+      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit', colorVariation: 'per-tuft-hsl', bladeStyle: 'crisp-tapered' }),
     dispose() { clear(); root.remove(group); geometry.dispose(); material.dispose(); texture.dispose(); },
   };
 }
