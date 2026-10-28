@@ -27,8 +27,9 @@ with sync_playwright() as p:
     assert state['meadow']['cardsPerTuft']==3
     assert state['meadow']['lighting']=='color-preserving-unlit'
     assert state['meadow']['colorVariation']=='per-tuft-hsl'
-    assert state['meadow']['nearDetail']=='solid-geometry-blades-fixed-green'
-    assert state['meadow']['visibleDetailInstances']>0
+    assert state['meadow']['detailLayer']=='global-large-solid-blades'
+    assert state['meadow']['layeredMeadow'] is True
+    assert state['meadow']['visibleDetailInstances']>100
     assert state['meadow']['characterParting'] is True
     assert state['meadow']['interactorCount']>=2
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
