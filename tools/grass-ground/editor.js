@@ -30,6 +30,52 @@ function reiPaintMap(svg,map) {
     const overlay=document.createElementNS(ns,'polygon');overlay.setAttribute('points',polygon.getAttribute('points'));overlay.setAttribute('fill','url(#rei-grass-pattern)');overlay.setAttribute('pointer-events','none');overlay.setAttribute('data-rei-ground-overlay','true');group.append(overlay);
   }
 }
+
+const REI_DIRECT_DB='nebeljagd-editor-files-v1',REI_DIRECT_STORE='handles',REI_DIRECT_KEY='world-json';
+function reiDirectSupported(){return window.isSecureContext&&typeof window.showSaveFilePicker==='function'&&!navigator.webdriver;}
+function reiDirectDb(){return new Promise((resolve,reject)=>{const req=indexedDB.open(REI_DIRECT_DB,1);req.onupgradeneeded=()=>req.result.createObjectStore(REI_DIRECT_STORE);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+async function reiDirectHandleGet(){try{const db=await reiDirectDb();return await new Promise((resolve,reject)=>{const tx=db.transaction(REI_DIRECT_STORE,'readonly'),req=tx.objectStore(REI_DIRECT_STORE).get(REI_DIRECT_KEY);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});}catch{return null;}}
+async function reiDirectHandleSet(handle){const db=await reiDirectDb();await new Promise((resolve,reject)=>{const tx=db.transaction(REI_DIRECT_STORE,'readwrite');tx.objectStore(REI_DIRECT_STORE).put(handle,REI_DIRECT_KEY);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}
+function reiDirectFilename(){const raw=(M?.name||M?.id||'Nebeljagd-Welt').replace(/[<>:"/\\|?*\x00-\x1f]+/g,'-').trim();return (raw||'Nebeljagd-Welt')+'.json';}
+function reiDownloadJson(){const blob=new Blob([JSON.stringify(M,null,2)+'\n'],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=reiDirectFilename();document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function reiDirectPermission(handle,request=false){try{let p=await handle.queryPermission({mode:'readwrite'});if(p==='prompt'&&request)p=await handle.requestPermission({mode:'readwrite'});return p;}catch{return 'denied';}}
+async function reiDirectPick(){const handle=await window.showSaveFilePicker({suggestedName:reiDirectFilename(),types:[{description:'Nebeljagd-Karte (JSON)',accept:{'application/json':['.json']}}]});await reiDirectHandleSet(handle);return handle;}
+async function reiDirectSave(forcePick=false){
+  if(!reiDirectSupported()){reiDownloadJson();reiDirectStatus('Browser-Download · für direktes Speichern über START_EDITOR.cmd in Chrome öffnen');return false;}
+  try{
+    let handle=forcePick?null:await reiDirectHandleGet();
+    if(handle&&(await reiDirectPermission(handle,true))!=='granted')handle=null;
+    if(!handle)handle=await reiDirectPick();
+    const writable=await handle.createWritable();await writable.write(JSON.stringify(M,null,2)+'\n');await writable.close();
+    reiDirectStatus('Direkt gespeichert · '+handle.name,true);return true;
+  }catch(error){
+    if(error?.name==='AbortError'){reiDirectStatus('Speichern abgebrochen');return false;}
+    console.error('Direktes Speichern fehlgeschlagen',error);reiDirectStatus('Direktes Speichern fehlgeschlagen · Speicherort neu wählen');
+    return false;
+  }
+}
+function reiDirectStatus(text,ok=false){const el=document.getElementById('rei-file-status');if(el){el.textContent=text;el.dataset.ok=ok?'true':'false';}}
+async function reiDirectRefresh(){
+  if(!reiDirectSupported()){reiDirectStatus('Direktes Überschreiben ist hier nicht verfügbar · JSON wird normal heruntergeladen');return;}
+  const handle=await reiDirectHandleGet();if(!handle){reiDirectStatus('Noch keine Projektdatei verknüpft · beim ersten Speichern Speicherort wählen');return;}
+  const p=await reiDirectPermission(handle,false);reiDirectStatus((p==='granted'?'Verknüpft · ':'Gespeicherte Datei · Berechtigung beim nächsten Speichern bestätigen · ')+handle.name,p==='granted');
+}
+function reiDirectSaveMount(){
+  const old=document.getElementById('export-json');
+  if(old&&!old.dataset.reiDirect){
+    const btn=old.cloneNode(true);btn.dataset.reiDirect='true';btn.textContent=reiDirectSupported()?'Projekt speichern':'JSON speichern';old.replaceWith(btn);
+    btn.addEventListener('click',()=>reiDirectSave(false));
+  }
+  const actions=document.querySelector('.project-actions');
+  if(actions&&!document.getElementById('rei-file-status')){
+    const box=document.createElement('div');box.className='rei-file-box';box.innerHTML='<strong>Projektdatei</strong><span id="rei-file-status">Speicherstatus wird geprüft …</span><button type="button" id="rei-file-change" class="text-button">Datei wechseln</button>';actions.prepend(box);
+    document.getElementById('rei-file-change').addEventListener('click',()=>reiDirectSave(true));
+  }
+  document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();reiDirectSave(false);}});
+  reiDirectRefresh();
+  window.nebeljagdDirectSaveState=async()=>{const h=await reiDirectHandleGet();return{supported:reiDirectSupported(),linked:!!h,name:h?.name||null,permission:h?await reiDirectPermission(h,false):null};};
+}
+
 function reiEditorMount(){
   if(!document.getElementById('rei-ground-panel')){
     const panel=document.createElement('section');panel.className='tool-section rei-ground-panel';panel.id='rei-ground-panel';
@@ -52,7 +98,7 @@ function reiEditorMount(){
     document.querySelector('.object-palette').before(panel);
   }
   if(!document.getElementById('rei-ground-style')){
-    const style=document.createElement('style');style.id='rei-ground-style';style.textContent=`.rei-ground-panel{background:#e9efdf}.rei-ground-panel label{display:block;font-size:10px;margin:12px 0 6px;color:#516348}.rei-ground-panel input[type=range]{width:100%;accent-color:#5d803f}.rei-ground-panel input[type=color]{width:100%;height:28px;border:1px solid #b7c5a6;border-radius:4px}.rei-ground-panel output{float:right;color:#365d2a}.rei-ground-panel details{margin-top:10px}.rei-ground-panel summary{cursor:pointer;font-size:11px;color:#3e5934;font-weight:600;padding:5px 0}.rei-ground-panel .rei-check{display:flex;align-items:center;gap:8px}#rei-ground-preview{width:100%;height:80px;margin-top:10px;border:1px solid #b9c9a6;border-radius:5px;display:block}.rei-ground-panel input:disabled{opacity:.45}`;document.head.append(style);
+    const style=document.createElement('style');style.id='rei-ground-style';style.textContent=`.rei-ground-panel{background:#e9efdf}.rei-ground-panel label{display:block;font-size:10px;margin:12px 0 6px;color:#516348}.rei-ground-panel input[type=range]{width:100%;accent-color:#5d803f}.rei-ground-panel input[type=color]{width:100%;height:28px;border:1px solid #b7c5a6;border-radius:4px}.rei-ground-panel output{float:right;color:#365d2a}.rei-ground-panel details{margin-top:10px}.rei-ground-panel summary{cursor:pointer;font-size:11px;color:#3e5934;font-weight:600;padding:5px 0}.rei-ground-panel .rei-check{display:flex;align-items:center;gap:8px}#rei-ground-preview{width:100%;height:80px;margin-top:10px;border:1px solid #b9c9a6;border-radius:5px;display:block}.rei-ground-panel input:disabled{opacity:.45}.rei-file-box{display:grid;gap:5px;padding:10px 0 12px;border-bottom:1px solid var(--line)}.rei-file-box strong{font-size:10px;color:#546b57}.rei-file-box span{font-size:9px;line-height:1.45;color:#8b9386}.rei-file-box span[data-ok=\"true\"]{color:#3f7350}.rei-file-box .text-button{padding:2px 0}`;document.head.append(style);
   }
   const regionProps=document.getElementById('region-properties');
   if(!document.getElementById('rei-region-ground'))regionProps.insertAdjacentHTML('beforeend',`<label for="rei-region-ground">Gras-Untergrund dieser Region</label><select id="rei-region-ground"><option value="inherit">Globale Bodeneinstellung</option><option value="rei-grass">Rei-Wiese verwenden</option><option value="none">Kein Bodengras</option></select><p class="small-note">Rei-Wiese muss links unter „Untergrund“ eingeschaltet sein.</p>`);
@@ -67,6 +113,7 @@ function reiEditorMount(){
     if(N?.type!=='region')return;const id=N.id,value=event.target.value;
     J(map=>{const region=map.regions.find(r=>r.id===id);if(region){if(value==='inherit')delete region.groundCover;else region.groundCover=value;}},'Gras-Untergrund der Region gespeichert.');
   });
+  reiDirectSaveMount();
   reiEditorSync();reiPaintMap(document.querySelector('#map-stage svg'),M);
   const image=new Image();image.src=REI_GRASS_MASK_DATA;
   image.onload=()=>{
