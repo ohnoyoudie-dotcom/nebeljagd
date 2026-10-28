@@ -18,6 +18,7 @@ try:
   original=editor.evaluate('nebeljagdMapTestState().map');original_count=len(original['objects'])
   editor.select_option('#rei-type','rei-grass')
   state=editor.evaluate('nebeljagdMapTestState()');results['newSettings']=state['map']['groundCover']
+  direct=editor.evaluate('nebeljagdDirectSaveState()');results['directSave']=direct;assert direct['supported'] is False
   editor.locator('#rei-height').evaluate('(e)=>{e.value="0.9";e.dispatchEvent(new Event("change",{bubbles:true}));}')
   assert editor.evaluate('nebeljagdMapTestState().map.groundCover.height')==.9
   editor.click('#undo');assert editor.evaluate('nebeljagdMapTestState().map.groundCover.height')==.85
