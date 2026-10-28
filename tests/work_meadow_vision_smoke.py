@@ -24,6 +24,7 @@ with sync_playwright() as p:
     assert state['meadow']['enabled'] is True
     assert state['meadow']['visibleInstances']>2500
     assert state['meadow']['cardsPerTuft']==3
+    assert state['meadow']['lighting']=='color-preserving-unlit'
     assert state['vision']['samples']==1024
     assert state['shadows']['type']=='VSM'
     assert state['shadows']['mapSize']==2048
