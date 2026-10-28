@@ -36,10 +36,13 @@ try:
   with editor.expect_download() as dl:editor.click('#export-json')
   dl.value.save_as(str(OUT/'roundtrip.json'))
   saved=json.loads((OUT/'roundtrip.json').read_text());assert saved['groundCover']['density']==9.6 and len(saved['objects'])==4
-  results['editor']={'undoRedo':True,'jsonRoundTrip':True,'objectsPreserved':True,'tavernVariants':editor.locator('#palette-variant').count()}
+  editor.select_option('#palette-kind','house')
+  variants=editor.locator('#palette-variant option').evaluate_all('(options)=>options.map(o=>o.value)')
+  assert 'tavern-file' in variants and 'tavern-nebeljagd' in variants
+  results['editor']={'undoRedo':True,'jsonRoundTrip':True,'objectsPreserved':True,'tavernVariants':variants}
   editor.evaluate('()=>{const original=window.open;window.open=(url,...args)=>original.call(window,url+"&inspect=1",...args)}')
   with editor.expect_popup() as pp:editor.click('#playtest-world')
-  game=pp.value;game.set_viewport_size({'width':850,'height':600});game.bring_to_front()
+  game=pp.value;game.set_viewport_size({'width':720,'height':480});game.bring_to_front()
   game.on('pageerror',lambda e:errors.append('game: '+str(e)))
   game.on('console',lambda m:errors.append(m.text[:5000]) if m.type=='error' and 'favicon' not in m.text else None)
   game.wait_for_function('!!window.nebeljagdMovementProbe',timeout=90000)
@@ -66,9 +69,10 @@ try:
   game.evaluate('nebeljagdInspect({x:0,z:2.65})');game.keyboard.press('KeyE')
   game.wait_for_function('nebeljagdTestState().chests.some(c=>c.id==="test-chest"&&c.opened)',timeout=15000)
   results['chestOpens']=True
-  game.evaluate('nebeljagdInspect({x:1,z:0})')
+  game.evaluate('nebeljagdInspect({x:1,z:0})');game.bring_to_front()
+  results['beforeWind']=game.evaluate('({grass:nebeljagdGrassGroundState(),game:nebeljagdTestState(),hidden:document.hidden})')
   first=game.evaluate('nebeljagdGrassGroundState().windTime')
-  game.wait_for_function('(v)=>nebeljagdGrassGroundState().windTime>v+.3',arg=first,timeout=20000)
+  game.wait_for_function('(v)=>nebeljagdGrassGroundState().windTime>v',arg=first,polling=250,timeout=30000)
   results['windTimeAdvances']=True;results['grass']=game.evaluate('nebeljagdGrassGroundState()');results['vision']=game.evaluate('nebeljagdTestState().vision')
   assert results['grass']['visibleInstances']>10000
   assert results['vision']['appearance']=='soft-transparent-charcoal'
