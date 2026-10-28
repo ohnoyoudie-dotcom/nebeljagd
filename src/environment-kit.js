@@ -75,6 +75,35 @@ function paintedGeometry(source, color, transform) {
   if (!geometry.attributes.normal) geometry.computeVertexNormals();
   return geometry;
 }
+const tavernWallHeight = name => {
+  if (/^(Ostwand|Westwand|Suedwand)$/i.test(name)) return 2.75;
+  if (/Trennwand$/i.test(name)) return 2.45;
+  if (/^(Eck_und_Seitenpfosten|Durchgangspfosten_)/i.test(name)) return /Durchgangspfosten_/i.test(name) ? 2.45 : 2.75;
+  return 0;
+};
+function shapeTavernArchitecture(geometry, name) {
+  geometry.computeBoundingBox();
+  const bounds = geometry.boundingBox;
+  let changed = false;
+  const targetHeight = tavernWallHeight(name);
+  if (targetHeight && bounds.max.y - bounds.min.y > 0.1 && bounds.max.y - bounds.min.y < targetHeight) {
+    const base = bounds.min.y, ratio = targetHeight / (bounds.max.y - base), positions = geometry.attributes.position;
+    for (let i = 0; i < positions.count; i++) positions.setY(i, base + (positions.getY(i) - base) * ratio);
+    positions.needsUpdate = true;
+    changed = true;
+  } else if (/^(Trennwand_Kappe|Zimmerwand_Kappe)/i.test(name) && bounds.max.y - bounds.min.y < 0.5) {
+    // Keep each wooden cap on the new top edge so doorways and room divisions
+    // have a clean, readable silhouette from the gameplay camera.
+    const shift = 2.38 - (bounds.min.y + bounds.max.y) / 2, positions = geometry.attributes.position;
+    for (let i = 0; i < positions.count; i++) positions.setY(i, positions.getY(i) + shift);
+    positions.needsUpdate = true;
+    changed = true;
+  }
+  if (changed) geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
 function nativeBox(x, y, z, width, height, depth) {
   const geometry = new THREE.BoxGeometry(width, height, depth); geometry.translate(x, y, z); return geometry;
 }
@@ -140,23 +169,26 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
         if (mesh.name === 'Studio_Boden' || /Praesentation/i.test(sourceMaterial?.name ?? '')) return;
         if (!sourceMaterial) return;
         const source = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld).applyMatrix4(transform);
-        const key = sourceMaterial.uuid;
+        shapeTavernArchitecture(source, mesh.name);
+        const frontFacade = /^Suedwand$/i.test(mesh.name);
+        const key = `${sourceMaterial.uuid}/${frontFacade ? 'front' : 'room'}`;
         if (!batches.has(key)) batches.set(key, { material: tintTavernMaterial(sourceMaterial), geometries: [] });
         batches.get(key).geometries.push(source);
       });
       const parts = [];
-      for (const { material, geometries } of batches.values()) {
+      for (const [batchKey, { material, geometries }] of batches) {
         const geometry = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries);
         if (geometries.length > 1) geometries.forEach(piece => piece.dispose());
         if (!geometry) { material.dispose(); continue; }
         geometry.computeBoundingBox(); geometry.computeBoundingSphere();
-        parts.push({ geometry, material, castShadow: true, interior: false, vegetationTint: false });
+        const frontFacade = batchKey.endsWith('/front');
+        parts.push({ geometry, material, castShadow: true, interior: false, frontFacade, vegetationTint: false });
       }
       gltf.scene.traverse(mesh => {
         if (!mesh.isMesh) return;
         mesh.geometry.dispose(); for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) material.dispose();
       });
-      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true });
+      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true, raisedWalls: true });
       return;
     }
     const groups = new Map();

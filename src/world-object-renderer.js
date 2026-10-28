@@ -292,7 +292,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       group.name = `${object.name} · ${object.id}`; group.userData.visionBlockerSurface = true; roof.name = 'Dach entfernt'; roof.visible = false; interior.name = 'Fachwerkhaus · offener Innenraum';
       group.position.set(x, groundHeightAt(x, z), z); group.rotation.y = object.rotation; group.scale.setScalar(scale);
       group.add(roof, frontFacade, interior);
-      for (const part of kit.parts) { const mesh = new THREE.Mesh(part.geometry, part.material); mesh.castShadow = part.castShadow; mesh.receiveShadow = true; (part.interior ? interior : group).add(mesh); }
+      for (const part of kit.parts) {
+        const mesh = new THREE.Mesh(part.geometry, part.material); mesh.castShadow = part.castShadow; mesh.receiveShadow = true;
+        (part.frontFacade ? frontFacade : part.interior ? interior : group).add(mesh);
+      }
       chunkFor(x, z).group.add(group);
       const structure = addStructure(object, kit.walls, group, true);
       const record = { id: object.id, name: object.name, kind: 'Fachwerkhaus', x, z, y: structure.y,

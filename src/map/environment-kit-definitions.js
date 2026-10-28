@@ -38,19 +38,19 @@ const nativeDefinitions = [
     insideHalfWidth: 1.65, insideHalfDepth: 1.45, entranceHalfWidth: .65 }),
   entry('house', 'kit-taverne', 'taverne', 'Taverne', 3.115, { halfWidth: 11.25, halfDepth: 9.92 }, [
     wall(-11.2, 11.2, -8.7, -8.3, 3.05, 'house-wall'),
-    wall(-11.2, -10.8, -8.7, 8.7, 1.55, 'house-wall'),
-    wall(10.8, 11.2, -8.7, 8.7, 1.15, 'house-wall'),
+    wall(-11.2, -10.8, -8.7, 8.7, 2.75, 'house-wall'),
+    wall(10.8, 11.2, -8.7, 8.7, 2.75, 'house-wall'),
     // The broad, double entrance remains open on the south side.
-    wall(-11.2, -3.45, 8.3, 8.7, 1.15, 'house-wall'),
-    wall(.25, 11.2, 8.3, 8.7, 1.15, 'house-wall'),
+    wall(-11.2, -3.45, 8.3, 8.7, 2.75, 'house-wall'),
+    wall(.25, 11.2, 8.3, 8.7, 2.75, 'house-wall'),
     // The internal divider has three deliberate doorways to the guest rooms.
-    wall(3.18, 3.52, -8.35, -6.35, 1.15, 'house-wall'),
-    wall(3.18, 3.52, -4.05, -1.15, 1.15, 'house-wall'),
-    wall(3.18, 3.52, 1.15, 4.05, 1.15, 'house-wall'),
-    wall(3.18, 3.52, 6.35, 8.35, 1.15, 'house-wall'),
-    // Low cross-walls separate the kitchen, store room and guest rooms.
-    wall(4.8, 10.9, -2.96, -2.64, 1.15, 'house-wall'),
-    wall(4.8, 10.9, 2.64, 2.96, 1.15, 'house-wall'),
+    wall(3.18, 3.52, -8.35, -6.35, 2.45, 'house-wall'),
+    wall(3.18, 3.52, -4.05, -1.15, 2.45, 'house-wall'),
+    wall(3.18, 3.52, 1.15, 4.05, 2.45, 'house-wall'),
+    wall(3.18, 3.52, 6.35, 8.35, 2.45, 'house-wall'),
+    // Cross-walls separate the kitchen, store room and guest rooms.
+    wall(4.8, 10.9, -2.96, -2.64, 2.45, 'house-wall'),
+    wall(4.8, 10.9, 2.64, 2.96, 2.45, 'house-wall'),
   ], [], { roofless: true, anchorY: 0, anchorXZ: [0, 0], floorHeight: 0, interior: { halfWidth: 10.9, halfDepth: 8.2, entranceHalfWidth: 1.85 },
     insideHalfWidth: 10.9, insideHalfDepth: 8.2, entranceHalfWidth: 1.85 }),
   entry('crate', 'kit-wood', 'crate_wood', 'Holzkiste', .76, { halfWidth: .475, halfDepth: .475 }, [wall(-.475, .475, -.475, .475, .76, 'crate')]),

@@ -52,6 +52,11 @@ test('the open-roof tavern keeps its front doorway and room entrances passable w
  assert.ok(index.traceSegment({x:5,y:.9,z:10},{x:5,y:.9,z:7},.08),'the remaining front wall blocks movement');
  assert.equal(index.traceSegment({x:0,y:.9,z:0},{x:6,y:.9,z:0},.08),null,'the central room doorway stays open');
  assert.ok(index.traceSegment({x:0,y:.9,z:3},{x:6,y:.9,z:3},.08),'room partitions block movement');
+ assert.equal(index.traceSegment({x:-1.5,y:2.1,z:10},{x:-1.5,y:2.1,z:7},.08),null,'the taller entrance still reads as an open passage');
+ assert.ok(index.traceSegment({x:5,y:2.1,z:10},{x:5,y:2.1,z:7},.08),'the taller facade remains solid above player height');
+ assert.equal(index.traceSegment({x:0,y:2.1,z:0},{x:6,y:2.1,z:0},.08),null,'the raised room doorway remains traversable');
+ assert.ok(index.traceSegment({x:0,y:2.1,z:3},{x:6,y:2.1,z:3},.08),'raised room partitions block movement and shots');
+ assert.equal(tavern.walls[1].maxY,2.75);assert.equal(tavern.walls[5].maxY,2.45);
  assert.equal(tavern.roofless,true);
 });
 

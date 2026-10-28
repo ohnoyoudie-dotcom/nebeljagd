@@ -242,7 +242,9 @@ try:
         inside=local_point(tavern,state(game)['position'])
         assert abs(inside[0])<definition['insideHalfWidth'] and abs(inside[1])<definition['insideHalfDepth'],inside
         assert state(game)['shelter']==tavern['name'],state(game)
-        passed('The uploaded roofless tavern renders its interior and its double entrance leads inside',{'localPosition':inside,'house':tavern_record})
+        tavern_record=next(h for h in state(game)['houses'] if h['id']==tavern['id'])
+        assert not tavern_record['frontFacadeVisible'] and tavern_record['frontFacadeParts']>0,tavern_record
+        passed('The raised tavern walls keep the entrance open, then cut away the front facade from inside',{'localPosition':inside,'house':tavern_record})
         capture(game,'taverne')
         grass=object_for('grass','kit-tall');inspect(game,grass['position'])
         game.wait_for_function('nebeljagdTestState().hiddenInGrass')
