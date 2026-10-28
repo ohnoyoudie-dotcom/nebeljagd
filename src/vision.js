@@ -25,7 +25,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     uniform float uTacticalBlockerSurface;
     float tacticalSightFade(float angleUv, float distanceToViewer) {
       float limit = texture2D(uTacticalSight, vec2(fract(angleUv), .5)).r * uTacticalRadius;
-      return 1. - smoothstep(limit + .04, limit + 1.0, distanceToViewer);
+      return 1. - smoothstep(limit - .18, limit + 1.18, distanceToViewer);
     }
     vec3 applyTacticalSight(vec3 color, vec2 point) {
       vec2 delta = point - uTacticalOrigin;
@@ -33,19 +33,18 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       float angle = atan(delta.y, delta.x) / 6.28318530718;
       float angleUv = fract(angle + .5 / ${samples.toFixed(1)});
       float texel = 1. / ${samples.toFixed(1)};
-      // Keep the blur width steady in world space: a fixed angular kernel gets
-      // wider with distance and washes distant obstacle shadows out.
-      float filterStep = .5 * texel * min(1., 12. / max(distanceToViewer, 12.));
-      // Dense Gaussian taps keep the contour soft while preserving its core.
-      float obstacleFade = .08995 * tacticalSightFade(angleUv, distanceToViewer)
-        + .08802 * (tacticalSightFade(angleUv - filterStep, distanceToViewer) + tacticalSightFade(angleUv + filterStep, distanceToViewer))
-        + .08248 * (tacticalSightFade(angleUv - 2. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 2. * filterStep, distanceToViewer))
-        + .07399 * (tacticalSightFade(angleUv - 3. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 3. * filterStep, distanceToViewer))
-        + .06357 * (tacticalSightFade(angleUv - 4. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 4. * filterStep, distanceToViewer))
-        + .05229 * (tacticalSightFade(angleUv - 5. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 5. * filterStep, distanceToViewer))
-        + .04118 * (tacticalSightFade(angleUv - 6. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 6. * filterStep, distanceToViewer))
-        + .03106 * (tacticalSightFade(angleUv - 7. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 7. * filterStep, distanceToViewer))
-        + .02243 * (tacticalSightFade(angleUv - 8. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 8. * filterStep, distanceToViewer));
+      // A constant penumbra in world metres avoids the radial staircase/fan
+      // that a fixed number of angular texels creates at long distances.
+      float filterStep = max(.20 / (6.28318530718 * max(distanceToViewer, 2.)), .18 * texel);
+      // 13-tap binomial kernel: continuously filtered but still crisp enough
+      // for cover to remain readable.
+      float obstacleFade = .225586 * tacticalSightFade(angleUv, distanceToViewer)
+        + .193359 * (tacticalSightFade(angleUv - filterStep, distanceToViewer) + tacticalSightFade(angleUv + filterStep, distanceToViewer))
+        + .120850 * (tacticalSightFade(angleUv - 2. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 2. * filterStep, distanceToViewer))
+        + .053711 * (tacticalSightFade(angleUv - 3. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 3. * filterStep, distanceToViewer))
+        + .016113 * (tacticalSightFade(angleUv - 4. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 4. * filterStep, distanceToViewer))
+        + .002930 * (tacticalSightFade(angleUv - 5. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 5. * filterStep, distanceToViewer))
+        + .000244 * (tacticalSightFade(angleUv - 6. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 6. * filterStep, distanceToViewer));
       float visibility = max(obstacleFade, uTacticalBlockerSurface);
       vec3 shadow = mix(color, vec3(0.0), .50);
       return mix(shadow, color, visibility);
@@ -68,6 +67,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       }
       for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
         if (!material || material.userData?.ignoreVision) continue;
+        material.dithering = true;
         present?.add(material);
         if (hooks.has(material)) continue;
         const standard = material.isMeshStandardMaterial || material.isMeshBasicMaterial || material.isLineBasicMaterial;
@@ -97,7 +97,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v15-black-50-world-softness-half-float-edge`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v16-continuous-world-penumbra`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }
