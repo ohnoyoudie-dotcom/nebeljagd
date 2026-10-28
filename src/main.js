@@ -200,8 +200,7 @@ function setQuality(quality) {
 function resize() {
   const width = window.innerWidth, height = window.innerHeight;
   const aspect = width / height;
-  // Slightly closer top-down framing makes characters, grass and combat easier to read.
-  const viewHeight = (aspect < 0.8 ? 27 : 16.8) * visualScale;
+  const viewHeight = (aspect < 0.8 ? 34 : 24) * visualScale;
   camera.left = -viewHeight * aspect / 2;
   camera.right = viewHeight * aspect / 2;
   camera.top = viewHeight / 2;
@@ -385,7 +384,7 @@ window.nebeljagdTestState = () => ({
     roofVisible: roof.visible, interiorVisible: interior.visible, frontFacadeVisible: frontFacade.visible, frontFacadeParts: frontFacade.children.length })),
   zone: { ...currentZone, inDanger: state.inDanger },
   pickups: pickups.items.map(({ id, type, x, z, collected, group }) => ({ id, type, x, z, collected, visible: group.visible })),
-  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom },
+  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z } },
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
     frameMs: frameSamples.length ? frameSamples.reduce((sum, ms) => sum + ms, 0) / frameSamples.length : null },
