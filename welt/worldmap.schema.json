@@ -191,6 +191,10 @@
       "items": {
         "$ref": "#/$defs/worldObject"
       }
+    },
+    "landscape": {
+      "$ref": "#/$defs/landscape",
+      "description": "Optionale, unabhängig versionierte Landschaftseinstellungen. Fehlt dieses Feld, gelten die bestehenden Welt- und Vegetationsvorgaben."
     }
   },
   "$defs": {
@@ -537,6 +541,9 @@
             "legendary"
           ],
           "description": "Waffenstufe; ältere Karten ohne Stufe erhalten common beim Import."
+        },
+        "vegetation": {
+          "$ref": "#/$defs/landscapeVegetation"
         }
       },
       "allOf": [
@@ -559,7 +566,11 @@
                   "birch",
                   "pine",
                   "rei-tree01",
-                  "rei-tree02"
+                  "rei-tree02",
+                  "kit-pine-high",
+                  "kit-pine-young",
+                  "kit-oak-green",
+                  "kit-oak-autumn"
                 ]
               }
             }
@@ -582,7 +593,9 @@
                 "enum": [
                   "herbal",
                   "inn",
-                  "hunter"
+                  "hunter",
+                  "kit-timber",
+                  "kit-taverne"
                 ]
               }
             }
@@ -627,7 +640,8 @@
               "variant": {
                 "enum": [
                   "tall",
-                  "short"
+                  "short",
+                  "kit-tall"
                 ]
               }
             }
@@ -649,7 +663,9 @@
               "variant": {
                 "enum": [
                   "granite",
-                  "basalt"
+                  "basalt",
+                  "kit-cluster",
+                  "kit-single"
                 ]
               }
             }
@@ -713,7 +729,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "stone"
+                  "stone",
+                  "kit-arch"
                 ]
               }
             }
@@ -910,8 +927,685 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "required": [
+              "vegetation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "grass",
+                  "flower"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wall"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-stone"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "fence"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-wood"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "crate"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-wood"
+                ]
+              }
+            }
+          }
         }
       ]
+    },
+    "landscapeVegetation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "type": {
+          "enum": [
+            "short",
+            "meadow",
+            "tall",
+            "dry",
+            "forest",
+            "swamp",
+            "flowers"
+          ]
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 3
+        },
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "heightVariation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[a-fA-F0-9]{6}$"
+        },
+        "groundColor": {
+          "type": "boolean"
+        },
+        "groundBlend": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "brightness": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 2
+        },
+        "saturation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "colorVariation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "edgeSoftness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "landscapeWind": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "speed": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "direction": {
+          "type": "number",
+          "minimum": -62.83185307179586,
+          "maximum": 62.83185307179586
+        },
+        "gusts": {
+          "type": "boolean"
+        },
+        "gustStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "gustFrequency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "turbulence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "landscapeTerrainSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "meadow",
+            "forest",
+            "earth",
+            "sand",
+            "mud",
+            "stone",
+            "rock",
+            "snow",
+            "cobble"
+          ]
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[a-fA-F0-9]{6}$"
+        },
+        "hardness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "variation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "landscapeTerrain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "position",
+        "radius",
+        "type",
+        "color",
+        "hardness",
+        "strength",
+        "variation",
+        "seed"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,79}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "position": {
+          "$ref": "#/$defs/point"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 80
+        },
+        "type": {
+          "enum": [
+            "meadow",
+            "forest",
+            "earth",
+            "sand",
+            "mud",
+            "stone",
+            "rock",
+            "snow",
+            "cobble"
+          ]
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[a-fA-F0-9]{6}$"
+        },
+        "hardness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "variation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "landscapeWindZone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "position",
+        "radius",
+        "falloff",
+        "strength",
+        "direction"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,79}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "position": {
+          "$ref": "#/$defs/point"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 250
+        },
+        "falloff": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "direction": {
+          "type": "number",
+          "minimum": -62.83185307179586,
+          "maximum": 62.83185307179586
+        }
+      }
+    },
+    "landscapeBiome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "presetId",
+        "position",
+        "radius"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,79}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "presetId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,79}$"
+        },
+        "position": {
+          "$ref": "#/$defs/point"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 80
+        },
+        "strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "landscapeScatterEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "variant",
+        "weight"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "tree",
+            "bush",
+            "grass",
+            "rock",
+            "flower"
+          ]
+        },
+        "variant": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "tree"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "oak",
+                  "birch",
+                  "pine",
+                  "rei-tree01",
+                  "rei-tree02",
+                  "kit-pine-high",
+                  "kit-pine-young",
+                  "kit-oak-green",
+                  "kit-oak-autumn"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "bush"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "rei-bush"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "grass"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "tall",
+                  "short",
+                  "kit-tall"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "rock"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "granite",
+                  "basalt",
+                  "kit-cluster",
+                  "kit-single"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "flower"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "rei-white",
+                  "rei-red",
+                  "rei-gold"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "landscapeScatter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "density": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minDistance": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 30
+        },
+        "scaleMin": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 3
+        },
+        "scaleMax": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 3
+        },
+        "clustering": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "randomRotation": {
+          "type": "boolean"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/landscapeScatterEntry"
+          }
+        }
+      }
+    },
+    "landscapePreset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,79}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "terrain": {
+          "$ref": "#/$defs/landscapeTerrainSettings"
+        },
+        "vegetation": {
+          "$ref": "#/$defs/landscapeVegetation"
+        },
+        "scatter": {
+          "$ref": "#/$defs/landscapeScatter"
+        },
+        "wind": {
+          "$ref": "#/$defs/landscapeWind"
+        },
+        "brushRadius": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 80
+        }
+      }
+    },
+    "landscape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "terrain": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/landscapeTerrain"
+          }
+        },
+        "wind": {
+          "$ref": "#/$defs/landscapeWind"
+        },
+        "windZones": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/landscapeWindZone"
+          }
+        },
+        "biomes": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 1024,
+          "items": {
+            "$ref": "#/$defs/landscapeBiome"
+          }
+        },
+        "presets": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/landscapePreset"
+          }
+        }
+      }
     }
   }
 }
