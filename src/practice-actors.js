@@ -190,8 +190,16 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     }
   }
 
+  function appendGrassInteractors(target = []) {
+    for (const actor of actors) {
+      if (!actor.target.alive) continue;
+      target.push({ x: actor.group.position.x, z: actor.group.position.z, radius: 1.05 });
+    }
+    return target;
+  }
+
   return {
-    root, update, reset, resolvePlayerMovement,
+    root, update, reset, resolvePlayerMovement, appendGrassInteractors,
     inspect: () => actors.map(({ id, target, group, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
       alive: target.alive, visible, burnRemaining: target.burnRemaining, slowRemaining: target.slowRemaining,
