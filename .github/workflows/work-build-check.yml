@@ -1,0 +1,85 @@
+name: Work build and visual checks
+on:
+  push:
+    branches: ['work']
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'worldmap.json'
+      - 'worldmap.schema.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/work-build-check.yml'
+permissions:
+  contents: write
+concurrency:
+  group: nebeljagd-work-build
+  cancel-in-progress: true
+
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: work
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install and run unit tests
+        run: |
+          npm ci
+          npm test
+      - name: Build standalone editor and game
+        run: npm run build
+      - name: Install browser smoke dependencies
+        run: |
+          python -m pip install --quiet playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify meadow, vision and shadow runtime
+        run: |
+          npm run preview -- --port 4174 >/tmp/nebeljagd-preview.log 2>&1 &
+          echo $! >/tmp/nebeljagd-preview.pid
+          for i in {1..40}; do
+            curl -fsS http://127.0.0.1:4174/nebeljagd.html >/dev/null && break
+            sleep 1
+          done
+          python tests/work_meadow_vision_smoke.py
+      - name: Publish verified build to welt
+        run: |
+          cp dist/map-editor.html welt/map-editor.html
+          cp dist/nebeljagd.html welt/nebeljagd.html
+          cp dist/nebeljagd.html welt/index.html
+          cp dist/worldmap.json welt/worldmap.json
+          cp dist/worldmap.svg welt/worldmap.svg
+          cp dist/worldmap.schema.json welt/worldmap.schema.json
+          cp dist/nebeljagd-welt-und-editor.zip welt/nebeljagd-welt-und-editor.zip
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path('welt')
+          names=['map-editor.html','nebeljagd.html','index.html','worldmap.json','worldmap.svg','worldmap.schema.json','nebeljagd-welt-und-editor.zip']
+          data={'branch':'work','sourceCommit':'${{ github.sha }}','files':{}}
+          for name in names:
+              raw=(root/name).read_bytes()
+              data['files'][name]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+          (root/'release.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add welt
+          if ! git diff --cached --quiet; then
+            git commit -m 'build: publish verified work editor and game'
+            git push origin HEAD:work
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: work-meadow-vision-check
+          path: |
+            work-smoke
+            /tmp/nebeljagd-preview.log
+          retention-days: 3
