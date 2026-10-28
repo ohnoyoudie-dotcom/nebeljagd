@@ -2,7 +2,7 @@ name: Dense meadow and gameplay checks
 on:
   push:
     branches: ['feature/rei-grass-ground']
-    paths: ['tools/upgrade_meadow_v2.py', 'tools/test_meadow_v2.py', '.github/workflows/meadow-v2-check.yml']
+    paths: ['tools/upgrade_meadow_v2.py', 'tools/test_meadow_v2.py', 'tools/grass-ground/regression_patch.py', '.github/workflows/meadow-v2-check.yml']
 permissions:
   contents: write
 concurrency:
