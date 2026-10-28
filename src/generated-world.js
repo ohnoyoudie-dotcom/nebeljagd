@@ -5,6 +5,7 @@ import { createRiverWater } from './water.js';
 import { createWorldObjectRenderer } from './world-object-renderer.js';
 import { createTerrainArtwork } from './terrain-art.js';
 import { createTerrainPaintMaterial, TERRAIN_PAINT_BUDGET } from './terrain-paint-renderer.js';
+import { createMeadowGround } from './meadow-ground.js';
 
 import { createWorldSpatialModel, projection } from './generated-spatial.js';
 export { createWorldSpatialModel } from './generated-spatial.js';
@@ -172,6 +173,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     if (pieces.length) { const geometry = mergeGeometries(pieces); pieces.forEach(p => p.dispose()); const mesh = new THREE.Mesh(geometry, bridgeMaterial); mesh.name = `${path.name} · begehbare Holzbrücke`; mesh.castShadow = mesh.receiveShadow = true; root.add(mesh); bridgeMeshes.push({ mesh, x: path.points[0][0], z: path.points[0][1] }); }
   }
   const objects = await createWorldObjectRenderer(root, { map, heightAt: surfaceHeightAt, groundHeightAt: surfaceHeightAt, colorAt: spatial.colorAt, quality, chunkSize: CHUNK });
+  const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: spatial.colorAt, spatial, quality });
   const materialSet = new Set(); root.traverse(child => { if (child.material) for (const material of Array.isArray(child.material) ? child.material : [child.material]) materialSet.add(material); });
   for (const material of materialSet) {
     if (!material.isMeshStandardMaterial || material.userData.generatedZoneTint) continue;
@@ -209,7 +211,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     return position;
   }
   function update(dt, time, player, zoneRadius = map.zone.initialRadius) {
-    timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(dt, time, player, zoneRadius);
+    timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(dt, time, player, zoneRadius); meadowGround.update(time, player);
     for (const water of waterMeshes) water.setZoneRadius(zoneRadius);
     if (time - lastCull > .3 || Math.hypot(player.x - lastCullX, player.z - lastCullZ) > 3) {
       const range = mode === 'low' ? 90 : 125; visibleTerrainChunks = 0;
@@ -250,7 +252,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     concealmentAt: objects.concealmentAt,
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
     update,
-    setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); lastCull = -Infinity; },
+    setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); lastCull = -Infinity; },
     get shelter() { return objects.shelter; },
     get stats() { return { source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
       terrainTriangles: triangles.length, generationMs, terrainArt: { ground: 'painted-woodland', mainPaths: 'irregular-grey-cobbles', trailPaths: 'earth', stoneTextureSize: 512, pathWidthFromMap: true },
@@ -263,7 +265,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         totalBakeMs: terrainChunks.reduce((sum, c) => sum + (c.paint?.stats.totalBakeMs ?? 0), 0),
         maximumTileBakeMs: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.maximumBakeMs ?? 0)),
         maximumTextureSize: mode === 'low' ? 256 : 512, changesCollisionHeight: false },
-      cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, ...objects.stats }; },
-    dispose() { const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
+      cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, meadowGround: meadowGround.inspect(), ...objects.stats }; },
+    dispose() { meadowGround.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
   };
 }
