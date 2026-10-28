@@ -238,6 +238,7 @@ try:
         tavern_record=next(h for h in state(game)['houses'] if h['id']==tavern['id'])
         assert not tavern_record['roofVisible'] and tavern_record['interiorVisible'],tavern_record
         inspect(game,world_point(tavern,-1.5,10.5),math.pi)
+        capture(game,'taverne-exterior')
         walk(game,['w'],1)
         inside=local_point(tavern,state(game)['position'])
         assert abs(inside[0])<definition['insideHalfWidth'] and abs(inside[1])<definition['insideHalfDepth'],inside

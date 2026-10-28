@@ -76,9 +76,8 @@ function paintedGeometry(source, color, transform) {
   return geometry;
 }
 const tavernWallHeight = name => {
-  if (/^(Ostwand|Westwand|Suedwand)$/i.test(name)) return 2.75;
-  if (/Trennwand$/i.test(name)) return 2.45;
-  if (/^(Eck_und_Seitenpfosten|Durchgangspfosten_)/i.test(name)) return /Durchgangspfosten_/i.test(name) ? 2.45 : 2.75;
+  if (/^(Nordwand|Ostwand|Westwand|Suedwand|Nord_Fachwerkpfosten|Eck_und_Seitenpfosten)/i.test(name)) return 4.8;
+  if (/Trennwand$/i.test(name) || /^Durchgangspfosten_/i.test(name)) return 3.8;
   return 0;
 };
 function shapeTavernArchitecture(geometry, name) {
@@ -94,7 +93,18 @@ function shapeTavernArchitecture(geometry, name) {
   } else if (/^(Trennwand_Kappe|Zimmerwand_Kappe)/i.test(name) && bounds.max.y - bounds.min.y < 0.5) {
     // Keep each wooden cap on the new top edge so doorways and room divisions
     // have a clean, readable silhouette from the gameplay camera.
-    const shift = 2.38 - (bounds.min.y + bounds.max.y) / 2, positions = geometry.attributes.position;
+    const shift = 3.72 - (bounds.min.y + bounds.max.y) / 2, positions = geometry.attributes.position;
+    for (let i = 0; i < positions.count; i++) positions.setY(i, positions.getY(i) + shift);
+    positions.needsUpdate = true;
+    changed = true;
+  } else if (/^Nord_Fachwerkbalken\.001$/i.test(name)) {
+    // Continue the front timber frame to the taller exterior wall top.
+    const shift = 4.7 - (bounds.min.y + bounds.max.y) / 2, positions = geometry.attributes.position;
+    for (let i = 0; i < positions.count; i++) positions.setY(i, positions.getY(i) + shift);
+    positions.needsUpdate = true;
+    changed = true;
+  } else if (/^Fachwerk_Kopfband(?:\.\d+)?$/i.test(name)) {
+    const shift = 4.52 - (bounds.min.y + bounds.max.y) / 2, positions = geometry.attributes.position;
     for (let i = 0; i < positions.count; i++) positions.setY(i, positions.getY(i) + shift);
     positions.needsUpdate = true;
     changed = true;

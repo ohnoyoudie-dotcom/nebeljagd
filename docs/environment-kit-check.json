@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "url": "http://127.0.0.1:5190",
+  "url": "http://127.0.0.1:5191",
   "checks": [
     {
       "name": "The editor imports all thirteen kit variants and shows their real embedded model previews",
@@ -28,7 +28,7 @@
         "terrainChunks": 324,
         "visibleTerrainChunks": 16,
         "terrainTriangles": 229376,
-        "generationMs": 1048,
+        "generationMs": 958,
         "terrainArt": {
           "ground": "painted-woodland",
           "mainPaths": "irregular-grey-cobbles",
@@ -99,7 +99,7 @@
               "gustFrequency": 0.18,
               "turbulence": 0.2
             },
-            "time": 0.6167000000000007
+            "time": 0.6333000000000011
           },
           "crossedStalkDensityPerSquareMeter": 35.367765131532295,
           "colorGradient": [
@@ -241,9 +241,9 @@
       "evidence": {
         "type": "wall",
         "point": {
-          "x": -81.66635265654179,
-          "y": 2.722403612693464,
-          "z": 44.42513447288054
+          "x": -81.66635265746332,
+          "y": 2.7265820489995445,
+          "z": 44.42513447380208
         },
         "normal": {
           "x": 0.7071067811865475,
@@ -269,9 +269,9 @@
       "evidence": {
         "type": "fence",
         "point": {
-          "x": -70.27213894311832,
-          "y": 2.6985115981998917,
-          "z": 44.17031548484343
+          "x": -70.27213894374025,
+          "y": 2.698511598126731,
+          "z": 44.170315484221504
         },
         "normal": {
           "x": -0.7071067811865475,
@@ -391,7 +391,7 @@
       "evidence": {
         "source": "standalone HTML served only by an in-memory route in an offline browser context",
         "limitation": "Managed Chromium blocks file:// navigation; no actual file:// opening is claimed.",
-        "sha256": "cde40a102da49b145d9887feba07443298819297dc24226f30b409e47d20cd83",
+        "sha256": "8f2f0ee7eb25ec12a0bcfa0cb8758a4447dc7d7b075ea96ed5b29a3e57c5c209",
         "models": 13,
         "inMemoryDocumentNavigations": 2,
         "externalResourceRequests": []
@@ -402,6 +402,7 @@
   "screenshots": [
     "docs/screenshots/environment-kit-trees.png",
     "docs/screenshots/environment-kit-house.png",
+    "docs/screenshots/environment-kit-taverne-exterior.png",
     "docs/screenshots/environment-kit-taverne.png",
     "docs/screenshots/environment-kit-props.png"
   ],
