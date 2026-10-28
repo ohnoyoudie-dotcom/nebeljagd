@@ -395,6 +395,7 @@ window.nebeljagdTestState = () => ({
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
 if (new URLSearchParams(location.search).has('inspect')) {
+  window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
     direction = state.direction } = {}) => {
