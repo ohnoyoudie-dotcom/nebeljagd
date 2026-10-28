@@ -39,7 +39,11 @@ jobs:
           capture="game=once(game,'window.nebeljagdPhysicsState=()=>',\"window.nebeljagdCaptureFrame=()=>{Jm.render(Ym,Xm);return Jm.domElement.toDataURL('image/png')};window.nebeljagdPhysicsState=()=>\")\n"
           if capture not in text:
               text+='\n'+capture
+          vision="game=once(game,'let s=_m({obstacles:r.projectileObstacles,radius:i,samples:a})','let s=_m({obstacles:r.projectileObstacles.filter(b=>![`chest`,`crate`].includes(b.type)),radius:i,samples:a})')\n"
+          if vision not in text:
+              text+='\n'+vision
           p.write_text(text)
+          p=Path('tools/grass-ground/test_browser.py');text=p.read_text();text=text.replace(".map.groundCover.height')==.65",".map.groundCover.height')==.85");p.write_text(text)
           p=Path('tools/test_meadow_v2.py'); text=p.read_text()
           if 'nebeljagdCaptureFrame()' not in text:
               text=text.replace('import threading,json,traceback,math,copy','import threading,json,traceback,math,copy,base64')
@@ -47,7 +51,9 @@ jobs:
               new="  data=game.evaluate('nebeljagdCaptureFrame()')\n  (OUT/'meadow.png').write_bytes(base64.b64decode(data.split(',',1)[1]))\n  before=game.evaluate('nebeljagdGrassGroundState().windTime')\n  game.wait_for_function('(t)=>nebeljagdGrassGroundState().windTime>t',arg=before,polling=250,timeout=30000)\n  data=game.evaluate('nebeljagdCaptureFrame()')\n  (OUT/'meadow-wind.png').write_bytes(base64.b64decode(data.split(',',1)[1]))\n  results['renderedWindTimes']=[before,game.evaluate('nebeljagdGrassGroundState().windTime')]"
               assert text.count(old)==1
               text=text.replace(old,new)
-              p.write_text(text)
+          if "assert results['vision']['blockerCount']==1" not in text:
+              text=text.replace("  assert results['vision']['appearance']=='soft-transparent-charcoal'","  assert results['vision']['appearance']=='soft-transparent-charcoal'\n  assert results['vision']['blockerCount']==1, 'Only the tall rock blocks sight; low crates stay solid for movement.'")
+          p.write_text(text)
           PY
           python tools/grass-ground/build.py
           node --check grass-build/map-editor.html.mjs
