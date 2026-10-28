@@ -8,6 +8,7 @@ export const TAVERN_DRESSING = Object.freeze({
     'Vintage bottle_013', 'Vintage bottle_014', 'Vintage bottle_016', 'Vintage bottle_017.001',
     'Vintage bottle_020', 'Vintage bottle_021', 'Vintage bottle_023', 'Vintage bottle_024',
     'Ale tankard_006.001', 'Ale tankard_007.001', 'Ale tankard_027', 'Ale tankard_028',
+    'Ale tankard_029.001', 'Lit candle_030',
   ]),
   omittedMeshes: Object.freeze([
     /^Spieltisch_/i, /^Spielbrett(?:_|$)/i, /^(?:Dunkle|Goldene)_Spielfigur/i,
