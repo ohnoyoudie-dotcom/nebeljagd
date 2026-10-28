@@ -1,6 +1,8 @@
 game=once(game,'if(r.opened||!i(u(r)))continue;','if(r.opened)continue;')
 game=once(game,'Jm.outputColorSpace=N,Jm.toneMapping=4,Jm.toneMappingExposure=1,Jm.shadowMap.enabled=!0,Jm.shadowMap.type=2;','Jm.outputColorSpace=N,Jm.toneMapping=4,Jm.toneMappingExposure=1,Jm.shadowMap.enabled=!0,Jm.shadowMap.type=3;')
-game=once(game,'eh.shadow.bias=-15e-5,eh.shadow.normalBias=.035,eh.shadow.radius=3,','eh.shadow.bias=-8e-5,eh.shadow.normalBias=.018,eh.shadow.mapSize.set(2048,2048),eh.shadow.radius=5,eh.shadow.blurSamples=16,')
+game=once(game,'eh.shadow.camera.left=-35,eh.shadow.camera.right=35,eh.shadow.camera.top=35,eh.shadow.camera.bottom=-35,','eh.shadow.camera.left=-24,eh.shadow.camera.right=24,eh.shadow.camera.top=21,eh.shadow.camera.bottom=-21,')
+game=once(game,'let n=t?2048:1024;eh.shadow.mapSize.x!==n&&(eh.shadow.mapSize.set(n,n),eh.shadow.map?.dispose(),eh.shadow.map=null),Oh()','let n=t?4096:2048;eh.shadow.blurSamples=t?32:16,eh.shadow.radius=t?3:2,eh.shadow.mapSize.x!==n&&(eh.shadow.mapSize.set(n,n),eh.shadow.map?.dispose(),eh.shadow.map=null),Oh()')
+game=once(game,'eh.shadow.bias=-15e-5,eh.shadow.normalBias=.035,eh.shadow.radius=3,','eh.shadow.bias=-6e-5,eh.shadow.normalBias=.012,eh.shadow.mapSize.set(Z.quality===`low`?2048:4096,Z.quality===`low`?2048:4096),eh.shadow.radius=Z.quality===`low`?2:3,eh.shadow.blurSamples=Z.quality===`low`?16:32,')
 # Executed in build.py after the original grass integration.
 game=once(game,'<script type="module">','<script type="module">'+(SRC/'solid-bodies.js').read_text()+'\n')
 game=once(game,'let[t,n]=e.position,i=e.scale,a=e.variant;if(pe(t,n).count++','if(e.kind===`chest`)_e(e,[{minX:-.87,maxX:.87,minZ:-.58,maxZ:.58,maxY:.95}],null);let[t,n]=e.position,i=e.scale,a=e.variant;if(pe(t,n).count++')
@@ -31,6 +33,7 @@ shader="""      float visibility = 0.;
 game=game[:start]+shader+game[end:]
 game=once(game,'tactical-sight-v2-pale','tactical-sight-v4-continuous-charcoal')
 game=once(game,'appearance:`translucent-blue-grey`,sceneryTransmission:.42','appearance:`soft-transparent-charcoal`,sceneryTransmission:.20,softEdges:true,continuousFalloff:true')
+game=once(game,'qm.setWorldmap?.(Q.map);','qm.setWorldmap?.(Q.map);Ym.traverse(o=>{const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats)if(m){m.dithering=!0;m.needsUpdate=!0;}});')
 extra="""
 if(new URLSearchParams(location.search).has('inspect')){
  window.nebeljagdMovementProbe=({from,to,radius=.42,actors=true})=>{
