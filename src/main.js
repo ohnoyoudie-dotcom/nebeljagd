@@ -201,7 +201,7 @@ function resize() {
   const width = window.innerWidth, height = window.innerHeight;
   const aspect = width / height;
   // Slightly closer top-down framing makes characters, grass and combat easier to read.
-  const viewHeight = (aspect < 0.8 ? 28.5 : 18.2) * visualScale;
+  const viewHeight = (aspect < 0.8 ? 27 : 16.8) * visualScale;
   camera.left = -viewHeight * aspect / 2;
   camera.right = viewHeight * aspect / 2;
   camera.top = viewHeight / 2;
