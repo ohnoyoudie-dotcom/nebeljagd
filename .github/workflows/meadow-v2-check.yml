@@ -29,6 +29,16 @@ jobs:
       - name: Apply guarded upgrade and build
         run: |
           python tools/upgrade_meadow_v2.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/grass-ground/regression_patch.py')
+          text=p.read_text()
+          fix="game=once(game,'if(r.opened||!i(u(r)))continue;','if(r.opened)continue;')\n"
+          if fix not in text:
+              # Nearby interactions already have an occlusion ray that ignores
+              # only the target chest itself. Its center must not self-occlude.
+              p.write_text(fix+text)
+          PY
           python tools/grass-ground/build.py
           node --check grass-build/map-editor.html.mjs
           node --check grass-build/nebeljagd.html.mjs
