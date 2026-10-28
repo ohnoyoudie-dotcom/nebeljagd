@@ -1,4 +1,6 @@
 game=once(game,'if(r.opened||!i(u(r)))continue;','if(r.opened)continue;')
+game=once(game,'Jm.outputColorSpace=N,Jm.toneMapping=4,Jm.toneMappingExposure=1,Jm.shadowMap.enabled=!0,Jm.shadowMap.type=2;','Jm.outputColorSpace=N,Jm.toneMapping=4,Jm.toneMappingExposure=1,Jm.shadowMap.enabled=!0,Jm.shadowMap.type=3;')
+game=once(game,'eh.shadow.bias=-15e-5,eh.shadow.normalBias=.035,eh.shadow.radius=3,','eh.shadow.bias=-8e-5,eh.shadow.normalBias=.018,eh.shadow.mapSize.set(2048,2048),eh.shadow.radius=5,eh.shadow.blurSamples=16,')
 # Executed in build.py after the original grass integration.
 game=once(game,'<script type="module">','<script type="module">'+(SRC/'solid-bodies.js').read_text()+'\n')
 game=once(game,'let[t,n]=e.position,i=e.scale,a=e.variant;if(pe(t,n).count++','if(e.kind===`chest`)_e(e,[{minX:-.87,maxX:.87,minZ:-.58,maxZ:.58,maxY:.95}],null);let[t,n]=e.position,i=e.scale,a=e.variant;if(pe(t,n).count++')
@@ -11,22 +13,24 @@ game=once(game,'c.position.copy(M),t.resolveMovement?.(c.position,.52)','c.posit
 start=game.index('      float limit = texture2D(uTacticalSight,')
 end=game.index('      return mix(obscured, color, visibility);',start)+len('      return mix(obscured, color, visibility);')
 shader="""      float visibility = 0.;
-      // Angular filtering only changes the visual penumbra, never actor secrecy.
-      float angularStep = .26 / max(distanceToViewer, 2.) / 6.28318530718;
-      for (int tap = -4; tap <= 4; tap++) {
-        float weight = 5. - abs(float(tap));
+      // Wider angular filtering + sub-pixel dithering removes visible 8-bit distance bands.
+      float angularStep = .20 / max(distanceToViewer, 2.) / 6.28318530718;
+      float dither = (fract(sin(dot(point, vec2(12.9898,78.233))) * 43758.5453) - .5) * .16;
+      for (int tap = -6; tap <= 6; tap++) {
+        float weight = 7. - abs(float(tap));
         float limit = texture2D(uTacticalSight, vec2(fract(angle + float(tap)*angularStep + .5 / ${a.toFixed(1)}), .5)).r * uTacticalRadius;
-        visibility += weight * (1. - smoothstep(limit - .2, limit + 1.6, distanceToViewer));
+        visibility += weight * (1. - smoothstep(limit - .55, limit + 2.65, distanceToViewer + dither));
       }
-      visibility /= 25.;
-      float radiusFade = 1. - smoothstep(uTacticalRadius - 4.5, uTacticalRadius + .25, distanceToViewer);
+      visibility /= 49.;
+      float radiusFade = 1. - smoothstep(uTacticalRadius - 6.0, uTacticalRadius + .35, distanceToViewer + dither);
       visibility = min(radiusFade, visibility);
+      visibility = visibility*visibility*(3.0-2.0*visibility);
       float luminance = dot(color, vec3(.2126,.7152,.0722));
-      vec3 obscured = mix(color,vec3(luminance),.10)*.20;
+      vec3 obscured = mix(color,vec3(luminance),.08)*.20;
       return mix(obscured,color,visibility);"""
 game=game[:start]+shader+game[end:]
-game=once(game,'tactical-sight-v2-pale','tactical-sight-v3-soft-charcoal')
-game=once(game,'appearance:`translucent-blue-grey`,sceneryTransmission:.42','appearance:`soft-transparent-charcoal`,sceneryTransmission:.20,softEdges:true')
+game=once(game,'tactical-sight-v2-pale','tactical-sight-v4-continuous-charcoal')
+game=once(game,'appearance:`translucent-blue-grey`,sceneryTransmission:.42','appearance:`soft-transparent-charcoal`,sceneryTransmission:.20,softEdges:true,continuousFalloff:true')
 extra="""
 if(new URLSearchParams(location.search).has('inspect')){
  window.nebeljagdMovementProbe=({from,to,radius=.42,actors=true})=>{
