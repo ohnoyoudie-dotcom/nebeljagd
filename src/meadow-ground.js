@@ -200,7 +200,14 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       dummy.scale.set(w, h, w); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
       colorAt(x, z, ground);
       const patch = .92 + .10 * Math.sin(x * .12 + Math.sin(z * .09)) + .06 * Math.cos(z * .18 - x * .05);
-      tint.copy(base).lerp(ground, settings.groundBlend * .42).multiplyScalar(patch * (.80 + hash(gx, gz, 97) * .14));
+      // Subtle per-tuft hue/saturation/lightness changes keep the meadow from
+      // reading as one flat green carpet while staying inside the same palette.
+      const hueShift = (hash(gx, gz, 111) - .5) * .036;
+      const saturationShift = (hash(gx, gz, 123) - .5) * .12;
+      const lightnessShift = (hash(gx, gz, 137) - .5) * .08;
+      tint.copy(base).offsetHSL(hueShift, saturationShift, lightnessShift)
+        .lerp(ground, settings.groundBlend * .38)
+        .multiplyScalar(patch * (.80 + hash(gx, gz, 97) * .14));
       mesh.setColorAt(i, tint);
     }
     mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -245,7 +252,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     update,
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, cachedChunks: chunks.size,
-      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit' }),
+      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit', colorVariation: 'per-tuft-hsl' }),
     dispose() { clear(); root.remove(group); geometry.dispose(); material.dispose(); texture.dispose(); },
   };
 }
