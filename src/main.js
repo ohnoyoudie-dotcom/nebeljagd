@@ -388,6 +388,9 @@ window.nebeljagdTestState = () => ({
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
     frameMs: frameSamples.length ? frameSamples.reduce((sum, ms) => sum + ms, 0) / frameSamples.length : null },
+  shadows: { type: renderer.shadowMap.type === THREE.VSMShadowMap ? 'VSM' : renderer.shadowMap.type,
+    mapSize: sun.shadow.mapSize.x, bias: sun.shadow.bias, normalBias: sun.shadow.normalBias,
+    radius: sun.shadow.radius, blurSamples: sun.shadow.blurSamples },
 });
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
