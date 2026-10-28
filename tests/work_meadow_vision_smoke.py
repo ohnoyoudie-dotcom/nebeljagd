@@ -20,11 +20,13 @@ with sync_playwright() as p:
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0',timeout=120000)
     state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       meadow:s.world.stats.meadowGround,vision:s.vision,shadows:s.shadows,rendering:s.rendering,
-      position:s.position};}''')
+      position:s.position,camera:s.camera};}''')
     assert state['meadow']['enabled'] is True
     assert state['meadow']['visibleInstances']>2500
     assert state['meadow']['cardsPerTuft']==3
     assert state['meadow']['lighting']=='color-preserving-unlit'
+    assert state['meadow']['colorVariation']=='per-tuft-hsl'
+    assert state['camera']['orthographicHeight']<=21
     assert state['vision']['samples']==1024
     assert state['shadows']['type']=='VSM'
     assert state['shadows']['mapSize']==2048
