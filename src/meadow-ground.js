@@ -10,8 +10,8 @@ export function groundGrassSettings(map = {}) {
   const explicitType = typeof source.type === 'string';
   return {
     enabled: explicitType ? source.type === 'rei-grass' : source.enabled !== false,
-    height: number(source.height, .82, .25, 1.6),
-    density: number(source.density, 8.8, 2, 16),
+    height: number(source.height, .98, .25, 1.6),
+    density: number(source.density, 7.4, 2, 16),
     color: /^#[\da-f]{6}$/i.test(source.color ?? '') ? source.color : '#4b7331',
     groundBlend: number(source.groundBlend, .30, 0, 1),
     windEnabled: source.windEnabled !== false,
@@ -153,7 +153,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     uGrassViewer: { value: new THREE.Vector2() }, uGrassDistance: { value: 42 },
   };
   const material = new THREE.MeshBasicMaterial({
-    color: '#ffffff', side: THREE.DoubleSide, alphaMap: texture, alphaTest: .48,
+    color: '#ffffff', side: THREE.DoubleSide, alphaMap: texture, alphaTest: .58,
     alphaToCoverage: true, vertexColors: true, toneMapped: true,
   });
   material.dithering = true;
@@ -181,7 +181,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         #include <alphatest_fragment>
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v3-crisp-blades';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v4-readable-blades';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -208,7 +208,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       const { x, z, gx, gz } = data[i];
       dummy.position.set(x, heightAt(x, z) - .035, z);
       dummy.rotation.set(0, hash(gx, gz, 49) * Math.PI * 2, 0);
-      const h = settings.height * (.78 + .50 * hash(gx, gz, 63)), w = .54 + .26 * hash(gx, gz, 73);
+      const h = settings.height * (.82 + .52 * hash(gx, gz, 63)), w = .58 + .28 * hash(gx, gz, 73);
       dummy.scale.set(w, h, w); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
       colorAt(x, z, ground);
       const patch = .92 + .10 * Math.sin(x * .12 + Math.sin(z * .09)) + .06 * Math.cos(z * .18 - x * .05);
@@ -264,7 +264,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     update,
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, cachedChunks: chunks.size,
-      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit', colorVariation: 'per-tuft-hsl', bladeStyle: 'crisp-tapered' }),
+      pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit', colorVariation: 'per-tuft-hsl', bladeStyle: 'crisp-tapered-readable' }),
     dispose() { clear(); root.remove(group); geometry.dispose(); material.dispose(); texture.dispose(); },
   };
 }
