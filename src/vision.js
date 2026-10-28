@@ -18,34 +18,23 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
   const objectHooks = new Map();
   let lastSampleTime = -Infinity, lastRegistrationTime = -Infinity;
   let updates = 0;
+  const edgeFeatherMeters = 1.4;
   const declaration = `
     uniform sampler2D uTacticalSight;
     uniform vec2 uTacticalOrigin;
     uniform float uTacticalRadius;
     uniform float uTacticalBlockerSurface;
-    float tacticalSightFade(float angleUv, float distanceToViewer) {
-      float limit = texture2D(uTacticalSight, vec2(fract(angleUv), .5)).r * uTacticalRadius;
-      return 1. - smoothstep(limit - .18, limit + 1.18, distanceToViewer);
-    }
     vec3 applyTacticalSight(vec3 color, vec2 point) {
       vec2 delta = point - uTacticalOrigin;
       float distanceToViewer = length(delta);
       float angle = atan(delta.y, delta.x) / 6.28318530718;
       float angleUv = fract(angle + .5 / ${samples.toFixed(1)});
-      float texel = 1. / ${samples.toFixed(1)};
-      // A constant penumbra in world metres avoids the radial staircase/fan
-      // that a fixed number of angular texels creates at long distances.
-      float filterStep = max(.20 / (6.28318530718 * max(distanceToViewer, 2.)), .18 * texel);
-      // 13-tap binomial kernel: continuously filtered but still crisp enough
-      // for cover to remain readable.
-      float obstacleFade = .225586 * tacticalSightFade(angleUv, distanceToViewer)
-        + .193359 * (tacticalSightFade(angleUv - filterStep, distanceToViewer) + tacticalSightFade(angleUv + filterStep, distanceToViewer))
-        + .120850 * (tacticalSightFade(angleUv - 2. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 2. * filterStep, distanceToViewer))
-        + .053711 * (tacticalSightFade(angleUv - 3. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 3. * filterStep, distanceToViewer))
-        + .016113 * (tacticalSightFade(angleUv - 4. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 4. * filterStep, distanceToViewer))
-        + .002930 * (tacticalSightFade(angleUv - 5. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 5. * filterStep, distanceToViewer))
-        + .000244 * (tacticalSightFade(angleUv - 6. * filterStep, distanceToViewer) + tacticalSightFade(angleUv + 6. * filterStep, distanceToViewer));
-      float visibility = max(obstacleFade, uTacticalBlockerSurface);
+      // One linearly interpolated sight distance produces one clean contour.
+      // Only the contour itself is softened in world metres; there are no
+      // offset angular taps that can create fan-shaped dark stripes.
+      float limit = texture2D(uTacticalSight, vec2(angleUv, .5)).r * uTacticalRadius;
+      float edge = 1. - smoothstep(limit - ${(edgeFeatherMeters/2).toFixed(2)}, limit + ${(edgeFeatherMeters/2).toFixed(2)}, distanceToViewer);
+      float visibility = max(edge, uTacticalBlockerSurface);
       vec3 shadow = mix(color, vec3(0.0), .50);
       return mix(shadow, color, visibility);
     }
@@ -97,7 +86,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v16-continuous-world-penumbra`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v17-single-soft-edge`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }
@@ -127,8 +116,8 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
   register();
   update({ x: world.spawn.x, z: world.spawn.z, y: world.heightAt(world.spawn.x, world.spawn.z) }, 0);
   return { update, isVisible, register, radius,
-    inspect: () => ({ radius, direction: '360-degree', appearance: 'clear-obstacle-only', sceneryTransmission: 1,
-      blockerCount: sight.nearbyCount, samples, updates, origin: { ...sight.observer }, materials: hooks.size }),
+    inspect: () => ({ radius, direction: '360-degree', appearance: 'single-soft-edge', sceneryTransmission: 1,
+      edgeFeatherMeters, blockerCount: sight.nearbyCount, samples, updates, origin: { ...sight.observer }, materials: hooks.size }),
     get stats() { return this.inspect(); },
     dispose() {
       for (const [material, hook] of hooks) { material.onBeforeCompile = hook.original; material.customProgramCacheKey = hook.originalKey; material.needsUpdate = true; }
