@@ -29,7 +29,9 @@ with sync_playwright() as p:
     assert state['meadow']['nearDetail']=='solid-geometry-blades-fixed-green'
     assert state['meadow']['visibleDetailInstances']>0
     assert state['camera']['orthographicHeight']<=21
-    assert state['vision']['samples']==1024
+    assert state['vision']['samples']==2048
+    assert state['vision']['appearance']=='single-soft-edge'
+    assert 1.2<=state['vision']['edgeFeatherMeters']<=1.6
     assert state['shadows']['type']=='VSM'
     assert state['shadows']['mapSize']==2048
     assert state['shadows']['normalBias']<=.015
