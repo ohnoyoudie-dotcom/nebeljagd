@@ -26,7 +26,7 @@ with sync_playwright() as p:
     assert state['meadow']['cardsPerTuft']==3
     assert state['meadow']['lighting']=='color-preserving-unlit'
     assert state['meadow']['colorVariation']=='per-tuft-hsl'
-    assert state['meadow']['nearDetail']=='solid-geometry-blades'
+    assert state['meadow']['nearDetail']=='solid-geometry-blades-fixed-green'
     assert state['meadow']['visibleDetailInstances']>0
     assert state['camera']['orthographicHeight']<=21
     assert state['vision']['samples']==1024
