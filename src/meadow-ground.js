@@ -12,7 +12,7 @@ export function groundGrassSettings(map = {}) {
     enabled: explicitType ? source.type === 'rei-grass' : source.enabled !== false,
     height: number(source.height, .82, .25, 1.6),
     density: number(source.density, 8.8, 2, 16),
-    color: /^#[\da-f]{6}$/i.test(source.color ?? '') ? source.color : '#60963d',
+    color: /^#[\da-f]{6}$/i.test(source.color ?? '') ? source.color : '#71ad45',
     groundBlend: number(source.groundBlend, .30, 0, 1),
     windEnabled: source.windEnabled !== false,
     windStrength: number(source.windStrength, .42, 0, 1),
@@ -142,7 +142,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   };
   const material = new THREE.MeshStandardMaterial({
     color: '#ffffff', roughness: 1, side: THREE.DoubleSide, alphaMap: texture, alphaTest: .20,
-    alphaToCoverage: true, vertexColors: true,
+    alphaToCoverage: true, vertexColors: true, emissive: new THREE.Color('#18310f'), emissiveIntensity: .28,
   });
   material.dithering = true;
   material.onBeforeCompile = shader => {
@@ -163,7 +163,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       varying float vGrassHeight;varying vec2 vGrassRoot;
       ${shader.fragmentShader}`.replace('#include <alphatest_fragment>', `
         diffuseColor.a*=1.-smoothstep(uGrassDistance-10.,uGrassDistance,distance(vGrassRoot,uGrassViewer));
-        diffuseColor.rgb*=mix(vec3(.52,.63,.40),vec3(1.10,1.15,.84),smoothstep(0.,1.,vGrassHeight));
+        diffuseColor.rgb*=mix(vec3(.78,.88,.61),vec3(1.22,1.20,.92),smoothstep(0.,1.,vGrassHeight));
         #include <alphatest_fragment>
       `).replace('#include <normal_fragment_begin>', `
         #include <normal_fragment_begin>
@@ -202,7 +202,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       dummy.scale.set(w, h, w); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
       colorAt(x, z, ground);
       const patch = .92 + .10 * Math.sin(x * .12 + Math.sin(z * .09)) + .06 * Math.cos(z * .18 - x * .05);
-      tint.copy(base).lerp(ground, settings.groundBlend * .55).multiplyScalar(patch * (.88 + hash(gx, gz, 97) * .20));
+      tint.copy(base).lerp(ground, settings.groundBlend * .45).multiplyScalar(patch * (.98 + hash(gx, gz, 97) * .18));
       mesh.setColorAt(i, tint);
     }
     mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
