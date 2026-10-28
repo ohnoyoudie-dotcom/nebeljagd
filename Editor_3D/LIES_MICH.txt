@@ -1,0 +1,51 @@
+NEBELJAGD — DICHTE WIESE, KOLLISIONEN UND SICHTNEBEL — V2
+
+INSTALLATION
+1. Im bisherigen Editor deine Karte als JSON speichern.
+2. Das bisherige schwarze Serverfenster schließen.
+3. ZIP nach E:\nebeljagd\ entpacken. Der Ordner Editor_3D liegt neben Blender.
+   Die beiden HTML-Dateien im Editor_3D-Ordner ersetzen. Blender und deine
+   eigenen Kartendateien unverändert lassen.
+4. Editor_3D\START_EDITOR.cmd starten. Serverfenster geöffnet lassen.
+5. Gesicherte Karte über „JSON öffnen“ laden.
+6. Untergrund → Bodenstil → „Dichte Rei-Wiese · mit Wind“ auswählen.
+   „In 3D testen“ öffnet die passende, ebenfalls aktualisierte Spiel-Datei.
+
+NEU
+- Dichtere, dreidimensionale Grasbüschel aus den vorhandenen Rei-Grasmasken.
+- Drei gekrümmte Flächen pro Büschel, vier Formen und natürliche Farbunterschiede.
+- Browser-Wind bewegt die Spitzen; der Ansatz bleibt am Boden.
+- Dichte: 2–18 Büschel je Quadratmeter, Standard 9,6; Höhe standardmäßig 0,85 m.
+- Bestehende aktivierte Rei-Wiesen werden auf die neue Dichteskala umgerechnet.
+  Bereits eingestellte Höhen und Farben bleiben erhalten.
+- Wege, Wasser, Hausgrundrisse und feste Objekte werden ausgespart.
+- Holztruhen und Kisten blockieren Bewegung und schnelle Rollen wieder.
+- Lebende Gegner und Spieler können nicht durcheinanderlaufen.
+- Truhen lassen sich weiterhin mit E öffnen.
+- Niedrige Truhen/Kisten blockieren Bewegung, werfen jedoch keine wandartigen
+  Sichtschatten. Große Hindernisse verdecken die Sicht weiterhin.
+- Sichtnebel: dunkle, durchscheinende Umgebung und weichere Übergänge statt
+  milchig-grauem Schleier. Die Regeln für Sichtverdeckung bleiben getrennt.
+
+TESTEN
+Testwiese.json ist eine kleine Prüffläche mit Weg, Truhen, Kiste und Fels.
+WASD/Pfeile: bewegen; Leertaste: rollen; E: Truhe öffnen / Waffe wechseln.
+Das Gras ist eine Untergrundfunktion, keine Kollisionsfläche.
+
+DATEIEN
+Alle Grastexturen sind in den HTML-Dateien eingebettet. Bestehende externe
+GLB-Dateien (Tavernen und Umwelt-Kit) werden wie bisher aus dem benachbarten
+Blender-Ordner geladen; die großen Modelle sind nicht erneut im ZIP enthalten.
+Diese Dateien ersetzen keine deiner Karten und löschen keine Objekte.
+
+PRÜFSTAND
+Testprotokoll.json enthält die automatisierten Browserprüfungen:
+Editor-Rückgängig/Wiederholen, JSON-Rundlauf, beide Tavernen in der Modellauswahl,
+Kollisionen aus vier Richtungen, gedrehte und skalierte Hindernisse, Kontakt von
+Spieler und Gegnern in beide Richtungen, Truhenöffnung und laufender Wind.
+Der Browsertest verwendet Software-Rendering und eine kleine Prüffläche.
+Keine verbindliche FPS-Aussage für deinen PC, die ganze Insel oder Schul-iPads.
+Der Windows-Doppelklick kann hier nicht direkt auf deinem Gerät geprüft werden.
+
+GITHUB
+Entwicklungsbranch: feature/rei-grass-ground. Keine Änderung an main.
