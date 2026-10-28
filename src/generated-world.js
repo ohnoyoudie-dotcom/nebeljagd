@@ -252,6 +252,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     concealmentAt: objects.concealmentAt,
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
     update,
+    setGrassInteractors(values) { meadowGround.setInteractors(values); objects.setGrassInteractors?.(values); },
     setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); lastCull = -Infinity; },
     get shelter() { return objects.shelter; },
     get stats() { return { source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
