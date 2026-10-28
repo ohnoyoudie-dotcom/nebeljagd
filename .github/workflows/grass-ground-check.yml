@@ -1,0 +1,28 @@
+name: Terrain grass validation
+on:
+  push:
+    branches: ['feature/rei-grass-ground']
+    paths: ['.github/workflows/grass-ground-check.yml', 'tools/grass-ground/**']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            welt
+            Blender/Gras/textures
+            tools/grass-ground
+      - name: Gather source files
+        run: |
+          mkdir -p grass-input/Blender/Gras/textures grass-input/welt
+          cp Blender/Gras/textures/*.png grass-input/Blender/Gras/textures/
+          cp welt/map-editor.html welt/nebeljagd.html grass-input/welt/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: grass-ground-input
+          path: grass-input
+          retention-days: 1
