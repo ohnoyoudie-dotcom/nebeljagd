@@ -121,24 +121,28 @@ function tuftGeometry() {
 }
 
 function detailBladeGeometry() {
-  // Sparse real geometry only for the near field. It sits on top of the soft
-  // meadow cards and gives the eye a few unmistakable individual blades.
+  // Second meadow layer: a small cluster of unmistakable, wider tapered blades.
+  // This is visible across the whole rendered meadow and sits above the dense
+  // carpet layer, so the ground stays covered while the eye still reads grass.
   const geometry = new THREE.BufferGeometry(), positions = [], uvs = [], indices = [];
   const blades = [
-    [-.10, -.03, -.55, 1.00, .060, .10],
-    [ .09,  .02,  .72,  .82, .050, .08],
-    [-.01,  .11, 1.82,  .68, .044, .07],
-    [ .04, -.12, 2.58,  .76, .048, .09],
+    [-.14, -.06, -.62, 1.05, .105, .18],
+    [ .13, -.02,  .54,  .88, .090, .13],
+    [-.04,  .12, 1.48, 1.16, .115, .20],
+    [ .08, -.14, 2.28,  .78, .082, .15],
+    [ .01,  .02, 2.92,  .96, .098, .17],
   ];
   for (const [ox, oz, angle, height, width, lean] of blades) {
     const base = positions.length / 3, wx = Math.cos(angle) * width * .5, wz = Math.sin(angle) * width * .5;
     const lx = Math.cos(angle + Math.PI / 2) * lean, lz = Math.sin(angle + Math.PI / 2) * lean;
-    for (const [row, spread, bend] of [[0,1,0],[.55,.68,.38],[1,.10,1]]) {
+    for (const [row, spread, bend] of [[0,1,0],[.48,.78,.30],[.78,.48,.62],[1,.07,1]]) {
       const cx = ox + lx * bend, cz = oz + lz * bend;
       positions.push(cx - wx * spread, row * height, cz - wz * spread, cx + wx * spread, row * height, cz + wz * spread);
       uvs.push(0,row,1,row);
     }
-    indices.push(base,base+1,base+2, base+1,base+3,base+2, base+2,base+3,base+4, base+3,base+5,base+4);
+    indices.push(base,base+1,base+2, base+1,base+3,base+2,
+      base+2,base+3,base+4, base+3,base+5,base+4,
+      base+4,base+5,base+6, base+5,base+7,base+6);
   }
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
@@ -210,7 +214,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       ${shader.fragmentShader}`.replace('#include <alphatest_fragment>', `
         diffuseColor.a*=1.-smoothstep(uGrassDistance-10.,uGrassDistance,distance(vGrassRoot,uGrassViewer));
         float grassHeightMix=smoothstep(0.,1.,vGrassHeight);
-        diffuseColor.rgb*=mix(vec3(.70,.79,.60),vec3(.94,.98,.79),grassHeightMix);
+        diffuseColor.rgb*=mix(vec3(.62,.72,.50),vec3(1.02,1.08,.82),grassHeightMix);
         diffuseColor.rgb=max(diffuseColor.rgb,vec3(.055,.12,.03));
         #include <alphatest_fragment>
       `);
@@ -241,10 +245,10 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     shader.fragmentShader = `varying float vDetailHeight;
       ${shader.fragmentShader}`.replace('#include <color_fragment>', `
         #include <color_fragment>
-        diffuseColor.rgb*=mix(vec3(.78,.86,.68),vec3(1.08,1.10,.88),smoothstep(0.,1.,vDetailHeight));
+        diffuseColor.rgb*=mix(vec3(.58,.70,.46),vec3(1.12,1.18,.88),smoothstep(0.,1.,vDetailHeight));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-near-meadow-solid-blades-v3-character-parting';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v1';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -270,8 +274,8 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     for (let i = 0; i < data.length; i++) {
       const { x, z, gx, gz } = data[i];
       dummy.position.set(x, heightAt(x, z) - .035, z);
-      dummy.rotation.set(0, hash(gx, gz, 49) * Math.PI * 2, 0);
-      const h = settings.height * (.72 + .54 * hash(gx, gz, 63)), w = .62 + .34 * hash(gx, gz, 73);
+      dummy.rotation.set((hash(gx, gz, 43) - .5) * .10, hash(gx, gz, 49) * Math.PI * 2, (hash(gx, gz, 47) - .5) * .10);
+      const h = settings.height * (.70 + .58 * hash(gx, gz, 63)), w = .66 + .38 * hash(gx, gz, 73);
       dummy.scale.set(w, h, w); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix);
       colorAt(x, z, ground);
       const patch = .92 + .10 * Math.sin(x * .12 + Math.sin(z * .09)) + .06 * Math.cos(z * .18 - x * .05);
@@ -288,15 +292,15 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere(); if (mesh.boundingSphere) mesh.boundingSphere.radius += settings.height + .8;
 
-    const detailData = data.filter(({ gx, gz }) => hash(gx, gz, 173) < (mode === 'low' ? .07 : .11));
+    const detailData = data.filter(({ gx, gz }) => hash(gx, gz, 173) < (mode === 'low' ? .13 : .20));
     const detailMesh = detailData.length ? new THREE.InstancedMesh(detailGeometry, detailMaterial, detailData.length) : null;
     if (detailMesh) {
       detailMesh.name = `Wiesen-Detailhalme ${key}`; detailMesh.castShadow = detailMesh.receiveShadow = false;
       for (let i = 0; i < detailData.length; i++) {
         const { x, z, gx, gz } = detailData[i];
-        dummy.position.set(x, heightAt(x, z) - .015, z);
-        dummy.rotation.set(0, hash(gx, gz, 181) * Math.PI * 2, 0);
-        const h = settings.height * (.68 + .24 * hash(gx, gz, 191)), w = .86 + .12 * hash(gx, gz, 199);
+        dummy.position.set(x, heightAt(x, z) - .012, z);
+        dummy.rotation.set((hash(gx, gz, 179) - .5) * .22, hash(gx, gz, 181) * Math.PI * 2, (hash(gx, gz, 183) - .5) * .22);
+        const h = settings.height * (1.02 + .38 * hash(gx, gz, 191)), w = .94 + .24 * hash(gx, gz, 199);
         dummy.scale.set(w, h, w); dummy.updateMatrix(); detailMesh.setMatrixAt(i, dummy.matrix);
       }
       detailMesh.instanceMatrix.needsUpdate = true;
@@ -326,17 +330,15 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       const next = queue.shift(); makeChunk(next.x, next.z);
     }
     visibleChunks = 0; visibleInstances = 0; visibleDetailInstances = 0;
-    const detailRadius = mode === 'low' ? 13 : 17;
     for (const [key, chunk] of chunks) {
       const distance = Math.hypot((chunk.cx + .5) * CHUNK_SIZE - player.x, (chunk.cz + .5) * CHUNK_SIZE - player.z);
       const near = distance < radius + CHUNK_SIZE * .75;
-      const detailNear = distance < detailRadius + CHUNK_SIZE * .75;
       if (chunk.mesh) chunk.mesh.visible = near;
-      if (chunk.detailMesh) chunk.detailMesh.visible = near && detailNear;
+      if (chunk.detailMesh) chunk.detailMesh.visible = near;
       if (near) {
         chunk.touched = frame;
         if (chunk.mesh) { visibleChunks++; visibleInstances += chunk.count; }
-        if (chunk.detailMesh?.visible) visibleDetailInstances += chunk.detailCount;
+        if (chunk.detailMesh) visibleDetailInstances += chunk.detailCount;
       }
       if (distance > radius + CHUNK_SIZE * 3) {
         if (chunk.mesh) group.remove(chunk.mesh);
@@ -361,7 +363,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     setQuality(value) { const next = value === 'low' ? 'low' : 'high'; if (next !== mode) { mode = next; clear(); } },
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, visibleDetailInstances, cachedChunks: chunks.size,
       pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit',
-      colorVariation: 'per-tuft-hsl', nearDetail: 'solid-geometry-blades-fixed-green', characterParting: true,
+      colorVariation: 'per-tuft-hsl', detailLayer: 'global-large-solid-blades', layeredMeadow: true, characterParting: true,
       interactorCount: uniforms.uGrassInteractorCount.value, maximumInteractors: maxInteractors }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
