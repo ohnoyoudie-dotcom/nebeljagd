@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { groundGrassSettings, regionHasGroundGrass, grassBiomeProfile, createGroundGrassExclusion } from '../src/meadow-ground.js';
+import { groundGrassSettings, regionHasGroundGrass, grassBiomeProfile, grassBiomeBlend, createGroundGrassExclusion } from '../src/meadow-ground.js';
 
 test('dense meadow adapts automatically across grassy biomes including snow', () => {
   const settings = groundGrassSettings({});
@@ -16,6 +16,16 @@ test('dense meadow adapts automatically across grassy biomes including snow', ()
   assert.equal(snow.density, .48);
   assert.equal(snow.color, '#c7d2cc');
   assert.ok(snow.groundBlend > grassBiomeProfile('meadow').groundBlend);
+});
+
+test('soft biome weights blend grass density and snow influence continuously', () => {
+  const meadow = grassBiomeProfile('meadow'), snow = grassBiomeProfile('snow');
+  const mixed = grassBiomeBlend([{ biome: 'meadow', weight: .5 }, { biome: 'snow', weight: .5 }]);
+  assert.ok(mixed.density < meadow.density && mixed.density > snow.density);
+  assert.ok(mixed.snowWeight > .49 && mixed.snowWeight < .51);
+  assert.ok(mixed.supportedWeight > .99);
+  const fading = grassBiomeBlend([{ biome: 'meadow', weight: .4 }, { biome: 'dunes', weight: .6 }]);
+  assert.ok(fading.density > .35 && fading.density < .45, 'grass fades out when transitioning into a non-grass biome');
 });
 
 test('old explicit ground-cover switch is still respected', () => {
