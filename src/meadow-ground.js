@@ -171,19 +171,26 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     uGrassViewer: { value: new THREE.Vector2() }, uGrassDistance: { value: 42 },
     uGrassInteractorCount: { value: 0 },
     uGrassInteractors: { value: Array.from({ length: maxInteractors }, () => new THREE.Vector3(99999, 99999, 0)) },
+    uGrassInteractorMotion: { value: Array.from({ length: maxInteractors }, () => new THREE.Vector3(0, 1, 0)) },
   };
   const interactionGLSL = `uniform int uGrassInteractorCount; uniform vec3 uGrassInteractors[${maxInteractors}];
+    uniform vec3 uGrassInteractorMotion[${maxInteractors}];
     vec2 grassInteractionAt(vec2 p) {
       vec2 push = vec2(0.);
       for (int i = 0; i < ${maxInteractors}; i++) {
         if (i >= uGrassInteractorCount) break;
         vec3 actor = uGrassInteractors[i];
+        vec3 motion = uGrassInteractorMotion[i];
         vec2 delta = p - actor.xy;
         float d = length(delta);
         float radius = max(.25, actor.z);
-        float influence = 1. - smoothstep(radius * .28, radius, d);
-        vec2 direction = d > .001 ? delta / d : vec2(1.,0.);
-        push += direction * influence * .60;
+        float influence = 1. - smoothstep(radius * .18, radius, d);
+        float motionLength = length(motion.xy);
+        if (influence <= 0. || motionLength < .001 || motion.z <= .001) continue;
+        vec2 radial = d > .001 ? delta / d : motion.xy / motionLength;
+        vec2 forward = motion.xy / motionLength;
+        vec2 direction = normalize(forward * .82 + radial * .18);
+        push += direction * influence * motion.z * .64;
       }
       return push;
     }`;
@@ -219,7 +226,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         #include <alphatest_fragment>
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v3-character-parting';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v4-forward-parting';
 
   const detailMaterial = new THREE.MeshBasicMaterial({
     color: '#58753a', side: THREE.DoubleSide, toneMapped: true,
@@ -248,7 +255,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         diffuseColor.rgb*=mix(vec3(.58,.70,.46),vec3(1.12,1.18,.88),smoothstep(0.,1.,vDetailHeight));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v1';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v2-forward-parting';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -354,6 +361,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     for (let i = 0; i < maxInteractors; i++) {
       const value = i < count ? values[i] : null;
       uniforms.uGrassInteractors.value[i].set(value?.x ?? 99999, value?.z ?? 99999, value?.radius ?? 0);
+      uniforms.uGrassInteractorMotion.value[i].set(value?.dirX ?? 0, value?.dirZ ?? 1, value?.strength ?? 0);
     }
   }
 
@@ -364,7 +372,8 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     inspect: () => ({ enabled: true, quality: mode, settings, visibleChunks, visibleInstances, visibleDetailInstances, cachedChunks: chunks.size,
       pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit',
       colorVariation: 'per-tuft-hsl', detailLayer: 'global-large-solid-blades', layeredMeadow: true, characterParting: true,
-      interactorCount: uniforms.uGrassInteractorCount.value, maximumInteractors: maxInteractors }),
+      interactorCount: uniforms.uGrassInteractorCount.value, maximumInteractors: maxInteractors,
+      interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18 }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
 }
