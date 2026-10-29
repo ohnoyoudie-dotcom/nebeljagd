@@ -15,7 +15,7 @@ export function terrainPaintTextureSize(bounds, quality = 'high', budgetBytes = 
   const texelsPerMeter = quality === 'low' ? 2 : 4, maximum = quality === 'low' ? 256 : 512;
   let width = Math.min(maximum, Math.max(4, Math.ceil(metersX * texelsPerMeter)));
   let height = Math.min(maximum, Math.max(4, Math.ceil(metersZ * texelsPerMeter)));
-  const scale = Math.min(1, Math.sqrt(Math.max(80, budgetBytes) / (width * height * 5)));
+  const scale = Math.min(1, Math.sqrt(Math.max(96, budgetBytes) / (width * height * 6)));
   width = Math.max(4, Math.floor(width * scale)); height = Math.max(4, Math.floor(height * scale));
   return { width, height, bytes: width * height * 6, metersPerTexel: Math.max(metersX / width, metersZ / height) };
 }
