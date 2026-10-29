@@ -268,47 +268,52 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   };
   material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v6-biome-tone';
 
-  const detailMaterial = new THREE.MeshBasicMaterial({
-    color: '#ffffff', side: THREE.DoubleSide, vertexColors: true, toneMapped: true,
-  });
-  detailMaterial.dithering = true;
-  detailMaterial.onBeforeCompile = shader => {
-    Object.assign(shader.uniforms, uniforms);
-    shader.vertexShader = `${interactionGLSL}\nuniform float uGrassTime,uGrassWind,uGrassSpeed;uniform vec2 uGrassDirection;
-      varying float vDetailHeight;
-      ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
-        vec2 grassRoot=instanceMatrix[3].xz;
-        float seedA=grassVariation(grassRoot,5.3), seedB=grassVariation(grassRoot,19.7), seedC=grassVariation(grassRoot,31.4);
-        float localSpeed=mix(.68,1.34,seedA);
-        float localAmplitude=mix(.70,1.30,seedB);
-        float phase=dot(grassRoot,vec2(.211,.173))+seedC*6.28318530718;
-        float gust=.56+.44*sin(dot(grassRoot,uGrassDirection)*.31-uGrassTime*uGrassSpeed*(.92+.30*seedA)+phase*.31);
-        float wave=sin(phase+uGrassTime*uGrassSpeed*1.35*localSpeed)+.18*sin(phase*2.7-uGrassTime*uGrassSpeed*.83);
-        float bend=pow(uv.y,1.75)*uGrassWind*(.12+gust*.22)*wave*localAmplitude;
-        float curveAngle=seedB*6.28318530718;
-        vec2 curveDir=vec2(cos(curveAngle),sin(curveAngle));
-        transformed.xz+=curveDir*mix(.035,.18,seedC)*pow(uv.y,1.75);
-        vec2 localWind=vec2(dot(normalize(instanceMatrix[0].xz),uGrassDirection),dot(normalize(instanceMatrix[2].xz),uGrassDirection));
-        transformed.xz+=localWind*bend;
-        vec2 worldPush=grassInteractionAt(grassRoot);
-        vec2 localPush=vec2(dot(normalize(instanceMatrix[0].xz),worldPush),dot(normalize(instanceMatrix[2].xz),worldPush));
-        transformed.xz+=localPush*pow(uv.y,1.25);
-        vDetailHeight=uv.y;
-      `);
-    shader.fragmentShader = `varying float vDetailHeight;
-      ${shader.fragmentShader}`.replace('#include <color_fragment>', `
-        #include <color_fragment>
-        float detailHeight=smoothstep(0.,1.,vDetailHeight);
-        float preDetailLuma=dot(diffuseColor.rgb,vec3(.299,.587,.114));
-        float snowyDetail=smoothstep(.34,.56,preDetailLuma);
-        vec3 normalDetailTone=mix(vec3(1.02,1.06,.92),vec3(1.24,1.27,1.08),detailHeight);
-        vec3 snowDetailTone=mix(vec3(.82,.90,.91),vec3(1.04,1.07,1.10),detailHeight);
-        diffuseColor.rgb*=mix(normalDetailTone,snowDetailTone,snowyDetail);
-        vec3 snowDetailTip=mix(vec3(.80,.87,.88),vec3(.99,1.0,1.0),detailHeight);
-        diffuseColor.rgb=mix(diffuseColor.rgb,snowDetailTip,snowyDetail*(.30+pow(detailHeight,1.15)*.64));
-      `);
-  };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v6-light-biome-colors';
+  const detailMaterials = new Map();
+  function detailMaterialFor(biome, profile = grassBiomeProfile(biome, settings.color)) {
+    const key = biome ?? 'meadow';
+    if (detailMaterials.has(key)) return detailMaterials.get(key);
+    const snowy = profile.snowy === true;
+    const detailMaterial = new THREE.MeshBasicMaterial({
+      color: profile.detailColor ?? profile.color ?? '#82aa58',
+      side: THREE.DoubleSide, toneMapped: true,
+    });
+    detailMaterial.dithering = true;
+    detailMaterial.onBeforeCompile = shader => {
+      Object.assign(shader.uniforms, uniforms);
+      shader.vertexShader = `${interactionGLSL}\nuniform float uGrassTime,uGrassWind,uGrassSpeed;uniform vec2 uGrassDirection;
+        varying float vDetailHeight;
+        ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
+          vec2 grassRoot=instanceMatrix[3].xz;
+          float seedA=grassVariation(grassRoot,5.3), seedB=grassVariation(grassRoot,19.7), seedC=grassVariation(grassRoot,31.4);
+          float localSpeed=mix(.68,1.34,seedA);
+          float localAmplitude=mix(.70,1.30,seedB);
+          float phase=dot(grassRoot,vec2(.211,.173))+seedC*6.28318530718;
+          float gust=.56+.44*sin(dot(grassRoot,uGrassDirection)*.31-uGrassTime*uGrassSpeed*(.92+.30*seedA)+phase*.31);
+          float wave=sin(phase+uGrassTime*uGrassSpeed*1.35*localSpeed)+.18*sin(phase*2.7-uGrassTime*uGrassSpeed*.83);
+          float bend=pow(uv.y,1.75)*uGrassWind*(.12+gust*.22)*wave*localAmplitude;
+          float curveAngle=seedB*6.28318530718;
+          vec2 curveDir=vec2(cos(curveAngle),sin(curveAngle));
+          transformed.xz+=curveDir*mix(.035,.18,seedC)*pow(uv.y,1.75);
+          vec2 localWind=vec2(dot(normalize(instanceMatrix[0].xz),uGrassDirection),dot(normalize(instanceMatrix[2].xz),uGrassDirection));
+          transformed.xz+=localWind*bend;
+          vec2 worldPush=grassInteractionAt(grassRoot);
+          vec2 localPush=vec2(dot(normalize(instanceMatrix[0].xz),worldPush),dot(normalize(instanceMatrix[2].xz),worldPush));
+          transformed.xz+=localPush*pow(uv.y,1.25);
+          vDetailHeight=uv.y;
+        `);
+      shader.fragmentShader = `varying float vDetailHeight;
+        ${shader.fragmentShader}`.replace('#include <color_fragment>', `
+          #include <color_fragment>
+          float detailHeight=smoothstep(0.,1.,vDetailHeight);
+          ${snowy
+            ? "diffuseColor.rgb*=mix(vec3(.92,.97,.98),vec3(1.08,1.10,1.12),detailHeight); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.99,1.0,1.0),pow(detailHeight,1.15)*.62);"
+            : "diffuseColor.rgb*=mix(vec3(1.00,1.05,.92),vec3(1.18,1.21,1.04),detailHeight);"}
+        `);
+    };
+    detailMaterial.customProgramCacheKey = () => `nebeljagd-layered-meadow-biome-material-v1:${key}`;
+    detailMaterials.set(key, detailMaterial);
+    return detailMaterial;
+  }
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -329,7 +334,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       if (allowed(x, z) && hash(gx, gz, 151) <= profile.density) data.push({ x, z, gx, gz, biome: region?.biome ?? 'meadow', profile });
     }
     const key = `${cx},${cz}`;
-    if (!data.length) { chunks.set(key, { mesh: null, detailMesh: null, cx, cz, count: 0, detailCount: 0, touched: frame }); return; }
+    if (!data.length) { chunks.set(key, { mesh: null, detailMeshes: [], cx, cz, count: 0, detailCount: 0, touched: frame }); return; }
     const mesh = new THREE.InstancedMesh(geometry, material, data.length);
     mesh.name = `Dichte Wiese ${key}`; mesh.castShadow = false; mesh.receiveShadow = false;
     for (let i = 0; i < data.length; i++) {
@@ -353,30 +358,31 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     mesh.computeBoundingSphere(); if (mesh.boundingSphere) mesh.boundingSphere.radius += settings.height + .8;
 
     const detailData = data.filter(({ gx, gz }) => hash(gx, gz, 173) < (mode === 'low' ? .13 : .20));
-    const detailMesh = detailData.length ? new THREE.InstancedMesh(detailGeometry, detailMaterial, detailData.length) : null;
-    if (detailMesh) {
-      detailMesh.name = `Wiesen-Detailhalme ${key}`; detailMesh.castShadow = detailMesh.receiveShadow = false;
-      for (let i = 0; i < detailData.length; i++) {
-        const { x, z, gx, gz, profile } = detailData[i];
+    const detailMeshes = [];
+    const byBiome = new Map();
+    for (const item of detailData) {
+      if (!byBiome.has(item.biome)) byBiome.set(item.biome, []);
+      byBiome.get(item.biome).push(item);
+    }
+    for (const [biome, biomeData] of byBiome) {
+      const profile = biomeData[0]?.profile ?? grassBiomeProfile(biome, settings.color);
+      const detailMesh = new THREE.InstancedMesh(detailGeometry, detailMaterialFor(biome, profile), biomeData.length);
+      detailMesh.name = `Wiesen-Detailhalme ${biome} ${key}`; detailMesh.castShadow = detailMesh.receiveShadow = false;
+      for (let i = 0; i < biomeData.length; i++) {
+        const { x, z, gx, gz } = biomeData[i];
         dummy.position.set(x, heightAt(x, z) - .012, z);
         dummy.rotation.set((hash(gx, gz, 179) - .5) * .22, hash(gx, gz, 181) * Math.PI * 2, (hash(gx, gz, 183) - .5) * .22);
         const h = settings.height * (profile.snowy ? .86 : 1) * (1.02 + .38 * hash(gx, gz, 191)), w = .94 + .24 * hash(gx, gz, 199);
         dummy.scale.set(w, h, w); dummy.updateMatrix(); detailMesh.setMatrixAt(i, dummy.matrix);
-        colorAt(x, z, ground);
-        tint.set(profile.detailColor ?? profile.color)
-          .offsetHSL((hash(gx,gz,211)-.5)*(profile.snowy ? .014 : .022), (hash(gx,gz,223)-.5)*(profile.snowy ? .04 : .06), (hash(gx,gz,227)-.5)*.04)
-          .lerp(ground, profile.snowy ? .56 : .16)
-          .multiplyScalar(profile.snowy ? 1.00 + hash(gx,gz,229)*.08 : 1.08 + hash(gx,gz,229)*.12);
-        detailMesh.setColorAt(i, tint);
       }
-      detailMesh.instanceMatrix.needsUpdate = true; if (detailMesh.instanceColor) detailMesh.instanceColor.needsUpdate = true;
-      detailMesh.computeBoundingSphere(); group.add(detailMesh);
+      detailMesh.instanceMatrix.needsUpdate = true;
+      detailMesh.computeBoundingSphere(); group.add(detailMesh); detailMeshes.push(detailMesh);
     }
-    group.add(mesh); chunks.set(key, { mesh, detailMesh, cx, cz, count: data.length, detailCount: detailData.length, touched: frame }); createdChunks++;
+    group.add(mesh); chunks.set(key, { mesh, detailMeshes, cx, cz, count: data.length, detailCount: detailData.length, touched: frame }); createdChunks++;
   }
 
   function clear() {
-    for (const chunk of chunks.values()) { if (chunk.mesh) group.remove(chunk.mesh); if (chunk.detailMesh) group.remove(chunk.detailMesh); }
+    for (const chunk of chunks.values()) { if (chunk.mesh) group.remove(chunk.mesh); for (const detailMesh of chunk.detailMeshes ?? []) group.remove(detailMesh); }
     chunks.clear(); queue = []; lastCellX = lastCellZ = Infinity;
   }
 
@@ -400,15 +406,15 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       const distance = Math.hypot((chunk.cx + .5) * CHUNK_SIZE - player.x, (chunk.cz + .5) * CHUNK_SIZE - player.z);
       const near = distance < radius + CHUNK_SIZE * .75;
       if (chunk.mesh) chunk.mesh.visible = near;
-      if (chunk.detailMesh) chunk.detailMesh.visible = near;
+      for (const detailMesh of chunk.detailMeshes ?? []) detailMesh.visible = near;
       if (near) {
         chunk.touched = frame;
         if (chunk.mesh) { visibleChunks++; visibleInstances += chunk.count; }
-        if (chunk.detailMesh) visibleDetailInstances += chunk.detailCount;
+        if ((chunk.detailMeshes?.length ?? 0) > 0) visibleDetailInstances += chunk.detailCount;
       }
       if (distance > radius + CHUNK_SIZE * 3) {
         if (chunk.mesh) group.remove(chunk.mesh);
-        if (chunk.detailMesh) group.remove(chunk.detailMesh);
+        for (const detailMesh of chunk.detailMeshes ?? []) group.remove(detailMesh);
         chunks.delete(key);
       }
     }
@@ -436,8 +442,8 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z,
       curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
       recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: true,
-      detailLayerTone: 'light-biome-colors',
+      detailLayerTone: 'fixed-light-biome-materials',
       biomeProfiles: Object.keys(GRASS_BIOME_PROFILES) }),
-    dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
+    dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); for (const detailMaterial of detailMaterials.values()) detailMaterial.dispose(); texture.dispose(); },
   };
 }
