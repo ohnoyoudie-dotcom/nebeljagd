@@ -32,7 +32,7 @@ export function createSnowFootprints(root, world) {
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
-    uniforms: { uTrackColor: { value: new THREE.Color('#bcc7ca') } },
+    uniforms: { uTrackColor: { value: new THREE.Color('#dbe5e7') } },
     vertexShader: `
       attribute float instanceFade;
       varying vec2 vTrackUv;
@@ -60,9 +60,9 @@ export function createSnowFootprints(root, world) {
         float printShape = max(heel*.82, toe) * mix(.82,1.0,waistCut);
         float inner = max(ellipse(p,vec2(.50,.34),vec2(.22,.18)), ellipse(p,vec2(.50,.67),vec2(.26,.24)));
         float rim = max(0.0, printShape-inner*.72);
-        float alpha = (printShape*.38 + rim*.16) * vTrackFade;
+        float alpha = (printShape*.27 + rim*.10) * vTrackFade;
         if (alpha < .008) discard;
-        vec3 color = mix(uTrackColor*1.055, uTrackColor*.92, inner);
+        vec3 color = mix(uTrackColor*1.025, uTrackColor*.97, inner);
         gl_FragColor = vec4(color, alpha);
       }
     `,
@@ -107,7 +107,7 @@ export function createSnowFootprints(root, world) {
     const snowWeight = snowWeightAt(world, x, z);
     if (snowWeight < .62) return false;
     prints.push({
-      x, z, y: world.heightAt(x, z) + snowVisualOffset(x, z, snowWeight) + .008,
+      x, z, y: (world.snowSurfaceAt?.(x, z) ?? (world.heightAt(x, z) + snowVisualOffset(x, z, snowWeight))) + .008,
       direction, born: time,
       scale: .92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18),
       snowWeight,
@@ -156,7 +156,7 @@ export function createSnowFootprints(root, world) {
       const id = String(source.id ?? 'player');
       for (let i = 0; i < id.length; i++) phaseSeed = (phaseSeed + id.charCodeAt(i) * (i + 1)) % 97;
       const stride = Math.sin(time * (5.2 + speed * 2.2) + phaseSeed * .17);
-      const surfaceY = world.heightAt(source.x, source.z) + snowVisualOffset(source.x, source.z, weight) - .028;
+      const surfaceY = (world.snowSurfaceAt?.(source.x, source.z) ?? (world.heightAt(source.x, source.z) + snowVisualOffset(source.x, source.z, weight))) - .028;
       const lateral = (source.lateral ?? .105) * 1.12;
       for (const side of [-1, 1]) {
         if (write >= MAX_WADING_MOUNDS) break;
@@ -238,8 +238,8 @@ export function createSnowFootprints(root, world) {
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
         stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,
         singleInstancedDraw: true, alignedToVisualSnowSurface: true,
-        trackColor: '#bcc7ca', wadingMounds: lastWadingCount,
-        maximumWadingMounds: MAX_WADING_MOUNDS, recommendedVisualSinkMeters: .18,
+        trackColor: '#dbe5e7', wadingMounds: lastWadingCount,
+        maximumWadingMounds: MAX_WADING_MOUNDS, recommendedVisualSinkMeters: .22,
         oldestAgeAtLastPrint: prints.length ? now - Math.min(...prints.map(print => print.born)) : 0,
       };
     },
