@@ -351,7 +351,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         dummy.scale.set(w, h, w); dummy.updateMatrix(); detailMesh.setMatrixAt(i, dummy.matrix);
         colorAt(x, z, ground);
         tint.set(profile.color)
-          .offsetHSL((hash(gx,gz,211)-.5)*(profile.snowy?.014:.026), (hash(gx,gz,223)-.5)*(profile.snowy?.04:.08), (hash(gx,gz,227)-.5)*.05)
+          .offsetHSL((hash(gx,gz,211)-.5)*(profile.snowy ? .014 : .026), (hash(gx,gz,223)-.5)*(profile.snowy ? .04 : .08), (hash(gx,gz,227)-.5)*.05)
           .lerp(ground, Math.min(.72, profile.groundBlend + .08))
           .multiplyScalar(profile.snowy ? .98 + hash(gx,gz,229)*.08 : .92 + hash(gx,gz,229)*.16);
         detailMesh.setColorAt(i, tint);
