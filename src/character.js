@@ -64,7 +64,7 @@ export async function createCharacter(scene) {
   const idle = mixer.clipAction(idleClip).play();
   const walk = mixer.clipAction(walkClip).play();
   walk.setEffectiveWeight(0);
-  let dead = false, concealed = false, opacity = 1;
+  let dead = false, concealed = false, opacity = 1, snowSink = 0;
   const locomotion = createLocomotionController();
   let rollRemaining = 0, attackRemaining = 0;
   const rollDuration = ROLL_DURATION;
@@ -155,10 +155,14 @@ export async function createCharacter(scene) {
     format: 'GLB', skinned: true, joints: 18, clips: gltf.animations.map(clip => clip.name),
   };
 
-  function update(dt, time, { moving = false, speed = 5.6, direction = 0, inDanger = false } = {}) {
+  function update(dt, time, { moving = false, speed = 5.6, direction = 0, inDanger = false, snowWeight = 0 } = {}) {
     restoreAnimatedPose();
     const delta = Math.max(0, Math.min(dt, 0.1));
     const smoothing = 1 - Math.exp(-delta * 12);
+    const targetSnowSink = THREE.MathUtils.clamp(snowWeight, 0, 1) * .18;
+    const snowResponse = 1 - Math.exp(-delta * (targetSnowSink > snowSink ? 10 : 7));
+    snowSink = THREE.MathUtils.lerp(snowSink, targetSnowSink, snowResponse);
+    if (Math.abs(snowSink - targetSnowSink) < .001) snowSink = targetSnowSink;
     const movement = locomotion.update(delta, { moving, speed, direction,
       currentYaw: group.rotation.y, rolling: rollRemaining > 0, dead });
     idle.setEffectiveWeight(rollRemaining > 0 ? 1 : 1 - movement.walkWeight);
@@ -178,7 +182,7 @@ export async function createCharacter(scene) {
       // The ranger faces local +Z, so negative local X is a forward somersault.
       rollPivot.rotation.x = -rotationProgress * Math.PI * 2;
       rollPivot.rotation.z = 0;
-      rollPivot.position.y = 1.025 - Math.sin(rotationProgress * Math.PI) * .28;
+      rollPivot.position.y = 1.025 - snowSink * .65 - Math.sin(rotationProgress * Math.PI) * .28;
       model.scale.set(THREE.MathUtils.lerp(1, .82, bundle),
         THREE.MathUtils.lerp(1, .66, bundle), THREE.MathUtils.lerp(1, .82, bundle));
       const poseEuler = new THREE.Euler();
@@ -190,11 +194,13 @@ export async function createCharacter(scene) {
     } else {
       rollPivot.rotation.x = dead ? THREE.MathUtils.lerp(rollPivot.rotation.x, -Math.PI * 0.43, smoothing) : movement.forwardLean;
       rollPivot.rotation.z = movement.sideLean;
-      rollPivot.position.y = dead ? THREE.MathUtils.lerp(rollPivot.position.y, 0.35, smoothing) : 1.025;
+      rollPivot.position.y = dead ? THREE.MathUtils.lerp(rollPivot.position.y, 0.35 - snowSink * .35, smoothing) : 1.025 - snowSink;
       model.scale.lerp(unitScale, smoothing);
     }
     group.userData.locomotion = { ...movement };
     group.userData.rolling = rollRemaining > 0;
+    group.userData.snowWeight = THREE.MathUtils.clamp(snowWeight, 0, 1);
+    group.userData.snowSinkMeters = snowSink;
     if (attackRemaining > 0) {
       attackRemaining = Math.max(0, attackRemaining - delta);
       if (chest) chest.rotation.z += Math.sin((1 - attackRemaining / .34) * Math.PI) * .08;
@@ -226,11 +232,12 @@ export async function createCharacter(scene) {
   return {
     group, update,
     resetMotion(direction = group.rotation.y) {
-      locomotion.reset(); rollRemaining = 0; attackRemaining = 0;
+      locomotion.reset(); rollRemaining = 0; attackRemaining = 0; snowSink = 0;
       if (Number.isFinite(direction)) group.rotation.y = direction;
       rollPivot.rotation.set(0, 0, 0); rollPivot.position.y = 1.025;
       model.scale.copy(unitScale);
       group.userData.rolling = false;
+      group.userData.snowWeight = 0; group.userData.snowSinkMeters = 0;
       group.userData.locomotion = locomotion.update(0, { direction: group.rotation.y, currentYaw: group.rotation.y });
     },
     setCombatState,
