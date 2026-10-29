@@ -25,6 +25,7 @@ test('editable SVG keeps authored terrain and wind in named layers with safe lit
 
 test('configured vegetation remains independently selectable including zero-density patches', () => {
   const map = structuredClone(base);
+  delete map.landscape;
   const grass = makeWorldObject('grass', [30, -42], { id: 'configured-grass' });
   grass.vegetation = { ...vegetationSettings(grass), height: 3, density: 0, color: '#83b752' };
   map.objects.push(grass);
