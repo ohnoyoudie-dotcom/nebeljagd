@@ -118,7 +118,8 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     // A short line patrol is easy to aim at and makes the ice slow measurable.
     const axis = index % 2 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
     actors.push({ id, target, group, pivot, coat, flames, frost, limbs, label, site, axis, direction: 1,
-      origin: group.position.clone(), travelled: 0, phase: 0, visible: true, speed: .85 });
+      origin: group.position.clone(), travelled: 0, phase: 0, visible: true, speed: .85,
+      grassDirX: axis.x, grassDirZ: axis.z, grassStrength: 0 });
   }
 
   const previous = new THREE.Vector3(), desired = new THREE.Vector3();
@@ -136,8 +137,13 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
           group.position.copy(desired); world.resolveMovement?.(group.position, .52);
           group.position.y = world.heightAt?.(group.position.x, group.position.z) ?? 0;
         }
-        const moved = Math.hypot(group.position.x - previous.x, group.position.z - previous.z);
+        const moveX = group.position.x - previous.x, moveZ = group.position.z - previous.z;
+        const moved = Math.hypot(moveX, moveZ);
         actor.travelled += moved; actor.phase += moved * 9;
+        if (moved > 1e-5) {
+          actor.grassDirX = moveX / moved; actor.grassDirZ = moveZ / moved;
+          actor.grassStrength = THREE.MathUtils.clamp(moved / Math.max(1e-5, delta * actor.speed), .55, 1.1);
+        } else actor.grassStrength = THREE.MathUtils.lerp(actor.grassStrength, 0, 1 - Math.exp(-delta * 12));
         const facing = Math.atan2(actor.axis.x * actor.direction, actor.axis.z * actor.direction);
         pivot.rotation.y = facing;
         for (const limb of actor.limbs) {
@@ -186,6 +192,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       const { target } = actor;
       actor.group.position.copy(actor.origin); actor.pivot.rotation.set(0, 0, 0); actor.pivot.position.y = 0;
       actor.direction = 1; actor.phase = 0; actor.travelled = 0;
+      actor.grassDirX = actor.axis.x; actor.grassDirZ = actor.axis.z; actor.grassStrength = 0;
       target.health = target.initialHealth; target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = target.hitFlash = 0; target.slowFactor = 1;
     }
   }
@@ -193,7 +200,10 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
   function appendGrassInteractors(target = []) {
     for (const actor of actors) {
       if (!actor.target.alive) continue;
-      target.push({ x: actor.group.position.x, z: actor.group.position.z, radius: 1.05 });
+      target.push({
+        x: actor.group.position.x, z: actor.group.position.z, radius: 1.05,
+        dirX: actor.grassDirX, dirZ: actor.grassDirZ, strength: actor.grassStrength,
+      });
     }
     return target;
   }
