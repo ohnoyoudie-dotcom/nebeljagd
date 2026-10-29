@@ -82,7 +82,7 @@ function createGrassPrototypes(wind) {
       lowGeometry: variant === 'tall' ? tallGrassLowGeo : undefined, material, castShadow: false }]);
   }
 
-  for (const biome of ['meadow', 'forest', 'heath', 'marsh', 'snow']) {
+  for (const biome of ['meadow', 'forest', 'heath', 'marsh', 'snow', 'dunes', 'volcanic']) {
     const profile = grassBiomeProfile(biome);
     const root = new THREE.Color(profile.detailColor ?? profile.color);
     const tip = root.clone();
@@ -406,7 +406,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
             vegetation: `#${vegetationTint(settings, px, pz, groundColor).getHexString()}`, rootY });
         }
         const grassKey = adaptiveLegacy
-          ? `grass:${renderVariant}:${['meadow','forest','heath','marsh','snow'].includes(biome) ? biome : 'meadow'}`
+          ? `grass:${renderVariant}:${['meadow','forest','heath','marsh','snow','dunes','volcanic'].includes(biome) ? biome : 'meadow'}`
           : snowGrass ? `grass:${renderVariant}:snow` : `grass:${renderVariant}`;
         const scale = adaptiveLegacy
           ? [instance.scale[0], instance.scale[1] * (renderVariant === 'short' ? profile.baseHeight : profile.detailHeight), instance.scale[2]]
