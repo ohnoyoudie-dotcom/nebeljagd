@@ -21,6 +21,10 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   assert.equal(footprints.inspect().alignedToVisualSnowSurface, true);
   assert.equal(footprints.inspect().trackColor, '#cfdadd');
   assert.equal(footprints.inspect().footprintFacingOffsetRadians, Math.PI);
+  assert.equal(footprints.inspect().footprintRotationJitterRadians, .04);
+  assert.deepEqual(footprints.inspect().footprintScaleVariation, [.96, 1.04]);
+  assert.deepEqual(footprints.inspect().footprintIntensityVariation, [.90, 1.08]);
+  assert.equal(footprints.inspect().footprintLateralJitterMeters, .016);
   assert.equal(footprints.inspect().recommendedVisualSinkMeters, .22);
   assert.equal(footprints.inspect().wadingMounds, 0, 'no travelling snow ridge is created');
   assert.equal(footprints.inspect().wadingStyle, 'removed');
@@ -35,7 +39,7 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   footprints.update(7, []);
   assert.equal(footprints.inspect().count, 1, 'print remains while fading');
   assert.equal(footprints.inspect().activeStepParticles, 0, 'powder particles expire quickly');
-  assert.ok(footprints.inspect().averageFade > .79 && footprints.inspect().averageFade < .81, 'fade is gradual between 6 and 10 seconds');
+  assert.ok(footprints.inspect().averageFade > .70 && footprints.inspect().averageFade < .90, 'fade and subtle per-print strength remain bounded');
   footprints.update(10.21, []);
   assert.equal(footprints.inspect().count, 0, 'expired print is removed');
   footprints.dispose();
