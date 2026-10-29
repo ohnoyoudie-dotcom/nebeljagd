@@ -14,6 +14,7 @@ import { createCombat } from './combat.js';
 import { createChests } from './chests.js';
 import { createHealthBars } from './health-bars.js';
 import { createPracticeActors } from './practice-actors.js';
+import { createSnowFootprints } from './snow-footprints.js';
 import { createDamageFeedback } from './damage-feedback.js';
 import { MAX_HEALTH, START_HEALTH, ROLL_SPEED, ROLL_DURATION, ROLL_COOLDOWN,
   healedHealth } from './rules.js';
@@ -141,7 +142,9 @@ const chests = createChests(world.root, { placements: world.map.objects, heightA
   },
 });
 const practiceActors = createPracticeActors(world.root, { world, combat, healthBars, vision });
+const snowFootprints = createSnowFootprints(world.root, world);
 const grassInteractors = [];
+const footprintSources = [];
 let playerGrassStrength = 0, playerGrassDirX = 0, playerGrassDirZ = 1;
 vision.register();
 const zone = createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius });
@@ -174,7 +177,7 @@ function reset() {
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
   cameraFocus.copy(player).multiplyScalar(visualScale);
-  pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); world.resetDestructibles?.(); character.setConcealed(false);
+  pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); snowFootprints.reset(); world.resetDestructibles?.(); character.setConcealed(false);
   damageFeedback.reset();
   healthBars.set('player', { health: START_HEALTH, snap: true });
   healthBars.reset();
@@ -369,6 +372,7 @@ window.nebeljagdTestState = () => ({
   equippedWeapon: weapons.equipped, equippedItem: weapons.equippedItem, attackCooldown: weapons.attackCooldown,
   combat: weapons.telemetry,
   vision: vision.inspect(), healthBars: healthBars.inspect(), practiceActors: practiceActors.inspect(),
+  snowFootprints: snowFootprints.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
   chests: chests.items.map(({ id, x, z, opened, group }) => ({ id, x, z, opened, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
@@ -471,6 +475,14 @@ function frame(now) {
   });
   practiceActors.appendGrassInteractors(grassInteractors);
   world.setGrassInteractors?.(grassInteractors);
+  footprintSources.length = 0;
+  footprintSources.push({
+    id: 'player', x: player.x, z: player.z, direction: state.direction,
+    moving: state.phase === 'playing' && state.moving, speed: state.actualSpeed || 0,
+    stepDistance: state.rollRemaining > 0 ? .78 : .58, lateral: .105,
+  });
+  practiceActors.appendFootprintSources?.(footprintSources);
+  snowFootprints.update(state.elapsed, footprintSources);
   chests.update(playDelta, time, player);
   weapons.update(playDelta, time, player);
   if (state.phase === 'playing') {
