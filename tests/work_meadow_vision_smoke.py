@@ -99,19 +99,21 @@ with sync_playwright() as p:
     page.wait_for_function("nebeljagdTestState().snowFootprints.count>0",timeout=120000)
     page.wait_for_function("nebeljagdTestState().character.snowSinkMeters>.17",timeout=10000)
     page.wait_for_function("nebeljagdTestState().character.snowClipStrength>.5",timeout=10000)
-    page.wait_for_function("nebeljagdTestState().snowFootprints.wadingMounds===1",timeout=10000)
+    page.wait_for_function("nebeljagdTestState().snowFootprints.particleBursts>0",timeout=10000)
     moving_track_state=page.evaluate("nebeljagdTestState().snowFootprints")
     page.keyboard.up('w')
-    page.wait_for_function("nebeljagdTestState().snowFootprints.wadingMounds===0",timeout=10000)
     track_state=page.evaluate("nebeljagdTestState().snowFootprints")
     snow_character=page.evaluate("nebeljagdTestState().character")
     assert track_state['singleInstancedDraw'] is True
     assert track_state['alignedToVisualSnowSurface'] is True
     assert track_state['fadeStartSeconds']==6
     assert track_state['lifetimeSeconds']==10
-    assert track_state['trackColor']=='#dbe5e7'
-    assert moving_track_state['wadingMounds']==1
-    assert moving_track_state['wadingStyle']=='single-forward-ridge-only-while-moving'
+    assert track_state['trackColor']=='#cfdadd'
+    assert moving_track_state['wadingMounds']==0
+    assert moving_track_state['wadingStyle']=='removed'
+    assert moving_track_state['particleBursts']>0
+    assert moving_track_state['particlesPerStep']==5
+    assert moving_track_state['particleDirection']=='sideways-and-backward'
     assert track_state['wadingMounds']==0
     assert track_state['recommendedVisualSinkMeters']==.22
     assert snow_character['snowWeight']>.6
