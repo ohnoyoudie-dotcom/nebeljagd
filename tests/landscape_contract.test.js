@@ -27,7 +27,9 @@ function paintedMap() {
 }
 
 test('reading old maps preserves all placements, document bytes and legacy vegetation defaults', () => {
-  const map = structuredClone(base), before = JSON.stringify(map);
+  const map = structuredClone(base);
+  delete map.landscape;
+  const before = JSON.stringify(map);
   const landscape = getLandscape(map);
   assert.equal(map.landscape, undefined);
   assert.deepEqual(landscape.wind, WIND_DEFAULTS);

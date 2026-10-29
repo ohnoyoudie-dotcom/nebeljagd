@@ -87,7 +87,9 @@ function createGrassPrototypes(wind) {
     const root = new THREE.Color(profile.detailColor ?? profile.color);
     const tip = root.clone();
     if (profile.snowy) {
-      root.set('#a3b0a8'); tip.set('#f6fbff');
+      // Winter grass stays darker than the snow surface. Only a slight cold
+      // lift remains toward the tip; no white-on-white blades.
+      root.set('#5f7168'); tip.set('#87978f');
     } else {
       root.offsetHSL(0, -.04, -.12);
       tip.offsetHSL(0, -.03, .18);

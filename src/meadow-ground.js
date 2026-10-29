@@ -8,7 +8,7 @@ const GRASS_BIOME_PROFILES = {
   forest: { color: '#365f3d', detailColor: '#507548', baseDensity: .72, detailDensity: .58, baseHeight: .82, detailHeight: .84, groundBlend: .30 },
   heath: { color: '#817944', detailColor: '#958a4c', baseDensity: .62, detailDensity: .66, baseHeight: .76, detailHeight: .88, groundBlend: .25 },
   marsh: { color: '#3f7064', detailColor: '#567f6d', baseDensity: .68, detailDensity: .92, baseHeight: .88, detailHeight: 1.08, groundBlend: .30 },
-  snow: { color: '#aeb9b1', detailColor: '#c4cdc6', baseDensity: .12, detailDensity: .18, baseHeight: .50, detailHeight: .68, groundBlend: .48, snowy: true },
+  snow: { color: '#aeb9b1', detailColor: '#687a70', baseDensity: 0, detailDensity: .12, baseHeight: .45, detailHeight: .62, groundBlend: .48, snowy: true },
   dunes: { color: '#a89262', detailColor: '#b9a36c', baseDensity: .16, detailDensity: .14, baseHeight: .52, detailHeight: .64, groundBlend: .22 },
   volcanic: { color: '#5d5a51', detailColor: '#756e5d', baseDensity: .10, detailDensity: .12, baseHeight: .50, detailHeight: .62, groundBlend: .24 },
 };
@@ -350,11 +350,11 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
           #include <color_fragment>
           float detailHeight=smoothstep(0.,1.,vDetailHeight);
           ${snowy
-            ? "diffuseColor.rgb*=mix(vec3(.92,.97,.98),vec3(1.08,1.10,1.12),detailHeight); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.99,1.0,1.0),pow(detailHeight,1.15)*.62);"
+            ? "diffuseColor.rgb*=mix(vec3(.84,.91,.87),vec3(1.02,1.07,1.03),detailHeight); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.78,.85,.82),pow(detailHeight,1.2)*.18);"
             : "diffuseColor.rgb*=mix(vec3(.92,.98,.84),vec3(1.10,1.14,.98),detailHeight);"}
         `);
     };
-    detailMaterial.customProgramCacheKey = () => `nebeljagd-layered-meadow-biome-material-v1:${key}`;
+    detailMaterial.customProgramCacheKey = () => `nebeljagd-layered-meadow-biome-material-v2:${key}`;
     detailMaterials.set(key, detailMaterial);
     return detailMaterial;
   }
@@ -501,9 +501,9 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
       firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z,
       curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
-      recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: true,
+      recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: false,
       detailLayerTone: 'fixed-light-biome-materials',
-      biomeLayerControls: 'independent-density-height-color', baseLayerBiomeTint: 'preserved-instance-color',
+      biomeLayerControls: 'independent-density-height-color', baseLayerBiomeTint: 'preserved-instance-color', snowBaseLayer: 'disabled', snowDetailStyle: 'sparse-dark-winter-tufts',
       biomeProfiles: Object.keys(GRASS_BIOME_PROFILES), softBiomeTransitions: true }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); for (const detailMaterial of detailMaterials.values()) detailMaterial.dispose(); texture.dispose(); },
   };

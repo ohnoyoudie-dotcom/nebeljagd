@@ -54,6 +54,18 @@ test('all nine painted soils retain editable colours, distinguishable details an
   assert.equal(colors.size, 9); assert.equal(surfaces.size, 9);
 });
 
+test('snow surface has visible but restrained drift and packed-snow variation', () => {
+  const samples = [
+    terrainSurfaceDetail('snow', 0.25, 0.25, 19),
+    terrainSurfaceDetail('snow', 4.5, -3.25, 19),
+    terrainSurfaceDetail('snow', 11.75, 7.5, 19),
+    terrainSurfaceDetail('snow', -8.5, 15.25, 19),
+  ];
+  assert.ok(Math.max(...samples) - Math.min(...samples) > .025);
+  assert.ok(Math.min(...samples) > .85);
+  assert.ok(Math.max(...samples) < 1.15);
+});
+
 test('paint changes ground colour without changing coast, river, bridge or house heights', () => {
   const map = structuredClone(baseMap), beforeObjects = JSON.stringify(map.objects);
   ensureLandscape(map).terrain.push(stamp({ color: '#b7a27a', variation: 0 }));
