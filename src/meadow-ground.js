@@ -40,6 +40,27 @@ export function grassBiomeProfile(biome, fallbackColor = '#4b7331') {
   return profile ? { ...profile } : { color: fallbackColor, detailColor: '#668f49', density: 1, groundBlend: .38 };
 }
 
+export function grassBiomeBlend(weights = [], fallbackColor = '#4b7331') {
+  const color = new THREE.Color(), detail = new THREE.Color(), sample = new THREE.Color();
+  let supported = 0, density = 0, groundBlend = 0, snowWeight = 0, dominant = 'meadow', dominantWeight = -1;
+  for (const item of weights) {
+    const weight = Math.max(0, Number(item?.weight) || 0), profile = GRASS_BIOME_PROFILES[item?.biome];
+    if (!profile || weight <= 0) continue;
+    supported += weight; density += profile.density * weight; groundBlend += profile.groundBlend * weight;
+    if (profile.snowy) snowWeight += weight;
+    sample.set(profile.color); color.r += sample.r * weight; color.g += sample.g * weight; color.b += sample.b * weight;
+    sample.set(profile.detailColor ?? profile.color); detail.r += sample.r * weight; detail.g += sample.g * weight; detail.b += sample.b * weight;
+    if (weight > dominantWeight) { dominantWeight = weight; dominant = item.biome; }
+  }
+  if (supported <= .0001) return { color: fallbackColor, detailColor: '#668f49', density: 0, groundBlend: .38,
+    snowy: false, snowWeight: 0, supportedWeight: 0, biomeKey: 'none' };
+  color.multiplyScalar(1 / supported); detail.multiplyScalar(1 / supported);
+  const normalizedSnow = snowWeight / supported;
+  return { color: `#${color.getHexString()}`, detailColor: `#${detail.getHexString()}`, density,
+    groundBlend: groundBlend / supported, snowy: normalizedSnow > .45, snowWeight: normalizedSnow,
+    supportedWeight: supported, biomeKey: dominant };
+}
+
 export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
   const cells = new Map(), cellSize = 24;
   const insert = (shape, minX, minZ, maxX, maxZ) => {
@@ -319,8 +340,10 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
   const chunks = new Map(), dummy = new THREE.Object3D(), base = new THREE.Color(settings.color), ground = new THREE.Color(), tint = new THREE.Color();
 
-  const allowed = (x, z) => spatial.isLand(x, z) && !spatial.isWater(x, z) && !excluded(x, z)
-    && regionHasGroundGrass(spatial.regionAt(x, z), settings);
+  const profileAt = (x, z) => grassBiomeBlend(
+    spatial.biomeWeightsAt?.(x, z) ?? [{ biome: spatial.regionAt(x, z)?.biome ?? 'meadow', weight: 1 }],
+    settings.color,
+  );
 
   function makeChunk(cx, cz) {
     const density = settings.density * (mode === 'low' ? .58 : 1);
@@ -330,8 +353,10 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       const gx = cx * cells + ix, gz = cz * cells + iz;
       const x = cx * CHUNK_SIZE + (ix + .12 + .76 * hash(gx, gz, 17)) * step;
       const z = cz * CHUNK_SIZE + (iz + .12 + .76 * hash(gx, gz, 31)) * step;
-      const region = spatial.regionAt(x, z), profile = grassBiomeProfile(region?.biome, settings.color);
-      if (allowed(x, z) && hash(gx, gz, 151) <= profile.density) data.push({ x, z, gx, gz, biome: region?.biome ?? 'meadow', profile });
+      if (!spatial.isLand(x, z) || spatial.isWater(x, z) || excluded(x, z)) continue;
+      const profile = profileAt(x, z);
+      if (profile.density <= .001 || hash(gx, gz, 151) > profile.density) continue;
+      data.push({ x, z, gx, gz, biome: profile.biomeKey, profile });
     }
     const key = `${cx},${cz}`;
     if (!data.length) { chunks.set(key, { mesh: null, detailMeshes: [], cx, cz, count: 0, detailCount: 0, touched: frame }); return; }
@@ -366,13 +391,14 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     }
     for (const [biome, biomeData] of byBiome) {
       const profile = biomeData[0]?.profile ?? grassBiomeProfile(biome, settings.color);
-      const detailMesh = new THREE.InstancedMesh(detailGeometry, detailMaterialFor(biome, profile), biomeData.length);
+      const materialProfile = grassBiomeProfile(biome, settings.color);
+      const detailMesh = new THREE.InstancedMesh(detailGeometry, detailMaterialFor(biome, materialProfile), biomeData.length);
       detailMesh.name = `Wiesen-Detailhalme ${biome} ${key}`; detailMesh.castShadow = detailMesh.receiveShadow = false;
       for (let i = 0; i < biomeData.length; i++) {
         const { x, z, gx, gz } = biomeData[i];
         dummy.position.set(x, heightAt(x, z) - .012, z);
         dummy.rotation.set((hash(gx, gz, 179) - .5) * .22, hash(gx, gz, 181) * Math.PI * 2, (hash(gx, gz, 183) - .5) * .22);
-        const h = settings.height * (profile.snowy ? .86 : 1) * (1.02 + .38 * hash(gx, gz, 191)), w = .94 + .24 * hash(gx, gz, 199);
+        const h = settings.height * (1 - .14 * (profile.snowWeight ?? (profile.snowy ? 1 : 0))) * (1.02 + .38 * hash(gx, gz, 191)), w = .94 + .24 * hash(gx, gz, 199);
         dummy.scale.set(w, h, w); dummy.updateMatrix(); detailMesh.setMatrixAt(i, dummy.matrix);
       }
       detailMesh.instanceMatrix.needsUpdate = true;
@@ -443,7 +469,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
       recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: true,
       detailLayerTone: 'fixed-light-biome-materials',
-      biomeProfiles: Object.keys(GRASS_BIOME_PROFILES) }),
+      biomeProfiles: Object.keys(GRASS_BIOME_PROFILES), softBiomeTransitions: true }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); for (const detailMaterial of detailMaterials.values()) detailMaterial.dispose(); texture.dispose(); },
   };
 }
