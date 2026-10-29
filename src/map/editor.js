@@ -626,14 +626,15 @@ function paintLandscapeSample(point) {
 function eraseTerrainSample(point) {
   if (!pointer?.terrainEraser) return;
   const gesture = pointer.terrainEraser;
-  const removed = eraseLandscapeAt(map, gesture.last, point, landscapePanel.radius('terrainErase'), 'terrain');
-  if (removed.terrainIds.length) {
-    const ids = new Set(removed.terrainIds); const landscape = ensureLandscape(map);
-    landscape.terrain = landscape.terrain.filter(item => !ids.has(item.id));
-    gesture.count += ids.size;
-    for (const id of ids) document.getElementById(`feature-terrain-${id}`)?.remove();
+  const removed = eraseLandscapeAt(map, gesture.last, point, landscapePanel.radius('terrainErase'), 'surface');
+  if (removed.terrainIds.length || removed.biomeIds.length) {
+    const terrainIds = new Set(removed.terrainIds), biomeIds = new Set(removed.biomeIds), landscape = ensureLandscape(map);
+    landscape.terrain = landscape.terrain.filter(item => !terrainIds.has(item.id));
+    landscape.biomes = landscape.biomes.filter(item => !biomeIds.has(item.id));
+    gesture.count += terrainIds.size + biomeIds.size;
+    for (const id of terrainIds) document.getElementById(`feature-terrain-${id}`)?.remove();
   }
-  gesture.last = point; landscapePanel.status(`${gesture.count} Bodenflächen entfernt · ein Schritt zurück stellt den Strich wieder her`); updatePlacementPreview();
+  gesture.last = point; landscapePanel.status(`${gesture.count} Boden-/Biomflächen entfernt · ein Schritt zurück stellt den Strich wieder her`); updatePlacementPreview();
 }
 function eraseObjectSample(point) {
   if (!pointer?.eraser) return;
