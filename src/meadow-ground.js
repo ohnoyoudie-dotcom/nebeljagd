@@ -8,7 +8,7 @@ const GRASS_BIOME_PROFILES = {
   forest: { color: '#365f3d', detailColor: '#507548', baseDensity: .72, detailDensity: .58, baseHeight: .82, detailHeight: .84, groundBlend: .30 },
   heath: { color: '#817944', detailColor: '#958a4c', baseDensity: .62, detailDensity: .66, baseHeight: .76, detailHeight: .88, groundBlend: .25 },
   marsh: { color: '#3f7064', detailColor: '#567f6d', baseDensity: .68, detailDensity: .92, baseHeight: .88, detailHeight: 1.08, groundBlend: .30 },
-  snow: { color: '#9daaa1', detailColor: '#b7c1b8', baseDensity: .22, detailDensity: .30, baseHeight: .58, detailHeight: .72, groundBlend: .44, snowy: true },
+  snow: { color: '#aeb9b1', detailColor: '#c4cdc6', baseDensity: .12, detailDensity: .18, baseHeight: .50, detailHeight: .68, groundBlend: .48, snowy: true },
   dunes: { color: '#a89262', detailColor: '#b9a36c', baseDensity: .16, detailDensity: .14, baseHeight: .52, detailHeight: .64, groundBlend: .22 },
   volcanic: { color: '#5d5a51', detailColor: '#756e5d', baseDensity: .10, detailDensity: .12, baseHeight: .50, detailHeight: .62, groundBlend: .24 },
 };
