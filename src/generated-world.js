@@ -265,6 +265,8 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         bakedChunksTotal: terrainChunks.reduce((sum, c) => sum + (c.paint?.stats.bakeCount ?? 0), 0),
         totalBakeMs: terrainChunks.reduce((sum, c) => sum + (c.paint?.stats.totalBakeMs ?? 0), 0),
         maximumTileBakeMs: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.maximumBakeMs ?? 0)),
+        snowRelief: terrainChunks.some(c => c.paint?.stats.snowRelief),
+        snowMaskResidentChunks: terrainChunks.filter(c => c.paint?.stats.snowMaskResident).length,
         maximumTextureSize: mode === 'low' ? 256 : 512, changesCollisionHeight: false },
       cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, meadowGround: meadowGround.inspect(), ...objects.stats }; },
     dispose() { meadowGround.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
