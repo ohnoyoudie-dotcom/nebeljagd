@@ -208,8 +208,25 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     return target;
   }
 
+  function appendFootprintSources(target = []) {
+    for (const actor of actors) {
+      if (!actor.target.alive) continue;
+      target.push({
+        id: actor.id,
+        x: actor.group.position.x,
+        z: actor.group.position.z,
+        direction: Math.atan2(actor.grassDirX, actor.grassDirZ),
+        moving: actor.grassStrength > .12,
+        speed: actor.speed * actor.target.speedMultiplier,
+        stepDistance: .68,
+        lateral: .11,
+      });
+    }
+    return target;
+  }
+
   return {
-    root, update, reset, resolvePlayerMovement, appendGrassInteractors,
+    root, update, reset, resolvePlayerMovement, appendGrassInteractors, appendFootprintSources,
     inspect: () => actors.map(({ id, target, group, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
       alive: target.alive, visible, burnRemaining: target.burnRemaining, slowRemaining: target.slowRemaining,
