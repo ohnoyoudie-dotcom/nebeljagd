@@ -35,6 +35,8 @@ with sync_playwright() as p:
     assert state['meadow']['detailLayerTone']=='fixed-light-biome-materials'
     assert state['meadow']['biomeLayerControls']=='independent-density-height-color'
     assert state['meadow']['baseLayerBiomeTint']=='preserved-instance-color'
+    assert state['meadow']['snowBaseLayer']=='disabled'
+    assert state['meadow']['snowDetailStyle']=='sparse-dark-winter-tufts'
     assert state['meadow']['layeredMeadow'] is True
     assert state['meadow']['visibleDetailInstances']>100
     assert state['meadow']['characterParting'] is True
@@ -72,14 +74,14 @@ with sync_playwright() as p:
 
     page.evaluate("nebeljagdInspect({x:-285,z:-400})")
     page.wait_for_function("nebeljagdTestState().world.biome==='snow'",timeout=120000)
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleInstances>220",timeout=120000)
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleDetailInstances>5",timeout=120000)
     snow_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     assert snow_state['biome']=='snow'
-    assert snow_state['meadow']['visibleInstances']>220
-    assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.42
-    assert snow_state['meadow']['visibleDetailInstances']>10
+    assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.08
+    assert snow_state['meadow']['visibleDetailInstances']>5
+    assert snow_state['meadow']['visibleDetailInstances'] < state['meadow']['visibleDetailInstances']*.35
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
 
