@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createGroundGrassExclusion } from './meadow-ground.js';
 
 const CHUNK_SIZE = 10;
+const MAX_OBJECT_CAPS = 512;
 
 function hash(x, z, salt = 0) {
   let value = Math.imul(x ^ salt, 374761393) ^ Math.imul(z + salt, 668265263);
@@ -87,22 +88,87 @@ ${shader.vertexShader}`.replace('#include <worldpos_vertex>', `#include <worldpo
         float grain = sin(p.x*8.7-p.y*6.1)*sin(p.y*7.3+p.x*3.4);
         return wind*.54 + ripple*.31 + grain*.15;
       }
+      float snowCoverMicro(vec2 p) {
+        float a = sin(p.x*15.7+p.y*9.2)*sin(p.y*13.9-p.x*4.8);
+        float b = sin(p.x*28.1-p.y*21.4)*sin(p.y*31.7+p.x*12.3);
+        return a*.68+b*.32;
+      }
 ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_fragment>
       float snowPattern = snowCoverPattern(vSnowCoverWorld.xz);
+      float micro = snowCoverMicro(vSnowCoverWorld.xz);
       float ridge = smoothstep(-.55,.70,snowPattern);
-      vec3 snowShadeLow = vec3(.900,.935,.955);
-      vec3 snowShadeHigh = vec3(1.035,1.045,1.048);
+      vec3 snowShadeLow = vec3(.895,.930,.953);
+      vec3 snowShadeHigh = vec3(1.040,1.048,1.052);
       diffuseColor.rgb *= mix(snowShadeLow, snowShadeHigh, ridge);
+      diffuseColor.rgb *= 1.0 + micro*.018;
+      float crystal = pow(max(0.0, micro), 18.0) * smoothstep(.15,.85,ridge) * .025;
+      diffuseColor.rgb += vec3(crystal);
     `).replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
-      roughnessFactor = clamp(roughnessFactor + (1.0 - abs(snowCoverPattern(vSnowCoverWorld.xz))) * .035, .94, 1.0);
+      float snowMicroRough = abs(snowCoverMicro(vSnowCoverWorld.xz));
+      roughnessFactor = clamp(.965 + (1.0 - abs(snowCoverPattern(vSnowCoverWorld.xz))) * .025 - snowMicroRough*.018, .935, 1.0);
     `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-snow-cover-natural-v2';
+  material.customProgramCacheKey = () => 'nebeljagd-snow-cover-natural-v3-microcrystals';
 
   const excluded = createGroundGrassExclusion(map, { padding: .18 });
   const dummy = new THREE.Object3D();
   const tint = new THREE.Color();
   const chunks = new Map();
+
+  // Static caps and small base drifts visually tie scenery into the winter biome.
+  // These are deliberately simple instanced meshes rather than duplicating or
+  // modifying the original scenery materials.
+  const capDefinitions = {
+    rock:   { y: 1.02, sx: 1.15, sy: .11, sz: 1.02, type: 'top' },
+    crate:  { y: .92,  sx: .72, sy: .075, sz: .68, type: 'top' },
+    shrine: { y: 1.46, sx: .62, sy: .085, sz: .56, type: 'top' },
+    mound:  { y: .34,  sx: 1.90, sy: .085, sz: 1.55, type: 'top' },
+    tree:   { y: .025, sx: .55, sy: .055, sz: .48, type: 'base' },
+  };
+  const capItems = [];
+  let treeBaseDrifts = 0;
+  for (const object of map.objects ?? []) {
+    const definition = capDefinitions[object.kind];
+    if (!definition || !Array.isArray(object.position) || capItems.length >= MAX_OBJECT_CAPS) continue;
+    const [x, z] = object.position;
+    const weight = snowWeight(spatial, x, z);
+    if (weight < .52) continue;
+    const scale = Number.isFinite(object.scale) ? object.scale : 1;
+    const seedX = Math.round(x * 10), seedZ = Math.round(z * 10);
+    capItems.push({
+      x, z, weight, rotation: object.rotation ?? 0,
+      y: heightAt(x, z) + definition.y * scale,
+      sx: definition.sx * scale * (.88 + hash(seedX, seedZ, 211) * .24),
+      sy: definition.sy * scale * (.86 + hash(seedX, seedZ, 223) * .28),
+      sz: definition.sz * scale * (.88 + hash(seedX, seedZ, 227) * .24),
+      type: definition.type,
+    });
+    if (definition.type === 'base') treeBaseDrifts++;
+  }
+  const capMaterial = material.clone();
+  capMaterial.name = 'Nebeljagd · Schneeauflagen auf Winterobjekten';
+  const capMesh = new THREE.InstancedMesh(geometry, capMaterial, Math.max(1, capItems.length));
+  capMesh.name = 'Schneekappen und Baumfuß-Verwehungen';
+  capMesh.count = capItems.length;
+  capMesh.castShadow = false;
+  capMesh.receiveShadow = true;
+  for (let i = 0; i < capItems.length; i++) {
+    const item = capItems[i];
+    dummy.position.set(item.x, item.y, item.z);
+    dummy.rotation.set(0, item.rotation + (hash(i, 0, 239)-.5)*.18, 0);
+    dummy.scale.set(item.sx, item.sy, item.sz);
+    dummy.updateMatrix();
+    capMesh.setMatrixAt(i, dummy.matrix);
+    const cool = .965 + (hash(i, 0, 241)-.5)*.035;
+    tint.setRGB(cool-.012, cool, Math.min(1,cool+.014));
+    capMesh.setColorAt(i, tint);
+  }
+  if (capItems.length) {
+    capMesh.instanceMatrix.needsUpdate = true;
+    if (capMesh.instanceColor) capMesh.instanceColor.needsUpdate = true;
+    capMesh.computeBoundingSphere();
+    group.add(capMesh);
+  }
   let mode = quality === 'low' ? 'low' : 'high';
   let frame = 0, lastCellX = Infinity, lastCellZ = Infinity, queue = [];
   let visibleChunks = 0, visibleInstances = 0, visibleDriftInstances = 0, createdChunks = 0;
@@ -131,7 +197,7 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
       const coverage = THREE.MathUtils.smoothstep(weight, .34, .86);
       if (hash(gx, gz, 47) > THREE.MathUtils.lerp(.55, .995, coverage)) continue;
 
-      const accent = hash(gx, gz, 53) < THREE.MathUtils.lerp(.06, .18, coverage);
+      const accent = hash(gx, gz, 53) < THREE.MathUtils.lerp(.10, .25, coverage);
       if (accent) driftCount++;
       items.push({ x, z, gx, gz, weight, coverage, accent });
     }
@@ -152,11 +218,13 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
       const { x, z, gx, gz, weight, coverage, accent } = items[i];
       const localDrift = broadDrift(x, z);
       const depth = accent
-        ? weight * (.105 + hash(gx, gz, 59) * .085)
-        : weight * (.060 + hash(gx, gz, 59) * .065);
-      const baseSize = accent ? 1.45 : 1.04;
-      const width = baseSize + hash(gx, gz, 61) * (accent ? 1.00 : .56);
-      const length = baseSize + hash(gx, gz, 67) * (accent ? 1.65 : .72);
+        ? weight * (.045 + hash(gx, gz, 59) * .050)
+        : weight * (.055 + hash(gx, gz, 59) * .060);
+      const baseSize = accent ? 1.08 : 1.04;
+      const width = baseSize + hash(gx, gz, 61) * (accent ? .45 : .56);
+      const length = accent
+        ? 2.10 + hash(gx, gz, 67) * 1.55
+        : baseSize + hash(gx, gz, 67) * .72;
 
       dummy.position.set(x, heightAt(x, z) + .003, z);
       dummy.rotation.set(0, accent
@@ -246,12 +314,16 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
       minimumSnowWeight: .34, nominalSurfaceDepthMeters: .19,
       broadDriftAmplitudeMeters: .045, fineDriftAmplitudeMeters: .012,
       maximumPillowDepthMeters: .19, multiScaleSurface: true, windShading: true,
+      microRelief: true, microCrystalHighlights: true,
+      objectSnowCaps: capItems.filter(item => item.type === 'top').length,
+      treeBaseDrifts, maximumObjectCaps: MAX_OBJECT_CAPS,
+      windRidges: 'long-low-prevailing-direction',
     }),
     dispose() {
       clear();
       root.remove(group);
       geometry.dispose();
-      material.dispose();
+      material.dispose(); capMaterial.dispose();
     },
   };
 }
