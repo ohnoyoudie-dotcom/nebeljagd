@@ -91,11 +91,18 @@ with sync_playwright() as p:
     assert snow_state['snowCover']['collisionIndependent'] is True
     assert snow_state['snowCover']['visibleInstances']>0
     assert 0.17<=snow_state['snowCover']['nominalSurfaceDepthMeters']<=0.21
+    assert snow_state['snowCover']['multiScaleSurface'] is True
+    assert snow_state['snowCover']['windShading'] is True
+    assert snow_state['snowCover']['layerStyle']=='overlapping-irregular-powder-with-wind-drifts'
+    assert snow_state['snowCover']['broadDriftAmplitudeMeters']>snow_state['snowCover']['fineDriftAmplitudeMeters']
     page.keyboard.down('w')
     page.wait_for_function("nebeljagdTestState().snowFootprints.count>0",timeout=120000)
     page.wait_for_function("nebeljagdTestState().character.snowSinkMeters>.17",timeout=10000)
     page.wait_for_function("nebeljagdTestState().character.snowClipStrength>.5",timeout=10000)
+    page.wait_for_function("nebeljagdTestState().snowFootprints.wadingMounds===1",timeout=10000)
+    moving_track_state=page.evaluate("nebeljagdTestState().snowFootprints")
     page.keyboard.up('w')
+    page.wait_for_function("nebeljagdTestState().snowFootprints.wadingMounds===0",timeout=10000)
     track_state=page.evaluate("nebeljagdTestState().snowFootprints")
     snow_character=page.evaluate("nebeljagdTestState().character")
     assert track_state['singleInstancedDraw'] is True
@@ -103,7 +110,9 @@ with sync_playwright() as p:
     assert track_state['fadeStartSeconds']==6
     assert track_state['lifetimeSeconds']==10
     assert track_state['trackColor']=='#dbe5e7'
-    assert track_state['wadingMounds']>=2
+    assert moving_track_state['wadingMounds']==1
+    assert moving_track_state['wadingStyle']=='single-forward-ridge-only-while-moving'
+    assert track_state['wadingMounds']==0
     assert track_state['recommendedVisualSinkMeters']==.22
     assert snow_character['snowWeight']>.6
     assert snow_character['snowSinkMeters']>.17
