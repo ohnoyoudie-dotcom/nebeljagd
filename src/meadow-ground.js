@@ -9,8 +9,10 @@ const GRASS_BIOME_PROFILES = {
   heath: { color: '#817944', detailColor: '#958a4c', baseDensity: .62, detailDensity: .66, baseHeight: .76, detailHeight: .88, groundBlend: .25 },
   marsh: { color: '#3f7064', detailColor: '#567f6d', baseDensity: .68, detailDensity: .92, baseHeight: .88, detailHeight: 1.08, groundBlend: .30 },
   snow: { color: '#9daaa1', detailColor: '#b7c1b8', baseDensity: .22, detailDensity: .30, baseHeight: .58, detailHeight: .72, groundBlend: .44, snowy: true },
+  dunes: { color: '#a89262', detailColor: '#b9a36c', baseDensity: .16, detailDensity: .14, baseHeight: .52, detailHeight: .64, groundBlend: .22 },
+  volcanic: { color: '#5d5a51', detailColor: '#756e5d', baseDensity: .10, detailDensity: .12, baseHeight: .50, detailHeight: .62, groundBlend: .24 },
 };
-const GREEN_BIOMES = new Set(Object.keys(GRASS_BIOME_PROFILES));
+const GRASS_BIOMES = new Set(Object.keys(GRASS_BIOME_PROFILES));
 const CHUNK_SIZE = 10;
 
 export function groundGrassSettings(map = {}) {
@@ -34,7 +36,7 @@ export function groundGrassSettings(map = {}) {
 export function regionHasGroundGrass(region, settings) {
   if (!settings.enabled || region?.groundCover === 'none') return false;
   if (region?.groundCover === 'rei-grass') return true;
-  return settings.scope === 'all' || GREEN_BIOMES.has(region?.biome);
+  return settings.scope === 'all' || GRASS_BIOMES.has(region?.biome);
 }
 
 export function grassBiomeProfile(biome, fallbackColor = '#4b7331') {
