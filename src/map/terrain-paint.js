@@ -95,7 +95,11 @@ export function terrainSurfaceDetail(type, x, z, seed = 1) {
     return (.57 + .43 * mortar) * tint + fine * .035;
   }
   if (type === 'sand') return .98 + broad * .06 + Math.sin(z * 8 + Math.sin(x * .65) * 1.7) * .025 + fine * .035;
-  if (type === 'snow') return 1.01 + broad * .04 + fine * .025;
+  if (type === 'snow') {
+    const drift = Math.sin(x * .19 + Math.sin(z * .11) * 1.8) * Math.cos(z * .16 - x * .07);
+    const packed = terrainPaintNoise(x * 1.15, z * 1.15, seed + 307) - .5;
+    return 1.0 + broad * .075 + drift * .035 + packed * .035 + fine * .018;
+  }
   if (type === 'mud') return .93 + broad * .2 + fine * .06;
   if (type === 'rock') return .93 + broad * .3 + Math.abs(Math.sin(x * .8 + z * 1.1 + broad * 3)) * .08;
   if (type === 'forest') return .96 + broad * .15 + fine * .1;
