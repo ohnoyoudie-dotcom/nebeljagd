@@ -14,13 +14,13 @@ test('dense meadow adapts automatically across grassy biomes including snow', ()
   assert.equal(regionHasGroundGrass({ biome: 'volcanic' }, settings), true);
   const meadow = grassBiomeProfile('meadow'), snow = grassBiomeProfile('snow');
   assert.equal(snow.snowy, true);
-  assert.equal(snow.baseDensity, .22);
-  assert.equal(snow.detailDensity, .30);
-  assert.equal(snow.baseHeight, .58);
-  assert.equal(snow.detailHeight, .72);
-  assert.equal(snow.color, '#9daaa1');
-  assert.ok(snow.baseDensity < meadow.baseDensity * .25);
-  assert.ok(snow.detailDensity < meadow.detailDensity * .35);
+  assert.equal(snow.baseDensity, .12);
+  assert.equal(snow.detailDensity, .18);
+  assert.equal(snow.baseHeight, .50);
+  assert.equal(snow.detailHeight, .68);
+  assert.equal(snow.color, '#aeb9b1');
+  assert.ok(snow.baseDensity < meadow.baseDensity * .15);
+  assert.ok(snow.detailDensity < meadow.detailDensity * .20);
 });
 
 test('soft biome weights blend both grass layers independently and fade into bare biomes', () => {
