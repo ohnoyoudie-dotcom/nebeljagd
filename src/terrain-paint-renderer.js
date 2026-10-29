@@ -68,7 +68,13 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
         float drift = sin(p.x*.78+p.y*.31+sin(p.y*.22)*1.7);
         float wind = sin(dot(p,vec2(.86,.50))*1.42 + sin(dot(p,vec2(-.24,.97))*.33)*1.8);
         float fine = sin(p.x*4.2-p.y*3.1)*sin(p.y*4.6+p.x*1.9);
-        return broad*.46 + drift*.22 + wind*.23 + fine*.09;
+        float micro = sin(p.x*13.7+p.y*8.9)*sin(p.y*16.1-p.x*5.7);
+        return broad*.44 + drift*.21 + wind*.23 + fine*.08 + micro*.04;
+      }
+      float terrainSnowMicro(vec2 p) {
+        float a = sin(p.x*17.3+p.y*11.2)*sin(p.y*15.9-p.x*6.3);
+        float b = sin(p.x*29.7-p.y*22.1)*sin(p.y*33.5+p.x*12.9);
+        return a*.7+b*.3;
       }
       ${shader.fragmentShader}`;
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `
@@ -80,18 +86,22 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       vec3 terrainPaving = clamp(texture2D(uTerrainPaving, vTerrainPaintPosition / 3.5).rgb / vec3(.32, .35, .28), .35, 1.5);
       terrainPaint.rgb *= mix(vec3(1.), terrainPaving, terrainPavingMix);
       float snowRelief = terrainSnowRelief(vTerrainPaintPosition);
-      float snowShade = 1.0 + snowRelief*.135;
+      float snowMicro = terrainSnowMicro(vTerrainPaintPosition);
+      float snowShade = 1.0 + snowRelief*.135 + snowMicro*.018;
       vec3 deepSnowTone = vec3(.885,.925,.955);
       vec3 ridgeSnowTone = vec3(1.060,1.068,1.072);
       terrainPaint.rgb = mix(terrainPaint.rgb, terrainPaint.rgb * mix(deepSnowTone, ridgeSnowTone, smoothstep(-.55,.55,snowRelief)) * snowShade, terrainSnowMix);
+      float snowCrystal = pow(max(0.0,snowMicro),18.0) * smoothstep(.35,.9,terrainSnowMix) * .020;
+      terrainPaint.rgb += vec3(snowCrystal);
       diffuseColor.rgb = mix(diffuseColor.rgb, terrainPaint.rgb, terrainPaint.a);
     `);
     shader.fragmentShader = shader.fragmentShader.replace('#include <roughnessmap_fragment>', `
       #include <roughnessmap_fragment>
-      roughnessFactor = mix(roughnessFactor, .94, terrainSnowMix * .88);
+      float terrainMicroRough = abs(terrainSnowMicro(vTerrainPaintPosition));
+      roughnessFactor = mix(roughnessFactor, .965 - terrainMicroRough*.022, terrainSnowMix * .90);
     `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v5-wind-shaped-snow';
+  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v6-microcrystal-snow';
   material.name = 'Nebeljagd · gemalter Boden aus Kartendaten';
   function release() {
     texture?.dispose(); maskTexture?.dispose(); snowMaskTexture?.dispose();
@@ -129,7 +139,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     dispose() { release(); empty.dispose(); },
     get stats() { return { resident: Boolean(texture), bytes: textureSize?.bytes ?? 0,
       width: textureSize?.width ?? 0, height: textureSize?.height ?? 0, bakeCount,
-      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .208,
+      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .208, snowMicroRelief: true, snowCrystalHighlights: true,
       totalBakeMs, maximumBakeMs, metersPerTexel: textureSize?.metersPerTexel ?? 0 }; },
   };
 }
