@@ -6,7 +6,7 @@ const GRASS_BIOME_PROFILES = {
   forest: { color: '#355d32', density: .88, groundBlend: .42 },
   heath: { color: '#7c7839', density: .78, groundBlend: .46 },
   marsh: { color: '#37665b', density: .82, groundBlend: .48 },
-  snow: { color: '#87988b', density: .65, groundBlend: .62, snowy: true },
+  snow: { color: '#c7d2cc', density: .48, groundBlend: .86, snowy: true },
 };
 const GREEN_BIOMES = new Set(Object.keys(GRASS_BIOME_PROFILES));
 const CHUNK_SIZE = 10;
@@ -255,7 +255,11 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       ${shader.fragmentShader}`.replace('#include <alphatest_fragment>', `
         diffuseColor.a*=1.-smoothstep(uGrassDistance-10.,uGrassDistance,distance(vGrassRoot,uGrassViewer));
         float grassHeightMix=smoothstep(0.,1.,vGrassHeight);
+        float preGrassLuma=dot(diffuseColor.rgb,vec3(.299,.587,.114));
+        float snowyGrass=smoothstep(.34,.56,preGrassLuma);
         diffuseColor.rgb*=mix(vec3(.62,.72,.50),vec3(1.08,1.13,.90),grassHeightMix);
+        vec3 snowTip=mix(vec3(.78,.84,.80),vec3(.96,.99,1.0),grassHeightMix);
+        diffuseColor.rgb=mix(diffuseColor.rgb,snowTip,snowyGrass*pow(grassHeightMix,1.35)*.82);
         diffuseColor.rgb=max(diffuseColor.rgb,vec3(.055,.12,.03));
         #include <alphatest_fragment>
       `);
@@ -292,7 +296,12 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
     shader.fragmentShader = `varying float vDetailHeight;
       ${shader.fragmentShader}`.replace('#include <color_fragment>', `
         #include <color_fragment>
-        diffuseColor.rgb*=mix(vec3(.58,.70,.46),vec3(1.18,1.22,1.02),smoothstep(0.,1.,vDetailHeight));
+        float detailHeight=smoothstep(0.,1.,vDetailHeight);
+        float preDetailLuma=dot(diffuseColor.rgb,vec3(.299,.587,.114));
+        float snowyDetail=smoothstep(.34,.56,preDetailLuma);
+        diffuseColor.rgb*=mix(vec3(.58,.70,.46),vec3(1.18,1.22,1.02),detailHeight);
+        vec3 snowDetailTip=mix(vec3(.76,.82,.78),vec3(.98,1.0,1.0),detailHeight);
+        diffuseColor.rgb=mix(diffuseColor.rgb,snowDetailTip,snowyDetail*pow(detailHeight,1.20)*.88);
       `);
   };
   detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v3-natural-motion';
@@ -347,7 +356,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         const { x, z, gx, gz, profile } = detailData[i];
         dummy.position.set(x, heightAt(x, z) - .012, z);
         dummy.rotation.set((hash(gx, gz, 179) - .5) * .22, hash(gx, gz, 181) * Math.PI * 2, (hash(gx, gz, 183) - .5) * .22);
-        const h = settings.height * (profile.snowy ? .92 : 1) * (1.02 + .38 * hash(gx, gz, 191)), w = .94 + .24 * hash(gx, gz, 199);
+        const h = settings.height * (profile.snowy ? .86 : 1) * (1.02 + .38 * hash(gx, gz, 191)), w = .94 + .24 * hash(gx, gz, 199);
         dummy.scale.set(w, h, w); dummy.updateMatrix(); detailMesh.setMatrixAt(i, dummy.matrix);
         colorAt(x, z, ground);
         tint.set(profile.color)
@@ -422,7 +431,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
       firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z,
       curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
-      recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true,
+      recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: true,
       biomeProfiles: Object.keys(GRASS_BIOME_PROFILES) }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
