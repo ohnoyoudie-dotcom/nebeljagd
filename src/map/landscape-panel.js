@@ -45,6 +45,10 @@ export function createLandscapePanel(api) {
     details.open = key === 'biomes';
     const summary = document.createElement('summary'); summary.textContent = label; details.append(summary); sidebar.append(details); sections[key] = details;
   }
+  for (const details of Object.values(sections)) details.addEventListener('toggle', () => {
+    if (!details.open) return;
+    for (const other of Object.values(sections)) if (other !== details) other.open = false;
+  });
   const move = (selector, key) => { const element = sidebar.querySelector(selector); if (element) sections[key].append(element); };
   move('.grass-brush-section', 'vegetation'); move('.object-palette', 'objects'); move('.eraser-section', 'objects'); move('.objects-section', 'objects');
   move('.layer-section', 'map'); move('.project-actions', 'map');
@@ -139,6 +143,7 @@ export function createLandscapePanel(api) {
     const biomeValue=$('biome-preset').value; $('biome-preset').innerHTML=options(BIOME_PRESETS);
     for(const preset of landscape.presets) if(preset.terrain&&preset.vegetation&&preset.scatter){const option=document.createElement('option');option.value=preset.id;option.textContent=`Eigene Vorlage · ${preset.name}`;$('biome-preset').append(option);}
     if([...$('biome-preset').options].some(option=>option.value===biomeValue))$('biome-preset').value=biomeValue;
+    syncBiomeChoices();
     const value=$('landscape-preset-select').value; $('landscape-preset-select').replaceChildren();
     for(const preset of landscape.presets){const option=document.createElement('option');option.value=preset.id;option.textContent=preset.name;$('landscape-preset-select').append(option);}
     if(landscape.presets.some(p=>p.id===value))$('landscape-preset-select').value=value;
