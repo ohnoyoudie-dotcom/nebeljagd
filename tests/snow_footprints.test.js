@@ -20,6 +20,7 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   assert.equal(footprints.inspect().singleInstancedDraw, true);
   assert.equal(footprints.inspect().alignedToVisualSnowSurface, true);
   assert.equal(footprints.inspect().trackColor, '#cfdadd');
+  assert.equal(footprints.inspect().footprintFacingOffsetRadians, Math.PI);
   assert.equal(footprints.inspect().recommendedVisualSinkMeters, .22);
   assert.equal(footprints.inspect().wadingMounds, 0, 'no travelling snow ridge is created');
   assert.equal(footprints.inspect().wadingStyle, 'removed');
