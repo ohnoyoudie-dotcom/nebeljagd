@@ -19,6 +19,9 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const collectionKeys = { region: 'regions', path: 'paths', river: 'rivers', place: 'places', spawn: 'spawnAreas', object: 'objects' };
 const PLAYTEST_KEY = 'nebeljagd.worldmap.playtest.v1';
 const MAX_FILE_BYTES = 5_000_000;
+const FILE_HANDLE_DB = 'nebeljagd-map-file-v1';
+const FILE_HANDLE_STORE = 'handles';
+const FILE_HANDLE_KEY = 'worldmap';
 const playtestWindows = new Map();
 const kindNames = { island: 'Inselumriss', region: 'Region', path: 'Weg', river: 'Fluss', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone' };
 const initialSnapshot = (() => {
@@ -42,6 +45,8 @@ let zoneTime = 0;
 let listLimit = 50;
 let hoverPoint = null;
 let landscapePanel = null;
+let mapFileHandle = null;
+let persistedMapFileHandle = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
 const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone'];
 const layers = { showLabels: true, showSpawns: true, showGrid: false, showZone: false, showObjects: true };
@@ -76,19 +81,37 @@ function updateWarnings(result = validate(map)) {
   warnings.hidden = !result.warnings.length;
   warnings.textContent = result.warnings.length ? `Planungshinweis: ${result.warnings.join(' ')}` : '';
 }
+const directFileSaveSupported = () => typeof window.showSaveFilePicker === 'function';
+function updateSaveStatus({ saved = false } = {}) {
+  if (restoredDraft !== null) {
+    $('save-status').textContent = mapFileHandle ? `Voriger Entwurf wartet · ${mapFileHandle.name}` : 'Voriger Entwurf wartet · Strg+S';
+    return;
+  }
+  if (saved && mapFileHandle) {
+    $('save-status').textContent = `Gespeichert · ${mapFileHandle.name}`;
+    return;
+  }
+  if (mapFileHandle) {
+    $('save-status').textContent = `Ungespeicherte Änderungen · ${mapFileHandle.name} · Strg+S`;
+    return;
+  }
+  $('save-status').textContent = directFileSaveSupported()
+    ? 'Ungespeicherte Änderungen · Strg+S wählt worldmap.json'
+    : 'Lokal gesichert · Browser-Download nötig';
+}
 function saveDraft() {
   if (restoredDraft !== null) {
-    $('save-status').textContent = 'Voriger Entwurf wartet · JSON exportieren';
+    updateSaveStatus();
     return;
   }
   $('restore-banner').hidden = true;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
     storageAvailable = true;
-    $('save-status').textContent = 'Lokal gespeichert · JSON exportieren';
+    updateSaveStatus();
   } catch {
     storageAvailable = false;
-    $('save-status').textContent = 'Nur im Speicher · JSON exportieren';
+    updateSaveStatus();
   }
 }
 function remember(previous) {
@@ -656,10 +679,86 @@ function download(contents, filename, mime) {
   document.body.append(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
-function exportJson() {
+function fileHandleDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!('indexedDB' in window)) return reject(new Error('IndexedDB nicht verfügbar'));
+    const request = indexedDB.open(FILE_HANDLE_DB, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(FILE_HANDLE_STORE);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function persistMapFileHandle(handle) {
+  try {
+    const db = await fileHandleDatabase();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(FILE_HANDLE_STORE, 'readwrite');
+      tx.objectStore(FILE_HANDLE_STORE).put(handle, FILE_HANDLE_KEY);
+      tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+    });
+    db.close();
+  } catch {
+    // Direct saving still works for this session even if the browser refuses
+    // to persist a FileSystemHandle in IndexedDB.
+  }
+}
+async function readPersistedMapFileHandle() {
+  try {
+    const db = await fileHandleDatabase();
+    const handle = await new Promise((resolve, reject) => {
+      const tx = db.transaction(FILE_HANDLE_STORE, 'readonly');
+      const request = tx.objectStore(FILE_HANDLE_STORE).get(FILE_HANDLE_KEY);
+      request.onsuccess = () => resolve(request.result ?? null);
+      request.onerror = () => reject(request.error);
+    });
+    db.close(); return handle;
+  } catch { return null; }
+}
+async function writablePermission(handle, request = false) {
+  if (!handle) return false;
+  try {
+    if (typeof handle.queryPermission !== 'function') return true;
+    let state = await handle.queryPermission({ mode: 'readwrite' });
+    if (state === 'granted') return true;
+    if (request && typeof handle.requestPermission === 'function') state = await handle.requestPermission({ mode: 'readwrite' });
+    return state === 'granted';
+  } catch { return false; }
+}
+async function chooseMapFileHandle() {
+  const handle = await window.showSaveFilePicker({
+    suggestedName: 'worldmap.json',
+    types: [{ description: 'Nebeljagd Weltkarte', accept: { 'application/json': ['.json'] } }],
+    excludeAcceptAllOption: false,
+  });
+  mapFileHandle = handle; persistedMapFileHandle = handle;
+  await persistMapFileHandle(handle);
+  return handle;
+}
+async function activeMapFileHandle() {
+  if (await writablePermission(mapFileHandle, true)) return mapFileHandle;
+  if (await writablePermission(persistedMapFileHandle, true)) {
+    mapFileHandle = persistedMapFileHandle; return mapFileHandle;
+  }
+  return chooseMapFileHandle();
+}
+async function exportJson() {
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
-  download(`${JSON.stringify(map, null, 2)}\n`, 'worldmap.json', 'application/json');
-  toast('worldmap.json gespeichert. Diese Datei ist die Datenbasis für den weiteren Weltbau.');
+  const contents = `${JSON.stringify(map, null, 2)}\n`;
+  if (!directFileSaveSupported()) {
+    download(contents, 'worldmap.json', 'application/json');
+    return toast('Dieser Browser erlaubt keinen direkten Dateizugriff. worldmap.json wurde deshalb heruntergeladen.', true);
+  }
+  try {
+    const handle = await activeMapFileHandle();
+    const writable = await handle.createWritable();
+    await writable.write(contents);
+    await writable.close();
+    updateSaveStatus({ saved: true });
+    toast(`${handle.name} direkt aktualisiert. Weitere Speicherungen und Strg+S überschreiben dieselbe Datei.`);
+  } catch (error) {
+    if (error?.name === 'AbortError') return toast('Speichern abgebrochen.');
+    toast(`worldmap.json konnte nicht direkt gespeichert werden: ${error?.message ?? 'Unbekannter Fehler'}`, true);
+  }
 }
 function exportSvg() {
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
@@ -681,8 +780,7 @@ function exportEditor() {
   download(`<!doctype html>\n${doc.outerHTML}`, 'map-editor.html', 'text/html');
   toast('Eigenständiger Editor mit dem aktuellen Kartenstand gespeichert.');
 }
-async function importJson(event) {
-  const file = event.target.files?.[0]; event.target.value = '';
+async function loadMapFile(file, handle = null) {
   if (!file) return;
   if (file.size > MAX_FILE_BYTES) return toast('Die Datei ist zu groß. Karten dürfen höchstens 5 MB groß sein.', true);
   let candidate;
@@ -692,7 +790,29 @@ async function importJson(event) {
   if (!result.valid) return toast(`Karte nicht geöffnet: ${result.errors.slice(0, 4).join(' ')}`, true);
   const previous = clone(map);
   map = candidate; selection = null; zoneTime = 0; $('zone-time').value = 0; view = initialView();
-  remember(previous); renderAll(); toast('Karte geöffnet. Mit „Zurück“ kehrst du zum vorherigen Stand zurück.');
+  if (handle) {
+    mapFileHandle = handle; persistedMapFileHandle = handle;
+    await persistMapFileHandle(handle);
+  }
+  remember(previous); renderAll(); updateSaveStatus({ saved: Boolean(handle) });
+  toast(handle ? `${handle.name} geöffnet und als Speicherdatei verbunden.` : 'Karte geöffnet. Mit „Zurück“ kehrst du zum vorherigen Stand zurück.');
+}
+async function importJson(event) {
+  const file = event.target.files?.[0]; event.target.value = '';
+  await loadMapFile(file);
+}
+async function openJson() {
+  if (typeof window.showOpenFilePicker !== 'function') return $('json-file-input').click();
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      multiple: false,
+      types: [{ description: 'Nebeljagd Weltkarte', accept: { 'application/json': ['.json'] } }],
+      excludeAcceptAllOption: false,
+    });
+    await loadMapFile(await handle.getFile(), handle);
+  } catch (error) {
+    if (error?.name !== 'AbortError') toast(`worldmap.json konnte nicht geöffnet werden: ${error?.message ?? 'Unbekannter Fehler'}`, true);
+  }
 }
 function resetMap() {
   const previous = clone(map);
@@ -857,9 +977,9 @@ $('zoom-in').addEventListener('click', () => zoomBy(.8)); $('zoom-out').addEvent
 $('fit-map').addEventListener('click', () => { view = initialView(); renderMap(); });
 for (const [id, key] of [['layer-objects', 'showObjects'], ['layer-labels', 'showLabels'], ['layer-spawns', 'showSpawns'], ['layer-grid', 'showGrid'], ['layer-zone', 'showZone']]) $(id).addEventListener('change', () => { layers[key] = $(id).checked; renderMap(); });
 $('zone-time').addEventListener('input', event => { zoneTime = Number(event.target.value); renderMap(); });
-$('import-json').addEventListener('click', () => $('json-file-input').click());
+$('import-json').addEventListener('click', () => { void openJson(); });
 $('json-file-input').addEventListener('change', importJson);
-$('export-json').addEventListener('click', exportJson); $('export-svg').addEventListener('click', exportSvg); $('export-editor').addEventListener('click', exportEditor);
+$('export-json').addEventListener('click', () => { void exportJson(); }); $('export-svg').addEventListener('click', exportSvg); $('export-editor').addEventListener('click', exportEditor);
 $('reset-map').addEventListener('click', () => { $('reset-confirm').hidden = !$('reset-confirm').hidden; });
 $('reset-confirm-yes').addEventListener('click', resetMap); $('reset-confirm-no').addEventListener('click', () => { $('reset-confirm').hidden = true; });
 $('map-viewport').addEventListener('pointerdown', pointerDown);
@@ -875,6 +995,9 @@ $('map-viewport').addEventListener('wheel', event => {
   event.preventDefault(); if (pointer?.brush || pointer?.eraser || pointer?.terrainEraser) return; zoomBy(event.deltaY > 0 ? 1.12 : 1 / 1.12, coordinateAt(event));
 }, { passive: false });
 document.addEventListener('keydown', event => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+    event.preventDefault(); void exportJson(); return;
+  }
   const editing = event.target.closest?.('input,textarea,select,[contenteditable=true]');
   if (editing) return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') { event.preventDefault(); event.shiftKey ? redo() : undo(); }
@@ -888,6 +1011,14 @@ document.addEventListener('keydown', event => {
 document.addEventListener('keyup', event => { if (event.code === 'Space') { spaceHeld = false; renderMap(); } });
 window.addEventListener('blur', () => { cancelPointer(); spaceHeld = false; renderMap(false); });
 new ResizeObserver(() => { if (!pointer) renderMap(); }).observe($('map-viewport'));
+
+void readPersistedMapFileHandle().then(async handle => {
+  persistedMapFileHandle = handle;
+  if (handle && await writablePermission(handle, false)) {
+    mapFileHandle = handle;
+    updateSaveStatus();
+  }
+});
 
 try {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -916,7 +1047,7 @@ window.nebeljagdMapTestState = () => ({
   landscape: landscapePanel?.state(),
   dirty: JSON.stringify(map) !== JSON.stringify(initialSnapshot),
   viewBox: [view.x, view.y, view.width, view.height], view: { ...view }, zoom: (map.bounds.maxX - map.bounds.minX) / view.width,
-  zone: zoneAt(map, zoneTime), zoneTime, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
+  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
 });
 renderAll();
-if (!storageAvailable) $('save-status').textContent = 'Nur im Speicher · JSON exportieren';
+if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();
