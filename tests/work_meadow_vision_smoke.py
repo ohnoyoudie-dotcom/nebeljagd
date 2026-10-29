@@ -48,7 +48,12 @@ with sync_playwright() as p:
     assert state['meadow']['biomeAdaptiveColor'] is True
     assert state['meadow']['snowTipCoating'] is True
     assert 'snow' in state['meadow']['biomeProfiles']
+    assert 'dunes' in state['meadow']['biomeProfiles']
+    assert 'volcanic' in state['meadow']['biomeProfiles']
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
+    assert state['editableGrass']['biomeAdaptiveLegacyGrass'] is True
+    assert state['editableGrass']['legacyBiomeAdaptedPatches']>=700
+    assert state['editableGrass']['legacySuppressedGrassInstances']>1000
     assert state['editableGrass']['wind']['interactors']>=2
     assert state['editableGrass']['wind']['interactionMode']=='forward-biased'
     assert state['editableGrass']['wind']['firstInteractorStrength']>.5
