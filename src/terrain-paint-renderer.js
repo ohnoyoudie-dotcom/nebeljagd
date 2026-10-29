@@ -58,7 +58,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
         float terrainSnowVertex = texture2D(uTerrainSnowMask, terrainSnowUvVertex).r;
         float terrainSnowDriftVertex = sin(vTerrainPaintPosition.x*.21 + sin(vTerrainPaintPosition.y*.13)*1.7)
           * cos(vTerrainPaintPosition.y*.18-vTerrainPaintPosition.x*.07);
-        transformed.y += terrainSnowVertex * (.068 + terrainSnowDriftVertex*.030);
+        transformed.y += terrainSnowVertex * (.115 + terrainSnowDriftVertex*.040);
       `);
     shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainSnowMask; uniform sampler2D uTerrainPaving; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
       float terrainSnowRelief(vec2 p) {
@@ -77,9 +77,9 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       vec3 terrainPaving = clamp(texture2D(uTerrainPaving, vTerrainPaintPosition / 3.5).rgb / vec3(.32, .35, .28), .35, 1.5);
       terrainPaint.rgb *= mix(vec3(1.), terrainPaving, terrainPavingMix);
       float snowRelief = terrainSnowRelief(vTerrainPaintPosition);
-      float snowShade = 1.0 + snowRelief*.085;
-      vec3 deepSnowTone = vec3(.875,.925,.95);
-      vec3 ridgeSnowTone = vec3(1.045,1.055,1.06);
+      float snowShade = 1.0 + snowRelief*.105;
+      vec3 deepSnowTone = vec3(.895,.935,.958);
+      vec3 ridgeSnowTone = vec3(1.055,1.065,1.07);
       terrainPaint.rgb = mix(terrainPaint.rgb, terrainPaint.rgb * mix(deepSnowTone, ridgeSnowTone, smoothstep(-.55,.55,snowRelief)) * snowShade, terrainSnowMix);
       diffuseColor.rgb = mix(diffuseColor.rgb, terrainPaint.rgb, terrainPaint.a);
     `);
@@ -88,7 +88,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       roughnessFactor = mix(roughnessFactor, .94, terrainSnowMix * .88);
     `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v3-deeper-snow-relief';
+  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v4-deep-powder-snow';
   material.name = 'Nebeljagd · gemalter Boden aus Kartendaten';
   function release() {
     texture?.dispose(); maskTexture?.dispose(); snowMaskTexture?.dispose();
@@ -126,7 +126,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     dispose() { release(); empty.dispose(); },
     get stats() { return { resident: Boolean(texture), bytes: textureSize?.bytes ?? 0,
       width: textureSize?.width ?? 0, height: textureSize?.height ?? 0, bakeCount,
-      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .098,
+      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .155,
       totalBakeMs, maximumBakeMs, metersPerTexel: textureSize?.metersPerTexel ?? 0 }; },
   };
 }
