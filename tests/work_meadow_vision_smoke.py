@@ -78,7 +78,7 @@ with sync_playwright() as p:
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleDetailInstances>5",timeout=120000)
     snow_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position,
-      terrainPaint:s.world.stats.terrainPaint, footprints:s.snowFootprints, elapsed:s.elapsed};}''')
+      terrainPaint:s.world.stats.terrainPaint, snowCover:s.world.stats.snowCover, footprints:s.snowFootprints, character:s.character, elapsed:s.elapsed};}''')
     assert snow_state['biome']=='snow'
     assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.08
     assert snow_state['meadow']['visibleDetailInstances']>5
@@ -86,9 +86,15 @@ with sync_playwright() as p:
     assert snow_state['terrainPaint']['snowRelief'] is True
     assert snow_state['terrainPaint']['snowMaskResidentChunks']>0
     assert 0.14<=snow_state['terrainPaint']['snowVisualDepthMeters']<=0.17
+    assert snow_state['snowCover']['enabled'] is True
+    assert snow_state['snowCover']['depthWriting'] is True
+    assert snow_state['snowCover']['collisionIndependent'] is True
+    assert snow_state['snowCover']['visibleInstances']>0
+    assert 0.17<=snow_state['snowCover']['nominalSurfaceDepthMeters']<=0.21
     page.keyboard.down('w')
     page.wait_for_function("nebeljagdTestState().snowFootprints.count>0",timeout=120000)
-    page.wait_for_function("nebeljagdTestState().character.snowSinkMeters>.14",timeout=10000)
+    page.wait_for_function("nebeljagdTestState().character.snowSinkMeters>.17",timeout=10000)
+    page.wait_for_function("nebeljagdTestState().character.snowClipStrength>.5",timeout=10000)
     page.keyboard.up('w')
     track_state=page.evaluate("nebeljagdTestState().snowFootprints")
     snow_character=page.evaluate("nebeljagdTestState().character")
@@ -96,11 +102,12 @@ with sync_playwright() as p:
     assert track_state['alignedToVisualSnowSurface'] is True
     assert track_state['fadeStartSeconds']==6
     assert track_state['lifetimeSeconds']==10
-    assert track_state['trackColor']=='#bcc7ca'
+    assert track_state['trackColor']=='#dbe5e7'
     assert track_state['wadingMounds']>=2
-    assert track_state['recommendedVisualSinkMeters']==.18
+    assert track_state['recommendedVisualSinkMeters']==.22
     assert snow_character['snowWeight']>.6
-    assert snow_character['snowSinkMeters']>.14
+    assert snow_character['snowSinkMeters']>.17
+    assert snow_character['snowClipStrength']>.5
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
     elapsed_now=page.evaluate("nebeljagdTestState().elapsed")
