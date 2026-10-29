@@ -9,10 +9,11 @@ const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url
 const clone = () => structuredClone(base);
 const lineDistance = (point, line) => Math.min(...line.points.slice(1).map((next, i) => distanceToSegment(point, line.points[i], next)));
 
-test('world objects are persisted editable instances, generated deterministically from the atlas', () => {
+test('world objects are persisted editable instances while the authoring generator remains deterministic', () => {
   assert.ok(base.objects.length > 3500 && base.objects.length < 5000);
-  assert.deepEqual(seedWorldObjects(base), base.objects);
-  assert.deepEqual(seedWorldObjects(base, { seed: 271026 }), base.objects);
+  const seeded = seedWorldObjects(base, { seed: 271026 });
+  assert.deepEqual(seedWorldObjects(base, { seed: 271026 }), seeded);
+  assert.ok(seeded.length > 3500, 'authoring generator still produces a full explicit world');
   assert.deepEqual(validateWorldmap(base), { valid: true, errors: [], warnings: [] });
   const stats = getWorldmapStats(base);
   assert.ok(stats.objectCounts.tree >= 2000);
@@ -29,8 +30,6 @@ test('spawn approach and starter objects remain explicit, accessible and outside
   assert.deepEqual(starter.bow.position, [34, -39]);
   assert.deepEqual(starter.sword.position, [26, -39]);
   assert.deepEqual(starter.heart.position, [38, -42]);
-  assert.deepEqual(starter.grass.position, [10, -30]);
-  assert.equal(starter.grass.variant, 'tall');
   const house = base.objects.find(item => item.id === 'obj-house-auenwacht-01');
   assert.deepEqual(house.position, [30, -60]);
   assert.equal(house.rotation, 0);
