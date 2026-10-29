@@ -501,7 +501,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
       firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z,
       curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
-      recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: true,
+      recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: false,
       detailLayerTone: 'fixed-light-biome-materials',
       biomeLayerControls: 'independent-density-height-color', baseLayerBiomeTint: 'preserved-instance-color', snowBaseLayer: 'disabled', snowDetailStyle: 'sparse-dark-winter-tufts',
       biomeProfiles: Object.keys(GRASS_BIOME_PROFILES), softBiomeTransitions: true }),
