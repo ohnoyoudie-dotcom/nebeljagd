@@ -450,7 +450,12 @@ function frame(now) {
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
   grassInteractors.length = 0;
-  grassInteractors.push({ x: player.x, z: player.z, radius: 1.12 });
+  const walkSpeed = Math.max(.1, world.map.gameplay.walkSpeedMetersPerSecond);
+  grassInteractors.push({
+    x: player.x, z: player.z, radius: 1.12,
+    dirX: Math.sin(state.direction), dirZ: Math.cos(state.direction),
+    strength: state.moving ? THREE.MathUtils.clamp(state.actualSpeed / walkSpeed, .55, 1.15) : 0,
+  });
   practiceActors.appendGrassInteractors(grassInteractors);
   world.setGrassInteractors?.(grassInteractors);
   chests.update(playDelta, time, player);
