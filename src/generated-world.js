@@ -6,6 +6,7 @@ import { createWorldObjectRenderer } from './world-object-renderer.js';
 import { createTerrainArtwork } from './terrain-art.js';
 import { createTerrainPaintMaterial, TERRAIN_PAINT_BUDGET } from './terrain-paint-renderer.js';
 import { createMeadowGround } from './meadow-ground.js';
+import { createSnowCover } from './snow-cover.js';
 
 import { createWorldSpatialModel, projection } from './generated-spatial.js';
 export { createWorldSpatialModel } from './generated-spatial.js';
@@ -187,6 +188,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   const objects = await createWorldObjectRenderer(root, { map, heightAt: surfaceHeightAt, groundHeightAt: surfaceHeightAt, colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, quality, chunkSize: CHUNK });
   const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: spatial.colorAt, spatial, quality });
+  const snowCover = createSnowCover(root, { map, heightAt: surfaceHeightAt, spatial, quality });
   const materialSet = new Set(); root.traverse(child => { if (child.material) for (const material of Array.isArray(child.material) ? child.material : [child.material]) materialSet.add(material); });
   for (const material of materialSet) {
     if (!material.isMeshStandardMaterial || material.userData.generatedZoneTint) continue;
@@ -224,7 +226,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     return position;
   }
   function update(dt, time, player, zoneRadius = map.zone.initialRadius) {
-    timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(dt, time, player, zoneRadius); meadowGround.update(time, player);
+    timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(dt, time, player, zoneRadius); meadowGround.update(time, player); snowCover.update(time, player);
     for (const water of waterMeshes) water.setZoneRadius(zoneRadius);
     if (time - lastCull > .3 || Math.hypot(player.x - lastCullX, player.z - lastCullZ) > 3) {
       const range = mode === 'low' ? 90 : 125; visibleTerrainChunks = 0;
@@ -258,7 +260,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   return {
     root, map, visualScale: 1, spawn, bounds: map.bounds,
     worldRadius: Math.max(...map.island.points.map(p => Math.hypot(...p))),
-    heightAt, groundHeightAt: surfaceHeightAt, resolveMovement, traceProjectile: objects.traceProjectile,
+    heightAt, groundHeightAt: surfaceHeightAt, snowSurfaceAt: snowCover.surfaceHeightAt, resolveMovement, traceProjectile: objects.traceProjectile,
     isWater: spatial.isWater, isLand: spatial.isLand, colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt,
     trees: objects.trees, grassPatches: objects.grassPatches, houses: objects.houses, destructibles: objects.destructibles,
     projectileObstacles: objects.projectileObstacles, importedAssets: objects.importedAssets,
@@ -266,7 +268,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
     update,
     setGrassInteractors(values) { meadowGround.setInteractors(values); objects.setGrassInteractors?.(values); },
-    setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); lastCull = -Infinity; },
+    setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); snowCover.setQuality(mode); lastCull = -Infinity; },
     get shelter() { return objects.shelter; },
     get stats() { return { source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
       terrainTriangles: triangles.length, generationMs, terrainArt: { ground: 'painted-woodland', mainPaths: 'irregular-grey-cobbles', trailPaths: 'earth', stoneTextureSize: 512, pathWidthFromMap: true },
@@ -282,7 +284,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         snowMaskResidentChunks: terrainChunks.filter(c => c.paint?.stats.snowMaskResident).length,
         snowVisualDepthMeters: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.snowVisualDepthMeters ?? 0)),
         maximumTextureSize: mode === 'low' ? 256 : 512, changesCollisionHeight: false },
-      cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, meadowGround: meadowGround.inspect(), ...objects.stats }; },
-    dispose() { meadowGround.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
+      cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, meadowGround: meadowGround.inspect(), snowCover: snowCover.inspect(), ...objects.stats }; },
+    dispose() { meadowGround.dispose(); snowCover.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
   };
 }
