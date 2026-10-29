@@ -51,7 +51,15 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     shader.uniforms.uTerrainPaint = paintUniform; shader.uniforms.uTerrainPaintBounds = boundsUniform;
     shader.uniforms.uTerrainPavingMask = pavingMaskUniform; shader.uniforms.uTerrainSnowMask = snowMaskUniform;
     shader.uniforms.uTerrainPaving = { value: pavingTexture };
-    shader.vertexShader = `varying vec2 vTerrainPaintPosition;\n${shader.vertexShader}`.replace('#include <begin_vertex>', '#include <begin_vertex>\nvTerrainPaintPosition = (modelMatrix * vec4(position, 1.)).xz;');
+    shader.vertexShader = `uniform sampler2D uTerrainSnowMask; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
+      ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
+        vTerrainPaintPosition = (modelMatrix * vec4(position, 1.)).xz;
+        vec2 terrainSnowUvVertex = (vTerrainPaintPosition - uTerrainPaintBounds.xy) / uTerrainPaintBounds.zw;
+        float terrainSnowVertex = texture2D(uTerrainSnowMask, terrainSnowUvVertex).r;
+        float terrainSnowDriftVertex = sin(vTerrainPaintPosition.x*.21 + sin(vTerrainPaintPosition.y*.13)*1.7)
+          * cos(vTerrainPaintPosition.y*.18-vTerrainPaintPosition.x*.07);
+        transformed.y += terrainSnowVertex * (.035 + terrainSnowDriftVertex*.018);
+      `);
     shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainSnowMask; uniform sampler2D uTerrainPaving; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
       float terrainSnowRelief(vec2 p) {
         float broad = sin(p.x*.42 + sin(p.y*.19)*1.7) * cos(p.y*.34-p.x*.11);
@@ -118,7 +126,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     dispose() { release(); empty.dispose(); },
     get stats() { return { resident: Boolean(texture), bytes: textureSize?.bytes ?? 0,
       width: textureSize?.width ?? 0, height: textureSize?.height ?? 0, bakeCount,
-      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture),
+      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .053,
       totalBakeMs, maximumBakeMs, metersPerTexel: textureSize?.metersPerTexel ?? 0 }; },
   };
 }
