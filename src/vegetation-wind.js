@@ -50,8 +50,12 @@ uniform vec2 uVegetationZoneWind[${maxZones}];
 uniform int uVegetationInteractorCount;
 uniform vec3 uVegetationInteractors[${maxInteractors}];
 uniform vec3 uVegetationInteractorMotion[${maxInteractors}];
+float vegetationVariation(vec2 p, float salt) {
+  return fract(sin(dot(p + salt, vec2(12.9898,78.233))) * 43758.5453);
+}
 vec2 vegetationInteractionAt(vec2 p) {
   vec2 push = vec2(0.);
+  float recoverySeed = vegetationVariation(p, 13.7);
   for (int i = 0; i < ${maxInteractors}; i++) {
     if (i >= uVegetationInteractorCount) break;
     vec3 actor = uVegetationInteractors[i];
@@ -59,13 +63,24 @@ vec2 vegetationInteractionAt(vec2 p) {
     vec2 delta = p - actor.xy;
     float d = length(delta);
     float radius = max(.25, actor.z);
-    float influence = 1. - smoothstep(radius * .18, radius, d);
     float motionLength = length(motion.xy);
-    if (influence <= 0. || motionLength < .001 || motion.z <= .001) continue;
-    vec2 radial = d > .001 ? delta / d : motion.xy / motionLength;
+    if (motionLength < .001 || motion.z <= .001) continue;
     vec2 forward = motion.xy / motionLength;
+    vec2 side = vec2(-forward.y, forward.x);
+    float along = dot(delta, forward);
+    float sideways = abs(dot(delta, side));
+    float bodyInfluence = 1. - smoothstep(radius * .18, radius, d);
+    float wakeLength = radius * mix(.80, 1.70, recoverySeed);
+    float wakeWidth = radius * mix(.55, .88, vegetationVariation(p, 31.2));
+    float behind = max(0., -along);
+    float wakeInfluence = (1. - smoothstep(wakeWidth * .42, wakeWidth, sideways))
+      * (1. - smoothstep(0., wakeLength, behind))
+      * (1. - smoothstep(-.05, .18, along));
+    float influence = max(bodyInfluence, wakeInfluence * mix(.50, .74, recoverySeed));
+    if (influence <= 0.) continue;
+    vec2 radial = d > .001 ? delta / d : forward;
     vec2 direction = normalize(forward * .82 + radial * .18);
-    push += direction * influence * motion.z * .62;
+    push += direction * influence * motion.z * mix(.54, .68, vegetationVariation(p, 59.4));
   }
   return push;
 }
@@ -82,14 +97,18 @@ vec2 vegetationWindAt(vec2 p) {
   float strength = length(wind);
   if (strength < .00001 || uVegetationEnabled < .5) return vec2(0.);
   vec2 direction = wind / strength;
-  float t = uVegetationTime * uVegetationSpeed;
+  float seedA = vegetationVariation(p, 5.1), seedB = vegetationVariation(p, 21.8), seedC = vegetationVariation(p, 44.7);
+  float localSpeed = mix(.74, 1.28, seedA);
+  float localAmplitude = mix(.76, 1.22, seedB);
+  float t = uVegetationTime * uVegetationSpeed * localSpeed;
   float along = dot(p, direction);
-  float wave = .68 + .22 * sin(along * .23 + t * .8)
-    + .10 * sin(t * .53 + p.x * .37 - p.y * .29);
-  float gustPhase = .5 + .5 * sin(t * uVegetationGust.y * 6.28318530718 - along * .045);
+  float phase = seedC * 6.28318530718;
+  float wave = .68 + .22 * sin(along * .23 + t * .8 + phase)
+    + .10 * sin(t * .53 + p.x * .37 - p.y * .29 + phase * .61);
+  float gustPhase = .5 + .5 * sin(t * uVegetationGust.y * 6.28318530718 - along * .045 + phase * .37);
   float gust = pow(gustPhase, 4.) * uVegetationGust.x * .8;
-  float crossWave = .17 * uVegetationTurbulence * sin(t * 1.13 + p.x * .49 + p.y * .41);
-  return (wind * (wave + gust) + vec2(-direction.y, direction.x) * strength * crossWave) * .18;
+  float crossWave = .17 * uVegetationTurbulence * sin(t * 1.13 + p.x * .49 + p.y * .41 + phase);
+  return (wind * (wave + gust) + vec2(-direction.y, direction.x) * strength * crossWave) * .18 * localAmplitude;
 }
 `;
   function apply(material, { response = 1, height = 1, replaceLegacySway = true, interactionResponse = 0 } = {}) {
@@ -115,14 +134,18 @@ vec2 vegetationWindAt(vec2 p) {
           * vegetationHeight * vegetationHeight * ${responseLiteral} * length(vegetationBasis[1].xyz);
         vec2 vegetationInteraction = vegetationInteractionAt(vegetationRoot.xz)
           * pow(vegetationHeight, 1.25) * ${interactionLiteral};
-        vec3 vegetationWorldOffset = vec3(vegetationOffset.x + vegetationInteraction.x, 0., vegetationOffset.y + vegetationInteraction.y);
+        float curveSeed = vegetationVariation(vegetationRoot.xz, 73.6);
+        float curveAngle = vegetationVariation(vegetationRoot.xz, 87.2) * 6.28318530718;
+        vec2 vegetationCurve = vec2(cos(curveAngle), sin(curveAngle))
+          * mix(.015, .085, curveSeed) * pow(vegetationHeight, 1.8) * ${interactionLiteral};
+        vec3 vegetationWorldOffset = vec3(vegetationOffset.x + vegetationInteraction.x + vegetationCurve.x, 0., vegetationOffset.y + vegetationInteraction.y + vegetationCurve.y);
         // Convert the world direction into the instance's rotated/scaled basis.
         // Translation is excluded; y=0 roots are exactly unchanged.
         transformed.x += dot(vegetationWorldOffset, vegetationBasis[0].xyz) / max(.0001, dot(vegetationBasis[0].xyz, vegetationBasis[0].xyz));
         transformed.z += dot(vegetationWorldOffset, vegetationBasis[2].xyz) / max(.0001, dot(vegetationBasis[2].xyz, vegetationBasis[2].xyz));
       `);
     };
-    material.customProgramCacheKey = () => `${previousKey()}|nebeljagd-wind-v3-forward-interaction:${responseLiteral}:${heightLiteral}:${interactionLiteral}:${replaceLegacySway}`;
+    material.customProgramCacheKey = () => `${previousKey()}|nebeljagd-wind-v4-natural-motion:${responseLiteral}:${heightLiteral}:${interactionLiteral}:${replaceLegacySway}`;
     material.userData.nebeljagdWind = uniforms;
     material.userData.nebeljagdWindParameters = { response, height, interactionResponse };
     material.needsUpdate = true;
@@ -169,6 +192,8 @@ vec2 vegetationWindAt(vec2 p) {
       zones: zones.length, maximumZones: maxZones, settings: { ...settings }, time: uniforms.uVegetationTime.value,
       interactors: uniforms.uVegetationInteractorCount.value, maximumInteractors: maxInteractors,
       interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
-      firstInteractorStrength: uniforms.uVegetationInteractorMotion.value[0].z }; },
+      firstInteractorStrength: uniforms.uVegetationInteractorMotion.value[0].z,
+      curvatureVariation: 'per-instance-grass', windVariation: 'per-instance-phase-speed-amplitude',
+      recoveryModel: 'variable-directional-wake' }; },
   };
 }
