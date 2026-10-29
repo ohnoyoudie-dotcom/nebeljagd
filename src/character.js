@@ -1,21 +1,22 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import rangerUrl from '../assets/characters/ranger.glb?url&inline';
+import adventurerUrl from '../assets/characters/adventurer.glb?url&inline';
 import { createLocomotionController } from './locomotion.js';
-import { ROLL_DURATION } from './rules.js';
+import { createAvatarAnimator } from './avatar-animation.js';
 
-/** Original Blender-authored skinned traveller; Vite embeds the asset. */
+/** Neutral, modular Blender-authored human; Vite embeds the complete GLB. */
 export async function createCharacter(scene) {
-  const gltf = await new GLTFLoader().loadAsync(rangerUrl);
+  const gltf = await new GLTFLoader().loadAsync(adventurerUrl);
   const group = new THREE.Group();
-  group.name = 'Waldläufer';
-  const rollPivot = new THREE.Group();
-  rollPivot.position.y = 1.025;
-  group.add(rollPivot);
+  group.name = 'Abenteurer';
+  const presentationPivot = new THREE.Group();
+  const pelvisHeight = .94;
+  presentationPivot.position.y = pelvisHeight;
+  group.add(presentationPivot);
   const model = gltf.scene;
-  model.position.y = -1.025;
-  model.name = 'Blender ranger · 18-joint skeleton';
-  rollPivot.add(model);
+  model.position.y = -pelvisHeight;
+  model.name = 'Nebeljagd · neutraler menschlicher Basisavatar';
+  presentationPivot.add(model);
   const unitScale = new THREE.Vector3(1, 1, 1);
   const materials = new Set();
   const meshes = [];
@@ -55,7 +56,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     part.material = Array.isArray(part.material) ? part.material.map(clone) : clone(part.material);
   });
   // A faint local-only read-through keeps the traveller legible under a canopy or
-  // in poison mist. These three draws reuse the original skin and bone matrices.
+  // in poison mist. These draws reuse the original skin and bone matrices.
   const silhouetteMaterial = new THREE.MeshBasicMaterial({
     color: '#b0cbbb', transparent: true, opacity: 0.045,
     depthTest: false, depthWrite: false, toneMapped: false,
@@ -79,17 +80,10 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   }
   scene.add(group);
 
-  const mixer = new THREE.AnimationMixer(model);
-  const idleClip = THREE.AnimationClip.findByName(gltf.animations, 'Idle');
-  const walkClip = THREE.AnimationClip.findByName(gltf.animations, 'Walk');
-  if (!idleClip || !walkClip) throw new Error('Ranger asset must contain Idle and Walk clips.');
-  const idle = mixer.clipAction(idleClip).play();
-  const walk = mixer.clipAction(walkClip).play();
-  walk.setEffectiveWeight(0);
+  const animator = createAvatarAnimator(model, gltf.animations);
   let dead = false, concealed = false, opacity = 1, snowSink = 0;
   const locomotion = createLocomotionController();
-  let rollRemaining = 0, attackRemaining = 0;
-  const rollDuration = ROLL_DURATION;
+  let attackRemaining = 0, rollYaw = group.rotation.y;
   const neck = model.getObjectByName('Neck');
   const chest = model.getObjectByName('Chest');
   const findBone = names => {
@@ -104,16 +98,9 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   };
   const armBones = {
     // GLTFLoader sanitises dots in node names; userData.name retains Blender's label.
-    left: ['UpperArmL', 'ForearmL', 'HandL'].map(name => model.getObjectByName(name)),
-    right: ['UpperArmR', 'ForearmR', 'HandR'].map(name => model.getObjectByName(name)),
+    left: ['UpperArmL', 'ForearmL', 'HandL'].map(name => findBone([name])),
+    right: ['UpperArmR', 'ForearmR', 'HandR'].map(name => findBone([name])),
   };
-  const rollBones = [
-    [findBone(['thighl']), [-1.3, 0, 0]], [findBone(['shinl']), [2.15, 0, 0]],
-    [findBone(['thighr']), [-1.3, 0, 0]], [findBone(['shinr']), [2.15, 0, 0]],
-    [findBone(['upperarml']), [0, 0, -1.15]], [findBone(['upperarmr']), [0, 0, 1.15]],
-    [findBone(['forearml']), [-1.35, 0, 0]], [findBone(['forearmr']), [-1.35, 0, 0]],
-    [chest, [-.38, 0, 0]], [neck, [.28, 0, 0]],
-  ].filter(([bone]) => bone).map(([bone, angles]) => ({ bone, angles, rotation: new THREE.Quaternion() }));
   // Two-bone aiming keeps the held objects in the actual hands instead of
   // floating beside the running rig. Targets use the character's local space.
   const shoulder = new THREE.Vector3(), handTarget = new THREE.Vector3();
@@ -164,7 +151,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   function setCombatState(next) {
     restoreAnimatedPose();
     group.userData.weaponPose = next ? { weapon: next.weapon, phase: next.phase } : null;
-    if (!next || dead || rollRemaining > 0) return;
+    if (!next || dead || animator.rolling) return;
     for (const [bone, rotation] of animatedPose) rotation.copy(bone.quaternion);
     if (chest) chest.rotation.y += next.chestTwist || 0;
     poseArm('left', next.leftHand);
@@ -173,8 +160,14 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   }
   group.userData.hiddenFromOtherPlayers = false;
   group.userData.concealmentOpacity = 1;
+  const bones = new Set();
+  model.traverse(node => { if (node.isBone) bones.add(node); });
   group.userData.characterAsset = {
-    format: 'GLB', skinned: true, joints: 18, clips: gltf.animations.map(clip => clip.name),
+    name: 'Neutraler Abenteurer', source: 'assets/characters/adventurer.glb',
+    format: 'GLB', skinned: true, joints: bones.size, clips: gltf.animations.map(clip => clip.name),
+    meshes: meshes.length, triangles: meshes.reduce((count, mesh) => count +
+      (mesh.geometry.index?.count ?? mesh.geometry.attributes.position.count) / 3, 0),
+    ...animator.snapshot(),
   };
 
   function update(dt, time, { moving = false, speed = 5.6, direction = 0, inDanger = false, snowWeight = 0, snowSurfaceY = null } = {}) {
@@ -190,51 +183,35 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     snowClipHeight.value = snowClip > .01 && Number.isFinite(snowSurfaceY)
       ? snowSurfaceY - THREE.MathUtils.lerp(.025, .005, snowClip)
       : -10000;
-    const movement = locomotion.update(delta, { moving, speed, direction,
-      currentYaw: group.rotation.y, rolling: rollRemaining > 0, dead });
-    idle.setEffectiveWeight(rollRemaining > 0 ? 1 : 1 - movement.walkWeight);
-    walk.setEffectiveWeight(rollRemaining > 0 ? 0 : movement.walkWeight);
-    // Walk is a 2/3 s gait authored at the game's 5.6 units/s reference speed.
-    walk.setEffectiveTimeScale(movement.playbackSpeed);
-    mixer.update(dead ? 0 : delta);
+    const movement = locomotion.update(delta, { moving, speed, direction: animator.rolling ? rollYaw : direction,
+      currentYaw: group.rotation.y, rolling: animator.rolling, dead });
+    const animation = animator.update(delta, { ...movement, frozen: dead });
     group.rotation.y = movement.yaw;
-    if (rollRemaining > 0 && !dead) {
-      rollRemaining = Math.max(0, rollRemaining - delta);
-      const progress = 1 - rollRemaining / rollDuration;
-      // Fold into a compact shape, somersault toward the facing direction, then stand.
-      const tuckIn = THREE.MathUtils.smoothstep(progress, 0, .2);
-      const standUp = 1 - THREE.MathUtils.smoothstep(progress, .78, 1);
-      const bundle = tuckIn * standUp;
-      const rotationProgress = THREE.MathUtils.clamp((progress - .12) / .72, 0, 1);
-      // The ranger faces local +Z, so negative local X is a forward somersault.
-      rollPivot.rotation.x = -rotationProgress * Math.PI * 2;
-      rollPivot.rotation.z = 0;
-      rollPivot.position.y = 1.025 - snowSink * .65 - Math.sin(rotationProgress * Math.PI) * .28;
-      model.scale.set(THREE.MathUtils.lerp(1, .82, bundle),
-        THREE.MathUtils.lerp(1, .66, bundle), THREE.MathUtils.lerp(1, .82, bundle));
-      const poseEuler = new THREE.Euler();
-      for (const entry of rollBones) {
-        poseEuler.set(entry.angles[0] * bundle, entry.angles[1] * bundle, entry.angles[2] * bundle);
-        entry.rotation.setFromEuler(poseEuler);
-        entry.bone.quaternion.multiply(entry.rotation);
-      }
+    if (animator.rolling && !dead) {
+      // All anticipation, compression and rotation belong to Roll_Nebeljagd.
+      // The parent only keeps the existing snow contact offset.
+      presentationPivot.rotation.set(0, 0, 0);
+      presentationPivot.position.y = pelvisHeight - snowSink * .65;
     } else {
-      rollPivot.rotation.x = dead ? THREE.MathUtils.lerp(rollPivot.rotation.x, -Math.PI * 0.43, smoothing) : movement.forwardLean;
-      rollPivot.rotation.z = movement.sideLean;
-      rollPivot.position.y = dead ? THREE.MathUtils.lerp(rollPivot.position.y, 0.35 - snowSink * .35, smoothing) : 1.025 - snowSink;
-      model.scale.lerp(unitScale, smoothing);
+      presentationPivot.rotation.x = dead ? THREE.MathUtils.lerp(presentationPivot.rotation.x, -Math.PI * 0.43, smoothing) : movement.forwardLean;
+      presentationPivot.rotation.z = movement.sideLean;
+      presentationPivot.position.y = dead ? THREE.MathUtils.lerp(presentationPivot.position.y, 0.35 - snowSink * .35, smoothing) : pelvisHeight - snowSink;
     }
     group.userData.locomotion = { ...movement };
-    group.userData.rolling = rollRemaining > 0;
+    group.userData.rolling = animator.rolling;
+    Object.assign(group.userData.characterAsset, animation, {
+      presentationRotation: presentationPivot.rotation.toArray().slice(0, 3),
+      modelScale: model.scale.toArray(),
+    });
     group.userData.snowWeight = THREE.MathUtils.clamp(snowWeight, 0, 1);
     group.userData.snowSinkMeters = snowSink;
     group.userData.snowClipStrength = snowClip;
     group.userData.snowClipHeight = snowClipHeight.value;
-    if (attackRemaining > 0) {
+    if (attackRemaining > 0 && !animator.rolling) {
       attackRemaining = Math.max(0, attackRemaining - delta);
       if (chest) chest.rotation.z += Math.sin((1 - attackRemaining / .34) * Math.PI) * .08;
     }
-    if (neck && !moving && !dead) neck.rotation.z += Math.sin(time * .75) * .008;
+    if (neck && !moving && !dead && !animator.rolling) neck.rotation.z += Math.sin(time * .75) * .008;
 
     // Gameplay visibility remains independent from the local transparent silhouette.
     // Opaque grass naturally occludes portions of the body through depth testing.
@@ -261,11 +238,13 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   return {
     group, update,
     resetMotion(direction = group.rotation.y) {
-      locomotion.reset(); rollRemaining = 0; attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
+      restoreAnimatedPose(); animator.reset();
+      locomotion.reset(); attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
       if (Number.isFinite(direction)) group.rotation.y = direction;
-      rollPivot.rotation.set(0, 0, 0); rollPivot.position.y = 1.025;
+      presentationPivot.rotation.set(0, 0, 0); presentationPivot.position.y = pelvisHeight;
       model.scale.copy(unitScale);
       group.userData.rolling = false;
+      Object.assign(group.userData.characterAsset, animator.snapshot());
       group.userData.snowWeight = 0; group.userData.snowSinkMeters = 0; group.userData.snowClipStrength = 0;
       group.userData.locomotion = locomotion.update(0, { direction: group.rotation.y, currentYaw: group.rotation.y });
     },
@@ -278,13 +257,21 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
       return group.worldToLocal(target);
     },
     get opacity() { return opacity; },
-    roll() { if (!dead) { rollRemaining = rollDuration; group.userData.rolling = true; } },
+    roll(direction = group.rotation.y) {
+      if (dead || !animator.startRoll()) return;
+      restoreAnimatedPose(); attackRemaining = 0;
+      rollYaw = Number.isFinite(direction) ? direction : group.rotation.y;
+      group.rotation.y = rollYaw;
+      presentationPivot.rotation.set(0, 0, 0);
+      group.userData.rolling = true;
+      Object.assign(group.userData.characterAsset, animator.snapshot());
+    },
     attack() { if (!dead) attackRemaining = 0.34; },
     setDead(value) {
       const next = Boolean(value);
       if (dead === next) return;
-      dead = next; rollRemaining = 0;
-      if (!dead) { rollPivot.rotation.x = 0; rollPivot.position.y = 1.025; model.scale.copy(unitScale); locomotion.reset(); }
+      dead = next; restoreAnimatedPose(); animator.stopRoll(); group.userData.rolling = false;
+      if (!dead) { presentationPivot.rotation.x = 0; presentationPivot.position.y = pelvisHeight; model.scale.copy(unitScale); locomotion.reset(); }
     },
     setConcealed(value) {
       concealed = Boolean(value);

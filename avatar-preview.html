@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#182627" />
+    <title>Nebeljagd · Avatar ansehen</title>
+  </head>
+  <body>
+    <main class="review-shell">
+      <header class="review-heading">
+        <div><p class="eyebrow">NEBELJAGD · CHARAKTERSTUDIO</p><h1>Der Abenteurer</h1><p class="intro">Neutraler menschlicher Basisavatar</p></div>
+        <p id="model-status" role="status">Avatar wird geladen …</p>
+      </header>
+      <section class="viewport" aria-label="Interaktive 3D-Vorschau">
+        <canvas id="avatar-canvas" aria-label="3D-Avatar. Mit einem Finger oder der linken Maustaste drehen; mit zwei Fingern oder dem Mausrad zoomen."></canvas>
+        <div class="view-controls" role="group" aria-label="Kameraansicht">
+          <button data-view="game" aria-pressed="true">Spielperspektive</button>
+          <button data-view="front" aria-pressed="false">Vorne</button>
+          <button data-view="back" aria-pressed="false">Hinten</button>
+          <button data-view="side" aria-pressed="false">Seite</button>
+          <button data-view="face" aria-pressed="false">Gesicht</button>
+        </div>
+        <p class="view-hint" id="view-hint">Winkel der Spielkamera, vergrößert · Ziehen zum Drehen · Scrollen / zwei Finger zum Zoomen</p>
+        <p class="error-panel" id="preview-error" role="alert" hidden></p>
+      </section>
+      <section class="animation-panel" aria-label="Animation abspielen">
+        <div class="animation-row">
+          <div class="clip-controls" role="group" aria-label="Animation">
+            <button data-clip="Idle_Nebeljagd" aria-pressed="true" disabled>Stehen</button>
+            <button data-clip="Run_Nebeljagd" aria-pressed="false" disabled>Laufen</button>
+            <button data-clip="Roll_Nebeljagd" aria-pressed="false" disabled>Vorwärtsrolle</button>
+          </div>
+          <div class="playback-controls">
+            <button id="play-pause" aria-pressed="true" disabled>Pause</button>
+            <button id="replay" disabled>Von vorn</button>
+            <label>Tempo <select id="playback-speed" aria-label="Abspieltempo"><option value="0.25">¼ ×</option><option value="0.5">½ ×</option><option value="1" selected>1 ×</option></select></label>
+          </div>
+        </div>
+        <div class="timeline-row"><label for="animation-time">Zeit</label><input id="animation-time" type="range" min="0" max="1" value="0" step="0.001" disabled /><output id="time-label" for="animation-time">0,00 / 0,00 s</output></div>
+        <p class="review-note">Die Rolle lässt sich pausieren und mit dem Zeitregler Bild für Bild prüfen. Waffen und Ausrüstung kommen im Spiel hinzu.</p>
+      </section>
+    </main>
+    <script type="module" src="./src/avatar-preview.js"></script>
+  </body>
+</html>

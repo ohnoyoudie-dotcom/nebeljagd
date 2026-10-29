@@ -221,7 +221,7 @@ function roll() {
   rollDirection.set(Math.sin(state.direction), 0, Math.cos(state.direction));
   state.rollRemaining = ROLL_DURATION;
   state.rollCooldown = ROLL_COOLDOWN;
-  character.roll();
+  character.roll(state.direction);
 }
 
 function nearbyInteraction() {

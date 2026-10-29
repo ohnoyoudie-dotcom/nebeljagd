@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 // Separate entry builds intentionally duplicate the shared map modules. Each
 // resulting HTML can then work offline without fetching a shared JavaScript chunk.
-for (const entry of ['index.html', 'map-editor.html']) {
+for (const entry of ['index.html', 'map-editor.html', 'avatar-preview.html']) {
   await build({
     build: {
       emptyOutDir: entry === 'index.html',

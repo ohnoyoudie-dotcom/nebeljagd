@@ -8,14 +8,16 @@ Vorlagen werden mit der Karte gespeichert. Anleitung und Prüfgrenzen:
 Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
-[`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel. Die zentrale Projektkarte
+[`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
+[`welt/avatar-preview.html`](welt/avatar-preview.html) zeigt den neutralen
+Abenteurer mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
 bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
-Blender-Waldläufer, Bogen, Schwert, Sammelgegenstände, Versteckgras und begehbare
-Häuser aus dem bisherigen Spiel bleiben Teil der Welt.
+neutrale Blender-Abenteurer, Bogen, Schwert, Sammelgegenstände, Versteckgras und
+begehbare Häuser sind Teil der Welt.
 
 Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Bäume, Häuser,
 Blumenbeete, Grasflächen, Felsen, Sträucher, Ruinen, Schreine und Gegenstände
@@ -160,9 +162,12 @@ Detailstufen und `?quality=low` begrenzen die sichtbare Last. **30 FPS auf
 Schul-iPads sind ein Ziel, kein gemessener Gerätebefund.** Die tatsächlichen
 iPads und Safari müssen gesondert geprüft werden.
 
-Der eigene Waldläufer liegt als `assets/characters/ranger.blend` und `ranger.glb`
-vor: 18 Gelenke, Skinning, Idle-/Walk-Clips und etwa 10.100 Dreiecke. Blender
-wird zum Spielen und Bauen nicht benötigt. Gebäude und Grundvegetation sind
+Der neutrale menschliche Abenteurer liegt als `assets/characters/adventurer.blend`
+und `adventurer.glb` vor, mit modularer Kleidung, humanoidem Skinning und eigenen
+Idle-, Run- und Vorwärtsroll-Clips. `avatar-preview.html` zeigt das Modell aus
+der Nähe und im Spielkamerawinkel, einschließlich Zeitlupe. Modellierung,
+Neubau und Prüfbefunde: [`assets/characters/`](assets/characters/README.md).
+Blender wird zum Spielen und für den Web-Build nicht benötigt. Gebäude und Grundvegetation sind
 prozedurale Projektquellen. Die hochgeladenen Rei-Bäume, Büsche und Blumen sind
 weiter eingebunden, unter anderem nahe Auenwacht. Unveränderte Quelldateien,
 Herkunft und Materialanpassungen: [`assets/imported/rei/`](assets/imported/rei/README.md).

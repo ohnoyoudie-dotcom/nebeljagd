@@ -1,0 +1,63 @@
+{
+  "sourceBasemesh": {
+    "object": "Authoring_Connected_Body_Base",
+    "connectedComponents": 1,
+    "vertices": 8446,
+    "skinned": true,
+    "exported": false
+  },
+  "name": "Nebeljagd neutral human Adventurer",
+  "authoring": "Original procedural sculpted/lofted topology, no external meshes/textures or mocap",
+  "triangles": 24964,
+  "visibleMeshes": [
+    "Skin_Head_Neck",
+    "Skin_Hands",
+    "Hair_Clumps",
+    "Tailored_Jacket",
+    "Linen_Shirt",
+    "Fitted_Trousers",
+    "Leather_Boots",
+    "Belt_and_Pouch"
+  ],
+  "bones": [
+    "Root",
+    "Pelvis",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "Clavicle.L",
+    "UpperArm.L",
+    "Forearm.L",
+    "Hand.L",
+    "Clavicle.R",
+    "UpperArm.R",
+    "Forearm.R",
+    "Hand.R",
+    "Thigh.L",
+    "Shin.L",
+    "Foot.L",
+    "Toe.L",
+    "Thigh.R",
+    "Shin.R",
+    "Foot.R",
+    "Toe.R"
+  ],
+  "clips": {
+    "Idle_Nebeljagd": 2.0,
+    "Run_Nebeljagd": 0.6,
+    "Roll_Nebeljagd": 0.8
+  },
+  "heightMetres": 1.8456,
+  "materials": [
+    "Warm skin",
+    "Sculpted walnut hair",
+    "Woven indigo and linen",
+    "Worn chestnut leather",
+    "Brushed aged iron"
+  ],
+  "forward": "Blender -Y; glTF +Z",
+  "up": "Blender Z; glTF Y",
+  "roll": "In-place forward X full revolution with physical tuck; vertical root compensation keeps deformed mesh touching ground; gameplay moves horizontal root",
+  "sha256": "01a669b2b7b4236031e89b006bf643e25e99829059da6cd1dec141c7de2410e6"
+}

@@ -4,6 +4,8 @@ on:
     branches: ['work']
     paths:
       - 'src/**'
+      - 'assets/characters/**'
+      - 'avatar-preview.html'
       - 'tests/**'
       - 'scripts/**'
       - 'worldmap.json'
@@ -33,6 +35,7 @@ jobs:
         run: |
           npm ci
           npm test
+          npm run verify:assets
       - name: Build standalone editor and game
         run: npm run build
       - name: Install browser smoke dependencies
@@ -48,11 +51,13 @@ jobs:
             sleep 1
           done
           python tests/work_meadow_vision_smoke.py
+          python tests/avatar_smoke.py
       - name: Publish verified build to welt
         run: |
           cp dist/map-editor.html welt/map-editor.html
           cp dist/nebeljagd.html welt/nebeljagd.html
           cp dist/nebeljagd.html welt/index.html
+          cp dist/avatar-preview.html welt/avatar-preview.html
           cp dist/worldmap.json welt/worldmap.json
           cp dist/worldmap.svg welt/worldmap.svg
           cp dist/worldmap.schema.json welt/worldmap.schema.json
@@ -61,7 +66,7 @@ jobs:
           from pathlib import Path
           import hashlib,json
           root=Path('welt')
-          names=['map-editor.html','nebeljagd.html','index.html','worldmap.json','worldmap.svg','worldmap.schema.json','nebeljagd-welt-und-editor.zip']
+          names=['map-editor.html','nebeljagd.html','index.html','avatar-preview.html','worldmap.json','worldmap.svg','worldmap.schema.json','nebeljagd-welt-und-editor.zip']
           data={'branch':'work','sourceCommit':'${{ github.sha }}','files':{}}
           for name in names:
               raw=(root/name).read_bytes()
@@ -81,5 +86,7 @@ jobs:
           name: work-meadow-vision-check
           path: |
             work-smoke
+            docs/avatar-check-*
+            assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

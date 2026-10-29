@@ -88,8 +88,8 @@ try:
         start(page)
         asset = state(page)['character']
         assert asset['skinned'] is True and asset['joints'] >= 16, asset
-        assert {'Idle', 'Walk'}.issubset(asset['clips']), asset
-        passed('WebGL2 production build loads original skinned GLB with Idle and Walk', asset)
+        assert {'Idle_Nebeljagd', 'Run_Nebeljagd', 'Roll_Nebeljagd'}.issubset(asset['clips']), asset
+        passed('WebGL2 production build loads the neutral skinned avatar with idle, run and forward roll', asset)
         inspect(page, -8, 8)
         wait_simulation(page, .25)
         capture(page, 'village-desktop.png')

@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 /** A small deterministic ZIP, using only Node's built-in modules. */
 export async function packageWorldBundle(directory = resolve('dist')) {
-  const names = ['nebeljagd.html', 'map-editor.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
+  const names = ['nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
   const entries = await Promise.all(names.map(async name => ({ name, bytes: await readFile(resolve(directory, name)) })));
   entries.push({ name: 'Anleitung.txt', bytes: Buffer.from(`NEBELJAGD – SPIELWELT UND EDITOR
 
@@ -13,6 +13,8 @@ export async function packageWorldBundle(directory = resolve('dist')) {
 3. map-editor.html im Browser öffnen: Weltobjekte anlegen und verändern.
 4. Im Editor „In 3D testen“ öffnet deinen aktuellen Entwurf im Spiel.
    Beide HTML-Dateien müssen dafür im selben Ordner liegen.
+5. avatar-preview.html zeigt den neuen Abenteurer aus der Nähe, aus der
+   Spielkamera und mit seinen drei Animationen, auch in Zeitlupe.
 
 Bäume, Häuser, Blumen, Gras und andere Weltobjekte lassen sich auswählen,
 verschieben, drehen, vergrößern, duplizieren und löschen. Mit „Auf Karte

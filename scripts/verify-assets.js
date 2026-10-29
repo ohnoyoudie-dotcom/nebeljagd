@@ -7,7 +7,7 @@ for (const [path, expected] of Object.entries(preserved)) {
   const bytes = await readFile(path);
   assert.equal(createHash('sha256').update(bytes).digest('hex'), expected, `Preserved version changed: ${path}`);
 }
-const bytes = await readFile('assets/characters/ranger.glb');
+const bytes = await readFile('assets/characters/adventurer.glb');
 assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
 assert.equal(bytes.readUInt32LE(4), 2);
 assert.equal(bytes.readUInt32LE(8), bytes.length);
@@ -15,14 +15,14 @@ assert.equal(bytes.readUInt32LE(16), 0x4e4f534a);
 const gltf = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
 assert.ok(gltf.skins?.length > 0, 'Character requires real skinning');
 assert.ok(gltf.skins[0].joints.length >= 16);
-for (const name of ['Idle', 'Walk']) assert.ok(gltf.animations.some(animation => animation.name === name), `Missing ${name}`);
+for (const name of ['Idle_Nebeljagd', 'Run_Nebeljagd', 'Roll_Nebeljagd']) assert.ok(gltf.animations.some(animation => animation.name === name), `Missing ${name}`);
 assert.ok(gltf.buffers.every(buffer => !buffer.uri), 'GLB must contain its own buffers');
 let triangles = 0;
 for (const mesh of gltf.meshes) for (const primitive of mesh.primitives) {
   assert.ok(primitive.attributes.JOINTS_0 !== undefined && primitive.attributes.WEIGHTS_0 !== undefined);
   triangles += gltf.accessors[primitive.indices].count / 3;
 }
-assert.ok(triangles <= 15000, `Character triangle budget exceeded: ${triangles}`);
+assert.ok(triangles >= 12000 && triangles <= 25000, `Character must stay within its 12k–25k triangle budget: ${triangles}`);
 console.log(JSON.stringify({ status: 'passed', preservedVersions: Object.keys(preserved).length,
   character: { bytes: bytes.length, triangles, joints: gltf.skins[0].joints.length,
     clips: gltf.animations.map(animation => animation.name), sha256: createHash('sha256').update(bytes).digest('hex') } }, null, 2));

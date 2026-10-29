@@ -1,3 +1,4 @@
+import portraitUrl from '../assets/characters/adventurer-portrait.png?url&inline';
 import { WEAPON_TYPES, weaponStats } from './loot-tiers.js';
 
 function describeWeapon(item) {
@@ -30,7 +31,7 @@ const icon = (name, className = '') => {
   return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[name] || shapes.leaf}</svg>`;
 };
 
-const portrait = `<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="hoodGradient" x2="0" y2="1"><stop stop-color="#5d9980"/><stop offset="1" stop-color="#183f36"/></linearGradient></defs><path fill="#172d28" d="M0 0h64v64H0z"/><circle cx="32" cy="30" r="24" fill="#355d4c"/><path fill="url(#hoodGradient)" d="M10 57c1-10 4-12 9-16-7-13-3-29 13-34 17 5 21 21 13 34 5 4 8 8 9 16Z"/><path fill="#192f2b" d="M20 28c2-11 8-15 12-17 7 5 11 11 12 18l-4 16H24Z"/><path fill="#e8b78b" d="m22 28 3 17 7 5 7-5 3-17-10-5Z"/><path fill="#d4a15e" d="m21 28 4-9 8-4 9 12-8-5-4 7-2-4Z"/><path stroke="#443a2b" stroke-width="2" d="M26 33h3m6 0h3"/><path fill="#58836c" d="m19 42 13 10 13-10 9 18H10Z"/><path fill="#be9b57" d="m28 51 4-2 4 2-4 7Z"/></svg>`;
+const portrait = `<img src="${portraitUrl}" width="64" height="64" alt="" aria-hidden="true">`;
 
 const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
 const timeLabel = seconds => `${pad(seconds / 60)}:${pad(seconds % 60)}`;
@@ -63,7 +64,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
 
     <section class="player-panel playing-only" aria-label="Spielfigur und Gesundheit">
       <div class="portrait">${portrait}<span class="portrait-level">I</span></div>
-      <div class="player-info"><div class="player-name-row"><strong>Waldläufer</strong><span id="healthValue">75 <small>/ 100</small></span></div>
+      <div class="player-info"><div class="player-name-row"><strong>Abenteurer</strong><span id="healthValue">75 <small>/ 100</small></span></div>
         <div id="healthBar" class="health-track" role="progressbar" aria-label="Lebenspunkte" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75"><div id="healthFill"></div><span class="health-segments"></span></div>
         <div class="player-status" id="playerStatusWrap"><span class="status-dot"></span><span id="playerStatus">Bereit für das Unbekannte</span></div>
       </div>
