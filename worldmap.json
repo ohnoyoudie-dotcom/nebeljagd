@@ -1546,30 +1546,6 @@
       "scale": 1
     },
     {
-      "id": "obj-house-auenwacht-06",
-      "name": "Auenwacht · Haus 6",
-      "kind": "house",
-      "variant": "herbal",
-      "position": [
-        48,
-        -15
-      ],
-      "rotation": 3.14,
-      "scale": 1
-    },
-    {
-      "id": "obj-house-auenwacht-07",
-      "name": "Auenwacht · Haus 7",
-      "kind": "house",
-      "variant": "inn",
-      "position": [
-        -19,
-        -18
-      ],
-      "rotation": 3.14,
-      "scale": 1
-    },
-    {
       "id": "obj-house-wildheide-01",
       "name": "Wildheide · Haus 1",
       "kind": "house",
@@ -1810,18 +1786,6 @@
       "scale": 1
     },
     {
-      "id": "obj-tree-0002",
-      "name": "Rei-Baum · Auenwacht 02",
-      "kind": "tree",
-      "variant": "rei-tree02",
-      "position": [
-        12,
-        -45
-      ],
-      "rotation": 5.63,
-      "scale": 1
-    },
-    {
       "id": "obj-flower-0001",
       "name": "Auenwacht · rei-white",
       "kind": "flower",
@@ -1870,18 +1834,6 @@
         -44
       ],
       "rotation": 4.24,
-      "scale": 0.9
-    },
-    {
-      "id": "obj-bush-0002",
-      "name": "Auenwacht · Rei-Strauch",
-      "kind": "bush",
-      "variant": "rei-bush",
-      "position": [
-        13,
-        -40
-      ],
-      "rotation": 5.24,
       "scale": 0.9
     },
     {
@@ -7609,18 +7561,6 @@
       ],
       "rotation": 2.02,
       "scale": 1.06
-    },
-    {
-      "id": "obj-tree-0476",
-      "name": "Baum 476",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        -0.37,
-        -40.75
-      ],
-      "rotation": 6.27,
-      "scale": 1.23
     },
     {
       "id": "obj-tree-0477",
@@ -13515,18 +13455,6 @@
       "scale": 1.29
     },
     {
-      "id": "obj-tree-0968",
-      "name": "Baum 968",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        4.94,
-        -34.14
-      ],
-      "rotation": 3.06,
-      "scale": 1.05
-    },
-    {
       "id": "obj-tree-0969",
       "name": "Baum 969",
       "kind": "tree",
@@ -15459,18 +15387,6 @@
       "scale": 0.93
     },
     {
-      "id": "obj-tree-1130",
-      "name": "Baum 1130",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        -2.31,
-        2.81
-      ],
-      "rotation": 6.03,
-      "scale": 1.24
-    },
-    {
       "id": "obj-tree-1131",
       "name": "Baum 1131",
       "kind": "tree",
@@ -16501,18 +16417,6 @@
       ],
       "rotation": 5.89,
       "scale": 0.81
-    },
-    {
-      "id": "obj-tree-1217",
-      "name": "Baum 1217",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        10.8,
-        -37.36
-      ],
-      "rotation": 1.3,
-      "scale": 0.77
     },
     {
       "id": "obj-tree-1218",
@@ -27411,18 +27315,6 @@
       "scale": 1
     },
     {
-      "id": "obj-tree-2126",
-      "name": "Baum 2126",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        9.31,
-        -5.2
-      ],
-      "rotation": 1.38,
-      "scale": 0.88
-    },
-    {
       "id": "obj-tree-2127",
       "name": "Baum 2127",
       "kind": "tree",
@@ -31309,18 +31201,6 @@
       ],
       "rotation": 4.03,
       "scale": 0.98
-    },
-    {
-      "id": "obj-tree-2451",
-      "name": "Baum 2451",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        18,
-        -42
-      ],
-      "rotation": 0.3,
-      "scale": 0.96
     },
     {
       "id": "obj-tree-2452",
@@ -35437,18 +35317,6 @@
       ],
       "rotation": 0.86,
       "scale": 0.85
-    },
-    {
-      "id": "obj-rock-0195",
-      "name": "Felsen 195",
-      "kind": "rock",
-      "variant": "granite",
-      "position": [
-        3.61,
-        -20.35
-      ],
-      "rotation": 0.77,
-      "scale": 1.4
     },
     {
       "id": "obj-rock-0196",
@@ -42399,19 +42267,6 @@
       "radius": 4.26
     },
     {
-      "id": "obj-grass-0457",
-      "name": "Grasfläche 457",
-      "kind": "grass",
-      "variant": "short",
-      "position": [
-        4.37,
-        -18.19
-      ],
-      "rotation": 0.96,
-      "scale": 0.82,
-      "radius": 4.42
-    },
-    {
       "id": "obj-grass-0458",
       "name": "Grasfläche 458",
       "kind": "grass",
@@ -46091,19 +45946,6 @@
       "radius": 6.09
     },
     {
-      "id": "obj-grass-start",
-      "name": "Versteckgras am Start",
-      "kind": "grass",
-      "variant": "tall",
-      "position": [
-        10,
-        -30
-      ],
-      "rotation": 2.19,
-      "scale": 1,
-      "radius": 3.5
-    },
-    {
       "id": "obj-bush-0003",
       "name": "Strauch 3",
       "kind": "bush",
@@ -49238,18 +49080,6 @@
       "scale": 0.85
     },
     {
-      "id": "obj-tree-2601",
-      "name": "Baum 2601",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        12,
-        -19
-      ],
-      "rotation": 5.56,
-      "scale": 0.85
-    },
-    {
       "id": "obj-heart-0002",
       "name": "Eiswacht · Herz",
       "kind": "heart",
@@ -50433,18 +50263,6 @@
       "scale": 1
     },
     {
-      "id": "obj-mound-south-clearing",
-      "name": "Südliche Lichtung · Bewachsene Felskante",
-      "kind": "mound",
-      "variant": "ridge",
-      "position": [
-        31,
-        -6
-      ],
-      "rotation": -0.2,
-      "scale": 1
-    },
-    {
       "id": "obj-mound-west-meadow",
       "name": "Westliche Wiese · Bewachsene Felskante",
       "kind": "mound",
@@ -50581,34 +50399,64 @@
     "version": 1,
     "terrain": [
       {
-        "id": "paint-terrain-mvtptg4n-1",
+        "id": "paint-terrain-mvtulg36-1",
         "name": "Gemalter Boden",
-        "type": "snow",
-        "color": "#dce7e8",
-        "hardness": 0.35,
+        "type": "forest",
+        "color": "#3c5741",
+        "hardness": 0.75,
         "strength": 0.8,
-        "variation": 0.08,
+        "variation": 0.2,
         "position": [
-          -0.582,
-          6.353
+          3.079,
+          -22.372
         ],
-        "radius": 22,
-        "seed": 1044161047
+        "radius": 11,
+        "seed": 1134477362
       },
       {
-        "id": "paint-terrain-mvtptg8z-3",
+        "id": "paint-terrain-mvtulhxf-3",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#8b7757",
+        "hardness": 0.75,
+        "strength": 0.8,
+        "variation": 0.17,
+        "position": [
+          25.055,
+          -25.041
+        ],
+        "radius": 11,
+        "seed": 809402191
+      },
+      {
+        "id": "paint-terrain-mvtulje4-5",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#655c45",
+        "hardness": 0.75,
+        "strength": 0.8,
+        "variation": 0.15,
+        "position": [
+          -19.102,
+          -20.318
+        ],
+        "radius": 11,
+        "seed": 3971999691
+      },
+      {
+        "id": "paint-terrain-mvtulkjp-7",
         "name": "Gemalter Boden",
         "type": "snow",
         "color": "#dce7e8",
-        "hardness": 0.35,
+        "hardness": 0.75,
         "strength": 0.8,
         "variation": 0.08,
         "position": [
-          -14.189,
-          7.384
+          11.294,
+          -42.294
         ],
-        "radius": 22,
-        "seed": 2912906849
+        "radius": 11,
+        "seed": 2177148945
       }
     ],
     "wind": {
@@ -50624,30 +50472,56 @@
     "windZones": [],
     "biomes": [
       {
-        "id": "paint-biome-mvtptg4n-2",
-        "name": "Schnee",
-        "presetId": "snow",
+        "id": "paint-biome-mvtulg36-2",
+        "name": "Wald",
+        "presetId": "forest",
         "position": [
-          -0.582,
-          6.353
+          3.079,
+          -22.372
         ],
-        "radius": 22,
+        "radius": 11,
         "strength": 1,
-        "softness": 0.65,
-        "seed": 1649891466
+        "softness": 0.25,
+        "seed": 2968822249
       },
       {
-        "id": "paint-biome-mvtptg8z-4",
+        "id": "paint-biome-mvtulhxf-4",
+        "name": "Heide",
+        "presetId": "heath",
+        "position": [
+          25.055,
+          -25.041
+        ],
+        "radius": 11,
+        "strength": 1,
+        "softness": 0.25,
+        "seed": 84665442
+      },
+      {
+        "id": "paint-biome-mvtulje4-6",
+        "name": "Moor",
+        "presetId": "swamp",
+        "position": [
+          -19.102,
+          -20.318
+        ],
+        "radius": 11,
+        "strength": 1,
+        "softness": 0.25,
+        "seed": 1532730030
+      },
+      {
+        "id": "paint-biome-mvtulkjp-8",
         "name": "Schnee",
         "presetId": "snow",
         "position": [
-          -14.189,
-          7.384
+          11.294,
+          -42.294
         ],
-        "radius": 22,
+        "radius": 11,
         "strength": 1,
-        "softness": 0.65,
-        "seed": 1526412364
+        "softness": 0.25,
+        "seed": 2550874684
       }
     ],
     "presets": []
