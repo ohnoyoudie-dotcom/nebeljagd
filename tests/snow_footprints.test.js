@@ -19,8 +19,8 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   assert.equal(footprints.inspect().count, 1);
   assert.equal(footprints.inspect().singleInstancedDraw, true);
   assert.equal(footprints.inspect().alignedToVisualSnowSurface, true);
-  assert.equal(footprints.inspect().trackColor, '#bcc7ca');
-  assert.equal(footprints.inspect().recommendedVisualSinkMeters, .18);
+  assert.equal(footprints.inspect().trackColor, '#dbe5e7');
+  assert.equal(footprints.inspect().recommendedVisualSinkMeters, .22);
   assert.ok(footprints.inspect().wadingMounds >= 2, 'deep snow builds low banks around moving feet');
   assert.equal(footprints.inspect().fadeStartSeconds, 6);
   assert.equal(footprints.inspect().lifetimeSeconds, 10);
