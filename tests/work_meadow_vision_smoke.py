@@ -75,7 +75,7 @@ with sync_playwright() as p:
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
 
     editor=browser.new_page(viewport={'width':1440,'height':900})
-    editor.add_init_script("""() => {
+    editor.add_init_script("""
       window.__mapSavePickerCalls=0;
       window.__mapSaveWrites=[];
       window.showSaveFilePicker=async()=>{
@@ -90,7 +90,7 @@ with sync_playwright() as p:
           })
         };
       };
-    }""")
+    """)
     editor_errors=[]
     editor.on('pageerror',lambda e:editor_errors.append(str(e)))
     editor.on('console',lambda m:editor_errors.append(m.text) if m.type=='error' and 'favicon' not in m.text else None)
