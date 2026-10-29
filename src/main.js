@@ -387,7 +387,9 @@ window.nebeljagdTestState = () => ({
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
-    snowSinkMeters: character.group.userData.snowSinkMeters ?? 0 },
+    snowSinkMeters: character.group.userData.snowSinkMeters ?? 0,
+    snowClipStrength: character.group.userData.snowClipStrength ?? 0,
+    snowClipHeight: character.group.userData.snowClipHeight ?? null },
   concealment: world.concealmentAt(player.x, player.z), shelter: state.shelter ?? null,
   houses: world.houses.map(({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight, roof, interior, frontFacade }) => ({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight,
     roofVisible: roof.visible, interiorVisible: interior.visible, frontFacadeVisible: frontFacade.visible, frontFacadeParts: frontFacade.children.length })),
@@ -454,7 +456,8 @@ function frame(now) {
   character.setConcealed(state.hiddenInGrass);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
-    direction: state.direction, health: state.health, inDanger: state.inDanger, snowWeight: state.snowWeight });
+    direction: state.direction, health: state.health, inDanger: state.inDanger, snowWeight: state.snowWeight,
+    snowSurfaceY: world.snowSurfaceAt?.(player.x, player.z) ?? player.y });
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
   grassInteractors.length = 0;
