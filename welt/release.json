@@ -1,18 +1,18 @@
 {
   "branch": "work",
-  "sourceCommit": "ea14647587ff33b712a93d6e820233bc67cd5012",
+  "sourceCommit": "9646a4eb93e0a4b9845d94256136837b8f15effc",
   "files": {
     "map-editor.html": {
-      "bytes": 13174910,
-      "sha256": "5eb100f27acfaf935217078f948859e6b9e79a59051148af19e9bf636da241f7"
+      "bytes": 13175220,
+      "sha256": "afad963bffe5caeaa8495c7f89150bdc60817c52bd537231afa06507c7463bc9"
     },
     "nebeljagd.html": {
-      "bytes": 13976744,
-      "sha256": "b4499832ff040d88693ce756432e908fa3bcdd281cb1513e3a064ddaa0660b8b"
+      "bytes": 13977494,
+      "sha256": "591fb2ee1f8e75e91f6e23238d4a42cfba679d46cb4fb6e50c064aab0d93da28"
     },
     "index.html": {
-      "bytes": 13976744,
-      "sha256": "b4499832ff040d88693ce756432e908fa3bcdd281cb1513e3a064ddaa0660b8b"
+      "bytes": 13977494,
+      "sha256": "591fb2ee1f8e75e91f6e23238d4a42cfba679d46cb4fb6e50c064aab0d93da28"
     },
     "worldmap.json": {
       "bytes": 582641,
@@ -27,8 +27,8 @@
       "sha256": "30a4057c342ee29d07d0e2cb94bf8a268820cfedcc0d4989d406b1411638c5b3"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 5711522,
-      "sha256": "20e7ac4bd0af64d16237bb5fde8f64fc26302cc1df292d3be47283a5806fbc45"
+      "bytes": 5711737,
+      "sha256": "bce61e77fe00c208f01b71594f3960107831cbd62a8ac105365e31b3b01c9964"
     }
   }
 }
