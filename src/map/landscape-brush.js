@@ -306,7 +306,10 @@ export function eraseLandscapeAt(map, start, end = start, radius = 4, target = '
   if (!pointValid(start) || !pointValid(end)) return { terrain: [], biomes: [], windZones: [], terrainIds: [], biomeIds: [], windZoneIds: [] };
   number(radius, 4, .5, 80, 'Radiergummi-Radius');
   const landscape = getLandscape(map), result = { terrain: [], biomes: [], windZones: [] };
-  const keys = target === 'all' ? ['terrain', 'biomes', 'windZones'] : target === 'biome' || target === 'biomes' ? ['biomes'] : target === 'wind' || target === 'windZones' ? ['windZones'] : ['terrain'];
+  const keys = target === 'all' ? ['terrain', 'biomes', 'windZones']
+    : target === 'surface' ? ['terrain', 'biomes']
+    : target === 'biome' || target === 'biomes' ? ['biomes']
+    : target === 'wind' || target === 'windZones' ? ['windZones'] : ['terrain'];
   for (const key of keys) result[key] = landscape[key].filter(item => distanceToSegment(item.position, start, end) <= radius);
   return { ...result, terrainIds: result.terrain.map(item => item.id), biomeIds: result.biomes.map(item => item.id), windZoneIds: result.windZones.map(item => item.id) };
 }
