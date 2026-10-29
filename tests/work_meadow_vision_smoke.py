@@ -78,7 +78,7 @@ with sync_playwright() as p:
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     assert snow_state['biome']=='snow'
     assert snow_state['meadow']['visibleInstances']>220
-    assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.55
+    assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.42
     assert snow_state['meadow']['visibleDetailInstances']>10
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
