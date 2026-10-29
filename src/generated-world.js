@@ -69,6 +69,15 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   const groundTexture = terrainArtwork.ground;
   const groundMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, map: groundTexture,
     bumpMap: groundTexture, bumpScale: .018, roughness: .98, side: THREE.DoubleSide });
+  const snowWeightAt = (x, z) => spatial.biomeWeightsAt(x, z).find(item => item.biome === 'snow')?.weight ?? 0;
+  const boundsHaveSnow = bounds => {
+    for (let ix = 0; ix < 3; ix++) for (let iz = 0; iz < 3; iz++) {
+      const x = THREE.MathUtils.lerp(bounds.minX, bounds.maxX, ix / 2);
+      const z = THREE.MathUtils.lerp(bounds.minZ, bounds.maxZ, iz / 2);
+      if (snowWeightAt(x, z) > .015) return true;
+    }
+    return false;
+  };
   for (const chunk of chunks.values()) {
     const geometry = new THREE.BufferGeometry(), positions = [], colors = [], uvs = [];
     for (const v of chunk.vertices) { positions.push(v.x, v.y, v.z); colors.push(...v.color); uvs.push(v.x / 8, v.z / 8); }
@@ -78,7 +87,11 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     // a 64m cell. Actual bounds avoid cutting painted circles at those edges.
     const bounds = { minX: Math.min(...chunk.vertices.map(v => v.x)) - .5, maxX: Math.max(...chunk.vertices.map(v => v.x)) + .5,
       minZ: Math.min(...chunk.vertices.map(v => v.z)) - .5, maxZ: Math.max(...chunk.vertices.map(v => v.z)) + .5 };
-    const paint = spatial.terrainPaint.overlapping(bounds).length ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving) : null;
+    const painted = spatial.terrainPaint.overlapping(bounds).length > 0;
+    const snow = boundsHaveSnow(bounds);
+    const paint = painted || snow
+      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt)
+      : null;
     const mesh = new THREE.Mesh(geometry, paint?.material ?? groundMaterial); mesh.name = `Geländeabschnitt ${chunk.key}`; mesh.receiveShadow = true; root.add(mesh);
     terrainChunks.push({ mesh, x: chunk.x, z: chunk.z, paint });
   }
