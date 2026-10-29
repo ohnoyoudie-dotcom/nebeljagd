@@ -18,6 +18,7 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   footprints.update(.2, [{ id:'player', x:0, z:.7, direction:0, moving:true, speed:4 }]);
   assert.equal(footprints.inspect().count, 1);
   assert.equal(footprints.inspect().singleInstancedDraw, true);
+  assert.equal(footprints.inspect().alignedToVisualSnowSurface, true);
   assert.equal(footprints.inspect().fadeStartSeconds, 6);
   assert.equal(footprints.inspect().lifetimeSeconds, 10);
   footprints.update(7, []);
