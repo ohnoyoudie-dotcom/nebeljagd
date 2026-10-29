@@ -14,7 +14,7 @@ function snowWeightAt(world, x, z) {
 /** Lightweight instanced snow tracks. No per-print mesh/material allocations:
  * matrices and fade values are compacted into one GPU draw each frame. */
 export function createSnowFootprints(root, world) {
-  const geometry = new THREE.PlaneGeometry(.34, .58);
+  const geometry = new THREE.PlaneGeometry(.38, .64);
   geometry.rotateX(-Math.PI / 2);
   const fades = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   geometry.setAttribute('instanceFade', fades);
@@ -26,7 +26,7 @@ export function createSnowFootprints(root, world) {
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
-    uniforms: { uTrackColor: { value: new THREE.Color('#687b82') } },
+    uniforms: { uTrackColor: { value: new THREE.Color('#53676f') } },
     vertexShader: `
       attribute float instanceFade;
       varying vec2 vTrackUv;
@@ -54,7 +54,7 @@ export function createSnowFootprints(root, world) {
         float printShape = max(heel*.82, toe) * mix(.82,1.0,waistCut);
         float inner = max(ellipse(p,vec2(.50,.34),vec2(.22,.18)), ellipse(p,vec2(.50,.67),vec2(.26,.24)));
         float rim = max(0.0, printShape-inner*.72);
-        float alpha = (printShape*.29 + rim*.16) * vTrackFade;
+        float alpha = (printShape*.43 + rim*.20) * vTrackFade;
         if (alpha < .008) discard;
         vec3 color = mix(uTrackColor*1.08, uTrackColor*.72, inner);
         gl_FragColor = vec4(color, alpha);
@@ -73,7 +73,7 @@ export function createSnowFootprints(root, world) {
   const prints = [];
   const trackers = new Map();
   const transform = new THREE.Object3D();
-  let created = 0;
+  let created = 0, lastAverageFade = 0;
 
   function add(source, time) {
     const direction = Number.isFinite(source.direction) ? source.direction : 0;
@@ -120,7 +120,7 @@ export function createSnowFootprints(root, world) {
 
   function update(time, sources = []) {
     for (const source of sources) sampleSource(source, time);
-    let write = 0;
+    let write = 0, fadeTotal = 0;
     for (let read = 0; read < prints.length; read++) {
       const print = prints[read], age = time - print.born;
       if (age >= LIFETIME) continue;
@@ -131,10 +131,12 @@ export function createSnowFootprints(root, world) {
       transform.scale.setScalar(print.scale);
       transform.updateMatrix();
       mesh.setMatrixAt(write, transform.matrix);
-      fades.setX(write, fade * THREE.MathUtils.clamp(print.snowWeight * 1.15, 0, 1));
+      const visibleFade = fade * THREE.MathUtils.clamp(print.snowWeight * 1.15, 0, 1);
+      fades.setX(write, visibleFade); fadeTotal += visibleFade;
       write++;
     }
     prints.length = write;
+    lastAverageFade = write ? fadeTotal / write : 0;
     mesh.count = write;
     if (write) {
       mesh.instanceMatrix.needsUpdate = true;
@@ -143,7 +145,7 @@ export function createSnowFootprints(root, world) {
   }
 
   function reset() {
-    prints.length = 0; trackers.clear(); mesh.count = 0;
+    prints.length = 0; trackers.clear(); mesh.count = 0; lastAverageFade = 0;
   }
 
   return {
@@ -154,7 +156,7 @@ export function createSnowFootprints(root, world) {
       return {
         count: prints.length, maximum: MAX_FOOTPRINTS, created,
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
-        stepDistance: STEP_DISTANCE, snowThreshold: .62,
+        stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,
         singleInstancedDraw: true,
         oldestAgeAtLastPrint: prints.length ? now - Math.min(...prints.map(print => print.born)) : 0,
       };
