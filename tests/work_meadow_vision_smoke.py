@@ -74,7 +74,22 @@ with sync_playwright() as p:
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
 
-    report={'passed':not errors,'errors':errors,'state':state,'snowState':snow_state}
+    editor=browser.new_page(viewport={'width':1440,'height':900})
+    editor_errors=[]
+    editor.on('pageerror',lambda e:editor_errors.append(str(e)))
+    editor.on('console',lambda m:editor_errors.append(m.text) if m.type=='error' and 'favicon' not in m.text else None)
+    editor.goto('http://127.0.0.1:4174/map-editor.html',wait_until='domcontentloaded',timeout=120000)
+    editor.wait_for_selector('[data-biome-choice="meadow"]',timeout=120000)
+    editor.wait_for_selector('#biome-softness',timeout=120000)
+    assert editor.locator('[data-biome-choice]').count()>=5
+    assert editor.locator('#biome-softness').input_value()=='65'
+    assert editor.locator('#landscape-section-biomes').evaluate('(e)=>e.open') is True
+    assert editor.locator('details.landscape-section[open]').count()==1
+    editor.locator('[data-biome-choice="snow"]').click()
+    assert editor.locator('#biome-preset').input_value()=='snow'
+    assert editor.locator('[data-biome-choice="snow"]').get_attribute('aria-pressed')=='true'
+    assert 'Boden und Gras' in editor.locator('.biome-intro').inner_text()
+    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,'snowState':snow_state,'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count()}}
     browser.close()
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
 if not report['passed']:
