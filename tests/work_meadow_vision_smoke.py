@@ -18,10 +18,13 @@ with sync_playwright() as p:
     page.locator('#startBtn').click(force=True)
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.visibleInstances>2500',timeout=120000)
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0',timeout=120000)
+    page.keyboard.down('w')
+    page.wait_for_timeout(350)
     state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       meadow:s.world.stats.meadowGround,editableGrass:s.world.stats.grassRendering,
       vision:s.vision,shadows:s.shadows,rendering:s.rendering,
       position:s.position,camera:s.camera,practice:s.practiceActors};}''')
+    page.keyboard.up('w')
     assert state['meadow']['enabled'] is True
     assert state['meadow']['visibleInstances']>2500
     assert state['meadow']['cardsPerTuft']==3
@@ -32,8 +35,13 @@ with sync_playwright() as p:
     assert state['meadow']['visibleDetailInstances']>100
     assert state['meadow']['characterParting'] is True
     assert state['meadow']['interactorCount']>=2
+    assert state['meadow']['interactionMode']=='forward-biased'
+    assert abs(state['meadow']['forwardWeight']-.82)<.001
+    assert state['meadow']['firstInteractorStrength']>.4
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
     assert state['editableGrass']['wind']['interactors']>=2
+    assert state['editableGrass']['wind']['interactionMode']=='forward-biased'
+    assert state['editableGrass']['wind']['firstInteractorStrength']>.4
     assert state['camera']['orthographicHeight']<=21
     assert state['vision']['samples']==2048
     assert state['vision']['appearance']=='single-soft-edge'
