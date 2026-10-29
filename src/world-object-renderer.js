@@ -87,7 +87,7 @@ function createGrassPrototypes(wind) {
     const root = new THREE.Color(profile.detailColor ?? profile.color);
     const tip = root.clone();
     if (profile.snowy) {
-      root.set('#8f9d96'); tip.set('#f4fbff');
+      root.set('#a3b0a8'); tip.set('#f6fbff');
     } else {
       root.offsetHSL(0, -.04, -.12);
       tip.offsetHSL(0, -.03, .18);
