@@ -19,7 +19,8 @@ with sync_playwright() as p:
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.visibleInstances>2500',timeout=120000)
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0',timeout=120000)
     page.keyboard.down('w')
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.firstInteractorStrength>.3",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.firstInteractorStrength>.55",timeout=120000)
+    page.wait_for_timeout(320)
     state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       meadow:s.world.stats.meadowGround,editableGrass:s.world.stats.grassRendering,
       vision:s.vision,shadows:s.shadows,rendering:s.rendering,
@@ -41,7 +42,7 @@ with sync_playwright() as p:
     assert state['meadow']['interactorCount']>=2
     assert state['meadow']['interactionMode']=='forward-biased'
     assert abs(state['meadow']['forwardWeight']-.82)<.001
-    assert state['meadow']['firstInteractorStrength']>.3
+    assert state['meadow']['firstInteractorStrength']>.5
     assert state['meadow']['curvatureVariation']=='per-tuft'
     assert state['meadow']['windVariation']=='per-tuft-phase-speed-amplitude'
     assert state['meadow']['recoveryModel']=='variable-directional-wake'
@@ -53,7 +54,7 @@ with sync_playwright() as p:
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
     assert state['editableGrass']['wind']['interactors']>=2
     assert state['editableGrass']['wind']['interactionMode']=='forward-biased'
-    assert state['editableGrass']['wind']['firstInteractorStrength']>.3
+    assert state['editableGrass']['wind']['firstInteractorStrength']>.5
     assert state['editableGrass']['wind']['curvatureVariation']=='per-instance-grass'
     assert state['editableGrass']['wind']['windVariation']=='per-instance-phase-speed-amplitude'
     assert state['editableGrass']['wind']['recoveryModel']=='variable-directional-wake'
