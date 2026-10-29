@@ -281,6 +281,8 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         totalBakeMs: terrainChunks.reduce((sum, c) => sum + (c.paint?.stats.totalBakeMs ?? 0), 0),
         maximumTileBakeMs: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.maximumBakeMs ?? 0)),
         snowRelief: terrainChunks.some(c => c.paint?.stats.snowRelief),
+        snowMicroRelief: terrainChunks.some(c => c.paint?.stats.snowMicroRelief),
+        snowCrystalHighlights: terrainChunks.some(c => c.paint?.stats.snowCrystalHighlights),
         snowMaskResidentChunks: terrainChunks.filter(c => c.paint?.stats.snowMaskResident).length,
         snowVisualDepthMeters: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.snowVisualDepthMeters ?? 0)),
         maximumTextureSize: mode === 'low' ? 256 : 512, changesCollisionHeight: false },
