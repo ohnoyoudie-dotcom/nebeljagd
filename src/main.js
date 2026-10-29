@@ -142,6 +142,7 @@ const chests = createChests(world.root, { placements: world.map.objects, heightA
 });
 const practiceActors = createPracticeActors(world.root, { world, combat, healthBars, vision });
 const grassInteractors = [];
+let playerGrassStrength = 0, playerGrassDirX = 0, playerGrassDirZ = 1;
 vision.register();
 const zone = createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius });
 const inactivePlayer = new THREE.Vector3(1000, 0, 1000);
@@ -178,6 +179,7 @@ function reset() {
   healthBars.set('player', { health: START_HEALTH, snap: true });
   healthBars.reset();
   character.resetMotion?.(state.direction);
+  playerGrassStrength = 0; playerGrassDirX = Math.sin(state.direction); playerGrassDirZ = Math.cos(state.direction);
   lastConcealment = false; lastShelter = null; currentZone = zoneAt(0);
   setPhase('playing');
   ui.toast('Ein neuer Streifzug beginnt.');
@@ -451,10 +453,21 @@ function frame(now) {
   practiceActors.update(playDelta, time, player);
   grassInteractors.length = 0;
   const walkSpeed = Math.max(.1, world.map.gameplay.walkSpeedMetersPerSecond);
+  const targetGrassStrength = state.moving ? THREE.MathUtils.clamp(state.actualSpeed / walkSpeed, .55, 1.15) : 0;
+  const grassResponse = 1 - Math.exp(-playDelta * (targetGrassStrength > playerGrassStrength ? 12 : 3.1));
+  playerGrassStrength = THREE.MathUtils.lerp(playerGrassStrength, targetGrassStrength, grassResponse);
+  if (state.moving) {
+    const targetX = Math.sin(state.direction), targetZ = Math.cos(state.direction);
+    const directionResponse = 1 - Math.exp(-playDelta * 11);
+    playerGrassDirX = THREE.MathUtils.lerp(playerGrassDirX, targetX, directionResponse);
+    playerGrassDirZ = THREE.MathUtils.lerp(playerGrassDirZ, targetZ, directionResponse);
+    const length = Math.hypot(playerGrassDirX, playerGrassDirZ) || 1;
+    playerGrassDirX /= length; playerGrassDirZ /= length;
+  }
   grassInteractors.push({
     x: player.x, z: player.z, radius: 1.12,
-    dirX: Math.sin(state.direction), dirZ: Math.cos(state.direction),
-    strength: state.moving ? THREE.MathUtils.clamp(state.actualSpeed / walkSpeed, .55, 1.15) : 0,
+    dirX: playerGrassDirX, dirZ: playerGrassDirZ,
+    strength: playerGrassStrength,
   });
   practiceActors.appendGrassInteractors(grassInteractors);
   world.setGrassInteractors?.(grassInteractors);
