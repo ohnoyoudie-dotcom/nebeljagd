@@ -47,10 +47,10 @@ test('reading old maps preserves all placements, document bytes and legacy veget
   assert.equal(getLandscape({ landscape: { version: 1, wind: { enabled: false } } }).wind.speed, 1);
 });
 
-test('all seven vegetation types, nine grounds and eight saved biomes round-trip with wind zones', () => {
+test('all seven vegetation types, nine grounds and nine saved biomes round-trip with wind zones', () => {
   assert.equal(VEGETATION_TYPES.length, 7);
   assert.equal(TERRAIN_TYPES.length, 9);
-  assert.equal(BIOME_PRESETS.length, 8);
+  assert.equal(BIOME_PRESETS.length, 9);
   const map = paintedMap(), validation = validateWorldmap(map);
   assert.deepEqual(validation.errors, []);
   const reloaded = JSON.parse(JSON.stringify(map));
