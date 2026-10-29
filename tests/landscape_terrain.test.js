@@ -54,6 +54,15 @@ test('all nine painted soils retain editable colours, distinguishable details an
   assert.equal(colors.size, 9); assert.equal(surfaces.size, 9);
 });
 
+test('terrain paint exposes snow coverage separately from color and paving', () => {
+  const snow = createTerrainPaintIndex([stamp({ ...terrainSettings('snow'), variation: 0 })]);
+  const snowSample = sampleTerrainPaint(snow, 30, -42);
+  assert.ok(snowSample.snow > .99);
+  assert.equal(snowSample.paving, 0);
+  const meadow = createTerrainPaintIndex([stamp({ ...terrainSettings('meadow'), variation: 0 })]);
+  assert.equal(sampleTerrainPaint(meadow, 30, -42).snow, 0);
+});
+
 test('snow surface has visible but restrained drift and packed-snow variation', () => {
   const samples = [
     terrainSurfaceDetail('snow', 0.25, 0.25, 19),
