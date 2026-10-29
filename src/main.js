@@ -23,7 +23,7 @@ const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
 const requestedQuality = new URLSearchParams(location.search).get('quality');
 const state = {
   phase: 'ready', health: START_HEALTH, maxHealth: MAX_HEALTH, elapsed: 0,
-  gold: 0, inDanger: false, moving: false, distance: 0,
+  gold: 0, inDanger: false, moving: false, distance: 0, snowWeight: 0,
   rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
   quality: requestedQuality === 'low' || (requestedQuality !== 'high' && coarsePointer) ? 'low' : 'high',
 };
@@ -173,7 +173,7 @@ function setPhase(phase) {
 
 function reset() {
   Object.assign(state, { health: START_HEALTH, elapsed: 0, gold: 0, inDanger: false,
-    distance: 0, moving: false, actualSpeed: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
+    distance: 0, moving: false, actualSpeed: 0, snowWeight: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
   cameraFocus.copy(player).multiplyScalar(visualScale);
@@ -386,7 +386,8 @@ window.nebeljagdTestState = () => ({
   weaponDrops: weapons.items.map(({ id, type, rarity, x, z, collected, group }) => ({ id, type, rarity, x, z, collected, visible: group.visible })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
-    locomotion: character.group.userData.locomotion },
+    locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
+    snowSinkMeters: character.group.userData.snowSinkMeters ?? 0 },
   concealment: world.concealmentAt(player.x, player.z), shelter: state.shelter ?? null,
   houses: world.houses.map(({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight, roof, interior, frontFacade }) => ({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight,
     roofVisible: roof.visible, interiorVisible: interior.visible, frontFacadeVisible: frontFacade.visible, frontFacadeParts: frontFacade.children.length })),
@@ -451,8 +452,9 @@ function frame(now) {
     lastConcealment = state.hiddenInGrass;
   }
   character.setConcealed(state.hiddenInGrass);
+  state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
-    direction: state.direction, health: state.health, inDanger: state.inDanger });
+    direction: state.direction, health: state.health, inDanger: state.inDanger, snowWeight: state.snowWeight });
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
   grassInteractors.length = 0;
