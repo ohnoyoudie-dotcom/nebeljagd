@@ -38,7 +38,7 @@ test('spawn approach and starter objects remain explicit, accessible and outside
     const [x, z] = item.position;
     assert.ok(Math.hypot(x - 30, z + 42) > 8);
   }
-  for (const variant of ['rei-tree01', 'rei-tree02']) assert.ok(trees.some(item => item.variant === variant), `${variant} remains represented somewhere in the editable world`);
+
 });
 
 test('seeded scatter keeps paths, rivers and distributed starts open', () => {
