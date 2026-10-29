@@ -22,8 +22,11 @@ test('snow cover creates depth-writing powder instances only in snow', () => {
   assert.equal(state.depthWriting, true);
   assert.equal(state.collisionIndependent, true);
   assert.ok(state.visibleInstances > 0);
-  assert.equal(state.layerStyle, 'overlapping-instanced-powder-pillows');
+  assert.equal(state.layerStyle, 'overlapping-irregular-powder-with-wind-drifts');
   assert.equal(state.nominalSurfaceDepthMeters, .19);
+  assert.equal(state.multiScaleSurface, true);
+  assert.equal(state.windShading, true);
+  assert.ok(state.broadDriftAmplitudeMeters > state.fineDriftAmplitudeMeters);
   assert.ok(cover.surfaceHeightAt(0, 0) > 2.14);
   cover.dispose();
   assert.equal(root.children.length, 0);
