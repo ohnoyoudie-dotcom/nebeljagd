@@ -5,6 +5,11 @@ const FADE_START = 6;
 const LIFETIME = 10;
 const STEP_DISTANCE = .62;
 
+function snowVisualOffset(x, z, snowWeight = 1) {
+  const drift = Math.sin(x * .21 + Math.sin(z * .13) * 1.7) * Math.cos(z * .18 - x * .07);
+  return snowWeight * (.068 + drift * .030);
+}
+
 function snowWeightAt(world, x, z) {
   const weights = world.biomeWeightsAt?.(x, z);
   if (Array.isArray(weights)) return weights.find(item => item.biome === 'snow')?.weight ?? 0;
@@ -26,7 +31,7 @@ export function createSnowFootprints(root, world) {
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
-    uniforms: { uTrackColor: { value: new THREE.Color('#53676f') } },
+    uniforms: { uTrackColor: { value: new THREE.Color('#465b63') } },
     vertexShader: `
       attribute float instanceFade;
       varying vec2 vTrackUv;
@@ -54,9 +59,9 @@ export function createSnowFootprints(root, world) {
         float printShape = max(heel*.82, toe) * mix(.82,1.0,waistCut);
         float inner = max(ellipse(p,vec2(.50,.34),vec2(.22,.18)), ellipse(p,vec2(.50,.67),vec2(.26,.24)));
         float rim = max(0.0, printShape-inner*.72);
-        float alpha = (printShape*.43 + rim*.20) * vTrackFade;
+        float alpha = (printShape*.48 + rim*.26) * vTrackFade;
         if (alpha < .008) discard;
-        vec3 color = mix(uTrackColor*1.08, uTrackColor*.72, inner);
+        vec3 color = mix(uTrackColor*1.12, uTrackColor*.66, inner);
         gl_FragColor = vec4(color, alpha);
       }
     `,
@@ -84,7 +89,7 @@ export function createSnowFootprints(root, world) {
     const snowWeight = snowWeightAt(world, x, z);
     if (snowWeight < .62) return false;
     prints.push({
-      x, z, y: world.heightAt(x, z) + .028,
+      x, z, y: world.heightAt(x, z) + snowVisualOffset(x, z, snowWeight) + .008,
       direction, born: time,
       scale: .92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18),
       snowWeight,
@@ -157,7 +162,7 @@ export function createSnowFootprints(root, world) {
         count: prints.length, maximum: MAX_FOOTPRINTS, created,
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
         stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,
-        singleInstancedDraw: true,
+        singleInstancedDraw: true, alignedToVisualSnowSurface: true,
         oldestAgeAtLastPrint: prints.length ? now - Math.min(...prints.map(print => print.born)) : 0,
       };
     },
