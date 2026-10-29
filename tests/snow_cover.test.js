@@ -11,7 +11,13 @@ function spatial(snow = true) {
   };
 }
 
-const map = { paths: [], rivers: [], objects: [] };
+const map = {
+  paths: [], rivers: [],
+  objects: [
+    { id:'rock-1', kind:'rock', variant:'granite', position:[1,1], rotation:0, scale:1 },
+    { id:'tree-1', kind:'tree', variant:'pine', position:[-1,-1], rotation:.2, scale:1 },
+  ],
+};
 
 test('snow cover creates depth-writing powder instances only in snow', () => {
   const root = new THREE.Group();
@@ -26,6 +32,11 @@ test('snow cover creates depth-writing powder instances only in snow', () => {
   assert.equal(state.nominalSurfaceDepthMeters, .19);
   assert.equal(state.multiScaleSurface, true);
   assert.equal(state.windShading, true);
+  assert.equal(state.microRelief, true);
+  assert.equal(state.microCrystalHighlights, true);
+  assert.equal(state.windRidges, 'long-low-prevailing-direction');
+  assert.ok(state.objectSnowCaps > 0);
+  assert.ok(state.treeBaseDrifts > 0);
   assert.ok(state.broadDriftAmplitudeMeters > state.fineDriftAmplitudeMeters);
   assert.ok(cover.surfaceHeightAt(0, 0) > 2.14);
   cover.dispose();
