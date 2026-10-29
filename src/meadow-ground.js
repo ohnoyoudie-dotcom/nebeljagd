@@ -175,8 +175,12 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   };
   const interactionGLSL = `uniform int uGrassInteractorCount; uniform vec3 uGrassInteractors[${maxInteractors}];
     uniform vec3 uGrassInteractorMotion[${maxInteractors}];
+    float grassVariation(vec2 p, float salt) {
+      return fract(sin(dot(p + salt, vec2(12.9898,78.233))) * 43758.5453);
+    }
     vec2 grassInteractionAt(vec2 p) {
       vec2 push = vec2(0.);
+      float recoverySeed = grassVariation(p, 17.3);
       for (int i = 0; i < ${maxInteractors}; i++) {
         if (i >= uGrassInteractorCount) break;
         vec3 actor = uGrassInteractors[i];
@@ -184,13 +188,24 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         vec2 delta = p - actor.xy;
         float d = length(delta);
         float radius = max(.25, actor.z);
-        float influence = 1. - smoothstep(radius * .18, radius, d);
         float motionLength = length(motion.xy);
-        if (influence <= 0. || motionLength < .001 || motion.z <= .001) continue;
-        vec2 radial = d > .001 ? delta / d : motion.xy / motionLength;
+        if (motionLength < .001 || motion.z <= .001) continue;
         vec2 forward = motion.xy / motionLength;
+        vec2 side = vec2(-forward.y, forward.x);
+        float along = dot(delta, forward);
+        float sideways = abs(dot(delta, side));
+        float bodyInfluence = 1. - smoothstep(radius * .18, radius, d);
+        float wakeLength = radius * mix(.85, 1.85, recoverySeed);
+        float wakeWidth = radius * mix(.58, .92, grassVariation(p, 39.1));
+        float behind = max(0., -along);
+        float wakeInfluence = (1. - smoothstep(wakeWidth * .42, wakeWidth, sideways))
+          * (1. - smoothstep(0., wakeLength, behind))
+          * (1. - smoothstep(-.05, .18, along));
+        float influence = max(bodyInfluence, wakeInfluence * mix(.52, .78, recoverySeed));
+        if (influence <= 0.) continue;
+        vec2 radial = d > .001 ? delta / d : forward;
         vec2 direction = normalize(forward * .82 + radial * .18);
-        push += direction * influence * motion.z * .64;
+        push += direction * influence * motion.z * mix(.56, .70, grassVariation(p, 71.9));
       }
       return push;
     }`;
@@ -205,10 +220,17 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       varying float vGrassHeight;varying vec2 vGrassRoot;
       ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
         vec2 grassRoot=instanceMatrix[3].xz;
-        float phase=dot(grassRoot,vec2(.197,.231));
-        float gust=.55+.45*sin(dot(grassRoot,uGrassDirection)*.28-uGrassTime*uGrassSpeed*1.15);
-        float wave=.42+sin(dot(grassRoot,uGrassDirection)*.47-uGrassTime*uGrassSpeed*1.5)*.62+.20*sin(phase*2.3+uGrassTime*uGrassSpeed*2.4);
-        float bend=pow(uv.y,1.7)*uGrassWind*(.18+gust*.31)*wave;
+        float seedA=grassVariation(grassRoot,3.7), seedB=grassVariation(grassRoot,11.9), seedC=grassVariation(grassRoot,23.1);
+        float localSpeed=mix(.72,1.30,seedA);
+        float localAmplitude=mix(.74,1.24,seedB);
+        float phase=dot(grassRoot,vec2(.197,.231))+seedC*6.28318530718;
+        float gust=.50+.50*sin(dot(grassRoot,uGrassDirection)*.28-uGrassTime*uGrassSpeed*(1.00+.24*seedA)+phase*.23);
+        float wave=.40+sin(dot(grassRoot,uGrassDirection)*.47-uGrassTime*uGrassSpeed*1.5*localSpeed+phase)*.62
+          +.20*sin(phase*2.1+uGrassTime*uGrassSpeed*(1.9+.8*seedB));
+        float bend=pow(uv.y,1.7)*uGrassWind*(.18+gust*.31)*wave*localAmplitude;
+        float curveAngle=seedA*6.28318530718;
+        vec2 curveDir=vec2(cos(curveAngle),sin(curveAngle));
+        transformed.xz+=curveDir*mix(.018,.115,seedC)*pow(uv.y,1.85);
         vec2 localWind=vec2(dot(normalize(instanceMatrix[0].xz),uGrassDirection),dot(normalize(instanceMatrix[2].xz),uGrassDirection));
         transformed.xz+=localWind*bend;
         vec2 worldPush=grassInteractionAt(grassRoot);
@@ -226,7 +248,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         #include <alphatest_fragment>
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v4-forward-parting';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v5-natural-motion';
 
   const detailMaterial = new THREE.MeshBasicMaterial({
     color: '#58753a', side: THREE.DoubleSide, toneMapped: true,
@@ -238,10 +260,16 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       varying float vDetailHeight;
       ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
         vec2 grassRoot=instanceMatrix[3].xz;
-        float phase=dot(grassRoot,vec2(.211,.173));
-        float gust=.60+.40*sin(dot(grassRoot,uGrassDirection)*.31-uGrassTime*uGrassSpeed*1.10);
-        float wave=sin(phase+uGrassTime*uGrassSpeed*1.35);
-        float bend=pow(uv.y,1.75)*uGrassWind*(.12+gust*.22)*wave;
+        float seedA=grassVariation(grassRoot,5.3), seedB=grassVariation(grassRoot,19.7), seedC=grassVariation(grassRoot,31.4);
+        float localSpeed=mix(.68,1.34,seedA);
+        float localAmplitude=mix(.70,1.30,seedB);
+        float phase=dot(grassRoot,vec2(.211,.173))+seedC*6.28318530718;
+        float gust=.56+.44*sin(dot(grassRoot,uGrassDirection)*.31-uGrassTime*uGrassSpeed*(.92+.30*seedA)+phase*.31);
+        float wave=sin(phase+uGrassTime*uGrassSpeed*1.35*localSpeed)+.18*sin(phase*2.7-uGrassTime*uGrassSpeed*.83);
+        float bend=pow(uv.y,1.75)*uGrassWind*(.12+gust*.22)*wave*localAmplitude;
+        float curveAngle=seedB*6.28318530718;
+        vec2 curveDir=vec2(cos(curveAngle),sin(curveAngle));
+        transformed.xz+=curveDir*mix(.035,.18,seedC)*pow(uv.y,1.75);
         vec2 localWind=vec2(dot(normalize(instanceMatrix[0].xz),uGrassDirection),dot(normalize(instanceMatrix[2].xz),uGrassDirection));
         transformed.xz+=localWind*bend;
         vec2 worldPush=grassInteractionAt(grassRoot);
@@ -255,7 +283,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         diffuseColor.rgb*=mix(vec3(.58,.70,.46),vec3(1.12,1.18,.88),smoothstep(0.,1.,vDetailHeight));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v2-forward-parting';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v3-natural-motion';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -374,7 +402,9 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       colorVariation: 'per-tuft-hsl', detailLayer: 'global-large-solid-blades', layeredMeadow: true, characterParting: true,
       interactorCount: uniforms.uGrassInteractorCount.value, maximumInteractors: maxInteractors,
       interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
-      firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z }),
+      firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z,
+      curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
+      recoveryModel: 'variable-directional-wake' }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
 }
