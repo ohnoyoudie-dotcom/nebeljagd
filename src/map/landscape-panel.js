@@ -1,4 +1,4 @@
-import { VEGETATION_TYPES, TERRAIN_TYPES, BIOME_PRESETS, WIND_DEFAULTS, getLandscape, ensureLandscape, vegetationSettings, terrainSettings, biomePreset } from './landscape.js';
+import { VEGETATION_TYPES, TERRAIN_TYPES, BIOME_PRESETS, PRIMARY_BIOME_IDS, WIND_DEFAULTS, getLandscape, ensureLandscape, vegetationSettings, terrainSettings, biomePreset } from './landscape.js';
 import { OBJECT_CATALOG } from './objects.js';
 import { createVegetationStroke, createTerrainStroke, createScatterStroke, createBiomeStroke } from './landscape-brush.js';
 import { createLandscapePreview } from './landscape-preview.js';
@@ -40,15 +40,16 @@ export function createLandscapePanel(api) {
   oldGrass.querySelector('.small-note').textContent = 'Ziehen malt einzelne Büschel oder Flächen. Höhe und Dichte lassen sich später für jede Fläche ändern.';
   $('brush-radius').min = '.5'; $('brush-radius').max = '20';
   const sections = {};
-  for (const [key, label] of [['terrain', 'Gelände'], ['vegetation', 'Vegetation'], ['objects', 'Objekte'], ['wind', 'Wind und Umgebung'], ['biomes', 'Biome'], ['map', 'Karte und Vorschau']]) {
-    const details = document.createElement('details'); details.className = 'landscape-section'; details.id = `landscape-section-${key}`; details.open = true;
+  for (const [key, label] of [['biomes', 'Biom malen'], ['terrain', 'Boden feinbearbeiten'], ['vegetation', 'Vegetation feinbearbeiten'], ['objects', 'Objekte & Verteilung'], ['wind', 'Wind'], ['map', 'Ansicht & Export']]) {
+    const details = document.createElement('details'); details.className = 'landscape-section'; details.id = `landscape-section-${key}`;
+    details.open = key === 'biomes';
     const summary = document.createElement('summary'); summary.textContent = label; details.append(summary); sidebar.append(details); sections[key] = details;
   }
   const move = (selector, key) => { const element = sidebar.querySelector(selector); if (element) sections[key].append(element); };
   move('.grass-brush-section', 'vegetation'); move('.object-palette', 'objects'); move('.eraser-section', 'objects'); move('.objects-section', 'objects');
   move('.layer-section', 'map'); move('.project-actions', 'map');
   const editTools = [...sidebar.querySelectorAll(':scope > .tool-section')].find(section => section.querySelector('#tool-select'));
-  if (editTools) sidebar.insertBefore(editTools, sections.terrain);
+  if (editTools) sidebar.insertBefore(editTools, sections.biomes);
   const nav = document.createElement('nav'); nav.className = 'landscape-nav'; nav.dataset.landscapeGenerated = 'true'; nav.setAttribute('aria-label', 'Editorbereiche');
   for (const [key, details] of Object.entries(sections)) { const link=document.createElement('button');link.type='button';link.textContent=details.querySelector('summary').textContent;link.addEventListener('click',()=>{details.open=true;details.scrollIntoView({block:'start',behavior:'instant'});if(getComputedStyle(sidebar).overflowY==='auto')sidebar.scrollTop-=nav.offsetHeight;});nav.append(link); }
   sidebar.insertBefore(nav, editTools ?? sections.terrain);
@@ -61,7 +62,11 @@ export function createLandscapePanel(api) {
   const scatterKinds = OBJECT_CATALOG.filter(item => ['tree', 'bush', 'grass', 'rock', 'flower'].includes(item.kind));
   mount('objects', `<h3>Natürlich verteilen</h3><p class="small-note">Modelle auswählen und über die Karte ziehen. Wege, Gewässer, Gebäude, Startbereiche und bestehende Hindernisse werden berücksichtigt.</p>${scatterKinds.map(item => `<div class="scatter-model"><label class="landscape-check"><input type="checkbox" id="scatter-${item.kind}"${['tree','bush'].includes(item.kind) ? ' checked' : ''}>${item.label}</label><select id="scatter-variant-${item.kind}" aria-label="${item.label}: Modell">${options(item.variants)}</select></div>`).join('')}${button('landscape-scatter-brush', 'Objekte verteilen')}${range('scatter-radius', 'Pinselradius', .5, 20, 12, .5, ' m')}${range('scatter-density', 'Objektdichte', 0, 100, 35)}${range('scatter-strength', 'Pinselstärke', 0, 100, 100)}${range('scatter-distance', 'Mindestabstand', .5, 30, 3, .5, ' m')}${range('scatter-min', 'Kleinste Größe', 25, 300, 80)}${range('scatter-max', 'Größte Größe', 25, 300, 125)}${range('scatter-clustering', 'Gruppenbildung', 0, 100, 65)}${check('scatter-rotation', 'Zufällige Drehung', true)}`);
   mount('wind', `${check('wind-enabled', 'Wind aktivieren', true)}${range('wind-strength', 'Windstärke', 0, 100, 35)}${range('wind-speed', 'Windgeschwindigkeit', 0, 5, 1, .05, '×')}<label for="wind-direction">Windrichtung</label><div class="wind-compass" id="wind-compass" tabindex="0" role="slider" aria-label="Windrichtung" aria-valuemin="0" aria-valuemax="360" aria-valuenow="37"><span class="wind-north">N</span><span id="wind-arrow" aria-hidden="true">↑</span></div>${range('wind-direction', 'Richtung', 0, 360, 37, 1, '°')}${check('wind-gusts', 'Windböen', true)}${range('wind-gust-strength', 'Böenstärke', 0, 100, 35)}${range('wind-gust-frequency', 'Böenhäufigkeit', 0, 2, .18, .01, ' /s')}${range('wind-turbulence', 'Turbulenz', 0, 100, 20)}<button type="button" class="button" id="wind-apply">Wind übernehmen</button><h3>Lokale Windzone</h3>${button('landscape-wind-zone', 'Windzone auf Karte setzen')}${range('wind-zone-radius', 'Zonenradius', .5, 250, 20, .5, ' m')}${range('wind-zone-strength', 'Lokale Windstärke', 0, 100, 10)}${range('wind-zone-falloff', 'Weicher Übergang', 0, 100, 50)}${range('wind-zone-direction', 'Lokale Richtung', 0, 360, 37, 1, '°')}<p class="small-note">0 % Stärke ergibt einen windgeschützten Bereich. Zonen in der Kartenliste oder am Kreisrand auswählen, verschieben und rechts bearbeiten.</p>`);
-  mount('biomes', `${selector('biome-preset', 'Landschaft', BIOME_PRESETS)}${button('landscape-biome-brush', 'Biom malen')}${range('biome-radius', 'Pinselradius', .5, 80, 18, .5, ' m')}${range('biome-strength', 'Pinselstärke', 0, 100, 80)}<button type="button" class="button small" id="biome-settings">Biom als Werkzeugeinstellung</button><p class="small-note">Malt Boden und verteilt passende Pflanzen als einzeln editierbare Objekte. Bestehende Objekte bleiben erhalten.</p><h3>Eigene Einstellungen</h3><label for="landscape-preset-name">Vorlagenname</label><input id="landscape-preset-name" maxlength="120" placeholder="Zum Beispiel Abendwald"><button type="button" class="button" id="landscape-preset-save">Einstellungen speichern</button><label for="landscape-preset-select">Gespeicherte Vorlage</label><select id="landscape-preset-select"></select><div class="property-pair"><button type="button" class="button small" id="landscape-preset-load">Laden</button><button type="button" class="button small" id="landscape-preset-delete">Entfernen</button></div><p class="small-note">Vorlagen enthalten Boden, Vegetation, Verteilung und Wind und werden mit der Karte gespeichert.</p>`);
+  const biomeQuickButtons = PRIMARY_BIOME_IDS.map(id => {
+    const preset = biomePreset(id);
+    return `<button type="button" class="biome-choice" data-biome-choice="${id}" aria-pressed="false"><span class="biome-choice-swatch" style="--biome-color:${preset.terrain.color}"></span><strong>${preset.label}</strong></button>`;
+  }).join('');
+  mount('biomes', `<div class="biome-intro"><strong>Fläche malen → Boden und Gras passen sich automatisch an.</strong><span>Übergänge werden weich zwischen benachbarten Biomen gemischt.</span></div><div class="biome-choice-grid">${biomeQuickButtons}</div>${selector('biome-preset', 'Weitere Biome', BIOME_PRESETS)}${button('landscape-biome-brush', 'Biom-Pinsel aktivieren')}${range('biome-radius', 'Pinselgröße', 2, 80, 22, 1, ' m')}${range('biome-softness', 'Weicher Übergang', 0, 100, 65)}${range('biome-strength', 'Deckkraft', 10, 100, 100)}<p class="small-note">Wiese erzeugt automatisch dichte Grasdeckung. Schnee reduziert sie und nutzt Wintergras. Bäume und besondere Objekte bleiben ein eigener Schritt.</p><details class="biome-advanced"><summary>Erweiterte Biom-Einstellungen</summary><button type="button" class="button small" id="biome-settings">Biom in Detailwerkzeuge übernehmen</button><label for="landscape-preset-name">Vorlagenname</label><input id="landscape-preset-name" maxlength="120" placeholder="Zum Beispiel Abendwald"><button type="button" class="button" id="landscape-preset-save">Einstellungen speichern</button><label for="landscape-preset-select">Gespeicherte Vorlage</label><select id="landscape-preset-select"></select><div class="property-pair"><button type="button" class="button small" id="landscape-preset-load">Laden</button><button type="button" class="button small" id="landscape-preset-delete">Entfernen</button></div></details>`);
   mount('map', `<h3>Lebendige Vorschau</h3><div id="landscape-preview" class="landscape-preview"></div><p id="landscape-preview-status" class="small-note">Vegetation und Wind werden mit denselben Regeln wie im Spiel dargestellt.</p><p id="landscape-status" class="small-note" role="status">Ziehen: malen · Leertaste: verschieben · Esc: abbrechen</p>`);
 
   const inspector = document.createElement('div'); inspector.id = 'landscape-feature-properties'; inspector.hidden = true;
@@ -113,6 +118,15 @@ export function createLandscapePanel(api) {
   $('wind-compass').addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;event.preventDefault();event.stopPropagation();$('wind-direction').value=(num('wind-direction')+(['ArrowLeft','ArrowDown'].includes(event.key)?355:5))%360;refresh();applyWind();});
   function loadPreset(preset) { if(preset.vegetation)writeVegetation(vegetationSettings({vegetation:preset.vegetation}));if(preset.terrain)writeTerrain({...terrainSettings(preset.terrain.type),...preset.terrain});if(preset.scatter)writeScatter({...BIOME_PRESETS[0].scatter,...preset.scatter});if(preset.wind){writeWind({...WIND_DEFAULTS,...preset.wind});applyWind();}if(preset.brushRadius)$('brush-radius').value=Math.min(20,preset.brushRadius);refresh(); }
   const currentBiome = () => biomePreset($('biome-preset').value) ?? getLandscape(api.getMap()).presets.find(item => item.id === $('biome-preset').value) ?? biomePreset('meadow');
+  function syncBiomeChoices() {
+    const selected = $('biome-preset').value;
+    for (const choice of document.querySelectorAll('[data-biome-choice]')) choice.setAttribute('aria-pressed', choice.dataset.biomeChoice === selected ? 'true' : 'false');
+  }
+  for (const choice of document.querySelectorAll('[data-biome-choice]')) choice.addEventListener('click', () => {
+    $('biome-preset').value = choice.dataset.biomeChoice; syncBiomeChoices(); refresh();
+  });
+  $('biome-preset').addEventListener('change', () => { syncBiomeChoices(); refresh(); });
+  syncBiomeChoices();
   $('biome-settings').addEventListener('click',()=>loadPreset(currentBiome()));
   $('landscape-preset-save').addEventListener('click',()=>{const name=$('landscape-preset-name').value.trim();if(!name)return api.toast('Bitte einen Vorlagennamen eingeben.',true);const scatter=readScatter();if(!scatter.entries.length)return api.toast('Mindestens eine Objektart für die Vorlage wählen.',true);const preset={id:uid('landscape-preset'),name,terrain:readTerrain(),vegetation:readVegetation(),scatter,wind:readWind(),brushRadius:num('brush-radius')};if(api.commit(candidate=>{ensureLandscape(candidate).presets.push(preset);},'Landschaftsvorlage mit der Karte gespeichert.'))$('landscape-preset-select').value=preset.id;});
   $('landscape-preset-load').addEventListener('click',()=>{const preset=getLandscape(api.getMap()).presets.find(item=>item.id===$('landscape-preset-select').value);if(preset)loadPreset(preset);});
@@ -152,7 +166,7 @@ export function createLandscapePanel(api) {
     if(mode==='brush')return createVegetationStroke(map,{radius:num('brush-radius'),strength:pct('vegetation-strength'),vegetation:readVegetation(),seed:Date.now()>>>0});
     if(mode==='terrain')return createTerrainStroke(map,{radius:num('terrain-radius'),strength:1,terrain:readTerrain(),seed:Date.now()>>>0});
     if(mode==='scatter'){const scatter=readScatter();if(!scatter.entries.length)throw new Error('Bitte mindestens eine Objektart wählen.');if(scatter.scaleMin>scatter.scaleMax)throw new Error('Kleinste Größe darf nicht über der größten Größe liegen.');return createScatterStroke(map,{radius:num('scatter-radius'),strength:pct('scatter-strength'),scatter,vegetation:readVegetation(),seed:Date.now()>>>0});}
-    if(mode==='biome'){const preset=currentBiome();return createBiomeStroke(map,{radius:num('biome-radius'),strength:pct('biome-strength'),presetId:preset.id,preset,seed:Date.now()>>>0});}
+    if(mode==='biome'){const preset=currentBiome();return createBiomeStroke(map,{radius:num('biome-radius'),strength:pct('biome-strength'),softness:pct('biome-softness'),presetId:preset.id,preset,seed:Date.now()>>>0});}
     return null;
   }
   function createZone(position){return{id:uid('wind-zone'),name:'Lokale Windzone',position:[...position],radius:num('wind-zone-radius'),strength:pct('wind-zone-strength'),falloff:pct('wind-zone-falloff'),direction:radians('wind-zone-direction')};}
@@ -160,7 +174,7 @@ export function createLandscapePanel(api) {
   writeVegetation(VEGETATION_TYPES.find(type=>type.id==='tall').settings);writeWind(getLandscape(api.getMap()).wind);
   return {sync,refresh,renderSelected,applySelected,createStroke,createZone,radius,readVegetation,
     setSelectedVariant: variant => {writeVegetation(VEGETATION_TYPES.find(type=>type.id===(variant==='kit-tall'?'tall':variant))?.settings ?? VEGETATION_TYPES[0].settings,'object-vegetation'); refresh();},
-    color:mode=>mode==='terrain'||mode==='terrainErase'?$('terrain-color').value:mode==='windzone'?'#91bed2':readVegetation().color,
-    state:()=>({vegetation:readVegetation(),terrain:readTerrain(),scatter:readScatter(),wind:readWind(),biome:$('biome-preset').value,preview:preview.stats}),
+    color:mode=>mode==='terrain'||mode==='terrainErase'?$('terrain-color').value:mode==='windzone'?'#91bed2':mode==='biome'?(currentBiome().terrain?.color ?? '#78a866'):readVegetation().color,
+    state:()=>({vegetation:readVegetation(),terrain:readTerrain(),scatter:readScatter(),wind:readWind(),biome:$('biome-preset').value,biomeSoftness:pct('biome-softness'),preview:preview.stats}),
     status:message=>{$('landscape-status').textContent=message;},dispose:()=>preview.dispose()};
 }
