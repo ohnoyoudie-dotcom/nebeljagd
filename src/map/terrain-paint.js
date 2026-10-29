@@ -110,7 +110,7 @@ export function terrainSurfaceDetail(type, x, z, seed = 1) {
 /** Return unpremultiplied linear RGB plus coverage in alpha. This alpha only
  * blends ground materials; vegetation texture transparency is never touched. */
 export function sampleTerrainPaint(index, x, z, target = {}, withDetail = false) {
-  let red = 0, green = 0, blue = 0, alpha = 0, paving = 0;
+  let red = 0, green = 0, blue = 0, alpha = 0, paving = 0, snow = 0;
   const stamps = index.near(x, z);
   // Front-to-back composition is algebraically identical to ordered overpaint,
   // but can stop once newer strokes fully cover older ones. This bounds work
@@ -126,11 +126,13 @@ export function sampleTerrainPaint(index, x, z, target = {}, withDetail = false)
     green += stamp.linear[1] * shade * amount;
     blue += stamp.linear[2] * shade * amount;
     paving += stamp.type === 'cobble' ? amount : 0;
+    snow += stamp.type === 'snow' ? amount : 0;
     alpha += amount;
     if (alpha > .99999) break;
   }
   target.r = alpha ? red / alpha : 0; target.g = alpha ? green / alpha : 0; target.b = alpha ? blue / alpha : 0; target.alpha = alpha;
   target.paving = alpha ? paving / alpha : 0;
+  target.snow = alpha ? snow / alpha : 0;
   return target;
 }
 
