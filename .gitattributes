@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# Generated standalone bundles preserve upstream Three.js shader strings verbatim.
+welt/*.html -whitespace
