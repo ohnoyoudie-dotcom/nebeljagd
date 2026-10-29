@@ -19,6 +19,8 @@ export async function createCharacter(scene) {
   const unitScale = new THREE.Vector3(1, 1, 1);
   const materials = new Set();
   const meshes = [];
+  const snowClipHeight = { value: -10000 };
+  const snowClipStrength = { value: 0 };
   model.traverse(part => {
     if (!part.isMesh) return;
     meshes.push(part);
@@ -27,6 +29,26 @@ export async function createCharacter(scene) {
     const clone = mat => {
       const own = mat.clone();
       own.forceSinglePass = true;
+      const originalCompile = own.onBeforeCompile;
+      const originalKey = own.customProgramCacheKey?.bind(own);
+      own.onBeforeCompile = shader => {
+        originalCompile?.(shader);
+        shader.uniforms.uCharacterSnowClipHeight = snowClipHeight;
+        shader.uniforms.uCharacterSnowClipStrength = snowClipStrength;
+        shader.vertexShader = `varying vec3 vCharacterSnowWorld;
+${shader.vertexShader}`.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+          vCharacterSnowWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
+        shader.fragmentShader = `uniform float uCharacterSnowClipHeight;
+uniform float uCharacterSnowClipStrength;
+varying vec3 vCharacterSnowWorld;
+${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+          if (uCharacterSnowClipStrength > .01) {
+            float snowEdge = sin(vCharacterSnowWorld.x * 17.3 + vCharacterSnowWorld.z * 11.7) * .010
+              + sin(vCharacterSnowWorld.x * 31.1 - vCharacterSnowWorld.z * 23.9) * .005;
+            if (vCharacterSnowWorld.y < uCharacterSnowClipHeight + snowEdge) discard;
+          }`);
+      };
+      own.customProgramCacheKey = () => `${originalKey?.() ?? ''}|nebeljagd-character-snow-clip-v1`;
       materials.add(own);
       return own;
     };
@@ -155,14 +177,19 @@ export async function createCharacter(scene) {
     format: 'GLB', skinned: true, joints: 18, clips: gltf.animations.map(clip => clip.name),
   };
 
-  function update(dt, time, { moving = false, speed = 5.6, direction = 0, inDanger = false, snowWeight = 0 } = {}) {
+  function update(dt, time, { moving = false, speed = 5.6, direction = 0, inDanger = false, snowWeight = 0, snowSurfaceY = null } = {}) {
     restoreAnimatedPose();
     const delta = Math.max(0, Math.min(dt, 0.1));
     const smoothing = 1 - Math.exp(-delta * 12);
-    const targetSnowSink = THREE.MathUtils.clamp(snowWeight, 0, 1) * .18;
+    const targetSnowSink = THREE.MathUtils.clamp(snowWeight, 0, 1) * .22;
     const snowResponse = 1 - Math.exp(-delta * (targetSnowSink > snowSink ? 10 : 7));
     snowSink = THREE.MathUtils.lerp(snowSink, targetSnowSink, snowResponse);
     if (Math.abs(snowSink - targetSnowSink) < .001) snowSink = targetSnowSink;
+    const snowClip = THREE.MathUtils.smoothstep(THREE.MathUtils.clamp(snowWeight, 0, 1), .45, .78);
+    snowClipStrength.value = snowClip;
+    snowClipHeight.value = snowClip > .01 && Number.isFinite(snowSurfaceY)
+      ? snowSurfaceY - THREE.MathUtils.lerp(.025, .005, snowClip)
+      : -10000;
     const movement = locomotion.update(delta, { moving, speed, direction,
       currentYaw: group.rotation.y, rolling: rollRemaining > 0, dead });
     idle.setEffectiveWeight(rollRemaining > 0 ? 1 : 1 - movement.walkWeight);
@@ -201,6 +228,8 @@ export async function createCharacter(scene) {
     group.userData.rolling = rollRemaining > 0;
     group.userData.snowWeight = THREE.MathUtils.clamp(snowWeight, 0, 1);
     group.userData.snowSinkMeters = snowSink;
+    group.userData.snowClipStrength = snowClip;
+    group.userData.snowClipHeight = snowClipHeight.value;
     if (attackRemaining > 0) {
       attackRemaining = Math.max(0, attackRemaining - delta);
       if (chest) chest.rotation.z += Math.sin((1 - attackRemaining / .34) * Math.PI) * .08;
@@ -222,7 +251,7 @@ export async function createCharacter(scene) {
       material.depthWrite = !translucent;
     }
     for (const mesh of meshes) mesh.castShadow = !concealed;
-    const silhouetteTarget = concealed ? 0.06 : inDanger ? 0.14 : 0.045;
+    const silhouetteTarget = snowClip > .08 ? 0 : concealed ? 0.06 : inDanger ? 0.14 : 0.045;
     silhouetteMaterial.opacity = THREE.MathUtils.lerp(silhouetteMaterial.opacity,
       silhouetteTarget, 1 - Math.exp(-delta * 6));
     group.userData.localSilhouetteOpacity = silhouetteMaterial.opacity;
@@ -232,12 +261,12 @@ export async function createCharacter(scene) {
   return {
     group, update,
     resetMotion(direction = group.rotation.y) {
-      locomotion.reset(); rollRemaining = 0; attackRemaining = 0; snowSink = 0;
+      locomotion.reset(); rollRemaining = 0; attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
       if (Number.isFinite(direction)) group.rotation.y = direction;
       rollPivot.rotation.set(0, 0, 0); rollPivot.position.y = 1.025;
       model.scale.copy(unitScale);
       group.userData.rolling = false;
-      group.userData.snowWeight = 0; group.userData.snowSinkMeters = 0;
+      group.userData.snowWeight = 0; group.userData.snowSinkMeters = 0; group.userData.snowClipStrength = 0;
       group.userData.locomotion = locomotion.update(0, { direction: group.rotation.y, currentYaw: group.rotation.y });
     },
     setCombatState,
