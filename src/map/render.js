@@ -1,5 +1,6 @@
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getWorldmapStats, validateWorldmap } from './model.js';
+import { biomePreset } from './landscape.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
@@ -93,7 +94,7 @@ export function renderWorldmapSvg(map, options = {}) {
   const { minX, minZ, maxX, maxZ } = map.bounds;
   const width = maxX - minX, height = maxZ - minZ;
   const stats = getWorldmapStats(map);
-  const terrain = map.landscape?.terrain ?? [], windZones = map.landscape?.windZones ?? [];
+  const terrain = map.landscape?.terrain ?? [], paintedBiomes = map.landscape?.biomes ?? [], windZones = map.landscape?.windZones ?? [];
   const zoneRadius = Number.isFinite(options.zoneRadius) ? Math.max(0, Math.min(1e7, options.zoneRadius)) : map.zone.initialRadius;
   const coast = points(map.island.points);
   const out = [
@@ -113,6 +114,12 @@ export function renderWorldmapSvg(map, options = {}) {
     '    <pattern id="world-pattern-dune" width="115" height="95" patternUnits="userSpaceOnUse"><path d="M9,35Q28,14 50,35 M60,80Q82,57 106,80" fill="none" stroke="#a78651" stroke-width="2" opacity=".35"/></pattern>',
     ...objectSymbols.map(symbol => `    ${symbol}`),
     ...terrain.map(stamp => `    <radialGradient id="world-terrain-${escape(stamp.id)}"><stop offset="0" stop-color="${escape(stamp.color)}" stop-opacity="${number(stamp.strength)}"/><stop offset="${number(stamp.hardness * 100)}%" stop-color="${escape(stamp.color)}" stop-opacity="${number(stamp.strength)}"/><stop offset="100%" stop-color="${escape(stamp.color)}" stop-opacity="${stamp.hardness >= .999 ? number(stamp.strength) : 0}"/></radialGradient>`),
+    ...paintedBiomes.map(stamp => {
+      const color = biomePreset(stamp.presetId)?.terrain?.color ?? '#78a866';
+      const softness = Number.isFinite(stamp.softness) ? Math.max(0, Math.min(1, stamp.softness)) : .6;
+      const inner = (1 - softness) * 100, alpha = Math.max(.08, Math.min(.32, (stamp.strength ?? 1) * .26));
+      return `    <radialGradient id="world-biome-${escape(stamp.id)}"><stop offset="0" stop-color="${escape(color)}" stop-opacity="${number(alpha)}"/><stop offset="${number(inner)}%" stop-color="${escape(color)}" stop-opacity="${number(alpha)}"/><stop offset="100%" stop-color="${escape(color)}" stop-opacity="0"/></radialGradient>`;
+    }),
     '  </defs>',
     '  <g id="sea" data-layer="sea" inkscape:groupmode="layer" inkscape:label="Meer">',
     `    <rect x="${minX}" y="${minZ}" width="${width}" height="${height}" fill="url(#world-sea)"/>`,
@@ -137,6 +144,14 @@ export function renderWorldmapSvg(map, options = {}) {
     out.push('  <g id="terrain-paint" data-layer="terrain-paint" inkscape:groupmode="layer" inkscape:label="Gemalter Boden" clip-path="url(#world-island-clip)">');
     for (const stamp of terrain) out.push(`    <g ${feature('terrain', stamp.id)} transform="translate(${number(stamp.position[0])} ${number(stamp.position[1])})"><title>${escape(stamp.name)} · ${escape(stamp.type)}</title><circle r="${number(stamp.radius)}" fill="url(#world-terrain-${escape(stamp.id)})" pointer-events="all"/></g>`);
     out.push('  </g>');
+    if (paintedBiomes.length) {
+      out.push('  <g id="biome-paint" data-layer="biome-paint" inkscape:groupmode="layer" inkscape:label="Gemalte Biome" clip-path="url(#world-island-clip)" pointer-events="none">');
+      for (const stamp of paintedBiomes) {
+        const color = biomePreset(stamp.presetId)?.terrain?.color ?? '#78a866';
+        out.push(`    <g transform="translate(${number(stamp.position[0])} ${number(stamp.position[1])})"><circle r="${number(stamp.radius)}" fill="url(#world-biome-${escape(stamp.id)})" stroke="${escape(color)}" stroke-opacity=".45" stroke-width=".8" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/></g>`);
+      }
+      out.push('  </g>');
+    }
   }
   out.push('  <g id="rivers" data-layer="rivers" inkscape:groupmode="layer" inkscape:label="Flüsse" clip-path="url(#world-island-clip)" fill="none" stroke-linecap="round" stroke-linejoin="round">');
   for (const river of map.rivers) out.push(`    <g ${feature('river', river.id)}><title>${escape(river.name)}</title><polyline points="${points(river.points)}" stroke="#315f6a" stroke-width="${number(river.width + 4)}"/><polyline points="${points(river.points)}" stroke="#72b0ba" stroke-width="${number(river.width)}"/><polyline points="${points(river.points)}" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>`);
