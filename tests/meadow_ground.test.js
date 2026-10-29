@@ -1,14 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { groundGrassSettings, regionHasGroundGrass, createGroundGrassExclusion } from '../src/meadow-ground.js';
+import { groundGrassSettings, regionHasGroundGrass, grassBiomeProfile, createGroundGrassExclusion } from '../src/meadow-ground.js';
 
-test('dense meadow is enabled by default for green biomes and keeps non-green biomes clear', () => {
+test('dense meadow adapts automatically across grassy biomes including snow', () => {
   const settings = groundGrassSettings({});
   assert.equal(settings.enabled, true);
   assert.equal(regionHasGroundGrass({ biome: 'meadow' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'forest' }, settings), true);
-  assert.equal(regionHasGroundGrass({ biome: 'snow' }, settings), false);
+  assert.equal(regionHasGroundGrass({ biome: 'heath' }, settings), true);
+  assert.equal(regionHasGroundGrass({ biome: 'marsh' }, settings), true);
+  assert.equal(regionHasGroundGrass({ biome: 'snow' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'dunes' }, settings), false);
+  const snow = grassBiomeProfile('snow');
+  assert.equal(snow.snowy, true);
+  assert.equal(snow.density, .65);
+  assert.equal(snow.color, '#87988b');
+  assert.ok(snow.groundBlend > grassBiomeProfile('meadow').groundBlend);
 });
 
 test('old explicit ground-cover switch is still respected', () => {
