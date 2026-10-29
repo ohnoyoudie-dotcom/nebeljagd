@@ -21,9 +21,12 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   assert.equal(footprints.inspect().alignedToVisualSnowSurface, true);
   assert.equal(footprints.inspect().trackColor, '#dbe5e7');
   assert.equal(footprints.inspect().recommendedVisualSinkMeters, .22);
-  assert.ok(footprints.inspect().wadingMounds >= 2, 'deep snow builds low banks around moving feet');
+  assert.equal(footprints.inspect().wadingMounds, 1, 'moving in deep snow creates one shallow forward ridge');
+  assert.equal(footprints.inspect().wadingStyle, 'single-forward-ridge-only-while-moving');
   assert.equal(footprints.inspect().fadeStartSeconds, 6);
   assert.equal(footprints.inspect().lifetimeSeconds, 10);
+  footprints.update(.3, [{ id:'player', x:0, z:.7, direction:0, moving:false, speed:0 }]);
+  assert.equal(footprints.inspect().wadingMounds, 0, 'standing does not create a snow ring around the feet');
   footprints.update(7, []);
   assert.equal(footprints.inspect().count, 1, 'print remains while fading');
   assert.ok(footprints.inspect().averageFade > .79 && footprints.inspect().averageFade < .81, 'fade is gradual between 6 and 10 seconds');
