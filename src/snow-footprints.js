@@ -139,7 +139,9 @@ export function createSnowFootprints(root, world) {
   function add(source, time) {
     const direction = Number.isFinite(source.direction) ? source.direction : 0;
     const side = source.side ?? 1;
-    const lateral = side * (source.lateral ?? .105);
+    const seed = created + 1;
+    const lateralJitter = (hash(seed, 101) - .5) * .032;
+    const lateral = side * (source.lateral ?? .105) + lateralJitter;
     const x = source.x + Math.cos(direction) * lateral;
     const z = source.z - Math.sin(direction) * lateral;
     const snowWeight = snowWeightAt(world, x, z);
@@ -150,7 +152,10 @@ export function createSnowFootprints(root, world) {
     prints.push({
       x, z, y,
       direction, born: time,
-      scale: .92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18),
+      rotationJitter: (hash(seed, 103) - .5) * .080,
+      scale: (.92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18))
+        * (.96 + hash(seed, 107) * .08),
+      strength: .90 + hash(seed, 109) * .18,
       snowWeight,
     });
     if (prints.length > MAX_FOOTPRINTS) prints.shift();
@@ -214,11 +219,11 @@ export function createSnowFootprints(root, world) {
       if (write !== read) prints[write] = print;
       const fade = age <= FADE_START ? 1 : Math.max(0, 1 - (age - FADE_START) / (LIFETIME - FADE_START));
       transform.position.set(print.x, print.y, print.z);
-      transform.rotation.set(0, print.direction + Math.PI, 0);
+      transform.rotation.set(0, print.direction + Math.PI + print.rotationJitter, 0);
       transform.scale.setScalar(print.scale);
       transform.updateMatrix();
       mesh.setMatrixAt(write, transform.matrix);
-      const visibleFade = fade * THREE.MathUtils.clamp(print.snowWeight * 1.15, 0, 1);
+      const visibleFade = fade * print.strength * THREE.MathUtils.clamp(print.snowWeight * 1.15, 0, 1);
       fades.setX(write, visibleFade); fadeTotal += visibleFade;
       write++;
     }
@@ -254,6 +259,10 @@ export function createSnowFootprints(root, world) {
         trackColor: '#cfdadd', trackVisibility: 'moderately-strong-compressed-snow',
         depressionStyle: 'soft-dark-center-with-light-compressed-rim',
         footprintFacingOffsetRadians: Math.PI,
+        footprintRotationJitterRadians: .04,
+        footprintScaleVariation: [.96, 1.04],
+        footprintIntensityVariation: [.90, 1.08],
+        footprintLateralJitterMeters: .016,
         wadingMounds: 0, maximumWadingMounds: 0, wadingStyle: 'removed',
         activeStepParticles: particles.length, maximumStepParticles: MAX_STEP_PARTICLES,
         particlesPerStep: PARTICLES_PER_STEP, particleLifetimeSeconds: [.30, .48],
