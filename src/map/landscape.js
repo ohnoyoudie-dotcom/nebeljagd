@@ -10,7 +10,7 @@ const freeze = value => {
 const clone = value => JSON.parse(JSON.stringify(value));
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
-export const LANDSCAPE_LIMITS = freeze({ terrain: 4096, windZones: 32, biomes: 1024, presets: 32 });
+export const LANDSCAPE_LIMITS = freeze({ terrain: 4096, windZones: 32, biomes: 2048, presets: 32 });
 export const WIND_DEFAULTS = freeze({ enabled: true, strength: .35, speed: 1,
   direction: .65, gusts: true, gustStrength: .35, gustFrequency: .18, turbulence: .2 });
 
@@ -52,13 +52,21 @@ const biome = (id, label, terrain, vegetation, distribution, overrides = {}) => 
 export const BIOME_PRESETS = freeze([
   biome('meadow', 'Wiese', 'meadow', 'meadow', scatter(.25, [['grass', 'short', .75], ['flower', 'rei-white', .25]])),
   biome('forest', 'Wald', 'forest', 'forest', scatter(.5, [['tree', 'rei-tree01', .45], ['bush', 'rei-bush', .2], ['grass', 'short', .25], ['rock', 'granite', .1]], { minDistance: 4 })),
+  biome('heath', 'Heide', 'earth', 'dry', scatter(.22, [['grass', 'short', .65], ['flower', 'rei-gold', .2], ['rock', 'granite', .15]], { minDistance: 4 }), { color: '#a69a58', density: .58, groundBlend: .62, saturation: .72 }),
   biome('autumn', 'Herbstwald', 'earth', 'dry', scatter(.4, [['tree', 'kit-oak-autumn', .6], ['grass', 'short', .3], ['flower', 'rei-gold', .1]], { minDistance: 4 }), { color: '#b49455', groundBlend: .6 }),
-  biome('swamp', 'Sumpf', 'mud', 'swamp', scatter(.45, [['grass', 'short', .65], ['bush', 'rei-bush', .25], ['tree', 'rei-tree02', .1]])),
+  biome('swamp', 'Moor', 'mud', 'swamp', scatter(.45, [['grass', 'short', .65], ['bush', 'rei-bush', .25], ['tree', 'rei-tree02', .1]])),
   biome('desert', 'Wüste', 'sand', 'dry', scatter(.12, [['rock', 'granite', .6], ['grass', 'short', .4]], { minDistance: 5 }), { density: .3, groundBlend: .65 }),
-  biome('snow', 'Schneegebiet', 'snow', 'short', scatter(.18, [['tree', 'pine', .65], ['rock', 'granite', .25], ['grass', 'short', .1]], { minDistance: 5 }), { color: '#9aa792', density: .3, groundBlend: .7, saturation: .65 }),
+  biome('snow', 'Schnee', 'snow', 'short', scatter(.18, [['tree', 'pine', .65], ['rock', 'granite', .25], ['grass', 'short', .1]], { minDistance: 5 }), { color: '#9aa792', density: .3, groundBlend: .7, saturation: .65 }),
   biome('rock', 'Felslandschaft', 'rock', 'forest', scatter(.3, [['rock', 'basalt', .65], ['rock', 'granite', .2], ['grass', 'short', .15]], { minDistance: 3.5 }), { density: .4 }),
   biome('village', 'Dorf und Bauernhof', 'earth', 'meadow', scatter(.18, [['grass', 'short', .5], ['flower', 'rei-gold', .25], ['flower', 'rei-white', .15], ['bush', 'rei-bush', .1]], { minDistance: 2.5 })),
 ]);
+
+const BIOME_RUNTIME_IDS = freeze({
+  meadow: 'meadow', forest: 'forest', heath: 'heath', autumn: 'forest',
+  swamp: 'marsh', desert: 'dunes', snow: 'snow', rock: 'volcanic', village: 'meadow',
+});
+export function biomeRuntimeId(id) { return BIOME_RUNTIME_IDS[id] ?? id ?? 'meadow'; }
+export const PRIMARY_BIOME_IDS = freeze(['meadow', 'forest', 'heath', 'swamp', 'snow']);
 
 /** A read of an old map neither migrates it nor adds saved objects. Lists refer
  * to the existing document; callers must explicitly clone before editing. */
@@ -182,11 +190,11 @@ export function validateLandscape(map, { ids = new Set(), checkPoint } = {}) {
     if (!inRange(item.radius, .5, 250)) add('Windzone: Radius muss zwischen 0,5 und 250 liegen.');
     ranges(item, { falloff: [0, 1], strength: [0, 1], direction: windRanges.direction }, 'Windzone');
   }
-  for (const item of list('biomes')) if (shape(item, ['id', 'name', 'presetId', 'position', 'radius', 'strength', 'seed'], 'Biomfläche')) {
+  for (const item of list('biomes')) if (shape(item, ['id', 'name', 'presetId', 'position', 'radius', 'strength', 'softness', 'seed'], 'Biomfläche')) {
     identity(item, 'Biomfläche', false); point(item.position, 'Biomfläche'); seed(item.seed, 'Biomfläche');
     if (!(typeof item.presetId === 'string' && ID.test(item.presetId))) add('Biomfläche: Ungültige Preset-ID.');
     if (!inRange(item.radius, .5, 80)) add('Biomfläche: Radius muss zwischen 0,5 und 80 liegen.');
-    ranges(item, { strength: [0, 1] }, 'Biomfläche');
+    ranges(item, { strength: [0, 1], softness: [0, 1] }, 'Biomfläche');
   }
   for (const item of list('presets')) if (shape(item, ['id', 'name', 'terrain', 'vegetation', 'scatter', 'wind', 'brushRadius'], 'Landschaftsvorlage')) {
     identity(item, 'Landschaftsvorlage');
