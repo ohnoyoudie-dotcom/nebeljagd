@@ -84,6 +84,8 @@ with sync_playwright() as p:
     assert snow_state['meadow']['visibleDetailInstances']>5
     assert snow_state['meadow']['visibleDetailInstances'] < state['meadow']['visibleDetailInstances']*.35
     assert snow_state['terrainPaint']['snowRelief'] is True
+    assert snow_state['terrainPaint']['snowMicroRelief'] is True
+    assert snow_state['terrainPaint']['snowCrystalHighlights'] is True
     assert snow_state['terrainPaint']['snowMaskResidentChunks']>0
     assert 0.19<=snow_state['terrainPaint']['snowVisualDepthMeters']<=0.22
     assert snow_state['snowCover']['enabled'] is True
@@ -93,6 +95,11 @@ with sync_playwright() as p:
     assert 0.17<=snow_state['snowCover']['nominalSurfaceDepthMeters']<=0.21
     assert snow_state['snowCover']['multiScaleSurface'] is True
     assert snow_state['snowCover']['windShading'] is True
+    assert snow_state['snowCover']['microRelief'] is True
+    assert snow_state['snowCover']['microCrystalHighlights'] is True
+    assert snow_state['snowCover']['windRidges']=='long-low-prevailing-direction'
+    assert snow_state['snowCover']['objectSnowCaps']>=0
+    assert snow_state['snowCover']['treeBaseDrifts']>=0
     assert snow_state['snowCover']['layerStyle']=='overlapping-irregular-powder-with-wind-drifts'
     assert snow_state['snowCover']['broadDriftAmplitudeMeters']>snow_state['snowCover']['fineDriftAmplitudeMeters']
     page.keyboard.down('w')
@@ -109,6 +116,9 @@ with sync_playwright() as p:
     assert track_state['fadeStartSeconds']==6
     assert track_state['lifetimeSeconds']==10
     assert track_state['trackColor']=='#cfdadd'
+    assert track_state['footprintRotationJitterRadians']==.04
+    assert track_state['footprintScaleVariation']==[.96,1.04]
+    assert track_state['footprintIntensityVariation']==[.90,1.08]
     assert moving_track_state['wadingMounds']==0
     assert moving_track_state['wadingStyle']=='removed'
     assert moving_track_state['particleBursts']>0
