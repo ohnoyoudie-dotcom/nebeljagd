@@ -373,7 +373,8 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       pendingChunks: queue.length, createdChunks, source: 'procedural dense Rei-style meadow', cardsPerTuft: 3, lighting: 'color-preserving-unlit',
       colorVariation: 'per-tuft-hsl', detailLayer: 'global-large-solid-blades', layeredMeadow: true, characterParting: true,
       interactorCount: uniforms.uGrassInteractorCount.value, maximumInteractors: maxInteractors,
-      interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18 }),
+      interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
+      firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
 }
