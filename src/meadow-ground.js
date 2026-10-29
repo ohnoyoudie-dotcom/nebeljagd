@@ -2,10 +2,10 @@ import * as THREE from 'three';
 import { distanceToSegment } from './map/model.js';
 
 const GRASS_BIOME_PROFILES = {
-  meadow: { color: '#4b7331', detailColor: '#82aa58', density: 1, groundBlend: .38 },
-  forest: { color: '#355d32', detailColor: '#64884d', density: .88, groundBlend: .42 },
-  heath: { color: '#7c7839', detailColor: '#aaa35a', density: .78, groundBlend: .46 },
-  marsh: { color: '#37665b', detailColor: '#66927a', density: .82, groundBlend: .48 },
+  meadow: { color: '#4b7331', detailColor: '#668f49', density: 1, groundBlend: .38 },
+  forest: { color: '#355d32', detailColor: '#527540', density: .88, groundBlend: .42 },
+  heath: { color: '#7c7839', detailColor: '#91894b', density: .78, groundBlend: .46 },
+  marsh: { color: '#37665b', detailColor: '#527b68', density: .82, groundBlend: .48 },
   snow: { color: '#c7d2cc', detailColor: '#dce5e2', density: .48, groundBlend: .86, snowy: true },
 };
 const GREEN_BIOMES = new Set(Object.keys(GRASS_BIOME_PROFILES));
@@ -37,7 +37,7 @@ export function regionHasGroundGrass(region, settings) {
 
 export function grassBiomeProfile(biome, fallbackColor = '#4b7331') {
   const profile = GRASS_BIOME_PROFILES[biome];
-  return profile ? { ...profile } : { color: fallbackColor, detailColor: '#82aa58', density: 1, groundBlend: .38 };
+  return profile ? { ...profile } : { color: fallbackColor, detailColor: '#668f49', density: 1, groundBlend: .38 };
 }
 
 export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
@@ -307,7 +307,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
           float detailHeight=smoothstep(0.,1.,vDetailHeight);
           ${snowy
             ? "diffuseColor.rgb*=mix(vec3(.92,.97,.98),vec3(1.08,1.10,1.12),detailHeight); diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.99,1.0,1.0),pow(detailHeight,1.15)*.62);"
-            : "diffuseColor.rgb*=mix(vec3(1.00,1.05,.92),vec3(1.18,1.21,1.04),detailHeight);"}
+            : "diffuseColor.rgb*=mix(vec3(.92,.98,.84),vec3(1.10,1.14,.98),detailHeight);"}
         `);
     };
     detailMaterial.customProgramCacheKey = () => `nebeljagd-layered-meadow-biome-material-v1:${key}`;
