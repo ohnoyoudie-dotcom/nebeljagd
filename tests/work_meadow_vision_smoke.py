@@ -75,6 +75,22 @@ with sync_playwright() as p:
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
 
     editor=browser.new_page(viewport={'width':1440,'height':900})
+    editor.add_init_script("""() => {
+      window.__mapSavePickerCalls=0;
+      window.__mapSaveWrites=[];
+      window.showSaveFilePicker=async()=>{
+        window.__mapSavePickerCalls++;
+        return {
+          name:'worldmap.json',
+          queryPermission:async()=> 'granted',
+          requestPermission:async()=> 'granted',
+          createWritable:async()=>({
+            write:async value=>window.__mapSaveWrites.push(String(value)),
+            close:async()=>{}
+          })
+        };
+      };
+    }""")
     editor_errors=[]
     editor.on('pageerror',lambda e:editor_errors.append(str(e)))
     editor.on('console',lambda m:editor_errors.append(m.text) if m.type=='error' and 'favicon' not in m.text else None)
@@ -89,7 +105,20 @@ with sync_playwright() as p:
     assert editor.locator('#biome-preset').input_value()=='snow'
     assert editor.locator('[data-biome-choice="snow"]').get_attribute('aria-pressed')=='true'
     assert 'Boden und Gras' in editor.locator('.biome-intro').inner_text()
-    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,'snowState':snow_state,'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count()}}
+    assert 'worldmap.json speichern' in editor.locator('#export-json').inner_text()
+    editor.locator('#export-json').click()
+    editor.wait_for_function("window.__mapSaveWrites.length===1",timeout=10000)
+    editor.locator('#export-json').click()
+    editor.wait_for_function("window.__mapSaveWrites.length===2",timeout=10000)
+    editor.keyboard.press('Control+s')
+    editor.wait_for_function("window.__mapSaveWrites.length===3",timeout=10000)
+    file_save=editor.evaluate("()=>({pickerCalls:window.__mapSavePickerCalls,writes:window.__mapSaveWrites.length,state:nebeljagdMapTestState().fileSave,status:document.querySelector('#save-status').textContent})")
+    assert file_save['pickerCalls']==1
+    assert file_save['writes']==3
+    assert file_save['state']['directSupported'] is True
+    assert file_save['state']['connectedFile']=='worldmap.json'
+    assert 'Gespeichert' in file_save['status']
+    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,'snowState':snow_state,'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count(),'fileSave':file_save}}
     browser.close()
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
 if not report['passed']:
