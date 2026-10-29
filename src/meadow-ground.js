@@ -301,14 +301,14 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         float detailHeight=smoothstep(0.,1.,vDetailHeight);
         float preDetailLuma=dot(diffuseColor.rgb,vec3(.299,.587,.114));
         float snowyDetail=smoothstep(.34,.56,preDetailLuma);
-        vec3 normalDetailTone=mix(vec3(.58,.70,.46),vec3(1.18,1.22,1.02),detailHeight);
+        vec3 normalDetailTone=mix(vec3(.92,1.00,.78),vec3(1.22,1.25,1.05),detailHeight);
         vec3 snowDetailTone=mix(vec3(.82,.90,.91),vec3(1.04,1.07,1.10),detailHeight);
         diffuseColor.rgb*=mix(normalDetailTone,snowDetailTone,snowyDetail);
         vec3 snowDetailTip=mix(vec3(.80,.87,.88),vec3(.99,1.0,1.0),detailHeight);
         diffuseColor.rgb=mix(diffuseColor.rgb,snowDetailTip,snowyDetail*(.30+pow(detailHeight,1.15)*.64));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v4-biome-tone';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v5-brighter-green';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
@@ -366,7 +366,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         tint.set(profile.color)
           .offsetHSL((hash(gx,gz,211)-.5)*(profile.snowy ? .014 : .026), (hash(gx,gz,223)-.5)*(profile.snowy ? .04 : .08), (hash(gx,gz,227)-.5)*.05)
           .lerp(ground, Math.min(.72, profile.groundBlend + .08))
-          .multiplyScalar(profile.snowy ? .98 + hash(gx,gz,229)*.08 : .92 + hash(gx,gz,229)*.16);
+          .multiplyScalar(profile.snowy ? .98 + hash(gx,gz,229)*.08 : 1.06 + hash(gx,gz,229)*.16);
         detailMesh.setColorAt(i, tint);
       }
       detailMesh.instanceMatrix.needsUpdate = true; if (detailMesh.instanceColor) detailMesh.instanceColor.needsUpdate = true;
@@ -436,6 +436,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
       firstInteractorStrength: uniforms.uGrassInteractorMotion.value[0].z,
       curvatureVariation: 'per-tuft', windVariation: 'per-tuft-phase-speed-amplitude',
       recoveryModel: 'variable-directional-wake', biomeAdaptiveColor: true, snowTipCoating: true,
+      detailLayerTone: 'brighter-green',
       biomeProfiles: Object.keys(GRASS_BIOME_PROFILES) }),
     dispose() { clear(); root.remove(group); geometry.dispose(); detailGeometry.dispose(); material.dispose(); detailMaterial.dispose(); texture.dispose(); },
   };
