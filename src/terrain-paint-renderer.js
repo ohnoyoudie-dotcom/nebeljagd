@@ -21,7 +21,7 @@ export function terrainPaintTextureSize(bounds, quality = 'high', budgetBytes = 
 }
 
 /** Pure byte baking also runs in Node tests, without Canvas or WebGL. */
-export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null, snowMask = null) {
+export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null, snowMask = null, snowWeightAt = null) {
   const bytes = new Uint8Array(width * height * 4), sample = {};
   const sx = (bounds.maxX - bounds.minX) / width, sz = (bounds.maxZ - bounds.minZ) / height;
   for (let row = 0; row < height; row++) for (let column = 0; column < width; column++) {
@@ -30,12 +30,18 @@ export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null
     bytes[offset] = toByte(sample.r); bytes[offset + 1] = toByte(sample.g); bytes[offset + 2] = toByte(sample.b);
     bytes[offset + 3] = Math.round(sample.alpha * 255);
     if (pavingMask) pavingMask[row * width + column] = Math.round(sample.paving * 255);
-    if (snowMask) snowMask[row * width + column] = Math.round((sample.snow ?? 0) * 255);
+    if (snowMask) {
+      const x = bounds.minX + (column + .5) * sx, z = bounds.minZ + (row + .5) * sz;
+      const baseSnow = snowWeightAt ? THREE.MathUtils.clamp(snowWeightAt(x, z), 0, 1) : 0;
+      const paintedSnow = (sample.snow ?? 0) * sample.alpha;
+      const finalSnow = baseSnow * (1 - sample.alpha) + paintedSnow;
+      snowMask[row * width + column] = Math.round(THREE.MathUtils.clamp(finalSnow, 0, 1) * 255);
+    }
   }
   return bytes;
 }
 
-export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTexture) {
+export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTexture, snowWeightAt = null) {
   const material = baseMaterial.clone();
   const empty = new THREE.DataTexture(new Uint8Array(4), 1, 1); empty.needsUpdate = true;
   const paintUniform = { value: empty }, pavingMaskUniform = { value: empty }, snowMaskUniform = { value: empty },
@@ -92,7 +98,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       const started = performance.now();
       release();
       const mask = new Uint8Array(next.width * next.height), snowMask = new Uint8Array(next.width * next.height);
-      texture = new THREE.DataTexture(bakeTerrainPaint(index, bounds, next.width, next.height, mask, snowMask), next.width, next.height, THREE.RGBAFormat, THREE.UnsignedByteType);
+      texture = new THREE.DataTexture(bakeTerrainPaint(index, bounds, next.width, next.height, mask, snowMask, snowWeightAt), next.width, next.height, THREE.RGBAFormat, THREE.UnsignedByteType);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.magFilter = texture.minFilter = THREE.LinearFilter;
       texture.generateMipmaps = false; texture.flipY = false; texture.needsUpdate = true;
