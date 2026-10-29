@@ -77,13 +77,26 @@ with sync_playwright() as p:
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleDetailInstances>5",timeout=120000)
     snow_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
-      biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
+      biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position,
+      terrainPaint:s.world.stats.terrainPaint, footprints:s.snowFootprints, elapsed:s.elapsed};}''')
     assert snow_state['biome']=='snow'
     assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.08
     assert snow_state['meadow']['visibleDetailInstances']>5
     assert snow_state['meadow']['visibleDetailInstances'] < state['meadow']['visibleDetailInstances']*.35
+    assert snow_state['terrainPaint']['snowRelief'] is True
+    assert snow_state['terrainPaint']['snowMaskResidentChunks']>0
+    page.keyboard.down('w')
+    page.wait_for_function("nebeljagdTestState().snowFootprints.count>0",timeout=120000)
+    page.keyboard.up('w')
+    track_state=page.evaluate("nebeljagdTestState().snowFootprints")
+    assert track_state['singleInstancedDraw'] is True
+    assert track_state['fadeStartSeconds']==6
+    assert track_state['lifetimeSeconds']==10
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
+    elapsed_now=page.evaluate("nebeljagdTestState().elapsed")
+    page.evaluate("(t)=>nebeljagdInspect({x:-285,z:-400,elapsed:t+10.5})",elapsed_now)
+    page.wait_for_function("nebeljagdTestState().snowFootprints.count===0",timeout=10000)
 
     page.evaluate("nebeljagdInspect({x:300,z:-310})")
     page.wait_for_function("nebeljagdTestState().world.biome==='heath'",timeout=120000)
@@ -150,7 +163,7 @@ with sync_playwright() as p:
     assert file_save['state']['connectedFile']=='worldmap.json'
     assert 'Gespeichert' in file_save['status']
     report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,
-      'snowState':snow_state,'heathState':heath_state,'marshState':marsh_state,
+      'snowState':snow_state,'snowTracks':track_state,'heathState':heath_state,'marshState':marsh_state,
       'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count(),'fileSave':file_save}}
     browser.close()
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
