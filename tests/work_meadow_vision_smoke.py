@@ -85,12 +85,13 @@ with sync_playwright() as p:
     assert snow_state['meadow']['visibleDetailInstances'] < state['meadow']['visibleDetailInstances']*.35
     assert snow_state['terrainPaint']['snowRelief'] is True
     assert snow_state['terrainPaint']['snowMaskResidentChunks']>0
-    assert 0.04<=snow_state['terrainPaint']['snowVisualDepthMeters']<=0.06
+    assert 0.09<=snow_state['terrainPaint']['snowVisualDepthMeters']<=0.11
     page.keyboard.down('w')
     page.wait_for_function("nebeljagdTestState().snowFootprints.count>0",timeout=120000)
     page.keyboard.up('w')
     track_state=page.evaluate("nebeljagdTestState().snowFootprints")
     assert track_state['singleInstancedDraw'] is True
+    assert track_state['alignedToVisualSnowSurface'] is True
     assert track_state['fadeStartSeconds']==6
     assert track_state['lifetimeSeconds']==10
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
