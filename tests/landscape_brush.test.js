@@ -104,12 +104,15 @@ test('natural scatter uses saved GLB variants, variable rotation/scale, minimum 
   assert.equal(validateWorldmap({ ...map, objects: stroke.objects }).valid, true);
 });
 
-test('all eight biome presets store concrete paint/objects and erasure only returns requested centres', () => {
+test('all biome presets store soft surface paint without multiplying automatic grass objects', () => {
   for (const preset of BIOME_PRESETS) {
-    const map = fixture(), stroke = createBiomeStroke(map, { radius: 25, seed: 101, presetId: preset.id });
+    const map = fixture(), stroke = createBiomeStroke(map, { radius: 25, softness: .7, seed: 101, presetId: preset.id });
     stroke.sample([-90, -100]);
     assert.equal(stroke.terrain.length, 1, preset.id); assert.equal(stroke.biomes.length, 1, preset.id);
+    assert.equal(stroke.objects.length, 0, 'biome painting uses automatic runtime cover instead of permanent grass objects');
     assert.equal(stroke.biomes[0].presetId, preset.id);
+    assert.equal(stroke.biomes[0].softness, .7);
+    assert.equal(stroke.terrain[0].hardness, .3);
     assert.equal(stroke.terrain[0].type, preset.terrain.type);
     map.objects.push(...stroke.objects);
     map.landscape = { ...getLandscape(map), terrain: stroke.terrain, biomes: stroke.biomes };
@@ -118,6 +121,8 @@ test('all eight biome presets store concrete paint/objects and erasure only retu
     const erased = eraseLandscapeAt(map, [-120, -100], [-60, -100], 2, 'terrain');
     assert.equal(erased.terrainIds.length, 1); assert.equal(erased.biomeIds.length, 0);
     assert.equal(JSON.stringify(map), before);
+    const surface = eraseLandscapeAt(map, [-120, -100], [-60, -100], 2, 'surface');
+    assert.equal(surface.terrainIds.length, 1); assert.equal(surface.biomeIds.length, 1);
     const all = eraseLandscapeAt(map, [-120, -100], [-60, -100], 2, 'all');
     assert.equal(all.biomeIds.length, 1);
   }
