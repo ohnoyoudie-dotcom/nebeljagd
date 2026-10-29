@@ -45,6 +45,8 @@ with sync_playwright() as p:
     assert state['meadow']['curvatureVariation']=='per-tuft'
     assert state['meadow']['windVariation']=='per-tuft-phase-speed-amplitude'
     assert state['meadow']['recoveryModel']=='variable-directional-wake'
+    assert state['meadow']['biomeAdaptiveColor'] is True
+    assert 'snow' in state['meadow']['biomeProfiles']
     assert recovery['meadowStrength']>0
     assert recovery['meadowStrength']<state['meadow']['firstInteractorStrength']
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
@@ -65,7 +67,19 @@ with sync_playwright() as p:
     assert state['shadows']['normalBias']<=.015
     data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-meadow-vision.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
-    report={'passed':not errors,'errors':errors,'state':state}
+
+    page.evaluate("nebeljagdInspect({x:-285,z:-400})")
+    page.wait_for_function("nebeljagdTestState().world.biome==='snow'",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleInstances>900",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    snow_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
+      biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
+    assert snow_state['biome']=='snow'
+    assert snow_state['meadow']['visibleInstances']>900
+    snow_data=page.evaluate('nebeljagdCaptureFrame()')
+    (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
+
+    report={'passed':not errors,'errors':errors,'state':state,'snowState':snow_state}
     browser.close()
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
 if not report['passed']:
