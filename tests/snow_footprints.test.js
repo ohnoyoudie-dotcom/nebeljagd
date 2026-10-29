@@ -22,7 +22,7 @@ test('snow footprints use one instanced pool and fade out after ten seconds', ()
   assert.equal(footprints.inspect().lifetimeSeconds, 10);
   footprints.update(7, []);
   assert.equal(footprints.inspect().count, 1, 'print remains while fading');
-  assert.ok(footprints.inspect().averageFade > .7 && footprints.inspect().averageFade < .8, 'fade is gradual between 6 and 10 seconds');
+  assert.ok(footprints.inspect().averageFade > .79 && footprints.inspect().averageFade < .81, 'fade is gradual between 6 and 10 seconds');
   footprints.update(10.21, []);
   assert.equal(footprints.inspect().count, 0, 'expired print is removed');
   footprints.dispose();
