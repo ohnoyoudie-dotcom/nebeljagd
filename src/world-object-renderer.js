@@ -11,6 +11,7 @@ import { createVegetationWind } from './vegetation-wind.js';
 import { buildVegetationPatch, buildKitGrassPatch, vegetationInstanceTint, vegetationTint, MAX_GRASS_INSTANCES, MAX_KIT_GRASS_INSTANCES } from './vegetation-patches.js';
 import { vegetationSettings } from './map/landscape.js';
 import { loadEnvironmentKit } from './environment-kit.js';
+import { grassBiomeProfile } from './meadow-ground.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
 import bushUrl from '../assets/imported/rei/runtime/bush.glb?url&inline';
@@ -77,6 +78,18 @@ function createGrassPrototypes(wind) {
     result.set(`grass:${variant}`, [{ geometry: variant === 'tall' ? tallGrassGeo : grassGeo,
       lowGeometry: variant === 'tall' ? tallGrassLowGeo : undefined, material, castShadow: false }]);
   }
+
+  const snow = grassBiomeProfile('snow');
+  const snowTallGeo = createHidingGrassGeometry({ rootColor: '#8f9f9b', tipColor: '#f4fbff' });
+  const snowTallLowGeo = createHidingGrassGeometry({ low: true, rootColor: '#8f9f9b', tipColor: '#f4fbff' });
+  const snowShortMaterial = wind.apply(new THREE.MeshStandardMaterial({
+    color: snow.color, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
+  }), { interactionResponse: .9 });
+  const snowTallMaterial = wind.apply(new THREE.MeshStandardMaterial({
+    color: '#ffffff', vertexColors: true, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
+  }), { interactionResponse: 1.15 });
+  result.set('grass:short:snow', [{ geometry: grassGeo, material: snowShortMaterial, castShadow: false }]);
+  result.set('grass:tall:snow', [{ geometry: snowTallGeo, lowGeometry: snowTallLowGeo, material: snowTallMaterial, castShadow: false }]);
   return result;
 }
 
@@ -189,7 +202,7 @@ async function createGrassPreview(root, { map, groundHeightAt = () => 0, colorAt
 
 /** Explicit object records are the only source of world props. Blades and flowers
  * within one editable patch are instanced details of that asset, not hidden map entries. */
-export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, quality = 'high', chunkSize = 64, previewOnly = false }) {
+export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, biomeAt = () => null, quality = 'high', chunkSize = 64, previewOnly = false }) {
   if (previewOnly) return createGrassPreview(root, { map, groundHeightAt, colorAt, quality });
   let mode = quality, shelter = null;
   const wind = createVegetationWind(map);
@@ -354,13 +367,16 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         patch.rootHeightRange[0] = Math.min(patch.rootHeightRange[0], rootY);
         patch.rootHeightRange[1] = Math.max(patch.rootHeightRange[1], rootY);
         let color = null;
-        if (configured) {
+        const biome = biomeAt?.(px, pz) ?? null;
+        const snowGrass = biome === 'snow' && (renderVariant === 'short' || renderVariant === 'tall');
+        if (configured && !snowGrass) {
           groundColor.set('#4e854b'); colorAt?.(px, pz, groundColor);
           color = vegetationInstanceTint(settings, px, pz, groundColor, kit ? 'tall' : renderVariant).toArray();
           if (patch.colorSamples.length < 3) patch.colorSamples.push({ position: [px, pz], ground: `#${groundColor.getHexString()}`,
             vegetation: `#${vegetationTint(settings, px, pz, groundColor).getHexString()}`, rootY });
         }
-        queue(`grass:${renderVariant}`, object, instance.position, instance.scale, instance.rotation, color);
+        const grassKey = snowGrass ? `grass:${renderVariant}:snow` : `grass:${renderVariant}`;
+        queue(grassKey, object, instance.position, instance.scale, instance.rotation, color);
         if (configured && settings.type === 'flowers' && index % 24 === 0) {
           const flowerVariant = ['rei-white', 'rei-gold', 'rei-red'][index / 24 % 3];
           const flowerSize = .38 * settings.height;
@@ -425,7 +441,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         }
       }
       mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-      mesh.computeBoundingBox(); mesh.computeBoundingSphere(); batch.chunk.group.add(mesh); instanced.push({ mesh, part, chunk: batch.chunk, grass: batch.key.startsWith('grass:'), tallGrass: ['grass:tall', 'grass:kit-tall'].includes(batch.key) });
+      mesh.computeBoundingBox(); mesh.computeBoundingSphere(); batch.chunk.group.add(mesh); instanced.push({ mesh, part, chunk: batch.chunk, grass: batch.key.startsWith('grass:'), tallGrass: batch.key.startsWith('grass:tall') || batch.key.startsWith('grass:kit-tall') });
     }
   }
   const collisionIndex = createCollisionIndex(circles, walls, 8);
