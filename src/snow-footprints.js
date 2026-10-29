@@ -4,7 +4,7 @@ const MAX_FOOTPRINTS = 96;
 const FADE_START = 6;
 const LIFETIME = 10;
 const STEP_DISTANCE = .62;
-const MAX_WADING_MOUNDS = 24;
+const MAX_WADING_MOUNDS = 8;
 
 function snowVisualOffset(x, z, snowWeight = 1) {
   const drift = Math.sin(x * .21 + Math.sin(z * .13) * 1.7) * Math.cos(z * .18 - x * .07);
@@ -76,12 +76,11 @@ export function createSnowFootprints(root, world) {
   mesh.renderOrder = 4;
   root.add(mesh);
 
-  // Small low-poly snow banks sit on the visual snow surface around the feet.
-  // They are presentation-only: collision, hitboxes and the authoritative player
-  // position remain on the terrain height.
+  // One shallow forward ridge is shown only while moving through deep snow.
+  // Standing no longer creates a white ring or two artificial piles around the feet.
   const wadingGeometry = new THREE.SphereGeometry(.34, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2);
   const wadingMaterial = new THREE.MeshStandardMaterial({
-    color: '#eef4f5', roughness: .98, metalness: 0,
+    color: '#e8f0f2', roughness: .99, metalness: 0, transparent: true, opacity: .72, depthWrite: false,
   });
   wadingMaterial.name = 'Nebeljagd · aufgeworfener Pulverschnee';
   const wadingMesh = new THREE.InstancedMesh(wadingGeometry, wadingMaterial, MAX_WADING_MOUNDS);
@@ -141,50 +140,31 @@ export function createSnowFootprints(root, world) {
     }
   }
 
-  function updateWading(time, sources) {
+  function updateWading(_time, sources) {
     let write = 0;
     for (const source of sources) {
       if (!Number.isFinite(source?.x) || !Number.isFinite(source?.z) || write >= MAX_WADING_MOUNDS) continue;
       const weight = snowWeightAt(world, source.x, source.z);
-      if (weight < .55) continue;
+      const speed = THREE.MathUtils.clamp((source.speed ?? 0) / 5.6, 0, 1.25);
+      if (weight < .58 || !source.moving || speed < .08) continue;
+
       const direction = Number.isFinite(source.direction) ? source.direction : 0;
       const forwardX = Math.sin(direction), forwardZ = Math.cos(direction);
-      const lateralX = Math.cos(direction), lateralZ = -Math.sin(direction);
-      const speed = THREE.MathUtils.clamp((source.speed ?? 0) / 5.6, 0, 1.25);
-      const moving = source.moving ? 1 : 0;
-      let phaseSeed = 0;
-      const id = String(source.id ?? 'player');
-      for (let i = 0; i < id.length; i++) phaseSeed = (phaseSeed + id.charCodeAt(i) * (i + 1)) % 97;
-      const stride = Math.sin(time * (5.2 + speed * 2.2) + phaseSeed * .17);
-      const surfaceY = (world.snowSurfaceAt?.(source.x, source.z) ?? (world.heightAt(source.x, source.z) + snowVisualOffset(source.x, source.z, weight))) - .028;
-      const lateral = (source.lateral ?? .105) * 1.12;
-      for (const side of [-1, 1]) {
-        if (write >= MAX_WADING_MOUNDS) break;
-        const forward = stride * side * .12 * moving;
-        transform.position.set(
-          source.x + forwardX * forward + lateralX * lateral * side,
-          surfaceY,
-          source.z + forwardZ * forward + lateralZ * lateral * side,
-        );
-        transform.rotation.set(0, direction, 0);
-        const push = moving * speed;
-        transform.scale.set(.72 + push * .10, .24 + weight * .10 + push * .08, .92 + push * .12);
-        transform.updateMatrix();
-        wadingMesh.setMatrixAt(write++, transform.matrix);
-      }
-      // A broad, shallow bow wave in front makes forward movement through deep
-      // powder read from the game's high camera without hiding the whole body.
-      if (moving && write < MAX_WADING_MOUNDS) {
-        transform.position.set(
-          source.x + forwardX * (.24 + speed * .05),
-          surfaceY - .006,
-          source.z + forwardZ * (.24 + speed * .05),
-        );
-        transform.rotation.set(0, direction, 0);
-        transform.scale.set(.92, .16 + weight * .06 + speed * .05, .52);
-        transform.updateMatrix();
-        wadingMesh.setMatrixAt(write++, transform.matrix);
-      }
+      const surfaceY = (world.snowSurfaceAt?.(source.x, source.z)
+        ?? (world.heightAt(source.x, source.z) + snowVisualOffset(source.x, source.z, weight)));
+
+      // A single low bow wave reads as displaced powder without surrounding
+      // the character with a circular mound.
+      const ahead = .29 + speed * .08;
+      transform.position.set(
+        source.x + forwardX * ahead,
+        surfaceY - .018,
+        source.z + forwardZ * ahead,
+      );
+      transform.rotation.set(0, direction, 0);
+      transform.scale.set(.74 + speed * .11, .055 + weight * .035 + speed * .025, .34 + speed * .05);
+      transform.updateMatrix();
+      wadingMesh.setMatrixAt(write++, transform.matrix);
     }
     wadingMesh.count = write;
     if (write) wadingMesh.instanceMatrix.needsUpdate = true;
@@ -240,6 +220,7 @@ export function createSnowFootprints(root, world) {
         singleInstancedDraw: true, alignedToVisualSnowSurface: true,
         trackColor: '#dbe5e7', wadingMounds: lastWadingCount,
         maximumWadingMounds: MAX_WADING_MOUNDS, recommendedVisualSinkMeters: .22,
+        wadingStyle: 'single-forward-ridge-only-while-moving',
         oldestAgeAtLastPrint: prints.length ? now - Math.min(...prints.map(print => print.born)) : 0,
       };
     },
