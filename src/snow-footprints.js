@@ -214,7 +214,7 @@ export function createSnowFootprints(root, world) {
       if (write !== read) prints[write] = print;
       const fade = age <= FADE_START ? 1 : Math.max(0, 1 - (age - FADE_START) / (LIFETIME - FADE_START));
       transform.position.set(print.x, print.y, print.z);
-      transform.rotation.set(0, print.direction, 0);
+      transform.rotation.set(0, print.direction + Math.PI, 0);
       transform.scale.setScalar(print.scale);
       transform.updateMatrix();
       mesh.setMatrixAt(write, transform.matrix);
@@ -253,6 +253,7 @@ export function createSnowFootprints(root, world) {
         singleInstancedDraw: true, alignedToVisualSnowSurface: true,
         trackColor: '#cfdadd', trackVisibility: 'moderately-strong-compressed-snow',
         depressionStyle: 'soft-dark-center-with-light-compressed-rim',
+        footprintFacingOffsetRadians: Math.PI,
         wadingMounds: 0, maximumWadingMounds: 0, wadingStyle: 'removed',
         activeStepParticles: particles.length, maximumStepParticles: MAX_STEP_PARTICLES,
         particlesPerStep: PARTICLES_PER_STEP, particleLifetimeSeconds: [.30, .48],
