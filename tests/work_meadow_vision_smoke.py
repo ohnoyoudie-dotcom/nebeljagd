@@ -25,6 +25,10 @@ with sync_playwright() as p:
       vision:s.vision,shadows:s.shadows,rendering:s.rendering,
       position:s.position,camera:s.camera,practice:s.practiceActors};}''')
     page.keyboard.up('w')
+    page.wait_for_timeout(180)
+    recovery=page.evaluate('''()=>{const s=nebeljagdTestState();return {
+      meadowStrength:s.world.stats.meadowGround.firstInteractorStrength,
+      editableStrength:s.world.stats.grassRendering.wind.firstInteractorStrength};}''')
     assert state['meadow']['enabled'] is True
     assert state['meadow']['visibleInstances']>2500
     assert state['meadow']['cardsPerTuft']==3
@@ -38,10 +42,20 @@ with sync_playwright() as p:
     assert state['meadow']['interactionMode']=='forward-biased'
     assert abs(state['meadow']['forwardWeight']-.82)<.001
     assert state['meadow']['firstInteractorStrength']>.4
+    assert state['meadow']['curvatureVariation']=='per-tuft'
+    assert state['meadow']['windVariation']=='per-tuft-phase-speed-amplitude'
+    assert state['meadow']['recoveryModel']=='variable-directional-wake'
+    assert recovery['meadowStrength']>0
+    assert recovery['meadowStrength']<state['meadow']['firstInteractorStrength']
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
     assert state['editableGrass']['wind']['interactors']>=2
     assert state['editableGrass']['wind']['interactionMode']=='forward-biased'
     assert state['editableGrass']['wind']['firstInteractorStrength']>.4
+    assert state['editableGrass']['wind']['curvatureVariation']=='per-instance-grass'
+    assert state['editableGrass']['wind']['windVariation']=='per-instance-phase-speed-amplitude'
+    assert state['editableGrass']['wind']['recoveryModel']=='variable-directional-wake'
+    assert recovery['editableStrength']>0
+    assert recovery['editableStrength']<state['editableGrass']['wind']['firstInteractorStrength']
     assert state['camera']['orthographicHeight']<=21
     assert state['vision']['samples']==2048
     assert state['vision']['appearance']=='single-soft-edge'
