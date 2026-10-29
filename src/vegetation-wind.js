@@ -122,7 +122,7 @@ vec2 vegetationWindAt(vec2 p) {
         transformed.z += dot(vegetationWorldOffset, vegetationBasis[2].xyz) / max(.0001, dot(vegetationBasis[2].xyz, vegetationBasis[2].xyz));
       `);
     };
-    material.customProgramCacheKey = () => `${previousKey()}|nebeljagd-wind-v2-interaction:${responseLiteral}:${heightLiteral}:${interactionLiteral}:${replaceLegacySway}`;
+    material.customProgramCacheKey = () => `${previousKey()}|nebeljagd-wind-v3-forward-interaction:${responseLiteral}:${heightLiteral}:${interactionLiteral}:${replaceLegacySway}`;
     material.userData.nebeljagdWind = uniforms;
     material.userData.nebeljagdWindParameters = { response, height, interactionResponse };
     material.needsUpdate = true;
@@ -168,6 +168,7 @@ vec2 vegetationWindAt(vec2 p) {
     get stats() { return { gpu: true, rootAnchored: true, worldSpaceDirection: true,
       zones: zones.length, maximumZones: maxZones, settings: { ...settings }, time: uniforms.uVegetationTime.value,
       interactors: uniforms.uVegetationInteractorCount.value, maximumInteractors: maxInteractors,
-      interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18 }; },
+      interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18,
+      firstInteractorStrength: uniforms.uVegetationInteractorMotion.value[0].z }; },
   };
 }
