@@ -48,7 +48,7 @@ with sync_playwright() as p:
     assert state['meadow']['windVariation']=='per-tuft-phase-speed-amplitude'
     assert state['meadow']['recoveryModel']=='variable-directional-wake'
     assert state['meadow']['biomeAdaptiveColor'] is True
-    assert state['meadow']['snowTipCoating'] is True
+    assert state['meadow']['snowTipCoating'] is False
     assert 'snow' in state['meadow']['biomeProfiles']
     assert 'dunes' in state['meadow']['biomeProfiles']
     assert 'volcanic' in state['meadow']['biomeProfiles']
