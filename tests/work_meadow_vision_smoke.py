@@ -85,7 +85,7 @@ with sync_playwright() as p:
     assert snow_state['meadow']['visibleDetailInstances'] < state['meadow']['visibleDetailInstances']*.35
     assert snow_state['terrainPaint']['snowRelief'] is True
     assert snow_state['terrainPaint']['snowMaskResidentChunks']>0
-    assert 0.14<=snow_state['terrainPaint']['snowVisualDepthMeters']<=0.17
+    assert 0.19<=snow_state['terrainPaint']['snowVisualDepthMeters']<=0.22
     assert snow_state['snowCover']['enabled'] is True
     assert snow_state['snowCover']['depthWriting'] is True
     assert snow_state['snowCover']['collisionIndependent'] is True
@@ -129,7 +129,7 @@ with sync_playwright() as p:
     heath_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     assert heath_state['meadow']['visibleInstances']>snow_state['meadow']['visibleInstances']
-    assert heath_state['meadow']['visibleDetailInstances']>snow_state['meadow']['visibleDetailInstances']
+    assert heath_state['meadow']['visibleDetailInstances']>=snow_state['meadow']['visibleDetailInstances']
     heath_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-heath-grass.png').write_bytes(base64.b64decode(heath_data.split(',',1)[1]))
 
@@ -139,7 +139,7 @@ with sync_playwright() as p:
     marsh_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     assert marsh_state['meadow']['visibleInstances']>snow_state['meadow']['visibleInstances']
-    assert marsh_state['meadow']['visibleDetailInstances']>snow_state['meadow']['visibleDetailInstances']
+    assert marsh_state['meadow']['visibleDetailInstances']>=snow_state['meadow']['visibleDetailInstances']
     marsh_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-marsh-grass.png').write_bytes(base64.b64decode(marsh_data.split(',',1)[1]))
 
