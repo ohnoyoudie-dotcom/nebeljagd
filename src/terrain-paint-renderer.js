@@ -17,11 +17,11 @@ export function terrainPaintTextureSize(bounds, quality = 'high', budgetBytes = 
   let height = Math.min(maximum, Math.max(4, Math.ceil(metersZ * texelsPerMeter)));
   const scale = Math.min(1, Math.sqrt(Math.max(80, budgetBytes) / (width * height * 5)));
   width = Math.max(4, Math.floor(width * scale)); height = Math.max(4, Math.floor(height * scale));
-  return { width, height, bytes: width * height * 5, metersPerTexel: Math.max(metersX / width, metersZ / height) };
+  return { width, height, bytes: width * height * 6, metersPerTexel: Math.max(metersX / width, metersZ / height) };
 }
 
 /** Pure byte baking also runs in Node tests, without Canvas or WebGL. */
-export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null) {
+export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null, snowMask = null) {
   const bytes = new Uint8Array(width * height * 4), sample = {};
   const sx = (bounds.maxX - bounds.minX) / width, sz = (bounds.maxZ - bounds.minZ) / height;
   for (let row = 0; row < height; row++) for (let column = 0; column < width; column++) {
@@ -30,6 +30,7 @@ export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null
     bytes[offset] = toByte(sample.r); bytes[offset + 1] = toByte(sample.g); bytes[offset + 2] = toByte(sample.b);
     bytes[offset + 3] = Math.round(sample.alpha * 255);
     if (pavingMask) pavingMask[row * width + column] = Math.round(sample.paving * 255);
+    if (snowMask) snowMask[row * width + column] = Math.round((sample.snow ?? 0) * 255);
   }
   return bytes;
 }
@@ -37,28 +38,48 @@ export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null
 export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTexture) {
   const material = baseMaterial.clone();
   const empty = new THREE.DataTexture(new Uint8Array(4), 1, 1); empty.needsUpdate = true;
-  const paintUniform = { value: empty }, pavingMaskUniform = { value: empty }, boundsUniform = { value: new THREE.Vector4(bounds.minX, bounds.minZ, bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ) };
-  let texture = null, maskTexture = null, textureSize = null, bakeCount = 0, totalBakeMs = 0, maximumBakeMs = 0;
+  const paintUniform = { value: empty }, pavingMaskUniform = { value: empty }, snowMaskUniform = { value: empty },
+    boundsUniform = { value: new THREE.Vector4(bounds.minX, bounds.minZ, bounds.maxX - bounds.minX, bounds.maxZ - bounds.minZ) };
+  let texture = null, maskTexture = null, snowMaskTexture = null, textureSize = null, bakeCount = 0, totalBakeMs = 0, maximumBakeMs = 0;
   material.onBeforeCompile = shader => {
     shader.uniforms.uTerrainPaint = paintUniform; shader.uniforms.uTerrainPaintBounds = boundsUniform;
-    shader.uniforms.uTerrainPavingMask = pavingMaskUniform; shader.uniforms.uTerrainPaving = { value: pavingTexture };
+    shader.uniforms.uTerrainPavingMask = pavingMaskUniform; shader.uniforms.uTerrainSnowMask = snowMaskUniform;
+    shader.uniforms.uTerrainPaving = { value: pavingTexture };
     shader.vertexShader = `varying vec2 vTerrainPaintPosition;\n${shader.vertexShader}`.replace('#include <begin_vertex>', '#include <begin_vertex>\nvTerrainPaintPosition = (modelMatrix * vec4(position, 1.)).xz;');
-    shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainPaving; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;\n${shader.fragmentShader}`;
+    shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainSnowMask; uniform sampler2D uTerrainPaving; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
+      float terrainSnowRelief(vec2 p) {
+        float broad = sin(p.x*.42 + sin(p.y*.19)*1.7) * cos(p.y*.34-p.x*.11);
+        float drift = sin(p.x*.93+p.y*.37+sin(p.y*.27)*1.6);
+        float fine = sin(p.x*3.7-p.y*2.9)*sin(p.y*4.1+p.x*1.6);
+        return broad*.62 + drift*.27 + fine*.11;
+      }
+      ${shader.fragmentShader}`;
     shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `
       #include <color_fragment>
       vec2 terrainPaintUV = (vTerrainPaintPosition - uTerrainPaintBounds.xy) / uTerrainPaintBounds.zw;
       vec4 terrainPaint = texture2D(uTerrainPaint, terrainPaintUV);
       float terrainPavingMix = texture2D(uTerrainPavingMask, terrainPaintUV).r;
+      float terrainSnowMix = texture2D(uTerrainSnowMask, terrainPaintUV).r * terrainPaint.a;
       vec3 terrainPaving = clamp(texture2D(uTerrainPaving, vTerrainPaintPosition / 3.5).rgb / vec3(.32, .35, .28), .35, 1.5);
       terrainPaint.rgb *= mix(vec3(1.), terrainPaving, terrainPavingMix);
+      float snowRelief = terrainSnowRelief(vTerrainPaintPosition);
+      float snowShade = 1.0 + snowRelief*.055;
+      vec3 deepSnowTone = vec3(.91,.95,.97);
+      vec3 ridgeSnowTone = vec3(1.035,1.045,1.05);
+      terrainPaint.rgb = mix(terrainPaint.rgb, terrainPaint.rgb * mix(deepSnowTone, ridgeSnowTone, smoothstep(-.55,.55,snowRelief)) * snowShade, terrainSnowMix);
       diffuseColor.rgb = mix(diffuseColor.rgb, terrainPaint.rgb, terrainPaint.a);
     `);
+    shader.fragmentShader = shader.fragmentShader.replace('#include <roughnessmap_fragment>', `
+      #include <roughnessmap_fragment>
+      roughnessFactor = mix(roughnessFactor, .94, terrainSnowMix * .88);
+    `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v1';
+  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v2-snow-relief';
   material.name = 'Nebeljagd · gemalter Boden aus Kartendaten';
   function release() {
-    texture?.dispose(); maskTexture?.dispose(); texture = null; maskTexture = null; textureSize = null;
-    paintUniform.value = empty; pavingMaskUniform.value = empty;
+    texture?.dispose(); maskTexture?.dispose(); snowMaskTexture?.dispose();
+    texture = null; maskTexture = null; snowMaskTexture = null; textureSize = null;
+    paintUniform.value = empty; pavingMaskUniform.value = empty; snowMaskUniform.value = empty;
   }
   return { material, bounds,
     matches(quality, budgetBytes) {
@@ -70,8 +91,8 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       if (texture && textureSize.width === next.width && textureSize.height === next.height) return;
       const started = performance.now();
       release();
-      const mask = new Uint8Array(next.width * next.height);
-      texture = new THREE.DataTexture(bakeTerrainPaint(index, bounds, next.width, next.height, mask), next.width, next.height, THREE.RGBAFormat, THREE.UnsignedByteType);
+      const mask = new Uint8Array(next.width * next.height), snowMask = new Uint8Array(next.width * next.height);
+      texture = new THREE.DataTexture(bakeTerrainPaint(index, bounds, next.width, next.height, mask, snowMask), next.width, next.height, THREE.RGBAFormat, THREE.UnsignedByteType);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.magFilter = texture.minFilter = THREE.LinearFilter;
       texture.generateMipmaps = false; texture.flipY = false; texture.needsUpdate = true;
@@ -80,13 +101,18 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       maskTexture.magFilter = maskTexture.minFilter = THREE.LinearFilter;
       maskTexture.generateMipmaps = false; maskTexture.flipY = false; maskTexture.unpackAlignment = 1; maskTexture.needsUpdate = true;
       maskTexture.name = 'Nebeljagd · gemalte Pflastergewichtung';
-      paintUniform.value = texture; pavingMaskUniform.value = maskTexture; textureSize = next; bakeCount++;
+      snowMaskTexture = new THREE.DataTexture(snowMask, next.width, next.height, THREE.RedFormat, THREE.UnsignedByteType);
+      snowMaskTexture.magFilter = snowMaskTexture.minFilter = THREE.LinearFilter;
+      snowMaskTexture.generateMipmaps = false; snowMaskTexture.flipY = false; snowMaskTexture.unpackAlignment = 1; snowMaskTexture.needsUpdate = true;
+      snowMaskTexture.name = 'Nebeljagd · gemalte Schneegewichtung';
+      paintUniform.value = texture; pavingMaskUniform.value = maskTexture; snowMaskUniform.value = snowMaskTexture; textureSize = next; bakeCount++;
       const elapsed = performance.now() - started; totalBakeMs += elapsed; maximumBakeMs = Math.max(maximumBakeMs, elapsed);
     },
     release,
     dispose() { release(); empty.dispose(); },
     get stats() { return { resident: Boolean(texture), bytes: textureSize?.bytes ?? 0,
       width: textureSize?.width ?? 0, height: textureSize?.height ?? 0, bakeCount,
+      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture),
       totalBakeMs, maximumBakeMs, metersPerTexel: textureSize?.metersPerTexel ?? 0 }; },
   };
 }
