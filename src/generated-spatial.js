@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { pointInPolygon, distanceToSegment } from './map/model.js';
 import { terrainPalette } from './terrain-art.js';
 import { createTerrainPaintIndex, applyTerrainPaint } from './map/terrain-paint.js';
+import { getLandscape, biomeRuntimeId } from './map/landscape.js';
 
 const CHUNK = 64;
 const clamp = THREE.MathUtils.clamp;
@@ -45,6 +46,19 @@ export function createWorldSpatialModel(map) {
   const regions = map.regions.map(region => ({ ...region, colorValue: terrainPalette(region.biome, region.color),
     minX: Math.min(...region.points.map(p => p[0])), maxX: Math.max(...region.points.map(p => p[0])),
     minZ: Math.min(...region.points.map(p => p[1])), maxZ: Math.max(...region.points.map(p => p[1])) }));
+  const paintedBiomes = getLandscape(map).biomes.map((item, order) => ({
+    ...item, order, softness: Number.isFinite(item.softness) ? clamp(item.softness, 0, 1) : .6,
+    runtimeBiome: biomeRuntimeId(item.presetId),
+  }));
+  const biomeCells = new Map(), biomeCellSize = 64;
+  for (const item of paintedBiomes) {
+    const radius = item.radius ?? 0;
+    for (let gx = Math.floor((item.position[0] - radius) / biomeCellSize); gx <= Math.floor((item.position[0] + radius) / biomeCellSize); gx++) {
+      for (let gz = Math.floor((item.position[1] - radius) / biomeCellSize); gz <= Math.floor((item.position[1] + radius) / biomeCellSize); gz++) {
+        const key = `${gx},${gz}`; if (!biomeCells.has(key)) biomeCells.set(key, []); biomeCells.get(key).push(item);
+      }
+    }
+  }
   const coast = segmentIndex([{ points: [...map.island.points, map.island.points[0]], width: 0 }], 30);
   const rivers = segmentIndex(map.rivers, 14);
   const bridges = segmentIndex(map.paths.filter(path => path.kind === 'bridge'), 2);
@@ -74,6 +88,36 @@ export function createWorldSpatialModel(map) {
     if (!weights.length) weights.push([regionAt(x, z), 1]);
     return weights;
   }
+  function biomeWeightsAt(x, z) {
+    const weights = new Map();
+    let baseTotal = 0;
+    for (const [region, weight] of regionWeights(x, z)) {
+      const biome = region.biome;
+      weights.set(biome, (weights.get(biome) ?? 0) + weight);
+      baseTotal += weight;
+    }
+    if (baseTotal > 0) for (const [biome, weight] of weights) weights.set(biome, weight / baseTotal);
+    const candidates = biomeCells.get(`${Math.floor(x / biomeCellSize)},${Math.floor(z / biomeCellSize)}`) ?? [];
+    for (const item of candidates) {
+      const distance = Math.hypot(x - item.position[0], z - item.position[1]);
+      if (distance > item.radius) continue;
+      const softness = item.softness;
+      const inner = item.radius * (1 - softness);
+      const edge = softness <= .0001 ? 1 : 1 - smooth(inner, item.radius, distance);
+      const influence = clamp((item.strength ?? 1) * edge, 0, 1);
+      if (influence <= .0001) continue;
+      for (const [biome, weight] of weights) weights.set(biome, weight * (1 - influence));
+      weights.set(item.runtimeBiome, (weights.get(item.runtimeBiome) ?? 0) + influence);
+    }
+    let total = 0;
+    for (const weight of weights.values()) total += weight;
+    if (total <= .0001) return [{ biome: regionAt(x, z).biome, weight: 1 }];
+    return [...weights.entries()]
+      .map(([biome, weight]) => ({ biome, weight: weight / total }))
+      .filter(item => item.weight > .001)
+      .sort((a, b) => b.weight - a.weight);
+  }
+  function biomeAt(x, z) { return biomeWeightsAt(x, z)[0]?.biome ?? regionAt(x, z).biome; }
   function rawLand(x, z) {
     let total = 0, value = 0;
     for (const [region, weight] of regionWeights(x, z)) { total += weight; value += biomeHeight(region.biome, x, z) * weight; }
@@ -140,7 +184,7 @@ export function createWorldSpatialModel(map) {
     baseColorAt(x, z, target);
     return terrainPaint.length ? applyTerrainPaint(terrainPaint, x, z, target, false, paintScratch) : target;
   }
-  return { groundAt, rawLand, regionAt, colorAt, baseColorAt, terrainPaint, waterAt, bridgeAt, coast, rivers,
+  return { groundAt, rawLand, regionAt, biomeAt, biomeWeightsAt, colorAt, baseColorAt, terrainPaint, waterAt, bridgeAt, coast, rivers,
     isLand: (x, z) => pointInPolygon([x, z], map.island.points),
     isWater: (x, z, padding = 0) => { const water = waterAt(x, z); return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z)); } };
 }
