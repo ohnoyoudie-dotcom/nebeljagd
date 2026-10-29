@@ -22,6 +22,9 @@ const UP = new THREE.Vector3(0, 1, 0);
 const clamp = THREE.MathUtils.clamp;
 function hashSeed(text) { let seed = 2166136261; for (const c of text) seed = Math.imul(seed ^ c.charCodeAt(0), 16777619); return seed >>> 0; }
 function randomSource(seed) { return () => { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 4294967296; }; }
+function positionHash(x, z, salt = 0) {
+  return Math.abs((Math.sin(x * 12.9898 + z * 78.233 + salt) * 43758.5453) % 1);
+}
 function texture(kind) {
   const c = document.createElement('canvas'); c.width = c.height = 128;
   const ctx = c.getContext('2d'), r = randomSource(hashSeed(kind));
@@ -79,17 +82,27 @@ function createGrassPrototypes(wind) {
       lowGeometry: variant === 'tall' ? tallGrassLowGeo : undefined, material, castShadow: false }]);
   }
 
-  const snow = grassBiomeProfile('snow');
-  const snowTallGeo = createHidingGrassGeometry({ rootColor: '#8f9f9b', tipColor: '#f4fbff' });
-  const snowTallLowGeo = createHidingGrassGeometry({ low: true, rootColor: '#8f9f9b', tipColor: '#f4fbff' });
-  const snowShortMaterial = wind.apply(new THREE.MeshStandardMaterial({
-    color: snow.color, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
-  }), { interactionResponse: .9 });
-  const snowTallMaterial = wind.apply(new THREE.MeshStandardMaterial({
-    color: '#ffffff', vertexColors: true, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
-  }), { interactionResponse: 1.15 });
-  result.set('grass:short:snow', [{ geometry: grassGeo, material: snowShortMaterial, castShadow: false }]);
-  result.set('grass:tall:snow', [{ geometry: snowTallGeo, lowGeometry: snowTallLowGeo, material: snowTallMaterial, castShadow: false }]);
+  for (const biome of ['meadow', 'forest', 'heath', 'marsh', 'snow', 'dunes', 'volcanic']) {
+    const profile = grassBiomeProfile(biome);
+    const root = new THREE.Color(profile.detailColor ?? profile.color);
+    const tip = root.clone();
+    if (profile.snowy) {
+      root.set('#a3b0a8'); tip.set('#f6fbff');
+    } else {
+      root.offsetHSL(0, -.04, -.12);
+      tip.offsetHSL(0, -.03, .18);
+    }
+    const tallGeo = createHidingGrassGeometry({ rootColor: `#${root.getHexString()}`, tipColor: `#${tip.getHexString()}` });
+    const tallLowGeo = createHidingGrassGeometry({ low: true, rootColor: `#${root.getHexString()}`, tipColor: `#${tip.getHexString()}` });
+    const shortMaterial = wind.apply(new THREE.MeshStandardMaterial({
+      color: profile.color, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
+    }), { interactionResponse: .9 });
+    const tallMaterial = wind.apply(new THREE.MeshStandardMaterial({
+      color: '#ffffff', vertexColors: true, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
+    }), { interactionResponse: 1.15 });
+    result.set(`grass:short:${biome}`, [{ geometry: grassGeo, material: shortMaterial, castShadow: false }]);
+    result.set(`grass:tall:${biome}`, [{ geometry: tallGeo, lowGeometry: tallLowGeo, material: tallMaterial, castShadow: false }]);
+  }
   return result;
 }
 
@@ -260,6 +273,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const chunks = new Map(), batches = new Map(), circles = [], walls = [], structures = [], trees = [], grassPatches = [], houses = [], destructibles = [], projectileObstacles = [];
   const matrix = new THREE.Object3D(), tempColor = new THREE.Color(), groundColor = new THREE.Color();
   let grassInstanceCount = 0, grassBudgetUsed = 0, kitGrassInstanceCount = 0;
+  let legacyBiomeAdaptedPatches = 0, legacySuppressedGrassInstances = 0;
   function chunkFor(x, z) {
     const gx = Math.floor(x / chunkSize), gz = Math.floor(z / chunkSize), id = `${gx},${gz}`;
     if (!chunks.has(id)) { const group = new THREE.Group(); group.name = `Objekte · Sektor ${id}`; root.add(group); chunks.set(id, { id, group, x: (gx + .5) * chunkSize, z: (gz + .5) * chunkSize, count: 0 }); }
@@ -360,23 +374,45 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         : buildVegetationPatch(object, { budget: MAX_GRASS_INSTANCES - grassBudgetUsed });
       const { patch, instances, settings, configured, renderVariant } = detail;
       grassPatches.push(patch);
-      grassInstanceCount += patch.instanceCount; grassBudgetUsed += detail.budgetCost ?? patch.instanceCount;
+      grassBudgetUsed += detail.budgetCost ?? patch.instanceCount;
       if (kit) kitGrassInstanceCount += patch.instanceCount;
+      const patchBiome = biomeAt?.(patch.x ?? object.position[0], patch.z ?? object.position[1]) ?? null;
+      if (!configured && ['short', 'tall'].includes(renderVariant)) {
+        const patchProfile = grassBiomeProfile(patchBiome);
+        patch.biome = patchBiome;
+        patch.biomeCoverScale = renderVariant === 'short' ? patchProfile.baseDensity : patchProfile.detailDensity;
+        legacyBiomeAdaptedPatches++;
+      }
       for (const [index, instance] of instances.entries()) {
         const [px, pz] = instance.position, rootY = groundHeightAt(px, pz);
         patch.rootHeightRange[0] = Math.min(patch.rootHeightRange[0], rootY);
         patch.rootHeightRange[1] = Math.max(patch.rootHeightRange[1], rootY);
         let color = null;
-        const biome = biomeAt?.(px, pz) ?? null;
-        const snowGrass = biome === 'snow' && (renderVariant === 'short' || renderVariant === 'tall');
+        const biome = biomeAt?.(px, pz) ?? patchBiome;
+        const profile = grassBiomeProfile(biome);
+        const adaptiveLegacy = !configured && ['short', 'tall'].includes(renderVariant);
+        if (adaptiveLegacy) {
+          const keep = renderVariant === 'short' ? profile.baseDensity : profile.detailDensity;
+          if (positionHash(px, pz, renderVariant === 'short' ? 17.7 : 29.3) > keep) {
+            legacySuppressedGrassInstances++;
+            continue;
+          }
+        }
+        const snowGrass = biome === 'snow' && ['short', 'tall'].includes(renderVariant);
         if (configured && !snowGrass) {
           groundColor.set('#4e854b'); colorAt?.(px, pz, groundColor);
           color = vegetationInstanceTint(settings, px, pz, groundColor, kit ? 'tall' : renderVariant).toArray();
           if (patch.colorSamples.length < 3) patch.colorSamples.push({ position: [px, pz], ground: `#${groundColor.getHexString()}`,
             vegetation: `#${vegetationTint(settings, px, pz, groundColor).getHexString()}`, rootY });
         }
-        const grassKey = snowGrass ? `grass:${renderVariant}:snow` : `grass:${renderVariant}`;
-        queue(grassKey, object, instance.position, instance.scale, instance.rotation, color);
+        const grassKey = adaptiveLegacy
+          ? `grass:${renderVariant}:${['meadow','forest','heath','marsh','snow','dunes','volcanic'].includes(biome) ? biome : 'meadow'}`
+          : snowGrass ? `grass:${renderVariant}:snow` : `grass:${renderVariant}`;
+        const scale = adaptiveLegacy
+          ? [instance.scale[0], instance.scale[1] * (renderVariant === 'short' ? profile.baseHeight : profile.detailHeight), instance.scale[2]]
+          : instance.scale;
+        queue(grassKey, object, instance.position, scale, instance.rotation, color);
+        grassInstanceCount++;
         if (configured && settings.type === 'flowers' && index % 24 === 0) {
           const flowerVariant = ['rei-white', 'rei-gold', 'rei-red'][index / 24 % 3];
           const flowerSize = .38 * settings.height;
@@ -515,7 +551,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const patch of grassCells.get(`${Math.floor(x / 16)},${Math.floor(z / 16)}`) ?? []) {
       const c = Math.cos(patch.yaw), s = Math.sin(patch.yaw), dx = x - patch.x, dz = z - patch.z;
       const distance = Math.hypot((c * dx - s * dz) / patch.radius, (s * dx + c * dz) / (patch.radius * patch.aspect));
-      result = Math.max(result, clamp((1 - distance) * 5, 0, 1));
+      result = Math.max(result, clamp((1 - distance) * 5, 0, 1) * (patch.biomeCoverScale ?? 1));
     }
     return result;
   }
@@ -559,6 +595,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,
         configuredPatches: grassPatches.filter(patch => patch.settings).length,
+        legacyBiomeAdaptedPatches, legacySuppressedGrassInstances,
+        biomeAdaptiveLegacyGrass: true,
         budgetLimitedPatches: grassPatches.filter(patch => patch.budgetLimited).length,
         wind: wind.stats,
         crossedStalkDensityPerSquareMeter: HIDING_GRASS_STYLE.instanceDensity * 4,

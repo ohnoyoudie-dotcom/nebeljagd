@@ -33,6 +33,8 @@ with sync_playwright() as p:
     assert state['meadow']['colorVariation']=='per-tuft-hsl'
     assert state['meadow']['detailLayer']=='global-large-solid-blades'
     assert state['meadow']['detailLayerTone']=='fixed-light-biome-materials'
+    assert state['meadow']['biomeLayerControls']=='independent-density-height-color'
+    assert state['meadow']['baseLayerBiomeTint']=='preserved-instance-color'
     assert state['meadow']['layeredMeadow'] is True
     assert state['meadow']['visibleDetailInstances']>100
     assert state['meadow']['characterParting'] is True
@@ -46,7 +48,12 @@ with sync_playwright() as p:
     assert state['meadow']['biomeAdaptiveColor'] is True
     assert state['meadow']['snowTipCoating'] is True
     assert 'snow' in state['meadow']['biomeProfiles']
+    assert 'dunes' in state['meadow']['biomeProfiles']
+    assert 'volcanic' in state['meadow']['biomeProfiles']
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
+    assert state['editableGrass']['biomeAdaptiveLegacyGrass'] is True
+    assert state['editableGrass']['legacyBiomeAdaptedPatches']>=700
+    assert state['editableGrass']['legacySuppressedGrassInstances']>1000
     assert state['editableGrass']['wind']['interactors']>=2
     assert state['editableGrass']['wind']['interactionMode']=='forward-biased'
     assert state['editableGrass']['wind']['firstInteractorStrength']>.5
@@ -65,14 +72,36 @@ with sync_playwright() as p:
 
     page.evaluate("nebeljagdInspect({x:-285,z:-400})")
     page.wait_for_function("nebeljagdTestState().world.biome==='snow'",timeout=120000)
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleInstances>900",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleInstances>220",timeout=120000)
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
     snow_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     assert snow_state['biome']=='snow'
-    assert snow_state['meadow']['visibleInstances']>900
+    assert snow_state['meadow']['visibleInstances']>220
+    assert snow_state['meadow']['visibleInstances'] < state['meadow']['visibleInstances']*.42
+    assert snow_state['meadow']['visibleDetailInstances']>10
     snow_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-snow-grass.png').write_bytes(base64.b64decode(snow_data.split(',',1)[1]))
+
+    page.evaluate("nebeljagdInspect({x:300,z:-310})")
+    page.wait_for_function("nebeljagdTestState().world.biome==='heath'",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    heath_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
+      biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
+    assert heath_state['meadow']['visibleInstances']>snow_state['meadow']['visibleInstances']
+    assert heath_state['meadow']['visibleDetailInstances']>snow_state['meadow']['visibleDetailInstances']
+    heath_data=page.evaluate('nebeljagdCaptureFrame()')
+    (OUT/'work-heath-grass.png').write_bytes(base64.b64decode(heath_data.split(',',1)[1]))
+
+    page.evaluate("nebeljagdInspect({x:-310,z:425})")
+    page.wait_for_function("nebeljagdTestState().world.biome==='marsh'",timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    marsh_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
+      biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
+    assert marsh_state['meadow']['visibleInstances']>snow_state['meadow']['visibleInstances']
+    assert marsh_state['meadow']['visibleDetailInstances']>snow_state['meadow']['visibleDetailInstances']
+    marsh_data=page.evaluate('nebeljagdCaptureFrame()')
+    (OUT/'work-marsh-grass.png').write_bytes(base64.b64decode(marsh_data.split(',',1)[1]))
 
     editor=browser.new_page(viewport={'width':1440,'height':900})
     editor.add_init_script("""
@@ -118,7 +147,9 @@ with sync_playwright() as p:
     assert file_save['state']['directSupported'] is True
     assert file_save['state']['connectedFile']=='worldmap.json'
     assert 'Gespeichert' in file_save['status']
-    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,'snowState':snow_state,'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count(),'fileSave':file_save}}
+    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,
+      'snowState':snow_state,'heathState':heath_state,'marshState':marsh_state,
+      'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count(),'fileSave':file_save}}
     browser.close()
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
 if not report['passed']:

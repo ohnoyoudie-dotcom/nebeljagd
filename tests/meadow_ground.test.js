@@ -10,22 +10,52 @@ test('dense meadow adapts automatically across grassy biomes including snow', ()
   assert.equal(regionHasGroundGrass({ biome: 'heath' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'marsh' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'snow' }, settings), true);
-  assert.equal(regionHasGroundGrass({ biome: 'dunes' }, settings), false);
-  const snow = grassBiomeProfile('snow');
+  assert.equal(regionHasGroundGrass({ biome: 'dunes' }, settings), true);
+  assert.equal(regionHasGroundGrass({ biome: 'volcanic' }, settings), true);
+  const meadow = grassBiomeProfile('meadow'), snow = grassBiomeProfile('snow');
   assert.equal(snow.snowy, true);
-  assert.equal(snow.density, .48);
-  assert.equal(snow.color, '#c7d2cc');
-  assert.ok(snow.groundBlend > grassBiomeProfile('meadow').groundBlend);
+  assert.equal(snow.baseDensity, .12);
+  assert.equal(snow.detailDensity, .18);
+  assert.equal(snow.baseHeight, .50);
+  assert.equal(snow.detailHeight, .68);
+  assert.equal(snow.color, '#aeb9b1');
+  assert.ok(snow.baseDensity < meadow.baseDensity * .15);
+  assert.ok(snow.detailDensity < meadow.detailDensity * .20);
 });
 
-test('soft biome weights blend grass density and snow influence continuously', () => {
+test('soft biome weights blend both grass layers independently and fade into bare biomes', () => {
   const meadow = grassBiomeProfile('meadow'), snow = grassBiomeProfile('snow');
   const mixed = grassBiomeBlend([{ biome: 'meadow', weight: .5 }, { biome: 'snow', weight: .5 }]);
-  assert.ok(mixed.density < meadow.density && mixed.density > snow.density);
+  assert.ok(mixed.baseDensity < meadow.baseDensity && mixed.baseDensity > snow.baseDensity);
+  assert.ok(mixed.detailDensity < meadow.detailDensity && mixed.detailDensity > snow.detailDensity);
+  assert.ok(mixed.baseHeight < meadow.baseHeight && mixed.baseHeight > snow.baseHeight);
+  assert.ok(mixed.detailHeight < meadow.detailHeight && mixed.detailHeight > snow.detailHeight);
   assert.ok(mixed.snowWeight > .49 && mixed.snowWeight < .51);
   assert.ok(mixed.supportedWeight > .99);
-  const fading = grassBiomeBlend([{ biome: 'meadow', weight: .4 }, { biome: 'dunes', weight: .6 }]);
-  assert.ok(fading.density > .35 && fading.density < .45, 'grass fades out when transitioning into a non-grass biome');
+  const fading = grassBiomeBlend([{ biome: 'meadow', weight: .4 }, { biome: 'water', weight: .6 }]);
+  assert.ok(fading.baseDensity > .39 && fading.baseDensity < .41, 'short grass fades into a non-grass biome');
+  assert.ok(fading.detailDensity > .39 && fading.detailDensity < .41, 'long grass fades independently into a non-grass biome');
+});
+
+test('forest, heath and marsh each have distinct short/tall layer behavior', () => {
+  const meadow = grassBiomeProfile('meadow'), forest = grassBiomeProfile('forest');
+  const heath = grassBiomeProfile('heath'), marsh = grassBiomeProfile('marsh');
+  assert.ok(forest.baseDensity < meadow.baseDensity && forest.detailDensity < meadow.detailDensity);
+  assert.ok(heath.baseHeight < meadow.baseHeight && heath.detailHeight < meadow.detailHeight);
+  assert.ok(marsh.baseDensity < meadow.baseDensity);
+  assert.ok(marsh.detailDensity > forest.detailDensity);
+  assert.ok(marsh.detailHeight > meadow.detailHeight);
+  assert.notEqual(forest.color, meadow.color);
+  assert.notEqual(heath.color, meadow.color);
+  assert.notEqual(marsh.color, meadow.color);
+});
+
+test('dunes and volcanic ground keep only sparse dry cover', () => {
+  const dunes = grassBiomeProfile('dunes'), volcanic = grassBiomeProfile('volcanic');
+  assert.ok(dunes.baseDensity < .2 && dunes.detailDensity < .2);
+  assert.ok(volcanic.baseDensity <= .1 && volcanic.detailDensity < .15);
+  assert.ok(dunes.baseHeight < .6 && volcanic.baseHeight <= .5);
+  assert.notEqual(dunes.color, volcanic.color);
 });
 
 test('old explicit ground-cover switch is still respected', () => {
