@@ -112,7 +112,7 @@ test('all biome presets store soft surface paint without multiplying automatic g
     assert.equal(stroke.objects.length, 0, 'biome painting uses automatic runtime cover instead of permanent grass objects');
     assert.equal(stroke.biomes[0].presetId, preset.id);
     assert.equal(stroke.biomes[0].softness, .7);
-    assert.equal(stroke.terrain[0].hardness, .3);
+    assert.ok(Math.abs(stroke.terrain[0].hardness - .3) < 1e-9);
     assert.equal(stroke.terrain[0].type, preset.terrain.type);
     map.objects.push(...stroke.objects);
     map.landscape = { ...getLandscape(map), terrain: stroke.terrain, biomes: stroke.biomes };
