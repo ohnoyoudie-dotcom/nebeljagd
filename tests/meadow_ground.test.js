@@ -13,8 +13,8 @@ test('dense meadow adapts automatically across grassy biomes including snow', ()
   assert.equal(regionHasGroundGrass({ biome: 'dunes' }, settings), false);
   const snow = grassBiomeProfile('snow');
   assert.equal(snow.snowy, true);
-  assert.equal(snow.density, .65);
-  assert.equal(snow.color, '#87988b');
+  assert.equal(snow.density, .48);
+  assert.equal(snow.color, '#c7d2cc');
   assert.ok(snow.groundBlend > grassBiomeProfile('meadow').groundBlend);
 });
 
