@@ -7,7 +7,7 @@ const STEP_DISTANCE = .62;
 
 function snowVisualOffset(x, z, snowWeight = 1) {
   const drift = Math.sin(x * .21 + Math.sin(z * .13) * 1.7) * Math.cos(z * .18 - x * .07);
-  return snowWeight * (.068 + drift * .030);
+  return snowWeight * (.115 + drift * .040);
 }
 
 function snowWeightAt(world, x, z) {
@@ -31,7 +31,7 @@ export function createSnowFootprints(root, world) {
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
-    uniforms: { uTrackColor: { value: new THREE.Color('#465b63') } },
+    uniforms: { uTrackColor: { value: new THREE.Color('#7e8c92') } },
     vertexShader: `
       attribute float instanceFade;
       varying vec2 vTrackUv;
@@ -61,7 +61,7 @@ export function createSnowFootprints(root, world) {
         float rim = max(0.0, printShape-inner*.72);
         float alpha = (printShape*.48 + rim*.26) * vTrackFade;
         if (alpha < .008) discard;
-        vec3 color = mix(uTrackColor*1.12, uTrackColor*.66, inner);
+        vec3 color = mix(uTrackColor*1.10, uTrackColor*.78, inner);
         gl_FragColor = vec4(color, alpha);
       }
     `,
