@@ -10,7 +10,8 @@ test('dense meadow adapts automatically across grassy biomes including snow', ()
   assert.equal(regionHasGroundGrass({ biome: 'heath' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'marsh' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'snow' }, settings), true);
-  assert.equal(regionHasGroundGrass({ biome: 'dunes' }, settings), false);
+  assert.equal(regionHasGroundGrass({ biome: 'dunes' }, settings), true);
+  assert.equal(regionHasGroundGrass({ biome: 'volcanic' }, settings), true);
   const meadow = grassBiomeProfile('meadow'), snow = grassBiomeProfile('snow');
   assert.equal(snow.snowy, true);
   assert.equal(snow.baseDensity, .22);
@@ -31,7 +32,7 @@ test('soft biome weights blend both grass layers independently and fade into bar
   assert.ok(mixed.detailHeight < meadow.detailHeight && mixed.detailHeight > snow.detailHeight);
   assert.ok(mixed.snowWeight > .49 && mixed.snowWeight < .51);
   assert.ok(mixed.supportedWeight > .99);
-  const fading = grassBiomeBlend([{ biome: 'meadow', weight: .4 }, { biome: 'dunes', weight: .6 }]);
+  const fading = grassBiomeBlend([{ biome: 'meadow', weight: .4 }, { biome: 'water', weight: .6 }]);
   assert.ok(fading.baseDensity > .39 && fading.baseDensity < .41, 'short grass fades into a non-grass biome');
   assert.ok(fading.detailDensity > .39 && fading.detailDensity < .41, 'long grass fades independently into a non-grass biome');
 });
@@ -47,6 +48,14 @@ test('forest, heath and marsh each have distinct short/tall layer behavior', () 
   assert.notEqual(forest.color, meadow.color);
   assert.notEqual(heath.color, meadow.color);
   assert.notEqual(marsh.color, meadow.color);
+});
+
+test('dunes and volcanic ground keep only sparse dry cover', () => {
+  const dunes = grassBiomeProfile('dunes'), volcanic = grassBiomeProfile('volcanic');
+  assert.ok(dunes.baseDensity < .2 && dunes.detailDensity < .2);
+  assert.ok(volcanic.baseDensity <= .1 && volcanic.detailDensity < .15);
+  assert.ok(dunes.baseHeight < .6 && volcanic.baseHeight <= .5);
+  assert.notEqual(dunes.color, volcanic.color);
 });
 
 test('old explicit ground-cover switch is still respected', () => {
