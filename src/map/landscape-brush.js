@@ -286,14 +286,17 @@ export function createScatterStroke(map, options = {}) {
 }
 export function createBiomeStroke(map, options = {}) {
   const preset = options.preset ?? BIOME_PRESETS.find(item => item.id === options.presetId) ?? BIOME_PRESETS[0];
-  const terrain = terrainOptions({ terrain: preset.terrain }), scatter = scatterOptions({ scatter: preset.scatter });
-  const vegetation = vegetationOptions({ vegetation: preset.vegetation }).settings;
+  const softness = number(options.softness, .6, 0, 1, 'Biom-Übergang');
+  // The biome brush owns the surface identity. Detailed object scatter stays a
+  // separate opt-in tool so painting a meadow no longer creates hundreds of
+  // permanent grass objects. Runtime ground cover follows the saved biome field.
+  const terrain = terrainOptions({ terrain: { ...preset.terrain, hardness: 1 - softness } });
   const presetId = preset.id ?? options.presetId ?? 'meadow';
   return strokeBase(map, options, (point, context) => {
     if (!terrainStamp(point, context, terrain)) return;
-    if (!context.addBiome({ id: id('biome'), name: preset.label ?? preset.name ?? 'Gemaltes Biom', presetId,
-      position: point.map(round), radius: context.radius, strength: context.strength, seed: Math.floor(context.random() * 4294967296) })) return;
-    scatterStamp(point, context, scatter, vegetation);
+    context.addBiome({ id: id('biome'), name: preset.label ?? preset.name ?? 'Gemaltes Biom', presetId,
+      position: point.map(round), radius: context.radius, strength: context.strength, softness,
+      seed: Math.floor(context.random() * 4294967296) });
   });
 }
 
