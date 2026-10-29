@@ -10,10 +10,10 @@ export const HIDING_GRASS_STYLE = Object.freeze({
   rootColor: '#315e36', tipColor: '#bbc975',
 });
 
-export function createHidingGrassGeometry({ low = false } = {}) {
+export function createHidingGrassGeometry({ low = false, rootColor = HIDING_GRASS_STYLE.rootColor, tipColor = HIDING_GRASS_STYLE.tipColor } = {}) {
   const positions = [], colors = [], indices = [];
   const segments = low ? 2 : 4;
-  const base = new THREE.Color(HIDING_GRASS_STYLE.rootColor), tip = new THREE.Color(HIDING_GRASS_STYLE.tipColor);
+  const base = new THREE.Color(rootColor), tip = new THREE.Color(tipColor);
   const tint = new THREE.Color();
   const stalks = [
     [-.17, -.13, 1, -.35], [.15, .13, 1, .48], [.15, -.16, 1, 1.04], [-.14, .16, 1, -.88],
