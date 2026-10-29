@@ -21,6 +21,7 @@ export function createVegetationWind(map = {}) {
     uVegetationZoneWind: { value: Array.from({ length: maxZones }, () => new THREE.Vector2()) },
     uVegetationInteractorCount: { value: 0 },
     uVegetationInteractors: { value: Array.from({ length: maxInteractors }, () => new THREE.Vector3(99999, 99999, 0)) },
+    uVegetationInteractorMotion: { value: Array.from({ length: maxInteractors }, () => new THREE.Vector3(0, 1, 0)) },
   };
   let settings, zones;
   function configure(nextMap) {
@@ -48,17 +49,23 @@ uniform vec4 uVegetationZoneArea[${maxZones}];
 uniform vec2 uVegetationZoneWind[${maxZones}];
 uniform int uVegetationInteractorCount;
 uniform vec3 uVegetationInteractors[${maxInteractors}];
+uniform vec3 uVegetationInteractorMotion[${maxInteractors}];
 vec2 vegetationInteractionAt(vec2 p) {
   vec2 push = vec2(0.);
   for (int i = 0; i < ${maxInteractors}; i++) {
     if (i >= uVegetationInteractorCount) break;
     vec3 actor = uVegetationInteractors[i];
+    vec3 motion = uVegetationInteractorMotion[i];
     vec2 delta = p - actor.xy;
     float d = length(delta);
     float radius = max(.25, actor.z);
-    float influence = 1. - smoothstep(radius * .28, radius, d);
-    vec2 direction = d > .001 ? delta / d : vec2(1., 0.);
-    push += direction * influence * .58;
+    float influence = 1. - smoothstep(radius * .18, radius, d);
+    float motionLength = length(motion.xy);
+    if (influence <= 0. || motionLength < .001 || motion.z <= .001) continue;
+    vec2 radial = d > .001 ? delta / d : motion.xy / motionLength;
+    vec2 forward = motion.xy / motionLength;
+    vec2 direction = normalize(forward * .82 + radial * .18);
+    push += direction * influence * motion.z * .62;
   }
   return push;
 }
@@ -147,6 +154,7 @@ vec2 vegetationWindAt(vec2 p) {
     for (let i = 0; i < maxInteractors; i++) {
       const value = i < count ? values[i] : null;
       uniforms.uVegetationInteractors.value[i].set(value?.x ?? 99999, value?.z ?? 99999, value?.radius ?? 0);
+      uniforms.uVegetationInteractorMotion.value[i].set(value?.dirX ?? 0, value?.dirZ ?? 1, value?.strength ?? 0);
     }
   }
   configure(map);
@@ -159,6 +167,7 @@ vec2 vegetationWindAt(vec2 p) {
     },
     get stats() { return { gpu: true, rootAnchored: true, worldSpaceDirection: true,
       zones: zones.length, maximumZones: maxZones, settings: { ...settings }, time: uniforms.uVegetationTime.value,
-      interactors: uniforms.uVegetationInteractorCount.value, maximumInteractors: maxInteractors }; },
+      interactors: uniforms.uVegetationInteractorCount.value, maximumInteractors: maxInteractors,
+      interactionMode: 'forward-biased', forwardWeight: .82, radialWeight: .18 }; },
   };
 }
