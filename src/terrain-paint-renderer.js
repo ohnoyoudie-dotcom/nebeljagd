@@ -56,9 +56,11 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
         vTerrainPaintPosition = (modelMatrix * vec4(position, 1.)).xz;
         vec2 terrainSnowUvVertex = (vTerrainPaintPosition - uTerrainPaintBounds.xy) / uTerrainPaintBounds.zw;
         float terrainSnowVertex = texture2D(uTerrainSnowMask, terrainSnowUvVertex).r;
-        float terrainSnowDriftVertex = sin(vTerrainPaintPosition.x*.21 + sin(vTerrainPaintPosition.y*.13)*1.7)
-          * cos(vTerrainPaintPosition.y*.18-vTerrainPaintPosition.x*.07);
-        transformed.y += terrainSnowVertex * (.115 + terrainSnowDriftVertex*.040);
+        float terrainSnowBroadVertex = sin(vTerrainPaintPosition.x*.145 + sin(vTerrainPaintPosition.y*.082)*1.9)
+          * cos(vTerrainPaintPosition.y*.118-vTerrainPaintPosition.x*.046);
+        float terrainSnowMidVertex = sin(vTerrainPaintPosition.x*.39 + vTerrainPaintPosition.y*.21
+          + sin(vTerrainPaintPosition.y*.15)*1.45);
+        transformed.y += terrainSnowVertex * (.132 + terrainSnowBroadVertex*.052 + terrainSnowMidVertex*.024);
       `);
     shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainSnowMask; uniform sampler2D uTerrainPaving; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
       float terrainSnowRelief(vec2 p) {
@@ -127,7 +129,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     dispose() { release(); empty.dispose(); },
     get stats() { return { resident: Boolean(texture), bytes: textureSize?.bytes ?? 0,
       width: textureSize?.width ?? 0, height: textureSize?.height ?? 0, bakeCount,
-      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .155,
+      snowRelief: true, snowMaskResident: Boolean(snowMaskTexture), snowVisualDepthMeters: .208,
       totalBakeMs, maximumBakeMs, metersPerTexel: textureSize?.metersPerTexel ?? 0 }; },
   };
 }
