@@ -257,14 +257,16 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         float grassHeightMix=smoothstep(0.,1.,vGrassHeight);
         float preGrassLuma=dot(diffuseColor.rgb,vec3(.299,.587,.114));
         float snowyGrass=smoothstep(.34,.56,preGrassLuma);
-        diffuseColor.rgb*=mix(vec3(.62,.72,.50),vec3(1.08,1.13,.90),grassHeightMix);
-        vec3 snowTip=mix(vec3(.78,.84,.80),vec3(.96,.99,1.0),grassHeightMix);
-        diffuseColor.rgb=mix(diffuseColor.rgb,snowTip,snowyGrass*pow(grassHeightMix,1.35)*.82);
+        vec3 normalGrassTone=mix(vec3(.62,.72,.50),vec3(1.08,1.13,.90),grassHeightMix);
+        vec3 snowGrassTone=mix(vec3(.84,.91,.92),vec3(1.03,1.06,1.09),grassHeightMix);
+        diffuseColor.rgb*=mix(normalGrassTone,snowGrassTone,snowyGrass);
+        vec3 snowTip=mix(vec3(.82,.88,.89),vec3(.98,1.0,1.0),grassHeightMix);
+        diffuseColor.rgb=mix(diffuseColor.rgb,snowTip,snowyGrass*(.28+pow(grassHeightMix,1.25)*.62));
         diffuseColor.rgb=max(diffuseColor.rgb,vec3(.055,.12,.03));
         #include <alphatest_fragment>
       `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v5-natural-motion';
+  material.customProgramCacheKey = () => 'nebeljagd-dense-meadow-v6-biome-tone';
 
   const detailMaterial = new THREE.MeshBasicMaterial({
     color: '#ffffff', side: THREE.DoubleSide, vertexColors: true, toneMapped: true,
@@ -299,12 +301,14 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
         float detailHeight=smoothstep(0.,1.,vDetailHeight);
         float preDetailLuma=dot(diffuseColor.rgb,vec3(.299,.587,.114));
         float snowyDetail=smoothstep(.34,.56,preDetailLuma);
-        diffuseColor.rgb*=mix(vec3(.58,.70,.46),vec3(1.18,1.22,1.02),detailHeight);
-        vec3 snowDetailTip=mix(vec3(.76,.82,.78),vec3(.98,1.0,1.0),detailHeight);
-        diffuseColor.rgb=mix(diffuseColor.rgb,snowDetailTip,snowyDetail*pow(detailHeight,1.20)*.88);
+        vec3 normalDetailTone=mix(vec3(.58,.70,.46),vec3(1.18,1.22,1.02),detailHeight);
+        vec3 snowDetailTone=mix(vec3(.82,.90,.91),vec3(1.04,1.07,1.10),detailHeight);
+        diffuseColor.rgb*=mix(normalDetailTone,snowDetailTone,snowyDetail);
+        vec3 snowDetailTip=mix(vec3(.80,.87,.88),vec3(.99,1.0,1.0),detailHeight);
+        diffuseColor.rgb=mix(diffuseColor.rgb,snowDetailTip,snowyDetail*(.30+pow(detailHeight,1.15)*.64));
       `);
   };
-  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v3-natural-motion';
+  detailMaterial.customProgramCacheKey = () => 'nebeljagd-layered-meadow-large-blades-v4-biome-tone';
 
   let mode = quality === 'low' ? 'low' : 'high', frame = 0, visibleChunks = 0, visibleInstances = 0, visibleDetailInstances = 0, createdChunks = 0;
   let lastCellX = Infinity, lastCellZ = Infinity, queue = [];
