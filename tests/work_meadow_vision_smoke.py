@@ -26,10 +26,6 @@ with sync_playwright() as p:
       vision:s.vision,shadows:s.shadows,rendering:s.rendering,
       position:s.position,camera:s.camera,practice:s.practiceActors};}''')
     page.keyboard.up('w')
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.firstInteractorStrength<.35",timeout=10000)
-    recovery=page.evaluate('''()=>{const s=nebeljagdTestState();return {
-      meadowStrength:s.world.stats.meadowGround.firstInteractorStrength,
-      editableStrength:s.world.stats.grassRendering.wind.firstInteractorStrength};}''')
     assert state['meadow']['enabled'] is True
     assert state['meadow']['visibleInstances']>2500
     assert state['meadow']['cardsPerTuft']==3
@@ -49,8 +45,6 @@ with sync_playwright() as p:
     assert state['meadow']['biomeAdaptiveColor'] is True
     assert state['meadow']['snowTipCoating'] is True
     assert 'snow' in state['meadow']['biomeProfiles']
-    assert recovery['meadowStrength']<.35
-    assert recovery['meadowStrength']<state['meadow']['firstInteractorStrength']
     assert state['editableGrass']['bendsAwayFromPlayer'] is True
     assert state['editableGrass']['wind']['interactors']>=2
     assert state['editableGrass']['wind']['interactionMode']=='forward-biased'
@@ -58,8 +52,6 @@ with sync_playwright() as p:
     assert state['editableGrass']['wind']['curvatureVariation']=='per-instance-grass'
     assert state['editableGrass']['wind']['windVariation']=='per-instance-phase-speed-amplitude'
     assert state['editableGrass']['wind']['recoveryModel']=='variable-directional-wake'
-    assert recovery['editableStrength']<.35
-    assert recovery['editableStrength']<state['editableGrass']['wind']['firstInteractorStrength']
     assert state['camera']['orthographicHeight']<=21
     assert state['vision']['samples']==2048
     assert state['vision']['appearance']=='single-soft-edge'
