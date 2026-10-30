@@ -1,0 +1,155 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4178",
+  "checks": [
+    {
+      "name": "Fresh map removes the four scenery categories while preserving every one of the 66 collectible placements exactly",
+      "evidence": {
+        "objects": 953,
+        "lootCount": 66,
+        "lootSha256": "c49b80d620169bd2c4cf3b672e175351101a78bb0c9f5e63f5edab32be90a0d7",
+        "selectableKinds": [
+          "house",
+          "grass",
+          "wagon",
+          "barrel",
+          "well",
+          "bush",
+          "ruin",
+          "shrine",
+          "heart",
+          "chest",
+          "bow",
+          "sword",
+          "fireStaff",
+          "iceStaff",
+          "wall",
+          "fence",
+          "crate"
+        ]
+      }
+    },
+    {
+      "name": "Palette, object category filter, scatter controls and fresh vegetation brush no longer offer retired scenery",
+      "evidence": null
+    },
+    {
+      "name": "Explicit old-draft cleanup is undoable, survives JSON saving and reload, and preserves loot, the inn, wagon, grass, shrubs and custom paths",
+      "evidence": {
+        "removedIds": [
+          "qa-retired-tree",
+          "qa-retired-rock",
+          "qa-retired-tripo-rock",
+          "qa-retired-mound",
+          "qa-retired-flowers"
+        ],
+        "retainedIds": [
+          "qa-preserved-grass",
+          "qa-preserved-bush",
+          "qa-preserved-chest",
+          "qa-preserved-bow",
+          "qa-preserved-inn",
+          "qa-preserved-wagon"
+        ]
+      }
+    },
+    {
+      "name": "Loading an old mixed flower/tree/rock preset produces only allowed grass through painting and scatter; its biome brush cannot respawn retired objects",
+      "evidence": {
+        "loadedVegetation": "meadow",
+        "scatterCount": 108,
+        "biomeStamps": 2
+      }
+    },
+    {
+      "name": "The edited map reaches the real 3D game without retired scenery or leftover collision obstacles",
+      "evidence": {
+        "objects": 953,
+        "trees": 0,
+        "obstacles": 39
+      }
+    },
+    {
+      "name": "Retained start loot still works: the bow auto-equips and E opens the original chest with weapon and gold drops",
+      "evidence": {
+        "equippedWeapon": "bow",
+        "chest": {
+          "id": "obj-chest-start",
+          "x": 28,
+          "z": -35,
+          "opened": true,
+          "variant": "wood",
+          "model": "procedural",
+          "lidRotation": -1.9,
+          "visible": true
+        },
+        "goldDrops": [
+          {
+            "id": "obj-chest-start-gold-1",
+            "type": "gold",
+            "x": 27.229780013014718,
+            "z": -33.77148008903055,
+            "collected": false,
+            "visible": true
+          },
+          {
+            "id": "obj-chest-start-gold-2",
+            "type": "gold",
+            "x": 28,
+            "z": -33.37,
+            "collected": false,
+            "visible": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "The actual delivered standalone editor and game need no external resources",
+      "evidence": {
+        "mode": "Actual welt/ standalone HTML served by local HTTP",
+        "files": {
+          "map-editor.html": {
+            "bytes": 27228372,
+            "sha256": "f41e701bedf86a45f1cd9041e0509f473de90514a6756d17a2bbc18a71865a38"
+          },
+          "nebeljagd.html": {
+            "bytes": 42733369,
+            "sha256": "163a0a1499ed084e83b3d8b5974d23e4108e53ae81b96327c55ed18a9846f492"
+          },
+          "index.html": {
+            "bytes": 42733369,
+            "sha256": "163a0a1499ed084e83b3d8b5974d23e4108e53ae81b96327c55ed18a9846f492"
+          }
+        },
+        "unexpectedResourceRequests": [],
+        "fileProtocolTested": false
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/scenery-cleanup-editor.png",
+    "docs/scenery-cleanup-cleared-world.png",
+    "docs/scenery-cleanup-retained-loot.png"
+  ],
+  "limits": "Chromium with CPU SwiftShader; no physical iPad performance claim.",
+  "delivery": {
+    "mode": "Actual welt/ standalone HTML served by local HTTP",
+    "files": {
+      "map-editor.html": {
+        "bytes": 27228372,
+        "sha256": "f41e701bedf86a45f1cd9041e0509f473de90514a6756d17a2bbc18a71865a38"
+      },
+      "nebeljagd.html": {
+        "bytes": 42733369,
+        "sha256": "163a0a1499ed084e83b3d8b5974d23e4108e53ae81b96327c55ed18a9846f492"
+      },
+      "index.html": {
+        "bytes": 42733369,
+        "sha256": "163a0a1499ed084e83b3d8b5974d23e4108e53ae81b96327c55ed18a9846f492"
+      }
+    },
+    "unexpectedResourceRequests": [],
+    "fileProtocolTested": false
+  }
+}

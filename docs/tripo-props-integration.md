@@ -1,5 +1,11 @@
 # Tripo-Gegenstände und neue Gebäudebasis
 
+**Aktueller Stand:** Die drei Tripo-Felsen sind zusammen mit den übrigen
+Felsen, Bäumen, Erhöhungen und Blumen vorübergehend aus der Editor-Auswahl
+entfernt. Die folgende Beschreibung dokumentiert ihre ursprüngliche
+Integration. Die Modelle und Importkompatibilität bleiben erhalten;
+siehe [Kartenbereinigung](scenery-cleanup.md).
+
 Die Ausgangskarte ist für die neue Gebäudereihe freigeräumt: 26 bisherige Häuser
 und 30 zugehörige oder bereits verwaiste Vorratstruhen wurden entfernt. Die
 3.949 übrigen Weltobjekte einschließlich 16 Truhen, Startwaffen, Vegetation,
