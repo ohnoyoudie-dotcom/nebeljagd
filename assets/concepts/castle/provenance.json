@@ -1,0 +1,68 @@
+{
+  "asset": "Nebeljagd large roofless castle image reference",
+  "generator": "OpenAI ImageGen",
+  "assetType": "2D concept image for subsequent Tripo generation",
+  "createdDate": "2026-10-30",
+  "styleReferences": [
+    "assets/characters/player-portrait.png",
+    "assets/concepts/inn/inn-reference.png"
+  ],
+  "generations": [
+    {
+      "prompt": "prompt.txt",
+      "output": "castle-reference-v1.png",
+      "original": "/workspace/generated_images/exec-7dba0dc8-a168-47cb-b3dc-579ee86d4cd5.png",
+      "references": [
+        "assets/characters/player-portrait.png",
+        "assets/concepts/inn/inn-reference.png"
+      ]
+    },
+    {
+      "prompt": "refinement-prompt.txt",
+      "output": "castle-reference.png",
+      "original": "/workspace/generated_images/exec-1b30078b-edd4-4ac1-93f5-4a090fddf414.png",
+      "references": [
+        "assets/concepts/castle/castle-reference-v1.png"
+      ]
+    }
+  ],
+  "output": "assets/concepts/castle/castle-reference.png",
+  "files": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056",
+      "dimensions": [
+        384,
+        384
+      ]
+    },
+    {
+      "file": "assets/concepts/inn/inn-reference.png",
+      "sha256": "39955511c97ca13ec38cc8c70beb82ac365ea359f56e7c79c4d9ac2d0b1d5016",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/castle/castle-reference-v1.png",
+      "sha256": "8aa01ca5458632eba7d495d44d81f2338b1531083b9ac5a9623f526918e4ec5f",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/castle/castle-reference.png",
+      "sha256": "32cf71cef5e4d016a50e8c435ef5725a8de7eb6fe149f2d6097a63a167e34e27",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "runtimeIntegrated": false,
+  "validation": "PNG bytes and dimensions verified; reference visually reviewed. Dimensions are design targets; passage geometry, ring corridor, eastern exit and floor heights require later 3D validation."
+}
