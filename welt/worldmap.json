@@ -13524,6 +13524,102 @@
       ],
       "rotation": 0.6,
       "scale": 1
+    },
+    {
+      "id": "object-rock-mvv6auaw-1",
+      "name": "Felsen",
+      "kind": "rock",
+      "variant": "kit-tripo-02",
+      "position": [
+        21.2,
+        -66.6
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-rock-mvv6b042-2",
+      "name": "Felsen",
+      "kind": "rock",
+      "variant": "kit-tripo-01",
+      "position": [
+        13.7,
+        -66.4
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-rock-mvv6b210-3",
+      "name": "Felsen",
+      "kind": "rock",
+      "variant": "kit-tripo-03",
+      "position": [
+        7.7,
+        -61.9
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-well-mvv6b7tu-4",
+      "name": "Brunnen",
+      "kind": "well",
+      "variant": "kit-tripo-well",
+      "position": [
+        39.2,
+        -56.1
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-chest-mvv6bjdb-5",
+      "name": "Holztruhe",
+      "kind": "chest",
+      "variant": "kit-tripo-chest",
+      "position": [
+        37,
+        -50.4
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-wagon-mvv6cnoq-6",
+      "name": "Holzwagen",
+      "kind": "wagon",
+      "variant": "kit-tripo-wagon",
+      "position": [
+        35.4,
+        -44.4
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-house-mvv6cw7v-7",
+      "name": "Haus",
+      "kind": "house",
+      "variant": "kit-tripo-tavern",
+      "position": [
+        56.6,
+        -53.9
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mvv6d58t-8",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "oak",
+      "position": [
+        10.5,
+        -98.8
+      ],
+      "rotation": 0,
+      "scale": 1
     }
   ],
   "landscape": {
