@@ -1,0 +1,78 @@
+{
+  "asset": "Nebeljagd large roofless inn image reference",
+  "generator": "OpenAI ImageGen",
+  "assetType": "2D concept image for subsequent Tripo generation",
+  "createdDate": "2026-10-30",
+  "styleReferences": [
+    "assets/characters/player-portrait.png",
+    "assets/concepts/well/well-reference.png",
+    "assets/concepts/cart/cart-reference.png"
+  ],
+  "generations": [
+    {
+      "prompt": "prompt.txt",
+      "output": "inn-reference-v1.png",
+      "original": "/workspace/generated_images/exec-a209d90c-c755-4107-b8c5-1077205317d7.png",
+      "references": [
+        "assets/characters/player-portrait.png",
+        "assets/concepts/well/well-reference.png",
+        "assets/concepts/cart/cart-reference.png"
+      ]
+    },
+    {
+      "prompt": "refinement-prompt.txt",
+      "output": "inn-reference.png",
+      "original": "/workspace/generated_images/exec-e10c3bd0-34fd-45f8-b08d-3948dcf1c377.png",
+      "references": [
+        "assets/concepts/inn/inn-reference-v1.png"
+      ]
+    }
+  ],
+  "output": "assets/concepts/inn/inn-reference.png",
+  "files": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056",
+      "dimensions": [
+        384,
+        384
+      ]
+    },
+    {
+      "file": "assets/concepts/well/well-reference.png",
+      "sha256": "ce9e28daa47598f9c5f061e2cc86189f874d0600034b048b96172eae9413c075",
+      "dimensions": [
+        1312,
+        1199
+      ]
+    },
+    {
+      "file": "assets/concepts/cart/cart-reference.png",
+      "sha256": "98bd7d3357a1fe55978e352a436cd169022e033e9b3dce6a999e68554c0dbb4a",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/inn/inn-reference-v1.png",
+      "sha256": "7c9e9bd5949c8cfea1c480e293c052bc4ee83babf819f08703ab0145d3a5843e",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/inn/inn-reference.png",
+      "sha256": "39955511c97ca13ec38cc8c70beb82ac365ea359f56e7c79c4d9ac2d0b1d5016",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "runtimeIntegrated": false,
+  "validation": "PNG bytes and dimensions verified; concept visually reviewed. No 3D geometry or collision validation."
+}
