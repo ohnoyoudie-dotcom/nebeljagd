@@ -32,7 +32,8 @@ export function createAvatarAnimator(model, clips, { rollDuration = ROLL_DURATIO
   for (const role of ['idle', 'run', 'roll']) {
     const clip = resolved[role];
     if (!clip || !(clip.duration > 0)) {
-      throw new Error(`Avatar benötigt eine ${role}-Animation. Gefunden: ${clips.map(item => item.name).join(', ') || 'keine'}`);
+      const legacy = { idle: 'Idle_Nebeljagd', run: 'Run_Nebeljagd', roll: 'Roll_Nebeljagd' }[role];
+      throw new Error(`Avatar benötigt eine ${role}-Animation (${legacy}). Gefunden: ${clips.map(item => item.name).join(', ') || 'keine'}`);
     }
   }
 

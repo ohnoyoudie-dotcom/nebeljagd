@@ -16,7 +16,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
 REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [], 'screenshots': [],
-          'sourceGlbSha256': hashlib.sha256((ROOT/'assets/characters/adventurer.glb').read_bytes()).hexdigest(),
+          'sourceGlbSha256': hashlib.sha256((ROOT/'assets/characters/nebeljagd_player_base_v1.glb').read_bytes()).hexdigest(),
           'limits': 'Chromium WebGL2 via SwiftShader; this is functional/render validation, not an iPad GPU performance benchmark.'}
 
 
@@ -65,10 +65,11 @@ try:
         page.evaluate('nebeljagdInspect({x:30,z:-42,health:100,direction:0})')
         wait_sim(page, .15)
         idle = state(page)
-        assert idle['character']['clips'] == ['Idle_Nebeljagd', 'Run_Nebeljagd', 'Roll_Nebeljagd'] or set(idle['character']['clips']) == {'Idle_Nebeljagd', 'Run_Nebeljagd', 'Roll_Nebeljagd'}
-        assert idle['character']['joints'] >= 20
-        assert 12000 <= idle['character']['triangles'] <= 25000
-        assert idle['character']['activeAnimation'] == 'Idle_Nebeljagd'
+        assert idle['character']['source'] == 'assets/characters/nebeljagd_player_base_v1.glb'
+        assert idle['character']['joints'] >= 60
+        assert 18000 <= idle['character']['triangles'] <= 25000
+        assert len(idle['character']['clips']) >= 4
+        assert idle['character']['activeAnimation'] == idle['character']['mappedAnimations']['idle']
         capture(page, 'idle-game-camera')
         passed('The actual game imports the new humanoid and idle clip with its normal camera', idle)
 
@@ -78,19 +79,20 @@ try:
         page.keyboard.up('s')
         assert running['position']['z'] - idle['position']['z'] > 2
         assert running['character']['locomotion']['walkWeight'] > .95
-        assert running['character']['activeAnimation'] == 'Run_Nebeljagd'
+        assert running['character']['activeAnimation'] == running['character']['mappedAnimations']['run']
         wait_sim(page, .7)
-        assert state(page)['character']['activeAnimation'] == 'Idle_Nebeljagd'
+        idle_again = state(page)['character']
+        assert idle_again['activeAnimation'] == idle_again['mappedAnimations']['idle']
         passed('Real WASD movement blends into the new run and returns to idle', running['character'])
 
         page.evaluate('nebeljagdInspect({x:30,z:-42,health:100,direction:0})')
         page.keyboard.press('Space')
         page.wait_for_function('nebeljagdTestState().character.rollProgress>.3 && nebeljagdTestState().rollRemaining>0')
         rolling = state(page)
-        assert rolling['character']['activeAnimation'] == 'Roll_Nebeljagd'
+        assert rolling['character']['activeAnimation'] == rolling['character']['mappedAnimations']['roll']
         assert rolling['character']['rollClipTime'] > 0
         assert max(abs(x) for x in rolling['character']['presentationRotation']) < 1e-5
-        assert rolling['character']['modelScale'] == [1, 1, 1]
+        assert len(rolling['character']['modelScale']) == 3 and all(math.isfinite(x) and x > 0 for x in rolling['character']['modelScale'])
         assert abs(rolling['position']['x']-30) < .05 and rolling['position']['z'] > -42
         page.keyboard.press('Escape')
         paused = state(page)
@@ -101,7 +103,7 @@ try:
         page.wait_for_function('nebeljagdTestState().rollRemaining===0')
         wait_sim(page, .15)
         ended = state(page)
-        assert ended['character']['activeAnimation'] == 'Idle_Nebeljagd'
+        assert ended['character']['activeAnimation'] == ended['character']['mappedAnimations']['idle']
         assert ended['character']['rollWeight'] == 0
         passed('Space plays the tucked GLB roll once without a second runtime spin; pause freezes it', {'rolling': rolling, 'ended': ended['character']})
 

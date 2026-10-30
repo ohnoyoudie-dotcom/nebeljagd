@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-const PLAYER_MODEL_URL = '/assets/characters/player/nebeljagd_player_base_v1.glb';
+import playerModelUrl from '../assets/characters/nebeljagd_player_base_v1.glb?url&inline';
+const PLAYER_MODEL_URL = playerModelUrl;
+const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
 import { createLocomotionController } from './locomotion.js';
 import { createAvatarAnimator } from './avatar-animation.js';
 
@@ -186,7 +188,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   const bones = new Set();
   model.traverse(node => { if (node.isBone) bones.add(node); });
   group.userData.characterAsset = {
-    name: 'Nebeljäger Tripo', source: PLAYER_MODEL_URL,
+    name: 'Nebeljäger Tripo', source: PLAYER_MODEL_SOURCE,
     format: 'GLB', skinned: true, joints: bones.size, clips: gltf.animations.map(clip => clip.name),
     meshes: meshes.length, triangles: meshes.reduce((count, mesh) => count +
       (mesh.geometry.index?.count ?? mesh.geometry.attributes.position.count) / 3, 0),
