@@ -1,0 +1,326 @@
+{
+  "tool": "tools/glb-texturcheck.html",
+  "sha256": "68768263f09411d5fb861fedae3a27e4855348828380e0ac92866089ee0cccaa",
+  "date": "2026-10-30",
+  "browser": "Chromium through Playwright, local HTTP server",
+  "fullSuite": {
+    "results": [
+      {
+        "file": "invalid.glb",
+        "bytes": 19,
+        "verdict": "Datei konnte nicht vollständig geprüft werden",
+        "previewResults": null
+      },
+      {
+        "file": "color_factor.glb",
+        "bytes": 916,
+        "verdict": "Farben ohne Farbtexturbild",
+        "previewResults": []
+      },
+      {
+        "file": "vertex_color.glb",
+        "bytes": 872,
+        "verdict": "Farben ohne Farbtexturbild",
+        "previewResults": []
+      },
+      {
+        "file": "external_image.glb",
+        "bytes": 1024,
+        "verdict": "Farbtextur liegt außerhalb der GLB",
+        "previewResults": []
+      },
+      {
+        "file": "missing_uv.glb",
+        "bytes": 996,
+        "verdict": "Material- oder Texturverknüpfung auffällig",
+        "previewResults": [
+          {
+            "imageIndex": 0,
+            "status": "decoded",
+            "width": 8,
+            "height": 8,
+            "sampleColoredFraction": 1,
+            "sampleNote": "64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler."
+          }
+        ]
+      },
+      {
+        "file": "broken_source_index.glb",
+        "bytes": 1012,
+        "verdict": "Material- oder Texturverknüpfung auffällig",
+        "previewResults": []
+      },
+      {
+        "file": "broken_texture_index.glb",
+        "bytes": 1012,
+        "verdict": "Material- oder Texturverknüpfung auffällig",
+        "previewResults": []
+      },
+      {
+        "file": "normal_map_only.glb",
+        "bytes": 964,
+        "verdict": "Keine Farbtextur zugewiesen",
+        "previewResults": []
+      },
+      {
+        "file": "unused_image.glb",
+        "bytes": 936,
+        "verdict": "Keine Farbtextur zugewiesen",
+        "previewResults": []
+      },
+      {
+        "file": "zero_images.glb",
+        "bytes": 860,
+        "verdict": "Keine Farbtextur zugewiesen",
+        "previewResults": []
+      },
+      {
+        "file": "valid_embedded_basecolor.glb",
+        "bytes": 1012,
+        "verdict": "Farbtexturen sind eingebettet und zugewiesen",
+        "previewResults": [
+          {
+            "imageIndex": 0,
+            "status": "decoded",
+            "width": 8,
+            "height": 8,
+            "sampleColoredFraction": 1,
+            "sampleNote": "64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler."
+          }
+        ]
+      },
+      {
+        "file": "tavern.glb",
+        "bytes": 7053948,
+        "verdict": "Farbtexturen sind eingebettet und zugewiesen",
+        "previewResults": [
+          {
+            "imageIndex": 1,
+            "status": "decoded",
+            "width": 2048,
+            "height": 2048,
+            "sampleColoredFraction": 1,
+            "sampleNote": "64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler."
+          }
+        ]
+      },
+      {
+        "file": "medieval tavern interior 3d model.glb",
+        "bytes": 65440900,
+        "verdict": "Farbtexturen sind eingebettet und zugewiesen",
+        "previewResults": [
+          {
+            "imageIndex": 0,
+            "status": "decoded",
+            "width": 4096,
+            "height": 4096,
+            "sampleColoredFraction": 1,
+            "sampleNote": "64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler."
+          }
+        ]
+      }
+    ],
+    "browserErrors": [],
+    "externalRequests": []
+  },
+  "targetedFinalCheck": {
+    "results": [
+      {
+        "file": "corrupt_image.glb",
+        "visibleVerdict": "Farbtexturen verknüpft, Vorschau nicht vollständig lesbar",
+        "report": {
+          "checker": "Nebeljagd GLB-Texturcheck",
+          "version": 1,
+          "generatedAt": "2026-10-30T22:38:04.993Z",
+          "file": {
+            "name": "corrupt_image.glb",
+            "sizeBytes": 1012,
+            "metadataSha256": "f55d6e0c09062d64bcbdcb09bad5e989b1ed9a186e993eea85a54f6d875318fb"
+          },
+          "verdict": "Farbtexturen verknüpft, Vorschau nicht vollständig lesbar",
+          "explanation": "Die Materialverweise sind vorhanden, aber mindestens eine zugehörige Bilddatei konnte nicht angezeigt werden. Der Prüfbericht enthält die einzelnen Ergebnisse; ein reines Anzeigeproblem ist damit noch nicht bestätigt.",
+          "severity": "warn",
+          "scope": "Local structural inspection of mesh references, color texture links, image ranges and declared UV sets. No network access, geometry rendering or complete glTF validation.",
+          "counts": {
+            "meshes": 1,
+            "meshParts": 1,
+            "materials": 1,
+            "images": 1,
+            "textures": 1,
+            "partsWithColorTexture": 1,
+            "partsWithEmbeddedColorTexture": 1
+          },
+          "extensionsRequired": [],
+          "issues": [
+            "Mindestens ein eingebettetes Farbbild konnte im Browser nicht geöffnet werden. Mögliche Ursachen sind beschädigte Bilddaten, ein nicht unterstützter Codec oder die Vorschaugrößenbegrenzung."
+          ],
+          "primitives": [
+            {
+              "meshIndex": 0,
+              "primitiveIndex": 0,
+              "materialIndex": 0,
+              "materialName": "Testmaterial",
+              "invalidMaterial": false,
+              "baseColorFactor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "vertexColors": false,
+              "colorTexture": {
+                "valid": true,
+                "textureIndex": 0,
+                "imageIndex": 0,
+                "texCoord": 0,
+                "storage": "embedded-buffer",
+                "offset": 932,
+                "byteLength": 77,
+                "mimeType": "image/png"
+              },
+              "uvDeclared": true,
+              "compressedGeometry": false
+            }
+          ],
+          "images": [
+            {
+              "index": 0,
+              "name": null,
+              "storage": "embedded-buffer",
+              "offset": 932,
+              "byteLength": 77,
+              "mimeType": "image/png"
+            }
+          ],
+          "previewResults": [
+            {
+              "imageIndex": 0,
+              "status": "preview-unavailable",
+              "note": "The source image cannot be decoded."
+            }
+          ]
+        }
+      },
+      {
+        "file": "medieval tavern interior 3d model.glb",
+        "visibleVerdict": "Farbtexturen sind eingebettet und zugewiesen",
+        "report": {
+          "checker": "Nebeljagd GLB-Texturcheck",
+          "version": 1,
+          "generatedAt": "2026-10-30T22:38:05.033Z",
+          "file": {
+            "name": "medieval tavern interior 3d model.glb",
+            "sizeBytes": 65440900,
+            "metadataSha256": "c7424db014d215f8197d385b9131f5b27728fa66d30a008103cc26ab11b03106"
+          },
+          "verdict": "Farbtexturen sind eingebettet und zugewiesen",
+          "explanation": "Dieser Export enthält Farbtexturbilder mit passenden Verweisen und deklarierten UV-Koordinaten. Unten kannst du die Bilddaten ansehen. Ob Tripo oder das Spiel sie korrekt rendert, ist damit noch nicht geprüft.",
+          "severity": "good",
+          "scope": "Local structural inspection of mesh references, color texture links, image ranges and declared UV sets. No network access, geometry rendering or complete glTF validation.",
+          "counts": {
+            "meshes": 1,
+            "meshParts": 1,
+            "materials": 1,
+            "images": 3,
+            "textures": 3,
+            "partsWithColorTexture": 1,
+            "partsWithEmbeddedColorTexture": 1
+          },
+          "extensionsRequired": [],
+          "issues": [],
+          "primitives": [
+            {
+              "meshIndex": 0,
+              "primitiveIndex": 0,
+              "materialIndex": 0,
+              "materialName": "tripo_material_d9d936fa-51d8-4136-88c5-8b3d3c1ac701",
+              "invalidMaterial": false,
+              "baseColorFactor": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "vertexColors": false,
+              "colorTexture": {
+                "valid": true,
+                "textureIndex": 0,
+                "imageIndex": 0,
+                "texCoord": 0,
+                "storage": "embedded-buffer",
+                "offset": 2052,
+                "byteLength": 4178094,
+                "mimeType": "image/jpeg"
+              },
+              "uvDeclared": true,
+              "compressedGeometry": false
+            }
+          ],
+          "images": [
+            {
+              "index": 0,
+              "name": "medieval_tavern_interior_3d_model_basecolor.jpg",
+              "storage": "embedded-buffer",
+              "offset": 2052,
+              "byteLength": 4178094,
+              "mimeType": "image/jpeg"
+            },
+            {
+              "index": 1,
+              "name": "medieval_tavern_interior_3d_model_rm.jpg",
+              "storage": "embedded-buffer",
+              "offset": 4180148,
+              "byteLength": 2374827,
+              "mimeType": "image/jpeg"
+            },
+            {
+              "index": 2,
+              "name": "medieval_tavern_interior_3d_model_normal.png",
+              "storage": "embedded-buffer",
+              "offset": 6554976,
+              "byteLength": 4234248,
+              "mimeType": "image/png"
+            }
+          ],
+          "previewResults": [
+            {
+              "imageIndex": 0,
+              "status": "decoded",
+              "width": 4096,
+              "height": 4096,
+              "sampleColoredFraction": 1,
+              "sampleNote": "64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler."
+            }
+          ]
+        }
+      },
+      {
+        "file": "invalid_magic.glb",
+        "visibleVerdict": "Datei konnte nicht vollständig geprüft werden",
+        "report": {
+          "checker": "Nebeljagd GLB-Texturcheck",
+          "version": 1,
+          "file": {
+            "name": "invalid_magic.glb",
+            "sizeBytes": 37
+          },
+          "error": "Dies ist keine binäre glTF-Datei (GLB)."
+        }
+      }
+    ],
+    "errors": [],
+    "externalRequests": [],
+    "fileScheme": "Managed Chromium returned ERR_BLOCKED_BY_ADMINISTRATOR; browser-wide policy was not changed. HTTP local-file input works."
+  },
+  "limitations": [
+    "file:// access is blocked by administrator policy in this cloud browser and was not verified. No browser policies were changed.",
+    "This is a structural texture check with image previews, not complete glTF validation or game rendering."
+  ],
+  "actualHouse": {
+    "report": "docs/house-texture-browser-report.json",
+    "sourceSha256": "9b0d006aa072b5e087b43813b1ad6d2d02ea8b0f659dab678cda15fd3e55b76a",
+    "verdict": "Keine Farbtextur zugewiesen",
+    "browserErrors": [],
+    "externalRequests": []
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "purpose": "Diagnose missing house textures by comparing the uploaded GLB with the working original tavern.",
+  "files": [
+    {
+      "file": "assets/inbox/medieval house interior 3d model.glb",
+      "bytes": 43841988,
+      "sha256": "9b0d006aa072b5e087b43813b1ad6d2d02ea8b0f659dab678cda15fd3e55b76a",
+      "images": 0,
+      "textures": 0,
+      "materials": [
+        {
+          "name": "material"
+        }
+      ],
+      "primitiveAttributes": [
+        [
+          "POSITION",
+          "NORMAL"
+        ]
+      ],
+      "triangles": 1826864
+    },
+    {
+      "file": "assets/inbox/medieval tavern interior 3d model.glb",
+      "bytes": 65440900,
+      "sha256": "343d7cf86820f13cae0f6081bd66be66df79769d0b65cb067618f2a2f96d2f1f",
+      "images": 3,
+      "textures": 3,
+      "materials": [
+        {
+          "name": "tripo_material_d9d936fa-51d8-4136-88c5-8b3d3c1ac701",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 0
+            },
+            "metallicRoughnessTexture": {
+              "index": 1
+            }
+          },
+          "normalTexture": {
+            "index": 2
+          }
+        }
+      ],
+      "primitiveAttributes": [
+        [
+          "POSITION",
+          "NORMAL",
+          "TEXCOORD_0"
+        ]
+      ],
+      "triangles": 1860045
+    }
+  ],
+  "finding": "The supplied house GLB has zero image/texture entries, only a named default material, and no UV or vertex-color attributes. This export does not contain the tavern-style color textures. File inspection alone cannot distinguish generation failure from an export without textures."
+}

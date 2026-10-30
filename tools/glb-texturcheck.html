@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nebeljagd · GLB-Texturcheck</title>
+<style>
+  :root{color-scheme:light;font-family:system-ui,sans-serif;color:#203a36;background:#edf1ed}
+  *{box-sizing:border-box}body{margin:0;padding:32px 18px}main{max-width:860px;margin:auto}
+  h1{font-size:clamp(26px,5vw,38px);margin:8px 0 12px}h2{font-size:22px}p{line-height:1.6}
+  .eyebrow{font-size:13px;letter-spacing:.12em;font-weight:700}.card{background:white;border:1px solid #cbd6ce;border-radius:16px;padding:24px;margin:20px 0}
+  .picker{display:block;padding:22px;border:2px dashed #79998a;border-radius:12px;background:#f5f8f3}
+  input{display:block;margin-top:14px;max-width:100%;font:inherit}button{font:inherit;border:0;border-radius:9px;background:#245b4b;color:white;padding:12px 18px;cursor:pointer}
+  button:disabled{opacity:.45;cursor:default}.muted{color:#53675e;font-size:14px}.good{border-left:6px solid #318363}.warn{border-left:6px solid #b47b27}.bad{border-left:6px solid #ae4b3a}
+  dl{display:grid;grid-template-columns:1fr 1fr;gap:8px}dt{color:#53675e}dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+  li{margin:9px 0;line-height:1.5}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f1f5f1;padding:15px;border-radius:9px;font-size:12px}
+  .previews{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}figure{margin:0}figure img{width:100%;max-height:220px;object-fit:contain;background:#eee;border:1px solid #ddd}figcaption{font-size:13px;padding:8px 0;overflow-wrap:anywhere}
+  [hidden]{display:none!important}
+</style>
+<main>
+  <div class="eyebrow">NEBELJAGD · MODELLPRÜFUNG</div>
+  <h1>Wo sind die Texturen?</h1>
+  <p>Wähle deine GLB-Datei aus. Die Prüfung läuft direkt in deinem Browser – auch bei Dateien über 32 MB. Es wird nichts hochgeladen und die Datei bleibt unverändert.</p>
+  <section class="card">
+    <label class="picker">Deine Hausdatei auswählen
+      <input id="file" type="file" accept=".glb,model/gltf-binary">
+    </label>
+    <p id="status" role="status" aria-live="polite">Du kannst diese HTML-Datei auch ohne Internet öffnen.</p>
+  </section>
+  <section id="result" class="card" hidden>
+    <h2 id="verdict"></h2><p id="explanation"></p><dl id="facts"></dl>
+    <ul id="findings"></ul>
+    <button id="download" disabled>Prüfbericht herunterladen</button>
+    <p class="muted">Lade anschließend die kleine JSON-Datei im Chat hoch. Sie enthält die Ergebnisse und Materialzuordnungen, aber keine 3D-Geometrie oder Texturbilder.</p>
+  </section>
+  <section id="previewSection" class="card" hidden>
+    <h2>Farbtexturen aus der Datei</h2><div id="previews" class="previews"></div>
+    <p class="muted">Hier erscheinen nur eingebettete Farbtexturen, die tatsächlich einem verwendeten Material zugeordnet sind. Externe Bilddateien werden nicht nachgeladen.</p>
+  </section>
+  <details id="details" class="card" hidden><summary>Technischer Prüfbericht</summary><pre id="json"></pre></details>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const JSON_CHUNK = 0x4e4f534a, BIN_CHUNK = 0x004e4942;
+const integer = n => Number.isSafeInteger(n) && n >= 0;
+const bytes = async (file, start, length) => new Uint8Array(await file.slice(start, start + length).arrayBuffer());
+const validIndex = (array, index) => integer(index) && index < array.length;
+
+async function readGLB(file) {
+  if (file.size < 20) throw Error('Die Datei ist zu klein für eine vollständige GLB-Datei.');
+  const header = new DataView((await bytes(file, 0, 12)).buffer);
+  if (header.getUint32(0, true) !== 0x46546c67) throw Error('Dies ist keine binäre glTF-Datei (GLB).');
+  if (header.getUint32(4, true) !== 2) throw Error('Dieser Prüfer unterstützt GLB-Version 2.');
+  const declaredLength = header.getUint32(8, true);
+  if (declaredLength !== file.size) throw Error('Die im GLB-Kopf angegebene Dateigröße stimmt nicht. Die Datei ist möglicherweise unvollständig.');
+  let cursor = 12, document = null, bin = null, jsonText = '';
+  while (cursor < file.size) {
+    if (cursor + 8 > file.size) throw Error('Unvollständiger GLB-Datenblock.');
+    const chunk = new DataView((await bytes(file, cursor, 8)).buffer);
+    const size = chunk.getUint32(0, true), type = chunk.getUint32(4, true);
+    const start = cursor + 8;
+    if (size % 4 || start + size > file.size) throw Error('Ungültige Länge eines GLB-Datenblocks.');
+    if (cursor === 12 && type !== JSON_CHUNK) throw Error('Der erste GLB-Datenblock enthält keine Modellbeschreibung.');
+    if (type === JSON_CHUNK) {
+      if (document) throw Error('Mehrere JSON-Blöcke sind in diesem GLB nicht zulässig.');
+      if (size > 16 * 1024 * 1024) throw Error('Die Modellbeschreibung überschreitet die Prüfgrenze von 16 MB. Das ist keine Aussage über vorhandene Texturen.');
+      jsonText = new TextDecoder('utf-8', {fatal:true}).decode(await bytes(file, start, size));
+      document = JSON.parse(jsonText.trim());
+    } else if (type === BIN_CHUNK) {
+      if (bin) throw Error('Mehrere Binärblöcke sind in diesem GLB nicht zulässig.');
+      bin = {start, length:size};
+    }
+    cursor = start + size;
+  }
+  if (!document || document.asset?.version !== '2.0') throw Error('Keine gültige glTF-2.0-Modellbeschreibung gefunden.');
+  for (const key of ['materials','textures','images','meshes','bufferViews','buffers','nodes','scenes']) {
+    if (document[key] !== undefined && !Array.isArray(document[key])) throw Error('Ungültige Modellliste: ' + key);
+  }
+  return {document, bin, jsonText};
+}
+
+function imageLocation(image, document, bin) {
+  if (!image || typeof image !== 'object') return {storage:'invalid', issue:'Ungültiger Bildeintrag.'};
+  if (typeof image.uri === 'string') {
+    if (image.uri.startsWith('data:image/')) return {storage:'embedded-data-uri', mimeType:image.uri.slice(5).split(';')[0]};
+    return {storage:'external', uri:image.uri, issue:'Externe Bilddatei; sie ist nicht in diesem GLB eingebettet.'};
+  }
+  const views = document.bufferViews || [], buffers = document.buffers || [];
+  if (!validIndex(views, image.bufferView)) return {storage:'invalid', issue:'Das Bild verweist auf keinen gültigen Datenbereich.'};
+  const view = views[image.bufferView];
+  if (view.buffer !== 0 || !buffers[0] || buffers[0].uri || !bin) return {storage:'external-buffer', issue:'Bilddaten liegen nicht im eingebetteten GLB-Binärblock.'};
+  const offset = view.byteOffset ?? 0, length = view.byteLength;
+  if (!integer(offset) || !integer(length) || !integer(buffers[0].byteLength) || length === 0 || offset + length > buffers[0].byteLength || offset + length > bin.length) {
+    return {storage:'invalid', issue:'Der Bilddatenbereich liegt außerhalb des verfügbaren Binärblocks.'};
+  }
+  return {storage:'embedded-buffer', offset:bin.start + offset, byteLength:length, mimeType:image.mimeType || 'application/octet-stream'};
+}
+
+function textureLink(info, document, locations) {
+  const textures = document.textures || [], images = document.images || [];
+  if (!info || !validIndex(textures, info.index)) return {valid:false, issue:'Ungültiger Texturindex.'};
+  const texture = textures[info.index];
+  const extension = texture.extensions?.KHR_texture_basisu || texture.extensions?.EXT_texture_webp || texture.extensions?.EXT_texture_avif;
+  const source = extension?.source ?? texture.source;
+  if (!validIndex(images, source)) return {valid:false, textureIndex:info.index, issue:'Die Textur verweist auf kein vorhandenes Bild.'};
+  const location = locations[source];
+  return {valid:location.storage !== 'invalid', textureIndex:info.index, imageIndex:source,
+    texCoord:info.extensions?.KHR_texture_transform?.texCoord ?? info.texCoord ?? 0,
+    ...location};
+}
+
+async function inspectGLB(file) {
+  const {document, bin, jsonText} = await readGLB(file);
+  const materials = document.materials || [], images = document.images || [];
+  const locations = images.map(image => imageLocation(image, document, bin));
+  const meshes = document.meshes || [], nodes = document.nodes || [];
+  const referencedMeshes = new Set(nodes.filter(n => validIndex(meshes,n.mesh)).map(n => n.mesh));
+  const primitives = [];
+  // Inspect mesh primitives referenced by any node; this is a structural check,
+  // not a claim that every node is visible in Tripo's current scene.
+  meshes.forEach((mesh, meshIndex) => {
+    if (nodes.length && !referencedMeshes.has(meshIndex)) return;
+    (mesh.primitives || []).forEach((primitive, primitiveIndex) => {
+      const material = materials[primitive.material];
+      const pbr = material?.pbrMetallicRoughness;
+      const specGloss = material?.extensions?.KHR_materials_pbrSpecularGlossiness;
+      const colorInfo = pbr?.baseColorTexture || specGloss?.diffuseTexture;
+      const color = colorInfo ? textureLink(colorInfo, document, locations) : null;
+      const attributes = primitive.attributes || {};
+      primitives.push({meshIndex, primitiveIndex, materialIndex:primitive.material ?? null,
+        materialName:material?.name || null,
+        invalidMaterial:primitive.material !== undefined && !validIndex(materials, primitive.material),
+        baseColorFactor:pbr?.baseColorFactor || specGloss?.diffuseFactor || [1,1,1,1],
+        vertexColors:attributes.COLOR_0 !== undefined,
+        colorTexture:color,
+        uvDeclared:color ? attributes['TEXCOORD_' + color.texCoord] !== undefined : null,
+        compressedGeometry:!!primitive.extensions?.KHR_draco_mesh_compression});
+    });
+  });
+  const used = primitives.filter(p => p.colorTexture);
+  const invalid = used.filter(p => !p.colorTexture.valid || !p.uvDeclared);
+  const external = used.filter(p => p.colorTexture.storage?.startsWith('external'));
+  const embedded = used.filter(p => p.colorTexture.valid && p.colorTexture.storage?.startsWith('embedded'));
+  const materialColors = primitives.some(p => p.vertexColors || Math.max(...p.baseColorFactor.slice(0,3))-Math.min(...p.baseColorFactor.slice(0,3)) > .03);
+  const issues = [];
+  if (!primitives.length) issues.push('Keine verwendeten Mesh-Teile gefunden. Sichtbare Geometrie lässt sich damit nicht bestätigen.');
+  if (primitives.some(p=>p.invalidMaterial)) issues.push('Mindestens ein Mesh-Teil verweist auf ein ungültiges Material.');
+  if (invalid.length) issues.push('Mindestens eine Farbtextur hat eine ungültige Verknüpfung oder die benötigte UV-Zuordnung fehlt.');
+  if (external.length) issues.push('Mindestens eine Farbtextur benötigt eine externe Datei. Ein einzelnes GLB enthält diese Bilddaten nicht.');
+  if (used.length < primitives.length && used.length) issues.push('Nicht alle Mesh-Teile besitzen eine Farbtextur. Einige können absichtlich nur eine Materialfarbe verwenden.');
+  let verdict, explanation, severity;
+  if (invalid.length || primitives.some(p=>p.invalidMaterial)) {
+    severity='bad'; verdict='Material- oder Texturverknüpfung auffällig';
+    explanation='Bilddaten können vorhanden sein, aber die Zuordnung ist nicht vollständig. Der Prüfbericht zeigt die betroffenen Mesh-Teile.';
+  } else if (!used.length && !materialColors) {
+    severity='warn'; verdict='Keine Farbtextur zugewiesen';
+    explanation=images.length ? 'Die Datei enthält Bildeinträge, aber kein verwendetes Material verknüpft sie als Farbtextur. Andere Texturen, etwa für die Oberflächenstruktur, ersetzen keine Farbtextur.' : 'In diesem Export gibt es weder Texturbilder noch eine Farbtexturzuordnung. Ein anderer Anzeigemodus kann daraus keine Holz- oder Stofffarben herstellen.';
+  } else if (external.length) {
+    severity='warn'; verdict='Farbtextur liegt außerhalb der GLB';
+    explanation='Das Modell verweist auf zusätzliche Bilddateien. Für einen vollständigen GLB-Export müssen die Bilder eingebettet sein.';
+  } else if (embedded.length) {
+    severity='good'; verdict='Farbtexturen sind eingebettet und zugewiesen';
+    explanation='Dieser Export enthält Farbtexturbilder mit passenden Verweisen und deklarierten UV-Koordinaten. Unten kannst du die Bilddaten ansehen. Ob Tripo oder das Spiel sie korrekt rendert, ist damit noch nicht geprüft.';
+  } else {
+    severity='warn'; verdict='Farben ohne Farbtexturbild';
+    explanation='Das Modell verwendet Material- oder Vertexfarben. Das kann beabsichtigt sein, entspricht aber nicht automatisch einer detaillierten Farbtextur.';
+  }
+  if (!primitives.length) { severity='warn'; verdict='Keine verwendete Geometrie gefunden'; }
+  const report = {checker:'Nebeljagd GLB-Texturcheck',version:1,generatedAt:new Date().toISOString(),
+    file:{name:file.name,sizeBytes:file.size},verdict,explanation,severity,
+    scope:'Local structural inspection of mesh references, color texture links, image ranges and declared UV sets. No network access, geometry rendering or complete glTF validation.',
+    counts:{meshes:meshes.length,meshParts:primitives.length,materials:materials.length,
+      images:images.length,textures:(document.textures||[]).length,partsWithColorTexture:used.length,partsWithEmbeddedColorTexture:embedded.length},
+    extensionsRequired:document.extensionsRequired || [],issues,primitives,
+    images:locations.map((location,index)=>({index,name:images[index]?.name || null,...location})),
+    previewResults:[]};
+  if (globalThis.crypto?.subtle) {
+    const hash = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(jsonText));
+    report.file.metadataSha256 = [...new Uint8Array(hash)].map(n=>n.toString(16).padStart(2,'0')).join('');
+  }
+  return {report, document, locations};
+}
+window.inspectGLB = inspectGLB;
+let currentReport = null, objectUrls = [], generation = 0;
+function refreshReport() {
+  if (currentReport?.verdict) {
+    $('result').className='card '+currentReport.severity;
+    $('verdict').textContent=currentReport.verdict;
+    $('explanation').textContent=currentReport.explanation;
+    $('findings').replaceChildren();
+    for (const finding of currentReport.issues) {
+      const li=document.createElement('li');li.textContent=finding;$('findings').append(li);
+    }
+  }
+  $('json').textContent = JSON.stringify(currentReport,null,2);
+  $('download').disabled = !currentReport;
+}
+function reset() {
+  for (const url of objectUrls) URL.revokeObjectURL(url);
+  objectUrls=[]; currentReport=null; $('download').disabled=true;
+  for (const id of ['result','details','previewSection']) $(id).hidden=true;
+  for (const id of ['previews','findings','facts']) $(id).replaceChildren();
+}
+async function showPreviews(file, result, token) {
+  const selected = [...new Set(result.report.primitives.filter(p=>p.colorTexture?.valid && p.colorTexture.storage.startsWith('embedded')).map(p=>p.colorTexture.imageIndex))].slice(0,4);
+  for (const index of selected) {
+    if (token !== generation) return;
+    const loc = result.locations[index], entry = {imageIndex:index};
+    if (!['image/png','image/jpeg','image/webp','image/avif'].includes(loc.mimeType)) { entry.status='unsupported-preview'; entry.note='Bilddaten vorhanden; dieser Prüfer unterstützt die Vorschau dieses Bildformats nicht: '+loc.mimeType; result.report.previewResults.push(entry); continue; }
+    let blob;
+    try {
+      if (loc.storage === 'embedded-buffer') blob = file.slice(loc.offset,loc.offset+loc.byteLength,loc.mimeType);
+      else {
+        const uri = result.document.images[index].uri;
+        const comma=uri.indexOf(',');
+        if (!uri.slice(0,comma).endsWith(';base64')) throw Error('Nicht unterstützte Data-URI-Vorschau.');
+        const raw=atob(uri.slice(comma+1)); blob=new Blob([Uint8Array.from(raw,c=>c.charCodeAt(0))],{type:loc.mimeType});
+      }
+      if (blob.size > 48*1024*1024) throw Error('Das Texturbild ist für diese Vorschau größer als 48 MB. Es bleibt im Modell erhalten.');
+      const url=URL.createObjectURL(blob); objectUrls.push(url);
+      const img=new Image(); img.alt='Eingebettete Farbtextur '+index; img.src=url;
+      await img.decode();
+      if (token !== generation) return;
+      entry.status='decoded'; entry.width=img.naturalWidth; entry.height=img.naturalHeight;
+      const canvas=document.createElement('canvas');canvas.width=64;canvas.height=64;
+      const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(img,0,0,64,64);
+      const pixels=context.getImageData(0,0,64,64).data;let colored=0,opaque=0;
+      for(let i=0;i<pixels.length;i+=4) if(pixels[i+3]>32){opaque++;if(Math.max(pixels[i],pixels[i+1],pixels[i+2])-Math.min(pixels[i],pixels[i+1],pixels[i+2])>12)colored++;}
+      entry.sampleColoredFraction=opaque?Math.round(colored/opaque*1000)/1000:0;
+      entry.sampleNote='64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler.';
+      const figure=document.createElement('figure'),caption=document.createElement('figcaption');
+      caption.textContent='Farbtextur '+index+' · '+entry.width+' × '+entry.height+' Pixel';figure.append(img,caption);$('previews').append(figure);$('previewSection').hidden=false;
+    } catch(error) {entry.status='preview-unavailable';entry.note=String(error.message);}
+    result.report.previewResults.push(entry);
+  }
+}
+$('file').addEventListener('change',async()=>{
+  const token=++generation; reset(); const file=$('file').files[0];if(!file)return;
+  $('status').textContent='Modellbeschreibung wird gelesen …';
+  try {
+    const result=await inspectGLB(file);if(token!==generation)return;
+    currentReport=result.report;$('result').className='card '+currentReport.severity;$('result').hidden=false;$('details').hidden=false;
+    $('verdict').textContent=currentReport.verdict;$('explanation').textContent=currentReport.explanation;
+    const facts=[['Datei',file.name],['Dateigröße',(file.size/1024/1024).toFixed(1)+' MiB'],['Texturbilder',currentReport.counts.images],['Materialien',currentReport.counts.materials],['Mesh-Teile mit Farbtextur',currentReport.counts.partsWithColorTexture+' / '+currentReport.counts.meshParts]];
+    for(const [key,value] of facts){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=key;dd.textContent=String(value);$('facts').append(dt,dd);}
+    for(const finding of currentReport.issues){const li=document.createElement('li');li.textContent=finding;$('findings').append(li);}
+    refreshReport();$('status').textContent='Materialzuordnung geprüft. Eingebettete Farbtexturen werden geöffnet …';
+    await showPreviews(file,result,token);if(token!==generation)return;
+    const failedPreviews=currentReport.previewResults.filter(entry=>entry.status==='preview-unavailable');
+    if (failedPreviews.length) {
+      currentReport.issues.push('Mindestens ein eingebettetes Farbbild konnte im Browser nicht geöffnet werden. Mögliche Ursachen sind beschädigte Bilddaten, ein nicht unterstützter Codec oder die Vorschaugrößenbegrenzung.');
+      if (currentReport.severity==='good') {
+        currentReport.severity='warn';
+        currentReport.verdict='Farbtexturen verknüpft, Vorschau nicht vollständig lesbar';
+        currentReport.explanation='Die Materialverweise sind vorhanden, aber mindestens eine zugehörige Bilddatei konnte nicht angezeigt werden. Der Prüfbericht enthält die einzelnen Ergebnisse; ein reines Anzeigeproblem ist damit noch nicht bestätigt.';
+      }
+    }
+    refreshReport();$('status').textContent='Prüfung abgeschlossen. Du kannst jetzt den kleinen Prüfbericht herunterladen.';
+  } catch(error) {
+    if(token!==generation)return;
+    $('status').textContent='Die Prüfung konnte nicht abgeschlossen werden: '+error.message;
+    currentReport={checker:'Nebeljagd GLB-Texturcheck',version:1,file:{name:file.name,sizeBytes:file.size},error:String(error.message)};
+    $('result').hidden=false;$('result').className='card warn';$('verdict').textContent='Datei konnte nicht vollständig geprüft werden';$('explanation').textContent='Das ist noch keine Diagnose fehlender Texturen. Bitte sende den Prüfbericht.';$('details').hidden=false;refreshReport();
+  }
+});
+$('download').addEventListener('click',()=>{
+  if(!currentReport)return;
+  const blob=new Blob([JSON.stringify(currentReport,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');
+  link.href=url;link.download='nebeljagd-texturbericht.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+</script>
+</html>
