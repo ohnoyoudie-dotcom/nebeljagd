@@ -1,6 +1,8 @@
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getWorldmapStats, validateWorldmap } from './model.js';
 import { biomePreset } from './landscape.js';
+import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
+import { getObjectFootprintRadius } from './objects.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
@@ -13,7 +15,23 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Symbols use the same metre scale and +z/front direction as the 3D assets.
 // Reusing a symbol preserves every independently editable placement without
 // repeating thousands of copies of the source paths in the exported SVG.
+function castleMapSymbol() {
+  const definition = getEnvironmentKitDefinition('house', 'kit-tripo-castle');
+  const { halfWidth, halfDepth } = definition.footprint;
+  const pieces = ['<g id="world-object-house-tripo-castle"><rect x="' + number(-halfWidth)
+    + '" y="' + number(-halfDepth) + '" width="' + number(halfWidth * 2) + '" height="'
+    + number(halfDepth * 2) + '" fill="#bda77f" stroke="#655b47" stroke-width=".5"/>'];
+  // Match the measured walls and furniture proxies, including real doorway
+  // gaps, rather than drawing the castle as a tiny generic cottage.
+  for (const wall of definition.walls) pieces.push('<rect x="' + number(wall.minX)
+    + '" y="' + number(wall.minZ) + '" width="' + number(wall.maxX - wall.minX)
+    + '" height="' + number(wall.maxZ - wall.minZ) + '" fill="'
+    + (wall.type === 'furniture' ? '#80694b' : '#ece0bd') + '"/>');
+  pieces.push('</g>');
+  return pieces.join('');
+}
 const objectSymbols = [
+  castleMapSymbol(),
   '<g id="world-object-wagon"><rect x="-.8" y="-1.1" width=".16" height=".8" rx=".05" fill="#343a39"/><rect x=".64" y="-1.1" width=".16" height=".8" rx=".05" fill="#343a39"/><path d="M-.4,.2V1.45M.4,.2V1.45" stroke="#8f6946" stroke-width=".12"/><rect x="-.58" y="-1.4" width="1.16" height="1.75" fill="#bd945e" stroke="#69503b" stroke-width=".15"/><path d="M-.25,-1.3V.2M.25,-1.3V.2" stroke="#89653f" stroke-width=".07"/></g>',
   '<g id="world-object-barrel"><ellipse rx=".43" ry=".45" fill="#97714b" stroke="#3f443f" stroke-width=".12"/><path d="M-.2,-.36V.36M.2,-.36V.36" stroke="#c3a574" stroke-width=".07"/><circle cy="-.08" r=".075" fill="#59452e"/></g>',
   '<g id="world-object-well"><circle cx="-.18" r=".94" fill="#b5b0a0" stroke="#676f66" stroke-width=".13"/><circle cx="-.18" r=".6" fill="#31454b"/><path d="M-1.06,-.77H.78V.78H-1.06Z" fill="#96724a" fill-opacity=".7" stroke="#654c38" stroke-width=".13"/><path d="M-1.08,0H.8M.8,.12H1.12" stroke="#ddc292" stroke-width=".14"/></g>',
@@ -50,6 +68,7 @@ const objectSymbols = [
 ];
 
 function objectSymbol(item) {
+  if (item.kind === 'house' && item.variant === 'kit-tripo-castle') return 'house-tripo-castle';
   if (item.kind === 'rock' && /^kit-tripo-0[123]$/.test(item.variant)) return `rock-tripo-${item.variant.slice(-2)}`;
   if (item.kind === 'house' && item.variant === 'kit-tripo-tavern') return 'house-tripo-tavern';
   if (item.kind === 'house' && item.variant === 'kit-taverne') return 'house-taverne';
@@ -67,7 +86,8 @@ function objectSymbol(item) {
 
 function objectSvg(item) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
-  const radius = item.radius ?? (item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
+  const radius = item.radius ?? (item.variant === 'kit-tripo-castle' ? getObjectFootprintRadius(item.kind, item.variant)
+    : item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
   const patch = item.kind === 'grass' || item.kind === 'flower';
   const tint = item.kind === 'flower' ? ({ 'rei-red': '#c77c7c', 'rei-gold': '#e0bd64' }[item.variant] ?? '#e7e4cb') : undefined;
   const tier = WEAPON_TYPES.includes(item.kind) ? (RARITIES[item.rarity] ?? RARITIES.common) : null;

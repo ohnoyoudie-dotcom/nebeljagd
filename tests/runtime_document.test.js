@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { parseWorldDocument, MAX_MAP_BYTES } from '../src/map/runtime-document.js';
-const original = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const original = JSON.parse(readFileSync(new URL('./fixtures/scenery-cleanup-worldmap.json', import.meta.url)));
 
 test('the runtime imports the exact edited document and old maps stay intentionally empty', () => {
   const edited = structuredClone(original);
@@ -11,6 +11,9 @@ test('the runtime imports the exact edited document and old maps stay intentiona
   assert.deepEqual(parseWorldDocument(JSON.stringify(edited)), edited);
   const legacy = structuredClone(original); delete legacy.objects;
   assert.deepEqual(parseWorldDocument(JSON.stringify(legacy)).objects, []);
+  const intentionallyEmpty = structuredClone(original); intentionallyEmpty.objects = [];
+  assert.deepEqual(parseWorldDocument(JSON.stringify(intentionallyEmpty)), intentionallyEmpty,
+    'A deliberately cleared map must not regain the seeded scenery or starter loot');
 });
 
 test('invalid runtime imports fail before any browser storage or navigation', () => {

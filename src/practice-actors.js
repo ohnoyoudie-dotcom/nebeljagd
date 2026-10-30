@@ -52,7 +52,13 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     if ((world.concealmentAt?.(x, z) ?? 0) > .01) return false;
     // Avoid an indoor practice spawn even if its floor itself is walkable.
     for (const house of world.houses ?? []) {
-      if (Math.hypot(x - house.x, z - house.z) < 15 * (house.scale ?? 1)) return false;
+      const dx = x - house.x, dz = z - house.z;
+      if (Number.isFinite(house.halfWidth) && Number.isFinite(house.halfDepth)) {
+        const c = Math.cos(house.rotation ?? 0), s = Math.sin(house.rotation ?? 0);
+        // House records already expose their scaled dimensions.
+        if (Math.abs(c * dx - s * dz) < house.halfWidth + radius
+          && Math.abs(s * dx + c * dz) < house.halfDepth + radius) return false;
+      } else if (Math.hypot(dx, dz) < 15 * (house.scale ?? 1)) return false;
     }
     const p = new THREE.Vector3(x, world.heightAt?.(x, z) ?? 0, z);
     world.resolveMovement?.(p, radius);

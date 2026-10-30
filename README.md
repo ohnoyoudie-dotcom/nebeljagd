@@ -36,7 +36,10 @@ Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große In
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
-Teil der Welt. Begehbare Tripo-Wirtshäuser lassen sich im Editor platzieren.
+Teil der Welt. Begehbare Tripo-Wirtshäuser und das kleine Tripo-Schloss lassen
+sich im Editor platzieren. Das Schloss steht unter **Objekte → Haus →
+Kleines Schloss · Tripo** bereit; Details in
+[docs/tripo-castle-integration.md](docs/tripo-castle-integration.md).
 
 Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Häuser,
 Grasflächen, Sträucher, Ruinen, Schreine und Gegenstände

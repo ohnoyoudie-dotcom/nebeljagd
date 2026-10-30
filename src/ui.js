@@ -1,5 +1,6 @@
 import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
 import { WEAPON_TYPES, weaponStats } from './loot-tiers.js';
+import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
 
 function describeWeapon(item) {
   const type = item.type || item.kind;
@@ -275,10 +276,14 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     }
     if (local) for (const object of landmarkObjects) {
       const [px, py] = mapProjection.point(...object.position);
-      if (px < -30 || py < -30 || px > size + 30 || py > size + 30) continue;
+      const footprint = object.kind === 'house' ? getEnvironmentKitDefinition('house', object.variant)?.footprint : null;
+      const reach = object.kind === 'house'
+        ? Math.hypot(footprint?.halfWidth ?? 8, footprint?.halfDepth ?? 7) * object.scale * scale + 3 : 30;
+      if (px < -reach || py < -reach || px > size + reach || py > size + reach) continue;
       if (object.kind === 'house') {
         ctx.save(); ctx.translate(px, py); ctx.rotate(-(object.rotation ?? 0));
-        const width = 16 * object.scale * scale, depth = 14 * object.scale * scale;
+        const width = (footprint ? footprint.halfWidth * 2 : 16) * object.scale * scale;
+        const depth = (footprint ? footprint.halfDepth * 2 : 14) * object.scale * scale;
         ctx.fillStyle = '#dfc894'; ctx.strokeStyle = '#5a5038'; ctx.lineWidth = 1.6;
         ctx.fillRect(-width / 2, -depth / 2, width, depth); ctx.strokeRect(-width / 2, -depth / 2, width, depth);
         ctx.strokeStyle = '#8c785455'; ctx.lineWidth = .8;

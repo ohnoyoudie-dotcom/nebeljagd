@@ -1,0 +1,39 @@
+{
+  "status": "source-and-runtime-previews-visually-reviewed",
+  "runtimeSha256": "c274ee6105bfcfc91245086d31cd466ee2f60de0e070b0138a0ab923d5cf2af8",
+  "observations": [
+    "Large-scale architecture, furniture, materials and floor patterns retained at 179999 triangles.",
+    "Central hall and four side rooms visible.",
+    "Main south portal and west portal are actual below-lintel gaps.",
+    "East wall is continuous in source mesh; do not invent a collider-only exit.",
+    "Bounded entrance-floor repair is visually coherent and level with the hall; no portal closures visible."
+  ],
+  "limits": [
+    "Small geometric details simplified.",
+    "The joined mesh does not expose independently destructible furniture.",
+    "No browser rendering or collision tests performed by this asset preparation.",
+    "Mosaic relief and raised throne podium remain; gameplay uses authored floor/collision proxies."
+  ],
+  "images": [
+    {
+      "path": "previews/collision-sections.png",
+      "sha256": "c4bcf9d9f33f68c6daffe02baf4b5ddd1b5631fb1138d6e500eb62ca9312ea92"
+    },
+    {
+      "path": "previews/runtime-perspective.png",
+      "sha256": "669bdbbfdaa699cab6c8a9ec85a1f334a4d832a6a2c624435c6ef76aaab50b53"
+    },
+    {
+      "path": "previews/runtime-top.png",
+      "sha256": "66677808c95d43dae7499d3d0d914be21bf3a365f015bf7467c01f9eed5bbf7c"
+    },
+    {
+      "path": "previews/source-perspective.png",
+      "sha256": "49d570547096846cfd94c5a38cb489a98bd18225fde0e8b64e272d59aba02323"
+    },
+    {
+      "path": "previews/source-top.png",
+      "sha256": "85a9d9304ca8bc7fc5f2973e369f37dbc5f5dbc3a04e1665985d1102080876c0"
+    }
+  ]
+}

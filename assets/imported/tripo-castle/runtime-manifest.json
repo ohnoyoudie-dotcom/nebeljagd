@@ -1,0 +1,94 @@
+{
+  "name": "nebeljagd-tripo-castle",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "source": {
+    "path": "assets/inbox/castle interior 3d model.glb",
+    "sha256": "f4166623cf9138ad4ff672e39dbb99418489edfc6fa48f13fec3dda31cb7a4f7"
+  },
+  "preparationScript": "scripts/prepare-tripo-castle.py",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3979,
+      "sha256": "f7869be571a4b457cf8ecb0ddf3d9b5da4589e330fcef6a5a7a93e511ca8eb56"
+    },
+    {
+      "path": "early-inspection.json",
+      "bytes": 1287,
+      "sha256": "a6f927fd649ba98ea752e077775deb78197e85e7d4449336411472693aa6ff0a"
+    },
+    {
+      "path": "floor-after-repair.json",
+      "bytes": 46779,
+      "sha256": "23b18717ff59eb7fc952eb620177180c9f3662a1361365f0133b218e0706f0b4"
+    },
+    {
+      "path": "floor-before-repair.json",
+      "bytes": 47070,
+      "sha256": "7b10d72d5f7964f40fb3b666d20eaae255dc10ac3c1f9182050aa46771c4c27f"
+    },
+    {
+      "path": "floor-validation.json",
+      "bytes": 1433,
+      "sha256": "51a5fbb9c1f92afe18c78bb32b376909a73221136dfb89f7243dd314a37b637b"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 4133,
+      "sha256": "17c84ffbb310eafc63b5b61637faebff1a834880b9b2f095b17801518a307d80"
+    },
+    {
+      "path": "preview-review.json",
+      "bytes": 1645,
+      "sha256": "e5149eb94284c5c02e6aff19732d9fbe21dc7216d38d3dde5a35e62b9626023c"
+    },
+    {
+      "path": "previews/collision-sections.png",
+      "bytes": 283733,
+      "sha256": "c4bcf9d9f33f68c6daffe02baf4b5ddd1b5631fb1138d6e500eb62ca9312ea92"
+    },
+    {
+      "path": "previews/runtime-perspective.png",
+      "bytes": 1493915,
+      "sha256": "669bdbbfdaa699cab6c8a9ec85a1f334a4d832a6a2c624435c6ef76aaab50b53"
+    },
+    {
+      "path": "previews/runtime-top.png",
+      "bytes": 1968612,
+      "sha256": "66677808c95d43dae7499d3d0d914be21bf3a365f015bf7467c01f9eed5bbf7c"
+    },
+    {
+      "path": "previews/source-perspective.png",
+      "bytes": 1502161,
+      "sha256": "49d570547096846cfd94c5a38cb489a98bd18225fde0e8b64e272d59aba02323"
+    },
+    {
+      "path": "previews/source-top.png",
+      "bytes": 1974213,
+      "sha256": "85a9d9304ca8bc7fc5f2973e369f37dbc5f5dbc3a04e1665985d1102080876c0"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 4241,
+      "sha256": "90df70e40382004c88d4aa4df9ab615332058a2ec6bbc1a646ed52d3226d1ace"
+    },
+    {
+      "path": "runtime/castle.glb",
+      "bytes": 14013992,
+      "sha256": "c274ee6105bfcfc91245086d31cd466ee2f60de0e070b0138a0ab923d5cf2af8"
+    }
+  ],
+  "validated": {
+    "embeddedDependenciesOnly": true,
+    "sourceUnchanged": true,
+    "sourceRuntimePreviewReview": "preview-review.json",
+    "boundedEntranceFloorRepair": "floor-validation.json"
+  },
+  "pending": [
+    "game/editor GPU import",
+    "movement/projectile/sight collisions",
+    "user artistic approval"
+  ],
+  "licenseStatus": "User-provided project asset; separate commercial provider receipt not supplied."
+}

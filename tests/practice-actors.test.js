@@ -69,3 +69,17 @@ test('an imported island without safe practice space does not create figures in 
   assert.deepEqual(actors.inspect(), []); assert.equal(combat.targets.size, 0);
   actors.dispose();
 });
+
+test('large rotated buildings do not get practice figures spawned in their outer rooms', () => {
+  for (const rotation of [0, Math.PI / 4, Math.PI / 2]) {
+    const combat = createCombat();
+    const actors = createPracticeActors(new THREE.Scene(), { world: {
+      spawn: { x: 0, z: 0 }, houses: [{ x: 0, z: 0, halfWidth: 35, halfDepth: 26, scale: 1, rotation }],
+      isLand: () => true, isWater: () => false, heightAt: () => .42,
+      resolveMovement: position => position,
+    }, combat });
+    assert.deepEqual(actors.inspect(), [], 'Every nearby candidate is inside the castle despite a walkable floor');
+    assert.equal(combat.targets.size, 0);
+    actors.dispose();
+  }
+});

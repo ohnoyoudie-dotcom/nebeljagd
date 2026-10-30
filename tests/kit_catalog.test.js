@@ -32,8 +32,8 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 47);
-  assert.equal(ASSET_CATALOG.length, 47);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 48);
+  assert.equal(ASSET_CATALOG.length, 48);
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {

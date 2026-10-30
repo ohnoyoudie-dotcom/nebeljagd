@@ -114,9 +114,13 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     if (object.kind === 'house' && object.variant === 'kit-timber') [hx, hz] = [3.8, 4.1];
     if (object.kind === 'house' && object.variant?.startsWith('tavern-')) [hx, hz] = [12.4, 12.4];
     if (object.kind === 'house' && object.variant === 'kit-tripo-tavern') [hx, hz] = [11.2, 9.1];
-    if (object.variant?.startsWith('kit-tripo-') && object.kind !== 'house') {
+    if (object.variant?.startsWith('kit-tripo-')) {
       const footprint = getEnvironmentKitDefinition(object.kind, object.variant)?.footprint;
-      if (footprint) [hx, hz] = [footprint.halfWidth, footprint.halfDepth];
+      // Keep the existing tavern clearance while covering the complete
+      // measured footprint of larger imported houses such as the castle.
+      if (footprint) [hx, hz] = object.kind === 'house'
+        ? [Math.max(hx, footprint.halfWidth), Math.max(hz, footprint.halfDepth)]
+        : [footprint.halfWidth, footprint.halfDepth];
     }
     hx = hx * scale + padding; hz = hz * scale + padding;
     const [x, z] = object.position, rotation = object.rotation ?? 0, c = Math.cos(rotation), s = Math.sin(rotation);

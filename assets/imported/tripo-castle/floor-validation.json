@@ -1,0 +1,52 @@
+{
+  "status": "passed bounded floor repair measurement",
+  "runtimeSha256": "c274ee6105bfcfc91245086d31cd466ee2f60de0e070b0138a0ab923d5cf2af8",
+  "unrepairedRuntimeSha256": "283c6e0819aedf8cfc877ce82db4bfacb0f5c079c18e0e008c9a428687646764",
+  "method": "Blender imported GLB ray casts downward from Y=.8m at explicit metric coordinates; upward normal threshold .8 distinguishes floor from underside. Low ray start excludes lintels and most furniture. Throne podium excluded from flat-floor expectations.",
+  "repair": {
+    "method": "Lift bounded upward entrance-floor vertices to hall Y=0 before decimation; topology and UVs unchanged.",
+    "gltfRegion": {
+      "x": [
+        -5,
+        5
+      ],
+      "z": [
+        8,
+        24.5
+      ],
+      "yBefore": [
+        -1.35,
+        -0.5
+      ]
+    },
+    "minimumUpNormal": 0.75,
+    "verticesMoved": 2039,
+    "sourceHeightRange": [
+      -1.3495562076568604,
+      -1.237282395362854
+    ],
+    "targetFloorY": 0.0,
+    "foundationUndersideUnchanged": true,
+    "sourceOriginalUnchanged": true
+  },
+  "portalCentreSamples": {
+    "x": 0,
+    "z": [
+      16,
+      24
+    ],
+    "count": 9,
+    "beforeYRange": [
+      -1.28239,
+      -1.25026
+    ],
+    "afterYRange": [
+      -9e-05,
+      0.0
+    ]
+  },
+  "sourcePreserved": true,
+  "portalsFoundationAndFurnitureNotMovedByRepair": true,
+  "gameplayFloorProxyStillRequired": true,
+  "browserCollisionTested": false
+}

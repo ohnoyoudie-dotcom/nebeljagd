@@ -4,7 +4,8 @@ import { readFileSync } from 'node:fs';
 import { createWorldSpatialModel } from '../src/generated-spatial.js';
 import { makeWorldObject } from '../src/map/objects.js';
 
-const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+// Keep the historical crate and bridge fixtures separate from editable project content.
+const map = JSON.parse(readFileSync(new URL('./fixtures/scenery-cleanup-worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
 
 test('generated geography follows editable coast, regions and house plateaus', () => {

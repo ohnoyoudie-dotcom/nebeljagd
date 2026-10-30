@@ -1,0 +1,182 @@
+{
+  "source": {
+    "path": "assets/inbox/castle interior 3d model.glb",
+    "bytes": 68252420,
+    "sha256": "f4166623cf9138ad4ff672e39dbb99418489edfc6fa48f13fec3dda31cb7a4f7",
+    "triangles": 1916390,
+    "meshes": 1,
+    "materials": 1,
+    "externalUris": [],
+    "animations": 0
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-castle/runtime/castle.glb",
+    "bytes": 14013992,
+    "sha256": "c274ee6105bfcfc91245086d31cd466ee2f60de0e070b0138a0ab923d5cf2af8",
+    "triangles": 179999,
+    "meshes": 1,
+    "materials": 1,
+    "externalUris": [],
+    "animations": 0
+  },
+  "tool": "Blender 4.3.2",
+  "normalization": {
+    "targetWidthMeters": 70.0,
+    "uniformScale": 71.43666450139415,
+    "rotationDegrees": [
+      0,
+      0,
+      0
+    ],
+    "entranceFloorRepair": {
+      "method": "Lift bounded upward entrance-floor vertices to hall Y=0 before decimation; topology and UVs unchanged.",
+      "gltfRegion": {
+        "x": [
+          -5,
+          5
+        ],
+        "z": [
+          8,
+          24.5
+        ],
+        "yBefore": [
+          -1.35,
+          -0.5
+        ]
+      },
+      "minimumUpNormal": 0.75,
+      "verticesMoved": 2039,
+      "sourceHeightRange": [
+        -1.3495562076568604,
+        -1.237282395362854
+      ],
+      "targetFloorY": 0.0,
+      "foundationUndersideUnchanged": true,
+      "sourceOriginalUnchanged": true
+    },
+    "floorSamplesBeforeOffset": [
+      {
+        "x": -6,
+        "z": 10,
+        "height": 1.6481819152832031
+      },
+      {
+        "x": -6,
+        "z": 0,
+        "height": 1.6114616394042969
+      },
+      {
+        "x": -6,
+        "z": -10,
+        "height": 1.6191577911376953
+      },
+      {
+        "x": 0,
+        "z": 10,
+        "height": 0.32363319396972656
+      },
+      {
+        "x": 0,
+        "z": 0,
+        "height": 1.6092414855957031
+      },
+      {
+        "x": 0,
+        "z": -10,
+        "height": 1.6110515594482422
+      },
+      {
+        "x": 6,
+        "z": 10,
+        "height": 1.6387481689453125
+      },
+      {
+        "x": 6,
+        "z": 0,
+        "height": 1.6122550964355469
+      },
+      {
+        "x": 6,
+        "z": -10,
+        "height": 1.6152477264404297
+      }
+    ],
+    "verticalOffsetMeters": -1.6122550964355469,
+    "axes": "glTF Y up, +Z front, +X right; source front orientation retained",
+    "blenderBounds": [
+      [
+        -35.002777099609375,
+        -24.294139862060547,
+        -1.6084426641464233
+      ],
+      [
+        35.0018310546875,
+        24.306591033935547,
+        9.05086612701416
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -35.002777099609375,
+        -1.6084426641464233,
+        -24.306591033935547
+      ],
+      [
+        35.0018310546875,
+        9.05086612701416,
+        24.294139862060547
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "castle_interior_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        4096,
+        4096
+      ],
+      "sourceFormat": "JPEG"
+    },
+    {
+      "name": "castle_interior_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        2048,
+        2048
+      ],
+      "sourceFormat": "PNG"
+    },
+    {
+      "name": "castle_interior_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        2048,
+        2048
+      ],
+      "sourceFormat": "JPEG"
+    }
+  ],
+  "sourcePreserved": true,
+  "license": {
+    "status": "user-provided-project-asset",
+    "source": "User supplied Tripo GLB and explicitly requested this editor integration; no provider commercial-license receipt supplied."
+  },
+  "validation": {
+    "externalDependencies": [],
+    "trianglesWithin180k": true,
+    "materialsPreserved": true,
+    "gameplayCollisionValidated": false,
+    "gpuRuntimeValidated": false
+  },
+  "method": "Uniform metric scale, median central-hall floor offset, bounded upward-facing entrance-floor repair, Blender collapse decimation preserving UV layers, existing image downsampling; no remeshing, new generation, or alteration of original source."
+}

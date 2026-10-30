@@ -1,0 +1,165 @@
+{
+  "asset": "Nebeljagd roofless Tripo castle",
+  "source": {
+    "path": "assets/inbox/castle interior 3d model.glb",
+    "bytes": 68252420,
+    "sha256": "f4166623cf9138ad4ff672e39dbb99418489edfc6fa48f13fec3dda31cb7a4f7",
+    "triangles": 1916390,
+    "meshes": 1,
+    "materials": 1,
+    "externalUris": [],
+    "animations": 0
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-castle/runtime/castle.glb",
+    "bytes": 14013992,
+    "sha256": "c274ee6105bfcfc91245086d31cd466ee2f60de0e070b0138a0ab923d5cf2af8",
+    "triangles": 179999,
+    "meshes": 1,
+    "materials": 1,
+    "externalUris": [],
+    "animations": 0
+  },
+  "sourceOrigin": "User supplied Tripo GLB through project branch work; integration explicitly requested by user",
+  "referenceImage": "assets/concepts/castle/castle-reference.png",
+  "providerGeneration": {
+    "provider": "Tripo (source GLB generator field)",
+    "jobId": null,
+    "invokedByThisTask": false,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-castle.py",
+    "scriptSha256": "3042ae8daba60ca21980dd181c333ace55c0cc22632ec1340122979f6f928848",
+    "command": "blender -b -t 4 --python scripts/prepare-tripo-castle.py",
+    "normalization": {
+      "targetWidthMeters": 70.0,
+      "uniformScale": 71.43666450139415,
+      "rotationDegrees": [
+        0,
+        0,
+        0
+      ],
+      "entranceFloorRepair": {
+        "method": "Lift bounded upward entrance-floor vertices to hall Y=0 before decimation; topology and UVs unchanged.",
+        "gltfRegion": {
+          "x": [
+            -5,
+            5
+          ],
+          "z": [
+            8,
+            24.5
+          ],
+          "yBefore": [
+            -1.35,
+            -0.5
+          ]
+        },
+        "minimumUpNormal": 0.75,
+        "verticesMoved": 2039,
+        "sourceHeightRange": [
+          -1.3495562076568604,
+          -1.237282395362854
+        ],
+        "targetFloorY": 0.0,
+        "foundationUndersideUnchanged": true,
+        "sourceOriginalUnchanged": true
+      },
+      "floorSamplesBeforeOffset": [
+        {
+          "x": -6,
+          "z": 10,
+          "height": 1.6481819152832031
+        },
+        {
+          "x": -6,
+          "z": 0,
+          "height": 1.6114616394042969
+        },
+        {
+          "x": -6,
+          "z": -10,
+          "height": 1.6191577911376953
+        },
+        {
+          "x": 0,
+          "z": 10,
+          "height": 0.32363319396972656
+        },
+        {
+          "x": 0,
+          "z": 0,
+          "height": 1.6092414855957031
+        },
+        {
+          "x": 0,
+          "z": -10,
+          "height": 1.6110515594482422
+        },
+        {
+          "x": 6,
+          "z": 10,
+          "height": 1.6387481689453125
+        },
+        {
+          "x": 6,
+          "z": 0,
+          "height": 1.6122550964355469
+        },
+        {
+          "x": 6,
+          "z": -10,
+          "height": 1.6152477264404297
+        }
+      ],
+      "verticalOffsetMeters": -1.6122550964355469,
+      "axes": "glTF Y up, +Z front, +X right; source front orientation retained",
+      "blenderBounds": [
+        [
+          -35.002777099609375,
+          -24.294139862060547,
+          -1.6084426641464233
+        ],
+        [
+          35.0018310546875,
+          24.306591033935547,
+          9.05086612701416
+        ]
+      ],
+      "gltfBounds": [
+        [
+          -35.002777099609375,
+          -1.6084426641464233,
+          -24.306591033935547
+        ],
+        [
+          35.0018310546875,
+          9.05086612701416,
+          24.294139862060547
+        ]
+      ]
+    },
+    "textureSizePolicy": {
+      "baseColor": [
+        4096,
+        4096
+      ],
+      "metallicRoughnessAndNormal": [
+        2048,
+        2048
+      ]
+    },
+    "triangleBudget": 180000,
+    "originalPreserved": true
+  },
+  "sourceValidation": {
+    "externalDependencies": [],
+    "trianglesWithin180k": true,
+    "materialsPreserved": true,
+    "gameplayCollisionValidated": false,
+    "gpuRuntimeValidated": false
+  },
+  "previewReview": "Generated source and runtime renders; visual review is required after each regeneration. GPU/playability tests are owned by runtime integration."
+}

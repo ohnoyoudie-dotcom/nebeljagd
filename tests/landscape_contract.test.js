@@ -7,7 +7,8 @@ import { getLandscape, ensureLandscape, vegetationSettings, terrainSettings,
   WIND_DEFAULTS, VEGETATION_TYPES, TERRAIN_TYPES, BIOME_PRESETS,
   LANDSCAPE_LIMITS, validateLandscape } from '../src/map/landscape.js';
 
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+// These import contracts require existing vegetation, independent of the user's live map.
+const base = JSON.parse(readFileSync(new URL('./fixtures/scenery-cleanup-worldmap.json', import.meta.url), 'utf8'));
 function paintedMap() {
   const map = structuredClone(base), landscape = ensureLandscape(map);
   landscape.terrain = TERRAIN_TYPES.map((type, i) => ({ id: `paint-${i}`, name: type.label,

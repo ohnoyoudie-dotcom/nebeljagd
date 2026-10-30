@@ -8,7 +8,8 @@ import { seedWorldObjects } from '../scripts/seed-world-objects.js';
 import { isRetiredBuilding } from '../src/map/retired-buildings.js';
 import { isRetiredScenery } from '../src/map/retired-scenery.js';
 
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+// Fixed authored-map fixture: users may freely clear or rearrange worldmap.json.
+const base = JSON.parse(readFileSync(new URL('./fixtures/scenery-cleanup-worldmap.json', import.meta.url), 'utf8'));
 const clone = () => structuredClone(base);
 const lineDistance = (point, line) => Math.min(...line.points.slice(1).map((next, i) => distanceToSegment(point, line.points[i], next)));
 

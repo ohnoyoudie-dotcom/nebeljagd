@@ -80,6 +80,8 @@ export const ASSET_CATALOG = Object.freeze([
     renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render',
     notes: 'Neues, dachloses Wirtshaus mit Gastraum, Küche und Einrichtung. Als eigene Variante platzieren, drehen und in 3D testen.',
     provenance: 'assets/imported/tripo-tavern/provenance.json' },
+  tripo('house', 'kit-tripo-castle', 'Kleines Schloss · Tripo', 'castle', 'castle interior 3d model',
+    'Dachloses Steinschloss mit großem Saal, eingerichteten Seitenräumen und offenen Durchgängen. Als eigenes Gebäude platzieren, drehen und in 3D testen.', 'tripo-castle'),
   kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Zerstörbare Holzkiste; blockiert Bewegung, Sicht und Pfeile bis sie kaputt ist.'),
   tripo('wagon', 'kit-tripo-wagon', 'Holzwagen · Tripo', 'wagon', 'wooden wagon 3d model', 'Holzwagen mit texturiertem Holz, Rädern und Deichseln. Drehen, skalieren und als festes Hindernis platzieren.'),
   tripo('barrel', 'kit-tripo-barrel', 'Holzfass · Tripo', 'barrel', 'wooden barrel 3d model', 'Massives Holzfass mit Eisenreifen. Blockiert die Bewegung und lässt sich im Kampf zerstören.'),

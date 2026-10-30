@@ -4,6 +4,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createVegetation } from './vegetation.js';
 import { createHouses } from './houses.js';
 import { createCollisionIndex } from './collision.js';
+import { collisionStructureBounds, structureContainsPoint, structureIntersectsSegment } from './map/structure-bounds.js';
+import { houseFloorFactorAt } from './map/house-floor.js';
 import { createWeatheredStone } from './stone-art.js';
 import { createHidingGrassGeometry, hidingGrassDetail, HIDING_GRASS_STYLE } from './hiding-grass.js';
 import { createMoundPrototype } from './overgrown-mounds.js';
@@ -281,7 +283,9 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function chunkFor(x, z) {
     const gx = Math.floor(x / chunkSize), gz = Math.floor(z / chunkSize), id = `${gx},${gz}`;
     if (!chunks.has(id)) { const group = new THREE.Group(); group.name = `Objekte · Sektor ${id}`; root.add(group); chunks.set(id, { id, group, x: (gx + .5) * chunkSize, z: (gz + .5) * chunkSize, count: 0 }); }
-    return chunks.get(id);
+    const chunk = chunks.get(id);
+    chunk.cullRadius ??= chunkSize * .72;
+    return chunk;
   }
   function queue(key, object, position = object.position, extraScale = [1, 1, 1], rotation = object.rotation, color = null) {
     const chunk = chunkFor(position[0], position[1]);
@@ -315,7 +319,15 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     });
     const index = createCollisionIndex([], bodies.filter(body => !body.movementOnly));
     const movementIndex = bodies.some(body => body.projectileOnly || body.movementOnly) ? createCollisionIndex([], bodies.filter(body => !body.projectileOnly)) : index;
-    const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index, movementIndex, bodies, group, house };
+    const bounds = collisionStructureBounds(bodies.map(body => body.worldBody));
+    if (bounds) {
+      // A large/rotated house may extend well beyond the sector containing its
+      // centre. Keep that whole sector visible while any part is nearby.
+      const chunk = chunkFor(x, z);
+      chunk.cullRadius = Math.max(chunk.cullRadius,
+        ...[bounds.minX, bounds.maxX].flatMap(px => [bounds.minZ, bounds.maxZ].map(pz => Math.hypot(px - chunk.x, pz - chunk.z))));
+    }
+    const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index, movementIndex, bodies, bounds, group, house };
     structures.push(entry); return entry;
   }
   for (const object of map.objects ?? []) {
@@ -338,10 +350,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
       chunkFor(x, z).group.add(group);
       const structure = addStructure(object, kit.walls, group, true);
-      const record = { id: object.id, name: object.name, kind: 'Fachwerkhaus', x, z, y: structure.y,
+      const record = { id: object.id, name: object.name, kind: kit.label, x, z, y: structure.y,
         halfWidth: kit.footprint.halfWidth * scale, halfDepth: kit.footprint.halfDepth * scale,
         rotation: object.rotation, scale, floorHeight: kit.floorHeight * scale, group, roof, frontFacade, interior,
-        localInterior: kit.interior, localFloorBounds: kit.floorBounds, kit: true };
+        localInterior: kit.interior, localFloorBounds: kit.floorBounds, localEntrances: kit.entrances, kit: true };
       structure.record = record; houses.push(record);
       importedAssets.placements.push({ id: object.id, kind: object.kind, variant, x, z, y: structure.y, scale });
       continue;
@@ -504,7 +516,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function resolveMovement(position, radius) {
     collisionIndex.resolve(position, radius);
     for (const structure of structures) {
-      if (Math.abs(position.x - structure.x) > 15 * structure.scale + radius || Math.abs(position.z - structure.z) > 15 * structure.scale + radius) continue;
+      if (!structureContainsPoint(structure.bounds, position, radius)) continue;
       Object.assign(localPoint, structure.toLocal(position));
       if (structure.solidResolver) structure.solidResolver(localPoint, radius / structure.scale);
       else structure.movementIndex.resolve(localPoint, radius / structure.scale);
@@ -515,8 +527,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function traceProjectile(start, end, radius = .06) {
     let best = collisionIndex.traceSegment(start, end, radius);
     for (const structure of structures) {
-      const reach = 15 * structure.scale + radius;
-      if (Math.max(start.x, end.x) < structure.x - reach || Math.min(start.x, end.x) > structure.x + reach || Math.max(start.z, end.z) < structure.z - reach || Math.min(start.z, end.z) > structure.z + reach) continue;
+      if (!structureIntersectsSegment(structure.bounds, start, end, radius)) continue;
       const hit = structure.index.traceSegment(structure.toLocal(start), structure.toLocal(end), radius / structure.scale);
       if (!hit || best && hit.t >= best.t) continue;
       best = { ...hit, point: structure.toWorld(hit.point), normal: { x: structure.cos * hit.normal.x + structure.sin * hit.normal.z, z: -structure.sin * hit.normal.x + structure.cos * hit.normal.z }, collider: hit.collider.worldBody };
@@ -552,13 +563,14 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       if (!structure.house) continue;
       // The measured footprint must remain covered after rotation. A fixed
       // 13 m axis check dropped the corners of the larger imported taverns.
-      const reach = Math.hypot(structure.record.halfWidth, structure.record.halfDepth) + .8 * structure.scale;
+      const entryDepth = Math.max(.8, ...(structure.record.localEntrances ?? []).map(entrance => entrance.depth));
+      const reach = Math.hypot(structure.record.halfWidth, structure.record.halfDepth) + entryDepth * structure.scale;
       if (Math.abs(x - structure.x) > reach || Math.abs(z - structure.z) > reach) continue;
       const p = structure.toLocal({ x, z });
       if (structure.record.kit) {
-        const bounds = structure.record.localFloorBounds, inside = structure.record.localInterior;
-        if (p.x >= bounds.minX && p.x <= bounds.maxX && p.z >= bounds.minZ && p.z <= bounds.maxZ) return structure.y + structure.record.floorHeight;
-        if (Math.abs(p.x - inside.centerX) < inside.entranceHalfWidth && p.z > bounds.maxZ && p.z < bounds.maxZ + .8) return structure.y + structure.record.floorHeight * clamp((bounds.maxZ + .8 - p.z) / .8, 0, 1);
+        const factor = houseFloorFactorAt(p.x, p.z, structure.record.localFloorBounds,
+          structure.record.localInterior, structure.record.localEntrances);
+        if (factor !== null) return structure.y + structure.record.floorHeight * factor;
         continue;
       }
       if (Math.abs(p.x) <= 8.15 && Math.abs(p.z) <= 7.15) return structure.y + .5 * structure.scale;
@@ -587,7 +599,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       visibleChunks = 0;
       const range = mode === 'low' ? 90 : 115;
       for (const chunk of chunks.values()) {
-        chunk.group.visible = Math.hypot(chunk.x - player.x, chunk.z - player.z) < range + chunkSize * .72;
+        chunk.group.visible = Math.hypot(chunk.x - player.x, chunk.z - player.z) < range + chunk.cullRadius;
         if (chunk.group.visible) visibleChunks++;
       }
       for (const entry of instanced) {

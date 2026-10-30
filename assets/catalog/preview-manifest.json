@@ -651,6 +651,27 @@
         ],
         "span": 3.7980979904349907
       }
+    },
+    {
+      "kind": "house",
+      "variant": "kit-tripo-castle",
+      "label": "Kleines Schloss · Tripo",
+      "file": "assets/catalog/house-kit-tripo-castle.webp",
+      "bytes": 5758,
+      "sha256": "cb24fd0ba7f1caf5db35c966fe893d02f5acd4ef536027a9360d41730e535a6c",
+      "renderedBounds": {
+        "min": [
+          1164.9972229003906,
+          -1.3084427118301392,
+          -24.306591033935547
+        ],
+        "max": [
+          1235.0018310546875,
+          9.350866317749023,
+          24.294139862060547
+        ],
+        "span": 96.19161632618595
+      }
     }
   ],
   "errors": []
