@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import avatarUrl from '../assets/characters/adventurer.glb?url&inline';
+import avatarUrl from '../assets/characters/nebeljagd_player_base_v1.glb?url&inline';
+import { prepareAvatarAnimations } from './avatar-animation.js';
+import { preparePlayerGeometry } from './player-model.js';
 import './avatar-preview.css';
 
 const canvas = document.querySelector('#avatar-canvas');
@@ -14,14 +16,15 @@ const playButton = document.querySelector('#play-pause');
 const replayButton = document.querySelector('#replay');
 let renderer, controls, frame, mixer, model, selected, duration = 0;
 let playing = true, loaded = false, speed = 1, viewSpan = 2.65, disposed = false;
-let currentClip = 'Idle_Nebeljagd';
+let currentRole = 'idle';
 const actions = new Map();
 const stats = {};
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#263333');
 const camera = new THREE.OrthographicCamera(-2, 2, 2, -2, .05, 60);
 const clock = new THREE.Clock();
-const clipNames = ['Idle_Nebeljagd', 'Run_Nebeljagd', 'Roll_Nebeljagd'];
+const clipRoles = ['idle', 'run', 'roll'];
+const source = 'assets/characters/nebeljagd_player_base_v1.glb';
 
 function fail(error) {
   status.textContent = 'Vorschau nicht verfügbar';
@@ -67,17 +70,17 @@ function updatePlaybackUi() {
   timeLabel.textContent = `${time.toFixed(2).replace('.', ',')} / ${duration.toFixed(2).replace('.', ',')} s`;
 }
 
-function selectClip(name) {
-  const action = actions.get(name);
+function selectClip(role) {
+  const action = actions.get(role);
   if (!action) return;
   mixer.stopAllAction();
-  currentClip = name; selected = action;
+  currentRole = role; selected = action;
   action.reset(); action.enabled = true; action.clampWhenFinished = true;
-  action.setLoop(name === 'Roll_Nebeljagd' ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
+  action.setLoop(role === 'roll' ? THREE.LoopOnce : THREE.LoopRepeat, role === 'roll' ? 1 : Infinity);
   action.play(); duration = action.getClip().duration; playing = true;
   scrubber.max = String(duration);
   mixer.update(0);
-  document.querySelectorAll('[data-clip]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.clip === name)));
+  document.querySelectorAll('[data-clip]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.clip === role)));
   updatePlaybackUi();
 }
 
@@ -136,7 +139,11 @@ async function init() {
   });
   const gltf = await new GLTFLoader().loadAsync(avatarUrl);
   if (disposed) return;
-  model = gltf.scene; scene.add(model);
+  model = gltf.scene;
+  const geometryPreparation = preparePlayerGeometry(model);
+  const normalized = new THREE.Group();
+  normalized.name = 'Nebeljäger · normalisierter Avatar';
+  normalized.add(model); scene.add(normalized);
   let triangles = 0, meshes = 0;
   const materials = new Set(), joints = new Set();
   model.traverse(node => {
@@ -146,35 +153,51 @@ async function init() {
     for (const material of Array.isArray(node.material) ? node.material : [node.material]) materials.add(material);
     node.skeleton?.bones.forEach(bone => joints.add(bone));
   });
-  const bounds = new THREE.Box3().setFromObject(model);
-  Object.assign(stats, { triangles, meshes, materials: materials.size, joints: joints.size, height: bounds.max.y - bounds.min.y });
+  // Use the same prepared source clips as the game. Normalise the visible idle
+  // pose, not the export's bind pose; the animated nodes retain their own scale.
+  const prepared = prepareAvatarAnimations(model, gltf.animations);
   mixer = new THREE.AnimationMixer(model);
-  for (const name of clipNames) {
-    const clip = THREE.AnimationClip.findByName(gltf.animations, name);
-    if (!clip) throw new Error(`Animation ${name} fehlt im Modell.`);
-    actions.set(name, mixer.clipAction(clip));
+  for (const role of clipRoles) {
+    const clip = prepared.roles[role];
+    if (!clip) throw new Error(`Animation ${role} fehlt im Modell.`);
+    actions.set(role, mixer.clipAction(clip));
   }
+  selectClip('idle');
+  model.updateWorldMatrix(true, true);
+  model.traverse(node => node.skeleton?.update());
+  const sourceBounds = new THREE.Box3().setFromObject(model, true);
+  const sourceHeight = sourceBounds.max.y - sourceBounds.min.y;
+  if (!(sourceHeight > .01) || !Number.isFinite(sourceHeight)) throw new Error('Der Avatar besitzt keine gültige Körpergröße.');
+  const scale = 1.82 / sourceHeight;
+  normalized.scale.setScalar(scale);
+  normalized.position.set(0, -sourceBounds.min.y * scale, 0);
+  normalized.updateWorldMatrix(true, true);
+  Object.assign(stats, { triangles, meshes, materials: materials.size, joints: joints.size,
+    height: sourceHeight * scale, animations: gltf.animations.map(clip => clip.name),
+    mappedAnimations: Object.fromEntries(clipRoles.map(role => [role, prepared.roles[role].name])),
+    preparation: prepared.diagnostics, geometryPreparation });
   mixer.addEventListener('finished', event => { if (event.action === selected) { playing = false; updatePlaybackUi(); } });
   loaded = true;
   status.textContent = `${(stats.height).toFixed(2).replace('.', ',')} m · ${triangles.toLocaleString('de-DE')} Dreiecke · ${joints.size} Gelenke · 3 Animationen`;
   document.querySelectorAll('[data-clip], #play-pause, #replay, #animation-time').forEach(element => { element.disabled = false; });
-  selectClip('Idle_Nebeljagd');
+  selectClip('idle');
 }
 
 document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
 document.querySelectorAll('[data-clip]').forEach(button => button.addEventListener('click', () => selectClip(button.dataset.clip)));
 playButton.addEventListener('click', () => {
   if (!selected) return;
-  if (!playing && selected.time >= duration) selectClip(currentClip);
+  if (!playing && selected.time >= duration) selectClip(currentRole);
   else playing = !playing;
   updatePlaybackUi();
 });
-replayButton.addEventListener('click', () => selectClip(currentClip));
+replayButton.addEventListener('click', () => selectClip(currentRole));
 document.querySelector('#playback-speed').addEventListener('change', event => { speed = Number(event.target.value); });
 scrubber.addEventListener('input', () => {
   if (!selected) return;
   playing = false; selected.paused = false; selected.enabled = true;
   selected.time = Number(scrubber.value); mixer.update(0); updatePlaybackUi();
 });
-window.nebeljagdAvatarPreviewState = () => ({ loaded, clip: currentClip, time: selected?.time || 0, duration, playing, speed, stats });
+window.nebeljagdAvatarPreviewState = () => ({ loaded, source, role: currentRole,
+  clip: selected?.getClip().name || null, time: selected?.time || 0, duration, playing, speed, stats });
 init().catch(fail);

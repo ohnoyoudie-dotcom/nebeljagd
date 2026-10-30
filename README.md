@@ -9,14 +9,14 @@ Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
-[`welt/avatar-preview.html`](welt/avatar-preview.html) zeigt den neutralen
-Abenteurer mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
+[`welt/avatar-preview.html`](welt/avatar-preview.html) zeigt den neu hochgeladenen
+Spieleravatar mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
 bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
-neutrale Blender-Abenteurer, Bogen, Schwert, Sammelgegenstände, Versteckgras und
+animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände, Versteckgras und
 begehbare Häuser sind Teil der Welt.
 
 Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Bäume, Häuser,
@@ -162,11 +162,13 @@ Detailstufen und `?quality=low` begrenzen die sichtbare Last. **30 FPS auf
 Schul-iPads sind ein Ziel, kein gemessener Gerätebefund.** Die tatsächlichen
 iPads und Safari müssen gesondert geprüft werden.
 
-Der neutrale menschliche Abenteurer liegt als `assets/characters/adventurer.blend`
-und `adventurer.glb` vor, mit modularer Kleidung, humanoidem Skinning und eigenen
-Idle-, Run- und Vorwärtsroll-Clips. `avatar-preview.html` zeigt das Modell aus
-der Nähe und im Spielkamerawinkel, einschließlich Zeitlupe. Modellierung,
-Neubau und Prüfbefunde: [`assets/characters/`](assets/characters/README.md).
+Der aktive Spieleravatar ist die hochgeladene
+`assets/characters/nebeljagd_player_base_v1.glb`: 20.161 Dreiecke, humanoides
+Skinning und eingebettete Farb-, Normal- und Rauigkeits-/Metalltexturen.
+Stehen, Laufen und Vorwärtsrolle verwenden seine eigenen Animationen.
+`avatar-preview.html` zeigt dasselbe Modell einschließlich Zeitlupe.
+Import und Prüfbefunde: [`docs/tripo-avatar-update.md`](docs/tripo-avatar-update.md).
+Die früheren Blender-Figuren bleiben unter [`assets/characters/`](assets/characters/README.md) erhalten.
 Blender wird zum Spielen und für den Web-Build nicht benötigt. Gebäude und Grundvegetation sind
 prozedurale Projektquellen. Die hochgeladenen Rei-Bäume, Büsche und Blumen sind
 weiter eingebunden, unter anderem nahe Auenwacht. Unveränderte Quelldateien,

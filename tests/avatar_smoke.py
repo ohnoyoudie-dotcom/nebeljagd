@@ -15,6 +15,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
+PAGE_URL = URL if URL.endswith('.html') else URL + '/nebeljagd.html'
 REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [], 'screenshots': [],
           'sourceGlbSha256': hashlib.sha256((ROOT/'assets/characters/nebeljagd_player_base_v1.glb').read_bytes()).hexdigest(),
           'limits': 'Chromium WebGL2 via SwiftShader; this is functional/render validation, not an iPad GPU performance benchmark.'}
@@ -59,14 +60,20 @@ try:
         page.route_web_socket('**', lambda ws: None)
         page.on('pageerror', lambda error: REPORT['errors'].append(str(error)))
         page.on('console', lambda message: REPORT['errors'].append(message.text) if message.type == 'error' else None)
-        page.goto(URL+'/?inspect=1&quality=low', wait_until='domcontentloaded')
+        page.goto(PAGE_URL+'?inspect=1&quality=low', wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
         page.locator('#startBtn').click()
         page.evaluate('nebeljagdInspect({x:30,z:-42,health:100,direction:0})')
         wait_sim(page, .15)
         idle = state(page)
         assert idle['character']['source'] == 'assets/characters/nebeljagd_player_base_v1.glb'
-        assert idle['character']['joints'] >= 60
+        assert idle['character']['joints'] == 66
+        assert idle['character']['normalizedHeight'] == 1.82
+        assert idle['character']['geometryPreparation']['repairedVertices'] == 4
+        assert len(idle['character']['materials']) == 1
+        assert all(idle['character']['materials'][0][key] for key in ('baseColorTexture', 'normalTexture', 'roughnessTexture', 'metalnessTexture'))
+        assert idle['character']['handBones']['left'][-1].lower().endswith('lefthand')
+        assert idle['character']['handBones']['right'][-1].lower().endswith('righthand')
         assert 18000 <= idle['character']['triangles'] <= 25000
         assert len(idle['character']['clips']) >= 4
         assert idle['character']['activeAnimation'] == idle['character']['mappedAnimations']['idle']

@@ -1,29 +1,36 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import playerModelUrl from '../assets/characters/nebeljagd_player_base_v1.glb?url&inline';
-const PLAYER_MODEL_URL = playerModelUrl;
-const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
 import { createLocomotionController } from './locomotion.js';
 import { createAvatarAnimator } from './avatar-animation.js';
+import { preparePlayerGeometry } from './player-model.js';
 
-/** Neutral, modular Blender-authored human; Vite embeds the complete GLB. */
+const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
+
+/** User-supplied animated avatar; Vite embeds its original meshes and textures. */
 export async function createCharacter(scene) {
-  const gltf = await new GLTFLoader().loadAsync(PLAYER_MODEL_URL);
+  const gltf = await new GLTFLoader().loadAsync(playerModelUrl);
   const group = new THREE.Group();
   group.name = 'Nebeljäger · Tripo';
   const presentationPivot = new THREE.Group();
-  const pelvisHeight = 0;
-  presentationPivot.position.y = pelvisHeight;
+  const pelvisHeight = .94;
   group.add(presentationPivot);
-  const model = gltf.scene;
-  model.position.set(0, 0, 0);
-  model.name = 'Nebeljagd · Tripo Basisavatar';
+  // Keep normalization outside the imported hierarchy: animation tracks may
+  // animate the scene/armature, but must never overwrite its metre scale.
+  const model = new THREE.Group();
+  model.name = 'Nebeljagd · normalisierter Spieleravatar';
+  const assetRoot = gltf.scene;
+  const geometryPreparation = preparePlayerGeometry(assetRoot);
+  model.add(assetRoot);
   presentationPivot.add(model);
+  const animator = createAvatarAnimator(assetRoot, gltf.animations);
+  animator.update(0);
 
-  // Tripo exports can use a different scene scale/origin. Normalize to a
-  // predictable human height and put the lowest visible point on the ground.
+  // Measure the actual animated skin at idle, not its cached bind-pose box.
+  // The supplied file is about one metre tall; no source bytes are rewritten.
   model.updateWorldMatrix(true, true);
-  const sourceBounds = new THREE.Box3().setFromObject(model);
+  model.traverse(node => node.skeleton?.update());
+  const sourceBounds = new THREE.Box3().setFromObject(model, true);
   const sourceSize = sourceBounds.getSize(new THREE.Vector3());
   if (!(sourceSize.y > 0.01) || !Number.isFinite(sourceSize.y)) {
     throw new Error('Die Tripo-GLB besitzt keine gültigen Modellabmessungen.');
@@ -32,11 +39,14 @@ export async function createCharacter(scene) {
   const normalizedScale = targetHeight / sourceSize.y;
   model.scale.setScalar(normalizedScale);
   model.updateWorldMatrix(true, true);
-  const groundedBounds = new THREE.Box3().setFromObject(model);
+  model.traverse(node => node.skeleton?.update());
+  const groundedBounds = new THREE.Box3().setFromObject(model, true);
   model.position.y -= groundedBounds.min.y;
+  presentationPivot.position.y = pelvisHeight;
+  model.position.y -= pelvisHeight;
   model.updateWorldMatrix(true, true);
   const unitScale = model.scale.clone();
-  const materials = new Set();
+  const materials = new Map();
   const meshes = [];
   const snowClipHeight = { value: -10000 };
   const snowClipStrength = { value: 0 };
@@ -68,7 +78,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
           }`);
       };
       own.customProgramCacheKey = () => `${originalKey?.() ?? ''}|nebeljagd-character-snow-clip-v1`;
-      materials.add(own);
+      materials.set(own, { transparent: own.transparent, opacity: own.opacity, depthWrite: own.depthWrite });
       return own;
     };
     part.material = Array.isArray(part.material) ? part.material.map(clone) : clone(part.material);
@@ -98,22 +108,27 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   }
   scene.add(group);
 
-  const animator = createAvatarAnimator(model, gltf.animations);
   let dead = false, concealed = false, opacity = 1, snowSink = 0;
   const locomotion = createLocomotionController();
   let attackRemaining = 0, rollYaw = group.rotation.y;
-  const neck = model.getObjectByName('Neck');
-  const chest = model.getObjectByName('Chest');
   const findBone = names => {
-    const wanted = names.map(name => String(name).replace(/[^a-z0-9]/gi, '').toLowerCase());
-    let result = null;
+    const normalize = name => String(name || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const bonesByName = new Map();
     model.traverse(node => {
-      if (result || !node.isBone) return;
-      const raw = String(node.name || node.userData?.name || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
-      if (wanted.some(name => raw === name || raw.endsWith(name) || raw.includes(name))) result = node;
+      if (!node.isBone) return;
+      bonesByName.set(normalize(node.name), node);
+      if (node.userData?.name) bonesByName.set(normalize(node.userData.name), node);
     });
-    return result;
+    // Exact aliases prevent LeftHandIndex1 being mistaken for LeftHand when
+    // glTF lists finger nodes before the wrist, as this export does.
+    for (const name of names) {
+      const bone = bonesByName.get(normalize(name));
+      if (bone) return bone;
+    }
+    return null;
   };
+  const neck = findBone(['mixamorigNeck', 'Neck']);
+  const chest = findBone(['mixamorigSpine2', 'Chest', 'Spine2']);
   const armBones = {
     left: [
       findBone(['UpperArmL', 'LeftUpperArm', 'mixamorigLeftArm', 'LeftArm']),
@@ -129,6 +144,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   // Two-bone aiming keeps the held objects in the actual hands instead of
   // floating beside the running rig. Targets use the character's local space.
   const shoulder = new THREE.Vector3(), handTarget = new THREE.Vector3();
+  const currentElbow = new THREE.Vector3(), currentHand = new THREE.Vector3();
   const reach = new THREE.Vector3(), bend = new THREE.Vector3(), elbow = new THREE.Vector3();
   const from = new THREE.Vector3(), end = new THREE.Vector3(), worldTarget = new THREE.Vector3();
   const oldDirection = new THREE.Vector3(), newDirection = new THREE.Vector3();
@@ -160,7 +176,12 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     upper.getWorldPosition(shoulder); group.worldToLocal(shoulder);
     handTarget.set(target.x, target.y, target.z);
     reach.subVectors(handTarget, shoulder);
-    const firstLength = forearm.position.length(), secondLength = hand.position.length();
+    // Segment lengths must use the same normalized coordinate space as the
+    // targets; raw Mixamo translations are roughly half the displayed size.
+    forearm.getWorldPosition(currentElbow); group.worldToLocal(currentElbow);
+    hand.getWorldPosition(currentHand); group.worldToLocal(currentHand);
+    const firstLength = shoulder.distanceTo(currentElbow), secondLength = currentElbow.distanceTo(currentHand);
+    if (firstLength < .001 || secondLength < .001) return;
     const distance = THREE.MathUtils.clamp(reach.length(), .04, firstLength + secondLength - .004);
     reach.normalize(); handTarget.copy(shoulder).addScaledVector(reach, distance);
     // Elbows point outward and down, away from the bow string and sword blade.
@@ -189,7 +210,14 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   model.traverse(node => { if (node.isBone) bones.add(node); });
   group.userData.characterAsset = {
     name: 'Nebeljäger Tripo', source: PLAYER_MODEL_SOURCE,
-    format: 'GLB', skinned: true, joints: bones.size, clips: gltf.animations.map(clip => clip.name),
+    format: 'GLB', skinned: meshes.some(mesh => mesh.isSkinnedMesh), joints: bones.size,
+    clips: gltf.animations.map(clip => clip.name), normalizedHeight: targetHeight,
+    sourceHeight: sourceSize.y, normalizedScale,
+    geometryPreparation,
+    handBones: Object.fromEntries(Object.entries(armBones).map(([side, chain]) => [side, chain.map(bone => bone?.name || null)])),
+    materials: [...materials.keys()].map(material => ({ name: material.name,
+      baseColorTexture: Boolean(material.map), normalTexture: Boolean(material.normalMap),
+      roughnessTexture: Boolean(material.roughnessMap), metalnessTexture: Boolean(material.metalnessMap) })),
     meshes: meshes.length, triangles: meshes.reduce((count, mesh) => count +
       (mesh.geometry.index?.count ?? mesh.geometry.attributes.position.count) / 3, 0),
     ...animator.snapshot(),
@@ -244,13 +272,14 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     opacity = THREE.MathUtils.lerp(opacity, target, 1 - Math.exp(-delta * 8));
     if (Math.abs(opacity - target) < 0.002) opacity = target;
     const translucent = opacity < 0.995;
-    for (const material of materials) {
-      if (material.transparent !== translucent) {
-        material.transparent = translucent;
+    for (const [material, original] of materials) {
+      const transparent = original.transparent || translucent;
+      if (material.transparent !== transparent) {
+        material.transparent = transparent;
         material.needsUpdate = true;
       }
-      material.opacity = opacity;
-      material.depthWrite = !translucent;
+      material.opacity = original.opacity * opacity;
+      material.depthWrite = original.depthWrite && !translucent;
     }
     for (const mesh of meshes) mesh.castShadow = !concealed;
     const silhouetteTarget = snowClip > .08 ? 0 : concealed ? 0.06 : inDanger ? 0.14 : 0.045;

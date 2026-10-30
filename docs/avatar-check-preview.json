@@ -1,0 +1,238 @@
+{
+  "url": "http://127.0.0.1:4174/avatar-preview.html",
+  "checks": [
+    {
+      "name": "Actual textured Tripo asset loads at normalized human height",
+      "state": {
+        "loaded": true,
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "role": "idle",
+        "clip": "standing_relax",
+        "time": 0.1,
+        "duration": 17.58333396911621,
+        "playing": true,
+        "speed": 1,
+        "stats": {
+          "triangles": 20161,
+          "meshes": 1,
+          "materials": 1,
+          "joints": 66,
+          "height": 1.82,
+          "animations": [
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
+          ],
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "preparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "run clip selection, pause and time scrub",
+      "state": {
+        "loaded": true,
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "role": "run",
+        "clip": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+        "time": 0.354,
+        "duration": 0.7083333333333333,
+        "playing": false,
+        "speed": 1,
+        "stats": {
+          "triangles": 20161,
+          "meshes": 1,
+          "materials": 1,
+          "joints": 66,
+          "height": 1.82,
+          "animations": [
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
+          ],
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "preparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "roll clip selection, pause and time scrub",
+      "state": {
+        "loaded": true,
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "role": "roll",
+        "clip": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+        "time": 0.979,
+        "duration": 1.9583333730697632,
+        "playing": false,
+        "speed": 1,
+        "stats": {
+          "triangles": 20161,
+          "meshes": 1,
+          "materials": 1,
+          "joints": 66,
+          "height": 1.82,
+          "animations": [
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
+          ],
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "preparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Replay and quarter speed"
+    },
+    {
+      "name": "390px mobile layout and controls"
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}

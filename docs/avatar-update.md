@@ -1,6 +1,9 @@
-# Neutraler menschlicher Avatar
+# Vorheriger neutraler menschlicher Avatar
 
-Der neue Abenteurer ersetzt den bisherigen Waldläufer als lokale Spielfigur.
+Dieser Bericht beschreibt den erhaltenen Vorgänger. Der aktive Avatar ist jetzt
+die hochgeladene Tripo-GLB; siehe [aktueller Import](tripo-avatar-update.md).
+
+Der damalige neue Abenteurer ersetzt den bisherigen Waldläufer als lokale Spielfigur.
 Der Stil verwendet ein modelliertes Gesicht, geschlossene Jacken-/Hosenflächen,
 modellierte Haarsträhnen, Hände mit Fingern und geformte Lederstiefel. Es gibt
 keine fest eingebaute Waffe oder Klassenrüstung. Die neutralen Kleidungsstücke

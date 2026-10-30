@@ -14,19 +14,93 @@
         },
         "direction": 0,
         "character": {
-          "name": "Neutraler Abenteurer",
-          "source": "assets/characters/adventurer.glb",
+          "name": "Nebeljäger Tripo",
+          "source": "assets/characters/nebeljagd_player_base_v1.glb",
           "format": "GLB",
           "skinned": true,
-          "joints": 22,
+          "joints": 66,
           "clips": [
-            "Idle_Nebeljagd",
-            "Run_Nebeljagd",
-            "Roll_Nebeljagd"
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
           ],
-          "meshes": 9,
-          "triangles": 24964,
-          "activeAnimation": "Idle_Nebeljagd",
+          "normalizedHeight": 1.82,
+          "sourceHeight": 0.98500635508701,
+          "normalizedScale": 1.8477038149050637,
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          },
+          "handBones": {
+            "left": [
+              "mixamorigLeftArm",
+              "mixamorigLeftForeArm",
+              "mixamorigLeftHand"
+            ],
+            "right": [
+              "mixamorigRightArm",
+              "mixamorigRightForeArm",
+              "mixamorigRightHand"
+            ]
+          },
+          "materials": [
+            {
+              "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "baseColorTexture": true,
+              "normalTexture": true,
+              "roughnessTexture": true,
+              "metalnessTexture": true
+            }
+          ],
+          "meshes": 1,
+          "triangles": 20161,
+          "activeAnimation": "standing_relax",
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "animationPreparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
           "rollProgress": 0,
           "rollClipTime": 0,
           "rollDuration": 0.72,
@@ -37,9 +111,9 @@
             0
           ],
           "modelScale": [
-            1,
-            1,
-            1
+            1.8477038149050637,
+            1.8477038149050637,
+            1.8477038149050637
           ],
           "opacity": 1,
           "locomotion": {
@@ -91,11 +165,11 @@
           }
         },
         "rendering": {
-          "calls": 481,
-          "triangles": 777421,
-          "geometries": 152,
-          "textures": 32,
-          "frameMs": 1507.0714285714287
+          "calls": 457,
+          "triangles": 763012,
+          "geometries": 144,
+          "textures": 35,
+          "frameMs": 1827.7166666666662
         },
         "camera": {
           "position": {
@@ -115,19 +189,93 @@
     {
       "name": "Real WASD movement blends into the new run and returns to idle",
       "evidence": {
-        "name": "Neutraler Abenteurer",
-        "source": "assets/characters/adventurer.glb",
+        "name": "Nebeljäger Tripo",
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
         "format": "GLB",
         "skinned": true,
-        "joints": 22,
+        "joints": 66,
         "clips": [
-          "Idle_Nebeljagd",
-          "Run_Nebeljagd",
-          "Roll_Nebeljagd"
+          "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+          "standing_relax",
+          "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "defeat_03"
         ],
-        "meshes": 9,
-        "triangles": 24964,
-        "activeAnimation": "Run_Nebeljagd",
+        "normalizedHeight": 1.82,
+        "sourceHeight": 0.98500635508701,
+        "normalizedScale": 1.8477038149050637,
+        "geometryPreparation": {
+          "version": "tripo-neutral-finger-v1",
+          "repairedVertices": 4,
+          "repairs": [
+            {
+              "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "vertices": [
+                5828,
+                5829,
+                5830,
+                5831
+              ],
+              "replacedBone": "neutral_bone",
+              "influences": [
+                {
+                  "bone": "mixamorigRightHandIndex1",
+                  "weight": 0.5563358767413223
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle1",
+                  "weight": 0.4116030543172535
+                },
+                {
+                  "bone": "mixamorigRightHandIndex2",
+                  "weight": 0.02015267200548744
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle2",
+                  "weight": 0.011908396935936705
+                }
+              ]
+            }
+          ]
+        },
+        "handBones": {
+          "left": [
+            "mixamorigLeftArm",
+            "mixamorigLeftForeArm",
+            "mixamorigLeftHand"
+          ],
+          "right": [
+            "mixamorigRightArm",
+            "mixamorigRightForeArm",
+            "mixamorigRightHand"
+          ]
+        },
+        "materials": [
+          {
+            "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+            "baseColorTexture": true,
+            "normalTexture": true,
+            "roughnessTexture": true,
+            "metalnessTexture": true
+          }
+        ],
+        "meshes": 1,
+        "triangles": 20161,
+        "activeAnimation": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+        "mappedAnimations": {
+          "idle": "standing_relax",
+          "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+        },
+        "animationPreparation": {
+          "rootAligned": true,
+          "runSourceWindow": [
+            1.7083333333333333,
+            2.4166666666666665
+          ],
+          "groundedSamples": 131,
+          "maxGroundCorrection": 0.18472989118046884,
+          "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+        },
         "rollProgress": 0,
         "rollClipTime": 0,
         "rollDuration": 0.72,
@@ -138,9 +286,9 @@
           0
         ],
         "modelScale": [
-          1,
-          1,
-          1
+          1.8477038149050637,
+          1.8477038149050637,
+          1.8477038149050637
         ],
         "opacity": 1,
         "locomotion": {
@@ -163,7 +311,7 @@
       "evidence": {
         "rolling": {
           "phase": "playing",
-          "elapsed": 2.116666666666664,
+          "elapsed": 2.033333333333331,
           "position": {
             "x": 30,
             "y": 1.236855817701637,
@@ -171,21 +319,95 @@
           },
           "direction": 0,
           "character": {
-            "name": "Neutraler Abenteurer",
-            "source": "assets/characters/adventurer.glb",
+            "name": "Nebeljäger Tripo",
+            "source": "assets/characters/nebeljagd_player_base_v1.glb",
             "format": "GLB",
             "skinned": true,
-            "joints": 22,
+            "joints": 66,
             "clips": [
-              "Idle_Nebeljagd",
-              "Run_Nebeljagd",
-              "Roll_Nebeljagd"
+              "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+              "standing_relax",
+              "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "defeat_03"
             ],
-            "meshes": 9,
-            "triangles": 24964,
-            "activeAnimation": "Roll_Nebeljagd",
+            "normalizedHeight": 1.82,
+            "sourceHeight": 0.98500635508701,
+            "normalizedScale": 1.8477038149050637,
+            "geometryPreparation": {
+              "version": "tripo-neutral-finger-v1",
+              "repairedVertices": 4,
+              "repairs": [
+                {
+                  "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                  "vertices": [
+                    5828,
+                    5829,
+                    5830,
+                    5831
+                  ],
+                  "replacedBone": "neutral_bone",
+                  "influences": [
+                    {
+                      "bone": "mixamorigRightHandIndex1",
+                      "weight": 0.5563358767413223
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle1",
+                      "weight": 0.4116030543172535
+                    },
+                    {
+                      "bone": "mixamorigRightHandIndex2",
+                      "weight": 0.02015267200548744
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle2",
+                      "weight": 0.011908396935936705
+                    }
+                  ]
+                }
+              ]
+            },
+            "handBones": {
+              "left": [
+                "mixamorigLeftArm",
+                "mixamorigLeftForeArm",
+                "mixamorigLeftHand"
+              ],
+              "right": [
+                "mixamorigRightArm",
+                "mixamorigRightForeArm",
+                "mixamorigRightHand"
+              ]
+            },
+            "materials": [
+              {
+                "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "baseColorTexture": true,
+                "normalTexture": true,
+                "roughnessTexture": true,
+                "metalnessTexture": true
+              }
+            ],
+            "meshes": 1,
+            "triangles": 20161,
+            "activeAnimation": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "mappedAnimations": {
+              "idle": "standing_relax",
+              "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+            },
+            "animationPreparation": {
+              "rootAligned": true,
+              "runSourceWindow": [
+                1.7083333333333333,
+                2.4166666666666665
+              ],
+              "groundedSamples": 131,
+              "maxGroundCorrection": 0.18472989118046884,
+              "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+            },
             "rollProgress": 0.41666666666666674,
-            "rollClipTime": 0.3333333383003871,
+            "rollClipTime": 0.815972238779068,
             "rollDuration": 0.72,
             "rollWeight": 1,
             "presentationRotation": [
@@ -194,9 +416,9 @@
               0
             ],
             "modelScale": [
-              1,
-              1,
-              1
+              1.8477038149050637,
+              1.8477038149050637,
+              1.8477038149050637
             ],
             "opacity": 1,
             "locomotion": {
@@ -248,11 +470,11 @@
             }
           },
           "rendering": {
-            "calls": 474,
-            "triangles": 723087,
-            "geometries": 153,
-            "textures": 32,
-            "frameMs": 1273.1607142857142
+            "calls": 446,
+            "triangles": 708582,
+            "geometries": 145,
+            "textures": 35,
+            "frameMs": 1319.180769230769
           },
           "camera": {
             "position": {
@@ -269,19 +491,93 @@
           }
         },
         "ended": {
-          "name": "Neutraler Abenteurer",
-          "source": "assets/characters/adventurer.glb",
+          "name": "Nebeljäger Tripo",
+          "source": "assets/characters/nebeljagd_player_base_v1.glb",
           "format": "GLB",
           "skinned": true,
-          "joints": 22,
+          "joints": 66,
           "clips": [
-            "Idle_Nebeljagd",
-            "Run_Nebeljagd",
-            "Roll_Nebeljagd"
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
           ],
-          "meshes": 9,
-          "triangles": 24964,
-          "activeAnimation": "Idle_Nebeljagd",
+          "normalizedHeight": 1.82,
+          "sourceHeight": 0.98500635508701,
+          "normalizedScale": 1.8477038149050637,
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          },
+          "handBones": {
+            "left": [
+              "mixamorigLeftArm",
+              "mixamorigLeftForeArm",
+              "mixamorigLeftHand"
+            ],
+            "right": [
+              "mixamorigRightArm",
+              "mixamorigRightForeArm",
+              "mixamorigRightHand"
+            ]
+          },
+          "materials": [
+            {
+              "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "baseColorTexture": true,
+              "normalTexture": true,
+              "roughnessTexture": true,
+              "metalnessTexture": true
+            }
+          ],
+          "meshes": 1,
+          "triangles": 20161,
+          "activeAnimation": "standing_relax",
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "animationPreparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
           "rollProgress": 0,
           "rollClipTime": 0,
           "rollDuration": 0.72,
@@ -292,9 +588,9 @@
             0
           ],
           "modelScale": [
-            1,
-            1,
-            1
+            1.8477038149050637,
+            1.8477038149050637,
+            1.8477038149050637
           ],
           "opacity": 1,
           "locomotion": {
@@ -316,7 +612,7 @@
     {
       "name": "The replacement rig still holds and fires the existing bow",
       "evidence": {
-        "attackPhase": "recover",
+        "attackPhase": "idle",
         "bowDraw": 0,
         "swordSweep": 0,
         "shotsFired": 1,
@@ -343,9 +639,9 @@
         "arrowsFlying": 1,
         "heldPose": {
           "bow": {
-            "x": 0.059999967051322045,
-            "y": 1.3400000039408666,
-            "z": 0.09580003049529906
+            "x": 0.06000003453963032,
+            "y": 1.3400000059311101,
+            "z": 0.09579994966465377
           },
           "sword": {
             "x": -0.22,
@@ -364,7 +660,7 @@
       "name": "A sudden right turn followed by roll locks the body to the actual roll direction",
       "evidence": {
         "phase": "playing",
-        "elapsed": 4.733333333333322,
+        "elapsed": 4.666666666666655,
         "position": {
           "x": 33.20000000000003,
           "y": 1.2262214540128245,
@@ -372,21 +668,95 @@
         },
         "direction": 1.5707963267948966,
         "character": {
-          "name": "Neutraler Abenteurer",
-          "source": "assets/characters/adventurer.glb",
+          "name": "Nebeljäger Tripo",
+          "source": "assets/characters/nebeljagd_player_base_v1.glb",
           "format": "GLB",
           "skinned": true,
-          "joints": 22,
+          "joints": 66,
           "clips": [
-            "Idle_Nebeljagd",
-            "Run_Nebeljagd",
-            "Roll_Nebeljagd"
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
           ],
-          "meshes": 9,
-          "triangles": 24964,
-          "activeAnimation": "Roll_Nebeljagd",
+          "normalizedHeight": 1.82,
+          "sourceHeight": 0.98500635508701,
+          "normalizedScale": 1.8477038149050637,
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          },
+          "handBones": {
+            "left": [
+              "mixamorigLeftArm",
+              "mixamorigLeftForeArm",
+              "mixamorigLeftHand"
+            ],
+            "right": [
+              "mixamorigRightArm",
+              "mixamorigRightForeArm",
+              "mixamorigRightHand"
+            ]
+          },
+          "materials": [
+            {
+              "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "baseColorTexture": true,
+              "normalTexture": true,
+              "roughnessTexture": true,
+              "metalnessTexture": true
+            }
+          ],
+          "meshes": 1,
+          "triangles": 20161,
+          "activeAnimation": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "animationPreparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
           "rollProgress": 0.41666666666666674,
-          "rollClipTime": 0.3333333383003871,
+          "rollClipTime": 0.815972238779068,
           "rollDuration": 0.72,
           "rollWeight": 1,
           "presentationRotation": [
@@ -395,9 +765,9 @@
             0
           ],
           "modelScale": [
-            1,
-            1,
-            1
+            1.8477038149050637,
+            1.8477038149050637,
+            1.8477038149050637
           ],
           "opacity": 1,
           "locomotion": {
@@ -445,9 +815,9 @@
           "arrowsFlying": 1,
           "heldPose": {
             "bow": {
-              "x": 0.059999996481941764,
-              "y": 1.3400000129501477,
-              "z": 0.09580000938754352
+              "x": 0.06000002229324508,
+              "y": 1.3399999784046697,
+              "z": 0.09579999128038863
             },
             "sword": {
               "x": -0.22,
@@ -462,11 +832,11 @@
           }
         },
         "rendering": {
-          "calls": 463,
-          "triangles": 743326,
-          "geometries": 167,
-          "textures": 32,
-          "frameMs": 1311.422950819672
+          "calls": 439,
+          "triangles": 728917,
+          "geometries": 159,
+          "textures": 35,
+          "frameMs": 1306.009090909091
         },
         "camera": {
           "position": {
@@ -490,52 +860,6 @@
     "docs/avatar-check-roll-game-camera.png",
     "docs/avatar-check-bow-game-camera.png"
   ],
-  "sourceGlbSha256": "01a669b2b7b4236031e89b006bf643e25e99829059da6cd1dec141c7de2410e6",
-  "limits": "Chromium WebGL2 via SwiftShader; this is functional/render validation, not an iPad GPU performance benchmark.",
-  "rollCapture": {
-    "rawCanvas": true,
-    "character": {
-      "name": "Neutraler Abenteurer",
-      "source": "assets/characters/adventurer.glb",
-      "format": "GLB",
-      "skinned": true,
-      "joints": 22,
-      "clips": [
-        "Idle_Nebeljagd",
-        "Run_Nebeljagd",
-        "Roll_Nebeljagd"
-      ],
-      "meshes": 9,
-      "triangles": 24964,
-      "activeAnimation": "Roll_Nebeljagd",
-      "rollProgress": 0.41666666666666674,
-      "rollClipTime": 0.3333333383003871,
-      "rollDuration": 0.72,
-      "rollWeight": 1,
-      "presentationRotation": [
-        0,
-        0,
-        0
-      ],
-      "modelScale": [
-        1,
-        1,
-        1
-      ],
-      "opacity": 1,
-      "locomotion": {
-        "speed": 0,
-        "walkWeight": 0,
-        "playbackSpeed": 0.42,
-        "yaw": 0,
-        "turnRate": 0,
-        "forwardLean": 0,
-        "sideLean": 0
-      },
-      "snowWeight": 0,
-      "snowSinkMeters": 0,
-      "snowClipStrength": 0,
-      "snowClipHeight": -10000
-    }
-  }
+  "sourceGlbSha256": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624",
+  "limits": "Chromium WebGL2 via SwiftShader; this is functional/render validation, not an iPad GPU performance benchmark."
 }

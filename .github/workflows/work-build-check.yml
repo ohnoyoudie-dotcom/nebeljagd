@@ -52,6 +52,7 @@ jobs:
           done
           python tests/work_meadow_vision_smoke.py
           python tests/avatar_smoke.py
+          python tests/avatar_preview_smoke.py
       - name: Publish verified build to welt
         run: |
           cp dist/map-editor.html welt/map-editor.html
@@ -87,6 +88,7 @@ jobs:
           path: |
             work-smoke
             docs/avatar-check-*
+            test-results/avatar-preview
             assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

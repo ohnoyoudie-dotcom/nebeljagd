@@ -2,6 +2,7 @@ node_modules/
 dist/
 .vite/
 test-results/
+work-smoke/
 *.log
 __pycache__/
 *.pyc

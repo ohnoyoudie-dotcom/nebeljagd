@@ -24,8 +24,45 @@ for (const mesh of gltf.meshes) for (const primitive of mesh.primitives) {
 }
 assert.ok(triangles >= 12000 && triangles <= 25000, `Character must stay within its 12k–25k triangle budget: ${triangles}`);
 console.log(JSON.stringify({ status: 'passed', preservedVersions: Object.keys(preserved).length,
-  character: { bytes: bytes.length, triangles, joints: gltf.skins[0].joints.length,
+  previousCharacter: { bytes: bytes.length, triangles, joints: gltf.skins[0].joints.length,
     clips: gltf.animations.map(animation => animation.name), sha256: createHash('sha256').update(bytes).digest('hex') } }, null, 2));
+
+// The user-supplied animated avatar is used by both the game and its review page.
+// Keep the upload unchanged, including its embedded 2K material maps.
+const playerPath = 'assets/characters/nebeljagd_player_base_v1.glb';
+const player = await readFile(playerPath);
+assert.equal(player.toString('ascii', 0, 4), 'glTF');
+assert.equal(player.readUInt32LE(4), 2);
+assert.equal(player.readUInt32LE(8), player.length);
+assert.equal(player.readUInt32LE(16), 0x4e4f534a);
+const playerHash = createHash('sha256').update(player).digest('hex');
+assert.equal(playerHash, '29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624', 'Original uploaded avatar bytes must be preserved');
+const uploaded = await readFile('public/assets/characters/player/nebeljagd_player_base_v1.glb');
+assert.ok(player.equals(uploaded), 'Bundled avatar must match the user upload');
+const playerGltf = JSON.parse(player.toString('utf8', 20, 20 + player.readUInt32LE(12)));
+assert.ok(playerGltf.skins?.[0]?.joints.length >= 60, 'Imported avatar needs its full humanoid rig');
+assert.ok(playerGltf.buffers.every(buffer => !buffer.uri), 'Avatar buffers must be embedded');
+assert.equal(playerGltf.images.length, 3);
+assert.ok(playerGltf.images.every(image => image.bufferView !== undefined && !image.uri), 'All material textures must be embedded');
+for (const pattern of [/standing_relax/, /sprint/i, /Vorwärtsrolle/]) {
+  assert.ok(playerGltf.animations.some(clip => pattern.test(clip.name)), `Missing imported movement: ${pattern}`);
+}
+let playerTriangles = 0;
+for (const mesh of playerGltf.meshes) for (const primitive of mesh.primitives) {
+  for (const attribute of ['POSITION', 'NORMAL', 'TEXCOORD_0', 'JOINTS_0', 'WEIGHTS_0']) {
+    assert.notEqual(primitive.attributes[attribute], undefined, `Missing avatar attribute ${attribute}`);
+  }
+  playerTriangles += playerGltf.accessors[primitive.indices].count / 3;
+}
+assert.equal(playerTriangles, 20161);
+for (const material of playerGltf.materials) {
+  assert.ok(material.normalTexture && material.pbrMetallicRoughness.baseColorTexture
+    && material.pbrMetallicRoughness.metallicRoughnessTexture, 'Preserve complete textured PBR material');
+}
+console.log(JSON.stringify({ status: 'passed', activeCharacter: { source: playerPath, bytes: player.length,
+  triangles: playerTriangles, joints: playerGltf.skins[0].joints.length,
+  clips: playerGltf.animations.map(clip => clip.name), embeddedTextures: playerGltf.images.length,
+  sha256: playerHash } }, null, 2));
 
 const importRoot = 'assets/imported/rei/';
 const sourceRecord = JSON.parse(await readFile(importRoot + 'source-manifest.json', 'utf8'));

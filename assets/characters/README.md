@@ -1,6 +1,28 @@
-# Neutraler Nebeljagd-Abenteurer
+# Charaktere für Nebeljagd
 
-`adventurer.glb` ist der im Spiel verwendete, klassenneutrale menschliche Basisavatar.
+## Aktiver hochgeladener Avatar
+
+`nebeljagd_player_base_v1.glb` ist der im Spiel und in `avatar-preview.html`
+verwendete Charakter. Er wurde vom Nutzer mit bereits enthaltenen Animationen
+und Texturen geliefert. Die Originaldatei bleibt unverändert; der Spielimport
+passt Maßstab und Animationen im Arbeitsspeicher an.
+
+- 20.161 Dreiecke, 66 Skin-Gelenke, ein Mesh und ein PBR-Material.
+- Drei eingebettete 2048 × 2048 Texturen: Farbe, Normalen, Rauigkeit/Metall.
+- Stehen (`standing_relax`), Sprint, Vorwärtsrolle und eine zusätzliche
+  Niederlagenanimation. Das Spiel nutzt die ersten drei Rollen.
+- `player-portrait.png` ist eine direkte Three.js-Aufnahme dieses Modells.
+- Der frühere Upload-Pfad `public/assets/characters/player/nebeljagd_player_base_v1.glb`
+  enthält dieselben Bytes. Der Vite-Import nutzt die Datei in diesem Ordner.
+- SHA-256: `29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624`.
+
+Prüfung mit `npm test`, `npm run verify:assets`, `npm run build` und
+`tests/avatar_smoke.py`. Details: [Importbericht](../../docs/tripo-avatar-update.md).
+Der bisherige Blender-Generator erzeugt diesen hochgeladenen Avatar nicht.
+
+## Erhaltener prozeduraler Abenteurer
+
+`adventurer.glb` ist der vorherige, klassenneutrale menschliche Basisavatar.
 `adventurer.blend` enthält das bearbeitbare Modell, das humanoide Skelett, die
 Animationen und die Prüfkamera. Das Modell blickt in glTF nach +Z; Y ist oben.
 Die Maße sind Meter. Der bestehende Spielfaktor von 1,2 bleibt für die
@@ -43,12 +65,12 @@ Blender-Änderungen deshalb unter einem eigenen Dateinamen sichern, bevor der
 Generator erneut ausgeführt wird. Die gespeicherte Blender-Datei kann direkt
 für weitere Modellarbeit geöffnet werden.
 
-`avatar-preview.html` bietet im Entwicklungsserver die Ansicht von vorn/hinten,
+`avatar-preview.html` zeigt inzwischen den aktiven hochgeladenen Avatar von vorn/hinten,
 das Gesicht, den Winkel der echten Spielkamera und die drei Clips mit
 Zeitleiste und Zeitlupe. Nach dem Build liegt die vollständige, eingebettete
 Version unter `dist/avatar-preview.html` und im Welt/Editor-ZIP.
 
-Messwerte und Asset-Hash stehen in `adventurer-inspection.json`. Die Tests lesen
+Messwerte und Asset-Hash des Vorgängers stehen in `adventurer-inspection.json`. Die Tests lesen
 die tatsächliche GLB mit dem Three.js-Importer, prüfen Gewichte, Abmessungen,
 Schleifen, die Vorwärtsrotation und die verformte Geometrie. Browserbefunde
 stehen in `docs/avatar-check-gameplay.json`, wenn der Browser-Test ausgeführt wurde.

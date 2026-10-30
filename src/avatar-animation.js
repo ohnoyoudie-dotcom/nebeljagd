@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { ROLL_DURATION } from './rules.js';
+import groundProfile from '../assets/characters/player-animation-profile.json' with { type: 'json' };
 
 export const AVATAR_CLIPS = Object.freeze({
   idle: 'idle',
@@ -15,7 +16,112 @@ const CLIP_PATTERNS = Object.freeze({
 
 function resolveClip(clips, role) {
   const patterns = CLIP_PATTERNS[role] ?? [];
-  return clips.find(clip => patterns.some(pattern => pattern.test(String(clip.name || '')))) ?? null;
+  for (const pattern of patterns) {
+    const clip = clips.find(item => pattern.test(String(item.name || '')));
+    if (clip) return clip;
+  }
+  return null;
+}
+
+export function resolveAvatarClips(clips) {
+  return Object.fromEntries(Object.keys(AVATAR_CLIPS).map(role => [role, resolveClip(clips, role)]));
+}
+
+// This uploaded take begins with standing/acceleration. Frames 41–58 contain
+// a complete pair of steps with matching foot-contact phases. Keep the original
+// source untouched; build a repeatable locomotion cycle only in memory.
+const TRIPO_SPRINT = 'Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich';
+const preparedCache = new WeakMap();
+
+function makeRunningLoop(clip) {
+  if (clip.name !== TRIPO_SPRINT || Math.abs(clip.duration - 71 / 24) > .001) return clip;
+  const start = 41 / 24, end = 58 / 24, duration = end - start;
+  const frames = 43;
+  const tracks = clip.tracks.map(track => {
+    const size = track.getValueSize();
+    const sample = track.createInterpolant();
+    const first = Array.from(sample.evaluate(start));
+    const last = Array.from(sample.evaluate(end));
+    const values = [], times = [];
+    const quaternionTrack = track.ValueTypeName === 'quaternion';
+    const delta = quaternionTrack
+      ? new THREE.Quaternion().fromArray(last).invert().multiply(new THREE.Quaternion().fromArray(first))
+      : null;
+    for (let frame = 0; frame <= frames; frame++) {
+      const time = duration * frame / frames;
+      const value = Array.from(sample.evaluate(start + time));
+      // Preserve the recorded movement; reconcile only the short loop seam.
+      const weight = THREE.MathUtils.smoothstep(time, duration - .16, duration);
+      if (quaternionTrack) {
+        const correction = new THREE.Quaternion().slerp(delta, weight);
+        new THREE.Quaternion().fromArray(value).multiply(correction).normalize().toArray(value);
+      } else {
+        for (let component = 0; component < size; component++) value[component] += (first[component] - last[component]) * weight;
+      }
+      times.push(time); values.push(...value);
+    }
+    return new track.constructor(track.name, times, values, THREE.InterpolateLinear);
+  });
+  return new THREE.AnimationClip(clip.name, duration, tracks);
+}
+
+/** Adapt the uploaded Mixamo/Tripo rig without changing the source asset.
+ * Both the game and review page use these same clips. Legacy Blender clips are
+ * returned unchanged: their authored Root already provides grounded motion.
+ */
+export function prepareAvatarAnimations(model, sourceClips, { grounding = true } = {}) {
+  const cached = preparedCache.get(model);
+  if (grounding && cached?.sourceClips === sourceClips) return cached.result;
+  const sourceRoles = resolveAvatarClips(sourceClips);
+  let hips;
+  model.traverse(node => { if (node.isBone && /^mixamorig:?hips$/i.test(node.name)) hips = node; });
+  const diagnostics = { rootAligned: false, runSourceWindow: null, groundedSamples: 0, maxGroundCorrection: 0, groundingProfile: null };
+  if (!hips || !sourceRoles.idle || !sourceRoles.run || !sourceRoles.roll) {
+    return { clips: sourceClips, roles: sourceRoles, diagnostics };
+  }
+  const clips = sourceClips.map(clip => makeRunningLoop(clip.clone()));
+  const roles = resolveAvatarClips(clips);
+  if (roles.run.duration !== sourceRoles.run.duration) diagnostics.runSourceWindow = [41 / 24, 58 / 24];
+  const positionName = `${hips.name}.position`;
+  const idlePosition = roles.idle.tracks.find(track => track.name === positionName);
+  if (!idlePosition) return { clips, roles, diagnostics };
+  const baseline = idlePosition.values;
+  for (const clip of Object.values(roles)) {
+    const track = clip.tracks.find(item => item.name === positionName);
+    if (!track) continue;
+    const startX = track.values[0], startZ = track.values[2];
+    for (let index = 0; index < track.values.length; index += 3) {
+      track.values[index] += baseline[0] - startX;
+      track.values[index + 2] += baseline[2] - startZ;
+    }
+  }
+  diagnostics.rootAligned = true;
+
+  // Corrections are precomputed against the actual skinned mesh and bound to
+  // its SHA-256 in the checked-in profile. No CPU skin sampling runs at startup
+  // or per frame; tests and the profile builder validate the source bytes.
+  const matchesProfile = Object.entries(groundProfile.sourceClips).every(([role, source]) =>
+    sourceRoles[role]?.name === source.name && Math.abs(sourceRoles[role].duration - source.duration) < 1e-6);
+  if (grounding && matchesProfile) {
+    for (const role of ['run', 'roll']) {
+      const clip = roles[role], profile = groundProfile.grounding[role];
+      const track = clip.tracks.find(item => item.name === positionName);
+      if (!track || Math.abs(clip.duration - profile.duration) > 1e-6) continue;
+      const sample = track.createInterpolant(), values = [];
+      for (let index = 0; index < profile.times.length; index++) {
+        const position = Array.from(sample.evaluate(profile.times[index]));
+        position[1] += profile.offsets[index];
+        values.push(...position);
+        diagnostics.groundedSamples++;
+        diagnostics.maxGroundCorrection = Math.max(diagnostics.maxGroundCorrection, profile.offsets[index]);
+      }
+      clip.tracks[clip.tracks.indexOf(track)] = new THREE.VectorKeyframeTrack(positionName, profile.times, values);
+    }
+    diagnostics.groundingProfile = groundProfile.sourceSha256;
+  }
+  const result = { clips, roles, diagnostics };
+  if (grounding) preparedCache.set(model, { sourceClips, result });
+  return result;
 }
 
 /** Plays the exported skeleton animations.
@@ -24,11 +130,7 @@ function resolveClip(clips, role) {
  */
 export function createAvatarAnimator(model, clips, { rollDuration = ROLL_DURATION } = {}) {
   const mixer = new THREE.AnimationMixer(model);
-  const resolved = {
-    idle: resolveClip(clips, 'idle'),
-    run: resolveClip(clips, 'run'),
-    roll: resolveClip(clips, 'roll'),
-  };
+  const { roles: resolved, diagnostics } = prepareAvatarAnimations(model, clips);
   for (const role of ['idle', 'run', 'roll']) {
     const clip = resolved[role];
     if (!clip || !(clip.duration > 0)) {
@@ -89,6 +191,7 @@ export function createAvatarAnimator(model, clips, { rollDuration = ROLL_DURATIO
         run: resolved.run.name,
         roll: resolved.roll.name,
       },
+      animationPreparation: diagnostics,
       rollProgress: elapsed === null ? 0 : elapsed / rollDuration,
       rollClipTime: elapsed === null ? 0 : roll.time,
       rollDuration,

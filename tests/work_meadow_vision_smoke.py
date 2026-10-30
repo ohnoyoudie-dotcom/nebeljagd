@@ -1,14 +1,30 @@
 from pathlib import Path
 import json
 import base64
+import os
+import shutil
 from playwright.sync_api import sync_playwright
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'work-smoke'
 OUT.mkdir(exist_ok=True)
 report={'passed':False}
+
+
+def move_to_biome(page, x, z, biome):
+    # Inspect moves the player synchronously, while grass/chunk statistics are
+    # refreshed in the next game frame. The previous district can still report
+    # pendingChunks == 0, so wait for a completed frame before testing readiness.
+    page.evaluate('''async ({x,z})=>{
+      nebeljagdInspect({x,z});
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    }''', {'x': x, 'z': z})
+    page.wait_for_function("biome=>nebeljagdTestState().world.biome===biome",arg=biome,timeout=120000)
+    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+
+
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
+    browser=p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or shutil.which('chromium'),headless=True,args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
     page=browser.new_page(viewport={'width':1280,'height':900})
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
@@ -72,9 +88,7 @@ with sync_playwright() as p:
     data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-meadow-vision.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
 
-    page.evaluate("nebeljagdInspect({x:-285,z:-400})")
-    page.wait_for_function("nebeljagdTestState().world.biome==='snow'",timeout=120000)
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    move_to_biome(page, -285, -400, 'snow')
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleDetailInstances>5",timeout=120000)
     snow_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position,
@@ -135,17 +149,13 @@ with sync_playwright() as p:
     page.evaluate("(t)=>nebeljagdInspect({x:-285,z:-400,elapsed:t+10.5})",elapsed_now)
     page.wait_for_function("nebeljagdTestState().snowFootprints.count===0",timeout=10000)
 
-    page.evaluate("nebeljagdInspect({x:300,z:-310})")
-    page.wait_for_function("nebeljagdTestState().world.biome==='heath'",timeout=120000)
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    move_to_biome(page, 300, -310, 'heath')
     heath_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     heath_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-heath-grass.png').write_bytes(base64.b64decode(heath_data.split(',',1)[1]))
 
-    page.evaluate("nebeljagdInspect({x:-310,z:425})")
-    page.wait_for_function("nebeljagdTestState().world.biome==='marsh'",timeout=120000)
-    page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0",timeout=120000)
+    move_to_biome(page, -310, 425, 'marsh')
     marsh_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     marsh_data=page.evaluate('nebeljagdCaptureFrame()')

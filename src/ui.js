@@ -1,4 +1,4 @@
-import portraitUrl from '../assets/characters/adventurer-portrait.png?url&inline';
+import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
 import { WEAPON_TYPES, weaponStats } from './loot-tiers.js';
 
 function describeWeapon(item) {
