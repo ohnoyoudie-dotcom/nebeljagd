@@ -497,7 +497,10 @@
             "iceStaff",
             "wall",
             "fence",
-            "crate"
+            "crate",
+            "wagon",
+            "barrel",
+            "well"
           ]
         },
         "variant": {
@@ -666,7 +669,10 @@
                   "granite",
                   "basalt",
                   "kit-cluster",
-                  "kit-single"
+                  "kit-single",
+                  "kit-tripo-01",
+                  "kit-tripo-02",
+                  "kit-tripo-03"
                 ]
               }
             }
@@ -794,7 +800,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "wood"
+                  "wood",
+                  "kit-tripo-chest"
                 ]
               }
             }
@@ -1004,6 +1011,60 @@
               "variant": {
                 "enum": [
                   "kit-wood"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wagon"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-wagon"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "barrel"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-barrel"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "well"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-well"
                 ]
               }
             }
@@ -1451,7 +1512,10 @@
                   "granite",
                   "basalt",
                   "kit-cluster",
-                  "kit-single"
+                  "kit-single",
+                  "kit-tripo-01",
+                  "kit-tripo-02",
+                  "kit-tripo-03"
                 ]
               }
             }
