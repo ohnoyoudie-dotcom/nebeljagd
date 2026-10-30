@@ -1,0 +1,345 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1547" viewBox="0 0 1900 1547">
+<rect width="100%" height="100%" fill="#f5f2e9"/>
+<style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#233936}.muted{fill:#687871}.room-label{font-size:12px;font-weight:600}.number{font-size:17px;font-weight:700;fill:#fff}.dim{font-size:17px;fill:#526c63}.legend{font-size:15px}</style>
+<text x="92" y="56" font-size="17" letter-spacing="4" fill="#4d6858">NEBELJAGD · GRUNDRISSENTWURF 01</text>
+<text x="92" y="100" font-size="34" font-weight="700">Das große Gartenschloss</text>
+<text x="92" y="132" font-size="18" class="muted">30 Räume · vier Außenzugänge · lange Galerien · eine offene Etage</text>
+<rect x="92.0" y="235.0" width="1404.0" height="1170.0" fill="#f7ebcf" stroke="#31443e" stroke-width="4"/>
+<rect x="92.0" y="508.0" width="1404.0" height="62.4" fill="#f7ebcf"/>
+<rect x="92.0" y="1069.6" width="1404.0" height="62.4" fill="#f7ebcf"/>
+<rect x="419.59999999999997" y="570.4" width="62.4" height="499.2" fill="#f7ebcf"/>
+<rect x="1106.0" y="570.4" width="62.4" height="499.2" fill="#f7ebcf"/>
+<rect x="762.8" y="235.0" width="62.4" height="273.0" fill="#f7ebcf"/>
+<rect x="762.8" y="1132.0" width="62.4" height="273.0" fill="#f7ebcf"/>
+<rect x="92.0" y="788.8" width="327.59999999999997" height="62.4" fill="#f7ebcf"/>
+<rect x="1168.3999999999999" y="788.8" width="327.59999999999997" height="62.4" fill="#f7ebcf"/>
+<rect x="482.0" y="570.4" width="624.0" height="499.2" fill="#d0dfb5" stroke="#31443e" stroke-width="3"/>
+<rect x="513.2" y="601.5999999999999" width="561.6" height="436.8" fill="#a3c48e"/>
+<rect x="762.8" y="570.4" width="62.4" height="499.2" fill="#e6d6b0"/>
+<rect x="482.0" y="788.8" width="624.0" height="62.4" fill="#e6d6b0"/>
+<rect x="544.4" y="632.8" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
+<rect x="872.0" y="632.8" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
+<rect x="544.4" y="882.4" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
+<rect x="872.0" y="882.4" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
+<circle cx="544.4" cy="632.8" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
+<circle cx="1043.6" cy="632.8" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
+<circle cx="544.4" cy="1007.1999999999999" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
+<circle cx="1043.6" cy="1007.1999999999999" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
+<circle cx="794.0" cy="820.0" r="29" fill="#a3cad0" stroke="#597a7c" stroke-width="3"/>
+<rect x="92.0" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="159.07999999999998" cy="355.9" r="17" fill="#435e53"/>
+<text x="159.07999999999998" y="361.9" text-anchor="middle" class="number">01</text>
+<text x="159.07999999999998" y="394.9" font-size="12" text-anchor="middle" class="room-label">Bibliothek</text>
+<rect x="226.16" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="293.24" cy="355.9" r="17" fill="#435e53"/>
+<text x="293.24" y="361.9" text-anchor="middle" class="number">02</text>
+<text x="293.24" y="394.9" font-size="12" text-anchor="middle" class="room-label">Archiv</text>
+<rect x="360.32" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="427.4" cy="355.9" r="17" fill="#435e53"/>
+<text x="427.4" y="361.9" text-anchor="middle" class="number">03</text>
+<text x="427.4" y="394.9" font-size="12" text-anchor="middle" class="room-label">Schreibstube</text>
+<rect x="494.48" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="561.56" cy="355.9" r="17" fill="#435e53"/>
+<text x="561.56" y="361.9" text-anchor="middle" class="number">04</text>
+<text x="561.56" y="394.9" font-size="12" text-anchor="middle" class="room-label">Kartenraum</text>
+<rect x="628.64" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="695.7199999999999" cy="355.9" r="17" fill="#435e53"/>
+<text x="695.7199999999999" y="361.9" text-anchor="middle" class="number">05</text>
+<text x="695.7199999999999" y="394.9" font-size="12" text-anchor="middle" class="room-label">Ratssaal</text>
+<rect x="825.1999999999999" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="892.28" cy="355.9" r="17" fill="#435e53"/>
+<text x="892.28" y="361.9" text-anchor="middle" class="number">06</text>
+<text x="892.28" y="394.9" font-size="12" text-anchor="middle" class="room-label">Thronsaal</text>
+<rect x="959.36" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="1026.44" cy="355.9" r="17" fill="#435e53"/>
+<text x="1026.44" y="361.9" text-anchor="middle" class="number">07</text>
+<text x="1026.44" y="394.9" font-size="12" text-anchor="middle" class="room-label">Audienzsaal</text>
+<rect x="1093.52" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="1160.6" cy="355.9" r="17" fill="#435e53"/>
+<text x="1160.6" y="361.9" text-anchor="middle" class="number">08</text>
+<text x="1160.6" y="394.9" font-size="12" text-anchor="middle" class="room-label">Kapelle</text>
+<rect x="1227.6799999999998" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="1294.76" cy="355.9" r="17" fill="#435e53"/>
+<text x="1294.76" y="361.9" text-anchor="middle" class="number">09</text>
+<text x="1294.76" y="394.9" font-size="12" text-anchor="middle" class="room-label">Sakristei</text>
+<rect x="1361.8400000000001" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
+<circle cx="1428.92" cy="355.9" r="17" fill="#435e53"/>
+<text x="1428.92" y="361.9" text-anchor="middle" class="number">10</text>
+<text x="1428.92" y="394.9" font-size="12" text-anchor="middle" class="room-label">Schatzkammer</text>
+<rect x="92.0" y="570.4" width="327.59999999999997" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
+<circle cx="255.79999999999998" cy="664.0" r="17" fill="#435e53"/>
+<text x="255.79999999999998" y="670.0" text-anchor="middle" class="number">11</text>
+<text x="255.79999999999998" y="703.0" font-size="12" text-anchor="middle" class="room-label">Großer</text>
+<text x="255.79999999999998" y="720.1600000000001" font-size="12" text-anchor="middle" class="room-label">Ballsaal</text>
+<rect x="92.0" y="851.1999999999999" width="109.2" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
+<circle cx="146.6" cy="944.8" r="17" fill="#435e53"/>
+<text x="146.6" y="950.8" text-anchor="middle" class="number">12</text>
+<text x="146.6" y="983.8" font-size="12" text-anchor="middle" class="room-label">Musiksalon</text>
+<rect x="201.2" y="851.1999999999999" width="109.2" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
+<circle cx="255.79999999999998" cy="944.8" r="17" fill="#435e53"/>
+<text x="255.79999999999998" y="950.8" text-anchor="middle" class="number">13</text>
+<text x="255.79999999999998" y="983.8" font-size="12" text-anchor="middle" class="room-label">Empfangssalon</text>
+<rect x="310.4" y="851.1999999999999" width="109.2" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
+<circle cx="365.0" cy="944.8" r="17" fill="#435e53"/>
+<text x="365.0" y="950.8" text-anchor="middle" class="number">14</text>
+<text x="365.0" y="983.8" font-size="12" text-anchor="middle" class="room-label">Galerie</text>
+<rect x="1168.3999999999999" y="570.4" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
+<circle cx="1223.0" cy="664.0" r="17" fill="#435e53"/>
+<text x="1223.0" y="670.0" text-anchor="middle" class="number">15</text>
+<text x="1223.0" y="703.0" font-size="12" text-anchor="middle" class="room-label">Speisesaal</text>
+<rect x="1277.6" y="570.4" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
+<circle cx="1332.2" cy="664.0" r="17" fill="#435e53"/>
+<text x="1332.2" y="670.0" text-anchor="middle" class="number">16</text>
+<text x="1332.2" y="703.0" font-size="12" text-anchor="middle" class="room-label">Küche</text>
+<rect x="1386.8" y="570.4" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
+<circle cx="1441.3999999999999" cy="664.0" r="17" fill="#435e53"/>
+<text x="1441.3999999999999" y="670.0" text-anchor="middle" class="number">17</text>
+<text x="1441.3999999999999" y="703.0" font-size="12" text-anchor="middle" class="room-label">Vorräte</text>
+<rect x="1168.3999999999999" y="851.1999999999999" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
+<circle cx="1223.0" cy="944.8" r="17" fill="#435e53"/>
+<text x="1223.0" y="950.8" text-anchor="middle" class="number">18</text>
+<text x="1223.0" y="983.8" font-size="12" text-anchor="middle" class="room-label">Backstube</text>
+<rect x="1277.6" y="851.1999999999999" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
+<circle cx="1332.2" cy="944.8" r="17" fill="#435e53"/>
+<text x="1332.2" y="950.8" text-anchor="middle" class="number">19</text>
+<text x="1332.2" y="983.8" font-size="12" text-anchor="middle" class="room-label">Personalraum</text>
+<rect x="1386.8" y="851.1999999999999" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
+<circle cx="1441.3999999999999" cy="944.8" r="17" fill="#435e53"/>
+<text x="1441.3999999999999" y="950.8" text-anchor="middle" class="number">20</text>
+<text x="1441.3999999999999" y="983.8" font-size="12" text-anchor="middle" class="room-label">Lager</text>
+<rect x="92.0" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="159.07999999999998" cy="1252.9" r="17" fill="#435e53"/>
+<text x="159.07999999999998" y="1258.9" text-anchor="middle" class="number">21</text>
+<text x="159.07999999999998" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Wachstube</text>
+<text x="159.07999999999998" y="1309.06" font-size="12" text-anchor="middle" class="room-label">West</text>
+<rect x="226.16" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="293.24" cy="1252.9" r="17" fill="#435e53"/>
+<text x="293.24" y="1258.9" text-anchor="middle" class="number">22</text>
+<text x="293.24" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Waffenkammer</text>
+<rect x="360.32" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="427.4" cy="1252.9" r="17" fill="#435e53"/>
+<text x="427.4" y="1258.9" text-anchor="middle" class="number">23</text>
+<text x="427.4" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer A</text>
+<rect x="494.48" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="561.56" cy="1252.9" r="17" fill="#435e53"/>
+<text x="561.56" y="1258.9" text-anchor="middle" class="number">24</text>
+<text x="561.56" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer B</text>
+<rect x="628.64" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="695.7199999999999" cy="1252.9" r="17" fill="#435e53"/>
+<text x="695.7199999999999" y="1258.9" text-anchor="middle" class="number">25</text>
+<text x="695.7199999999999" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästesalon</text>
+<text x="695.7199999999999" y="1309.06" font-size="12" text-anchor="middle" class="room-label">West</text>
+<rect x="825.1999999999999" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="892.28" cy="1252.9" r="17" fill="#435e53"/>
+<text x="892.28" y="1258.9" text-anchor="middle" class="number">26</text>
+<text x="892.28" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästesalon</text>
+<text x="892.28" y="1309.06" font-size="12" text-anchor="middle" class="room-label">Ost</text>
+<rect x="959.36" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="1026.44" cy="1252.9" r="17" fill="#435e53"/>
+<text x="1026.44" y="1258.9" text-anchor="middle" class="number">27</text>
+<text x="1026.44" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer C</text>
+<rect x="1093.52" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="1160.6" cy="1252.9" r="17" fill="#435e53"/>
+<text x="1160.6" y="1258.9" text-anchor="middle" class="number">28</text>
+<text x="1160.6" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer D</text>
+<rect x="1227.6799999999998" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="1294.76" cy="1252.9" r="17" fill="#435e53"/>
+<text x="1294.76" y="1258.9" text-anchor="middle" class="number">29</text>
+<text x="1294.76" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Garderobe</text>
+<rect x="1361.8400000000001" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
+<circle cx="1428.92" cy="1252.9" r="17" fill="#435e53"/>
+<text x="1428.92" y="1258.9" text-anchor="middle" class="number">30</text>
+<text x="1428.92" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Wachstube Ost</text>
+<line x1="143.48" y1="508.0" x2="174.68" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="143.48" y1="508.0" x2="174.68" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="277.64" y1="508.0" x2="308.84000000000003" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="277.64" y1="508.0" x2="308.84000000000003" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="411.8" y1="508.0" x2="443.0" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="411.8" y1="508.0" x2="443.0" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="545.96" y1="508.0" x2="577.1600000000001" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="545.96" y1="508.0" x2="577.1600000000001" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="680.12" y1="508.0" x2="711.32" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="680.12" y1="508.0" x2="711.32" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="876.68" y1="508.0" x2="907.8799999999999" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="876.68" y1="508.0" x2="907.8799999999999" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1010.8399999999999" y1="508.0" x2="1042.04" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1010.8399999999999" y1="508.0" x2="1042.04" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1145.0" y1="508.0" x2="1176.2" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1145.0" y1="508.0" x2="1176.2" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1279.1599999999999" y1="508.0" x2="1310.36" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1279.1599999999999" y1="508.0" x2="1310.36" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1413.32" y1="508.0" x2="1444.52" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1413.32" y1="508.0" x2="1444.52" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="226.16" y1="355.9" x2="226.16" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="226.16" y1="355.9" x2="226.16" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="360.32" y1="355.9" x2="360.32" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="360.32" y1="355.9" x2="360.32" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="494.48" y1="355.9" x2="494.48" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="494.48" y1="355.9" x2="494.48" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="628.64" y1="355.9" x2="628.64" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="628.64" y1="355.9" x2="628.64" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="959.36" y1="355.9" x2="959.36" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="959.36" y1="355.9" x2="959.36" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1093.52" y1="355.9" x2="1093.52" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1093.52" y1="355.9" x2="1093.52" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1227.6799999999998" y1="355.9" x2="1227.6799999999998" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1227.6799999999998" y1="355.9" x2="1227.6799999999998" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1361.8400000000001" y1="355.9" x2="1361.8400000000001" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1361.8400000000001" y1="355.9" x2="1361.8400000000001" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="143.48" y1="1132.0" x2="174.68" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="143.48" y1="1132.0" x2="174.68" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="277.64" y1="1132.0" x2="308.84000000000003" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="277.64" y1="1132.0" x2="308.84000000000003" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="411.8" y1="1132.0" x2="443.0" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="411.8" y1="1132.0" x2="443.0" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="545.96" y1="1132.0" x2="577.1600000000001" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="545.96" y1="1132.0" x2="577.1600000000001" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="680.12" y1="1132.0" x2="711.32" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="680.12" y1="1132.0" x2="711.32" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="876.68" y1="1132.0" x2="907.8799999999999" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="876.68" y1="1132.0" x2="907.8799999999999" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1010.8399999999999" y1="1132.0" x2="1042.04" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1010.8399999999999" y1="1132.0" x2="1042.04" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1145.0" y1="1132.0" x2="1176.2" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1145.0" y1="1132.0" x2="1176.2" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1279.1599999999999" y1="1132.0" x2="1310.36" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1279.1599999999999" y1="1132.0" x2="1310.36" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1413.32" y1="1132.0" x2="1444.52" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1413.32" y1="1132.0" x2="1444.52" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="226.16" y1="1252.9" x2="226.16" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="226.16" y1="1252.9" x2="226.16" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="360.32" y1="1252.9" x2="360.32" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="360.32" y1="1252.9" x2="360.32" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="494.48" y1="1252.9" x2="494.48" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="494.48" y1="1252.9" x2="494.48" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="628.64" y1="1252.9" x2="628.64" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="628.64" y1="1252.9" x2="628.64" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="959.36" y1="1252.9" x2="959.36" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="959.36" y1="1252.9" x2="959.36" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1093.52" y1="1252.9" x2="1093.52" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1093.52" y1="1252.9" x2="1093.52" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1227.6799999999998" y1="1252.9" x2="1227.6799999999998" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1227.6799999999998" y1="1252.9" x2="1227.6799999999998" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1361.8400000000001" y1="1252.9" x2="1361.8400000000001" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1361.8400000000001" y1="1252.9" x2="1361.8400000000001" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="162.2" y1="570.4" x2="209.0" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="162.2" y1="570.4" x2="209.0" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="419.59999999999997" y1="656.2" x2="419.59999999999997" y2="703.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="419.59999999999997" y1="656.2" x2="419.59999999999997" y2="703.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="131.0" y1="1069.6" x2="162.2" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="131.0" y1="1069.6" x2="162.2" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="240.2" y1="1069.6" x2="271.4" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="240.2" y1="1069.6" x2="271.4" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="349.4" y1="1069.6" x2="380.59999999999997" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="349.4" y1="1069.6" x2="380.59999999999997" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="201.2" y1="944.8" x2="201.2" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="201.2" y1="944.8" x2="201.2" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="310.4" y1="944.8" x2="310.4" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="310.4" y1="944.8" x2="310.4" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="419.59999999999997" y1="944.8" x2="419.59999999999997" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="419.59999999999997" y1="944.8" x2="419.59999999999997" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1207.3999999999999" y1="570.4" x2="1238.6" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1207.3999999999999" y1="570.4" x2="1238.6" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1316.6" y1="570.4" x2="1347.8" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1316.6" y1="570.4" x2="1347.8" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1425.8" y1="570.4" x2="1457.0" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1425.8" y1="570.4" x2="1457.0" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1207.3999999999999" y1="1069.6" x2="1238.6" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1207.3999999999999" y1="1069.6" x2="1238.6" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1316.6" y1="1069.6" x2="1347.8" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1316.6" y1="1069.6" x2="1347.8" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1425.8" y1="1069.6" x2="1457.0" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1425.8" y1="1069.6" x2="1457.0" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1277.6" y1="664.0" x2="1277.6" y2="695.2" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1277.6" y1="664.0" x2="1277.6" y2="695.2" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1386.8" y1="664.0" x2="1386.8" y2="695.2" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1386.8" y1="664.0" x2="1386.8" y2="695.2" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1277.6" y1="944.8" x2="1277.6" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1277.6" y1="944.8" x2="1277.6" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1386.8" y1="944.8" x2="1386.8" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1386.8" y1="944.8" x2="1386.8" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1168.3999999999999" y1="664.0" x2="1168.3999999999999" y2="695.2" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1168.3999999999999" y1="664.0" x2="1168.3999999999999" y2="695.2" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1168.3999999999999" y1="944.8" x2="1168.3999999999999" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1168.3999999999999" y1="944.8" x2="1168.3999999999999" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="762.8" y1="570.4" x2="825.1999999999999" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="762.8" y1="570.4" x2="825.1999999999999" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="762.8" y1="1069.6" x2="825.1999999999999" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="762.8" y1="1069.6" x2="825.1999999999999" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="482.0" y1="788.8" x2="482.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="482.0" y1="788.8" x2="482.0" y2="851.1999999999999" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="1106.0" y1="788.8" x2="1106.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="7"/>
+<line x1="1106.0" y1="788.8" x2="1106.0" y2="851.1999999999999" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
+<line x1="762.8" y1="235.0" x2="825.1999999999999" y2="235.0" stroke="#f7ebcf" stroke-width="8"/>
+<line x1="762.8" y1="1405.0" x2="825.1999999999999" y2="1405.0" stroke="#f7ebcf" stroke-width="8"/>
+<line x1="92.0" y1="788.8" x2="92.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="8"/>
+<line x1="1496.0" y1="788.8" x2="1496.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="8"/>
+<line x1="450.8" y1="539.2" x2="1137.2" y2="539.2" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
+<line x1="1137.2" y1="539.2" x2="1137.2" y2="1100.8" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
+<line x1="1137.2" y1="1100.8" x2="450.8" y2="1100.8" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
+<line x1="450.8" y1="1100.8" x2="450.8" y2="539.2" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
+<text x="794.0" y="734.2" font-size="22" text-anchor="middle" font-weight="700">INNENGARTEN</text>
+<text x="794.0" y="765.4" font-size="15" text-anchor="middle" >Grünfläche 72 × 56 m</text>
+<text x="794.0" y="944.8" font-size="14" text-anchor="middle" >Gartenwege als Abkürzung</text>
+<text x="794.0" y="538.42" font-size="13" text-anchor="middle" >NORDGALERIE · 8 m breit</text>
+<text x="794.0" y="1113.28" font-size="13" text-anchor="middle" >SÜDGALERIE · 8 m breit</text>
+<text x="255.79999999999998" y="827.8" font-size="12" text-anchor="middle" >WESTZUGANG</text>
+<text x="1332.2" y="827.8" font-size="12" text-anchor="middle" >OSTZUGANG</text>
+<g transform="translate(794.0,211.6) rotate(0)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<text x="794.0" y="192.1" font-size="15" text-anchor="middle" font-weight="700">NORDTOR</text>
+<g transform="translate(794.0,1428.3999999999999) rotate(180)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<text x="794.0" y="1467.3999999999999" font-size="15" text-anchor="middle" font-weight="700">HAUPTEINGANG</text>
+<g transform="translate(68.6,820.0) rotate(270)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<g transform="translate(1519.3999999999999,820.0) rotate(90)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<line x1="92.0" y1="172.6" x2="1496.0" y2="172.6" stroke="#84938b" stroke-width="1"/>
+<text x="794.0" y="161.68" font-size="18" text-anchor="middle" >180 m</text>
+<line x1="92.0" y1="160.9" x2="92.0" y2="184.3" stroke="#84938b" stroke-width="1"/>
+<line x1="1496.0" y1="160.9" x2="1496.0" y2="184.3" stroke="#84938b" stroke-width="1"/>
+<text x="37.4" y="820.0" font-size="18" text-anchor="middle" transform="rotate(-90 37.4 820.0)">150 m</text>
+<text x="1555" y="253" font-size="22" font-weight="700">RAUMVERZEICHNIS</text>
+<rect x="1555" y="266" width="300" height="27" rx="4" fill="#dbe4ed"/><text x="1564" y="285" font-size="13" font-weight="700">NORD · WISSEN &amp; HERRSCHAFT</text>
+<text x="1563" y="318" class="legend">01  Bibliothek</text>
+<text x="1563" y="342" class="legend">02  Archiv</text>
+<text x="1563" y="366" class="legend">03  Schreibstube</text>
+<text x="1563" y="390" class="legend">04  Kartenraum</text>
+<text x="1563" y="414" class="legend">05  Ratssaal</text>
+<text x="1563" y="438" class="legend">06  Thronsaal</text>
+<text x="1563" y="462" class="legend">07  Audienzsaal</text>
+<text x="1563" y="486" class="legend">08  Kapelle</text>
+<text x="1563" y="510" class="legend">09  Sakristei</text>
+<text x="1563" y="534" class="legend">10  Schatzkammer</text>
+<rect x="1555" y="553" width="300" height="27" rx="4" fill="#e8d8bd"/><text x="1564" y="572" font-size="13" font-weight="700">WEST · FESTFLÜGEL</text>
+<text x="1563" y="605" class="legend">11  Großer Ballsaal</text>
+<text x="1563" y="629" class="legend">12  Musiksalon</text>
+<text x="1563" y="653" class="legend">13  Empfangssalon</text>
+<text x="1563" y="677" class="legend">14  Galerie</text>
+<rect x="1555" y="696" width="300" height="27" rx="4" fill="#e9ded1"/><text x="1564" y="715" font-size="13" font-weight="700">OST · VERSORGUNG</text>
+<text x="1563" y="748" class="legend">15  Speisesaal</text>
+<text x="1563" y="772" class="legend">16  Küche</text>
+<text x="1563" y="796" class="legend">17  Vorräte</text>
+<text x="1563" y="820" class="legend">18  Backstube</text>
+<text x="1563" y="844" class="legend">19  Personalraum</text>
+<text x="1563" y="868" class="legend">20  Lager</text>
+<rect x="1555" y="887" width="300" height="27" rx="4" fill="#dedee9"/><text x="1564" y="906" font-size="13" font-weight="700">SÜD · GÄSTE &amp; ANKUNFT</text>
+<text x="1563" y="939" class="legend">21  Wachstube West</text>
+<text x="1563" y="963" class="legend">22  Waffenkammer</text>
+<text x="1563" y="987" class="legend">23  Gästezimmer A</text>
+<text x="1563" y="1011" class="legend">24  Gästezimmer B</text>
+<text x="1563" y="1035" class="legend">25  Gästesalon West</text>
+<text x="1563" y="1059" class="legend">26  Gästesalon Ost</text>
+<text x="1563" y="1083" class="legend">27  Gästezimmer C</text>
+<text x="1563" y="1107" class="legend">28  Gästezimmer D</text>
+<text x="1563" y="1131" class="legend">29  Garderobe</text>
+<text x="1563" y="1155" class="legend">30  Wachstube Ost</text>
+<text x="1555" y="1211" font-size="17" font-weight="700">WEGE & MASSSTAB</text>
+<text x="1555" y="1242" class="legend">Ringgang: ca. 320 m pro Runde</text>
+<text x="1555" y="1267" class="legend">Gänge und Außentore: 8 m breit</text>
+<text x="1555" y="1292" class="legend">Raumtüren: meist 4 m breit</text>
+<text x="1555" y="1317" class="legend">Ballsaal: 42 × 28 m</text>
+<text x="1555" y="1342" class="legend">Grundfläche: 27.000 m²</text>
+<rect x="1555" y="1378" width="20" height="15" fill="#f7ebcf" stroke="#7d8e7b"/><text x="1585" y="1391" class="legend">Begehbare Gänge</text>
+<rect x="1555" y="1407" width="20" height="15" fill="#a3c48e" stroke="#7d8e7b"/><text x="1585" y="1420" class="legend">Garten / Grünfläche</text>
+<rect x="1555" y="1436" width="20" height="15" fill="#435e53" stroke="#7d8e7b"/><text x="1585" y="1449" class="legend">Wände; Lücken sind Türen</text>
+<path d="M92,1491 V1503 M92,1497 H248.0 M248.0,1491 V1503" stroke="#435e53" stroke-width="3"/><text x="170.0" y="1524" text-anchor="middle" font-size="15">20 Meter</text>
+<text x="400" y="1500" font-size="15" class="muted">Schematische Planungsbasis · Räume ohne Möbel · keine fertige Spielgeometrie</text>
+</svg>

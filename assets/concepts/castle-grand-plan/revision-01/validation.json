@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "rooms": 30,
+  "doors": 60,
+  "outerExits": 4,
+  "footprint": [
+    180,
+    150
+  ],
+  "footprintM2": 27000,
+  "courtyard": [
+    80,
+    64
+  ],
+  "lawn": [
+    72,
+    56
+  ],
+  "ringWalkMetres": 320,
+  "checks": [
+    "All rectangles tile the footprint without overlap.",
+    "All 60 door openings lie on matching shared boundaries.",
+    "All 8 corridor contacts are 8 metres wide.",
+    "All 30 rooms are reachable from every gate.",
+    "Each room has at least 2 connections."
+  ],
+  "floorplanSha256": "d357f1184fb760e8a813bc81c10ee0d82404017563a20929d1464657d764e836",
+  "boundary": "Concept connectivity only, not collision or navigation validation in a game engine."
+}

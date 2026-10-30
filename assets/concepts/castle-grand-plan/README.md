@@ -1,46 +1,55 @@
-# Großes Gartenschloss · Grundrissentwurf 01
+# Großes Gartenschloss · Grundrissentwurf 02
 
-Dies ist der schematische Entwurf vor der detaillierten Schloss-Bildvorlage.
-Die maßgebliche Zeichnung ist **floorplan.svg**, die zugehörige Ansicht
-**floorplan.png**. **floorplan.json** speichert Räume, Gänge, Türen und Zugänge
-in Metern. Die Dateien sind eine neue Planungsbasis; die bisherige
-Schlossvorlage und die Spielkarte werden nicht ersetzt.
+Überarbeitete schematische Planungsbasis mit breiteren Räumen und asymmetrischer
+Anlage. Maßgeblich sind **floorplan.svg** und **floorplan.json**; **floorplan.png**
+ist die aus der SVG gerenderte Ansicht. Die Spielkarte wird dadurch nicht verändert.
 
-## Größe und Aufbau
+## Änderungen gegenüber Entwurf 01
 
-- Eine offene, begehbare Etage, später ohne Dach und Decken für die Spielkamera.
-- Gebäude 180 × 150 m, 27.000 m², etwa siebenfache Grundfläche des früheren 70 × 55 m-Entwurfs.
-- Genau 30 Räume; Garten und Gänge zählen nicht als Räume.
-- Gartenhof 80 × 64 m, darin eine 72 × 56 m große Grünfläche mit kreuzenden Wegen.
-- Umlaufender 8 m breiter Gang, ungefähr 320 m pro Runde.
-- Vier 8 m breite Außenportale: Norden, Süden, Westen und Osten.
-- Raumtüren meist 4 m, zwei große Ballsaalöffnungen 6 m breit.
+- Weiterhin 30 Räume und vier Außenportale, eine offene Etage für die spätere Spielkamera.
+- Die kürzere Raumseite beträgt jetzt mindestens 24 m statt bisher teils 14 m.
+  Ihr Durchschnitt steigt von 16,6 auf 30,7 m. Die Räume sind deutlich kompakter:
+  das größte Seitenverhältnis sinkt von 2,03 auf 1,67.
+- Unterschiedliche Raumgrößen, zusammenhängende Zimmergruppen und gestaffelte
+  Außenwände ersetzen die langen Reihen gleich großer schmaler Räume.
+- Der Nordflügel hat einen eigenen Bibliotheksgang und einen großen Thronsaal.
+  Westlich liegt der Ballsaal; im Osten springt der Versorgungstrakt vor.
+  Der Südflügel bekommt einen zusätzlichen Gästegang und eine breite Vorhalle.
+- Gartenhof und Eingänge sind versetzt. Die Gartenwege verlaufen geschwungen;
+  Pflanzgruppen und Brunnen sind ungleich verteilt.
 
-Nordflügel: Bibliothek, Archiv, Schreibstube, Kartenraum, Ratssaal, Thronsaal,
-Audienzsaal, Kapelle, Sakristei und Schatzkammer.
-Westflügel: 42 × 28 m großer Ballsaal, Musiksalon, Empfangssalon und Galerie.
-Ostflügel: Speisesaal, Küche, Vorräte, Backstube, Personalraum und Lager.
-Südflügel: zwei Wachstuben, Waffenkammer, vier Gästezimmer, zwei Gästesalons
-und Garderobe. Die südliche Vorhalle ist Teil der Verkehrsflächen.
+## Maße und Wege
 
-Alle Räume haben mindestens zwei Verbindungen. Direktzugänge an den Galerien,
-Verbindungstüren zwischen benachbarten Räumen und vier Gartenzugänge ermöglichen
-alternative Wege. Prüfung und Maße stehen in validation.json; das ist eine
-Grundrissprüfung, noch keine Prüfung echter Spielfiguren und Kollisionen.
+- Maximale Ausdehnung einschließlich Ostflügel: **270 × 220 m**.
+  Das ist das umschließende Rechteck, nicht die tatsächliche Grundfläche.
+- Die gestaffelte Anlage einschließlich Hof umfasst **50.872 m²**.
+- Gartenhof: **88 × 72 m**. Die 80 × 64 m große innere Pflanzzone wird von Wegen
+  durchquert; sie ist keine reine Netto-Rasenfläche.
+- Ballsaal: **54 × 40 m**. Thronsaal: **48 × 58 m**.
+- Gänge meist 8 m, Vorhalle und Haupteingang 12 m breit.
+- Rundweg um den Garten: etwa 352 m auf der Gangmittellinie.
+- 73 Türöffnungen zwischen Räumen, Gängen und Garten sowie vier Außenportale.
+  Alle Räume haben mindestens zwei Verbindungen; von jedem Tor sind alle Räume erreichbar.
 
-## Weiterbearbeitung
+Die durchgeführten Geometrie- und Wegeprüfungen stehen in validation.json.
+Das ist eine Grundrissprüfung, noch keine Prüfung von Spielfiguren,
+Möblierung, Kollisionen oder Sichtlinien in der Engine.
 
-Die SVG lässt sich in einem Vektorprogramm bearbeiten. SVG-Änderungen verändern
-die JSON-Daten nicht automatisch. generate-plan.py erzeugt den ursprünglichen
-Grundentwurf und seine SVG erneut; manuell geänderte Dateien dabei separat
-halten. Die PNG-Ansicht wird aus der SVG gerendert.
+## Bearbeiten und weiterverwenden
 
-schematic-concept.png ist eine zusätzliche mit ImageGen gestaltete Ansicht,
-keine maßverbindliche Zeichnung. Für die Anzahl und Lage der Tür- und
-Außenöffnungen sowie den Maßstab gelten immer SVG und JSON. Die Bildfassung
-interpretiert einzelne äußere Galeriegrenzen und Maßlinien dekorativ.
+- **floorplan.svg:** editierbar in Inkscape, Illustrator oder einem anderen Vektorprogramm.
+- **floorplan.json:** Raumrechtecke, Außenpolygon, Gänge, Türpositionen, Gartenwege
+  und Maße in Metern. Schema-Version 2 ist Planungsdatenformat, kein Runtime-Import.
+- **generate-plan.py:** erzeugt den zweiten Grundentwurf, die SVG und die Prüfzusammenfassung.
+- **render-preview.py:** rendert die SVG mit Playwright und Chromium als PNG.
 
-Erst nach der Grundrissabstimmung folgt das detaillierte Fantasy-Referenzbild.
-Für die tatsächliche 3D-Umsetzung empfehlen sich getrennte Flügel, Raumsegmente,
-Mauern und Möbel. Die Größe und 30 Innenräume lassen sich so zuverlässiger
-aufbauen und prüfen als mit einem einzigen automatisch erzeugten Komplettmodell.
+SVG und JSON synchronisieren sich nicht automatisch. Vor dem erneuten Generieren
+manuell bearbeitete Dateien separat sichern.
+
+Der erste Entwurf ist vollständig in **revision-01/** erhalten, einschließlich
+der damaligen dekorativen ImageGen-Ansicht. Diese gehört ausschließlich zu Entwurf 01.
+Entwurf 02 ist eine maßbasierte Vektorzeichnung ohne neue ImageGen- oder Tripo-Generierung.
+
+Das detaillierte Fantasy-Referenzbild folgt nach der Grundrissabstimmung.
+Für das spätere große 3D-Gebäude sind getrennte Flügel, Raumsegmente, Mauern
+und Einrichtung vorgesehen.

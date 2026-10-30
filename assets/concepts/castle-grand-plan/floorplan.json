@@ -1,5 +1,6 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "revision": 2,
   "name": "Nebeljagd · Großes Gartenschloss",
   "status": "schematic concept, not runtime map data",
   "units": "metres",
@@ -8,9 +9,125 @@
     "z"
   ],
   "footprint": [
-    180,
-    150
+    270,
+    220
   ],
+  "footprintMeaning": "bounding extents, not a filled rectangle",
+  "footprintPolygon": [
+    [
+      0,
+      0
+    ],
+    [
+      48,
+      0
+    ],
+    [
+      48,
+      18
+    ],
+    [
+      76,
+      18
+    ],
+    [
+      76,
+      22
+    ],
+    [
+      108,
+      22
+    ],
+    [
+      108,
+      0
+    ],
+    [
+      200,
+      0
+    ],
+    [
+      200,
+      4
+    ],
+    [
+      240,
+      4
+    ],
+    [
+      240,
+      66
+    ],
+    [
+      270,
+      66
+    ],
+    [
+      270,
+      108
+    ],
+    [
+      240,
+      108
+    ],
+    [
+      240,
+      184
+    ],
+    [
+      218,
+      184
+    ],
+    [
+      218,
+      218
+    ],
+    [
+      178,
+      218
+    ],
+    [
+      178,
+      210
+    ],
+    [
+      140,
+      210
+    ],
+    [
+      140,
+      220
+    ],
+    [
+      92,
+      220
+    ],
+    [
+      92,
+      210
+    ],
+    [
+      68,
+      210
+    ],
+    [
+      68,
+      212
+    ],
+    [
+      36,
+      212
+    ],
+    [
+      36,
+      218
+    ],
+    [
+      0,
+      218
+    ]
+  ],
+  "footprintAreaM2": 50872,
   "floorCount": 1,
   "roof": "open for later top-down game rendering",
   "rooms": [
@@ -19,10 +136,10 @@
       "number": 1,
       "name": "Bibliothek",
       "rect": [
-        0.0,
         0,
-        17.2,
-        35
+        0,
+        40,
+        26
       ],
       "wing": "north"
     },
@@ -31,10 +148,10 @@
       "number": 2,
       "name": "Archiv",
       "rect": [
-        17.2,
         0,
-        17.2,
-        35
+        34,
+        40,
+        24
       ],
       "wing": "north"
     },
@@ -43,58 +160,58 @@
       "number": 3,
       "name": "Schreibstube",
       "rect": [
-        34.4,
-        0,
-        17.2,
-        35
+        48,
+        18,
+        28,
+        40
       ],
       "wing": "north"
     },
     {
       "id": "R04",
       "number": 4,
-      "name": "Kartenraum",
+      "name": "Ratssaal",
       "rect": [
-        51.6,
-        0,
-        17.2,
-        35
+        76,
+        22,
+        32,
+        36
       ],
       "wing": "north"
     },
     {
       "id": "R05",
       "number": 5,
-      "name": "Ratssaal",
+      "name": "Thronsaal",
       "rect": [
-        68.8,
+        116,
         0,
-        17.2,
-        35
+        48,
+        58
       ],
       "wing": "north"
     },
     {
       "id": "R06",
       "number": 6,
-      "name": "Thronsaal",
+      "name": "Audienzsaal",
       "rect": [
-        94.0,
-        0,
-        17.2,
-        35
+        164,
+        24,
+        36,
+        34
       ],
       "wing": "north"
     },
     {
       "id": "R07",
       "number": 7,
-      "name": "Audienzsaal",
+      "name": "Schatzkammer",
       "rect": [
-        111.2,
+        164,
         0,
-        17.2,
-        35
+        36,
+        24
       ],
       "wing": "north"
     },
@@ -103,10 +220,10 @@
       "number": 8,
       "name": "Kapelle",
       "rect": [
-        128.4,
-        0,
-        17.2,
-        35
+        200,
+        4,
+        40,
+        28
       ],
       "wing": "north"
     },
@@ -115,250 +232,250 @@
       "number": 9,
       "name": "Sakristei",
       "rect": [
-        145.6,
-        0,
-        17.2,
-        35
+        200,
+        32,
+        40,
+        26
       ],
       "wing": "north"
     },
     {
       "id": "R10",
       "number": 10,
-      "name": "Schatzkammer",
+      "name": "Großer Ballsaal",
       "rect": [
-        162.8,
         0,
-        17.2,
-        35
+        66,
+        54,
+        40
       ],
-      "wing": "north"
+      "wing": "west"
     },
     {
       "id": "R11",
       "number": 11,
-      "name": "Großer Ballsaal",
+      "name": "Musiksalon",
       "rect": [
         0,
-        43,
-        42,
-        28
+        114,
+        26,
+        24
       ],
       "wing": "west"
     },
     {
       "id": "R12",
       "number": 12,
-      "name": "Musiksalon",
+      "name": "Galerie",
       "rect": [
-        0,
-        79,
-        14,
-        28
+        26,
+        114,
+        28,
+        24
       ],
       "wing": "west"
     },
     {
       "id": "R13",
       "number": 13,
-      "name": "Empfangssalon",
+      "name": "Speisesaal",
       "rect": [
-        14,
-        79,
-        14,
-        28
+        158,
+        66,
+        40,
+        34
       ],
-      "wing": "west"
+      "wing": "east"
     },
     {
       "id": "R14",
       "number": 14,
-      "name": "Galerie",
+      "name": "Küche",
       "rect": [
-        28,
-        79,
-        14,
-        28
+        158,
+        100,
+        40,
+        38
       ],
-      "wing": "west"
+      "wing": "east"
     },
     {
       "id": "R15",
       "number": 15,
-      "name": "Speisesaal",
+      "name": "Vorräte",
       "rect": [
-        138,
-        43,
-        14,
-        28
+        206,
+        66,
+        34,
+        34
       ],
       "wing": "east"
     },
     {
       "id": "R16",
       "number": 16,
-      "name": "Küche",
+      "name": "Backstube",
       "rect": [
-        152,
-        43,
-        14,
-        28
+        206,
+        108,
+        34,
+        30
       ],
       "wing": "east"
     },
     {
       "id": "R17",
       "number": 17,
-      "name": "Vorräte",
+      "name": "Vorratslager",
       "rect": [
-        166,
-        43,
-        14,
-        28
+        240,
+        66,
+        30,
+        34
       ],
       "wing": "east"
     },
     {
       "id": "R18",
       "number": 18,
-      "name": "Backstube",
+      "name": "Wintergarten",
       "rect": [
-        138,
-        79,
-        14,
-        28
+        0,
+        146,
+        32,
+        30
       ],
-      "wing": "east"
+      "wing": "south"
     },
     {
       "id": "R19",
       "number": 19,
-      "name": "Personalraum",
+      "name": "Empfangssalon",
       "rect": [
-        152,
-        79,
-        14,
-        28
+        32,
+        146,
+        30,
+        30
       ],
-      "wing": "east"
+      "wing": "south"
     },
     {
       "id": "R20",
       "number": 20,
-      "name": "Lager",
+      "name": "Gästesalon",
       "rect": [
-        166,
-        79,
-        14,
-        28
+        62,
+        146,
+        30,
+        30
       ],
-      "wing": "east"
+      "wing": "south"
     },
     {
       "id": "R21",
       "number": 21,
-      "name": "Wachstube West",
+      "name": "Gästezimmer A",
       "rect": [
-        0.0,
-        115,
-        17.2,
-        35
+        104,
+        146,
+        40,
+        30
       ],
       "wing": "south"
     },
     {
       "id": "R22",
       "number": 22,
-      "name": "Waffenkammer",
+      "name": "Gästezimmer B",
       "rect": [
-        17.2,
-        115,
-        17.2,
-        35
+        144,
+        146,
+        30,
+        30
       ],
       "wing": "south"
     },
     {
       "id": "R23",
       "number": 23,
-      "name": "Gästezimmer A",
+      "name": "Waffenkammer",
       "rect": [
-        34.4,
-        115,
-        17.2,
-        35
+        174,
+        146,
+        32,
+        30
       ],
       "wing": "south"
     },
     {
       "id": "R24",
       "number": 24,
-      "name": "Gästezimmer B",
+      "name": "Personalraum",
       "rect": [
-        51.6,
-        115,
-        17.2,
-        35
+        206,
+        138,
+        34,
+        38
       ],
       "wing": "south"
     },
     {
       "id": "R25",
       "number": 25,
-      "name": "Gästesalon West",
+      "name": "Wachstube West",
       "rect": [
-        68.8,
-        115,
-        17.2,
-        35
+        0,
+        184,
+        36,
+        34
       ],
       "wing": "south"
     },
     {
       "id": "R26",
       "number": 26,
-      "name": "Gästesalon Ost",
+      "name": "Übungsraum",
       "rect": [
-        94.0,
-        115,
-        17.2,
-        35
+        36,
+        184,
+        32,
+        28
       ],
       "wing": "south"
     },
     {
       "id": "R27",
       "number": 27,
-      "name": "Gästezimmer C",
+      "name": "Garderobe",
       "rect": [
-        111.2,
-        115,
-        17.2,
-        35
+        68,
+        184,
+        24,
+        26
       ],
       "wing": "south"
     },
     {
       "id": "R28",
       "number": 28,
-      "name": "Gästezimmer D",
+      "name": "Gästezimmer C",
       "rect": [
-        128.4,
-        115,
-        17.2,
-        35
+        104,
+        184,
+        36,
+        36
       ],
       "wing": "south"
     },
     {
       "id": "R29",
       "number": 29,
-      "name": "Garderobe",
+      "name": "Gästezimmer D",
       "rect": [
-        145.6,
-        115,
-        17.2,
-        35
+        140,
+        184,
+        38,
+        26
       ],
       "wing": "south"
     },
@@ -367,10 +484,10 @@
       "number": 30,
       "name": "Wachstube Ost",
       "rect": [
-        162.8,
-        115,
-        17.2,
-        35
+        178,
+        184,
+        40,
+        34
       ],
       "wing": "south"
     }
@@ -380,8 +497,8 @@
       "id": "CN",
       "rect": [
         0,
-        35,
-        180,
+        58,
+        240,
         8
       ],
       "name": "Nordgalerie"
@@ -390,74 +507,127 @@
       "id": "CS",
       "rect": [
         0,
-        107,
-        180,
+        138,
+        206,
         8
       ],
-      "name": "Südgalerie"
+      "name": "Gartengalerie"
     },
     {
       "id": "CW",
       "rect": [
-        42,
-        43,
+        54,
+        66,
         8,
-        64
+        72
       ],
       "name": "Westgang"
     },
     {
       "id": "CE",
       "rect": [
-        130,
-        43,
+        150,
+        66,
         8,
-        64
+        72
       ],
       "name": "Ostgang"
     },
     {
-      "id": "PN",
+      "id": "NW",
       "rect": [
-        86,
+        40,
         0,
         8,
-        35
+        58
       ],
-      "name": "Nordzugang"
+      "name": "Bibliotheksgang"
     },
     {
-      "id": "PS",
+      "id": "NL",
       "rect": [
-        86,
-        115,
-        8,
-        35
+        0,
+        26,
+        40,
+        8
       ],
-      "name": "Hauptzugang"
+      "name": "Lesegang"
+    },
+    {
+      "id": "PN",
+      "rect": [
+        108,
+        0,
+        8,
+        58
+      ],
+      "name": "Nordzugang"
     },
     {
       "id": "PW",
       "rect": [
         0,
-        71,
-        42,
+        106,
+        54,
         8
       ],
-      "name": "Westzugang"
+      "name": "Festzugang"
+    },
+    {
+      "id": "EC",
+      "rect": [
+        198,
+        66,
+        8,
+        72
+      ],
+      "name": "Versorgungsgang"
     },
     {
       "id": "PE",
       "rect": [
-        138,
-        71,
-        42,
+        206,
+        100,
+        64,
         8
       ],
-      "name": "Ostzugang"
+      "name": "Lieferzugang"
+    },
+    {
+      "id": "PS",
+      "rect": [
+        92,
+        146,
+        12,
+        74
+      ],
+      "name": "Große Vorhalle"
+    },
+    {
+      "id": "SW",
+      "rect": [
+        0,
+        176,
+        92,
+        8
+      ],
+      "name": "Westlicher Gästegang"
+    },
+    {
+      "id": "SE",
+      "rect": [
+        104,
+        176,
+        136,
+        8
+      ],
+      "name": "Östlicher Gästegang"
     }
   ],
-  "corridorWidth": 8,
+  "corridorWidths": [
+    8,
+    12
+  ],
   "corridorLinks": [
     [
       "CN",
@@ -468,6 +638,18 @@
       "CE"
     ],
     [
+      "CN",
+      "NW"
+    ],
+    [
+      "CN",
+      "PN"
+    ],
+    [
+      "CN",
+      "EC"
+    ],
+    [
       "CS",
       "CW"
     ],
@@ -476,8 +658,8 @@
       "CE"
     ],
     [
-      "CN",
-      "PN"
+      "CS",
+      "EC"
     ],
     [
       "CS",
@@ -488,37 +670,63 @@
       "PW"
     ],
     [
-      "CE",
+      "NW",
+      "NL"
+    ],
+    [
+      "EC",
       "PE"
+    ],
+    [
+      "PS",
+      "SW"
+    ],
+    [
+      "PS",
+      "SE"
     ]
   ],
   "courtyard": {
     "id": "G",
     "rect": [
-      50,
-      43,
-      80,
-      64
-    ]
+      62,
+      66,
+      88,
+      72
+    ],
+    "name": "Versetzter Gartenhof"
   },
   "lawn": {
     "rect": [
-      54,
-      47,
-      72,
-      56
-    ]
+      66,
+      70,
+      80,
+      64
+    ],
+    "description": "planting envelope, crossed by paths"
   },
+  "gardenPaths": [
+    {
+      "id": "west-north",
+      "width": 7,
+      "svgPath": "M62,110 C80,110 73,93 96,94 S125,94 126,66"
+    },
+    {
+      "id": "south-east",
+      "width": 7,
+      "svgPath": "M82,138 C82,117 111,122 118,104 S135,88 150,88"
+    }
+  ],
   "doors": [
     {
       "id": "D01",
       "connects": [
         "R01",
-        "CN"
+        "NL"
       ],
       "position": [
-        8.6,
-        35
+        16,
+        26
       ],
       "axis": "h",
       "width": 4
@@ -526,25 +734,25 @@
     {
       "id": "D02",
       "connects": [
-        "R02",
-        "CN"
+        "R01",
+        "NW"
       ],
       "position": [
-        25.8,
-        35
+        40,
+        14
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D03",
       "connects": [
-        "R03",
+        "R02",
         "CN"
       ],
       "position": [
-        43.0,
-        35
+        18,
+        58
       ],
       "axis": "h",
       "width": 4
@@ -552,12 +760,12 @@
     {
       "id": "D04",
       "connects": [
-        "R04",
-        "CN"
+        "R02",
+        "NL"
       ],
       "position": [
-        60.2,
-        35
+        20,
+        34
       ],
       "axis": "h",
       "width": 4
@@ -565,12 +773,12 @@
     {
       "id": "D05",
       "connects": [
-        "R05",
+        "R03",
         "CN"
       ],
       "position": [
-        77.4,
-        35
+        60,
+        58
       ],
       "axis": "h",
       "width": 4
@@ -578,25 +786,25 @@
     {
       "id": "D06",
       "connects": [
-        "R06",
-        "CN"
+        "R03",
+        "NW"
       ],
       "position": [
-        102.6,
-        35
+        48,
+        40
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D07",
       "connects": [
-        "R07",
+        "R04",
         "CN"
       ],
       "position": [
-        119.8,
-        35
+        90,
+        58
       ],
       "axis": "h",
       "width": 4
@@ -604,90 +812,90 @@
     {
       "id": "D08",
       "connects": [
-        "R08",
-        "CN"
+        "R04",
+        "PN"
       ],
       "position": [
-        137.0,
-        35
+        108,
+        40
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D09",
       "connects": [
-        "R09",
-        "CN"
+        "R03",
+        "R04"
       ],
       "position": [
-        154.2,
-        35
+        76,
+        42
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D10",
       "connects": [
-        "R10",
+        "R05",
         "CN"
       ],
       "position": [
-        171.4,
-        35
+        140,
+        58
       ],
       "axis": "h",
-      "width": 4
+      "width": 8
     },
     {
       "id": "D11",
       "connects": [
-        "R01",
-        "R02"
+        "R05",
+        "PN"
       ],
       "position": [
-        17.2,
-        17.5
+        116,
+        32
       ],
       "axis": "v",
-      "width": 4
+      "width": 6
     },
     {
       "id": "D12",
       "connects": [
-        "R02",
-        "R03"
+        "R05",
+        "R06"
       ],
       "position": [
-        34.4,
-        17.5
+        164,
+        44
       ],
       "axis": "v",
-      "width": 4
+      "width": 6
     },
     {
       "id": "D13",
       "connects": [
-        "R03",
-        "R04"
+        "R06",
+        "CN"
       ],
       "position": [
-        51.6,
-        17.5
+        182,
+        58
       ],
-      "axis": "v",
-      "width": 4
+      "axis": "h",
+      "width": 6
     },
     {
       "id": "D14",
       "connects": [
-        "R04",
+        "R07",
         "R05"
       ],
       "position": [
-        68.8,
-        17.5
+        164,
+        14
       ],
       "axis": "v",
       "width": 4
@@ -695,25 +903,25 @@
     {
       "id": "D15",
       "connects": [
-        "R06",
-        "R07"
+        "R07",
+        "R06"
       ],
       "position": [
-        111.2,
-        17.5
+        180,
+        24
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D16",
       "connects": [
-        "R07",
-        "R08"
+        "R08",
+        "R07"
       ],
       "position": [
-        128.4,
-        17.5
+        200,
+        16
       ],
       "axis": "v",
       "width": 4
@@ -722,11 +930,11 @@
       "id": "D17",
       "connects": [
         "R08",
-        "R09"
+        "R06"
       ],
       "position": [
-        145.6,
-        17.5
+        200,
+        28
       ],
       "axis": "v",
       "width": 4
@@ -734,25 +942,25 @@
     {
       "id": "D18",
       "connects": [
-        "R09",
-        "R10"
+        "R08",
+        "R09"
       ],
       "position": [
-        162.8,
-        17.5
+        222,
+        32
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D19",
       "connects": [
-        "R21",
-        "CS"
+        "R09",
+        "CN"
       ],
       "position": [
-        8.6,
-        115
+        222,
+        58
       ],
       "axis": "h",
       "width": 4
@@ -760,51 +968,51 @@
     {
       "id": "D20",
       "connects": [
-        "R22",
-        "CS"
+        "R10",
+        "CN"
       ],
       "position": [
-        25.8,
-        115
+        24,
+        66
       ],
       "axis": "h",
-      "width": 4
+      "width": 8
     },
     {
       "id": "D21",
       "connects": [
-        "R23",
-        "CS"
+        "R10",
+        "CW"
       ],
       "position": [
-        43.0,
-        115
+        54,
+        84
       ],
-      "axis": "h",
-      "width": 4
+      "axis": "v",
+      "width": 8
     },
     {
       "id": "D22",
       "connects": [
-        "R24",
-        "CS"
+        "R10",
+        "PW"
       ],
       "position": [
-        60.2,
-        115
+        22,
+        106
       ],
       "axis": "h",
-      "width": 4
+      "width": 6
     },
     {
       "id": "D23",
       "connects": [
-        "R25",
-        "CS"
+        "R11",
+        "PW"
       ],
       "position": [
-        77.4,
-        115
+        12,
+        114
       ],
       "axis": "h",
       "width": 4
@@ -812,12 +1020,12 @@
     {
       "id": "D24",
       "connects": [
-        "R26",
+        "R11",
         "CS"
       ],
       "position": [
-        102.6,
-        115
+        12,
+        138
       ],
       "axis": "h",
       "width": 4
@@ -825,25 +1033,25 @@
     {
       "id": "D25",
       "connects": [
-        "R27",
-        "CS"
+        "R12",
+        "CW"
       ],
       "position": [
-        119.8,
-        115
+        54,
+        126
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D26",
       "connects": [
-        "R28",
+        "R12",
         "CS"
       ],
       "position": [
-        137.0,
-        115
+        40,
+        138
       ],
       "axis": "h",
       "width": 4
@@ -851,51 +1059,51 @@
     {
       "id": "D27",
       "connects": [
-        "R29",
-        "CS"
+        "R11",
+        "R12"
       ],
       "position": [
-        154.2,
-        115
-      ],
-      "axis": "h",
-      "width": 4
-    },
-    {
-      "id": "D28",
-      "connects": [
-        "R30",
-        "CS"
-      ],
-      "position": [
-        171.4,
-        115
-      ],
-      "axis": "h",
-      "width": 4
-    },
-    {
-      "id": "D29",
-      "connects": [
-        "R21",
-        "R22"
-      ],
-      "position": [
-        17.2,
-        132.5
+        26,
+        124
       ],
       "axis": "v",
       "width": 4
     },
     {
-      "id": "D30",
+      "id": "D28",
       "connects": [
-        "R22",
-        "R23"
+        "R13",
+        "CN"
       ],
       "position": [
-        34.4,
-        132.5
+        178,
+        66
+      ],
+      "axis": "h",
+      "width": 6
+    },
+    {
+      "id": "D29",
+      "connects": [
+        "R13",
+        "CE"
+      ],
+      "position": [
+        158,
+        84
+      ],
+      "axis": "v",
+      "width": 6
+    },
+    {
+      "id": "D30",
+      "connects": [
+        "R13",
+        "EC"
+      ],
+      "position": [
+        198,
+        84
       ],
       "axis": "v",
       "width": 4
@@ -903,25 +1111,25 @@
     {
       "id": "D31",
       "connects": [
-        "R23",
-        "R24"
+        "R14",
+        "CE"
       ],
       "position": [
-        51.6,
-        132.5
+        158,
+        120
       ],
       "axis": "v",
-      "width": 4
+      "width": 6
     },
     {
       "id": "D32",
       "connects": [
-        "R24",
-        "R25"
+        "R14",
+        "EC"
       ],
       "position": [
-        68.8,
-        132.5
+        198,
+        122
       ],
       "axis": "v",
       "width": 4
@@ -929,25 +1137,25 @@
     {
       "id": "D33",
       "connects": [
-        "R26",
-        "R27"
+        "R13",
+        "R14"
       ],
       "position": [
-        111.2,
-        132.5
+        178,
+        100
       ],
-      "axis": "v",
-      "width": 4
+      "axis": "h",
+      "width": 6
     },
     {
       "id": "D34",
       "connects": [
-        "R27",
-        "R28"
+        "R15",
+        "EC"
       ],
       "position": [
-        128.4,
-        132.5
+        206,
+        78
       ],
       "axis": "v",
       "width": 4
@@ -955,25 +1163,25 @@
     {
       "id": "D35",
       "connects": [
-        "R28",
-        "R29"
+        "R15",
+        "PE"
       ],
       "position": [
-        145.6,
-        132.5
+        222,
+        100
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D36",
       "connects": [
-        "R29",
-        "R30"
+        "R15",
+        "R17"
       ],
       "position": [
-        162.8,
-        132.5
+        240,
+        82
       ],
       "axis": "v",
       "width": 4
@@ -981,51 +1189,51 @@
     {
       "id": "D37",
       "connects": [
-        "R11",
-        "CN"
+        "R17",
+        "PE"
       ],
       "position": [
-        12,
-        43
-      ],
-      "axis": "h",
-      "width": 6
-    },
-    {
-      "id": "D38",
-      "connects": [
-        "R11",
-        "CW"
-      ],
-      "position": [
-        42,
-        57
-      ],
-      "axis": "v",
-      "width": 6
-    },
-    {
-      "id": "D39",
-      "connects": [
-        "R12",
-        "CS"
-      ],
-      "position": [
-        7,
-        107
+        255,
+        100
       ],
       "axis": "h",
       "width": 4
     },
     {
-      "id": "D40",
+      "id": "D38",
       "connects": [
-        "R13",
-        "CS"
+        "R16",
+        "PE"
       ],
       "position": [
-        21,
-        107
+        220,
+        108
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D39",
+      "connects": [
+        "R16",
+        "EC"
+      ],
+      "position": [
+        206,
+        126
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D40",
+      "connects": [
+        "R16",
+        "R24"
+      ],
+      "position": [
+        222,
+        138
       ],
       "axis": "h",
       "width": 4
@@ -1033,12 +1241,12 @@
     {
       "id": "D41",
       "connects": [
-        "R14",
-        "CS"
+        "R24",
+        "SE"
       ],
       "position": [
-        35,
-        107
+        222,
+        176
       ],
       "axis": "h",
       "width": 4
@@ -1046,51 +1254,51 @@
     {
       "id": "D42",
       "connects": [
-        "R12",
-        "R13"
+        "R18",
+        "CS"
       ],
       "position": [
-        14,
-        93
+        16,
+        146
       ],
-      "axis": "v",
-      "width": 4
+      "axis": "h",
+      "width": 6
     },
     {
       "id": "D43",
       "connects": [
-        "R13",
-        "R14"
+        "R18",
+        "SW"
       ],
       "position": [
-        28,
-        93
+        18,
+        176
       ],
-      "axis": "v",
-      "width": 4
+      "axis": "h",
+      "width": 6
     },
     {
       "id": "D44",
       "connects": [
-        "R14",
-        "CW"
+        "R19",
+        "CS"
       ],
       "position": [
-        42,
-        93
+        46,
+        146
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D45",
       "connects": [
-        "R15",
-        "CN"
+        "R19",
+        "SW"
       ],
       "position": [
-        145,
-        43
+        46,
+        176
       ],
       "axis": "h",
       "width": 4
@@ -1098,25 +1306,25 @@
     {
       "id": "D46",
       "connects": [
-        "R16",
-        "CN"
+        "R18",
+        "R19"
       ],
       "position": [
-        159,
-        43
+        32,
+        164
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D47",
       "connects": [
-        "R17",
-        "CN"
+        "R20",
+        "CS"
       ],
       "position": [
-        173,
-        43
+        78,
+        146
       ],
       "axis": "h",
       "width": 4
@@ -1124,25 +1332,25 @@
     {
       "id": "D48",
       "connects": [
-        "R18",
-        "CS"
+        "R20",
+        "PS"
       ],
       "position": [
-        145,
-        107
+        92,
+        162
       ],
-      "axis": "h",
+      "axis": "v",
       "width": 4
     },
     {
       "id": "D49",
       "connects": [
-        "R19",
-        "CS"
+        "R20",
+        "SW"
       ],
       "position": [
-        159,
-        107
+        78,
+        176
       ],
       "axis": "h",
       "width": 4
@@ -1150,12 +1358,12 @@
     {
       "id": "D50",
       "connects": [
-        "R20",
+        "R21",
         "CS"
       ],
       "position": [
-        173,
-        107
+        124,
+        146
       ],
       "axis": "h",
       "width": 4
@@ -1163,12 +1371,12 @@
     {
       "id": "D51",
       "connects": [
-        "R15",
-        "R16"
+        "R21",
+        "PS"
       ],
       "position": [
-        152,
-        57
+        104,
+        162
       ],
       "axis": "v",
       "width": 4
@@ -1176,51 +1384,51 @@
     {
       "id": "D52",
       "connects": [
-        "R16",
-        "R17"
+        "R21",
+        "SE"
       ],
       "position": [
-        166,
-        57
+        126,
+        176
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D53",
       "connects": [
-        "R18",
-        "R19"
+        "R22",
+        "CS"
       ],
       "position": [
-        152,
-        93
+        158,
+        146
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D54",
       "connects": [
-        "R19",
-        "R20"
+        "R22",
+        "SE"
       ],
       "position": [
-        166,
-        93
+        160,
+        176
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D55",
       "connects": [
-        "R15",
-        "CE"
+        "R21",
+        "R22"
       ],
       "position": [
-        138,
-        57
+        144,
+        162
       ],
       "axis": "v",
       "width": 4
@@ -1228,64 +1436,233 @@
     {
       "id": "D56",
       "connects": [
-        "R18",
-        "CE"
+        "R23",
+        "CS"
       ],
       "position": [
-        138,
-        93
+        188,
+        146
       ],
-      "axis": "v",
+      "axis": "h",
       "width": 4
     },
     {
       "id": "D57",
       "connects": [
+        "R23",
+        "SE"
+      ],
+      "position": [
+        190,
+        176
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D58",
+      "connects": [
+        "R25",
+        "SW"
+      ],
+      "position": [
+        18,
+        184
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D59",
+      "connects": [
+        "R25",
+        "R26"
+      ],
+      "position": [
+        36,
+        200
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D60",
+      "connects": [
+        "R26",
+        "SW"
+      ],
+      "position": [
+        54,
+        184
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D61",
+      "connects": [
+        "R26",
+        "R27"
+      ],
+      "position": [
+        68,
+        198
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D62",
+      "connects": [
+        "R27",
+        "SW"
+      ],
+      "position": [
+        80,
+        184
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D63",
+      "connects": [
+        "R27",
+        "PS"
+      ],
+      "position": [
+        92,
+        198
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D64",
+      "connects": [
+        "R28",
+        "SE"
+      ],
+      "position": [
+        122,
+        184
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D65",
+      "connects": [
+        "R28",
+        "PS"
+      ],
+      "position": [
+        104,
+        202
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D66",
+      "connects": [
+        "R28",
+        "R29"
+      ],
+      "position": [
+        140,
+        198
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D67",
+      "connects": [
+        "R29",
+        "SE"
+      ],
+      "position": [
+        158,
+        184
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D68",
+      "connects": [
+        "R29",
+        "R30"
+      ],
+      "position": [
+        178,
+        198
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D69",
+      "connects": [
+        "R30",
+        "SE"
+      ],
+      "position": [
+        200,
+        184
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D70",
+      "connects": [
         "CN",
         "G"
       ],
       "position": [
-        90,
-        43
+        126,
+        66
       ],
       "axis": "h",
       "width": 8
     },
     {
-      "id": "D58",
+      "id": "D71",
       "connects": [
         "CS",
         "G"
       ],
       "position": [
-        90,
-        107
+        82,
+        138
       ],
       "axis": "h",
       "width": 8
     },
     {
-      "id": "D59",
+      "id": "D72",
       "connects": [
         "CW",
         "G"
       ],
       "position": [
-        50,
-        75
+        62,
+        110
       ],
       "axis": "v",
       "width": 8
     },
     {
-      "id": "D60",
+      "id": "D73",
       "connects": [
         "CE",
         "G"
       ],
       "position": [
-        130,
-        75
+        150,
+        88
       ],
       "axis": "v",
       "width": 8
@@ -1296,18 +1673,22 @@
       "id": "north",
       "corridor": "PN",
       "position": [
-        90,
+        112,
         0
       ],
+      "axis": "h",
+      "width": 8,
       "label": "NORDTOR"
     },
     {
       "id": "south",
       "corridor": "PS",
       "position": [
-        90,
-        150
+        98,
+        220
       ],
+      "axis": "h",
+      "width": 12,
       "label": "HAUPTEINGANG"
     },
     {
@@ -1315,25 +1696,30 @@
       "corridor": "PW",
       "position": [
         0,
-        75
+        110
       ],
-      "label": "WESTTOR"
+      "axis": "v",
+      "width": 8,
+      "label": "FESTZUGANG"
     },
     {
       "id": "east",
       "corridor": "PE",
       "position": [
-        180,
-        75
+        270,
+        104
       ],
-      "label": "OSTTOR"
+      "axis": "v",
+      "width": 8,
+      "label": "LIEFERZUGANG"
     }
   ],
-  "ringWalkLength": 320,
+  "ringWalkLength": 352,
   "notes": [
     "30 rooms exclude corridors and garden.",
-    "All rooms are accessible from public corridors.",
-    "Paired room doors provide secondary routes.",
-    "Exact structures, navigation and collision must be built later."
+    "Garden and gates intentionally offset.",
+    "Stepped exterior with projecting eastern service wing.",
+    "All rooms have at least two connections.",
+    "Structures, navigation and collision must be built later."
   ]
 }

@@ -1,55 +1,51 @@
 {
   "asset": "Nebeljagd grand palace schematic plan",
+  "revision": 2,
   "status": "planning concept only; no 3D model or runtime integration",
   "technicalSource": "floorplan.json",
   "editableDrawing": "floorplan.svg",
   "measuredPreview": "floorplan.png",
-  "rendering": "Original vector diagram generated from metre-based room, corridor and door data; PNG rendered in Chromium.",
-  "schematicImage": {
-    "generator": "OpenAI ImageGen",
-    "prompt": "schematic-prompt.txt",
-    "output": "schematic-concept.png",
-    "originalOutput": "/workspace/generated_images/exec-44dc8b1f-1743-4897-b279-0a550f8fae85.png",
-    "dimensionsPx": [
-      1416,
-      1111
-    ],
-    "reference": "initial raster preview of the same floorplan before header spacing refinement",
-    "role": "Visual interpretation only; use SVG/JSON for exact boundaries, doorway count and scale.",
-    "reviewNotes": "All 30 numbered rooms and principal four routes retained. Decorative interpretation adds ambiguous light breaks at outer gallery ends and changes dimension-line extents; these do not define additional exits or measured geometry."
-  },
+  "rendering": "Original vector diagram from metre-based room, corridor and doorway geometry; PNG rendered in Chromium.",
+  "generation": "Authored geometry and vector schematic. No new image generation, paid provider job or 3D generation.",
+  "previousRevision": "revision-01/",
+  "request": "Wider, larger rooms and a less symmetrical castle layout.",
   "tripoSubmitted": false,
   "modelGenerated": false,
   "files": [
     {
       "path": "floorplan.json",
-      "bytes": 18827,
-      "sha256": "d357f1184fb760e8a813bc81c10ee0d82404017563a20929d1464657d764e836"
+      "bytes": 23536,
+      "sha256": "eb9c84fbcb2ce5e9c4735a01e3f86d3b66d99cdf6be338a138ddca189d1a155f"
     },
     {
       "path": "floorplan.svg",
-      "bytes": 33092,
-      "sha256": "d466091071fa4f1be08a6fdce597c83ff06f9d4c5997bac84dd05cc9b4a200ad"
+      "bytes": 37879,
+      "sha256": "ac28c94ef632ae75763e61790ee0b00e5bc1ebe3e6b8eb47e8a8227ef0eb0d02"
     },
     {
       "path": "floorplan.png",
-      "bytes": 254112,
-      "sha256": "8225fcccd9406506ec90900af6043b1e7e6422e02c9c2c10d1691be215eae31a"
+      "bytes": 303404,
+      "sha256": "6aacc985a62fd9135916f1519e0d81090864a06d8a8e4388064f7a0a9dd86ecb"
     },
     {
       "path": "generate-plan.py",
-      "bytes": 10805,
-      "sha256": "22ae747d59e7d180aa16aa59d7c6f811efcf5230692b281a948652cab716714e"
+      "bytes": 19559,
+      "sha256": "9ce407ba94b1273d13c96b705b88a003d8fb3c4a78a7e222a6e0259b0defd108"
     },
     {
-      "path": "schematic-prompt.txt",
-      "bytes": 2185,
-      "sha256": "fe2b535dc6e0d198a8a744848e02e4635f6ad027c352ce9397fc8b7f35730742"
+      "path": "render-preview.py",
+      "bytes": 867,
+      "sha256": "c521d4c221ae17f5fdade00559640a90355765b1e2b7701c5d45459ee55be19a"
     },
     {
-      "path": "schematic-concept.png",
-      "bytes": 1652340,
-      "sha256": "f4aeb1d884883d2e5b7eb79d7a9d4f0282a1114360712e72c1abd9441ee626e1"
+      "path": "validation.json",
+      "bytes": 1219,
+      "sha256": "623f6e5705f9f9ea16db552388236e555c27a24225e5d75a45eb27bb7faedd3e"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3160,
+      "sha256": "d35c08dfbdb5ad24d34afb81cfba48facc99e940bbd3dbe93287e52389a8fd87"
     }
   ]
 }

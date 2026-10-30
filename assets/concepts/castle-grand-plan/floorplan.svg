@@ -1,345 +1,409 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1547" viewBox="0 0 1900 1547">
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1710" viewBox="0 0 2200 1710">
 <rect width="100%" height="100%" fill="#f5f2e9"/>
-<style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#233936}.muted{fill:#687871}.room-label{font-size:12px;font-weight:600}.number{font-size:17px;font-weight:700;fill:#fff}.dim{font-size:17px;fill:#526c63}.legend{font-size:15px}</style>
-<text x="92" y="56" font-size="17" letter-spacing="4" fill="#4d6858">NEBELJAGD · GRUNDRISSENTWURF 01</text>
-<text x="92" y="100" font-size="34" font-weight="700">Das große Gartenschloss</text>
-<text x="92" y="132" font-size="18" class="muted">30 Räume · vier Außenzugänge · lange Galerien · eine offene Etage</text>
-<rect x="92.0" y="235.0" width="1404.0" height="1170.0" fill="#f7ebcf" stroke="#31443e" stroke-width="4"/>
-<rect x="92.0" y="508.0" width="1404.0" height="62.4" fill="#f7ebcf"/>
-<rect x="92.0" y="1069.6" width="1404.0" height="62.4" fill="#f7ebcf"/>
-<rect x="419.59999999999997" y="570.4" width="62.4" height="499.2" fill="#f7ebcf"/>
-<rect x="1106.0" y="570.4" width="62.4" height="499.2" fill="#f7ebcf"/>
-<rect x="762.8" y="235.0" width="62.4" height="273.0" fill="#f7ebcf"/>
-<rect x="762.8" y="1132.0" width="62.4" height="273.0" fill="#f7ebcf"/>
-<rect x="92.0" y="788.8" width="327.59999999999997" height="62.4" fill="#f7ebcf"/>
-<rect x="1168.3999999999999" y="788.8" width="327.59999999999997" height="62.4" fill="#f7ebcf"/>
-<rect x="482.0" y="570.4" width="624.0" height="499.2" fill="#d0dfb5" stroke="#31443e" stroke-width="3"/>
-<rect x="513.2" y="601.5999999999999" width="561.6" height="436.8" fill="#a3c48e"/>
-<rect x="762.8" y="570.4" width="62.4" height="499.2" fill="#e6d6b0"/>
-<rect x="482.0" y="788.8" width="624.0" height="62.4" fill="#e6d6b0"/>
-<rect x="544.4" y="632.8" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
-<rect x="872.0" y="632.8" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
-<rect x="544.4" y="882.4" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
-<rect x="872.0" y="882.4" width="171.6" height="124.8" fill="#91b67b" stroke="#73995f" stroke-width="1"/>
-<circle cx="544.4" cy="632.8" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
-<circle cx="1043.6" cy="632.8" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
-<circle cx="544.4" cy="1007.1999999999999" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
-<circle cx="1043.6" cy="1007.1999999999999" r="22" fill="#759b69" stroke="#577d52" stroke-width="2"/>
-<circle cx="794.0" cy="820.0" r="29" fill="#a3cad0" stroke="#597a7c" stroke-width="3"/>
-<rect x="92.0" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="159.07999999999998" cy="355.9" r="17" fill="#435e53"/>
-<text x="159.07999999999998" y="361.9" text-anchor="middle" class="number">01</text>
-<text x="159.07999999999998" y="394.9" font-size="12" text-anchor="middle" class="room-label">Bibliothek</text>
-<rect x="226.16" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="293.24" cy="355.9" r="17" fill="#435e53"/>
-<text x="293.24" y="361.9" text-anchor="middle" class="number">02</text>
-<text x="293.24" y="394.9" font-size="12" text-anchor="middle" class="room-label">Archiv</text>
-<rect x="360.32" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="427.4" cy="355.9" r="17" fill="#435e53"/>
-<text x="427.4" y="361.9" text-anchor="middle" class="number">03</text>
-<text x="427.4" y="394.9" font-size="12" text-anchor="middle" class="room-label">Schreibstube</text>
-<rect x="494.48" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="561.56" cy="355.9" r="17" fill="#435e53"/>
-<text x="561.56" y="361.9" text-anchor="middle" class="number">04</text>
-<text x="561.56" y="394.9" font-size="12" text-anchor="middle" class="room-label">Kartenraum</text>
-<rect x="628.64" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="695.7199999999999" cy="355.9" r="17" fill="#435e53"/>
-<text x="695.7199999999999" y="361.9" text-anchor="middle" class="number">05</text>
-<text x="695.7199999999999" y="394.9" font-size="12" text-anchor="middle" class="room-label">Ratssaal</text>
-<rect x="825.1999999999999" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="892.28" cy="355.9" r="17" fill="#435e53"/>
-<text x="892.28" y="361.9" text-anchor="middle" class="number">06</text>
-<text x="892.28" y="394.9" font-size="12" text-anchor="middle" class="room-label">Thronsaal</text>
-<rect x="959.36" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="1026.44" cy="355.9" r="17" fill="#435e53"/>
-<text x="1026.44" y="361.9" text-anchor="middle" class="number">07</text>
-<text x="1026.44" y="394.9" font-size="12" text-anchor="middle" class="room-label">Audienzsaal</text>
-<rect x="1093.52" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="1160.6" cy="355.9" r="17" fill="#435e53"/>
-<text x="1160.6" y="361.9" text-anchor="middle" class="number">08</text>
-<text x="1160.6" y="394.9" font-size="12" text-anchor="middle" class="room-label">Kapelle</text>
-<rect x="1227.6799999999998" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="1294.76" cy="355.9" r="17" fill="#435e53"/>
-<text x="1294.76" y="361.9" text-anchor="middle" class="number">09</text>
-<text x="1294.76" y="394.9" font-size="12" text-anchor="middle" class="room-label">Sakristei</text>
-<rect x="1361.8400000000001" y="235.0" width="134.16" height="273.0" fill="#dbe4ed" stroke="#31443e" stroke-width="3"/>
-<circle cx="1428.92" cy="355.9" r="17" fill="#435e53"/>
-<text x="1428.92" y="361.9" text-anchor="middle" class="number">10</text>
-<text x="1428.92" y="394.9" font-size="12" text-anchor="middle" class="room-label">Schatzkammer</text>
-<rect x="92.0" y="570.4" width="327.59999999999997" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
-<circle cx="255.79999999999998" cy="664.0" r="17" fill="#435e53"/>
-<text x="255.79999999999998" y="670.0" text-anchor="middle" class="number">11</text>
-<text x="255.79999999999998" y="703.0" font-size="12" text-anchor="middle" class="room-label">Großer</text>
-<text x="255.79999999999998" y="720.1600000000001" font-size="12" text-anchor="middle" class="room-label">Ballsaal</text>
-<rect x="92.0" y="851.1999999999999" width="109.2" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
-<circle cx="146.6" cy="944.8" r="17" fill="#435e53"/>
-<text x="146.6" y="950.8" text-anchor="middle" class="number">12</text>
-<text x="146.6" y="983.8" font-size="12" text-anchor="middle" class="room-label">Musiksalon</text>
-<rect x="201.2" y="851.1999999999999" width="109.2" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
-<circle cx="255.79999999999998" cy="944.8" r="17" fill="#435e53"/>
-<text x="255.79999999999998" y="950.8" text-anchor="middle" class="number">13</text>
-<text x="255.79999999999998" y="983.8" font-size="12" text-anchor="middle" class="room-label">Empfangssalon</text>
-<rect x="310.4" y="851.1999999999999" width="109.2" height="218.4" fill="#e8d8bd" stroke="#31443e" stroke-width="3"/>
-<circle cx="365.0" cy="944.8" r="17" fill="#435e53"/>
-<text x="365.0" y="950.8" text-anchor="middle" class="number">14</text>
-<text x="365.0" y="983.8" font-size="12" text-anchor="middle" class="room-label">Galerie</text>
-<rect x="1168.3999999999999" y="570.4" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
-<circle cx="1223.0" cy="664.0" r="17" fill="#435e53"/>
-<text x="1223.0" y="670.0" text-anchor="middle" class="number">15</text>
-<text x="1223.0" y="703.0" font-size="12" text-anchor="middle" class="room-label">Speisesaal</text>
-<rect x="1277.6" y="570.4" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
-<circle cx="1332.2" cy="664.0" r="17" fill="#435e53"/>
-<text x="1332.2" y="670.0" text-anchor="middle" class="number">16</text>
-<text x="1332.2" y="703.0" font-size="12" text-anchor="middle" class="room-label">Küche</text>
-<rect x="1386.8" y="570.4" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
-<circle cx="1441.3999999999999" cy="664.0" r="17" fill="#435e53"/>
-<text x="1441.3999999999999" y="670.0" text-anchor="middle" class="number">17</text>
-<text x="1441.3999999999999" y="703.0" font-size="12" text-anchor="middle" class="room-label">Vorräte</text>
-<rect x="1168.3999999999999" y="851.1999999999999" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
-<circle cx="1223.0" cy="944.8" r="17" fill="#435e53"/>
-<text x="1223.0" y="950.8" text-anchor="middle" class="number">18</text>
-<text x="1223.0" y="983.8" font-size="12" text-anchor="middle" class="room-label">Backstube</text>
-<rect x="1277.6" y="851.1999999999999" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
-<circle cx="1332.2" cy="944.8" r="17" fill="#435e53"/>
-<text x="1332.2" y="950.8" text-anchor="middle" class="number">19</text>
-<text x="1332.2" y="983.8" font-size="12" text-anchor="middle" class="room-label">Personalraum</text>
-<rect x="1386.8" y="851.1999999999999" width="109.2" height="218.4" fill="#e9ded1" stroke="#31443e" stroke-width="3"/>
-<circle cx="1441.3999999999999" cy="944.8" r="17" fill="#435e53"/>
-<text x="1441.3999999999999" y="950.8" text-anchor="middle" class="number">20</text>
-<text x="1441.3999999999999" y="983.8" font-size="12" text-anchor="middle" class="room-label">Lager</text>
-<rect x="92.0" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="159.07999999999998" cy="1252.9" r="17" fill="#435e53"/>
-<text x="159.07999999999998" y="1258.9" text-anchor="middle" class="number">21</text>
-<text x="159.07999999999998" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Wachstube</text>
-<text x="159.07999999999998" y="1309.06" font-size="12" text-anchor="middle" class="room-label">West</text>
-<rect x="226.16" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="293.24" cy="1252.9" r="17" fill="#435e53"/>
-<text x="293.24" y="1258.9" text-anchor="middle" class="number">22</text>
-<text x="293.24" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Waffenkammer</text>
-<rect x="360.32" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="427.4" cy="1252.9" r="17" fill="#435e53"/>
-<text x="427.4" y="1258.9" text-anchor="middle" class="number">23</text>
-<text x="427.4" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer A</text>
-<rect x="494.48" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="561.56" cy="1252.9" r="17" fill="#435e53"/>
-<text x="561.56" y="1258.9" text-anchor="middle" class="number">24</text>
-<text x="561.56" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer B</text>
-<rect x="628.64" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="695.7199999999999" cy="1252.9" r="17" fill="#435e53"/>
-<text x="695.7199999999999" y="1258.9" text-anchor="middle" class="number">25</text>
-<text x="695.7199999999999" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästesalon</text>
-<text x="695.7199999999999" y="1309.06" font-size="12" text-anchor="middle" class="room-label">West</text>
-<rect x="825.1999999999999" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="892.28" cy="1252.9" r="17" fill="#435e53"/>
-<text x="892.28" y="1258.9" text-anchor="middle" class="number">26</text>
-<text x="892.28" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästesalon</text>
-<text x="892.28" y="1309.06" font-size="12" text-anchor="middle" class="room-label">Ost</text>
-<rect x="959.36" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="1026.44" cy="1252.9" r="17" fill="#435e53"/>
-<text x="1026.44" y="1258.9" text-anchor="middle" class="number">27</text>
-<text x="1026.44" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer C</text>
-<rect x="1093.52" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="1160.6" cy="1252.9" r="17" fill="#435e53"/>
-<text x="1160.6" y="1258.9" text-anchor="middle" class="number">28</text>
-<text x="1160.6" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Gästezimmer D</text>
-<rect x="1227.6799999999998" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="1294.76" cy="1252.9" r="17" fill="#435e53"/>
-<text x="1294.76" y="1258.9" text-anchor="middle" class="number">29</text>
-<text x="1294.76" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Garderobe</text>
-<rect x="1361.8400000000001" y="1132.0" width="134.16" height="273.0" fill="#dedee9" stroke="#31443e" stroke-width="3"/>
-<circle cx="1428.92" cy="1252.9" r="17" fill="#435e53"/>
-<text x="1428.92" y="1258.9" text-anchor="middle" class="number">30</text>
-<text x="1428.92" y="1291.8999999999999" font-size="12" text-anchor="middle" class="room-label">Wachstube Ost</text>
-<line x1="143.48" y1="508.0" x2="174.68" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="143.48" y1="508.0" x2="174.68" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="277.64" y1="508.0" x2="308.84000000000003" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="277.64" y1="508.0" x2="308.84000000000003" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="411.8" y1="508.0" x2="443.0" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="411.8" y1="508.0" x2="443.0" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="545.96" y1="508.0" x2="577.1600000000001" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="545.96" y1="508.0" x2="577.1600000000001" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="680.12" y1="508.0" x2="711.32" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="680.12" y1="508.0" x2="711.32" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="876.68" y1="508.0" x2="907.8799999999999" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="876.68" y1="508.0" x2="907.8799999999999" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1010.8399999999999" y1="508.0" x2="1042.04" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1010.8399999999999" y1="508.0" x2="1042.04" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1145.0" y1="508.0" x2="1176.2" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1145.0" y1="508.0" x2="1176.2" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1279.1599999999999" y1="508.0" x2="1310.36" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1279.1599999999999" y1="508.0" x2="1310.36" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1413.32" y1="508.0" x2="1444.52" y2="508.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1413.32" y1="508.0" x2="1444.52" y2="508.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="226.16" y1="355.9" x2="226.16" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="226.16" y1="355.9" x2="226.16" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="360.32" y1="355.9" x2="360.32" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="360.32" y1="355.9" x2="360.32" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="494.48" y1="355.9" x2="494.48" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="494.48" y1="355.9" x2="494.48" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="628.64" y1="355.9" x2="628.64" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="628.64" y1="355.9" x2="628.64" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="959.36" y1="355.9" x2="959.36" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="959.36" y1="355.9" x2="959.36" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1093.52" y1="355.9" x2="1093.52" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1093.52" y1="355.9" x2="1093.52" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1227.6799999999998" y1="355.9" x2="1227.6799999999998" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1227.6799999999998" y1="355.9" x2="1227.6799999999998" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1361.8400000000001" y1="355.9" x2="1361.8400000000001" y2="387.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1361.8400000000001" y1="355.9" x2="1361.8400000000001" y2="387.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="143.48" y1="1132.0" x2="174.68" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="143.48" y1="1132.0" x2="174.68" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="277.64" y1="1132.0" x2="308.84000000000003" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="277.64" y1="1132.0" x2="308.84000000000003" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="411.8" y1="1132.0" x2="443.0" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="411.8" y1="1132.0" x2="443.0" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="545.96" y1="1132.0" x2="577.1600000000001" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="545.96" y1="1132.0" x2="577.1600000000001" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="680.12" y1="1132.0" x2="711.32" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="680.12" y1="1132.0" x2="711.32" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="876.68" y1="1132.0" x2="907.8799999999999" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="876.68" y1="1132.0" x2="907.8799999999999" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1010.8399999999999" y1="1132.0" x2="1042.04" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1010.8399999999999" y1="1132.0" x2="1042.04" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1145.0" y1="1132.0" x2="1176.2" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1145.0" y1="1132.0" x2="1176.2" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1279.1599999999999" y1="1132.0" x2="1310.36" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1279.1599999999999" y1="1132.0" x2="1310.36" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1413.32" y1="1132.0" x2="1444.52" y2="1132.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1413.32" y1="1132.0" x2="1444.52" y2="1132.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="226.16" y1="1252.9" x2="226.16" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="226.16" y1="1252.9" x2="226.16" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="360.32" y1="1252.9" x2="360.32" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="360.32" y1="1252.9" x2="360.32" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="494.48" y1="1252.9" x2="494.48" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="494.48" y1="1252.9" x2="494.48" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="628.64" y1="1252.9" x2="628.64" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="628.64" y1="1252.9" x2="628.64" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="959.36" y1="1252.9" x2="959.36" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="959.36" y1="1252.9" x2="959.36" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1093.52" y1="1252.9" x2="1093.52" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1093.52" y1="1252.9" x2="1093.52" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1227.6799999999998" y1="1252.9" x2="1227.6799999999998" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1227.6799999999998" y1="1252.9" x2="1227.6799999999998" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1361.8400000000001" y1="1252.9" x2="1361.8400000000001" y2="1284.1" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1361.8400000000001" y1="1252.9" x2="1361.8400000000001" y2="1284.1" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="162.2" y1="570.4" x2="209.0" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="162.2" y1="570.4" x2="209.0" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="419.59999999999997" y1="656.2" x2="419.59999999999997" y2="703.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="419.59999999999997" y1="656.2" x2="419.59999999999997" y2="703.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="131.0" y1="1069.6" x2="162.2" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="131.0" y1="1069.6" x2="162.2" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="240.2" y1="1069.6" x2="271.4" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="240.2" y1="1069.6" x2="271.4" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="349.4" y1="1069.6" x2="380.59999999999997" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="349.4" y1="1069.6" x2="380.59999999999997" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="201.2" y1="944.8" x2="201.2" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="201.2" y1="944.8" x2="201.2" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="310.4" y1="944.8" x2="310.4" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="310.4" y1="944.8" x2="310.4" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="419.59999999999997" y1="944.8" x2="419.59999999999997" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="419.59999999999997" y1="944.8" x2="419.59999999999997" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1207.3999999999999" y1="570.4" x2="1238.6" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1207.3999999999999" y1="570.4" x2="1238.6" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1316.6" y1="570.4" x2="1347.8" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1316.6" y1="570.4" x2="1347.8" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1425.8" y1="570.4" x2="1457.0" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1425.8" y1="570.4" x2="1457.0" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1207.3999999999999" y1="1069.6" x2="1238.6" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1207.3999999999999" y1="1069.6" x2="1238.6" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1316.6" y1="1069.6" x2="1347.8" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1316.6" y1="1069.6" x2="1347.8" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1425.8" y1="1069.6" x2="1457.0" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1425.8" y1="1069.6" x2="1457.0" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1277.6" y1="664.0" x2="1277.6" y2="695.2" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1277.6" y1="664.0" x2="1277.6" y2="695.2" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1386.8" y1="664.0" x2="1386.8" y2="695.2" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1386.8" y1="664.0" x2="1386.8" y2="695.2" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1277.6" y1="944.8" x2="1277.6" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1277.6" y1="944.8" x2="1277.6" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1386.8" y1="944.8" x2="1386.8" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1386.8" y1="944.8" x2="1386.8" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1168.3999999999999" y1="664.0" x2="1168.3999999999999" y2="695.2" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1168.3999999999999" y1="664.0" x2="1168.3999999999999" y2="695.2" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1168.3999999999999" y1="944.8" x2="1168.3999999999999" y2="976.0" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1168.3999999999999" y1="944.8" x2="1168.3999999999999" y2="976.0" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="762.8" y1="570.4" x2="825.1999999999999" y2="570.4" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="762.8" y1="570.4" x2="825.1999999999999" y2="570.4" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="762.8" y1="1069.6" x2="825.1999999999999" y2="1069.6" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="762.8" y1="1069.6" x2="825.1999999999999" y2="1069.6" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="482.0" y1="788.8" x2="482.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="482.0" y1="788.8" x2="482.0" y2="851.1999999999999" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="1106.0" y1="788.8" x2="1106.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="7"/>
-<line x1="1106.0" y1="788.8" x2="1106.0" y2="851.1999999999999" stroke="#92a995" stroke-width="1.4" stroke-dasharray="3 3"/>
-<line x1="762.8" y1="235.0" x2="825.1999999999999" y2="235.0" stroke="#f7ebcf" stroke-width="8"/>
-<line x1="762.8" y1="1405.0" x2="825.1999999999999" y2="1405.0" stroke="#f7ebcf" stroke-width="8"/>
-<line x1="92.0" y1="788.8" x2="92.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="8"/>
-<line x1="1496.0" y1="788.8" x2="1496.0" y2="851.1999999999999" stroke="#f7ebcf" stroke-width="8"/>
-<line x1="450.8" y1="539.2" x2="1137.2" y2="539.2" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
-<line x1="1137.2" y1="539.2" x2="1137.2" y2="1100.8" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
-<line x1="1137.2" y1="1100.8" x2="450.8" y2="1100.8" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
-<line x1="450.8" y1="1100.8" x2="450.8" y2="539.2" stroke="#ae976c" stroke-width="1.8" stroke-dasharray="8 8"/>
-<text x="794.0" y="734.2" font-size="22" text-anchor="middle" font-weight="700">INNENGARTEN</text>
-<text x="794.0" y="765.4" font-size="15" text-anchor="middle" >Grünfläche 72 × 56 m</text>
-<text x="794.0" y="944.8" font-size="14" text-anchor="middle" >Gartenwege als Abkürzung</text>
-<text x="794.0" y="538.42" font-size="13" text-anchor="middle" >NORDGALERIE · 8 m breit</text>
-<text x="794.0" y="1113.28" font-size="13" text-anchor="middle" >SÜDGALERIE · 8 m breit</text>
-<text x="255.79999999999998" y="827.8" font-size="12" text-anchor="middle" >WESTZUGANG</text>
-<text x="1332.2" y="827.8" font-size="12" text-anchor="middle" >OSTZUGANG</text>
-<g transform="translate(794.0,211.6) rotate(0)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
-<text x="794.0" y="192.1" font-size="15" text-anchor="middle" font-weight="700">NORDTOR</text>
-<g transform="translate(794.0,1428.3999999999999) rotate(180)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
-<text x="794.0" y="1467.3999999999999" font-size="15" text-anchor="middle" font-weight="700">HAUPTEINGANG</text>
-<g transform="translate(68.6,820.0) rotate(270)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
-<g transform="translate(1519.3999999999999,820.0) rotate(90)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
-<line x1="92.0" y1="172.6" x2="1496.0" y2="172.6" stroke="#84938b" stroke-width="1"/>
-<text x="794.0" y="161.68" font-size="18" text-anchor="middle" >180 m</text>
-<line x1="92.0" y1="160.9" x2="92.0" y2="184.3" stroke="#84938b" stroke-width="1"/>
-<line x1="1496.0" y1="160.9" x2="1496.0" y2="184.3" stroke="#84938b" stroke-width="1"/>
-<text x="37.4" y="820.0" font-size="18" text-anchor="middle" transform="rotate(-90 37.4 820.0)">150 m</text>
-<text x="1555" y="253" font-size="22" font-weight="700">RAUMVERZEICHNIS</text>
-<rect x="1555" y="266" width="300" height="27" rx="4" fill="#dbe4ed"/><text x="1564" y="285" font-size="13" font-weight="700">NORD · WISSEN &amp; HERRSCHAFT</text>
-<text x="1563" y="318" class="legend">01  Bibliothek</text>
-<text x="1563" y="342" class="legend">02  Archiv</text>
-<text x="1563" y="366" class="legend">03  Schreibstube</text>
-<text x="1563" y="390" class="legend">04  Kartenraum</text>
-<text x="1563" y="414" class="legend">05  Ratssaal</text>
-<text x="1563" y="438" class="legend">06  Thronsaal</text>
-<text x="1563" y="462" class="legend">07  Audienzsaal</text>
-<text x="1563" y="486" class="legend">08  Kapelle</text>
-<text x="1563" y="510" class="legend">09  Sakristei</text>
-<text x="1563" y="534" class="legend">10  Schatzkammer</text>
-<rect x="1555" y="553" width="300" height="27" rx="4" fill="#e8d8bd"/><text x="1564" y="572" font-size="13" font-weight="700">WEST · FESTFLÜGEL</text>
-<text x="1563" y="605" class="legend">11  Großer Ballsaal</text>
-<text x="1563" y="629" class="legend">12  Musiksalon</text>
-<text x="1563" y="653" class="legend">13  Empfangssalon</text>
-<text x="1563" y="677" class="legend">14  Galerie</text>
-<rect x="1555" y="696" width="300" height="27" rx="4" fill="#e9ded1"/><text x="1564" y="715" font-size="13" font-weight="700">OST · VERSORGUNG</text>
-<text x="1563" y="748" class="legend">15  Speisesaal</text>
-<text x="1563" y="772" class="legend">16  Küche</text>
-<text x="1563" y="796" class="legend">17  Vorräte</text>
-<text x="1563" y="820" class="legend">18  Backstube</text>
-<text x="1563" y="844" class="legend">19  Personalraum</text>
-<text x="1563" y="868" class="legend">20  Lager</text>
-<rect x="1555" y="887" width="300" height="27" rx="4" fill="#dedee9"/><text x="1564" y="906" font-size="13" font-weight="700">SÜD · GÄSTE &amp; ANKUNFT</text>
-<text x="1563" y="939" class="legend">21  Wachstube West</text>
-<text x="1563" y="963" class="legend">22  Waffenkammer</text>
-<text x="1563" y="987" class="legend">23  Gästezimmer A</text>
-<text x="1563" y="1011" class="legend">24  Gästezimmer B</text>
-<text x="1563" y="1035" class="legend">25  Gästesalon West</text>
-<text x="1563" y="1059" class="legend">26  Gästesalon Ost</text>
-<text x="1563" y="1083" class="legend">27  Gästezimmer C</text>
-<text x="1563" y="1107" class="legend">28  Gästezimmer D</text>
-<text x="1563" y="1131" class="legend">29  Garderobe</text>
-<text x="1563" y="1155" class="legend">30  Wachstube Ost</text>
-<text x="1555" y="1211" font-size="17" font-weight="700">WEGE & MASSSTAB</text>
-<text x="1555" y="1242" class="legend">Ringgang: ca. 320 m pro Runde</text>
-<text x="1555" y="1267" class="legend">Gänge und Außentore: 8 m breit</text>
-<text x="1555" y="1292" class="legend">Raumtüren: meist 4 m breit</text>
-<text x="1555" y="1317" class="legend">Ballsaal: 42 × 28 m</text>
-<text x="1555" y="1342" class="legend">Grundfläche: 27.000 m²</text>
-<rect x="1555" y="1378" width="20" height="15" fill="#f7ebcf" stroke="#7d8e7b"/><text x="1585" y="1391" class="legend">Begehbare Gänge</text>
-<rect x="1555" y="1407" width="20" height="15" fill="#a3c48e" stroke="#7d8e7b"/><text x="1585" y="1420" class="legend">Garten / Grünfläche</text>
-<rect x="1555" y="1436" width="20" height="15" fill="#435e53" stroke="#7d8e7b"/><text x="1585" y="1449" class="legend">Wände; Lücken sind Türen</text>
-<path d="M92,1491 V1503 M92,1497 H248.0 M248.0,1491 V1503" stroke="#435e53" stroke-width="3"/><text x="170.0" y="1524" text-anchor="middle" font-size="15">20 Meter</text>
-<text x="400" y="1500" font-size="15" class="muted">Schematische Planungsbasis · Räume ohne Möbel · keine fertige Spielgeometrie</text>
+<style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#263e38}.muted{fill:#708076}.label{font-size:13px;font-weight:600}.dim{font-size:12px;fill:#607169}</style>
+<text x="106" y="55" font-size="16" letter-spacing="4">NEBELJAGD · GRUNDRISSENTWURF 02</text>
+<text x="106" y="99" font-size="36" font-weight="700">Das große Gartenschloss</text>
+<text x="106" y="133" font-size="18" class="muted">Breitere Räume · versetzte Flügel · ein frei gestalteter Gartenhof</text>
+<rect x="106" y="590" width="1440" height="48" fill="#f4e6c8"/>
+<rect x="106" y="1070" width="1236" height="48" fill="#f4e6c8"/>
+<rect x="430" y="638" width="48" height="432" fill="#f4e6c8"/>
+<rect x="1006" y="638" width="48" height="432" fill="#f4e6c8"/>
+<rect x="346" y="242" width="48" height="348" fill="#f4e6c8"/>
+<rect x="106" y="398" width="240" height="48" fill="#f4e6c8"/>
+<rect x="754" y="242" width="48" height="348" fill="#f4e6c8"/>
+<rect x="106" y="878" width="324" height="48" fill="#f4e6c8"/>
+<rect x="1294" y="638" width="48" height="432" fill="#f4e6c8"/>
+<rect x="1342" y="842" width="384" height="48" fill="#f4e6c8"/>
+<rect x="658" y="1118" width="72" height="444" fill="#f4e6c8"/>
+<rect x="106" y="1298" width="552" height="48" fill="#f4e6c8"/>
+<rect x="730" y="1298" width="816" height="48" fill="#f4e6c8"/>
+<rect x="478" y="638" width="528" height="432" fill="#cadbb6" stroke="#42544a" stroke-width="3"/>
+<rect x="502" y="662" width="480" height="384" fill="#aacb94"/>
+<g transform="translate(106 242) scale(6)">
+<path d="M69,73 Q90,69 108,73 Q112,79 104,84 Q90,83 78,94 L68,96Z" fill="#87ae79"/>
+<path d="M127,101 Q140,93 145,101 L145,132 Q130,135 115,131 Q110,118 127,101Z" fill="#94b982"/>
+<path d="M62,110 C80,110 73,93 96,94 S125,94 126,66" fill="none" stroke="#e9d8b1" stroke-width="7" stroke-linecap="butt"/>
+<path d="M82,138 C82,117 111,122 118,104 S135,88 150,88" fill="none" stroke="#e9d8b1" stroke-width="7" stroke-linecap="butt"/>
+<circle cx="72" cy="77" r="3.7" fill="#6e9764" stroke="#567d50" stroke-width=".35"/>
+<circle cx="83" cy="76" r="4.2" fill="#6e9764" stroke="#567d50" stroke-width=".35"/>
+<circle cx="97" cy="77" r="3.4" fill="#6e9764" stroke="#567d50" stroke-width=".35"/>
+<circle cx="140" cy="125" r="4.1" fill="#6e9764" stroke="#567d50" stroke-width=".35"/>
+<circle cx="132" cy="128" r="3.2" fill="#6e9764" stroke="#567d50" stroke-width=".35"/>
+<circle cx="119" cy="128" r="3.5" fill="#6e9764" stroke="#567d50" stroke-width=".35"/>
+<circle cx="99" cy="101" r="5.2" fill="#a4ccd0" stroke="#658c88" stroke-width=".6"/>
+</g>
+<rect x="106" y="242" width="240" height="156" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="226.0" cy="293.0" r="16" fill="#466457"/>
+<text x="226.0" y="298.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">01</text>
+<text x="226.0" y="327.2" font-size="14" text-anchor="middle" class="label">Bibliothek</text>
+<text x="226.0" y="349.4" font-size="14" text-anchor="middle" class="dim">40 × 26 m</text>
+<rect x="106" y="446" width="240" height="144" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="226.0" cy="491.0" r="16" fill="#466457"/>
+<text x="226.0" y="496.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">02</text>
+<text x="226.0" y="525.2" font-size="14" text-anchor="middle" class="label">Archiv</text>
+<text x="226.0" y="547.4000000000001" font-size="14" text-anchor="middle" class="dim">40 × 24 m</text>
+<rect x="394" y="350" width="168" height="240" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="478.0" cy="443.0" r="16" fill="#466457"/>
+<text x="478.0" y="448.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">03</text>
+<text x="478.0" y="477.20000000000005" font-size="14" text-anchor="middle" class="label">Schreibstube</text>
+<text x="478.0" y="499.40000000000003" font-size="14" text-anchor="middle" class="dim">28 × 40 m</text>
+<rect x="562" y="374" width="192" height="216" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="658.0" cy="455.0" r="16" fill="#466457"/>
+<text x="658.0" y="460.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">04</text>
+<text x="658.0" y="489.20000000000005" font-size="14" text-anchor="middle" class="label">Ratssaal</text>
+<text x="658.0" y="511.40000000000003" font-size="14" text-anchor="middle" class="dim">32 × 36 m</text>
+<rect x="802" y="242" width="288" height="348" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="946.0" cy="389.0" r="16" fill="#466457"/>
+<text x="946.0" y="394.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">05</text>
+<text x="946.0" y="423.2" font-size="14" text-anchor="middle" class="label">Thronsaal</text>
+<text x="946.0" y="445.4" font-size="14" text-anchor="middle" class="dim">48 × 58 m</text>
+<rect x="1090" y="386" width="216" height="204" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1198.0" cy="461.0" r="16" fill="#466457"/>
+<text x="1198.0" y="466.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">06</text>
+<text x="1198.0" y="495.20000000000005" font-size="14" text-anchor="middle" class="label">Audienzsaal</text>
+<text x="1198.0" y="517.4000000000001" font-size="14" text-anchor="middle" class="dim">36 × 34 m</text>
+<rect x="1090" y="242" width="216" height="144" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1198.0" cy="287.0" r="16" fill="#466457"/>
+<text x="1198.0" y="292.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">07</text>
+<text x="1198.0" y="321.2" font-size="14" text-anchor="middle" class="label">Schatzkammer</text>
+<text x="1198.0" y="343.4" font-size="14" text-anchor="middle" class="dim">36 × 24 m</text>
+<rect x="1306" y="266" width="240" height="168" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1426.0" cy="323.0" r="16" fill="#466457"/>
+<text x="1426.0" y="328.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">08</text>
+<text x="1426.0" y="357.2" font-size="14" text-anchor="middle" class="label">Kapelle</text>
+<text x="1426.0" y="379.4" font-size="14" text-anchor="middle" class="dim">40 × 28 m</text>
+<rect x="1306" y="434" width="240" height="156" fill="#d9e4eb" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1426.0" cy="485.0" r="16" fill="#466457"/>
+<text x="1426.0" y="490.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">09</text>
+<text x="1426.0" y="519.2" font-size="14" text-anchor="middle" class="label">Sakristei</text>
+<text x="1426.0" y="541.4000000000001" font-size="14" text-anchor="middle" class="dim">40 × 26 m</text>
+<rect x="106" y="638" width="324" height="240" fill="#ead7b8" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="268.0" cy="731.0" r="16" fill="#466457"/>
+<text x="268.0" y="736.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">10</text>
+<text x="268.0" y="765.2" font-size="14" text-anchor="middle" class="label">Großer</text>
+<text x="268.0" y="781.4000000000001" font-size="14" text-anchor="middle" class="label">Ballsaal</text>
+<text x="268.0" y="803.6" font-size="14" text-anchor="middle" class="dim">54 × 40 m</text>
+<rect x="106" y="926" width="156" height="144" fill="#ead7b8" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="184.0" cy="971.0" r="16" fill="#466457"/>
+<text x="184.0" y="976.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">11</text>
+<text x="184.0" y="1005.2" font-size="14" text-anchor="middle" class="label">Musiksalon</text>
+<text x="184.0" y="1027.4" font-size="14" text-anchor="middle" class="dim">26 × 24 m</text>
+<rect x="262" y="926" width="168" height="144" fill="#ead7b8" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="346.0" cy="971.0" r="16" fill="#466457"/>
+<text x="346.0" y="976.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">12</text>
+<text x="346.0" y="1005.2" font-size="14" text-anchor="middle" class="label">Galerie</text>
+<text x="346.0" y="1027.4" font-size="14" text-anchor="middle" class="dim">28 × 24 m</text>
+<rect x="1054" y="638" width="240" height="204" fill="#e7ded0" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1174.0" cy="713.0" r="16" fill="#466457"/>
+<text x="1174.0" y="718.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">13</text>
+<text x="1174.0" y="747.2" font-size="14" text-anchor="middle" class="label">Speisesaal</text>
+<text x="1174.0" y="769.4000000000001" font-size="14" text-anchor="middle" class="dim">40 × 34 m</text>
+<rect x="1054" y="842" width="240" height="228" fill="#e7ded0" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1174.0" cy="929.0" r="16" fill="#466457"/>
+<text x="1174.0" y="934.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">14</text>
+<text x="1174.0" y="963.2" font-size="14" text-anchor="middle" class="label">Küche</text>
+<text x="1174.0" y="985.4000000000001" font-size="14" text-anchor="middle" class="dim">40 × 38 m</text>
+<rect x="1342" y="638" width="204" height="204" fill="#e7ded0" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1444.0" cy="713.0" r="16" fill="#466457"/>
+<text x="1444.0" y="718.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">15</text>
+<text x="1444.0" y="747.2" font-size="14" text-anchor="middle" class="label">Vorräte</text>
+<text x="1444.0" y="769.4000000000001" font-size="14" text-anchor="middle" class="dim">34 × 34 m</text>
+<rect x="1342" y="890" width="204" height="180" fill="#e7ded0" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1444.0" cy="953.0" r="16" fill="#466457"/>
+<text x="1444.0" y="958.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">16</text>
+<text x="1444.0" y="987.2" font-size="14" text-anchor="middle" class="label">Backstube</text>
+<text x="1444.0" y="1009.4000000000001" font-size="14" text-anchor="middle" class="dim">34 × 30 m</text>
+<rect x="1546" y="638" width="180" height="204" fill="#e7ded0" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1636.0" cy="713.0" r="16" fill="#466457"/>
+<text x="1636.0" y="718.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">17</text>
+<text x="1636.0" y="747.2" font-size="14" text-anchor="middle" class="label">Vorratslager</text>
+<text x="1636.0" y="769.4000000000001" font-size="14" text-anchor="middle" class="dim">30 × 34 m</text>
+<rect x="106" y="1118" width="192" height="180" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="202.0" cy="1181.0" r="16" fill="#466457"/>
+<text x="202.0" y="1186.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">18</text>
+<text x="202.0" y="1215.1999999999998" font-size="14" text-anchor="middle" class="label">Wintergarten</text>
+<text x="202.0" y="1237.3999999999999" font-size="14" text-anchor="middle" class="dim">32 × 30 m</text>
+<rect x="298" y="1118" width="180" height="180" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="388.0" cy="1181.0" r="16" fill="#466457"/>
+<text x="388.0" y="1186.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">19</text>
+<text x="388.0" y="1215.1999999999998" font-size="14" text-anchor="middle" class="label">Empfangssalon</text>
+<text x="388.0" y="1237.3999999999999" font-size="14" text-anchor="middle" class="dim">30 × 30 m</text>
+<rect x="478" y="1118" width="180" height="180" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="568.0" cy="1181.0" r="16" fill="#466457"/>
+<text x="568.0" y="1186.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">20</text>
+<text x="568.0" y="1215.1999999999998" font-size="14" text-anchor="middle" class="label">Gästesalon</text>
+<text x="568.0" y="1237.3999999999999" font-size="14" text-anchor="middle" class="dim">30 × 30 m</text>
+<rect x="730" y="1118" width="240" height="180" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="850.0" cy="1181.0" r="16" fill="#466457"/>
+<text x="850.0" y="1186.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">21</text>
+<text x="850.0" y="1215.1999999999998" font-size="14" text-anchor="middle" class="label">Gästezimmer A</text>
+<text x="850.0" y="1237.3999999999999" font-size="14" text-anchor="middle" class="dim">40 × 30 m</text>
+<rect x="970" y="1118" width="180" height="180" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1060.0" cy="1181.0" r="16" fill="#466457"/>
+<text x="1060.0" y="1186.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">22</text>
+<text x="1060.0" y="1215.1999999999998" font-size="14" text-anchor="middle" class="label">Gästezimmer B</text>
+<text x="1060.0" y="1237.3999999999999" font-size="14" text-anchor="middle" class="dim">30 × 30 m</text>
+<rect x="1150" y="1118" width="192" height="180" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1246.0" cy="1181.0" r="16" fill="#466457"/>
+<text x="1246.0" y="1186.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">23</text>
+<text x="1246.0" y="1215.1999999999998" font-size="14" text-anchor="middle" class="label">Waffenkammer</text>
+<text x="1246.0" y="1237.3999999999999" font-size="14" text-anchor="middle" class="dim">32 × 30 m</text>
+<rect x="1342" y="1070" width="204" height="228" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1444.0" cy="1157.0" r="16" fill="#466457"/>
+<text x="1444.0" y="1162.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">24</text>
+<text x="1444.0" y="1191.1999999999998" font-size="14" text-anchor="middle" class="label">Personalraum</text>
+<text x="1444.0" y="1213.3999999999999" font-size="14" text-anchor="middle" class="dim">34 × 38 m</text>
+<rect x="106" y="1346" width="216" height="204" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="214.0" cy="1421.0" r="16" fill="#466457"/>
+<text x="214.0" y="1426.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">25</text>
+<text x="214.0" y="1455.1999999999998" font-size="14" text-anchor="middle" class="label">Wachstube</text>
+<text x="214.0" y="1471.3999999999999" font-size="14" text-anchor="middle" class="label">West</text>
+<text x="214.0" y="1493.6" font-size="14" text-anchor="middle" class="dim">36 × 34 m</text>
+<rect x="322" y="1346" width="192" height="168" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="418.0" cy="1403.0" r="16" fill="#466457"/>
+<text x="418.0" y="1408.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">26</text>
+<text x="418.0" y="1437.1999999999998" font-size="14" text-anchor="middle" class="label">Übungsraum</text>
+<text x="418.0" y="1459.3999999999999" font-size="14" text-anchor="middle" class="dim">32 × 28 m</text>
+<rect x="514" y="1346" width="144" height="156" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="586.0" cy="1397.0" r="16" fill="#466457"/>
+<text x="586.0" y="1402.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">27</text>
+<text x="586.0" y="1431.1999999999998" font-size="14" text-anchor="middle" class="label">Garderobe</text>
+<text x="586.0" y="1453.3999999999999" font-size="14" text-anchor="middle" class="dim">24 × 26 m</text>
+<rect x="730" y="1346" width="216" height="216" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="838.0" cy="1427.0" r="16" fill="#466457"/>
+<text x="838.0" y="1432.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">28</text>
+<text x="838.0" y="1461.1999999999998" font-size="14" text-anchor="middle" class="label">Gästezimmer C</text>
+<text x="838.0" y="1483.3999999999999" font-size="14" text-anchor="middle" class="dim">36 × 36 m</text>
+<rect x="946" y="1346" width="228" height="156" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1060.0" cy="1397.0" r="16" fill="#466457"/>
+<text x="1060.0" y="1402.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">29</text>
+<text x="1060.0" y="1431.1999999999998" font-size="14" text-anchor="middle" class="label">Gästezimmer D</text>
+<text x="1060.0" y="1453.3999999999999" font-size="14" text-anchor="middle" class="dim">38 × 26 m</text>
+<rect x="1174" y="1346" width="240" height="204" fill="#ddddea" stroke="#42544a" stroke-width="2.7"/>
+<circle cx="1294.0" cy="1421.0" r="16" fill="#466457"/>
+<text x="1294.0" y="1426.0" text-anchor="middle" font-size="16" font-weight="700" style="fill:white">30</text>
+<text x="1294.0" y="1455.1999999999998" font-size="14" text-anchor="middle" class="label">Wachstube Ost</text>
+<text x="1294.0" y="1477.3999999999999" font-size="14" text-anchor="middle" class="dim">40 × 34 m</text>
+<line x1="454" y1="614" x2="1030" y2="614" stroke="#af976f" stroke-width="1.6" stroke-dasharray="6 7"/>
+<line x1="1030" y1="614" x2="1030" y2="1094" stroke="#af976f" stroke-width="1.6" stroke-dasharray="6 7"/>
+<line x1="1030" y1="1094" x2="454" y2="1094" stroke="#af976f" stroke-width="1.6" stroke-dasharray="6 7"/>
+<line x1="454" y1="1094" x2="454" y2="614" stroke="#af976f" stroke-width="1.6" stroke-dasharray="6 7"/>
+<polygon points="106,242 394,242 394,350 562,350 562,374 754,374 754,242 1306,242 1306,266 1546,266 1546,638 1726,638 1726,890 1546,890 1546,1346 1414,1346 1414,1550 1174,1550 1174,1502 946,1502 946,1562 658,1562 658,1502 514,1502 514,1514 322,1514 322,1550 106,1550" fill="none" stroke="#334e42" stroke-width="4" stroke-linejoin="round"/>
+<line x1="190.0" y1="398" x2="214.0" y2="398" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="190.0" y1="398" x2="214.0" y2="398" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="346" y1="314.0" x2="346" y2="338.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="346" y1="314.0" x2="346" y2="338.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="202.0" y1="590" x2="226.0" y2="590" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="202.0" y1="590" x2="226.0" y2="590" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="214.0" y1="446" x2="238.0" y2="446" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="214.0" y1="446" x2="238.0" y2="446" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="454.0" y1="590" x2="478.0" y2="590" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="454.0" y1="590" x2="478.0" y2="590" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="394" y1="470.0" x2="394" y2="494.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="394" y1="470.0" x2="394" y2="494.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="634.0" y1="590" x2="658.0" y2="590" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="634.0" y1="590" x2="658.0" y2="590" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="754" y1="470.0" x2="754" y2="494.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="754" y1="470.0" x2="754" y2="494.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="562" y1="482.0" x2="562" y2="506.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="562" y1="482.0" x2="562" y2="506.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="922.0" y1="590" x2="970.0" y2="590" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="922.0" y1="590" x2="970.0" y2="590" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="802" y1="416.0" x2="802" y2="452.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="802" y1="416.0" x2="802" y2="452.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1090" y1="488.0" x2="1090" y2="524.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1090" y1="488.0" x2="1090" y2="524.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1180.0" y1="590" x2="1216.0" y2="590" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1180.0" y1="590" x2="1216.0" y2="590" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1090" y1="314.0" x2="1090" y2="338.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1090" y1="314.0" x2="1090" y2="338.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1174.0" y1="386" x2="1198.0" y2="386" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1174.0" y1="386" x2="1198.0" y2="386" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1306" y1="326.0" x2="1306" y2="350.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1306" y1="326.0" x2="1306" y2="350.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1306" y1="398.0" x2="1306" y2="422.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1306" y1="398.0" x2="1306" y2="422.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1426.0" y1="434" x2="1450.0" y2="434" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1426.0" y1="434" x2="1450.0" y2="434" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1426.0" y1="590" x2="1450.0" y2="590" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1426.0" y1="590" x2="1450.0" y2="590" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="226.0" y1="638" x2="274.0" y2="638" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="226.0" y1="638" x2="274.0" y2="638" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="430" y1="722.0" x2="430" y2="770.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="430" y1="722.0" x2="430" y2="770.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="220.0" y1="878" x2="256.0" y2="878" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="220.0" y1="878" x2="256.0" y2="878" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="166.0" y1="926" x2="190.0" y2="926" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="166.0" y1="926" x2="190.0" y2="926" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="166.0" y1="1070" x2="190.0" y2="1070" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="166.0" y1="1070" x2="190.0" y2="1070" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="430" y1="986.0" x2="430" y2="1010.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="430" y1="986.0" x2="430" y2="1010.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="334.0" y1="1070" x2="358.0" y2="1070" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="334.0" y1="1070" x2="358.0" y2="1070" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="262" y1="974.0" x2="262" y2="998.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="262" y1="974.0" x2="262" y2="998.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1156.0" y1="638" x2="1192.0" y2="638" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1156.0" y1="638" x2="1192.0" y2="638" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1054" y1="728.0" x2="1054" y2="764.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1054" y1="728.0" x2="1054" y2="764.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1294" y1="734.0" x2="1294" y2="758.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1294" y1="734.0" x2="1294" y2="758.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1054" y1="944.0" x2="1054" y2="980.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1054" y1="944.0" x2="1054" y2="980.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1294" y1="962.0" x2="1294" y2="986.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1294" y1="962.0" x2="1294" y2="986.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1156.0" y1="842" x2="1192.0" y2="842" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1156.0" y1="842" x2="1192.0" y2="842" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1342" y1="698.0" x2="1342" y2="722.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1342" y1="698.0" x2="1342" y2="722.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1426.0" y1="842" x2="1450.0" y2="842" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1426.0" y1="842" x2="1450.0" y2="842" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1546" y1="722.0" x2="1546" y2="746.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1546" y1="722.0" x2="1546" y2="746.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1624.0" y1="842" x2="1648.0" y2="842" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1624.0" y1="842" x2="1648.0" y2="842" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1414.0" y1="890" x2="1438.0" y2="890" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1414.0" y1="890" x2="1438.0" y2="890" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1342" y1="986.0" x2="1342" y2="1010.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1342" y1="986.0" x2="1342" y2="1010.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1426.0" y1="1070" x2="1450.0" y2="1070" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1426.0" y1="1070" x2="1450.0" y2="1070" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1426.0" y1="1298" x2="1450.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1426.0" y1="1298" x2="1450.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="184.0" y1="1118" x2="220.0" y2="1118" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="184.0" y1="1118" x2="220.0" y2="1118" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="196.0" y1="1298" x2="232.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="196.0" y1="1298" x2="232.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="370.0" y1="1118" x2="394.0" y2="1118" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="370.0" y1="1118" x2="394.0" y2="1118" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="370.0" y1="1298" x2="394.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="370.0" y1="1298" x2="394.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="298" y1="1214.0" x2="298" y2="1238.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="298" y1="1214.0" x2="298" y2="1238.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="562.0" y1="1118" x2="586.0" y2="1118" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="562.0" y1="1118" x2="586.0" y2="1118" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="658" y1="1202.0" x2="658" y2="1226.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="658" y1="1202.0" x2="658" y2="1226.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="562.0" y1="1298" x2="586.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="562.0" y1="1298" x2="586.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="838.0" y1="1118" x2="862.0" y2="1118" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="838.0" y1="1118" x2="862.0" y2="1118" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="730" y1="1202.0" x2="730" y2="1226.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="730" y1="1202.0" x2="730" y2="1226.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="850.0" y1="1298" x2="874.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="850.0" y1="1298" x2="874.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1042.0" y1="1118" x2="1066.0" y2="1118" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1042.0" y1="1118" x2="1066.0" y2="1118" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1054.0" y1="1298" x2="1078.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1054.0" y1="1298" x2="1078.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="970" y1="1202.0" x2="970" y2="1226.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="970" y1="1202.0" x2="970" y2="1226.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1222.0" y1="1118" x2="1246.0" y2="1118" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1222.0" y1="1118" x2="1246.0" y2="1118" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1234.0" y1="1298" x2="1258.0" y2="1298" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1234.0" y1="1298" x2="1258.0" y2="1298" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="202.0" y1="1346" x2="226.0" y2="1346" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="202.0" y1="1346" x2="226.0" y2="1346" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="322" y1="1430.0" x2="322" y2="1454.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="322" y1="1430.0" x2="322" y2="1454.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="418.0" y1="1346" x2="442.0" y2="1346" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="418.0" y1="1346" x2="442.0" y2="1346" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="514" y1="1418.0" x2="514" y2="1442.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="514" y1="1418.0" x2="514" y2="1442.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="574.0" y1="1346" x2="598.0" y2="1346" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="574.0" y1="1346" x2="598.0" y2="1346" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="658" y1="1418.0" x2="658" y2="1442.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="658" y1="1418.0" x2="658" y2="1442.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="826.0" y1="1346" x2="850.0" y2="1346" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="826.0" y1="1346" x2="850.0" y2="1346" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="730" y1="1442.0" x2="730" y2="1466.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="730" y1="1442.0" x2="730" y2="1466.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="946" y1="1418.0" x2="946" y2="1442.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="946" y1="1418.0" x2="946" y2="1442.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1042.0" y1="1346" x2="1066.0" y2="1346" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1042.0" y1="1346" x2="1066.0" y2="1346" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1174" y1="1418.0" x2="1174" y2="1442.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1174" y1="1418.0" x2="1174" y2="1442.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1294.0" y1="1346" x2="1318.0" y2="1346" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1294.0" y1="1346" x2="1318.0" y2="1346" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="838.0" y1="638" x2="886.0" y2="638" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="838.0" y1="638" x2="886.0" y2="638" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="574.0" y1="1070" x2="622.0" y2="1070" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="574.0" y1="1070" x2="622.0" y2="1070" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="478" y1="878.0" x2="478" y2="926.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="478" y1="878.0" x2="478" y2="926.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="1006" y1="746.0" x2="1006" y2="794.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1006" y1="746.0" x2="1006" y2="794.0" stroke="#99b197" stroke-width="1.3" stroke-dasharray="3 3"/>
+<line x1="754.0" y1="242" x2="802.0" y2="242" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="658.0" y1="1562" x2="730.0" y2="1562" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="106" y1="878.0" x2="106" y2="926.0" stroke="#f4e6c8" stroke-width="7"/>
+<line x1="1726" y1="842.0" x2="1726" y2="890.0" stroke="#f4e6c8" stroke-width="7"/>
+<text x="754" y="938" font-size="22" text-anchor="middle" font-weight="700">GARTENHOF</text>
+<text x="766" y="962" font-size="13" text-anchor="middle" >88 × 72 m · freie Wegeführung</text>
+<text x="586" y="619.4" font-size="11" text-anchor="middle" >NORDGALERIE</text>
+<text x="694" y="1099.4" font-size="11" text-anchor="middle" >GARTENGALERIE · 8 m</text>
+<text x="376" y="1327.4" font-size="11" text-anchor="middle" >GÄSTEGANG</text>
+<text x="1120" y="1327.4" font-size="11" text-anchor="middle" >GÄSTEGANG</text>
+<text x="268" y="908" font-size="11" text-anchor="middle" >FESTZUGANG</text>
+<text x="1552" y="872" font-size="11" text-anchor="middle" >LIEFERZUGANG</text>
+<text x="694" y="1328" font-size="11" text-anchor="middle" transform="rotate(-90 694 1328)">VORHALLE · 12 m</text>
+<g transform="translate(778,218) rotate(0)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<text x="778" y="194" font-size="14" text-anchor="middle" font-weight="700">NORDTOR</text>
+<g transform="translate(694,1586) rotate(180)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<text x="694" y="1622" font-size="14" text-anchor="middle" font-weight="700">HAUPTEINGANG</text>
+<g transform="translate(82,902) rotate(270)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<g transform="translate(1750,866) rotate(90)"><path d="M0,-12 L-9,3 H-4 V15 H4 V3 H9 Z" fill="#447a58"/></g>
+<line x1="106" y1="170" x2="1726" y2="170" stroke="#9aa89b" stroke-width="1"/>
+<line x1="106" y1="161.0" x2="106" y2="179.0" stroke="#9aa89b" stroke-width="1"/>
+<line x1="1726" y1="161.0" x2="1726" y2="179.0" stroke="#9aa89b" stroke-width="1"/>
+<text x="916" y="155.0" font-size="15" text-anchor="middle" >270 m · größte Ausdehnung einschließlich Versorgungsflügel</text>
+<text x="46" y="902" font-size="16" text-anchor="middle" transform="rotate(-90 46 902)">220 m</text>
+<text x="1810" y="242" font-size="22" font-weight="700">30 RÄUME · VIER FLÜGEL</text>
+<rect x="1810" y="259" width="338" height="27" rx="4" fill="#d9e4eb"/><text x="1818" y="278" font-size="13" font-weight="700">NORD · HERRSCHAFT &amp; WISSEN</text>
+<text x="1818" y="310" font-size="15">01  Bibliothek</text>
+<text x="1818" y="334" font-size="15">02  Archiv</text>
+<text x="1818" y="358" font-size="15">03  Schreibstube</text>
+<text x="1818" y="382" font-size="15">04  Ratssaal</text>
+<text x="1818" y="406" font-size="15">05  Thronsaal</text>
+<text x="1818" y="430" font-size="15">06  Audienzsaal</text>
+<text x="1818" y="454" font-size="15">07  Schatzkammer</text>
+<text x="1818" y="478" font-size="15">08  Kapelle</text>
+<text x="1818" y="502" font-size="15">09  Sakristei</text>
+<rect x="1810" y="523" width="338" height="27" rx="4" fill="#ead7b8"/><text x="1818" y="542" font-size="13" font-weight="700">WEST · FESTFLÜGEL</text>
+<text x="1818" y="574" font-size="15">10  Großer Ballsaal</text>
+<text x="1818" y="598" font-size="15">11  Musiksalon</text>
+<text x="1818" y="622" font-size="15">12  Galerie</text>
+<rect x="1810" y="643" width="338" height="27" rx="4" fill="#e7ded0"/><text x="1818" y="662" font-size="13" font-weight="700">OST · VERSORGUNG</text>
+<text x="1818" y="694" font-size="15">13  Speisesaal</text>
+<text x="1818" y="718" font-size="15">14  Küche</text>
+<text x="1818" y="742" font-size="15">15  Vorräte</text>
+<text x="1818" y="766" font-size="15">16  Backstube</text>
+<text x="1818" y="790" font-size="15">17  Vorratslager</text>
+<rect x="1810" y="811" width="338" height="27" rx="4" fill="#ddddea"/><text x="1818" y="830" font-size="13" font-weight="700">SÜD · GÄSTE &amp; ANKUNFT</text>
+<text x="1818" y="862" font-size="15">18  Wintergarten</text>
+<text x="1818" y="886" font-size="15">19  Empfangssalon</text>
+<text x="1818" y="910" font-size="15">20  Gästesalon</text>
+<text x="1818" y="934" font-size="15">21  Gästezimmer A</text>
+<text x="1818" y="958" font-size="15">22  Gästezimmer B</text>
+<text x="1818" y="982" font-size="15">23  Waffenkammer</text>
+<text x="1818" y="1006" font-size="15">24  Personalraum</text>
+<text x="1818" y="1030" font-size="15">25  Wachstube West</text>
+<text x="1818" y="1054" font-size="15">26  Übungsraum</text>
+<text x="1818" y="1078" font-size="15">27  Garderobe</text>
+<text x="1818" y="1102" font-size="15">28  Gästezimmer C</text>
+<text x="1818" y="1126" font-size="15">29  Gästezimmer D</text>
+<text x="1818" y="1150" font-size="15">30  Wachstube Ost</text>
+<text x="1810" y="1198" font-size="18" font-weight="700">MEHR PLATZ, MEHR VARIATION</text>
+<text x="1810" y="1230" font-size="15">Kurze Raumseite: mindestens 24 m</text>
+<text x="1810" y="1254" font-size="15">Ballsaal: 54 × 40 m</text>
+<text x="1810" y="1278" font-size="15">Thronsaal: 48 × 58 m</text>
+<text x="1810" y="1302" font-size="15">Gänge: 8 m · Vorhalle: 12 m</text>
+<text x="1810" y="1326" font-size="15">Gartenrunde: ca. 352 m</text>
+<text x="1810" y="1350" font-size="15">Vier versetzte Außenzugänge</text>
+<rect x="1810" y="1384" width="20" height="15" fill="#f4e6c8" stroke="#899884"/><text x="1840" y="1397" font-size="15">Gänge und Durchgänge</text>
+<rect x="1810" y="1413" width="20" height="15" fill="#aacb94" stroke="#899884"/><text x="1840" y="1426" font-size="15">Garten / Grünfläche</text>
+<rect x="1810" y="1442" width="20" height="15" fill="#42544a" stroke="#899884"/><text x="1840" y="1455" font-size="15">Wände · Lücken sind Türen</text>
+<path d="M106,1652 V1664 M106,1658 H226 M226,1652 V1664" stroke="#466457" stroke-width="3"/><text x="166" y="1685" text-anchor="middle" font-size="15">20 Meter</text>
+<text x="330" y="1661" font-size="15" class="muted">Editierbare Planungsbasis · 30 Räume ohne Möbel · eine offene Etage · noch keine Spielgeometrie</text>
 </svg>
