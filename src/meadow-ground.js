@@ -112,6 +112,7 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     if (object.kind === 'mound' && object.variant === 'knoll') [hx, hz] = [3.3, 2.8];
     if (object.kind === 'house' && object.variant === 'kit-timber') [hx, hz] = [3.8, 4.1];
     if (object.kind === 'house' && object.variant?.startsWith('tavern-')) [hx, hz] = [12.4, 12.4];
+    if (object.kind === 'house' && object.variant === 'kit-tripo-tavern') [hx, hz] = [11.2, 9.1];
     hx = hx * scale + padding; hz = hz * scale + padding;
     const [x, z] = object.position, rotation = object.rotation ?? 0, c = Math.cos(rotation), s = Math.sin(rotation);
     const radius = Math.hypot(hx, hz);

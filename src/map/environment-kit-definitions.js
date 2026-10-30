@@ -1,3 +1,5 @@
+import { TRIPO_TAVERN_DEFINITION } from './tripo-tavern-definition.js';
+
 /** Shared CPU-only dimensions for the project's existing GLB environment kit.
  * Horizontal axes are x/z and all dimensions are metres after glTF import.
  * Original collision metadata is preserved in the kit's source directory.
@@ -78,7 +80,7 @@ const targetHeights = { pine_high: 7.2, pine_young: 4.2, oak_green: 5.8, oak_aut
   wall_stone_3m: 1.5, fence_wood_3m: 1.5, ruin_arch: 3.5, rock_cluster: 1.7,
   rock_single: 1.6, grass_tall_patch: 1.95, house_timbersmall: 5.5, taverne: 4.065, crate_wood: 1 };
 
-export const ENVIRONMENT_KIT_DEFINITIONS = freeze(nativeDefinitions.map(definition => {
+export const ENVIRONMENT_KIT_DEFINITIONS = freeze([...nativeDefinitions.map(definition => {
   const bounds = nativeBounds[definition.asset], targetHeight = targetHeights[definition.asset];
   const scale = targetHeight / (bounds.max[1] - bounds.min[1]);
   const anchor = definition.anchorXZ;
@@ -95,7 +97,7 @@ export const ENVIRONMENT_KIT_DEFINITIONS = freeze(nativeDefinitions.map(definiti
     height: y(definition.height), ...(interior ? { interior, insideHalfWidth: interior.halfWidth, insideHalfDepth: interior.halfDepth,
       entranceHalfWidth: interior.entranceHalfWidth, floorHeight: y(definition.floorHeight),
       floorBounds: { minX: x(-definition.footprint.halfWidth), maxX: x(definition.footprint.halfWidth), minZ: z(-definition.footprint.halfDepth), maxZ: z(definition.footprint.halfDepth) } } : {}) };
-}));
+}), TRIPO_TAVERN_DEFINITION]);
 
 const byId = new Map(ENVIRONMENT_KIT_DEFINITIONS.map(definition => [definition.id, definition]));
 export function getEnvironmentKitDefinition(kind, variant) { return byId.get(`${kind}:${variant}`) ?? null; }

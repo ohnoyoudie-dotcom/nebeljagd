@@ -14,6 +14,7 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Reusing a symbol preserves every independently editable placement without
 // repeating thousands of copies of the source paths in the exported SVG.
 const objectSymbols = [
+  '<g id="world-object-house-tripo-tavern"><rect x="-11" y="-8.89" width="22" height="17.78" rx=".35" fill="#926b47" stroke="#493a2e" stroke-width=".45"/><path d="M-10.4,-8H-2.35M0,-8H10.4V8H1.4M-1.5,8H-10.4V-8M2.9,-8V-3.5M2.9,-1.1V0H4.7M6.8,0H10.4" fill="none" stroke="#d6c39b" stroke-width=".5"/><path d="M-1.5,8H1.4M-2.35,-8H0" stroke="#f4e6bc" stroke-width=".7"/><path d="M-8.7,-2H-4.7V.86H-8.7ZM-8.7,2.2H-4.7V5.05H-8.7ZM-7.6,-7.4H-2.5V-5.5H-7.6Z" fill="#644b35" stroke="#bf9966" stroke-width=".2"/></g>',
   '<g id="world-object-wall"><rect x="-1.6" y="-.31" width="3.2" height=".62" fill="#8b9387" stroke="#4d5d53" stroke-width=".13"/><path d="M-.8,-.31V.31M0,-.31V.31M.8,-.31V.31" stroke="#535c50" stroke-width=".1"/></g>',
   '<g id="world-object-fence"><path d="M-1.6,-.16H1.6M-1.6,.16H1.6M-1.4,-.28V.28M0,-.28V.28M1.4,-.28V.28" stroke="#b08b54" stroke-width=".2"/></g>',
   '<g id="world-object-crate"><rect x="-.43" y="-.43" width=".86" height=".86" fill="#9e784d" stroke="#5e4931" stroke-width=".12"/><path d="M-.35,-.35 .35,.35M-.35,.35 .35,-.35" stroke="#e0bd7e" stroke-width=".1"/></g>',
@@ -43,6 +44,7 @@ const objectSymbols = [
 ];
 
 function objectSymbol(item) {
+  if (item.kind === 'house' && item.variant === 'kit-tripo-tavern') return 'house-tripo-tavern';
   if (item.kind === 'house' && item.variant === 'kit-taverne') return 'house-taverne';
   if (item.kind === 'house' && item.variant === 'kit-timber') return 'house-kit';
   if (item.kind === 'ruin' && item.variant === 'kit-arch') return 'ruin-kit';
@@ -58,7 +60,7 @@ function objectSymbol(item) {
 
 function objectSvg(item) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
-  const radius = item.radius ?? (item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : item.variant === 'kit-taverne' ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
+  const radius = item.radius ?? (item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
   const patch = item.kind === 'grass' || item.kind === 'flower';
   const tint = item.kind === 'flower' ? ({ 'rei-red': '#c77c7c', 'rei-gold': '#e0bd64' }[item.variant] ?? '#e7e4cb') : undefined;
   const tier = WEAPON_TYPES.includes(item.kind) ? (RARITIES[item.rarity] ?? RARITIES.common) : null;

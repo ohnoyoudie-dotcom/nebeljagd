@@ -483,6 +483,27 @@
         ],
         "span": 33.90296174716752
       }
+    },
+    {
+      "kind": "house",
+      "variant": "kit-tripo-tavern",
+      "label": "Wirtshaus · Tripo (neu)",
+      "file": "assets/catalog/house-kit-tripo-tavern.webp",
+      "bytes": 5968,
+      "sha256": "dbb784504ef10fe0de6bc377e75c854c960d3d4692982016420258cbf2a5efec",
+      "renderedBounds": {
+        "min": [
+          1109.0027685165405,
+          -0.587919294834137,
+          -8.885022163391113
+        ],
+        "max": [
+          1131.0009269714355,
+          5.053661823272705,
+          8.885710716247559
+        ],
+        "span": 32.29691161058426
+      }
     }
   ],
   "errors": []
