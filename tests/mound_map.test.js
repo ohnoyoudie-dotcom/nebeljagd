@@ -9,7 +9,8 @@ import { getMoundDefinition } from '../src/overgrown-mounds.js';
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const schema = JSON.parse(readFileSync(new URL('../worldmap.schema.json', import.meta.url), 'utf8'));
 // Legacy fixtures remain useful for recovery/imports even though these objects
-// are no longer part of the current island or offered for new placements.
+// are no longer offered for new placements. Their historical clearance is
+// checked against original seeded objects, independently of later user edits.
 const mounds = [
   makeWorldObject('mound', [47, -58], { id: 'legacy-knoll', variant: 'knoll', rotation: -.35 }),
   makeWorldObject('mound', [-34, -75], { id: 'legacy-ridge', variant: 'ridge', rotation: .6 }),
@@ -26,8 +27,7 @@ function coverRadius(item) {
     bow: .9, sword: .9, fireStaff: .9, iceStaff: .9, heart: .9 }[item.kind] ?? 1) * item.scale;
 }
 
-test('the cleared map has no mounds; legacy fixtures preserve route and loot clearance', () => {
-  assert.equal(map.objects.some(item => item.kind === 'mound'), false);
+test('retired mound fixtures preserve their original route and loot clearance', () => {
   assert.equal(getObjectDefinition('mound').retired, true);
   assert.ok(mounds.length >= 2);
   assert.ok(mounds.some(item => item.variant === 'ridge'));
@@ -43,7 +43,7 @@ test('the cleared map has no mounds; legacy fixtures preserve route and loot cle
     }
     assert.ok(distance(item.position, map.gameplay.spawnPosition) > radius + 8, `${item.id}: initial clearing`);
     for (const start of map.spawnAreas) assert.ok(distance(item.position, start.position) > start.radius + radius + .8, `${item.id}: blocked ${start.id}`);
-    for (const other of map.objects) if (other.id !== item.id) {
+    for (const other of map.objects.filter(object => object.id.startsWith('obj-'))) if (other.id !== item.id) {
       assert.ok(distance(item.position, other.position) > radius + coverRadius(other) + .8, `${item.id}: intersects ${other.id}`);
     }
   }

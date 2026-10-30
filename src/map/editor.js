@@ -267,6 +267,25 @@ function updatePlacementPreview() {
   circle.setAttribute('pointer-events', 'none');
   if (mode !== 'place') circle.setAttribute('stroke-dasharray', '5 3');
   svg.append(circle);
+  if (mode === 'terrainErase') {
+    const targets = eraseLandscapeAt(map, point, point, radius, 'surface');
+    const marks = document.createElementNS(SVG_NS, 'g'); marks.id = 'eraser-target-preview';
+    marks.setAttribute('pointer-events', 'none');
+    const footprints = new Set();
+    for (const item of [...targets.terrain, ...targets.biomes]) {
+      const key = `${item.position}:${item.radius}`;
+      if (footprints.has(key)) continue;
+      footprints.add(key);
+      const mark = document.createElementNS(SVG_NS, 'circle');
+      for (const [name, value] of Object.entries({cx:item.position[0], cy:item.position[1], r:item.radius,
+        fill:'#d88e7c', 'fill-opacity':'.24', stroke:'#ae5141', 'stroke-width':'1.5', 'stroke-dasharray':'4 3', 'vector-effect':'non-scaling-stroke'})) mark.setAttribute(name,value);
+      marks.append(mark);
+    }
+    svg.append(marks);
+    if (!pointer?.terrainEraser) landscapePanel.status(footprints.size
+      ? `${footprints.size} gemalte Flächen markiert · ganz entfernen`
+      : 'Hier ist keine gemalte Fläche. Der ursprüngliche Inselboden bleibt erhalten.');
+  }
   if (mode === 'erase') {
     const targets = objectEraserTargets(map, point, { radius, filter: $('eraser-filter').value });
     const marks = document.createElementNS(SVG_NS, 'g'); marks.id = 'eraser-target-preview';
@@ -399,6 +418,7 @@ function select(type, id, vertex = null) {
 }
 function renderProperties() {
   const feature = selectedFeature();
+  document.querySelector('.editor-layout').classList.toggle('has-selection', Boolean(feature) && mode === 'select');
   $('selection-empty').hidden = Boolean(feature);
   $('properties-form').hidden = !feature;
   landscapePanel?.renderSelected(feature, selection?.type);
@@ -673,9 +693,9 @@ function pointerEnd(event, cancelled = false) {
       if (!cancelled) toast(`Pinselstrich nicht übernommen: ${result.errors.slice(0, 2).join(' ')}`, true);
     } else if (JSON.stringify(map) !== JSON.stringify(finished.previous)) {
       remember(finished.previous);
-      const addedObject = finished.brush?.objects.at(-1), addedTerrain = finished.brush?.terrain.at(-1);
-      selection = addedObject ? { type: 'object', id: addedObject.id, vertex: null } : addedTerrain ? { type: 'terrain', id: addedTerrain.id, vertex: null } : null;
-      toast('Pinselstrich gespeichert. „Zurück“ stellt den ganzen Strich wieder her.');
+      // Keep painting without opening the properties drawer after every stroke.
+      selection = null;
+      toast(finished.terrainEraser ? 'Flächen entfernt. „Rückgängig“ holt den ganzen Strich zurück.' : 'Gemalt! Mit „Rückgängig“ kannst du den Strich zurücknehmen.');
     } else toast(finished.brush?.full ? 'Die Grenze für diesen Pinselstrich ist erreicht.' : 'Hier wurden keine Änderungen vorgenommen. Freie Fläche oder einen kleineren Pinsel wählen.');
     const message = cancelled ? 'Pinselstrich verworfen.' : finished.brush?.full ? 'Grenze erreicht · Strich gespeichert' : 'Leertaste halten zum Verschieben · Esc beendet';
     $('brush-status').textContent = message; landscapePanel.status(message);
@@ -726,7 +746,7 @@ function eraseTerrainSample(point) {
     gesture.count += terrainIds.size + biomeIds.size;
     for (const id of terrainIds) document.getElementById(`feature-terrain-${id}`)?.remove();
   }
-  gesture.last = point; landscapePanel.status(`${gesture.count} Boden-/Biomflächen entfernt · ein Schritt zurück stellt den Strich wieder her`); updatePlacementPreview();
+  gesture.last = point; landscapePanel.status('Flächen entfernt · Loslassen zum Speichern · Rückgängig holt sie zurück'); updatePlacementPreview();
 }
 function eraseObjectSample(point) {
   if (!pointer?.eraser) return;
@@ -894,6 +914,8 @@ function resetMap() {
 function setMode(next) {
   cancelPointer();
   mode = next;
+  if (placementModes.includes(mode)) selection = null;
+  renderProperties();
   for (const type of ['select', 'pan']) {
     $(`tool-${type}`).classList.toggle('active', mode === type);
     $(`tool-${type}`).setAttribute('aria-pressed', mode === type ? 'true' : 'false');
@@ -902,17 +924,24 @@ function setMode(next) {
   $('place-object').setAttribute('aria-pressed', mode === 'place' ? 'true' : 'false');
   $('grass-brush').classList.toggle('active', mode === 'brush');
   $('grass-brush').setAttribute('aria-pressed', mode === 'brush' ? 'true' : 'false');
-  $('grass-brush').textContent = mode === 'brush' ? 'Graspinsel aktiv · Esc beendet' : 'Graspinsel aktivieren';
+  $('grass-brush').textContent = mode === 'brush' ? 'Grasmalen beenden' : 'Hohes Gras malen';
   $('object-eraser').classList.toggle('active', mode === 'erase');
   $('object-eraser').setAttribute('aria-pressed', mode === 'erase' ? 'true' : 'false');
-  $('object-eraser').textContent = mode === 'erase' ? 'Radiergummi aktiv · Esc beendet' : 'Radiergummi aktivieren';
+  $('object-eraser').textContent = mode === 'erase' ? 'Radieren beenden' : 'Objekte radieren';
   if (mode === 'erase') {
     layers.showObjects = true; $('layer-objects').checked = true;
     $('feature-filter').value = 'object'; $('object-kind-filter').value = 'all'; $('feature-search').value = '';
     renderList();
   }
   landscapePanel?.sync();
-  $('canvas-instruction').textContent = ['terrain','scatter','biome'].includes(mode) ? 'Ziehen: Landschaft gestalten · Leertaste: verschieben · Esc bricht ab' : mode === 'windzone' ? 'Auf die Insel klicken: lokale Windzone setzen · Esc beendet' : mode === 'terrainErase' ? 'Ziehen: gemalte Bodenflächen entfernen · Esc bricht ab' : mode === 'erase' ? 'Ziehen: ganze Objekte radieren · Mittelpunkt berühren · Esc bricht ab' : mode === 'brush' ? 'Ziehen: Versteckgras malen · Leertaste: Karte verschieben · Esc beendet' : mode === 'place' ? 'Auf die Insel klicken, um ein Objekt zu setzen · Esc beendet' : mode === 'pan' ? 'Karte ziehen · Mausrad oder + / − zum Zoomen' : 'Element auswählen und ziehen · Punkte ändern die Form';
+  const instructions = {
+    biome: 'Ziehe auf der Insel, um Landschaft zu malen.', terrain: 'Ziehe auf der Insel, um die Bodenfarbe zu ändern.',
+    scatter: 'Ziehe auf der Insel, um Objekte zu verteilen.', windzone: 'Tippe auf die Insel, um eine Windzone zu setzen.',
+    terrainErase: 'Berühre gemalte Flächen, um sie zu entfernen.', erase: 'Ziehe über die markierten Objektmittelpunkte.',
+    brush: 'Ziehe auf der Insel, um hohes Gras zu malen.', place: 'Tippe auf die Insel, um ein Objekt zu setzen.',
+    pan: 'Ziehe die Karte. Mit + und − kannst du zoomen.', select: 'Tippe ein Element an. Ziehe es an eine neue Stelle.',
+  };
+  $('canvas-instruction').textContent = instructions[mode] ?? instructions.select;
   renderMap();
 }
 

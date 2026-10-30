@@ -296,8 +296,10 @@ export function createBiomeStroke(map, options = {}) {
   });
 }
 
-/** Same swept-centre semantics as the object eraser. Returning references and
- * IDs lets the existing editor's snapshot history restore the exact documents. */
+/** Erase painted surfaces by touching their visible circular footprints, not
+ * their hidden centres. A swept segment catches fast mouse and touch gestures.
+ * Entire saved stamps are returned, allowing one-step undo without new masks
+ * or changes to the runtime map format. Wind zones retain centre selection. */
 export function eraseLandscapeAt(map, start, end = start, radius = 4, target = 'terrain') {
   if (!pointValid(start) || !pointValid(end)) return { terrain: [], biomes: [], windZones: [], terrainIds: [], biomeIds: [], windZoneIds: [] };
   number(radius, 4, .5, 80, 'Radiergummi-Radius');
@@ -306,6 +308,9 @@ export function eraseLandscapeAt(map, start, end = start, radius = 4, target = '
     : target === 'surface' ? ['terrain', 'biomes']
     : target === 'biome' || target === 'biomes' ? ['biomes']
     : target === 'wind' || target === 'windZones' ? ['windZones'] : ['terrain'];
-  for (const key of keys) result[key] = landscape[key].filter(item => distanceToSegment(item.position, start, end) <= radius);
+  for (const key of keys) result[key] = landscape[key].filter(item => {
+    const footprintRadius = key === 'windZones' ? 0 : item.radius ?? 0;
+    return distanceToSegment(item.position, start, end) <= radius + footprintRadius;
+  });
   return { ...result, terrainIds: result.terrain.map(item => item.id), biomeIds: result.biomes.map(item => item.id), windZoneIds: result.windZones.map(item => item.id) };
 }

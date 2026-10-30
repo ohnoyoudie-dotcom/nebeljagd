@@ -1,0 +1,311 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4178",
+  "checks": [
+    {
+      "name": "The untouched map opens in a four-action editor with an obvious painting palette, permanent undo controls and no empty inspector",
+      "evidence": {
+        "objects": 961
+      }
+    },
+    {
+      "name": "A landscape card immediately paints matching ground and biome fields; one Undo/Redo restores the complete stroke",
+      "evidence": null
+    },
+    {
+      "name": "The visible surface eraser removes both painted layers from their edges without hunting hidden centres, while preserving loot and base regions",
+      "evidence": null
+    },
+    {
+      "name": "Grass-only and object erasing target the selected content and preserve exact data when undone",
+      "evidence": null
+    },
+    {
+      "name": "Changing to Objects or More stops the previous paint tool, preventing accidental new brush strokes",
+      "evidence": null
+    },
+    {
+      "name": "Optional ground-only detail painting remains available under the painting area without creating a second biome layer",
+      "evidence": null
+    },
+    {
+      "name": "Painted and erased map data survive normal JSON saving, draft recovery and JSON import",
+      "evidence": null
+    },
+    {
+      "name": "An exported standalone HTML editor reopens offline with its exact map, working tools and no duplicate controls",
+      "evidence": null
+    },
+    {
+      "name": "The edited landscape and retained objects transfer unchanged to the actual 3D game",
+      "evidence": {
+        "biomeAtSpawn": "snow",
+        "terrain": 22,
+        "biomes": 10
+      }
+    },
+    {
+      "name": "Primary tools remain reachable with at least 44px targets and no horizontal page overflow at desktop, tablet and phone sizes",
+      "evidence": [
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 900
+          },
+          "scrollWidth": 1280,
+          "nav": [
+            {
+              "x": 14,
+              "y": 97,
+              "width": 125.5,
+              "height": 50,
+              "bottom": 147,
+              "right": 139.5
+            },
+            {
+              "x": 147.5,
+              "y": 97,
+              "width": 125.5,
+              "height": 50,
+              "bottom": 147,
+              "right": 273
+            },
+            {
+              "x": 14,
+              "y": 155,
+              "width": 125.5,
+              "height": 50,
+              "bottom": 205,
+              "right": 139.5
+            },
+            {
+              "x": 147.5,
+              "y": 155,
+              "width": 125.5,
+              "height": 50,
+              "bottom": 205,
+              "right": 273
+            }
+          ],
+          "map": {
+            "x": 288,
+            "y": 207,
+            "width": 992,
+            "height": 599,
+            "bottom": 806,
+            "right": 1280
+          },
+          "undo": {
+            "x": 1039.640625,
+            "y": 93,
+            "width": 108.0625,
+            "height": 44,
+            "bottom": 137,
+            "right": 1147.703125
+          }
+        },
+        {
+          "viewport": {
+            "width": 1024,
+            "height": 768
+          },
+          "scrollWidth": 1024,
+          "nav": [
+            {
+              "x": 14,
+              "y": 96,
+              "width": 111.5,
+              "height": 50,
+              "bottom": 146,
+              "right": 125.5
+            },
+            {
+              "x": 133.5,
+              "y": 96,
+              "width": 111.5,
+              "height": 50,
+              "bottom": 146,
+              "right": 245
+            },
+            {
+              "x": 14,
+              "y": 154,
+              "width": 111.5,
+              "height": 50,
+              "bottom": 204,
+              "right": 125.5
+            },
+            {
+              "x": 133.5,
+              "y": 154,
+              "width": 111.5,
+              "height": 50,
+              "bottom": 204,
+              "right": 245
+            }
+          ],
+          "map": {
+            "x": 260,
+            "y": 200,
+            "width": 764,
+            "height": 474,
+            "bottom": 674,
+            "right": 1024
+          },
+          "undo": {
+            "x": 815.578125,
+            "y": 90,
+            "width": 95.234375,
+            "height": 44,
+            "bottom": 134,
+            "right": 910.8125
+          }
+        },
+        {
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "scrollWidth": 768,
+          "nav": [
+            {
+              "x": 10,
+              "y": 82,
+              "width": 110,
+              "height": 48,
+              "bottom": 130,
+              "right": 120
+            },
+            {
+              "x": 127,
+              "y": 82,
+              "width": 110,
+              "height": 48,
+              "bottom": 130,
+              "right": 237
+            },
+            {
+              "x": 10,
+              "y": 137,
+              "width": 110,
+              "height": 48,
+              "bottom": 185,
+              "right": 120
+            },
+            {
+              "x": 127,
+              "y": 137,
+              "width": 110,
+              "height": 48,
+              "bottom": 185,
+              "right": 237
+            }
+          ],
+          "map": {
+            "x": 248,
+            "y": 261.390625,
+            "width": 520,
+            "height": 672.609375,
+            "bottom": 934,
+            "right": 768
+          },
+          "undo": {
+            "x": 258,
+            "y": 131,
+            "width": 247.5,
+            "height": 44,
+            "bottom": 175,
+            "right": 505.5
+          }
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "scrollWidth": 390,
+          "nav": [
+            {
+              "x": 8,
+              "y": 74.375,
+              "width": 89.75,
+              "height": 44,
+              "bottom": 118.375,
+              "right": 97.75
+            },
+            {
+              "x": 102.75,
+              "y": 74.375,
+              "width": 89.75,
+              "height": 44,
+              "bottom": 118.375,
+              "right": 192.5
+            },
+            {
+              "x": 197.5,
+              "y": 74.375,
+              "width": 89.75,
+              "height": 44,
+              "bottom": 118.375,
+              "right": 287.25
+            },
+            {
+              "x": 292.25,
+              "y": 74.375,
+              "width": 89.75,
+              "height": 44,
+              "bottom": 118.375,
+              "right": 382
+            }
+          ],
+          "map": {
+            "x": 0,
+            "y": 426.375,
+            "width": 390,
+            "height": 344.625,
+            "bottom": 771,
+            "right": 390
+          },
+          "undo": {
+            "x": 197.5,
+            "y": 322.375,
+            "width": 90.25,
+            "height": 44,
+            "bottom": 366.375,
+            "right": 287.75
+          }
+        }
+      ]
+    },
+    {
+      "name": "Native tablet touch paints a biome in one undo step and a cancelled gesture restores the entire pre-stroke map",
+      "evidence": null
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/simple-editor-overview.png",
+    "docs/simple-editor-eraser.png",
+    "docs/simple-editor-768.png",
+    "docs/simple-editor-390.png"
+  ],
+  "limits": "Chromium with CPU SwiftShader and emulated native touch; no physical iPad performance measurement.",
+  "delivery": {
+    "mode": "Actual welt/ standalone HTML served by local HTTP",
+    "files": {
+      "map-editor.html": {
+        "bytes": 27248077,
+        "sha256": "5c9a4bf70cde872369263d149dece56506ed05dfa0dcc98ff6c48d6e6f8d4d0a"
+      },
+      "nebeljagd.html": {
+        "bytes": 42734338,
+        "sha256": "1d841b03f2a446f46beefd249df988f305c68a5d2c561d6bf80d0496c9034cf7"
+      },
+      "index.html": {
+        "bytes": 42734338,
+        "sha256": "1d841b03f2a446f46beefd249df988f305c68a5d2c561d6bf80d0496c9034cf7"
+      }
+    },
+    "unexpectedRequests": []
+  }
+}

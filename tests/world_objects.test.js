@@ -19,10 +19,11 @@ test('world objects are persisted editable instances while the authoring generat
   assert.ok(seeded.length > 900, 'authoring generator retains grass, bushes, loot and other active scenery');
   assert.deepEqual(validateWorldmap(base), { valid: true, errors: [], warnings: [] });
   const stats = getWorldmapStats(base);
-  for (const kind of ['tree', 'rock', 'mound', 'flower']) assert.equal(stats.objectCounts[kind] ?? 0, 0, `${kind} is retired from the project map`);
   assert.equal(seeded.some(isRetiredScenery), false, 'Explicit reseeding must not bring retired scenery back');
-  assert.equal(stats.objectCounts.house ?? 0, 0, 'The starting map is cleared for the new building collection');
-  assert.equal(base.objects.some(isRetiredBuilding), false);
+  // Authoring restrictions must not reject objects deliberately added through
+  // an older editor or imported by the map owner after the one-time cleanup.
+  assert.deepEqual(normalizeWorldmap(base).objects, base.objects);
+  assert.equal(seeded.some(isRetiredBuilding), false);
   assert.equal(seeded.some(item => item.kind === 'house'), false, 'Explicit scenery reseeding must not bring old houses back');
   assert.equal(seeded.some(item => item.id.startsWith('chest-obj-house-')), false, 'No orphaned stock chests from retired houses');
   assert.ok(stats.objectCounts.grass >= 500);
@@ -51,10 +52,12 @@ test('remaining seeded grass and bushes keep paths, rivers and distributed start
   }
 });
 
-test('retiring scenery preserves all existing loot and the remaining seeded placements exactly', () => {
+test('retiring scenery preserves the original loot and remaining seeded placements while allowing new authored objects', () => {
   const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
   const lootKinds = new Set(['heart', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff']);
-  const loot = base.objects.filter(item => lootKinds.has(item.kind));
+  // Original generator IDs use "obj-"; later manual placements use
+  // "object-" and must not invalidate the preservation proof for these 66.
+  const loot = base.objects.filter(item => lootKinds.has(item.kind) && item.id.startsWith('obj-'));
   assert.equal(loot.length, 66);
   // Captured from work 39c269f before retiring tree/rock/mound/flower. This
   // covers IDs, positions, rotations, scales, names and weapon rarities.
@@ -112,7 +115,7 @@ test('chests replace crystals and every weapon tier survives authoring and expor
   const { renderWorldmapSvg } = await import('../src/map/render.js');
   const map = clone(); map.objects = [];
   assert.equal(base.objects.some(item => item.kind === 'crystal'), false);
-  const chests = base.objects.filter(item => item.kind === 'chest');
+  const chests = base.objects.filter(item => item.kind === 'chest' && item.id.startsWith('obj-'));
   assert.equal(chests.length, 16, 'Remaining outdoor and starter chests survive the building cleanup');
   assert.ok(chests.some(item => item.id === 'obj-chest-start'));
   assert.equal(chests.some(item => item.id.startsWith('chest-obj-house-')), false);

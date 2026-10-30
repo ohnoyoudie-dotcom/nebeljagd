@@ -1,10 +1,10 @@
 # Nebeljagd · Die Nebelinsel
 
-**Entwicklungsstand auf `work`:** Der bestehende Editor enthält jetzt
-Vegetations-, Boden-, Streu- und Biompinsel, globale und lokale Windsteuerung
-sowie eine animierte Vegetationsvorschau. Höhe, Dichte, Farbwerte und eigene
-Vorlagen werden mit der Karte gespeichert. Anleitung und Prüfgrenzen:
-[`docs/landscape-tools.md`](docs/landscape-tools.md).
+**Entwicklungsstand auf `work`:** Der Editor ist in **Malen, Objekte,
+Radieren und Mehr** gegliedert. Landschaftskarten starten direkt den Pinsel;
+der Flächenradierer entfernt Boden und Bewuchs gemeinsam. Feineinstellungen
+sind aufklappbar, Rückgängig bleibt erreichbar. Anleitung:
+[`docs/simple-editor.md`](docs/simple-editor.md).
 Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
@@ -13,7 +13,7 @@ Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 Spieleravatar mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
 bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
 
-Das neue Tripo-Wirtshaus ist unter **Objekte & Verteilung → Haus →
+Das neue Tripo-Wirtshaus ist unter **Objekte → Haus →
 Wirtshaus · Tripo (neu)** auswählbar. Es enthält eine Modellvorschau, offene
 Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
@@ -23,8 +23,9 @@ Holzwagen, Holzfass, Steinbrunnen und die Schatztruhe ergänzen den
 Tripo-Katalog. Bedienung und aktueller Prüfstand:
 [`docs/tripo-props-integration.md`](docs/tripo-props-integration.md).
 Bäume, Felsen (einschließlich der bisherigen Tripo-Felsen), Erhöhungen und
-Blumen sind vorübergehend aus Karte und Editor-Auswahl entfernt. Beute bleibt
-erhalten; ältere Entwürfe lassen sich gezielt und rückgängig machbar bereinigen.
+Blumen wurden aus der damaligen Karte und der Auswahl entfernt. Spätere
+Benutzerplatzierungen bleiben erhalten; ältere Entwürfe lassen sich gezielt
+und rückgängig machbar bereinigen.
 Details: [`docs/scenery-cleanup.md`](docs/scenery-cleanup.md).
 
 Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
@@ -40,15 +41,14 @@ Teil der Welt. Begehbare Tripo-Wirtshäuser lassen sich im Editor platzieren.
 Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Häuser,
 Grasflächen, Sträucher, Ruinen, Schreine und Gegenstände
 lassen sich anlegen, verschieben, drehen, skalieren, duplizieren und löschen.
-**„In 3D testen“** öffnet den aktuellen Entwurf im Spiel. Varianten zeigen echte
+**„Spielen“** öffnet den aktuellen Entwurf im Spiel. Varianten zeigen echte
 Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
-Die bereinigte Ausgangskarte enthält 953 gespeicherte Weltobjekte: 739
-Grasflächen, 129 Sträucher, 66 Sammel-/Beuteobjekte (darunter 16 Truhen),
-zehn Holzkisten, fünf Ruinen und vier Schreine. Bäume, Felsen, Erhöhungen,
-Blumen und die früheren Häuser sind entfernt; neue Gebäude werden bewusst
-im Editor gesetzt. Zehn Startbereiche bieten Platz
+Die aktuelle Karte enthält 961 gespeicherte Weltobjekte, einschließlich der
+acht später selbst platzierten Modelle. Alle ursprünglichen 66 Sammel- und
+Beuteobjekte bleiben erhalten; eine zusätzliche Tripo-Truhe ist dazugekommen.
+Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
 Multiplayer, Teams und Schreinfragen sind noch nicht aktiv.
@@ -106,7 +106,7 @@ Einzeldateien mit eingebettetem JavaScript, CSS und allen benötigten Modellen:
 SVG, Schema und eine kurze Anleitung. Das ZIP entpacken und die Dateien im
 gemeinsamen Ordner lassen.
 
-Für „In 3D testen“ bei lokal geöffneten Dateien beide HTML-Dateien in denselben
+Für „Spielen“ bei lokal geöffneten Dateien beide HTML-Dateien in denselben
 Ordner legen. Alternativ im Editor JSON speichern und im Spiel über **„Eigene
 Karte laden“** öffnen. Normales Spielen und Bearbeiten benötigen keine externen
 Grafikdienste, Zugangsdaten oder heruntergeladenen Schriftarten. Die Quelldateien

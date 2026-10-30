@@ -35,12 +35,14 @@ test('legacy flower-meadow grass becomes ordinary meadow with all authored param
   assert.equal(grass.vegetation.type, 'flowers');
 });
 
-test('retired scenery is absent from the default map and authoring palette but legacy imports remain valid', () => {
+test('retired scenery is absent from the authoring palette while authored maps and legacy imports remain valid', () => {
   const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
-  assert.equal(map.objects.some(isRetiredScenery), false);
   assert.equal(AUTHORING_OBJECT_CATALOG.some(isRetiredScenery), false);
-  assert.equal(removeRetiredScenery(map).totalChanged, 0);
+  assert.deepEqual(normalizeWorldmap(map), map, 'loading the map never silently removes later user placements');
+  const clean = { ...map, objects: [obj('grass', 'tall'), obj('chest', 'kit-tripo-chest'), obj('house', 'kit-tripo-tavern')] };
+  assert.equal(removeRetiredScenery(clean).totalChanged, 0);
   const legacy = { ...map, objects: [obj('tree', 'oak'), obj('rock', 'kit-tripo-03'), obj('flower', 'rei-white'), obj('mound', 'ridge')] };
   assert.deepEqual(validateWorldmap(legacy).errors, []);
   assert.deepEqual(normalizeWorldmap(legacy), legacy, 'import is preserved until explicit cleanup');
+  assert.deepEqual(removeRetiredScenery(legacy).removedObjects, legacy.objects);
 });
