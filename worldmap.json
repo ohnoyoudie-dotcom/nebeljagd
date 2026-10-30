@@ -1318,13 +1318,13 @@
   },
   "objects": [
     {
-      "id": "object-house-mvvdx59r-1",
+      "id": "object-house-mvviwx0g-2",
       "name": "Haus",
       "kind": "house",
-      "variant": "kit-tripo-castle",
+      "variant": "kit-tripo-tavern",
       "position": [
-        -17.1,
-        -85.8
+        9.5,
+        -66.1
       ],
       "rotation": 0,
       "scale": 1
