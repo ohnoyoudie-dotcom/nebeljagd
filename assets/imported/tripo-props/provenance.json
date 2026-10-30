@@ -1,0 +1,243 @@
+{
+  "package": "nebeljagd-tripo-props",
+  "version": 1,
+  "sourceOrigin": "User supplied Tripo GLBs in project assets/inbox and explicitly requested editor/game integration.",
+  "provider": {
+    "name": "Tripo (original sources)",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-props.py",
+    "scriptSha256": "51444961b4f0e01fda61a9f1e2d2e7fa1446c1636bf0db9c75a91fd9bd9494d7",
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-props.py",
+    "method": "Uniform metric scale, horizontal centering and ground offset, sub-millimetre duplicate-vertex/degenerate-face cleanup retaining loop UVs, collapse decimation preserving original UVs/materials, downsample embedded textures to 1024. No original modification."
+  },
+  "assets": [
+    {
+      "id": "barrel",
+      "source": {
+        "path": "assets/inbox/wooden barrel 3d model.glb",
+        "bytes": 63365624,
+        "sha256": "4edd81d9371ee2bc54c7820fae59f2e543885c751abe60b979b59c99abccbe7f",
+        "triangles": 1947286,
+        "vertices": 1180165,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/barrel.glb",
+        "bytes": 546512,
+        "sha256": "3b0b2bf34d4c3e5f1a9aae92923c734042715212fdcf8a94960daf9b23a49f88",
+        "triangles": 8000,
+        "vertices": 7087,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "rock-01",
+      "source": {
+        "path": "assets/inbox/rock 3d model.glb",
+        "bytes": 62504720,
+        "sha256": "70b18784f55149bc637a662817e43d115f6f261959e61eeb53cd59f6aba70541",
+        "triangles": 1916856,
+        "vertices": 1137078,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/rock-01.glb",
+        "bytes": 495256,
+        "sha256": "31bb0175c17e460e3e8f7925891a1637c7d72c4dc0533b21cb401f3b2dc3b687",
+        "triangles": 4000,
+        "vertices": 3434,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "rock-02",
+      "source": {
+        "path": "assets/inbox/rock boulder 3d model.glb",
+        "bytes": 63889460,
+        "sha256": "30448782ea40dcf3b4160ab8de1b47cfd81cd105905938aaeb5679a08a92edd9",
+        "triangles": 1943395,
+        "vertices": 1166632,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/rock-02.glb",
+        "bytes": 515488,
+        "sha256": "0009410bf736dc179a6ddd7e154fcf8b295c04294863aea0d87bbc5e33860a3b",
+        "triangles": 4999,
+        "vertices": 4093,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "rock-03",
+      "source": {
+        "path": "assets/inbox/rock formation 3d model.glb",
+        "bytes": 62734552,
+        "sha256": "947bbfe030ebb0a3731a48b874ea53054fde754ad557c045da107d18c7b98e73",
+        "triangles": 1922531,
+        "vertices": 1150021,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/rock-03.glb",
+        "bytes": 492240,
+        "sha256": "2a437ac5a73fb9b84b9e39d39acad8e2efa53ed3ad238dcdf58b8f9607ad9c3d",
+        "triangles": 6999,
+        "vertices": 4933,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "wagon",
+      "source": {
+        "path": "assets/inbox/wooden wagon 3d model.glb",
+        "bytes": 62397620,
+        "sha256": "a704b8ff5898b4ed33b5289612a07bd432a95f6b61bc9bd8dfbf364c80f7a507",
+        "triangles": 1946355,
+        "vertices": 1131737,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/wagon.glb",
+        "bytes": 835928,
+        "sha256": "7257e8c02089dd783c1783a502dbe95d6afca7da52e06e2ce831421fd8befc83",
+        "triangles": 13999,
+        "vertices": 11900,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "well",
+      "source": {
+        "path": "assets/inbox/medieval well 3d model.glb",
+        "bytes": 61255364,
+        "sha256": "60e2b4861914ab054755196d07e5adb1bf449581d3471ad8ef1454cd3300c440",
+        "triangles": 1888191,
+        "vertices": 1118224,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/well.glb",
+        "bytes": 821704,
+        "sha256": "497637e68ff1516396447d8c4d7144ac2f7733bd718de92bd86a489880725f66",
+        "triangles": 13994,
+        "vertices": 11979,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    }
+  ],
+  "evidenceBoundary": "Static validation plus actual Blender render. Project GPU import/collisions and artistic approval are checked separately."
+}

@@ -2,9 +2,11 @@
 
 Die vom Nutzer hochgeladene Datei
 `assets/inbox/medieval tavern interior 3d model.glb` ist als zusätzliche
-Hausvariante **Wirtshaus · Tripo (neu)** eingebunden. Die ältere Taverne und
-das bisherige Waldgasthaus bleiben verfügbar. Die Ausgangskarte wird durch
-die Registrierung nicht um zusätzliche Gebäude verändert.
+Hausvariante **Wirtshaus · Tripo (neu)** eingebunden. Die alten Hausvarianten
+wurden inzwischen aus der Auswahl für neue Platzierungen und aus der
+Ausgangskarte entfernt. Vorhandene Entwürfe bleiben lesbar und können gezielt
+bereinigt werden; siehe [Tripo-Gegenstände und Gebäudebasis](tripo-props-integration.md).
+Das neue Wirtshaus bleibt auswählbar und wird nicht automatisch verteilt.
 
 ## Ausprobieren
 

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createWorldSpatialModel } from '../src/generated-spatial.js';
+import { makeWorldObject } from '../src/map/objects.js';
 
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
@@ -10,9 +11,12 @@ test('generated geography follows editable coast, regions and house plateaus', (
   assert.equal(spatial.isLand(30, -42), true);
   assert.equal(spatial.isLand(-599, -719), false);
   for (const region of map.regions) assert.equal(spatial.regionAt(...region.label).biome, region.biome);
-  const center = spatial.groundAt(30, -60);
+  const withHouse = structuredClone(map);
+  withHouse.objects.push(makeWorldObject('house', [30, -60], { id: 'test-house-plateau' }));
+  const houseTerrain = createWorldSpatialModel(withHouse);
+  const center = houseTerrain.groundAt(30, -60);
   assert.ok(Number.isFinite(center));
-  assert.ok(Math.abs(spatial.groundAt(35, -60) - center) < 1e-6);
+  assert.ok(Math.abs(houseTerrain.groundAt(35, -60) - center) < 1e-6);
   const modified = structuredClone(map);
   modified.island.points = [[-100, -100], [100, -100], [100, 100], [-100, 100]];
   const other = createWorldSpatialModel(modified);

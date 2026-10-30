@@ -93,7 +93,8 @@ test('landscape imports reject nonfinite values, unsupported shaders, invalid ty
     map => { map.landscape.presets[0].vegetation.height = 3.01; },
     map => { map.landscape.biomes[0].presetId = '../outside'; },
     map => { map.objects.find(o => o.kind === 'grass').vegetation.type = 'unsupported'; },
-    map => { map.objects.find(o => o.kind === 'house').vegetation = { type: 'tall' }; },
+    map => { map.objects.push({ id: 'test-house-invalid-vegetation', name: 'Haus', kind: 'house',
+      variant: 'kit-tripo-tavern', position: [30, -60], rotation: 0, scale: 1, vegetation: { type: 'tall' } }); },
     map => { map.landscape = JSON.parse('{"version":1,"__proto__":{"polluted":true}}'); },
   ];
   for (const [index, alter] of bad.entries()) {

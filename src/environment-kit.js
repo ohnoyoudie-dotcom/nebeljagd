@@ -9,6 +9,12 @@ import oakGreen from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_green.glb?ur
 import oakAutumn from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_autumn.glb?url&inline';
 import tavern from '../Blender/Taverne.glb?url&inline';
 import tripoTavern from '../assets/imported/tripo-tavern/runtime/tavern.glb?url&inline';
+import tripoWagon from '../assets/imported/tripo-props/runtime/wagon.glb?url&inline';
+import tripoBarrel from '../assets/imported/tripo-props/runtime/barrel.glb?url&inline';
+import tripoWell from '../assets/imported/tripo-props/runtime/well.glb?url&inline';
+import tripoRock01 from '../assets/imported/tripo-props/runtime/rock-01.glb?url&inline';
+import tripoRock02 from '../assets/imported/tripo-props/runtime/rock-02.glb?url&inline';
+import tripoRock03 from '../assets/imported/tripo-props/runtime/rock-03.glb?url&inline';
 import timberHouse from '../Blender/nebeljagd_umwelt_kit_v1/assets/house_timbersmall.glb?url&inline';
 import tallGrass from '../Blender/nebeljagd_umwelt_kit_v1/assets/grass_tall_patch.glb?url&inline';
 import rockCluster from '../Blender/nebeljagd_umwelt_kit_v1/assets/rock_cluster.glb?url&inline';
@@ -23,6 +29,9 @@ const urls = {
   'tree:kit-oak-green': oakGreen, 'tree:kit-oak-autumn': oakAutumn,
   'house:kit-taverne': tavern,
   'house:kit-tripo-tavern': tripoTavern,
+  'wagon:kit-tripo-wagon': tripoWagon, 'barrel:kit-tripo-barrel': tripoBarrel,
+  'well:kit-tripo-well': tripoWell,
+  'rock:kit-tripo-01': tripoRock01, 'rock:kit-tripo-02': tripoRock02, 'rock:kit-tripo-03': tripoRock03,
   'house:kit-timber': timberHouse, 'grass:kit-tall': tallGrass,
   'rock:kit-cluster': rockCluster, 'rock:kit-single': rockSingle,
   'ruin:kit-arch': ruinArch, 'wall:kit-stone': stoneWall,
@@ -171,10 +180,11 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
     const gltf = await new GLTFLoader().loadAsync(urls[key]); gltf.scene.updateWorldMatrix(true, true);
     const { scale, offset } = definition.normalization;
     const transform = new THREE.Matrix4().makeScale(scale, scale, scale).multiply(new THREE.Matrix4().makeTranslation(-offset[0], -offset[1], -offset[2]));
-    if (key === 'house:kit-tripo-tavern') {
-      // This prepared, roofless model is already measured in metres. Preserve
-      // its UVs, normals and PBR maps: the legacy timber-house clipping/repaint
-      // below would remove its plaster and destroy the authored appearance.
+    if (key === 'house:kit-tripo-tavern' || definition.textured) {
+      // Prepared Tripo assets are already measured in metres. Preserve UVs,
+      // normals and PBR maps; the legacy painted-vertex path discards them.
+      // Geometry/materials are loaded once per variant, then shared by the
+      // scenery renderer's chunked instances, including destructible barrels.
       const parts = [], materials = new Map();
       const copyMaterial = source => {
         if (!materials.has(source.uuid)) materials.set(source.uuid, source.clone());
@@ -192,7 +202,7 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
         mesh.geometry.dispose();
         for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) material.dispose();
       });
-      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true, textured: true });
+      result.set(key, { ...definition, parts, roofRemoved: kind === 'house', embedded: true, textured: true });
       return;
     }
     if (key === 'house:kit-taverne') {

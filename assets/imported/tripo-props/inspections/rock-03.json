@@ -1,0 +1,252 @@
+{
+  "id": "rock-03",
+  "label": "Hoher Felsen",
+  "source": {
+    "path": "assets/inbox/rock formation 3d model.glb",
+    "bytes": 62734552,
+    "sha256": "947bbfe030ebb0a3731a48b874ea53054fde754ad557c045da107d18c7b98e73",
+    "triangles": 1922531,
+    "vertices": 1150021,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-props/runtime/rock-03.glb",
+    "bytes": 492240,
+    "sha256": "2a437ac5a73fb9b84b9e39d39acad8e2efa53ed3ad238dcdf58b8f9607ad9c3d",
+    "triangles": 6999,
+    "vertices": 4933,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 2.645616547078234,
+    "blenderSourceBounds": [
+      [
+        -0.4432983994483948,
+        -0.4913941025733948,
+        0.0
+      ],
+      [
+        0.4428711533546448,
+        0.4913635849952698,
+        0.964324951171875
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -1.1722323894500732,
+        -1.2999999523162842,
+        0.0
+      ],
+      [
+        1.1722323894500732,
+        1.2999999523162842,
+        2.551234006881714
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      -0.0005651712417602539,
+      -4.035234451293945e-05,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      -0.00030356645584106445,
+      -0.0008791089057922363,
+      -0.0026212187949568033
+    ],
+    "gltfBounds": [
+      [
+        -1.174299716949463,
+        0.0,
+        -1.301117181777954
+      ],
+      [
+        1.174299716949463,
+        2.553933620452881,
+        1.301117181777954
+      ]
+    ],
+    "dimensions": [
+      2.348599433898926,
+      2.553933620452881,
+      2.602234363555908
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 465,
+      "gltfBounds": [
+        [
+          -1.1391644477844238,
+          0.0,
+          -1.2482411861419678
+        ],
+        [
+          1.1722793579101562,
+          0.14951865375041962,
+          1.271958351135254
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 756,
+      "gltfBounds": [
+        [
+          -1.174299716949463,
+          0.15102362632751465,
+          -1.301117181777954
+        ],
+        [
+          1.174299716949463,
+          0.5494052767753601,
+          1.301117181777954
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 624,
+      "gltfBounds": [
+        [
+          -1.1446068286895752,
+          0.5502391457557678,
+          -1.3005602359771729
+        ],
+        [
+          1.136983871459961,
+          0.9498023390769958,
+          1.190598487854004
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.95,
+        1.5
+      ],
+      "vertices": 790,
+      "gltfBounds": [
+        [
+          -1.0055439472198486,
+          0.9502269625663757,
+          -1.1897492408752441
+        ],
+        [
+          1.137821912765503,
+          1.4999452829360962,
+          1.1139943599700928
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        1.5,
+        3.0
+      ],
+      "vertices": 865,
+      "gltfBounds": [
+        [
+          -0.6892144083976746,
+          1.5004651546478271,
+          -1.0729060173034668
+        ],
+        [
+          0.9589839577674866,
+          2.553933620452881,
+          0.7792642116546631
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.00026000000000000003,
+    "before": {
+      "vertices": 1150021,
+      "faces": 1922531
+    },
+    "after": {
+      "vertices": 961232,
+      "faces": 1922463
+    }
+  },
+  "textures": [
+    {
+      "name": "rock_formation_3d_model_basecolor",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "rock_formation_3d_model_normal",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "rock_formation_3d_model_rm",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 7000,
+    "textureLimit": 1024,
+    "fileLimitBytes": 4194304
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  }
+}

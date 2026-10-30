@@ -1,0 +1,56 @@
+{
+  "name": "nebeljagd-tripo-chest",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "source": {
+    "path": "assets/inbox/treasure chest 3d model.glb",
+    "sha256": "ec7cf9035da10d994273d877f05ac542f70329057fa95b3c6016c761683c3ca8"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1071,
+      "sha256": "ae92d110d5220680f7041afa1af41a51d37d66120d66b77b43f313c426648daa"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 2289,
+      "sha256": "d4963ca2b3a3914a72ec3cf7af599ba8225139770ee9f9d3ad44c59b0c5ff3cf"
+    },
+    {
+      "path": "previews/runtime-closed.png",
+      "bytes": 603452,
+      "sha256": "5f9ed6ec3531042b607ac954ae94d88750eed9b29bebbcd483317a698f6cef48"
+    },
+    {
+      "path": "previews/runtime-open.png",
+      "bytes": 705993,
+      "sha256": "3445991dbccf8448c87e885ffe1200ef1f9c6173d5d39757b50b811b3a397e02"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 1938,
+      "sha256": "04305f9aca5799e2f8a22bfda301fcd06055731b9479d2fbbe5cbefe48d1823a"
+    },
+    {
+      "path": "runtime/chest.glb",
+      "bytes": 894760,
+      "sha256": "8e5765294e1582a1aca09fb0fc67cbb20e7f5ddbe06e0edf01e4abd790767524"
+    }
+  ],
+  "validated": {
+    "embeddedOnly": true,
+    "trianglesWithin16000": true,
+    "animatedHingePresent": true,
+    "gpuRuntimeValidated": false
+  },
+  "licenseStatus": {
+    "status": "user-provided-project-asset",
+    "commercialReceipt": null,
+    "authorization": "User requested integration of their uploaded Tripo items; no external provider job requested."
+  },
+  "pending": [
+    "GPU import and gameplay QA",
+    "User artistic review"
+  ]
+}

@@ -12,6 +12,7 @@ import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
 import { createChests } from './chests.js';
+import { loadTripoChest } from './tripo-chest.js';
 import { createHealthBars } from './health-bars.js';
 import { createPracticeActors } from './practice-actors.js';
 import { createSnowFootprints } from './snow-footprints.js';
@@ -136,6 +137,7 @@ const pickups = createPickups(world.root, { placements: world.map.objects, heigh
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
+  tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {
     if (item.kind === 'gold' || item.type === 'gold') pickups.addDrop(item, launch);
     else weapons.addDrop(item, launch);
@@ -374,7 +376,7 @@ window.nebeljagdTestState = () => ({
   vision: vision.inspect(), healthBars: healthBars.inspect(), practiceActors: practiceActors.inspect(),
   snowFootprints: snowFootprints.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
-  chests: chests.items.map(({ id, x, z, opened, group }) => ({ id, x, z, opened, visible: group.visible })),
+  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid }) => ({ id, x, z, opened, variant, model, lidRotation: lid.rotation.x, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
     destructibles: world.destructibles?.map(({ id, name, kind, x, z, health, maxHealth, destroyed }) => ({ id, name, kind, x, z, health, maxHealth, destroyed })) ?? [],

@@ -9,6 +9,7 @@ import { getLandscape, ensureLandscape } from './landscape.js';
 import { eraseLandscapeAt } from './landscape-brush.js';
 import { createObjectEraserStroke, objectEraserTargets } from './object-eraser.js';
 import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
+import { removeRetiredBuildings } from './retired-buildings.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -50,6 +51,39 @@ let persistedMapFileHandle = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
 const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone'];
 const layers = { showLabels: true, showSpawns: true, showGrid: false, showZone: false, showObjects: true };
+
+// Deliberately separate from draft restoration: loading a previous draft or
+// imported map must not silently discard the user's house placements.
+let retiredBuildingsBanner = $('retired-buildings-banner');
+if (!retiredBuildingsBanner) {
+  retiredBuildingsBanner = document.createElement('div');
+  retiredBuildingsBanner.id = 'retired-buildings-banner';
+  retiredBuildingsBanner.className = 'restore-banner';
+  retiredBuildingsBanner.hidden = true;
+  retiredBuildingsBanner.setAttribute('role', 'status');
+  const label = document.createElement('span'); label.id = 'retired-buildings-note';
+  const button = document.createElement('button');
+  button.id = 'remove-retired-buildings'; button.className = 'button small';
+  button.textContent = 'Alte Gebäude entfernen';
+  retiredBuildingsBanner.append(label, button);
+  $('restore-banner').after(retiredBuildingsBanner);
+}
+$('remove-retired-buildings').addEventListener('click', () => {
+  if (pointer) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
+  const result = removeRetiredBuildings(map);
+  if (!result.totalRemoved) return;
+  selection = null;
+  commit(candidate => { candidate.objects = removeRetiredBuildings(candidate).map.objects; },
+    `${result.removedBuildings.length} alte Gebäude und ${result.removedDependents.length} zugehörige Vorratstruhen entfernt. „Zurück“ stellt sie wieder her.`);
+});
+
+function updateRetiredBuildingsBanner() {
+  const result = removeRetiredBuildings(map);
+  retiredBuildingsBanner.hidden = !result.totalRemoved;
+  $('retired-buildings-note').textContent = result.totalRemoved
+    ? `Dieser Entwurf enthält ${result.removedBuildings.length} alte Gebäude und ${result.removedDependents.length} zugehörige Vorratstruhen. Das Tripo-Wirtshaus und andere Änderungen bleiben erhalten.`
+    : '';
+}
 
 function initialView() {
   const b = map.bounds;
@@ -138,7 +172,7 @@ function commit(mutator, message) {
   return true;
 }
 function renderAll() {
-  renderMap(); renderList(); renderProperties(); renderFacts(); updateWarnings();
+  renderMap(); renderList(); renderProperties(); renderFacts(); updateWarnings(); updateRetiredBuildingsBanner();
   $('undo').disabled = !history.length;
   $('redo').disabled = !future.length;
   landscapePanel?.sync();
@@ -776,6 +810,7 @@ function exportEditor() {
   doc.querySelector('#map-stage').replaceChildren();
   doc.querySelector('#feature-list').replaceChildren();
   doc.querySelector('#restore-banner').hidden = true;
+  doc.querySelector('#retired-buildings-banner').hidden = true;
   doc.querySelector('#toast').hidden = true;
   download(`<!doctype html>\n${doc.outerHTML}`, 'map-editor.html', 'text/html');
   toast('Eigenständiger Editor mit dem aktuellen Kartenstand gespeichert.');
@@ -849,6 +884,7 @@ function fillVariants(select, kind, value = null) {
   const definition = getObjectDefinition(kind);
   select.replaceChildren();
   for (const variant of definition.variants) {
+    if (variant.retired && variant.id !== value) continue;
     const option = document.createElement('option'); option.value = variant.id; option.textContent = variant.label;
     select.append(option);
   }

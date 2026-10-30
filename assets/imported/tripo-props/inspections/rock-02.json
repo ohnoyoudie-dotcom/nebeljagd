@@ -1,0 +1,233 @@
+{
+  "id": "rock-02",
+  "label": "Findling",
+  "source": {
+    "path": "assets/inbox/rock boulder 3d model.glb",
+    "bytes": 63889460,
+    "sha256": "30448782ea40dcf3b4160ab8de1b47cfd81cd105905938aaeb5679a08a92edd9",
+    "triangles": 1943395,
+    "vertices": 1166632,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-props/runtime/rock-02.glb",
+    "bytes": 515488,
+    "sha256": "0009410bf736dc179a6ddd7e154fcf8b295c04294863aea0d87bbc5e33860a3b",
+    "triangles": 4999,
+    "vertices": 4093,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 2.245991563903027,
+    "blenderSourceBounds": [
+      [
+        -0.4164734482765198,
+        -0.4897156357765198,
+        0.0
+      ],
+      [
+        0.4129639267921448,
+        0.4898071885108948,
+        0.582611083984375
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -0.9314546585083008,
+        -1.0999999046325684,
+        0.0
+      ],
+      [
+        0.9314546585083008,
+        1.0999999046325684,
+        1.3085395097732544
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      -0.003941178321838379,
+      0.00010281801223754883,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      0.0007116496562957764,
+      0.00016510486602783203,
+      2.2470145268016495e-05
+    ],
+    "gltfBounds": [
+      [
+        -0.9304180145263672,
+        0.0,
+        -1.100463628768921
+      ],
+      [
+        0.9304180145263672,
+        1.3078104257583618,
+        1.100463628768921
+      ]
+    ],
+    "dimensions": [
+      1.8608360290527344,
+      1.3078104257583618,
+      2.200927257537842
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 412,
+      "gltfBounds": [
+        [
+          -0.9304180145263672,
+          0.0,
+          -1.0595942735671997
+        ],
+        [
+          0.9032753705978394,
+          0.14983396232128143,
+          1.028252363204956
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 1021,
+      "gltfBounds": [
+        [
+          -0.9109530448913574,
+          0.15023648738861084,
+          -1.1004489660263062
+        ],
+        [
+          0.9304180145263672,
+          0.5489266514778137,
+          1.085375428199768
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 679,
+      "gltfBounds": [
+        [
+          -0.8510973453521729,
+          0.5513060092926025,
+          -1.100463628768921
+        ],
+        [
+          0.9101278781890869,
+          0.9498446583747864,
+          1.100463628768921
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.95,
+        1.5
+      ],
+      "vertices": 377,
+      "gltfBounds": [
+        [
+          -0.7527865171432495,
+          0.9508379697799683,
+          -1.0315459966659546
+        ],
+        [
+          0.7449400424957275,
+          1.3078104257583618,
+          0.9093006253242493
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.00022000000000000003,
+    "before": {
+      "vertices": 1166632,
+      "faces": 1943395
+    },
+    "after": {
+      "vertices": 971592,
+      "faces": 1943203
+    }
+  },
+  "textures": [
+    {
+      "name": "rock_boulder_3d_model_basecolor",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "rock_boulder_3d_model_normal",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "rock_boulder_3d_model_rm",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 5000,
+    "textureLimit": 1024,
+    "fileLimitBytes": 4194304
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  }
+}

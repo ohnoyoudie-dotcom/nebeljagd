@@ -1,6 +1,7 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
+import { join, relative, resolve, sep } from 'node:path';
 
 const preserved = JSON.parse(await readFile('archive/preserved-versions.json', 'utf8'));
 for (const [path, expected] of Object.entries(preserved)) {
@@ -91,3 +92,28 @@ for (const asset of imported.runtime) {
 }
 console.log(JSON.stringify({ importedSources: sourceRecord.originals.length, verifiedRuntimeGLBs: imported.runtime.length,
   status: 'passed', note: 'Byte/geometry checks; no independent license or hardware-performance certification.' }, null, 2));
+
+// User-supplied Tripo uploads stay untouched. Prepared packages carry a closed
+// file roster so browser builds cannot silently use a different derivative.
+for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest']) {
+  const root = `assets/imported/${name}/`;
+  const manifest = JSON.parse(await readFile(root + 'runtime-manifest.json', 'utf8'));
+  const sources = manifest.sources ?? [manifest.source];
+  for (const source of sources) {
+    assert.ok(source?.path?.startsWith('assets/inbox/') && !source.path.includes('..'), `Invalid source: ${name}`);
+    const bytes = await readFile(source.path);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), source.sha256, `Original changed: ${source.path}`);
+  }
+  const files = await readdir(root, { recursive: true, withFileTypes: true });
+  assert.ok(files.every(entry => entry.isFile() || entry.isDirectory()), `${name}: only regular package files`);
+  const actualPaths = files.filter(entry => entry.isFile()).map(entry => relative(resolve(root), resolve(join(entry.parentPath, entry.name))).split(sep).join('/'))
+    .filter(path => path !== 'runtime-manifest.json').sort();
+  assert.deepEqual(actualPaths, manifest.files.map(file => file.path).sort(), `${name}: closed package roster`);
+  for (const file of manifest.files) {
+    assert.ok(file.path && !file.path.startsWith('/') && !file.path.split('/').includes('..'), `${name}: safe relative path`);
+    const bytes = await readFile(root + file.path);
+    assert.equal(bytes.length, file.bytes, `${name}/${file.path}: length`);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), file.sha256, `${name}/${file.path}: digest`);
+  }
+  console.log(JSON.stringify({ status: 'passed', package: name, originals: sources.length, verifiedFiles: manifest.files.length }));
+}

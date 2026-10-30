@@ -1,0 +1,61 @@
+{
+  "source": {
+    "path": "assets/inbox/treasure chest 3d model.glb",
+    "bytes": 65164384,
+    "sha256": "ec7cf9035da10d994273d877f05ac542f70329057fa95b3c6016c761683c3ca8",
+    "triangles": 1947170,
+    "meshes": 1,
+    "materials": 1,
+    "animations": 0,
+    "externalUris": [],
+    "nodes": [
+      "tripo_node_90ec78e7-6c3f-46fb-98b5-e1b73d4367e9"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-chest/runtime/chest.glb",
+    "bytes": 894760,
+    "sha256": "8e5765294e1582a1aca09fb0fc67cbb20e7f5ddbe06e0edf01e4abd790767524",
+    "triangles": 15551,
+    "meshes": 2,
+    "materials": 2,
+    "animations": 0,
+    "externalUris": [],
+    "nodes": [
+      "chest-body",
+      "chest-lid-shell",
+      "chest-lid",
+      "nebeljagd-tripo-chest"
+    ]
+  },
+  "sourceOrigin": "User uploaded Tripo export in project assets/inbox; integration explicitly requested.",
+  "providerJobId": null,
+  "providerInvoked": false,
+  "script": "scripts/prepare-tripo-chest.py",
+  "scriptSha256": "d8fafb63b45003b3573929c7496841c10e1e8eaf02e76b8546e72f08a2f1a568",
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-chest.py",
+  "tool": "Blender 4.3.2",
+  "transform": {
+    "widthMeters": 1.72,
+    "uniformScale": 1.755628855311802,
+    "gltfDimensions": [
+      1.72,
+      0.9682533164427151,
+      1.1285039501146759
+    ],
+    "axes": "glTF +Y up, +Z front; bottom at 0",
+    "gltfHinge": [
+      0,
+      0.57,
+      -0.515
+    ],
+    "openAngleRadians": -1.9
+  },
+  "method": "Positional weld at 0.01mm and UV-preserving collapse reduction, 1024px original PBR maps, measured horizontal lid seam at 0.57m, separate rear hinge, dark wooden cavity liner and sealed lid underside.",
+  "sourcePreserved": true,
+  "license": {
+    "status": "user-provided-project-asset",
+    "commercialReceipt": null,
+    "authorization": "User requested integration of their uploaded Tripo items; no external provider job requested."
+  }
+}

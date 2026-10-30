@@ -24,7 +24,7 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
   const awayWater = (position, margin = 0) => map.rivers.every(river => lineDistance(position, river) > river.width / 2 + margin);
   const awayPath = (position, margin = 0) => map.paths.every(path => lineDistance(position, path) > path.width / 2 + margin);
   const regionAt = position => [...map.regions].reverse().find(region => pointInPolygon(position, region.points));
-  const houses = [], monuments = [];
+  const monuments = [];
   const spacing = new Map();
   const spacingSize = 8;
   const cell = position => [Math.floor(position[0] / spacingSize), Math.floor(position[1] / spacingSize)];
@@ -52,27 +52,17 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
   }
   const starter = [30, -42];
   const clearSpawn = (position, margin = 0) => distance(position, starter) > 8 + margin && map.spawnAreas.every(spawn => distance(position, spawn.position) > spawn.radius + margin);
-  const clearBuildings = (position, margin = 0) => houses.every(house => distance(position, house.position) > 12 * house.scale + margin)
-    && monuments.every(monument => distance(position, monument.position) > (monument.kind === 'ruin' ? 10 : 4) + margin);
+  const clearBuildings = (position, margin = 0) => monuments.every(monument => distance(position, monument.position) > (monument.kind === 'ruin' ? 10 : 4) + margin);
   const safe = (position, margin = 0) => onLand(position, margin + 3) && awayWater(position, margin + 2);
 
-  // The hub preserves a full-size, cutaway cottage and clear southern approach.
-  houses.push(add('house', [30, -60], { id: 'obj-house-auenwacht-01', name: 'Auenwacht · Kräuterhaus', variant: 'herbal', rotation: 0 }));
-  for (const village of map.places.filter(place => place.kind === 'village')) {
-    let placed = village.id === 'auenwacht' ? 1 : 0;
-    const offsets = [[-27, -18], [27, -18], [-27, 20], [27, 20], [-50, -2], [50, 2], [-17, -44], [18, 45], [-49, 42], [49, -42], [0, 65], [-65, -30]];
-    for (let index = 0; index < offsets.length && placed < 7; index++) {
-      const [dx, dz] = offsets[index], position = [village.position[0] + dx, village.position[1] + dz];
-      if (!safe(position, 12) || houses.some(house => distance(position, house.position) < 25) || !awayPath(position, 10) || distance(position, starter) < 16) continue;
-      placed++;
-      houses.push(add('house', position, { id: `obj-house-${village.id}-${String(placed).padStart(2, '0')}`, name: `${village.name} · Haus ${placed}`, variant: ['herbal', 'inn', 'hunter'][placed % 3], rotation: dz > 0 ? Math.PI : 0 }));
-    }
-  }
+  // Buildings are now placed explicitly in the editor from the new Tripo
+  // catalogue. Reseeding scenery must not revive the retired house collection
+  // or create replacement inns automatically at village markers.
   // Ruins and shrines are explicit game objects at existing atlas markers.
   for (const place of map.places.filter(place => ['ruin', 'shrine'].includes(place.kind))) {
     if (safe(place.position, place.kind === 'ruin' ? 5 : 1)) monuments.push(add(place.kind, place.position, { id: `obj-${place.kind}-${place.id}`, name: place.name, rotation: 0 }));
   }
-  // Curated user assets close to the starting cottage are easy to find.
+  // Curated user assets close to the starting area are easy to find.
   for (const [position, variant] of [[[46, -47], 'rei-tree01'], [[12, -45], 'rei-tree02']]) {
     if (safe(position, 1) && clearBuildings(position, 1)) add('tree', position, { variant, name: `Rei-Baum · Auenwacht ${variant.slice(-2)}`, scale: 1 }, 2.2);
   }
@@ -110,13 +100,7 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
   if (safe([10, -30], 4) && clearBuildings([10, -30], 4)) add('grass', [10, -30], { id: 'obj-grass-start', name: 'Versteckgras am Start', variant: 'tall', radius: 3.5 });
   scatter('bush', 130, 1.5, p => ['forest', 'marsh', 'meadow'].includes(regionAt(p)?.biome), () => ({ scale: .65 + random() * .6 }));
 
-  // Beds at houses are deliberately modest; a bed is an editable cluster, not
-  // dozens of untracked imported meshes spread randomly at runtime.
-  for (const house of houses) for (const side of [-1, 1]) {
-    const direction = Math.cos(house.rotation) >= 0 ? 1 : -1;
-    const position = [house.position[0] + side * 5, house.position[1] + direction * 9.5];
-    if (safe(position, 1) && awayPath(position, 1)) add('flower', position, { radius: 1.5, variant: ['rei-white', 'rei-red', 'rei-gold'][(counts.flower ?? 0) % 3], name: `${house.name} · Beet` });
-  }
+  // Flower patches stay editable and are distributed independently of houses.
   scatter('flower', 125, 1.5, p => ['forest', 'meadow', 'heath'].includes(regionAt(p)?.biome), () => ({ variant: ['rei-white', 'rei-red', 'rei-gold'][Math.floor(random() * 3)], radius: rounded(1 + random() * 1.5), scale: .8 + random() * .4 }));
   // A few visible stones and grass clumps frame the starter's open fighting area.
   for (const [kind, position] of [['rock', [51, -27]], ['rock', [5, -32]], ['tree', [46, -22]], ['tree', [12, -19]]]) {
@@ -131,13 +115,6 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
   // New loot is authored after the scenery, preserving the original seeded island.
   add('fireStaff', [35, -34], { id: 'obj-fireStaff-start', name: 'Feuerstab am Start', rotation: .3, rarity: 'rare' });
   add('iceStaff', [23, -35], { id: 'obj-iceStaff-start', name: 'Eisstab am Start', rotation: -.3, rarity: 'uncommon' });
-  for (const house of houses) {
-    // A chest beside the porch stays reachable without blocking the doorway.
-    const dx = 4.4 * house.scale, dz = 9.7 * house.scale;
-    const c = Math.cos(house.rotation), s = Math.sin(house.rotation);
-    const position = [house.position[0] + c * dx + s * dz, house.position[1] - s * dx + c * dz];
-    if (safe(position, .9) && separated(position, .9)) add('chest', position, { id: `chest-${house.id}`, name: `${house.name} · Vorratstruhe`, rotation: house.rotation });
-  }
   const tiers = ['normal', 'common', 'uncommon', 'rare', 'legendary'];
   let weaponIndex = 0;
   for (const item of objects) if (item.kind === 'bow' || item.kind === 'sword') item.rarity = tiers[weaponIndex++ % tiers.length];
@@ -154,7 +131,7 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
   };
   for (const [id, variant, position, rotation, name] of [
     ['obj-mound-auenwacht-east', 'knoll', [41, -34], .2, 'Auenwacht · Bewachsene Felskuppe'],
-    ['obj-mound-cottage-east', 'knoll', [47, -58], -.35, 'Kräuterhaus · Bewachsene Felskuppe'],
+    ['obj-mound-cottage-east', 'knoll', [47, -58], -.35, 'Auenwacht · Bewachsene Felskuppe am Südostrand'],
     ['obj-mound-south-clearing', 'ridge', [31, -6], -.2, 'Südliche Lichtung · Bewachsene Felskante'],
     ['obj-mound-west-meadow', 'ridge', [-34, -75], .6, 'Westliche Wiese · Bewachsene Felskante'],
   ]) {

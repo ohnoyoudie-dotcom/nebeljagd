@@ -7,13 +7,19 @@ const number = value => Math.round(value * 1000) / 1000;
 const points = list => list.map(([x, z]) => `${number(x)},${number(z)}`).join(' ');
 const feature = (type, id) => `id="feature-${type}-${escape(id)}" data-feature-type="${type}" data-feature-id="${escape(id)}"`;
 const biomePattern = { snow: 'mountain', forest: 'forest', meadow: 'meadow', heath: 'heath', marsh: 'marsh', volcanic: 'ash', dunes: 'dune' };
-const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8 };
-const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5 };
+const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8 };
+const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, wagon: 1.7, barrel: .65, well: 1.5, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5 };
 
 // Symbols use the same metre scale and +z/front direction as the 3D assets.
 // Reusing a symbol preserves every independently editable placement without
 // repeating thousands of copies of the source paths in the exported SVG.
 const objectSymbols = [
+  '<g id="world-object-wagon"><rect x="-.8" y="-1.1" width=".16" height=".8" rx=".05" fill="#343a39"/><rect x=".64" y="-1.1" width=".16" height=".8" rx=".05" fill="#343a39"/><path d="M-.4,.2V1.45M.4,.2V1.45" stroke="#8f6946" stroke-width=".12"/><rect x="-.58" y="-1.4" width="1.16" height="1.75" fill="#bd945e" stroke="#69503b" stroke-width=".15"/><path d="M-.25,-1.3V.2M.25,-1.3V.2" stroke="#89653f" stroke-width=".07"/></g>',
+  '<g id="world-object-barrel"><ellipse rx=".43" ry=".45" fill="#97714b" stroke="#3f443f" stroke-width=".12"/><path d="M-.2,-.36V.36M.2,-.36V.36" stroke="#c3a574" stroke-width=".07"/><circle cy="-.08" r=".075" fill="#59452e"/></g>',
+  '<g id="world-object-well"><circle cx="-.18" r=".94" fill="#b5b0a0" stroke="#676f66" stroke-width=".13"/><circle cx="-.18" r=".6" fill="#31454b"/><path d="M-1.06,-.77H.78V.78H-1.06Z" fill="#96724a" fill-opacity=".7" stroke="#654c38" stroke-width=".13"/><path d="M-1.08,0H.8M.8,.12H1.12" stroke="#ddc292" stroke-width=".14"/></g>',
+  '<g id="world-object-rock-tripo-01"><path d="M-.96,-.25-.52,-.78 .45,-.85 .98,-.13 .72,.64-.4,.8-.95,.34Z" fill="#9b9d8b" stroke="#626c5b" stroke-width=".13"/><path d="M-.52,-.78 .15,-.12 .98,-.13M.15,-.12-.4,.8" fill="none" stroke="#c0c2a7" stroke-width=".1"/></g>',
+  '<g id="world-object-rock-tripo-02"><path d="M-.9,-.36-.55,-1.05 .4,-1 .9,-.32 .68,.88-.18,1.05-.85,.5Z" fill="#8e9285" stroke="#596356" stroke-width=".14"/><path d="M-.55,-1.05 .25,-.15 .68,.88M.25,-.15-.85,.5" fill="none" stroke="#b7b9a4" stroke-width=".11"/></g>',
+  '<g id="world-object-rock-tripo-03"><path d="M-1.1,-.3-.65,-1.23 .45,-1.25 1.14,-.4 .9,.65 .1,1.28-.9,.87Z" fill="#747e6a" stroke="#4c5c4b" stroke-width=".15"/><path d="M-.65,-1.23 .2,-.5 1.14,-.4M.2,-.5-.3,.5 .1,1.28M-.3,.5-.9,.87" fill="none" stroke="#abb79a" stroke-width=".12"/></g>',
   '<g id="world-object-house-tripo-tavern"><rect x="-11" y="-8.89" width="22" height="17.78" rx=".35" fill="#926b47" stroke="#493a2e" stroke-width=".45"/><path d="M-10.4,-8H-2.35M0,-8H10.4V8H1.4M-1.5,8H-10.4V-8M2.9,-8V-3.5M2.9,-1.1V0H4.7M6.8,0H10.4" fill="none" stroke="#d6c39b" stroke-width=".5"/><path d="M-1.5,8H1.4M-2.35,-8H0" stroke="#f4e6bc" stroke-width=".7"/><path d="M-8.7,-2H-4.7V.86H-8.7ZM-8.7,2.2H-4.7V5.05H-8.7ZM-7.6,-7.4H-2.5V-5.5H-7.6Z" fill="#644b35" stroke="#bf9966" stroke-width=".2"/></g>',
   '<g id="world-object-wall"><rect x="-1.6" y="-.31" width="3.2" height=".62" fill="#8b9387" stroke="#4d5d53" stroke-width=".13"/><path d="M-.8,-.31V.31M0,-.31V.31M.8,-.31V.31" stroke="#535c50" stroke-width=".1"/></g>',
   '<g id="world-object-fence"><path d="M-1.6,-.16H1.6M-1.6,.16H1.6M-1.4,-.28V.28M0,-.28V.28M1.4,-.28V.28" stroke="#b08b54" stroke-width=".2"/></g>',
@@ -44,6 +50,7 @@ const objectSymbols = [
 ];
 
 function objectSymbol(item) {
+  if (item.kind === 'rock' && /^kit-tripo-0[123]$/.test(item.variant)) return `rock-tripo-${item.variant.slice(-2)}`;
   if (item.kind === 'house' && item.variant === 'kit-tripo-tavern') return 'house-tripo-tavern';
   if (item.kind === 'house' && item.variant === 'kit-taverne') return 'house-taverne';
   if (item.kind === 'house' && item.variant === 'kit-timber') return 'house-kit';

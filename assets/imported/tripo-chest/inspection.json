@@ -1,0 +1,97 @@
+{
+  "asset": "Nebeljagd Tripo chest",
+  "source": {
+    "path": "assets/inbox/treasure chest 3d model.glb",
+    "bytes": 65164384,
+    "sha256": "ec7cf9035da10d994273d877f05ac542f70329057fa95b3c6016c761683c3ca8",
+    "triangles": 1947170,
+    "meshes": 1,
+    "materials": 1,
+    "animations": 0,
+    "externalUris": [],
+    "nodes": [
+      "tripo_node_90ec78e7-6c3f-46fb-98b5-e1b73d4367e9"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-chest/runtime/chest.glb",
+    "bytes": 894760,
+    "sha256": "8e5765294e1582a1aca09fb0fc67cbb20e7f5ddbe06e0edf01e4abd790767524",
+    "triangles": 15551,
+    "meshes": 2,
+    "materials": 2,
+    "animations": 0,
+    "externalUris": [],
+    "nodes": [
+      "chest-body",
+      "chest-lid-shell",
+      "chest-lid",
+      "nebeljagd-tripo-chest"
+    ]
+  },
+  "tool": "Blender 4.3.2",
+  "normalization": {
+    "widthMeters": 1.72,
+    "uniformScale": 1.755628855311802,
+    "gltfDimensions": [
+      1.72,
+      0.9682533164427151,
+      1.1285039501146759
+    ],
+    "axes": "glTF +Y up, +Z front; bottom at 0",
+    "gltfHinge": [
+      0,
+      0.57,
+      -0.515
+    ],
+    "openAngleRadians": -1.9
+  },
+  "textures": [
+    {
+      "name": "treasure_chest_3d_model_basecolor",
+      "before": [
+        2048,
+        2048
+      ],
+      "after": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "treasure_chest_3d_model_normal",
+      "before": [
+        2048,
+        2048
+      ],
+      "after": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "treasure_chest_3d_model_rm",
+      "before": [
+        2048,
+        2048
+      ],
+      "after": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "sourcePreserved": true,
+  "preparation": "Positional weld at 0.01mm and UV-preserving collapse reduction, 1024px original PBR maps, measured horizontal lid seam at 0.57m, separate rear hinge, dark wooden cavity liner and sealed lid underside.",
+  "validation": {
+    "embeddedOnly": true,
+    "trianglesWithin16000": true,
+    "animatedHingePresent": true,
+    "gpuRuntimeValidated": false
+  },
+  "license": {
+    "status": "user-provided-project-asset",
+    "commercialReceipt": null,
+    "authorization": "User requested integration of their uploaded Tripo items; no external provider job requested."
+  }
+}

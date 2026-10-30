@@ -28,7 +28,7 @@ const localPoint = (point, item) => {
   return [(c * dx - s * dz) / (item.scale ?? 1), (s * dx + c * dz) / (item.scale ?? 1)];
 };
 const rectDistance = (p, minX, maxX, minZ, maxZ) => Math.hypot(Math.max(minX - p[0], 0, p[0] - maxX), Math.max(minZ - p[1], 0, p[1] - maxZ));
-const large = kind => ['tree', 'rock', 'house', 'mound', 'ruin', 'shrine', 'wall', 'fence', 'crate'].includes(kind);
+const large = kind => ['tree', 'rock', 'house', 'mound', 'ruin', 'shrine', 'wall', 'fence', 'crate', 'wagon', 'barrel', 'well'].includes(kind);
 const collisionRadius = item => {
   const kit = getEnvironmentKitDefinition(item.kind, item.variant);
   if (kit?.circles.length) return kit.circles[0].radius * (item.scale ?? 1);

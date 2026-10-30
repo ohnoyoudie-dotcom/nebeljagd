@@ -1,0 +1,506 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5193",
+  "checks": [
+    {
+      "name": "Fresh source map contains no retired buildings and the new Tripo inn remains selectable",
+      "evidence": {
+        "defaultObjectCount": 3949,
+        "houseOptions": [
+          "kit-tripo-tavern"
+        ]
+      }
+    },
+    {
+      "name": "Legacy draft cleanup removes only old buildings and linked stock, supports Undo and preserves the new inn and unrelated edits after reload",
+      "evidence": {
+        "removedIds": [
+          "qa-retired-house",
+          "chest-qa-retired-house"
+        ],
+        "retainedObjects": [
+          {
+            "id": "qa-preserved-inn",
+            "kind": "house",
+            "variant": "kit-tripo-tavern",
+            "name": "My new inn",
+            "position": [
+              225,
+              150
+            ],
+            "rotation": 0.3,
+            "scale": 1.2
+          },
+          {
+            "id": "qa-preserved-tree",
+            "kind": "tree",
+            "variant": "oak",
+            "name": "My custom tree",
+            "position": [
+              165,
+              145
+            ],
+            "rotation": 0.7,
+            "scale": 1.3
+          }
+        ]
+      }
+    },
+    {
+      "name": "Every new prop has a real embedded preview, can be placed and transformed, and survives JSON export/reimport",
+      "evidence": {
+        "previews": [
+          {
+            "id": "wagon:kit-tripo-wagon",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          },
+          {
+            "id": "barrel:kit-tripo-barrel",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          },
+          {
+            "id": "well:kit-tripo-well",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          },
+          {
+            "id": "rock:kit-tripo-01",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          },
+          {
+            "id": "rock:kit-tripo-02",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          },
+          {
+            "id": "rock:kit-tripo-03",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          },
+          {
+            "id": "chest:kit-tripo-chest",
+            "width": 256,
+            "height": 192,
+            "embedded": true
+          }
+        ],
+        "objects": [
+          {
+            "id": "object-wagon-mvv5sdnn-1",
+            "name": "QA kit-tripo-wagon",
+            "kind": "wagon",
+            "variant": "kit-tripo-wagon",
+            "position": [
+              174,
+              150
+            ],
+            "rotation": 0.7853981633974483,
+            "scale": 1.25
+          },
+          {
+            "id": "object-barrel-mvv5see7-2",
+            "name": "QA kit-tripo-barrel",
+            "kind": "barrel",
+            "variant": "kit-tripo-barrel",
+            "position": [
+              180,
+              150
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-well-mvv5sexm-3",
+            "name": "QA kit-tripo-well",
+            "kind": "well",
+            "variant": "kit-tripo-well",
+            "position": [
+              186,
+              150
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-rock-mvv5sfgw-4",
+            "name": "QA kit-tripo-01",
+            "kind": "rock",
+            "variant": "kit-tripo-01",
+            "position": [
+              174,
+              159
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-rock-mvv5sg1r-5",
+            "name": "QA kit-tripo-02",
+            "kind": "rock",
+            "variant": "kit-tripo-02",
+            "position": [
+              180,
+              159
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-rock-mvv5sgpa-6",
+            "name": "QA kit-tripo-03",
+            "kind": "rock",
+            "variant": "kit-tripo-03",
+            "position": [
+              186,
+              159
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-chest-mvv5sh8r-7",
+            "name": "QA kit-tripo-chest",
+            "kind": "chest",
+            "variant": "kit-tripo-chest",
+            "position": [
+              180,
+              167
+            ],
+            "rotation": 0.7853981633974483,
+            "scale": 1.1
+          },
+          {
+            "id": "object-wagon-mvv5shm9-8",
+            "name": "QA second wagon",
+            "kind": "wagon",
+            "variant": "kit-tripo-wagon",
+            "position": [
+              193,
+              150
+            ],
+            "rotation": 1.5707963267948966,
+            "scale": 0.8
+          },
+          {
+            "id": "object-sword-mvv5sibz-9",
+            "name": "QA sword",
+            "kind": "sword",
+            "variant": "steel",
+            "position": [
+              174,
+              168
+            ],
+            "rotation": 0,
+            "scale": 1,
+            "rarity": "common"
+          },
+          {
+            "id": "object-bow-mvv5sivl-a",
+            "name": "QA bow",
+            "kind": "bow",
+            "variant": "wood",
+            "position": [
+              186,
+              168
+            ],
+            "rotation": 0,
+            "scale": 1,
+            "rarity": "common"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Editor playtest renders all six static models with one shared load for repeated wagon placements",
+      "evidence": {
+        "kit": {
+          "loadedModels": 6,
+          "models": [
+            {
+              "id": "wagon:kit-tripo-wagon",
+              "asset": "tripo-wagon",
+              "targetHeight": 1.1,
+              "height": 1.1,
+              "parts": 1,
+              "roofRemoved": false,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            },
+            {
+              "id": "barrel:kit-tripo-barrel",
+              "asset": "tripo-barrel",
+              "targetHeight": 0.95,
+              "height": 0.95,
+              "parts": 1,
+              "roofRemoved": false,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            },
+            {
+              "id": "well:kit-tripo-well",
+              "asset": "tripo-well",
+              "targetHeight": 2.4,
+              "height": 2.4,
+              "parts": 1,
+              "roofRemoved": false,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            },
+            {
+              "id": "rock:kit-tripo-02",
+              "asset": "tripo-rock-02",
+              "targetHeight": 1.31,
+              "height": 1.31,
+              "parts": 1,
+              "roofRemoved": false,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            },
+            {
+              "id": "rock:kit-tripo-03",
+              "asset": "tripo-rock-03",
+              "targetHeight": 2.55,
+              "height": 2.55,
+              "parts": 1,
+              "roofRemoved": false,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            },
+            {
+              "id": "rock:kit-tripo-01",
+              "asset": "tripo-rock-01",
+              "targetHeight": 0.56,
+              "height": 0.56,
+              "parts": 1,
+              "roofRemoved": false,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            }
+          ],
+          "placements": 7
+        },
+        "rendering": {
+          "calls": 199,
+          "triangles": 341985,
+          "geometries": 71,
+          "textures": 33,
+          "frameMs": 951.6299999999999
+        }
+      }
+    },
+    {
+      "name": "Wagon, barrel, well and all three rocks block actual walking and rolls at their authored collision bodies",
+      "evidence": [
+        {
+          "id": "barrel:kit-tripo-barrel",
+          "front": 0.44,
+          "walkLocal": [
+            0.0,
+            0.8600000000000136
+          ],
+          "rollLocal": [
+            0.0,
+            0.8600000000000136
+          ]
+        },
+        {
+          "id": "rock:kit-tripo-01",
+          "front": 0.78,
+          "walkLocal": [
+            0.0,
+            1.1999999999999886
+          ],
+          "rollLocal": [
+            0.0,
+            1.1999999999999886
+          ]
+        },
+        {
+          "id": "wagon:kit-tripo-wagon",
+          "front": 1.45,
+          "walkLocal": [
+            -0.4049999999999943,
+            1.7859999999999843
+          ],
+          "rollLocal": [
+            -0.4049999999999943,
+            1.7859999999999843
+          ]
+        },
+        {
+          "id": "rock:kit-tripo-02",
+          "front": 1.08,
+          "walkLocal": [
+            0.0,
+            1.5
+          ],
+          "rollLocal": [
+            0.0,
+            1.5
+          ]
+        },
+        {
+          "id": "rock:kit-tripo-03",
+          "front": 1.22,
+          "walkLocal": [
+            0.0,
+            1.6399999999999864
+          ],
+          "rollLocal": [
+            0.0,
+            1.6399999999999864
+          ]
+        },
+        {
+          "id": "well:kit-tripo-well",
+          "front": 0.94,
+          "walkLocal": [
+            -0.18000000000000682,
+            1.3600000000000136
+          ],
+          "rollLocal": [
+            -0.18000000000000682,
+            1.3600000000000136
+          ]
+        }
+      ]
+    },
+    {
+      "name": "The rotated and scaled Tripo chest blocks walking and rolling before it is opened",
+      "evidence": {
+        "walkLocal": [
+          1.8369144589252588e-14,
+          0.9568181818181817
+        ],
+        "rollLocal": [
+          1.8369144589252588e-14,
+          0.9568181818181817
+        ]
+      }
+    },
+    {
+      "name": "E opens the real Tripo lid and releases the existing two gold drops and weapon loot",
+      "evidence": {
+        "chest": {
+          "id": "object-chest-mvv5sh8r-7",
+          "x": 180,
+          "z": 167,
+          "opened": true,
+          "variant": "kit-tripo-chest",
+          "model": "tripo",
+          "lidRotation": -1.9,
+          "visible": true
+        },
+        "gold": [
+          {
+            "id": "object-chest-mvv5sh8r-7-gold-1",
+            "type": "gold",
+            "x": 180.3240669840665,
+            "z": 168.4133225356719,
+            "collected": false,
+            "visible": true
+          },
+          {
+            "id": "object-chest-mvv5sh8r-7-gold-2",
+            "type": "gold",
+            "x": 181.15258405333407,
+            "z": 168.15258405333407,
+            "collected": false,
+            "visible": true
+          }
+        ],
+        "weapon": [
+          {
+            "id": "object-chest-mvv5sh8r-7-weapon",
+            "type": "fireStaff",
+            "rarity": "normal",
+            "x": 181.76421640659734,
+            "z": 167.4045249939037,
+            "collected": false,
+            "visible": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "The Tripo barrel is destroyed by actual sword attacks and its removed collision permits walking through",
+      "evidence": {
+        "target": {
+          "id": "object-barrel-mvv5see7-2",
+          "name": "QA kit-tripo-barrel",
+          "kind": "barrel",
+          "x": 180,
+          "z": 150,
+          "health": 0,
+          "maxHealth": 60,
+          "destroyed": true
+        },
+        "crossedLocal": [
+          0.0,
+          -2.76666666666668
+        ]
+      }
+    },
+    {
+      "name": "The tall Tripo rock stops an arrow through the live projectile collision system",
+      "evidence": {
+        "type": "rock",
+        "point": {
+          "x": 185.927999973625,
+          "y": 11.290574219367913,
+          "z": 160.09263031085632
+        },
+        "normal": {
+          "x": -0.0657534487443,
+          "z": 0.9978359003254146
+        }
+      }
+    },
+    {
+      "name": "Restart restores the barrel model, full health and solid collision, and closes the Tripo chest again",
+      "evidence": {
+        "barrel": {
+          "id": "object-barrel-mvv5see7-2",
+          "name": "QA kit-tripo-barrel",
+          "kind": "barrel",
+          "x": 180,
+          "z": 150,
+          "health": 60,
+          "maxHealth": 60,
+          "destroyed": false
+        },
+        "walkLocal": [
+          0.0,
+          0.8600000000000136
+        ],
+        "chest": {
+          "id": "object-chest-mvv5sh8r-7",
+          "x": 180,
+          "z": 167,
+          "opened": false,
+          "variant": "kit-tripo-chest",
+          "model": "tripo",
+          "lidRotation": 0,
+          "visible": false
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/tripo-props-editor.png",
+    "docs/tripo-props-overview.png",
+    "docs/tripo-props-chest-open.png",
+    "docs/tripo-props-barrel-destroyed.png",
+    "docs/tripo-props-reset.png"
+  ]
+}

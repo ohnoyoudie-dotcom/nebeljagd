@@ -22,6 +22,14 @@ const kit = (kind, variant, label, filename, notes) => ({
   renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render', notes,
   provenance: 'Blender/nebeljagd_umwelt_kit_v1/manifest.json',
 });
+const tripo = (kind, variant, label, filename, original, notes, packageName = 'tripo-props') => ({
+  id: `${kind}:${variant}`, kind, variant, label, format: 'glb',
+  sourceLabel: 'Eigener Tripo-Export · aufbereitetes Spielmodell',
+  sourcePaths: [`assets/imported/${packageName}/runtime/${filename}.glb`, `assets/inbox/${original}.glb`],
+  renderer: kind === 'chest' ? 'src/tripo-chest.js' : 'src/world-object-renderer.js',
+  status: 'available', previewKind: 'render', notes,
+  provenance: `assets/imported/${packageName}/provenance.json`,
+});
 
 export const ASSET_CATALOG = Object.freeze([
   project('tree', 'oak', 'Eiche', ['src/vegetation.js', 'src/world-object-renderer.js'], 'Breite Laubkrone und dunkler Stamm.'),
@@ -73,6 +81,13 @@ export const ASSET_CATALOG = Object.freeze([
     notes: 'Neues, dachloses Wirtshaus mit Gastraum, Küche und Einrichtung. Als eigene Variante platzieren, drehen und in 3D testen.',
     provenance: 'assets/imported/tripo-tavern/provenance.json' },
   kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Zerstörbare Holzkiste; blockiert Bewegung, Sicht und Pfeile bis sie kaputt ist.'),
+  tripo('wagon', 'kit-tripo-wagon', 'Holzwagen · Tripo', 'wagon', 'wooden wagon 3d model', 'Holzwagen mit texturiertem Holz, Rädern und Deichseln. Drehen, skalieren und als festes Hindernis platzieren.'),
+  tripo('barrel', 'kit-tripo-barrel', 'Holzfass · Tripo', 'barrel', 'wooden barrel 3d model', 'Massives Holzfass mit Eisenreifen. Blockiert die Bewegung und lässt sich im Kampf zerstören.'),
+  tripo('well', 'kit-tripo-well', 'Steinbrunnen · Tripo', 'well', 'medieval well 3d model', 'Steinerner Brunnen mit Holzaufbau, Dach und Seil. Festes Landschaftsobjekt.'),
+  tripo('rock', 'kit-tripo-01', 'Flacher Felsen · Tripo', 'rock-01', 'rock 3d model', 'Breiter, niedriger Naturstein; blockiert Bewegung, lässt hohe Geschosse passieren.'),
+  tripo('rock', 'kit-tripo-02', 'Findling · Tripo', 'rock-02', 'rock boulder 3d model', 'Kompakter Findling mit verwitterter Oberfläche als feste Deckung.'),
+  tripo('rock', 'kit-tripo-03', 'Hohe Felsgruppe · Tripo', 'rock-03', 'rock formation 3d model', 'Hohe Felsformation mit markanter Silhouette als Sicht- und Bewegungshindernis.'),
+  tripo('chest', 'kit-tripo-chest', 'Schatztruhe · Tripo', 'chest', 'treasure chest 3d model', 'Texturierte Schatztruhe mit beweglichem Deckel; öffnet sich mit E und wirft Gold und Ausrüstung aus.', 'tripo-chest'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
 const byId = new Map(ASSET_CATALOG.map(asset => [asset.id, asset]));

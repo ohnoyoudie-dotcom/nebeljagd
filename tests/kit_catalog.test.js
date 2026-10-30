@@ -32,8 +32,8 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 40);
-  assert.equal(ASSET_CATALOG.length, 40);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 47);
+  assert.equal(ASSET_CATALOG.length, 47);
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {
@@ -46,6 +46,22 @@ test('the new Tripo inn is schema-valid and remains distinct through map save an
   const restored = normalizeWorldmap(JSON.parse(JSON.stringify(map)));
   assert.deepEqual(restored.objects.at(-1), tavern);
   assert.notEqual(getVariantAsset('house', variant).sourcePaths[0], getVariantAsset('house', 'kit-taverne').sourcePaths[0]);
+});
+
+test('all seven Tripo props agree across editor catalogue, structural schema and map round-trip', () => {
+  const map = structuredClone(base);
+  const variants = [['wagon', 'kit-tripo-wagon'], ['barrel', 'kit-tripo-barrel'], ['well', 'kit-tripo-well'],
+    ['rock', 'kit-tripo-01'], ['rock', 'kit-tripo-02'], ['rock', 'kit-tripo-03'], ['chest', 'kit-tripo-chest']];
+  const objects = variants.map(([kind, variant], index) => {
+    const rule = schema.$defs.worldObject.allOf.find(entry => entry.if?.properties?.kind?.const === kind);
+    assert.ok(schema.$defs.worldObject.properties.kind.enum.includes(kind));
+    assert.ok(rule?.then.properties.variant.enum.includes(variant), `${kind}:${variant}`);
+    assert.equal(getVariantAsset(kind, variant).format, 'glb');
+    return makeWorldObject(kind, [30 + index * 3, -42], { variant, id: `tripo-prop-schema-${index}`, rotation: .7, scale: 1.3 });
+  });
+  map.objects.push(...objects);
+  assert.deepEqual(validateWorldmap(map).errors, []);
+  assert.deepEqual(normalizeWorldmap(JSON.parse(JSON.stringify(map))).objects.slice(-objects.length), objects);
 });
 
 test('the uploaded tavern GLB is a valid selectable map asset with a traversable main entrance', () => {

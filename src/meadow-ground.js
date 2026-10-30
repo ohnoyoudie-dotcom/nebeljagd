@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { distanceToSegment } from './map/model.js';
+import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
 
 const GRASS_BIOME_PROFILES = {
   // base* controls the dense short carpet; detail* controls the larger blades.
@@ -103,7 +104,7 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
   }
   const extents = {
     chest: [1.05, .8], crate: [.8, .8], rock: [1.35, 1.35], shrine: [1.15, 1.15],
-    mound: [4.6, 3.5], house: [9.4, 9.2],
+    mound: [4.6, 3.5], house: [9.4, 9.2], wagon: [.82, 1.46], barrel: [.46, .46], well: [1.13, .92],
   };
   for (const object of map.objects ?? []) {
     if (!extents[object.kind]) continue;
@@ -113,6 +114,10 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     if (object.kind === 'house' && object.variant === 'kit-timber') [hx, hz] = [3.8, 4.1];
     if (object.kind === 'house' && object.variant?.startsWith('tavern-')) [hx, hz] = [12.4, 12.4];
     if (object.kind === 'house' && object.variant === 'kit-tripo-tavern') [hx, hz] = [11.2, 9.1];
+    if (object.variant?.startsWith('kit-tripo-') && object.kind !== 'house') {
+      const footprint = getEnvironmentKitDefinition(object.kind, object.variant)?.footprint;
+      if (footprint) [hx, hz] = [footprint.halfWidth, footprint.halfDepth];
+    }
     hx = hx * scale + padding; hz = hz * scale + padding;
     const [x, z] = object.position, rotation = object.rotation ?? 0, c = Math.cos(rotation), s = Math.sin(rotation);
     const radius = Math.hypot(hx, hz);

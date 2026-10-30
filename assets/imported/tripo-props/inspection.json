@@ -1,0 +1,1402 @@
+{
+  "assets": [
+    {
+      "id": "barrel",
+      "label": "Holzfass",
+      "source": {
+        "path": "assets/inbox/wooden barrel 3d model.glb",
+        "bytes": 63365624,
+        "sha256": "4edd81d9371ee2bc54c7820fae59f2e543885c751abe60b979b59c99abccbe7f",
+        "triangles": 1947286,
+        "vertices": 1180165,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/barrel.glb",
+        "bytes": 546512,
+        "sha256": "3b0b2bf34d4c3e5f1a9aae92923c734042715212fdcf8a94960daf9b23a49f88",
+        "triangles": 8000,
+        "vertices": 7087,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 0.9666977206384696,
+        "blenderSourceBounds": [
+          [
+            -0.4462891221046448,
+            -0.4701843857765198,
+            0.0
+          ],
+          [
+            0.4455567002296448,
+            0.4699097275733948,
+            0.98272705078125
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.4310726523399353,
+            -0.4543933868408203,
+            0.0
+          ],
+          [
+            0.4310726523399353,
+            0.4543933868408203,
+            0.949999988079071
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          -0.0003540217876434326,
+          -0.00013275444507598877,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          9.931623935699463e-05,
+          0.0006709843873977661,
+          0.00048727146349847317
+        ],
+        "gltfBounds": [
+          [
+            -0.43123549222946167,
+            0.0,
+            -0.4550541043281555
+          ],
+          [
+            0.43123549222946167,
+            0.9490711092948914,
+            0.4550541043281555
+          ]
+        ],
+        "dimensions": [
+          0.8624709844589233,
+          0.9490711092948914,
+          0.910108208656311
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 953,
+          "gltfBounds": [
+            [
+              -0.3750331997871399,
+              0.0,
+              -0.40848278999328613
+            ],
+            [
+              0.3733951449394226,
+              0.14746005833148956,
+              0.41113436222076416
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1054,
+          "gltfBounds": [
+            [
+              -0.43123549222946167,
+              0.15085451304912567,
+              -0.4550541043281555
+            ],
+            [
+              0.43123549222946167,
+              0.5487633943557739,
+              0.4550541043281555
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 1993,
+          "gltfBounds": [
+            [
+              -0.4271804690361023,
+              0.551518440246582,
+              -0.4508759379386902
+            ],
+            [
+              0.4281177520751953,
+              0.9490711092948914,
+              0.4456225633621216
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 9.5e-05,
+        "before": {
+          "vertices": 1180165,
+          "faces": 1947286
+        },
+        "after": {
+          "vertices": 973599,
+          "faces": 1947198
+        }
+      },
+      "textures": [
+        {
+          "name": "wooden_barrel_3d_model_basecolor",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_barrel_3d_model_normal",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_barrel_3d_model_rm",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 8000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 4194304
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      }
+    },
+    {
+      "id": "rock-01",
+      "label": "Flacher Felsen",
+      "source": {
+        "path": "assets/inbox/rock 3d model.glb",
+        "bytes": 62504720,
+        "sha256": "70b18784f55149bc637a662817e43d115f6f261959e61eeb53cd59f6aba70541",
+        "triangles": 1916856,
+        "vertices": 1137078,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/rock-01.glb",
+        "bytes": 495256,
+        "sha256": "31bb0175c17e460e3e8f7925891a1637c7d72c4dc0533b21cb401f3b2dc3b687",
+        "triangles": 4000,
+        "vertices": 3434,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 2.0429562024907986,
+        "blenderSourceBounds": [
+          [
+            -0.4894409775733948,
+            -0.42053231596946716,
+            0.0
+          ],
+          [
+            0.4895325303077698,
+            0.41976937651634216,
+            0.275238037109375
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.9999999403953552,
+            -0.8583497405052185,
+            0.0
+          ],
+          [
+            0.9999999403953552,
+            0.8583497405052185,
+            0.5622992515563965
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          9.351968765258789e-05,
+          -0.0007793307304382324,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0001843869686126709,
+          0.0008421838283538818,
+          -0.0013739767018705606
+        ],
+        "gltfBounds": [
+          [
+            -0.9998878240585327,
+            0.0,
+            -0.8581494092941284
+          ],
+          [
+            0.9998878240585327,
+            0.5652078986167908,
+            0.8581494092941284
+          ]
+        ],
+        "dimensions": [
+          1.9997756481170654,
+          0.5652078986167908,
+          1.7162988185882568
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 782,
+          "gltfBounds": [
+            [
+              -0.9998878240585327,
+              0.0,
+              -0.8581494092941284
+            ],
+            [
+              0.9998878240585327,
+              0.14976035058498383,
+              0.8581494092941284
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1201,
+          "gltfBounds": [
+            [
+              -0.9618021249771118,
+              0.15091422200202942,
+              -0.8419324159622192
+            ],
+            [
+              0.9854154586791992,
+              0.5495454668998718,
+              0.8534963130950928
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 10,
+          "gltfBounds": [
+            [
+              -0.6313005685806274,
+              0.5500727891921997,
+              -0.565125584602356
+            ],
+            [
+              -0.472318559885025,
+              0.5652078986167908,
+              -0.1809929758310318
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.0002,
+        "before": {
+          "vertices": 1137078,
+          "faces": 1916856
+        },
+        "after": {
+          "vertices": 957949,
+          "faces": 1915905
+        }
+      },
+      "textures": [
+        {
+          "name": "rock_3d_model_basecolor",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "rock_3d_model_normal",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "rock_3d_model_rm",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 4000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 4194304
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      }
+    },
+    {
+      "id": "rock-02",
+      "label": "Findling",
+      "source": {
+        "path": "assets/inbox/rock boulder 3d model.glb",
+        "bytes": 63889460,
+        "sha256": "30448782ea40dcf3b4160ab8de1b47cfd81cd105905938aaeb5679a08a92edd9",
+        "triangles": 1943395,
+        "vertices": 1166632,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/rock-02.glb",
+        "bytes": 515488,
+        "sha256": "0009410bf736dc179a6ddd7e154fcf8b295c04294863aea0d87bbc5e33860a3b",
+        "triangles": 4999,
+        "vertices": 4093,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 2.245991563903027,
+        "blenderSourceBounds": [
+          [
+            -0.4164734482765198,
+            -0.4897156357765198,
+            0.0
+          ],
+          [
+            0.4129639267921448,
+            0.4898071885108948,
+            0.582611083984375
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.9314546585083008,
+            -1.0999999046325684,
+            0.0
+          ],
+          [
+            0.9314546585083008,
+            1.0999999046325684,
+            1.3085395097732544
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          -0.003941178321838379,
+          0.00010281801223754883,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          0.0007116496562957764,
+          0.00016510486602783203,
+          2.2470145268016495e-05
+        ],
+        "gltfBounds": [
+          [
+            -0.9304180145263672,
+            0.0,
+            -1.100463628768921
+          ],
+          [
+            0.9304180145263672,
+            1.3078104257583618,
+            1.100463628768921
+          ]
+        ],
+        "dimensions": [
+          1.8608360290527344,
+          1.3078104257583618,
+          2.200927257537842
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 412,
+          "gltfBounds": [
+            [
+              -0.9304180145263672,
+              0.0,
+              -1.0595942735671997
+            ],
+            [
+              0.9032753705978394,
+              0.14983396232128143,
+              1.028252363204956
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1021,
+          "gltfBounds": [
+            [
+              -0.9109530448913574,
+              0.15023648738861084,
+              -1.1004489660263062
+            ],
+            [
+              0.9304180145263672,
+              0.5489266514778137,
+              1.085375428199768
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 679,
+          "gltfBounds": [
+            [
+              -0.8510973453521729,
+              0.5513060092926025,
+              -1.100463628768921
+            ],
+            [
+              0.9101278781890869,
+              0.9498446583747864,
+              1.100463628768921
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 377,
+          "gltfBounds": [
+            [
+              -0.7527865171432495,
+              0.9508379697799683,
+              -1.0315459966659546
+            ],
+            [
+              0.7449400424957275,
+              1.3078104257583618,
+              0.9093006253242493
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00022000000000000003,
+        "before": {
+          "vertices": 1166632,
+          "faces": 1943395
+        },
+        "after": {
+          "vertices": 971592,
+          "faces": 1943203
+        }
+      },
+      "textures": [
+        {
+          "name": "rock_boulder_3d_model_basecolor",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "rock_boulder_3d_model_normal",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "rock_boulder_3d_model_rm",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 5000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 4194304
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      }
+    },
+    {
+      "id": "rock-03",
+      "label": "Hoher Felsen",
+      "source": {
+        "path": "assets/inbox/rock formation 3d model.glb",
+        "bytes": 62734552,
+        "sha256": "947bbfe030ebb0a3731a48b874ea53054fde754ad557c045da107d18c7b98e73",
+        "triangles": 1922531,
+        "vertices": 1150021,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/rock-03.glb",
+        "bytes": 492240,
+        "sha256": "2a437ac5a73fb9b84b9e39d39acad8e2efa53ed3ad238dcdf58b8f9607ad9c3d",
+        "triangles": 6999,
+        "vertices": 4933,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 2.645616547078234,
+        "blenderSourceBounds": [
+          [
+            -0.4432983994483948,
+            -0.4913941025733948,
+            0.0
+          ],
+          [
+            0.4428711533546448,
+            0.4913635849952698,
+            0.964324951171875
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -1.1722323894500732,
+            -1.2999999523162842,
+            0.0
+          ],
+          [
+            1.1722323894500732,
+            1.2999999523162842,
+            2.551234006881714
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          -0.0005651712417602539,
+          -4.035234451293945e-05,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.00030356645584106445,
+          -0.0008791089057922363,
+          -0.0026212187949568033
+        ],
+        "gltfBounds": [
+          [
+            -1.174299716949463,
+            0.0,
+            -1.301117181777954
+          ],
+          [
+            1.174299716949463,
+            2.553933620452881,
+            1.301117181777954
+          ]
+        ],
+        "dimensions": [
+          2.348599433898926,
+          2.553933620452881,
+          2.602234363555908
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 465,
+          "gltfBounds": [
+            [
+              -1.1391644477844238,
+              0.0,
+              -1.2482411861419678
+            ],
+            [
+              1.1722793579101562,
+              0.14951865375041962,
+              1.271958351135254
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 756,
+          "gltfBounds": [
+            [
+              -1.174299716949463,
+              0.15102362632751465,
+              -1.301117181777954
+            ],
+            [
+              1.174299716949463,
+              0.5494052767753601,
+              1.301117181777954
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 624,
+          "gltfBounds": [
+            [
+              -1.1446068286895752,
+              0.5502391457557678,
+              -1.3005602359771729
+            ],
+            [
+              1.136983871459961,
+              0.9498023390769958,
+              1.190598487854004
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 790,
+          "gltfBounds": [
+            [
+              -1.0055439472198486,
+              0.9502269625663757,
+              -1.1897492408752441
+            ],
+            [
+              1.137821912765503,
+              1.4999452829360962,
+              1.1139943599700928
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            1.5,
+            3.0
+          ],
+          "vertices": 865,
+          "gltfBounds": [
+            [
+              -0.6892144083976746,
+              1.5004651546478271,
+              -1.0729060173034668
+            ],
+            [
+              0.9589839577674866,
+              2.553933620452881,
+              0.7792642116546631
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00026000000000000003,
+        "before": {
+          "vertices": 1150021,
+          "faces": 1922531
+        },
+        "after": {
+          "vertices": 961232,
+          "faces": 1922463
+        }
+      },
+      "textures": [
+        {
+          "name": "rock_formation_3d_model_basecolor",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "rock_formation_3d_model_normal",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "rock_formation_3d_model_rm",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 7000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 4194304
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      }
+    },
+    {
+      "id": "wagon",
+      "label": "Holzkarren",
+      "source": {
+        "path": "assets/inbox/wooden wagon 3d model.glb",
+        "bytes": 62397620,
+        "sha256": "a704b8ff5898b4ed33b5289612a07bd432a95f6b61bc9bd8dfbf364c80f7a507",
+        "triangles": 1946355,
+        "vertices": 1131737,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/wagon.glb",
+        "bytes": 835928,
+        "sha256": "7257e8c02089dd783c1783a502dbe95d6afca7da52e06e2ce831421fd8befc83",
+        "triangles": 13999,
+        "vertices": 11900,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 2.959887507800636,
+        "blenderSourceBounds": [
+          [
+            -0.27276611328125,
+            -0.4901428818702698,
+            0.0
+          ],
+          [
+            0.27520751953125,
+            0.4896240830421448,
+            0.3669281005859375
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.8109701871871948,
+            -1.4500000476837158,
+            0.0
+          ],
+          [
+            0.8109701871871948,
+            1.4500000476837158,
+            1.0860658884048462
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0036131441593170166,
+          -0.0007677674293518066,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0004768669605255127,
+          0.0008495450019836426,
+          4.571348836179823e-05
+        ],
+        "gltfBounds": [
+          [
+            -0.8104836940765381,
+            0.0,
+            -1.4496817588806152
+          ],
+          [
+            0.8104836940765381,
+            1.0860551595687866,
+            1.4496817588806152
+          ]
+        ],
+        "dimensions": [
+          1.6209673881530762,
+          1.0860551595687866,
+          2.8993635177612305
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 344,
+          "gltfBounds": [
+            [
+              -0.7564055919647217,
+              0.0,
+              -0.8672984838485718
+            ],
+            [
+              0.7645447254180908,
+              0.14978648722171783,
+              0.1905115246772766
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 3157,
+          "gltfBounds": [
+            [
+              -0.8104836940765381,
+              0.1502773016691208,
+              -1.2420799732208252
+            ],
+            [
+              0.8104836940765381,
+              0.5499686598777771,
+              1.4496817588806152
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 3196,
+          "gltfBounds": [
+            [
+              -0.7643349170684814,
+              0.5501273274421692,
+              -1.4496817588806152
+            ],
+            [
+              0.7696845531463623,
+              0.9494607448577881,
+              0.3080105185508728
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 271,
+          "gltfBounds": [
+            [
+              -0.6007251739501953,
+              0.9500150084495544,
+              -1.4281587600708008
+            ],
+            [
+              0.5225253105163574,
+              1.0860551595687866,
+              0.17846190929412842
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00029,
+        "before": {
+          "vertices": 1131737,
+          "faces": 1946355
+        },
+        "after": {
+          "vertices": 972897,
+          "faces": 1945852
+        }
+      },
+      "textures": [
+        {
+          "name": "wooden_wagon_3d_model_basecolor",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_wagon_3d_model_normal",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_wagon_3d_model_rm",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 14000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 4194304
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      }
+    },
+    {
+      "id": "well",
+      "label": "Steinbrunnen",
+      "source": {
+        "path": "assets/inbox/medieval well 3d model.glb",
+        "bytes": 61255364,
+        "sha256": "60e2b4861914ab054755196d07e5adb1bf449581d3471ad8ef1454cd3300c440",
+        "triangles": 1888191,
+        "vertices": 1118224,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-props/runtime/well.glb",
+        "bytes": 821704,
+        "sha256": "497637e68ff1516396447d8c4d7144ac2f7733bd718de92bd86a489880725f66",
+        "triangles": 13994,
+        "vertices": 11979,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 2.4521592716161016,
+        "blenderSourceBounds": [
+          [
+            -0.4582214951515198,
+            -0.3713684380054474,
+            0.0
+          ],
+          [
+            0.4582520127296448,
+            0.3712463676929474,
+            0.978729248046875
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -1.1236693859100342,
+            -0.9105048775672913,
+            0.0
+          ],
+          [
+            1.1236693859100342,
+            0.9105048775672913,
+            2.3999998569488525
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          3.737211227416992e-05,
+          -0.00014966726303100586,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -6.16908073425293e-05,
+          0.0004404783248901367,
+          -5.111756308906479e-06
+        ],
+        "gltfBounds": [
+          [
+            -1.123389720916748,
+            0.0,
+            -0.9103109240531921
+          ],
+          [
+            1.123389720916748,
+            2.3992178440093994,
+            0.9103109240531921
+          ]
+        ],
+        "dimensions": [
+          2.246779441833496,
+          2.3992178440093994,
+          1.8206218481063843
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 516,
+          "gltfBounds": [
+            [
+              -1.123389720916748,
+              0.0,
+              -0.9103109240531921
+            ],
+            [
+              0.765869140625,
+              0.1495424211025238,
+              0.9103109240531921
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1559,
+          "gltfBounds": [
+            [
+              -1.11293363571167,
+              0.15074849128723145,
+              -0.9018270969390869
+            ],
+            [
+              0.7548738121986389,
+              0.5497705340385437,
+              0.9004785418510437
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 1590,
+          "gltfBounds": [
+            [
+              -1.095721960067749,
+              0.5501095652580261,
+              -0.87525475025177
+            ],
+            [
+              0.7412550449371338,
+              0.9487020969390869,
+              0.889017641544342
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 964,
+          "gltfBounds": [
+            [
+              -1.0578365325927734,
+              0.9503137469291687,
+              -0.2390429973602295
+            ],
+            [
+              1.123389720916748,
+              1.499852180480957,
+              0.24231547117233276
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            1.5,
+            3.0
+          ],
+          "vertices": 2406,
+          "gltfBounds": [
+            [
+              -1.0634381771087646,
+              1.5027415752410889,
+              -0.7665412425994873
+            ],
+            [
+              0.7782801985740662,
+              2.3992178440093994,
+              0.7752164006233215
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00024,
+        "before": {
+          "vertices": 1118224,
+          "faces": 1888191
+        },
+        "after": {
+          "vertices": 944172,
+          "faces": 1888153
+        }
+      },
+      "textures": [
+        {
+          "name": "medieval_well_3d_model_basecolor",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "medieval_well_3d_model_normal",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "medieval_well_3d_model_rm",
+          "sourceSize": [
+            2048,
+            2048
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 14000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 4194304
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      }
+    }
+  ]
+}

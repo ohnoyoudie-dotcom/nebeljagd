@@ -99,15 +99,21 @@ function chestPrototype() {
 }
 
 export function createChests(scene, { placements = [], heightAt = () => 0, world = null,
-  isVisible = () => true, onDrop = () => {}, viewDistance = 75, revealSceneryThroughFog = false } = {}) {
+  isVisible = () => true, onDrop = () => {}, viewDistance = 75, revealSceneryThroughFog = false,
+  tripoPrototype = null } = {}) {
+  if (placements.some(object => object.kind === 'chest' && object.variant === 'kit-tripo-chest') && !tripoPrototype) {
+    throw new Error('Die Tripo-Truhe muss vor dem Platzieren geladen werden.');
+  }
   const prototype = chestPrototype();
   const items = placements.filter(object => object.kind === 'chest').map((definition, index) => {
     const [x, z] = definition.position, groundY = heightAt(x, z);
-    const group = prototype.clone(true); group.name = definition.name || 'Holztruhe';
+    const isTripo = definition.variant === 'kit-tripo-chest';
+    const group = (isTripo ? tripoPrototype : prototype).clone(true); group.name = definition.name || 'Holztruhe';
     group.position.set(x, groundY, z); group.rotation.y = definition.rotation ?? 0;
     group.scale.setScalar(definition.scale ?? 1); group.userData.worldObjectId = definition.id; scene.add(group);
     return { id: definition.id, name: definition.name || 'Holztruhe', type: 'chest', kind: 'chest',
       x, z, groundY, scale: definition.scale ?? 1, rarity: definition.rarity, group,
+      variant: definition.variant ?? 'wood', model: isTripo ? 'tripo' : 'procedural',
       lid: group.getObjectByName('chest-lid'), halo: group.getObjectByName('chest-halo'),
       opened: false, elapsed: 0, dropped: false, opener: null, index };
   });
@@ -158,9 +164,14 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
       item.opener = null; item.lid.rotation.x = 0; item.halo.visible = true; } },
     dispose() {
       for (const item of items) scene.remove(item.group);
-      const geometries = new Set(), materials = new Set();
-      prototype.traverse(node => { if (node.geometry) geometries.add(node.geometry); if (node.material) materials.add(node.material); });
+      const geometries = new Set(), materials = new Set(), textures = new Set();
+      for (const asset of [prototype, tripoPrototype].filter(Boolean)) asset.traverse(node => {
+        if (node.geometry) geometries.add(node.geometry);
+        for (const material of Array.isArray(node.material) ? node.material : node.material ? [node.material] : []) materials.add(material);
+      });
+      for (const material of materials) for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
       for (const geometry of geometries) geometry.dispose(); for (const material of materials) material.dispose();
+      for (const texture of textures) texture.dispose();
     },
   };
 }

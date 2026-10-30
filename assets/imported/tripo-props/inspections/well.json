@@ -1,0 +1,252 @@
+{
+  "id": "well",
+  "label": "Steinbrunnen",
+  "source": {
+    "path": "assets/inbox/medieval well 3d model.glb",
+    "bytes": 61255364,
+    "sha256": "60e2b4861914ab054755196d07e5adb1bf449581d3471ad8ef1454cd3300c440",
+    "triangles": 1888191,
+    "vertices": 1118224,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-props/runtime/well.glb",
+    "bytes": 821704,
+    "sha256": "497637e68ff1516396447d8c4d7144ac2f7733bd718de92bd86a489880725f66",
+    "triangles": 13994,
+    "vertices": 11979,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 2.4521592716161016,
+    "blenderSourceBounds": [
+      [
+        -0.4582214951515198,
+        -0.3713684380054474,
+        0.0
+      ],
+      [
+        0.4582520127296448,
+        0.3712463676929474,
+        0.978729248046875
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -1.1236693859100342,
+        -0.9105048775672913,
+        0.0
+      ],
+      [
+        1.1236693859100342,
+        0.9105048775672913,
+        2.3999998569488525
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      3.737211227416992e-05,
+      -0.00014966726303100586,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      -6.16908073425293e-05,
+      0.0004404783248901367,
+      -5.111756308906479e-06
+    ],
+    "gltfBounds": [
+      [
+        -1.123389720916748,
+        0.0,
+        -0.9103109240531921
+      ],
+      [
+        1.123389720916748,
+        2.3992178440093994,
+        0.9103109240531921
+      ]
+    ],
+    "dimensions": [
+      2.246779441833496,
+      2.3992178440093994,
+      1.8206218481063843
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 516,
+      "gltfBounds": [
+        [
+          -1.123389720916748,
+          0.0,
+          -0.9103109240531921
+        ],
+        [
+          0.765869140625,
+          0.1495424211025238,
+          0.9103109240531921
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 1559,
+      "gltfBounds": [
+        [
+          -1.11293363571167,
+          0.15074849128723145,
+          -0.9018270969390869
+        ],
+        [
+          0.7548738121986389,
+          0.5497705340385437,
+          0.9004785418510437
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 1590,
+      "gltfBounds": [
+        [
+          -1.095721960067749,
+          0.5501095652580261,
+          -0.87525475025177
+        ],
+        [
+          0.7412550449371338,
+          0.9487020969390869,
+          0.889017641544342
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.95,
+        1.5
+      ],
+      "vertices": 964,
+      "gltfBounds": [
+        [
+          -1.0578365325927734,
+          0.9503137469291687,
+          -0.2390429973602295
+        ],
+        [
+          1.123389720916748,
+          1.499852180480957,
+          0.24231547117233276
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        1.5,
+        3.0
+      ],
+      "vertices": 2406,
+      "gltfBounds": [
+        [
+          -1.0634381771087646,
+          1.5027415752410889,
+          -0.7665412425994873
+        ],
+        [
+          0.7782801985740662,
+          2.3992178440093994,
+          0.7752164006233215
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.00024,
+    "before": {
+      "vertices": 1118224,
+      "faces": 1888191
+    },
+    "after": {
+      "vertices": 944172,
+      "faces": 1888153
+    }
+  },
+  "textures": [
+    {
+      "name": "medieval_well_3d_model_basecolor",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "medieval_well_3d_model_normal",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "medieval_well_3d_model_rm",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 14000,
+    "textureLimit": 1024,
+    "fileLimitBytes": 4194304
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  }
+}

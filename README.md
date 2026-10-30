@@ -17,6 +17,11 @@ Das neue Tripo-Wirtshaus ist unter **Objekte & Verteilung → Haus →
 Wirtshaus · Tripo (neu)** auswählbar. Es enthält eine Modellvorschau, offene
 Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
+Die bisherigen Häuser wurden von der Ausgangskarte entfernt. Neue Platzierungen
+verwenden das Tripo-Wirtshaus; alte Entwürfe lassen sich gezielt bereinigen.
+Holzwagen, Holzfass, Steinbrunnen, drei Felsen und die Schatztruhe ergänzen den
+Tripo-Katalog. Bedienung und aktueller Prüfstand:
+[`docs/tripo-props-integration.md`](docs/tripo-props-integration.md).
 
 Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
 Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
@@ -25,8 +30,8 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
-animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände, Versteckgras und
-begehbare Häuser sind Teil der Welt.
+animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
+Teil der Welt. Begehbare Tripo-Wirtshäuser lassen sich im Editor platzieren.
 
 Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Bäume, Häuser,
 Blumenbeete, Grasflächen, Felsen, Sträucher, Ruinen, Schreine und Gegenstände
@@ -35,9 +40,11 @@ lassen sich anlegen, verschieben, drehen, skalieren, duplizieren und löschen.
 Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
-Die Ausgangskarte enthält 4.020 gespeicherte Weltobjekte, darunter 2.601 Bäume,
-31 Häuser, 48 Truhen, 741 Grasflächen, 125 Blumenbeete und vier bewachsene
-Felskanten beziehungsweise Felskuppen. Zehn Startbereiche bieten Platz
+Die bereinigte Ausgangskarte enthält 3.949 gespeicherte Weltobjekte, darunter
+2.591 Bäume, 16 frei platzierte Truhen, 739 Grasflächen, 124 Blumenbeete und zwei
+bewachsene Felskanten beziehungsweise Felskuppen. Die 26 verbliebenen alten Häuser
+und 30 zugehörige beziehungsweise verwaiste Vorratstruhen wurden entfernt;
+neue Gebäude werden bewusst im Editor gesetzt. Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
 Multiplayer, Teams und Schreinfragen sind noch nicht aktiv.
@@ -78,8 +85,11 @@ npm run preview       # Fertigen Build lokal prüfen
 
 Die Landschaftsdaten sind eine optionale, separat versionierte Erweiterung
 `landscape.version = 1`. Alte Karten bleiben gültig; bestehende Objekte erhalten
-erst beim Bearbeiten neue `vegetation`-Eigenschaften. Die Ausgangskarte und ihre
-4.020 Platzierungen werden durch die neuen Werkzeuge nicht automatisch verändert.
+erst beim Bearbeiten neue `vegetation`-Eigenschaften. Die aktuelle Ausgangskarte
+und ihre 3.949 Platzierungen werden beim Öffnen des Editors nicht automatisch
+verändert. Frühere Browserentwürfe und JSON-Importe bleiben erhalten;
+**Alte Gebäude entfernen** bereinigt sie gezielt und lässt sich mit **Zurück**
+rückgängig machen.
 
 Ein Produktionsserver muss nur `dist/` ausliefern. Relative Pfade unterstützen
 Hosting unter einem Unterverzeichnis. Der Build erzeugt außerdem zwei
@@ -119,8 +129,8 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
 - Flüsse werden über die gespeicherten Brücken überquert. Bäume, Felsen,
   bewachsene Erhöhungen, Hauswände, Wasser und Küste begrenzen die Bewegung. Pfeile prüfen ihre gesamte
   Flugstrecke gegen Hindernisse und prallen gedämpft ab.
-- Häuser sind dauerhaft ohne Dach und zeigen Wohnraum und zwei Schlafzimmer.
-  Drehung und Größe aus dem Editor gelten auch für Boden, Eingang und Kollision.
+- Das neue Wirtshaus ist dauerhaft ohne Dach und enthält Gastraum und Küche.
+  Drehung und Größe aus dem Editor gelten auch für Boden, Eingänge und Kollision.
 - Hohes Gras verbirgt die Figur teilweise; die lokale Darstellung blendet auf
   45 % Deckkraft. Der Status für spätere Verbergung gegenüber anderen Spielern
   ist vorbereitet, aber noch keine Netzwerkfunktion.
@@ -185,10 +195,11 @@ Herkunft und Materialanpassungen: [`assets/imported/rei/`](assets/imported/rei/R
 Die hochgeladene Rei-Gras-GLB enthielt keine Halme; die sieben Pinseltypen
 verwenden deshalb Projektgeometrie. Das vorhandene Nebeljagd-Umwelt-Kit ergänzt
 echtes GLB-Gras, vier Bäume einschließlich einer Herbsteiche, zwei Felsen,
-Mauer, Zaun, Ruinenbogen, Fachwerkhaus und Holzkiste. Zehn Holzkisten und die
-Esstische in den 31 Häusern sind zerstörbar; nach dem Zerbrechen verschwinden
-auch ihre Kollisionen und Sichtblockaden. Alle 38 Katalogvarianten haben echte
-Modellvorschauen. Die Kit-Quelldateien bleiben unverändert.
+Mauer, Zaun, Ruinenbogen und Holzkiste. Zehn Holzkisten sind weiterhin auf der Karte
+verteilt. Die älteren Fachwerkhäuser bleiben für vorhandene Karten importierbar;
+ihre zerstörbaren Esstische funktionieren dort weiter. Nach dem Zerbrechen
+verschwinden auch deren Kollisionen und Sichtblockaden. Die Kit-Quelldateien und
+ihre Herkunft bleiben erhalten; neue Tripo-Modelle werden separat dokumentiert.
 
 ## Prüfen und frühere Stände
 

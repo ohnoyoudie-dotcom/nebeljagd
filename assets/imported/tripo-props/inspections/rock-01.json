@@ -1,0 +1,214 @@
+{
+  "id": "rock-01",
+  "label": "Flacher Felsen",
+  "source": {
+    "path": "assets/inbox/rock 3d model.glb",
+    "bytes": 62504720,
+    "sha256": "70b18784f55149bc637a662817e43d115f6f261959e61eeb53cd59f6aba70541",
+    "triangles": 1916856,
+    "vertices": 1137078,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-props/runtime/rock-01.glb",
+    "bytes": 495256,
+    "sha256": "31bb0175c17e460e3e8f7925891a1637c7d72c4dc0533b21cb401f3b2dc3b687",
+    "triangles": 4000,
+    "vertices": 3434,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 2.0429562024907986,
+    "blenderSourceBounds": [
+      [
+        -0.4894409775733948,
+        -0.42053231596946716,
+        0.0
+      ],
+      [
+        0.4895325303077698,
+        0.41976937651634216,
+        0.275238037109375
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -0.9999999403953552,
+        -0.8583497405052185,
+        0.0
+      ],
+      [
+        0.9999999403953552,
+        0.8583497405052185,
+        0.5622992515563965
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      9.351968765258789e-05,
+      -0.0007793307304382324,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      -0.0001843869686126709,
+      0.0008421838283538818,
+      -0.0013739767018705606
+    ],
+    "gltfBounds": [
+      [
+        -0.9998878240585327,
+        0.0,
+        -0.8581494092941284
+      ],
+      [
+        0.9998878240585327,
+        0.5652078986167908,
+        0.8581494092941284
+      ]
+    ],
+    "dimensions": [
+      1.9997756481170654,
+      0.5652078986167908,
+      1.7162988185882568
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 782,
+      "gltfBounds": [
+        [
+          -0.9998878240585327,
+          0.0,
+          -0.8581494092941284
+        ],
+        [
+          0.9998878240585327,
+          0.14976035058498383,
+          0.8581494092941284
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 1201,
+      "gltfBounds": [
+        [
+          -0.9618021249771118,
+          0.15091422200202942,
+          -0.8419324159622192
+        ],
+        [
+          0.9854154586791992,
+          0.5495454668998718,
+          0.8534963130950928
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 10,
+      "gltfBounds": [
+        [
+          -0.6313005685806274,
+          0.5500727891921997,
+          -0.565125584602356
+        ],
+        [
+          -0.472318559885025,
+          0.5652078986167908,
+          -0.1809929758310318
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.0002,
+    "before": {
+      "vertices": 1137078,
+      "faces": 1916856
+    },
+    "after": {
+      "vertices": 957949,
+      "faces": 1915905
+    }
+  },
+  "textures": [
+    {
+      "name": "rock_3d_model_basecolor",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "rock_3d_model_normal",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "rock_3d_model_rm",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 4000,
+    "textureLimit": 1024,
+    "fileLimitBytes": 4194304
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  }
+}

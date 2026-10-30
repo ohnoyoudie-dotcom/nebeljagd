@@ -11,6 +11,7 @@ import { createVegetationWind } from './vegetation-wind.js';
 import { buildVegetationPatch, buildKitGrassPatch, vegetationInstanceTint, vegetationTint, MAX_GRASS_INSTANCES, MAX_KIT_GRASS_INSTANCES } from './vegetation-patches.js';
 import { vegetationSettings } from './map/landscape.js';
 import { loadEnvironmentKit } from './environment-kit.js';
+import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { grassBiomeProfile } from './meadow-ground.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
@@ -139,7 +140,8 @@ function disposeScenery(groups, prototypes, hosts = []) {
   }
   for (const group of [...groups, ...hosts]) group.traverse(collect);
   for (const parts of prototypes.values()) for (const part of parts) {
-    geometries.add(part.geometry); if (part.lowGeometry) geometries.add(part.lowGeometry); materials.add(part.material);
+    geometries.add(part.geometry); if (part.lowGeometry) geometries.add(part.lowGeometry);
+    for (const material of Array.isArray(part.material) ? part.material : [part.material]) materials.add(material);
   }
   for (const material of materials) for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
   geometries.forEach(geometry => geometry.dispose()); materials.forEach(material => material.dispose()); textures.forEach(value => value.dispose());
@@ -308,9 +310,12 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, destructibleId: local.furnitureId ? `${object.id}-furniture-${local.furnitureId}` : undefined,
         type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
         minY: y + local.minY * scale, maxY: y + local.maxY * scale, rotation, oriented: true, corners };
-      projectileObstacles.push(worldBody); local.worldBody = worldBody; return local;
+      if (!local.movementOnly) projectileObstacles.push(worldBody);
+      local.worldBody = worldBody; return local;
     });
-    const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index: createCollisionIndex([], bodies), bodies, group, house };
+    const index = createCollisionIndex([], bodies.filter(body => !body.movementOnly));
+    const movementIndex = bodies.some(body => body.projectileOnly || body.movementOnly) ? createCollisionIndex([], bodies.filter(body => !body.projectileOnly)) : index;
+    const entry = { object, x, z, y, scale, cos, sin, toLocal, toWorld, index, movementIndex, bodies, group, house };
     structures.push(entry); return entry;
   }
   for (const object of map.objects ?? []) {
@@ -318,6 +323,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     const [x, z] = object.position, scale = object.scale, variant = object.variant;
     const kit = kitModels.get(`${object.kind}:${variant}`);
     chunkFor(x, z).count++;
+    if (object.kind === 'chest' && variant === 'kit-tripo-chest') {
+      addStructure(object, TRIPO_CHEST_MOVEMENT_WALLS, null);
+      continue;
+    }
     if (kit && object.kind === 'house') {
       const group = new THREE.Group(), roof = new THREE.Group(), frontFacade = new THREE.Group(), interior = new THREE.Group();
       group.name = `${object.name} · ${object.id}`; group.userData.visionBlockerSurface = true; roof.name = 'Dach entfernt'; roof.visible = false; interior.name = 'Fachwerkhaus · offener Innenraum';
@@ -432,9 +441,12 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         }
         if (kit.walls.length) {
           const structure = addStructure(object, kit.walls, null);
-          if (object.kind === 'crate') destructibles.push({ id: object.id, name: object.name, kind: 'crate', x, z,
-            y: structure.y, scale, position: { x, y: structure.y, z }, radius: .64 * scale, height: kit.height * scale,
-            maxHealth: 55, health: 55, destroyed: false, structure, mesh: null, instanceIndex: -1, originalMatrix: null });
+          if (object.kind === 'crate' || kit.destructible) {
+            const maxHealth = kit.destructible?.health ?? 55;
+            destructibles.push({ id: object.id, name: object.name, kind: object.kind, x, z,
+              y: structure.y, scale, position: { x, y: structure.y, z }, radius: (kit.destructible?.radius ?? .64) * scale, height: kit.height * scale,
+              maxHealth, health: maxHealth, destroyed: false, structure, instances: [], mesh: null, instanceIndex: -1, originalMatrix: null });
+          }
         }
       }
       else if (object.kind === 'tree') {
@@ -463,12 +475,17 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const part of parts) {
       const mesh = new THREE.InstancedMesh(mode === 'low' && part.lowGeometry ? part.lowGeometry : part.geometry, part.material, batch.placements.length);
       mesh.name = `${batch.key} · ${batch.chunk.id}`; mesh.castShadow = part.castShadow; mesh.receiveShadow = true;
-      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence):/.test(batch.key);
+      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence|wagon|barrel|well):/.test(batch.key);
       for (let i = 0; i < batch.placements.length; i++) {
         const p = batch.placements[i]; matrix.position.set(p.x, p.y + (batch.key === 'bed:soil' ? .04 : .01), p.z); matrix.rotation.set(0, p.rotation, 0); matrix.scale.set(...p.scale); matrix.updateMatrix(); mesh.setMatrixAt(i, matrix.matrix);
-        if (p.object.kind === 'crate') {
+        if (p.object.kind === 'crate' || kitModels.get(batch.key)?.destructible) {
           const destructible = destructibles.find(item => item.id === p.object.id);
-          if (destructible) { destructible.mesh = mesh; destructible.instanceIndex = i; destructible.originalMatrix = matrix.matrix.clone(); }
+          if (destructible) {
+            const originalMatrix = matrix.matrix.clone();
+            destructible.instances.push({ mesh, index: i, originalMatrix });
+            // Preserve the existing inspect/debug fields for single-part props.
+            destructible.mesh = mesh; destructible.instanceIndex = i; destructible.originalMatrix = originalMatrix;
+          }
         }
         if (part.foliage) { tempColor.set('#a0b481'); mesh.setColorAt(i, tempColor); }
         if (p.color && part.vegetationTint !== false) { tempColor.fromArray(p.color); mesh.setColorAt(i, tempColor); }
@@ -490,7 +507,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       if (Math.abs(position.x - structure.x) > 15 * structure.scale + radius || Math.abs(position.z - structure.z) > 15 * structure.scale + radius) continue;
       Object.assign(localPoint, structure.toLocal(position));
       if (structure.solidResolver) structure.solidResolver(localPoint, radius / structure.scale);
-      else structure.index.resolve(localPoint, radius / structure.scale);
+      else structure.movementIndex.resolve(localPoint, radius / structure.scale);
       const worldPoint = structure.toWorld(localPoint); position.x = worldPoint.x; position.z = worldPoint.z;
     }
     return position;
@@ -512,9 +529,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     item.destroyed = true; item.health = 0;
     for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = true; body.worldBody.destroyed = true; }
     if (item.group) item.group.visible = false;
-    if (item.mesh && item.instanceIndex >= 0) {
+    if (item.instances?.length) {
       matrix.position.set(item.x, item.y + .01, item.z); matrix.rotation.set(0, 0, 0); matrix.scale.setScalar(0); matrix.updateMatrix();
-      item.mesh.setMatrixAt(item.instanceIndex, matrix.matrix); item.mesh.instanceMatrix.needsUpdate = true;
+      for (const instance of item.instances) {
+        instance.mesh.setMatrixAt(instance.index, matrix.matrix); instance.mesh.instanceMatrix.needsUpdate = true;
+      }
     }
     return true;
   }
@@ -523,8 +542,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       item.destroyed = false; item.health = item.maxHealth;
       for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = false; body.worldBody.destroyed = false; }
       if (item.group) item.group.visible = true;
-      if (item.mesh && item.instanceIndex >= 0 && item.originalMatrix) {
-        item.mesh.setMatrixAt(item.instanceIndex, item.originalMatrix); item.mesh.instanceMatrix.needsUpdate = true;
+      for (const instance of item.instances ?? []) {
+        instance.mesh.setMatrixAt(instance.index, instance.originalMatrix); instance.mesh.instanceMatrix.needsUpdate = true;
       }
     }
   }

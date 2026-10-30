@@ -504,6 +504,153 @@
         ],
         "span": 32.29691161058426
       }
+    },
+    {
+      "kind": "rock",
+      "variant": "kit-tripo-01",
+      "label": "Flacher Felsen · Tripo",
+      "file": "assets/catalog/rock-kit-tripo-01.webp",
+      "bytes": 3120,
+      "sha256": "28eff745af29b6563c5e99cd40032bd3ad49e6fc9a10628c5075e099154314db",
+      "renderedBounds": {
+        "min": [
+          1999.0001121759415,
+          0.009999999776482582,
+          -0.8581494092941284
+        ],
+        "max": [
+          2000.9998878240585,
+          0.5752078983932734,
+          0.8581494092941284
+        ],
+        "span": 3.0186533392174084
+      }
+    },
+    {
+      "kind": "rock",
+      "variant": "kit-tripo-02",
+      "label": "Findling · Tripo",
+      "file": "assets/catalog/rock-kit-tripo-02.webp",
+      "bytes": 3606,
+      "sha256": "ff6ca6c4981d7c10dde04aa6aa6874a397f4e5fed5dde4be1ca659c481bf69f7",
+      "renderedBounds": {
+        "min": [
+          2079.0695819854736,
+          0.009999999776482582,
+          -1.100463628768921
+        ],
+        "max": [
+          2080.9304180145264,
+          1.3178104255348444,
+          1.100463628768921
+        ],
+        "span": 3.544788433674968
+      }
+    },
+    {
+      "kind": "rock",
+      "variant": "kit-tripo-03",
+      "label": "Hohe Felsgruppe · Tripo",
+      "file": "assets/catalog/rock-kit-tripo-03.webp",
+      "bytes": 3422,
+      "sha256": "b3ba69ad26b2db22ed1ab5032d20fc51b1c6d23c5df0834b47a029049b543e46",
+      "renderedBounds": {
+        "min": [
+          2158.8257002830505,
+          0.009999999776482582,
+          -1.301117181777954
+        ],
+        "max": [
+          2161.1742997169495,
+          2.5639336202293634,
+          1.301117181777954
+        ],
+        "span": 4.857511135291493
+      }
+    },
+    {
+      "kind": "wagon",
+      "variant": "kit-tripo-wagon",
+      "label": "Holzwagen · Tripo",
+      "file": "assets/catalog/wagon-kit-tripo-wagon.webp",
+      "bytes": 4012,
+      "sha256": "d7d5963310821d74e95e42ad106134640ac4fc2a7f7095e2674d53171adb4fe5",
+      "renderedBounds": {
+        "min": [
+          2239.1895163059235,
+          0.009999999776482582,
+          -1.4496817588806152
+        ],
+        "max": [
+          2240.8104836940765,
+          1.0960551593452692,
+          1.4496817588806152
+        ],
+        "span": 3.914133192359391
+      }
+    },
+    {
+      "kind": "barrel",
+      "variant": "kit-tripo-barrel",
+      "label": "Holzfass · Tripo",
+      "file": "assets/catalog/barrel-kit-tripo-barrel.webp",
+      "bytes": 3744,
+      "sha256": "2aea4214848a8b5519bd5540c7706a8b6a72c6e9a65844ba7ac36b8c0847331e",
+      "renderedBounds": {
+        "min": [
+          2319.5687645077705,
+          0.009999999776482582,
+          -0.4550541043281555
+        ],
+        "max": [
+          2320.4312354922295,
+          0.9590711090713739,
+          0.4550541043281555
+        ],
+        "span": 2
+      }
+    },
+    {
+      "kind": "well",
+      "variant": "kit-tripo-well",
+      "label": "Steinbrunnen · Tripo",
+      "file": "assets/catalog/well-kit-tripo-well.webp",
+      "bytes": 5214,
+      "sha256": "69fed6081ad4321e0373f9e671aa058cf5d977e1429da5b7e2c8dbf967aefcec",
+      "renderedBounds": {
+        "min": [
+          2398.8766102790833,
+          0.009999999776482582,
+          -0.9103109240531921
+        ],
+        "max": [
+          2401.1233897209167,
+          2.409217843785882,
+          0.9103109240531921
+        ],
+        "span": 4.20841815052751
+      }
+    },
+    {
+      "kind": "chest",
+      "variant": "kit-tripo-chest",
+      "label": "Schatztruhe · Tripo",
+      "file": "assets/catalog/chest-kit-tripo-chest.webp",
+      "bytes": 3548,
+      "sha256": "d99e2a43398063d97d45cd2f160c8c3ae4c2efaea5c5dcfc2f031bc47d988c1f",
+      "renderedBounds": {
+        "min": [
+          3118.8508805939,
+          -3.971964179072529e-05,
+          -1.1491194061000818
+        ],
+        "max": [
+          3121.1491194061,
+          0.9675115942955017,
+          1.1491194061000818
+        ],
+        "span": 3.7980979904349907
+      }
     }
   ],
   "errors": []

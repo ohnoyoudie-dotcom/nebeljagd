@@ -1,0 +1,187 @@
+{
+  "name": "nebeljagd-tripo-props",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1807,
+      "sha256": "60d2d313ab2a022bead1ef8432a8267f979abc8284cfb99a9950043eecbc6561"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 33064,
+      "sha256": "cb11dbd2ea39abc7662100783c79f47ae8ca78ff249cd965a04cff26ed5d6772"
+    },
+    {
+      "path": "inspections/barrel.json",
+      "bytes": 4238,
+      "sha256": "b6c9263d5065db0cf9773da32de2c1bf9335d6fcaab33a04e0fed0d12df3be88"
+    },
+    {
+      "path": "inspections/rock-01.json",
+      "bytes": 4206,
+      "sha256": "d3cbaf6434bc95bb69405905bc38179e44f3af38769a81628ea203e93863367f"
+    },
+    {
+      "path": "inspections/rock-02.json",
+      "bytes": 4584,
+      "sha256": "44c0806ef4a066a27b7cb1e3fa9afea31cf70d8fb2c93be3b1f06334c684c3d5"
+    },
+    {
+      "path": "inspections/rock-03.json",
+      "bytes": 4931,
+      "sha256": "f4b28b64c69e0d8bb2ab81243aac4aaf8a6c64cd8f5f7fbfe766b25efe4ca98a"
+    },
+    {
+      "path": "inspections/wagon.json",
+      "bytes": 4574,
+      "sha256": "f3942826313275af71bd824b76ac6bb7904a3bad456024453f027db12246b22c"
+    },
+    {
+      "path": "inspections/well.json",
+      "bytes": 4912,
+      "sha256": "6a6781ee0b6f42741a716fbb42fc7d2cd8b969fbf6003ccd6eb80f67a5477d85"
+    },
+    {
+      "path": "previews/barrel-runtime.png",
+      "bytes": 726868,
+      "sha256": "9ba17038420a4769106f9f3727457c066113351eee13b9b53db01d6b4dae5d36"
+    },
+    {
+      "path": "previews/barrel-source.png",
+      "bytes": 736255,
+      "sha256": "007ad906a82a96f55278c360e9426ea715c41bef19ffa5ffb315176aeaed2e4d"
+    },
+    {
+      "path": "previews/comparison.png",
+      "bytes": 1074778,
+      "sha256": "e9c88db766467ebc48a7ba5ca7806264622cc8f76fc8f79068f6262396aee332"
+    },
+    {
+      "path": "previews/review.html",
+      "bytes": 2428,
+      "sha256": "8eab7610a41c2d91478af19b6a1bb4df13284e65880f776be15ef00d689fe25d"
+    },
+    {
+      "path": "previews/rock-01-runtime.png",
+      "bytes": 655995,
+      "sha256": "c987b093a554eafc49a74289e21b6d694cc4d02bd542cc7f9a271041b6bc7281"
+    },
+    {
+      "path": "previews/rock-01-source.png",
+      "bytes": 664873,
+      "sha256": "9961943ab678f8c6ac3a4d7fa7804ca93dcf4d6809f98a386b558043ffb3c526"
+    },
+    {
+      "path": "previews/rock-02-runtime.png",
+      "bytes": 683202,
+      "sha256": "a2ac7bf4a38eea2eac97e01fedcd8d7eddc60b10dfdeabb0ce6ccb33042c6993"
+    },
+    {
+      "path": "previews/rock-02-source.png",
+      "bytes": 696397,
+      "sha256": "c8b4749db1f17ad4e678874ebd6805e501fbbef108a133feb170cd685b02e222"
+    },
+    {
+      "path": "previews/rock-03-runtime.png",
+      "bytes": 742859,
+      "sha256": "3117f7ea6de4f12e6e822846ef77597b42f821e5daf71000c25c091a85f37ec9"
+    },
+    {
+      "path": "previews/rock-03-source.png",
+      "bytes": 759942,
+      "sha256": "e49de3a17ea288edefc79698e82fd02b9fc3ddb1de5ef051c2860aa26883a865"
+    },
+    {
+      "path": "previews/wagon-runtime.png",
+      "bytes": 636847,
+      "sha256": "6b0c5ee2a7ff500aef5b2d000e4536d10ed6b11887d14fb3ea64632aeff7150f"
+    },
+    {
+      "path": "previews/wagon-source.png",
+      "bytes": 639893,
+      "sha256": "cbf730ab8ff2fa5092c87c90cf9c5289f98c1ec90e537a161eb621360c88bb9b"
+    },
+    {
+      "path": "previews/well-runtime.png",
+      "bytes": 725422,
+      "sha256": "31bea3ccfaced4820b23b831487128fee6fc7bbe5dafbbee99d1b08cef35f59c"
+    },
+    {
+      "path": "previews/well-source.png",
+      "bytes": 741832,
+      "sha256": "7ed2e5c987185cb5e576702eae1a7042b99ee523803c23de351ac85bfd1c0330"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 7033,
+      "sha256": "79e141f9a490f330ef4641324b676d03efb65fd99c8bd39633d4d95878a1eb2e"
+    },
+    {
+      "path": "runtime/barrel.glb",
+      "bytes": 546512,
+      "sha256": "3b0b2bf34d4c3e5f1a9aae92923c734042715212fdcf8a94960daf9b23a49f88"
+    },
+    {
+      "path": "runtime/rock-01.glb",
+      "bytes": 495256,
+      "sha256": "31bb0175c17e460e3e8f7925891a1637c7d72c4dc0533b21cb401f3b2dc3b687"
+    },
+    {
+      "path": "runtime/rock-02.glb",
+      "bytes": 515488,
+      "sha256": "0009410bf736dc179a6ddd7e154fcf8b295c04294863aea0d87bbc5e33860a3b"
+    },
+    {
+      "path": "runtime/rock-03.glb",
+      "bytes": 492240,
+      "sha256": "2a437ac5a73fb9b84b9e39d39acad8e2efa53ed3ad238dcdf58b8f9607ad9c3d"
+    },
+    {
+      "path": "runtime/wagon.glb",
+      "bytes": 835928,
+      "sha256": "7257e8c02089dd783c1783a502dbe95d6afca7da52e06e2ce831421fd8befc83"
+    },
+    {
+      "path": "runtime/well.glb",
+      "bytes": 821704,
+      "sha256": "497637e68ff1516396447d8c4d7144ac2f7733bd718de92bd86a489880725f66"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/wooden barrel 3d model.glb",
+      "sha256": "4edd81d9371ee2bc54c7820fae59f2e543885c751abe60b979b59c99abccbe7f"
+    },
+    {
+      "path": "assets/inbox/rock 3d model.glb",
+      "sha256": "70b18784f55149bc637a662817e43d115f6f261959e61eeb53cd59f6aba70541"
+    },
+    {
+      "path": "assets/inbox/rock boulder 3d model.glb",
+      "sha256": "30448782ea40dcf3b4160ab8de1b47cfd81cd105905938aaeb5679a08a92edd9"
+    },
+    {
+      "path": "assets/inbox/rock formation 3d model.glb",
+      "sha256": "947bbfe030ebb0a3731a48b874ea53054fde754ad557c045da107d18c7b98e73"
+    },
+    {
+      "path": "assets/inbox/wooden wagon 3d model.glb",
+      "sha256": "a704b8ff5898b4ed33b5289612a07bd432a95f6b61bc9bd8dfbf364c80f7a507"
+    },
+    {
+      "path": "assets/inbox/medieval well 3d model.glb",
+      "sha256": "60e2b4861914ab054755196d07e5adb1bf449581d3471ad8ef1454cd3300c440"
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "allStaticPoliciesPassed": true
+  },
+  "licenseStatus": "User-provided project assets; separate commercial provider receipt not supplied.",
+  "pending": [
+    "Editor/game GPU import and collision review",
+    "User artistic approval"
+  ]
+}

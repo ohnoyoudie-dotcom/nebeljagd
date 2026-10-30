@@ -1,0 +1,214 @@
+{
+  "id": "barrel",
+  "label": "Holzfass",
+  "source": {
+    "path": "assets/inbox/wooden barrel 3d model.glb",
+    "bytes": 63365624,
+    "sha256": "4edd81d9371ee2bc54c7820fae59f2e543885c751abe60b979b59c99abccbe7f",
+    "triangles": 1947286,
+    "vertices": 1180165,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-props/runtime/barrel.glb",
+    "bytes": 546512,
+    "sha256": "3b0b2bf34d4c3e5f1a9aae92923c734042715212fdcf8a94960daf9b23a49f88",
+    "triangles": 8000,
+    "vertices": 7087,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 0.9666977206384696,
+    "blenderSourceBounds": [
+      [
+        -0.4462891221046448,
+        -0.4701843857765198,
+        0.0
+      ],
+      [
+        0.4455567002296448,
+        0.4699097275733948,
+        0.98272705078125
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -0.4310726523399353,
+        -0.4543933868408203,
+        0.0
+      ],
+      [
+        0.4310726523399353,
+        0.4543933868408203,
+        0.949999988079071
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      -0.0003540217876434326,
+      -0.00013275444507598877,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      9.931623935699463e-05,
+      0.0006709843873977661,
+      0.00048727146349847317
+    ],
+    "gltfBounds": [
+      [
+        -0.43123549222946167,
+        0.0,
+        -0.4550541043281555
+      ],
+      [
+        0.43123549222946167,
+        0.9490711092948914,
+        0.4550541043281555
+      ]
+    ],
+    "dimensions": [
+      0.8624709844589233,
+      0.9490711092948914,
+      0.910108208656311
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 953,
+      "gltfBounds": [
+        [
+          -0.3750331997871399,
+          0.0,
+          -0.40848278999328613
+        ],
+        [
+          0.3733951449394226,
+          0.14746005833148956,
+          0.41113436222076416
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 1054,
+      "gltfBounds": [
+        [
+          -0.43123549222946167,
+          0.15085451304912567,
+          -0.4550541043281555
+        ],
+        [
+          0.43123549222946167,
+          0.5487633943557739,
+          0.4550541043281555
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 1993,
+      "gltfBounds": [
+        [
+          -0.4271804690361023,
+          0.551518440246582,
+          -0.4508759379386902
+        ],
+        [
+          0.4281177520751953,
+          0.9490711092948914,
+          0.4456225633621216
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 9.5e-05,
+    "before": {
+      "vertices": 1180165,
+      "faces": 1947286
+    },
+    "after": {
+      "vertices": 973599,
+      "faces": 1947198
+    }
+  },
+  "textures": [
+    {
+      "name": "wooden_barrel_3d_model_basecolor",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "wooden_barrel_3d_model_normal",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "wooden_barrel_3d_model_rm",
+      "sourceSize": [
+        2048,
+        2048
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 8000,
+    "textureLimit": 1024,
+    "fileLimitBytes": 4194304
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  }
+}

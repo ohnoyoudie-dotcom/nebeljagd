@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { validateWorldmap, getWorldmapStats, distanceToSegment, pointInPolygon } from '../src/map/model.js';
 import { OBJECT_CATALOG, getObjectDefinition, makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { seedWorldObjects } from '../scripts/seed-world-objects.js';
+import { isRetiredBuilding } from '../src/map/retired-buildings.js';
 
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const clone = () => structuredClone(base);
@@ -17,7 +18,10 @@ test('world objects are persisted editable instances while the authoring generat
   assert.deepEqual(validateWorldmap(base), { valid: true, errors: [], warnings: [] });
   const stats = getWorldmapStats(base);
   assert.ok(stats.objectCounts.tree >= 2000);
-  assert.ok(stats.objectCounts.house >= 25);
+  assert.equal(stats.objectCounts.house ?? 0, 0, 'The starting map is cleared for the new building collection');
+  assert.equal(base.objects.some(isRetiredBuilding), false);
+  assert.equal(seeded.some(item => item.kind === 'house'), false, 'Explicit scenery reseeding must not bring old houses back');
+  assert.equal(seeded.some(item => item.id.startsWith('chest-obj-house-')), false, 'No orphaned stock chests from retired houses');
   assert.ok(stats.objectCounts.grass >= 500);
   assert.equal(stats.objectCount, base.objects.length);
   assert.equal(new Set(base.objects.map(item => item.id)).size, base.objects.length);
@@ -30,9 +34,8 @@ test('spawn approach and starter objects remain explicit, accessible and outside
   assert.deepEqual(starter.bow.position, [34, -39]);
   assert.deepEqual(starter.sword.position, [26, -39]);
   assert.deepEqual(starter.heart.position, [38, -42]);
-  const house = base.objects.find(item => item.id === 'obj-house-auenwacht-01');
-  assert.deepEqual(house.position, [30, -60]);
-  assert.equal(house.rotation, 0);
+  assert.deepEqual(starter.chest.position, [28, -35], 'Unrelated starter loot remains available');
+  assert.equal(base.objects.some(item => item.id === 'obj-house-auenwacht-01'), false);
   const trees = base.objects.filter(item => item.kind === 'tree');
   for (const item of trees) {
     const [x, z] = item.position;
@@ -98,7 +101,10 @@ test('chests replace crystals and every weapon tier survives authoring and expor
   const { renderWorldmapSvg } = await import('../src/map/render.js');
   const map = clone(); map.objects = [];
   assert.equal(base.objects.some(item => item.kind === 'crystal'), false);
-  assert.equal(base.objects.filter(item => item.kind === 'chest').length, 48);
+  const chests = base.objects.filter(item => item.kind === 'chest');
+  assert.equal(chests.length, 16, 'Remaining outdoor and starter chests survive the building cleanup');
+  assert.ok(chests.some(item => item.id === 'obj-chest-start'));
+  assert.equal(chests.some(item => item.id.startsWith('chest-obj-house-')), false);
   for (const type of WEAPON_TYPES) for (const rarity of Object.keys(RARITIES)) {
     const item = makeWorldObject(type, [30, -42], { id: `tier-${type}-${rarity}`, rarity });
     map.objects.push(item);
