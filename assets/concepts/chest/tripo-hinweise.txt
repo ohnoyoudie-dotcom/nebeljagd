@@ -1,0 +1,16 @@
+Nebeljagd: hochwertige Holztruhe
+
+Das Referenzbild zeigt eine geschlossene Truhe. In Tripo ein einzelnes Modell ohne Umgebung erzeugen und als GLB mit eingebetteten Texturen exportieren.
+
+Gestaltung: dunkles gealtertes Holz, breite geschmiedete Eisenbänder, dezente Messingdetails, leicht gewölbter Deckel, klare große Formen für die Ansicht von oben. Keine eingebauten Münzen, Leuchteffekte oder zusätzlichen Gegenstände.
+
+Vorbereitung in Blender nach dem Export:
+- Unterteil und Deckel als getrennte bewegliche Teile herstellen.
+- Einen hohlen Innenraum und die Unterseite des Deckels ergänzen, falls der Export dort keine geeignete Geometrie enthält.
+- Scharniere an der Rückseite; Drehpunkt des Deckels auf der Scharnierachse.
+- Verschluss und Beschläge dem passenden beweglichen oder festen Teil zuordnen.
+- Maßstab ungefähr 1,7 m breit, 1,1 m tief und 1,0 m hoch an die vorhandenen Spieltruhen anpassen.
+
+Vorhandener Spielvertrag (Three.js/glTF): +Y oben, +Z vorne, Ursprung unten mittig. Der Deckel heißt chest-lid; bisheriger Drehpunkt (0, 0.69, -0.54). Öffnung um lokale X-Achse von 0 auf -1.9 rad in etwa 0,55 s; Beute tritt nach etwa 0,23 s aus. Ein Animationsclip ist für diese bestehende Spielbewegung nicht nötig.
+
+Das Bild allein garantiert keine getrennten Meshes oder einen modellierten Innenraum; diese Eigenschaften prüfen wir am erzeugten GLB.

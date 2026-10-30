@@ -13,6 +13,10 @@ Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 Spieleravatar mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
 bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
 
+Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
+Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
+[`docs/art-style.md`](docs/art-style.md).
+
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
