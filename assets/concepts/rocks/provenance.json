@@ -1,0 +1,80 @@
+{
+  "asset": "Nebeljagd natural boulder reference set",
+  "generator": "OpenAI ImageGen",
+  "assetType": "Three separate 2D reference images for subsequent Tripo generation",
+  "variants": [
+    {
+      "name": "rock-01",
+      "prompt": "rock-01-prompt.txt",
+      "references": [
+        "assets/characters/player-portrait.png",
+        "assets/concepts/well/well-reference.png"
+      ],
+      "output": "assets/concepts/rocks/rock-01-reference.png"
+    },
+    {
+      "name": "rock-02",
+      "prompt": "rock-02-prompt.txt",
+      "references": [
+        "assets/characters/player-portrait.png",
+        "assets/concepts/well/well-reference.png",
+        "assets/concepts/rocks/rock-01-reference.png"
+      ],
+      "output": "assets/concepts/rocks/rock-02-reference.png"
+    },
+    {
+      "name": "rock-03",
+      "prompt": "rock-03-prompt.txt",
+      "references": [
+        "assets/characters/player-portrait.png",
+        "assets/concepts/well/well-reference.png",
+        "assets/concepts/rocks/rock-01-reference.png"
+      ],
+      "output": "assets/concepts/rocks/rock-03-reference.png"
+    }
+  ],
+  "files": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056",
+      "dimensions": [
+        384,
+        384
+      ]
+    },
+    {
+      "file": "assets/concepts/well/well-reference.png",
+      "sha256": "ce9e28daa47598f9c5f061e2cc86189f874d0600034b048b96172eae9413c075",
+      "dimensions": [
+        1312,
+        1199
+      ]
+    },
+    {
+      "file": "assets/concepts/rocks/rock-01-reference.png",
+      "sha256": "4ea71f54aede09ae0d6d5f6fec1999843a0a3cbf5aa7dafd04a7c48bdc96f447",
+      "dimensions": [
+        1312,
+        1199
+      ]
+    },
+    {
+      "file": "assets/concepts/rocks/rock-02-reference.png",
+      "sha256": "d74e42f5681dd5377e07030d07b055faf3c3b0a8f285d1d8500bf204cc9062b4",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/rocks/rock-03-reference.png",
+      "sha256": "a1240380fbbfc14b2df5632e43f0b04587a7fb8fda2dccf152095447d6a4bfe8",
+      "dimensions": [
+        1312,
+        1199
+      ]
+    }
+  ],
+  "tripoSubmitted": false,
+  "modelsGenerated": false
+}

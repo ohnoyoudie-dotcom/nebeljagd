@@ -1,0 +1,48 @@
+{
+  "asset": "Nebeljagd wooden handcart image reference",
+  "generator": "OpenAI ImageGen",
+  "assetType": "2D concept image for subsequent Tripo generation",
+  "prompt": "prompt.txt",
+  "styleReferences": [
+    "assets/characters/player-portrait.png",
+    "assets/concepts/chest/chest-reference.png",
+    "assets/concepts/barrel/barrel-reference.png"
+  ],
+  "output": "assets/concepts/cart/cart-reference.png",
+  "files": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056",
+      "dimensions": [
+        384,
+        384
+      ]
+    },
+    {
+      "file": "assets/concepts/chest/chest-reference.png",
+      "sha256": "702a0001124cef8d9b3e42c4a7cf530d44b53d8c8b91684e664919089ce79971",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/barrel/barrel-reference.png",
+      "sha256": "d6eeb423353a11f3d6b436c601de18b40b203fc00edbd1104cbf44ea90077b8c",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "file": "assets/concepts/cart/cart-reference.png",
+      "sha256": "98bd7d3357a1fe55978e352a436cd169022e033e9b3dce6a999e68554c0dbb4a",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "tripoSubmitted": false,
+  "modelGenerated": false
+}
