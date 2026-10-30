@@ -1318,18 +1318,6 @@
   },
   "objects": [
     {
-      "id": "obj-house-auenwacht-01",
-      "name": "Auenwacht · Kräuterhaus",
-      "kind": "house",
-      "variant": "herbal",
-      "position": [
-        30,
-        -60
-      ],
-      "rotation": 0,
-      "scale": 1
-    },
-    {
       "id": "obj-house-mondhain-01",
       "name": "Mondhain · Haus 1",
       "kind": "house",
@@ -1505,30 +1493,6 @@
       "position": [
         3,
         -78
-      ],
-      "rotation": 0,
-      "scale": 1
-    },
-    {
-      "id": "obj-house-auenwacht-03",
-      "name": "Auenwacht · Haus 3",
-      "kind": "house",
-      "variant": "herbal",
-      "position": [
-        57,
-        -40
-      ],
-      "rotation": 3.14,
-      "scale": 1
-    },
-    {
-      "id": "obj-house-auenwacht-04",
-      "name": "Auenwacht · Haus 4",
-      "kind": "house",
-      "variant": "inn",
-      "position": [
-        -20,
-        -62
       ],
       "rotation": 0,
       "scale": 1
@@ -1771,18 +1735,6 @@
         500
       ],
       "rotation": 0,
-      "scale": 1
-    },
-    {
-      "id": "obj-tree-0001",
-      "name": "Rei-Baum · Auenwacht 01",
-      "kind": "tree",
-      "variant": "rei-tree01",
-      "position": [
-        46,
-        -47
-      ],
-      "rotation": 5.73,
       "scale": 1
     },
     {
@@ -9853,18 +9805,6 @@
       ],
       "rotation": 5.13,
       "scale": 1.34
-    },
-    {
-      "id": "obj-tree-0668",
-      "name": "Baum 668",
-      "kind": "tree",
-      "variant": "oak",
-      "position": [
-        -13.42,
-        -34.08
-      ],
-      "rotation": 2.6,
-      "scale": 1.16
     },
     {
       "id": "obj-tree-0669",
@@ -47872,19 +47812,6 @@
       "radius": 1.5
     },
     {
-      "id": "obj-flower-0034",
-      "name": "Auenwacht · Haus 2 · Beet",
-      "kind": "flower",
-      "variant": "rei-white",
-      "position": [
-        8,
-        -68.5
-      ],
-      "rotation": 5.47,
-      "scale": 1,
-      "radius": 1.5
-    },
-    {
       "id": "obj-flower-0035",
       "name": "Auenwacht · Haus 3 · Beet",
       "kind": "flower",
@@ -49068,18 +48995,6 @@
       "radius": 1.43
     },
     {
-      "id": "obj-rock-0281",
-      "name": "Felsen 281",
-      "kind": "rock",
-      "variant": "granite",
-      "position": [
-        5,
-        -32
-      ],
-      "rotation": 0.65,
-      "scale": 0.85
-    },
-    {
       "id": "obj-heart-0002",
       "name": "Eiswacht · Herz",
       "kind": "heart",
@@ -49363,18 +49278,6 @@
         -47
       ],
       "rotation": 2.57,
-      "scale": 1
-    },
-    {
-      "id": "obj-chest-0008",
-      "name": "Auenwacht · Holztruhe",
-      "kind": "chest",
-      "variant": "wood",
-      "position": [
-        46,
-        -47
-      ],
-      "rotation": 5.37,
       "scale": 1
     },
     {
@@ -50047,18 +49950,6 @@
       "scale": 1
     },
     {
-      "id": "chest-obj-house-auenwacht-02",
-      "name": "Auenwacht · Haus 2 · Vorratstruhe",
-      "kind": "chest",
-      "variant": "wood",
-      "position": [
-        7.4,
-        -68.3
-      ],
-      "rotation": 0,
-      "scale": 1
-    },
-    {
       "id": "chest-obj-house-auenwacht-03",
       "name": "Auenwacht · Haus 3 · Vorratstruhe",
       "kind": "chest",
@@ -50236,18 +50127,6 @@
         405.29
       ],
       "rotation": 3.14,
-      "scale": 1
-    },
-    {
-      "id": "obj-mound-auenwacht-east",
-      "name": "Auenwacht · Bewachsene Felskuppe",
-      "kind": "mound",
-      "variant": "knoll",
-      "position": [
-        41,
-        -34
-      ],
-      "rotation": 0.2,
       "scale": 1
     },
     {
