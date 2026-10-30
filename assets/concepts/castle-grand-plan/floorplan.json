@@ -1,0 +1,1339 @@
+{
+  "schemaVersion": 1,
+  "name": "Nebeljagd · Großes Gartenschloss",
+  "status": "schematic concept, not runtime map data",
+  "units": "metres",
+  "coordinateAxes": [
+    "x",
+    "z"
+  ],
+  "footprint": [
+    180,
+    150
+  ],
+  "floorCount": 1,
+  "roof": "open for later top-down game rendering",
+  "rooms": [
+    {
+      "id": "R01",
+      "number": 1,
+      "name": "Bibliothek",
+      "rect": [
+        0.0,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R02",
+      "number": 2,
+      "name": "Archiv",
+      "rect": [
+        17.2,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R03",
+      "number": 3,
+      "name": "Schreibstube",
+      "rect": [
+        34.4,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R04",
+      "number": 4,
+      "name": "Kartenraum",
+      "rect": [
+        51.6,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R05",
+      "number": 5,
+      "name": "Ratssaal",
+      "rect": [
+        68.8,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R06",
+      "number": 6,
+      "name": "Thronsaal",
+      "rect": [
+        94.0,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R07",
+      "number": 7,
+      "name": "Audienzsaal",
+      "rect": [
+        111.2,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R08",
+      "number": 8,
+      "name": "Kapelle",
+      "rect": [
+        128.4,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R09",
+      "number": 9,
+      "name": "Sakristei",
+      "rect": [
+        145.6,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R10",
+      "number": 10,
+      "name": "Schatzkammer",
+      "rect": [
+        162.8,
+        0,
+        17.2,
+        35
+      ],
+      "wing": "north"
+    },
+    {
+      "id": "R11",
+      "number": 11,
+      "name": "Großer Ballsaal",
+      "rect": [
+        0,
+        43,
+        42,
+        28
+      ],
+      "wing": "west"
+    },
+    {
+      "id": "R12",
+      "number": 12,
+      "name": "Musiksalon",
+      "rect": [
+        0,
+        79,
+        14,
+        28
+      ],
+      "wing": "west"
+    },
+    {
+      "id": "R13",
+      "number": 13,
+      "name": "Empfangssalon",
+      "rect": [
+        14,
+        79,
+        14,
+        28
+      ],
+      "wing": "west"
+    },
+    {
+      "id": "R14",
+      "number": 14,
+      "name": "Galerie",
+      "rect": [
+        28,
+        79,
+        14,
+        28
+      ],
+      "wing": "west"
+    },
+    {
+      "id": "R15",
+      "number": 15,
+      "name": "Speisesaal",
+      "rect": [
+        138,
+        43,
+        14,
+        28
+      ],
+      "wing": "east"
+    },
+    {
+      "id": "R16",
+      "number": 16,
+      "name": "Küche",
+      "rect": [
+        152,
+        43,
+        14,
+        28
+      ],
+      "wing": "east"
+    },
+    {
+      "id": "R17",
+      "number": 17,
+      "name": "Vorräte",
+      "rect": [
+        166,
+        43,
+        14,
+        28
+      ],
+      "wing": "east"
+    },
+    {
+      "id": "R18",
+      "number": 18,
+      "name": "Backstube",
+      "rect": [
+        138,
+        79,
+        14,
+        28
+      ],
+      "wing": "east"
+    },
+    {
+      "id": "R19",
+      "number": 19,
+      "name": "Personalraum",
+      "rect": [
+        152,
+        79,
+        14,
+        28
+      ],
+      "wing": "east"
+    },
+    {
+      "id": "R20",
+      "number": 20,
+      "name": "Lager",
+      "rect": [
+        166,
+        79,
+        14,
+        28
+      ],
+      "wing": "east"
+    },
+    {
+      "id": "R21",
+      "number": 21,
+      "name": "Wachstube West",
+      "rect": [
+        0.0,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R22",
+      "number": 22,
+      "name": "Waffenkammer",
+      "rect": [
+        17.2,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R23",
+      "number": 23,
+      "name": "Gästezimmer A",
+      "rect": [
+        34.4,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R24",
+      "number": 24,
+      "name": "Gästezimmer B",
+      "rect": [
+        51.6,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R25",
+      "number": 25,
+      "name": "Gästesalon West",
+      "rect": [
+        68.8,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R26",
+      "number": 26,
+      "name": "Gästesalon Ost",
+      "rect": [
+        94.0,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R27",
+      "number": 27,
+      "name": "Gästezimmer C",
+      "rect": [
+        111.2,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R28",
+      "number": 28,
+      "name": "Gästezimmer D",
+      "rect": [
+        128.4,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R29",
+      "number": 29,
+      "name": "Garderobe",
+      "rect": [
+        145.6,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    },
+    {
+      "id": "R30",
+      "number": 30,
+      "name": "Wachstube Ost",
+      "rect": [
+        162.8,
+        115,
+        17.2,
+        35
+      ],
+      "wing": "south"
+    }
+  ],
+  "corridors": [
+    {
+      "id": "CN",
+      "rect": [
+        0,
+        35,
+        180,
+        8
+      ],
+      "name": "Nordgalerie"
+    },
+    {
+      "id": "CS",
+      "rect": [
+        0,
+        107,
+        180,
+        8
+      ],
+      "name": "Südgalerie"
+    },
+    {
+      "id": "CW",
+      "rect": [
+        42,
+        43,
+        8,
+        64
+      ],
+      "name": "Westgang"
+    },
+    {
+      "id": "CE",
+      "rect": [
+        130,
+        43,
+        8,
+        64
+      ],
+      "name": "Ostgang"
+    },
+    {
+      "id": "PN",
+      "rect": [
+        86,
+        0,
+        8,
+        35
+      ],
+      "name": "Nordzugang"
+    },
+    {
+      "id": "PS",
+      "rect": [
+        86,
+        115,
+        8,
+        35
+      ],
+      "name": "Hauptzugang"
+    },
+    {
+      "id": "PW",
+      "rect": [
+        0,
+        71,
+        42,
+        8
+      ],
+      "name": "Westzugang"
+    },
+    {
+      "id": "PE",
+      "rect": [
+        138,
+        71,
+        42,
+        8
+      ],
+      "name": "Ostzugang"
+    }
+  ],
+  "corridorWidth": 8,
+  "corridorLinks": [
+    [
+      "CN",
+      "CW"
+    ],
+    [
+      "CN",
+      "CE"
+    ],
+    [
+      "CS",
+      "CW"
+    ],
+    [
+      "CS",
+      "CE"
+    ],
+    [
+      "CN",
+      "PN"
+    ],
+    [
+      "CS",
+      "PS"
+    ],
+    [
+      "CW",
+      "PW"
+    ],
+    [
+      "CE",
+      "PE"
+    ]
+  ],
+  "courtyard": {
+    "id": "G",
+    "rect": [
+      50,
+      43,
+      80,
+      64
+    ]
+  },
+  "lawn": {
+    "rect": [
+      54,
+      47,
+      72,
+      56
+    ]
+  },
+  "doors": [
+    {
+      "id": "D01",
+      "connects": [
+        "R01",
+        "CN"
+      ],
+      "position": [
+        8.6,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D02",
+      "connects": [
+        "R02",
+        "CN"
+      ],
+      "position": [
+        25.8,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D03",
+      "connects": [
+        "R03",
+        "CN"
+      ],
+      "position": [
+        43.0,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D04",
+      "connects": [
+        "R04",
+        "CN"
+      ],
+      "position": [
+        60.2,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D05",
+      "connects": [
+        "R05",
+        "CN"
+      ],
+      "position": [
+        77.4,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D06",
+      "connects": [
+        "R06",
+        "CN"
+      ],
+      "position": [
+        102.6,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D07",
+      "connects": [
+        "R07",
+        "CN"
+      ],
+      "position": [
+        119.8,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D08",
+      "connects": [
+        "R08",
+        "CN"
+      ],
+      "position": [
+        137.0,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D09",
+      "connects": [
+        "R09",
+        "CN"
+      ],
+      "position": [
+        154.2,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D10",
+      "connects": [
+        "R10",
+        "CN"
+      ],
+      "position": [
+        171.4,
+        35
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D11",
+      "connects": [
+        "R01",
+        "R02"
+      ],
+      "position": [
+        17.2,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D12",
+      "connects": [
+        "R02",
+        "R03"
+      ],
+      "position": [
+        34.4,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D13",
+      "connects": [
+        "R03",
+        "R04"
+      ],
+      "position": [
+        51.6,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D14",
+      "connects": [
+        "R04",
+        "R05"
+      ],
+      "position": [
+        68.8,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D15",
+      "connects": [
+        "R06",
+        "R07"
+      ],
+      "position": [
+        111.2,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D16",
+      "connects": [
+        "R07",
+        "R08"
+      ],
+      "position": [
+        128.4,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D17",
+      "connects": [
+        "R08",
+        "R09"
+      ],
+      "position": [
+        145.6,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D18",
+      "connects": [
+        "R09",
+        "R10"
+      ],
+      "position": [
+        162.8,
+        17.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D19",
+      "connects": [
+        "R21",
+        "CS"
+      ],
+      "position": [
+        8.6,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D20",
+      "connects": [
+        "R22",
+        "CS"
+      ],
+      "position": [
+        25.8,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D21",
+      "connects": [
+        "R23",
+        "CS"
+      ],
+      "position": [
+        43.0,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D22",
+      "connects": [
+        "R24",
+        "CS"
+      ],
+      "position": [
+        60.2,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D23",
+      "connects": [
+        "R25",
+        "CS"
+      ],
+      "position": [
+        77.4,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D24",
+      "connects": [
+        "R26",
+        "CS"
+      ],
+      "position": [
+        102.6,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D25",
+      "connects": [
+        "R27",
+        "CS"
+      ],
+      "position": [
+        119.8,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D26",
+      "connects": [
+        "R28",
+        "CS"
+      ],
+      "position": [
+        137.0,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D27",
+      "connects": [
+        "R29",
+        "CS"
+      ],
+      "position": [
+        154.2,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D28",
+      "connects": [
+        "R30",
+        "CS"
+      ],
+      "position": [
+        171.4,
+        115
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D29",
+      "connects": [
+        "R21",
+        "R22"
+      ],
+      "position": [
+        17.2,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D30",
+      "connects": [
+        "R22",
+        "R23"
+      ],
+      "position": [
+        34.4,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D31",
+      "connects": [
+        "R23",
+        "R24"
+      ],
+      "position": [
+        51.6,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D32",
+      "connects": [
+        "R24",
+        "R25"
+      ],
+      "position": [
+        68.8,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D33",
+      "connects": [
+        "R26",
+        "R27"
+      ],
+      "position": [
+        111.2,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D34",
+      "connects": [
+        "R27",
+        "R28"
+      ],
+      "position": [
+        128.4,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D35",
+      "connects": [
+        "R28",
+        "R29"
+      ],
+      "position": [
+        145.6,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D36",
+      "connects": [
+        "R29",
+        "R30"
+      ],
+      "position": [
+        162.8,
+        132.5
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D37",
+      "connects": [
+        "R11",
+        "CN"
+      ],
+      "position": [
+        12,
+        43
+      ],
+      "axis": "h",
+      "width": 6
+    },
+    {
+      "id": "D38",
+      "connects": [
+        "R11",
+        "CW"
+      ],
+      "position": [
+        42,
+        57
+      ],
+      "axis": "v",
+      "width": 6
+    },
+    {
+      "id": "D39",
+      "connects": [
+        "R12",
+        "CS"
+      ],
+      "position": [
+        7,
+        107
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D40",
+      "connects": [
+        "R13",
+        "CS"
+      ],
+      "position": [
+        21,
+        107
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D41",
+      "connects": [
+        "R14",
+        "CS"
+      ],
+      "position": [
+        35,
+        107
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D42",
+      "connects": [
+        "R12",
+        "R13"
+      ],
+      "position": [
+        14,
+        93
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D43",
+      "connects": [
+        "R13",
+        "R14"
+      ],
+      "position": [
+        28,
+        93
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D44",
+      "connects": [
+        "R14",
+        "CW"
+      ],
+      "position": [
+        42,
+        93
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D45",
+      "connects": [
+        "R15",
+        "CN"
+      ],
+      "position": [
+        145,
+        43
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D46",
+      "connects": [
+        "R16",
+        "CN"
+      ],
+      "position": [
+        159,
+        43
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D47",
+      "connects": [
+        "R17",
+        "CN"
+      ],
+      "position": [
+        173,
+        43
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D48",
+      "connects": [
+        "R18",
+        "CS"
+      ],
+      "position": [
+        145,
+        107
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D49",
+      "connects": [
+        "R19",
+        "CS"
+      ],
+      "position": [
+        159,
+        107
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D50",
+      "connects": [
+        "R20",
+        "CS"
+      ],
+      "position": [
+        173,
+        107
+      ],
+      "axis": "h",
+      "width": 4
+    },
+    {
+      "id": "D51",
+      "connects": [
+        "R15",
+        "R16"
+      ],
+      "position": [
+        152,
+        57
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D52",
+      "connects": [
+        "R16",
+        "R17"
+      ],
+      "position": [
+        166,
+        57
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D53",
+      "connects": [
+        "R18",
+        "R19"
+      ],
+      "position": [
+        152,
+        93
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D54",
+      "connects": [
+        "R19",
+        "R20"
+      ],
+      "position": [
+        166,
+        93
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D55",
+      "connects": [
+        "R15",
+        "CE"
+      ],
+      "position": [
+        138,
+        57
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D56",
+      "connects": [
+        "R18",
+        "CE"
+      ],
+      "position": [
+        138,
+        93
+      ],
+      "axis": "v",
+      "width": 4
+    },
+    {
+      "id": "D57",
+      "connects": [
+        "CN",
+        "G"
+      ],
+      "position": [
+        90,
+        43
+      ],
+      "axis": "h",
+      "width": 8
+    },
+    {
+      "id": "D58",
+      "connects": [
+        "CS",
+        "G"
+      ],
+      "position": [
+        90,
+        107
+      ],
+      "axis": "h",
+      "width": 8
+    },
+    {
+      "id": "D59",
+      "connects": [
+        "CW",
+        "G"
+      ],
+      "position": [
+        50,
+        75
+      ],
+      "axis": "v",
+      "width": 8
+    },
+    {
+      "id": "D60",
+      "connects": [
+        "CE",
+        "G"
+      ],
+      "position": [
+        130,
+        75
+      ],
+      "axis": "v",
+      "width": 8
+    }
+  ],
+  "exits": [
+    {
+      "id": "north",
+      "corridor": "PN",
+      "position": [
+        90,
+        0
+      ],
+      "label": "NORDTOR"
+    },
+    {
+      "id": "south",
+      "corridor": "PS",
+      "position": [
+        90,
+        150
+      ],
+      "label": "HAUPTEINGANG"
+    },
+    {
+      "id": "west",
+      "corridor": "PW",
+      "position": [
+        0,
+        75
+      ],
+      "label": "WESTTOR"
+    },
+    {
+      "id": "east",
+      "corridor": "PE",
+      "position": [
+        180,
+        75
+      ],
+      "label": "OSTTOR"
+    }
+  ],
+  "ringWalkLength": 320,
+  "notes": [
+    "30 rooms exclude corridors and garden.",
+    "All rooms are accessible from public corridors.",
+    "Paired room doors provide secondary routes.",
+    "Exact structures, navigation and collision must be built later."
+  ]
+}
