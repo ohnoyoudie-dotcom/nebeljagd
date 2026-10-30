@@ -1,0 +1,113 @@
+{
+  "asset": "Nebeljagd roofless Tripo tavern",
+  "source": {
+    "path": "assets/inbox/medieval tavern interior 3d model.glb",
+    "bytes": 65440900,
+    "sha256": "343d7cf86820f13cae0f6081bd66be66df79769d0b65cb067618f2a2f96d2f1f",
+    "triangles": 1860045,
+    "meshes": 1,
+    "materials": 1,
+    "externalUris": [],
+    "animations": 0
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-tavern/runtime/tavern.glb",
+    "bytes": 7053948,
+    "sha256": "b8f703b7a794c00521d9bf4047c6d8185a30c143e4df83ea9a344c3c1149fc76",
+    "triangles": 100000,
+    "meshes": 1,
+    "materials": 1,
+    "externalUris": [],
+    "animations": 0
+  },
+  "sourceOrigin": "User supplied Tripo GLB through project branch work; integration explicitly requested by user",
+  "referenceImage": "assets/concepts/inn/inn-reference.png",
+  "providerGeneration": {
+    "provider": "Tripo (source GLB generator field)",
+    "jobId": null,
+    "invokedByThisTask": false,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-tavern.py",
+    "scriptSha256": "dfb24f80b33046383c2c51bcc99889c8e3300b3c339ad567fe82eeb789e98faf",
+    "command": "blender -b -t 4 --python scripts/prepare-tripo-tavern.py",
+    "normalization": {
+      "targetWidthMeters": 22.0,
+      "uniformScale": 22.46271909364965,
+      "rotationDegrees": [
+        0,
+        0,
+        0
+      ],
+      "floorSamplesBeforeOffset": [
+        {
+          "x": 0,
+          "z": 0,
+          "height": 0.9648103713989258
+        },
+        {
+          "x": 1,
+          "z": 0,
+          "height": 0.9795618057250977
+        },
+        {
+          "x": 0,
+          "z": 4,
+          "height": 0.8693313598632812
+        },
+        {
+          "x": 1,
+          "z": 4,
+          "height": 0.8822813034057617
+        },
+        {
+          "x": 0,
+          "z": -4,
+          "height": 0.8802261352539062
+        }
+      ],
+      "verticalOffsetMeters": -0.8822813034057617,
+      "axes": "glTF Y up, +Z front, +X right; source front orientation retained",
+      "blenderBounds": [
+        [
+          -10.997231483459473,
+          -8.885710716247559,
+          -0.8879193067550659
+        ],
+        [
+          11.000926971435547,
+          8.885022163391113,
+          4.753661632537842
+        ]
+      ],
+      "gltfBounds": [
+        [
+          -10.997231483459473,
+          -0.8879193067550659,
+          -8.885022163391113
+        ],
+        [
+          11.000926971435547,
+          4.753661632537842,
+          8.885710716247559
+        ]
+      ]
+    },
+    "textureSize": [
+      2048,
+      2048
+    ],
+    "triangleBudget": 100000,
+    "originalPreserved": true
+  },
+  "sourceValidation": {
+    "externalDependencies": [],
+    "trianglesWithin120k": true,
+    "materialsPreserved": true,
+    "gameplayCollisionValidated": false,
+    "gpuRuntimeValidated": false
+  },
+  "previewReview": "Source and reduced Blender previews visually inspected; architectural structure and material appearance retained. GPU/playability tests owned by runtime integration."
+}

@@ -7,6 +7,7 @@ import { createTerrainArtwork } from './terrain-art.js';
 import { createTerrainPaintMaterial, TERRAIN_PAINT_BUDGET } from './terrain-paint-renderer.js';
 import { createMeadowGround } from './meadow-ground.js';
 import { createSnowCover } from './snow-cover.js';
+import { emitTerrainTriangles } from './terrain-triangulation.js';
 
 import { createWorldSpatialModel, projection } from './generated-spatial.js';
 export { createWorldSpatialModel } from './generated-spatial.js';
@@ -58,14 +59,9 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       const cell = `${x},${z}`; if (!surfaceCells.has(cell)) surfaceCells.set(cell, []); surfaceCells.get(cell).push(id);
     }
   }
-  const midpoint = (a, b) => vertex((a.x + b.x) / 2, (a.z + b.z) / 2);
-  function subdivide(a, b, c, depth) {
-    if (!depth) { addTriangle(a, b, c); return; }
-    const ab = midpoint(a, b), bc = midpoint(b, c), ca = midpoint(c, a);
-    subdivide(a, ab, ca, depth - 1); subdivide(ab, b, bc, depth - 1); subdivide(ca, bc, c, depth - 1); subdivide(ab, bc, ca, depth - 1);
-  }
   const outline = map.island.points.map(([x, z]) => new THREE.Vector2(x, z));
-  for (const tri of THREE.ShapeUtils.triangulateShape(outline, [])) subdivide(...tri.map(index => vertex(...map.island.points[index])), 6);
+  const terrainSource = THREE.ShapeUtils.triangulateShape(outline, []).map(tri => tri.map(index => vertex(...map.island.points[index])));
+  emitTerrainTriangles(terrainSource, { depth: 6, vertex, shouldRefine: spatial.refineTerrainTriangle, emit: addTriangle });
   const terrainArtwork = createTerrainArtwork();
   const groundTexture = terrainArtwork.ground;
   const groundMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, map: groundTexture,

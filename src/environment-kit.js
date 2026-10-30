@@ -8,6 +8,7 @@ import pineYoung from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_young.glb?
 import oakGreen from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_green.glb?url&inline';
 import oakAutumn from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_autumn.glb?url&inline';
 import tavern from '../Blender/Taverne.glb?url&inline';
+import tripoTavern from '../assets/imported/tripo-tavern/runtime/tavern.glb?url&inline';
 import timberHouse from '../Blender/nebeljagd_umwelt_kit_v1/assets/house_timbersmall.glb?url&inline';
 import tallGrass from '../Blender/nebeljagd_umwelt_kit_v1/assets/grass_tall_patch.glb?url&inline';
 import rockCluster from '../Blender/nebeljagd_umwelt_kit_v1/assets/rock_cluster.glb?url&inline';
@@ -21,6 +22,7 @@ const urls = {
   'tree:kit-pine-high': pineHigh, 'tree:kit-pine-young': pineYoung,
   'tree:kit-oak-green': oakGreen, 'tree:kit-oak-autumn': oakAutumn,
   'house:kit-taverne': tavern,
+  'house:kit-tripo-tavern': tripoTavern,
   'house:kit-timber': timberHouse, 'grass:kit-tall': tallGrass,
   'rock:kit-cluster': rockCluster, 'rock:kit-single': rockSingle,
   'ruin:kit-arch': ruinArch, 'wall:kit-stone': stoneWall,
@@ -159,8 +161,8 @@ function removeMirroredFaces(geometry) {
   result.computeBoundingBox(); result.computeBoundingSphere(); return result;
 }
 
-/** Existing CC0 kit files are embedded unchanged. Only variants present in the
- * saved map are parsed. Normalization matches the formerly compiled-only kit. */
+/** Original kit files and separately attributed user models are embedded.
+ * Only variants present in the saved map are parsed. */
 export async function loadEnvironmentKit(map, { wind } = {}) {
   const wanted = [...new Set((map.objects ?? []).map(object => `${object.kind}:${object.variant}`).filter(key => urls[key]))];
   const result = new Map();
@@ -169,6 +171,30 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
     const gltf = await new GLTFLoader().loadAsync(urls[key]); gltf.scene.updateWorldMatrix(true, true);
     const { scale, offset } = definition.normalization;
     const transform = new THREE.Matrix4().makeScale(scale, scale, scale).multiply(new THREE.Matrix4().makeTranslation(-offset[0], -offset[1], -offset[2]));
+    if (key === 'house:kit-tripo-tavern') {
+      // This prepared, roofless model is already measured in metres. Preserve
+      // its UVs, normals and PBR maps: the legacy timber-house clipping/repaint
+      // below would remove its plaster and destroy the authored appearance.
+      const parts = [], materials = new Map();
+      const copyMaterial = source => {
+        if (!materials.has(source.uuid)) materials.set(source.uuid, source.clone());
+        return materials.get(source.uuid);
+      };
+      gltf.scene.traverse(mesh => {
+        if (!mesh.isMesh) return;
+        const geometry = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld).applyMatrix4(transform);
+        geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+        const material = Array.isArray(mesh.material) ? mesh.material.map(copyMaterial) : copyMaterial(mesh.material);
+        parts.push({ geometry, material, castShadow: true, interior: false, frontFacade: false, vegetationTint: false });
+      });
+      gltf.scene.traverse(mesh => {
+        if (!mesh.isMesh) return;
+        mesh.geometry.dispose();
+        for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) material.dispose();
+      });
+      result.set(key, { ...definition, parts, roofRemoved: true, embedded: true, textured: true });
+      return;
+    }
     if (key === 'house:kit-taverne') {
       // The user asset is a detailed, already roofless tavern. Drop only its
       // 200 m presentation floor and merge its 3,247 source pieces by material

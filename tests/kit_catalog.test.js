@@ -32,8 +32,20 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 39);
-  assert.equal(ASSET_CATALOG.length, 39);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 40);
+  assert.equal(ASSET_CATALOG.length, 40);
+});
+
+test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {
+  const variant = 'kit-tripo-tavern';
+  const rule = schema.$defs.worldObject.allOf.find(entry => entry.if?.properties?.kind?.const === 'house');
+  assert.ok(rule.then.properties.variant.enum.includes(variant));
+  const tavern = makeWorldObject('house', [30, -42], { variant, id: 'kit-test-tripo-tavern', rotation: Math.PI / 4, scale: 1.25 });
+  const map = structuredClone(base); map.objects.push(tavern);
+  assert.deepEqual(validateWorldmap(map).errors, []);
+  const restored = normalizeWorldmap(JSON.parse(JSON.stringify(map)));
+  assert.deepEqual(restored.objects.at(-1), tavern);
+  assert.notEqual(getVariantAsset('house', variant).sourcePaths[0], getVariantAsset('house', 'kit-taverne').sourcePaths[0]);
 });
 
 test('the uploaded tavern GLB is a valid selectable map asset with a traversable main entrance', () => {

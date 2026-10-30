@@ -1,4 +1,4 @@
-"""Import and exercise the GLB environment-kit variants and the uploaded tavern.
+"""Import and exercise the GLB environment-kit variants and uploaded taverns.
 
 NEBELJAGD_URL=http://127.0.0.1:4174 python3 tests/environment_kit_smoke.py
 Uses real editor JSON import/export and game movement/roll/attack. Inspection
@@ -36,6 +36,7 @@ PLACEMENTS={
  'grass:kit-tall':([-82,57],.2,1.2),
  'house:kit-timber':([-66,62],.2,1.5),
  'house:kit-taverne':([180,150],0,1),
+ 'house:kit-tripo-tavern':([225,150],math.pi/6,1),
  'crate:kit-wood':([-50,57],math.pi/2,1.6),
 }
 for definition in DEFINITIONS:
@@ -46,7 +47,7 @@ for definition in DEFINITIONS:
     FIXTURE['objects'].append(obj)
 FIXTURE['objects'].append({'id':'qa-bow','name':'QA Holzbogen','kind':'bow','variant':'wood','rarity':'common','position':[-64,50],'rotation':0,'scale':1})
 REPORT={'status':'running','url':URL,'checks':[],'errors':[],'screenshots':[],
-        'note':'Actual Chromium WebGL2 and keyboard input; fixture contains every existing kit variant, not new source assets.'}
+        'note':'Actual Chromium WebGL2 and keyboard input; fixture contains every registered kit variant, including the prepared Tripo tavern.'}
 
 
 def passed(name,evidence=None):
@@ -130,8 +131,8 @@ def check_offline_kit(browser):
     page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().world.source==="import" && nebeljagdTestState().rendering.calls>0')
     current=state(page)
     assert current['world']['objects']==FIXTURE['objects']
-    assert current['world']['stats']['loadedGLBs']==18
-    assert current['world']['stats']['environmentKit']['loadedModels']==13
+    assert current['world']['stats']['loadedGLBs']==5+len(DEFINITIONS)
+    assert current['world']['stats']['environmentKit']['loadedModels']==len(DEFINITIONS)
     assert not requests,requests
     evidence={'source':'standalone HTML served only by an in-memory route in an offline browser context',
               'limitation':'Managed Chromium blocks file:// navigation; no actual file:// opening is claimed.',
@@ -139,7 +140,7 @@ def check_offline_kit(browser):
               'models':current['world']['stats']['environmentKit']['loadedModels'],
               'inMemoryDocumentNavigations':len(document_requests),'externalResourceRequests':requests}
     context.close()
-    passed('Standalone game bytes import and render all thirteen kit models offline without external resource requests',evidence)
+    passed('Standalone game bytes import and render all registered kit models offline without external resource requests',evidence)
 
 
 try:
@@ -161,8 +162,8 @@ try:
             result=editor.evaluate('''async()=>{const image=new Image();image.src=document.querySelector('#palette-preview-image svg image').getAttribute('href');await image.decode();return{width:image.naturalWidth,height:image.naturalHeight,embedded:image.src.startsWith('data:image/webp;base64,')};}''')
             assert result['embedded'] and result['width']>=128 and result['height']>=96
             variants.append(definition['id'])
-        assert len(variants)==13
-        passed('The editor imports all thirteen kit variants and shows their real embedded model previews',variants)
+        assert len(variants)==len(DEFINITIONS)
+        passed('The editor imports all registered kit variants and shows their real embedded model previews',variants)
         with editor.expect_download() as info:editor.locator('#export-json').click()
         saved=ROOT/'test-results/environment-kit-map.json';saved.parent.mkdir(exist_ok=True);info.value.save_as(saved)
         assert json.loads(saved.read_text())==FIXTURE
@@ -181,9 +182,9 @@ try:
         game.wait_for_function('nebeljagdTestState().equippedWeapon==="bow"')
         first=state(game)
         assert first['world']['objects']==FIXTURE['objects']
-        assert first['world']['stats']['loadedGLBs']==18,first['world']['stats']
+        assert first['world']['stats']['loadedGLBs']==5+len(DEFINITIONS),first['world']['stats']
         kit_stats=first['world']['stats']['environmentKit']
-        assert kit_stats['loadedModels']==13 and kit_stats['placements']==13,kit_stats
+        assert kit_stats['loadedModels']==len(DEFINITIONS) and kit_stats['placements']==len(DEFINITIONS),kit_stats
         assert {model['id'] for model in kit_stats['models']}==set(BY_ID)
         tavern_model=next(model for model in kit_stats['models'] if model['id']=='house:kit-taverne')
         assert tavern_model['height']==4.8 and tavern_model['reducedDressing'] and tavern_model['omittedDetailMeshes']>0,tavern_model

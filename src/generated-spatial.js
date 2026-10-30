@@ -3,6 +3,7 @@ import { pointInPolygon, distanceToSegment } from './map/model.js';
 import { terrainPalette } from './terrain-art.js';
 import { createTerrainPaintIndex, applyTerrainPaint } from './map/terrain-paint.js';
 import { getLandscape, biomeRuntimeId } from './map/landscape.js';
+import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
 
 const CHUNK = 64;
 const clamp = THREE.MathUtils.clamp;
@@ -64,6 +65,7 @@ export function createWorldSpatialModel(map) {
   const bridges = segmentIndex(map.paths.filter(path => path.kind === 'bridge'), 2);
   const houseSites = (map.objects ?? []).filter(item => item.kind === 'house');
   const houseCells = new Map();
+  const refinedHouseSites = [];
   const regionAt = (x, z) => [...regions].reverse().find(region => x >= region.minX && x <= region.maxX && z >= region.minZ && z <= region.maxZ && pointInPolygon([x, z], region.points)) ?? regions[0];
   function biomeHeight(biome, x, z) {
     const wave = Math.sin(x * .013 + Math.sin(z * .009) * 1.4) * .55 + Math.cos(z * .016 - x * .004) * .45;
@@ -137,8 +139,15 @@ export function createWorldSpatialModel(map) {
     return height;
   }
   for (const house of houseSites) {
-    const scale = house.scale ?? 1, margin = 17 * scale + 7;
-    const record = { ...house, plateau: baseGround(...house.position), cos: Math.cos(house.rotation ?? 0), sin: Math.sin(house.rotation ?? 0) };
+    const scale = house.scale ?? 1, definition = getEnvironmentKitDefinition('house', house.variant);
+    const terrain = definition?.terrain;
+    const halfWidth = (terrain ? definition.footprint.halfWidth + terrain.padding : 9.3) * scale;
+    const halfDepth = (terrain ? definition.footprint.halfDepth + terrain.padding : 9.1) * scale;
+    const radius = Math.hypot(halfWidth, halfDepth), margin = Math.max(17 * scale, radius) + 7;
+    const record = { ...house, halfWidth, halfDepth, radius,
+      maxTriangleEdge: terrain ? terrain.maxTriangleEdge * scale : null,
+      plateau: baseGround(...house.position), cos: Math.cos(house.rotation ?? 0), sin: Math.sin(house.rotation ?? 0) };
+    if (terrain) refinedHouseSites.push(record);
     for (let x = Math.floor((house.position[0] - margin) / CHUNK); x <= Math.floor((house.position[0] + margin) / CHUNK); x++) for (let z = Math.floor((house.position[1] - margin) / CHUNK); z <= Math.floor((house.position[1] + margin) / CHUNK); z++) {
       const key = `${x},${z}`; if (!houseCells.has(key)) houseCells.set(key, []); houseCells.get(key).push(record);
     }
@@ -148,10 +157,22 @@ export function createWorldSpatialModel(map) {
     for (const house of houseCells.get(`${Math.floor(x / CHUNK)},${Math.floor(z / CHUNK)}`) ?? []) {
       const dx = x - house.position[0], dz = z - house.position[1];
       const lx = house.cos * dx - house.sin * dz, lz = house.sin * dx + house.cos * dz;
-      const outside = Math.max(Math.abs(lx) - 9.3 * house.scale, Math.abs(lz) - 9.1 * house.scale);
+      const outside = Math.max(Math.abs(lx) - house.halfWidth, Math.abs(lz) - house.halfDepth);
       height = THREE.MathUtils.lerp(house.plateau, height, smooth(0, 6.5, outside));
     }
     return height;
+  }
+  function refineTerrainTriangle(a, b, c) {
+    if (!refinedHouseSites.length) return false;
+    const edge2 = (p, q) => (p.x - q.x) ** 2 + (p.z - q.z) ** 2;
+    const longest2 = Math.max(edge2(a, b), edge2(b, c), edge2(c, a));
+    const minX = Math.min(a.x, b.x, c.x), maxX = Math.max(a.x, b.x, c.x);
+    const minZ = Math.min(a.z, b.z, c.z), maxZ = Math.max(a.z, b.z, c.z);
+    // The normal island mesh can span an entire room with one triangle. Only
+    // refine locally so every vertex beneath this floor lies on its plateau.
+    return refinedHouseSites.some(house => longest2 > house.maxTriangleEdge ** 2
+      && maxX >= house.position[0] - house.radius && minX <= house.position[0] + house.radius
+      && maxZ >= house.position[1] - house.radius && minZ <= house.position[1] + house.radius);
   }
   function bridgeAt(x, z, padding = 0) {
     for (const segment of bridges.near(x, z)) {
@@ -184,7 +205,7 @@ export function createWorldSpatialModel(map) {
     baseColorAt(x, z, target);
     return terrainPaint.length ? applyTerrainPaint(terrainPaint, x, z, target, false, paintScratch) : target;
   }
-  return { groundAt, rawLand, regionAt, biomeAt, biomeWeightsAt, colorAt, baseColorAt, terrainPaint, waterAt, bridgeAt, coast, rivers,
+  return { groundAt, refineTerrainTriangle, rawLand, regionAt, biomeAt, biomeWeightsAt, colorAt, baseColorAt, terrainPaint, waterAt, bridgeAt, coast, rivers,
     isLand: (x, z) => pointInPolygon([x, z], map.island.points),
     isWater: (x, z, padding = 0) => { const water = waterAt(x, z); return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z)); } };
 }

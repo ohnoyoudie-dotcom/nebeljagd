@@ -1,0 +1,238 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:4177",
+  "checks": [
+    {
+      "name": "New Tripo tavern can be selected with its real embedded preview and placed through editor controls",
+      "evidence": {
+        "preview": {
+          "width": 256,
+          "height": 192,
+          "embedded": true
+        },
+        "object": {
+          "id": "object-house-mvv13knf-1",
+          "name": "Neues Wirtshaus · QA",
+          "kind": "house",
+          "variant": "kit-tripo-tavern",
+          "position": [
+            180,
+            150
+          ],
+          "rotation": 0,
+          "scale": 1
+        }
+      }
+    },
+    {
+      "name": "Position, rotation, scale and new variant survive JSON download export and reimport",
+      "evidence": {
+        "saveMode": "Browser without File System Access",
+        "objects": [
+          {
+            "id": "object-house-mvv13knf-1",
+            "name": "Neues Wirtshaus · QA",
+            "kind": "house",
+            "variant": "kit-tripo-tavern",
+            "position": [
+              180,
+              150
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-house-mvv13lbb-2",
+            "name": "Gedrehtes Wirtshaus · QA",
+            "kind": "house",
+            "variant": "kit-tripo-tavern",
+            "position": [
+              225,
+              150
+            ],
+            "rotation": 0.7853981633974483,
+            "scale": 1.25
+          }
+        ]
+      }
+    },
+    {
+      "name": "Editor playtest renders both taverns from one loaded GLB with preserved transforms and open roofs",
+      "evidence": {
+        "kit": {
+          "loadedModels": 1,
+          "models": [
+            {
+              "id": "house:kit-tripo-tavern",
+              "asset": "tripo-tavern",
+              "targetHeight": 5.641580939292908,
+              "height": 5.054,
+              "parts": 1,
+              "roofRemoved": true,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            }
+          ],
+          "placements": 2
+        },
+        "houses": [
+          {
+            "id": "object-house-mvv13knf-1",
+            "name": "Neues Wirtshaus · QA",
+            "x": 180,
+            "y": 6.412854345139625,
+            "z": 150,
+            "halfWidth": 11.01,
+            "halfDepth": 8.89,
+            "rotation": 0,
+            "scale": 1,
+            "floorHeight": 0.42,
+            "roofVisible": false,
+            "interiorVisible": true,
+            "frontFacadeVisible": true,
+            "frontFacadeParts": 0
+          },
+          {
+            "id": "object-house-mvv13lbb-2",
+            "name": "Gedrehtes Wirtshaus · QA",
+            "x": 225,
+            "y": 13.118866197162909,
+            "z": 150,
+            "halfWidth": 13.7625,
+            "halfDepth": 11.1125,
+            "rotation": 0.7853981633974483,
+            "scale": 1.25,
+            "floorHeight": 0.525,
+            "roofVisible": false,
+            "interiorVisible": true,
+            "frontFacadeVisible": true,
+            "frontFacadeParts": 0
+          }
+        ],
+        "rendering": {
+          "calls": 168,
+          "triangles": 480368,
+          "geometries": 44,
+          "textures": 15,
+          "frameMs": 989.5500000000002
+        }
+      }
+    },
+    {
+      "name": "Actual keyboard walking enters the new tavern through the front doorway",
+      "evidence": {
+        "x": 180,
+        "y": 6.832854345139625,
+        "z": 155.15999999999997
+      }
+    },
+    {
+      "name": "The facade blocks both walking and a forward roll while the actual doorway stays passable",
+      "evidence": {
+        "walk": {
+          "x": 185.6,
+          "y": 6.412854345139626,
+          "z": 158.92
+        },
+        "roll": {
+          "x": 185.6,
+          "y": 6.412854345139626,
+          "z": 158.92
+        }
+      }
+    },
+    {
+      "name": "Large interior furniture remains solid during real movement",
+      "evidence": {
+        "body": {
+          "minX": -8.75,
+          "maxX": -4.7,
+          "minZ": 2.2,
+          "maxZ": 5.06,
+          "minY": 0,
+          "maxY": 1.76,
+          "type": "furniture"
+        },
+        "position": {
+          "x": 173.275,
+          "y": 6.832854345139625,
+          "z": 155.48
+        }
+      }
+    },
+    {
+      "name": "The rotated and scaled editor copy retains its floor height and indoor detection",
+      "evidence": {
+        "position": {
+          "x": 227.65165042944955,
+          "y": 13.64386619716291,
+          "z": 152.65165042944955
+        },
+        "house": {
+          "id": "object-house-mvv13lbb-2",
+          "name": "Gedrehtes Wirtshaus · QA",
+          "x": 225,
+          "y": 13.118866197162909,
+          "z": 150,
+          "halfWidth": 13.7625,
+          "halfDepth": 11.1125,
+          "rotation": 0.7853981633974483,
+          "scale": 1.25,
+          "floorHeight": 0.525,
+          "roofVisible": false,
+          "interiorVisible": true,
+          "frontFacadeVisible": false,
+          "frontFacadeParts": 0
+        }
+      }
+    },
+    {
+      "name": "Actual standalone editor and game files complete the handoff without external resource dependencies",
+      "evidence": {
+        "mode": "Actual standalone HTML files served by the local static HTTP server",
+        "fileProtocolLimitation": "Managed Chromium rejected the preceding file:// attempt with ERR_BLOCKED_BY_ADMINISTRATOR. No actual file:// playtest or policy override is claimed.",
+        "files": {
+          "map-editor.html": {
+            "sha256": "fb4c36e37dec34ad74063cceb87855614d920c8d39e93aebf5ac3d2dc38e3534",
+            "bytes": 22593592
+          },
+          "index.html": {
+            "sha256": "09ea5811bbb9dcec1c3993410a34a8912b9bb81cd3f01d29bfdb3711dd7ed7ed",
+            "bytes": 36947935
+          },
+          "nebeljagd.html": {
+            "sha256": "09ea5811bbb9dcec1c3993410a34a8912b9bb81cd3f01d29bfdb3711dd7ed7ed",
+            "bytes": 36947935
+          }
+        },
+        "unexpectedResourceRequests": []
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/tripo-tavern-editor.png",
+    "docs/tripo-tavern-exterior.png",
+    "docs/tripo-tavern-interior.png",
+    "docs/tripo-tavern-rotated.png"
+  ],
+  "delivery": {
+    "mode": "Actual standalone HTML files served by the local static HTTP server",
+    "fileProtocolLimitation": "Managed Chromium rejected the preceding file:// attempt with ERR_BLOCKED_BY_ADMINISTRATOR. No actual file:// playtest or policy override is claimed.",
+    "files": {
+      "map-editor.html": {
+        "sha256": "fb4c36e37dec34ad74063cceb87855614d920c8d39e93aebf5ac3d2dc38e3534",
+        "bytes": 22593592
+      },
+      "index.html": {
+        "sha256": "09ea5811bbb9dcec1c3993410a34a8912b9bb81cd3f01d29bfdb3711dd7ed7ed",
+        "bytes": 36947935
+      },
+      "nebeljagd.html": {
+        "sha256": "09ea5811bbb9dcec1c3993410a34a8912b9bb81cd3f01d29bfdb3711dd7ed7ed",
+        "bytes": 36947935
+      }
+    },
+    "unexpectedResourceRequests": []
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "name": "nebeljagd-tripo-tavern",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "source": {
+    "path": "assets/inbox/medieval tavern interior 3d model.glb",
+    "sha256": "343d7cf86820f13cae0f6081bd66be66df79769d0b65cb067618f2a2f96d2f1f"
+  },
+  "preparationScript": "scripts/prepare-tripo-tavern.py",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3023,
+      "sha256": "6c57a549aeea9185ea3751a10417b57089cfa9df9286094a65d074132b72c3e5"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 3148,
+      "sha256": "a595c2287d44899c40380ffbba0e75f5f8a7fd5149b43fd134423a1203d61330"
+    },
+    {
+      "path": "previews/collision-sections.png",
+      "bytes": 201330,
+      "sha256": "b0df60c0291236fb46a4840a60205663c1d7824ad178b97b4a2ef88557ceb646"
+    },
+    {
+      "path": "previews/runtime-perspective.png",
+      "bytes": 961428,
+      "sha256": "db374c4507302e5ee380daa42deb7a1a73ee5a1d2b7f494c531f277ad4117450"
+    },
+    {
+      "path": "previews/runtime-top.png",
+      "bytes": 1174178,
+      "sha256": "97a06e8d5f932945bef95fbc6920ad554f3e0a4869392b646ac396584f2e0855"
+    },
+    {
+      "path": "previews/source-perspective.png",
+      "bytes": 984596,
+      "sha256": "59b1cb06aff7fc282ee0f681654cf4ed8f577583ad38455cbe622828aac4b9e4"
+    },
+    {
+      "path": "previews/source-top.png",
+      "bytes": 1223329,
+      "sha256": "70782a37cb6e1d3aa209751c2629c2403d5e69576a91bcffe4e2b922110d5755"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 3084,
+      "sha256": "dd0d37c2d7e878437af3cac17ffede670d009f2d320963d7142352abfcf33c72"
+    },
+    {
+      "path": "runtime/tavern.glb",
+      "bytes": 7053948,
+      "sha256": "b8f703b7a794c00521d9bf4047c6d8185a30c143e4df83ea9a344c3c1149fc76"
+    }
+  ],
+  "validated": {
+    "glbHeaderAndLength": true,
+    "finiteAccessorValues": true,
+    "embeddedDependenciesOnly": true,
+    "sourceUnchanged": true,
+    "blenderRenderReviewed": true
+  },
+  "pending": [
+    "game/editor GPU import",
+    "movement/projectile/sight collisions",
+    "user artistic approval"
+  ],
+  "licenseStatus": "User-provided project asset; separate commercial provider receipt not supplied."
+}

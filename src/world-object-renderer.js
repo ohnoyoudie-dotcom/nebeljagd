@@ -530,7 +530,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   }
   function heightAtHouse(x, z) {
     for (const structure of structures) {
-      if (!structure.house || Math.abs(x - structure.x) > 13 * structure.scale || Math.abs(z - structure.z) > 13 * structure.scale) continue;
+      if (!structure.house) continue;
+      // The measured footprint must remain covered after rotation. A fixed
+      // 13 m axis check dropped the corners of the larger imported taverns.
+      const reach = Math.hypot(structure.record.halfWidth, structure.record.halfDepth) + .8 * structure.scale;
+      if (Math.abs(x - structure.x) > reach || Math.abs(z - structure.z) > reach) continue;
       const p = structure.toLocal({ x, z });
       if (structure.record.kit) {
         const bounds = structure.record.localFloorBounds, inside = structure.record.localInterior;

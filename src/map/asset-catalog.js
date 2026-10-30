@@ -66,6 +66,12 @@ export const ASSET_CATALOG = Object.freeze([
     renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render',
     notes: 'Große, offene Taverne mit mehreren Räumen und Einrichtung; das Dach ist bereits aus dem Modell entfernt.',
     provenance: 'Blender/Taverne.glb' },
+  { id: 'house:kit-tripo-tavern', kind: 'house', variant: 'kit-tripo-tavern', label: 'Wirtshaus · Tripo (neu)', format: 'glb',
+    sourceLabel: 'Eigener Tripo-Export · aufbereitetes Spielmodell',
+    sourcePaths: ['assets/imported/tripo-tavern/runtime/tavern.glb', 'assets/inbox/medieval tavern interior 3d model.glb'],
+    renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render',
+    notes: 'Neues, dachloses Wirtshaus mit Gastraum, Küche und Einrichtung. Als eigene Variante platzieren, drehen und in 3D testen.',
+    provenance: 'assets/imported/tripo-tavern/provenance.json' },
   kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Zerstörbare Holzkiste; blockiert Bewegung, Sicht und Pfeile bis sie kaputt ist.'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 

@@ -13,6 +13,11 @@ Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 Spieleravatar mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
 bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
 
+Das neue Tripo-Wirtshaus ist unter **Objekte & Verteilung → Haus →
+Wirtshaus · Tripo (neu)** auswählbar. Es enthält eine Modellvorschau, offene
+Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
+[`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
+
 Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
 Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 [`docs/art-style.md`](docs/art-style.md).

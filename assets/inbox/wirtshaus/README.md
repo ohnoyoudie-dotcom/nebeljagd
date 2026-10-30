@@ -1,9 +1,18 @@
 # Eingang: Wirtshaus
 
-Den unveränderten Tripo-Export hier als `nebeljagd_wirtshaus_v1.glb` mit
-eingebetteten Texturen ablegen und auf Branch `work` committen/pushen.
+Der hochgeladene Tripo-Export liegt unverändert im übergeordneten Ordner:
+
+`assets/inbox/medieval tavern interior 3d model.glb`
+
+Für die zusätzliche Editor-Variante **„Wirtshaus · Tripo (neu)“**
+(`house:kit-tripo-tavern`) wird die aufbereitete Laufzeitdatei
+`assets/imported/tripo-tavern/runtime/tavern.glb` genutzt. Herkunft und
+Aufbereitung werden in `assets/imported/tripo-tavern/provenance.json`
+dokumentiert. Das bestehende Modell **„Taverne · GLB“** bleibt separat erhalten.
 
 Bildvorlage und Hinweise: [Wirtshaus-Konzept](../../concepts/inn/README.md).
-Das Kopieren allein registriert das Modell noch nicht im Spiel oder Editor.
-Vor dem Einbau folgen Geometrieprüfung, Blender-Aufbereitung, passende
-Wand-/Möbelkollisionen sowie eine Prüfung neben dem aktuellen Avatar.
+Weitere Exporte hier unter einem neuen eindeutigen Namen ablegen und auf
+Branch `work` committen/pushen; das ursprüngliche Modell nicht überschreiben.
+Das Kopieren weiterer Dateien registriert sie noch nicht automatisch im
+Spiel oder Editor. Neue Versionen benötigen ebenfalls Aufbereitung und
+passende Wand-/Möbelkollisionen.
