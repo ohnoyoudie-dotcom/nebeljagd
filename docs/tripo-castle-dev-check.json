@@ -1,0 +1,365 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5192",
+  "checks": [
+    {
+      "name": "Small castle is selectable with its embedded real-model thumbnail and can be placed",
+      "evidence": {
+        "preview": {
+          "width": 256,
+          "height": 192,
+          "embedded": true
+        },
+        "object": {
+          "id": "object-house-mvvdbi0i-1",
+          "name": "Kleines Schloss · QA",
+          "kind": "house",
+          "variant": "kit-tripo-castle",
+          "position": [
+            180,
+            150
+          ],
+          "rotation": 0,
+          "scale": 1
+        }
+      }
+    },
+    {
+      "name": "Placement, variant, rotation and size survive JSON download and reimport",
+      "evidence": {
+        "objects": [
+          {
+            "id": "object-house-mvvdbi0i-1",
+            "name": "Kleines Schloss · QA",
+            "kind": "house",
+            "variant": "kit-tripo-castle",
+            "position": [
+              180,
+              150
+            ],
+            "rotation": 0,
+            "scale": 1
+          },
+          {
+            "id": "object-house-mvvdbiex-2",
+            "name": "Gedrehtes Schloss · QA",
+            "kind": "house",
+            "variant": "kit-tripo-castle",
+            "position": [
+              320,
+              150
+            ],
+            "rotation": 0.7853981633974483,
+            "scale": 1.25
+          }
+        ],
+        "saveMode": "download without File System Access"
+      }
+    },
+    {
+      "name": "Editor playtest renders the textured roofless castle and its transformed copy",
+      "evidence": {
+        "kit": {
+          "loadedModels": 1,
+          "models": [
+            {
+              "id": "house:kit-tripo-castle",
+              "asset": "tripo-castle",
+              "targetHeight": 10.659308791160583,
+              "height": 9.35086612701416,
+              "parts": 1,
+              "roofRemoved": true,
+              "reducedDressing": null,
+              "omittedDetailMeshes": null
+            }
+          ],
+          "placements": 2
+        },
+        "houses": [
+          {
+            "id": "object-house-mvvdbi0i-1",
+            "name": "Kleines Schloss · QA",
+            "x": 180,
+            "y": 6.412854345139625,
+            "z": 150,
+            "halfWidth": 35.1,
+            "halfDepth": 24.4,
+            "rotation": 0,
+            "scale": 1,
+            "floorHeight": 0.42,
+            "roofVisible": false,
+            "interiorVisible": true,
+            "frontFacadeVisible": true,
+            "frontFacadeParts": 0
+          },
+          {
+            "id": "object-house-mvvdbiex-2",
+            "name": "Gedrehtes Schloss · QA",
+            "x": 320,
+            "y": 7.9275354073939726,
+            "z": 150,
+            "halfWidth": 43.875,
+            "halfDepth": 30.5,
+            "rotation": 0.7853981633974483,
+            "scale": 1.25,
+            "floorHeight": 0.525,
+            "roofVisible": false,
+            "interiorVisible": true,
+            "frontFacadeVisible": true,
+            "frontFacadeParts": 0
+          }
+        ],
+        "rendering": {
+          "calls": 151,
+          "triangles": 508422,
+          "geometries": 42,
+          "textures": 15,
+          "frameMs": 1018.4777777777776
+        }
+      }
+    },
+    {
+      "name": "Measured exterior gateways pass real keyboard movement into the castle",
+      "evidence": [
+        {
+          "route": {
+            "name": "Hauptportal",
+            "from": [
+              0,
+              26.2
+            ],
+            "to": [
+              0,
+              16
+            ]
+          },
+          "position": {
+            "x": 0.0,
+            "z": 15.93333333333328,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.06666666666671972
+        },
+        {
+          "route": {
+            "name": "Westtor",
+            "from": [
+              -36,
+              4.8
+            ],
+            "to": [
+              -27.5,
+              4.8
+            ]
+          },
+          "position": {
+            "x": -27.4133333333333,
+            "z": 4.800000000000011,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.08666666666670153
+        }
+      ]
+    },
+    {
+      "name": "All side rooms and connecting internal archways are reachable by keyboard movement",
+      "evidence": [
+        {
+          "route": {
+            "name": "Bibliothek",
+            "from": [
+              -10,
+              -7
+            ],
+            "to": [
+              -23,
+              -7
+            ]
+          },
+          "position": {
+            "x": -23.06666666666672,
+            "z": -7.0,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.06666666666671972
+        },
+        {
+          "route": {
+            "name": "Wachraum",
+            "from": [
+              -10,
+              10.2
+            ],
+            "to": [
+              -24,
+              10.2
+            ]
+          },
+          "position": {
+            "x": -24.56000000000006,
+            "z": 10.199999999999989,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.5600000000000591
+        },
+        {
+          "route": {
+            "name": "Speisesaal",
+            "from": [
+              9,
+              -7
+            ],
+            "to": [
+              22,
+              -7
+            ]
+          },
+          "position": {
+            "x": 22.06666666666672,
+            "z": -7.0,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.06666666666671972
+        },
+        {
+          "route": {
+            "name": "Küche",
+            "from": [
+              9,
+              8
+            ],
+            "to": [
+              24,
+              8
+            ]
+          },
+          "position": {
+            "x": 24.30666666666673,
+            "z": 8.0,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.3066666666667288
+        },
+        {
+          "route": {
+            "name": "west rooms",
+            "from": [
+              -19,
+              -3
+            ],
+            "to": [
+              -19,
+              4
+            ]
+          },
+          "position": {
+            "x": -19.0,
+            "z": 4.28000000000003,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.28000000000002956
+        },
+        {
+          "route": {
+            "name": "east rooms",
+            "from": [
+              16,
+              -3
+            ],
+            "to": [
+              16,
+              4
+            ]
+          },
+          "position": {
+            "x": 16.0,
+            "z": 4.28000000000003,
+            "y": 6.832854345139625
+          },
+          "remaining": 0.28000000000002956
+        }
+      ]
+    },
+    {
+      "name": "Facade more than 15 m from the centre blocks walking and a forward roll",
+      "evidence": {
+        "body": {
+          "name": "south facade west",
+          "minX": -33.5,
+          "maxX": -4,
+          "minZ": 19.7,
+          "maxZ": 22.5,
+          "minY": 0,
+          "maxY": 8.9,
+          "type": "house-wall"
+        },
+        "positions": {
+          "walk": {
+            "x": -18.75,
+            "z": 22.920000000000016,
+            "y": 6.412854345139626
+          },
+          "roll": {
+            "x": -18.75,
+            "z": 22.920000000000016,
+            "y": 6.412854345139626
+          }
+        }
+      }
+    },
+    {
+      "name": "Large interior furniture blocks actual player movement",
+      "evidence": {
+        "body": {
+          "name": "library table and chairs",
+          "minX": -27.7,
+          "maxX": -21.2,
+          "minZ": -17.2,
+          "maxZ": -11.4,
+          "minY": 0,
+          "maxY": 2.3,
+          "type": "furniture"
+        },
+        "position": {
+          "x": -24.44999999999999,
+          "z": -10.97999999999999,
+          "y": 6.832854345139625
+        }
+      }
+    },
+    {
+      "name": "Rotated and scaled castle preserves floor height, indoor detection and terrain exclusion",
+      "evidence": {
+        "position": {
+          "x": 322.65165042944955,
+          "y": 8.452535407393972,
+          "z": 152.65165042944955
+        },
+        "house": {
+          "id": "object-house-mvvdbiex-2",
+          "name": "Gedrehtes Schloss · QA",
+          "x": 320,
+          "y": 7.9275354073939726,
+          "z": 150,
+          "halfWidth": 43.875,
+          "halfDepth": 30.5,
+          "rotation": 0.7853981633974483,
+          "scale": 1.25,
+          "floorHeight": 0.525,
+          "roofVisible": false,
+          "interiorVisible": true,
+          "frontFacadeVisible": false,
+          "frontFacadeParts": 0
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/tripo-castle-editor.png",
+    "docs/tripo-castle-exterior.png",
+    "docs/tripo-castle-interior.png",
+    "docs/tripo-castle-rotated.png"
+  ],
+  "sourceMapUnchanged": "08aa33416038973a59ed686b124c67fd58f87720e1f69dc5ab663935cc0e9e71"
+}

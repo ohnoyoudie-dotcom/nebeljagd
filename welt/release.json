@@ -1,38 +1,38 @@
 {
   "branch": "work",
-  "sourceCommit": "40484ef56258e5a6a607a7c6f8b2ecb0c09ec4b2",
+  "sourceCommit": "2a3c187fb0a7faac7cb4996c329b74ac8150b3de",
   "files": {
     "map-editor.html": {
-      "bytes": 27248077,
-      "sha256": "5c9a4bf70cde872369263d149dece56506ed05dfa0dcc98ff6c48d6e6f8d4d0a"
+      "bytes": 45820693,
+      "sha256": "d9fa52463af25baa888146e6fbb6f1bb8ca5b091d099f0082b28e313865693d8"
     },
     "nebeljagd.html": {
-      "bytes": 42734338,
-      "sha256": "1d841b03f2a446f46beefd249df988f305c68a5d2c561d6bf80d0496c9034cf7"
+      "bytes": 61298755,
+      "sha256": "19b85c60504a46cf634c18bdf47eea59b2a59170dc87a7f39115308c7ae5de9c"
     },
     "index.html": {
-      "bytes": 42734338,
-      "sha256": "1d841b03f2a446f46beefd249df988f305c68a5d2c561d6bf80d0496c9034cf7"
+      "bytes": 61298755,
+      "sha256": "19b85c60504a46cf634c18bdf47eea59b2a59170dc87a7f39115308c7ae5de9c"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 257528,
-      "sha256": "d1038c7364a458bde867a638343c7e257b75956699969d8669420ff89b61b4dd"
+      "bytes": 19280,
+      "sha256": "08aa33416038973a59ed686b124c67fd58f87720e1f69dc5ab663935cc0e9e71"
     },
     "worldmap.svg": {
-      "bytes": 416672,
-      "sha256": "b0024891b4d401a1f402bb0ba6a45325e469f768387a8618d4bdd4b829dd4cc4"
+      "bytes": 41369,
+      "sha256": "81c4291bb723d71d41fb356f6e6c0978fe2b4a5e06d62c84c990770f1a3e1914"
     },
     "worldmap.schema.json": {
-      "bytes": 35336,
-      "sha256": "6008b89bd9a485316dc7a87a7b11a687cbdf245b9a3e1d7d00f375893d844335"
+      "bytes": 35374,
+      "sha256": "f8ed1249b7a0189c2d2914ac75fa8898f42de8eb197f535fcd8c645c74bcf095"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 43975779,
-      "sha256": "78909b7e6f2b56ce97eab6eff3bfddf24210c493a6865832c15a4d2ededb3e00"
+      "bytes": 68686317,
+      "sha256": "757db79fb472040435896add4347ea686b587b7e7438f26481ecbac452786bb6"
     }
   }
 }
