@@ -1,0 +1,83 @@
+{
+  "assetFamily": "Nebeljagd wooden crates",
+  "generator": "OpenAI ImageGen",
+  "assetType": "2D image references for later Tripo generation",
+  "styleReferences": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+    },
+    {
+      "file": "assets/concepts/chest/chest-reference.png",
+      "sha256": "702a0001124cef8d9b3e42c4a7cf530d44b53d8c8b91684e664919089ce79971"
+    },
+    {
+      "file": "assets/concepts/barrel/barrel-reference.png",
+      "sha256": "d6eeb423353a11f3d6b436c601de18b40b203fc00edbd1104cbf44ea90077b8c"
+    }
+  ],
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "variants": [
+    {
+      "id": "crate-square-closed",
+      "intendedDimensionsM": [
+        0.9,
+        0.9,
+        0.85
+      ],
+      "image": "crate-square-closed/reference.png",
+      "prompt": "crate-square-closed/prompt.txt",
+      "imageSha256": "9eb1ec32a009851e5f15ddf57c46a50389a447fe08890c1c4a43adeb4d98bf08",
+      "promptSha256": "1db244585772dd93bf6af795de5e49e9a56e85fe2b1f363457245bd276ce2e8e",
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "bytes": 2367738,
+      "generatorOutput": "/workspace/generated_images/exec-a70de79d-d981-4f6b-8bd1-cc26d9034090.png",
+      "imageVisuallyReviewed": true
+    },
+    {
+      "id": "crate-long-closed",
+      "intendedDimensionsM": [
+        1.5,
+        0.75,
+        0.65
+      ],
+      "image": "crate-long-closed/reference.png",
+      "prompt": "crate-long-closed/prompt.txt",
+      "imageSha256": "f02ca502f9cb2f5b5d060c9850edd21faed4d695946fa4cf74a8b17cda3636ea",
+      "promptSha256": "69b9a5efe274d9070f52f9fba267849f70f05f5bc52f1170f1d2e82500236a43",
+      "dimensionsPx": [
+        1536,
+        1024
+      ],
+      "bytes": 2177016,
+      "generatorOutput": "/workspace/generated_images/exec-441f19db-a841-4c8f-8211-886cb80e22e8.png",
+      "imageVisuallyReviewed": true
+    },
+    {
+      "id": "crate-open-empty",
+      "intendedDimensionsM": [
+        0.95,
+        0.75,
+        0.55
+      ],
+      "image": "crate-open-empty/reference.png",
+      "prompt": "crate-open-empty/prompt.txt",
+      "imageSha256": "8e661965a58469e80f41f8845f67dc9672d45e196f3309e5d2edbb603aba875d",
+      "promptSha256": "1c8488cde11ad83fa713c8998c016e8cf1ed48aa40dad0cc0f10362cc72ff974",
+      "dimensionsPx": [
+        1536,
+        1024
+      ],
+      "bytes": 2269356,
+      "generatorOutput": "/workspace/generated_images/exec-818282f1-e007-4232-9f96-9b533f1abcb8.png",
+      "imageVisuallyReviewed": true
+    }
+  ],
+  "dimensionsOrder": "width, depth, height",
+  "dimensionsNote": "Design targets, not measured geometry. Set scale and bottom origin after generating the GLBs.",
+  "reviewNotes": "Three separate intact crates on neutral backgrounds; consistent timber/iron family. Flat timber tops and visible open interior are concept targets; precise contact planes, raised hardware and hollow mesh must be checked on the generated GLBs."
+}
