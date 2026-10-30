@@ -1,23 +1,39 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import adventurerUrl from '../assets/characters/adventurer.glb?url&inline';
+const PLAYER_MODEL_URL = '/assets/characters/player/nebeljagd_player_base_v1.glb';
 import { createLocomotionController } from './locomotion.js';
 import { createAvatarAnimator } from './avatar-animation.js';
 
 /** Neutral, modular Blender-authored human; Vite embeds the complete GLB. */
 export async function createCharacter(scene) {
-  const gltf = await new GLTFLoader().loadAsync(adventurerUrl);
+  const gltf = await new GLTFLoader().loadAsync(PLAYER_MODEL_URL);
   const group = new THREE.Group();
-  group.name = 'Abenteurer';
+  group.name = 'Nebeljäger · Tripo';
   const presentationPivot = new THREE.Group();
-  const pelvisHeight = .94;
+  const pelvisHeight = 0;
   presentationPivot.position.y = pelvisHeight;
   group.add(presentationPivot);
   const model = gltf.scene;
-  model.position.y = -pelvisHeight;
-  model.name = 'Nebeljagd · neutraler menschlicher Basisavatar';
+  model.position.set(0, 0, 0);
+  model.name = 'Nebeljagd · Tripo Basisavatar';
   presentationPivot.add(model);
-  const unitScale = new THREE.Vector3(1, 1, 1);
+
+  // Tripo exports can use a different scene scale/origin. Normalize to a
+  // predictable human height and put the lowest visible point on the ground.
+  model.updateWorldMatrix(true, true);
+  const sourceBounds = new THREE.Box3().setFromObject(model);
+  const sourceSize = sourceBounds.getSize(new THREE.Vector3());
+  if (!(sourceSize.y > 0.01) || !Number.isFinite(sourceSize.y)) {
+    throw new Error('Die Tripo-GLB besitzt keine gültigen Modellabmessungen.');
+  }
+  const targetHeight = 1.82;
+  const normalizedScale = targetHeight / sourceSize.y;
+  model.scale.setScalar(normalizedScale);
+  model.updateWorldMatrix(true, true);
+  const groundedBounds = new THREE.Box3().setFromObject(model);
+  model.position.y -= groundedBounds.min.y;
+  model.updateWorldMatrix(true, true);
+  const unitScale = model.scale.clone();
   const materials = new Set();
   const meshes = [];
   const snowClipHeight = { value: -10000 };
@@ -87,19 +103,26 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   const neck = model.getObjectByName('Neck');
   const chest = model.getObjectByName('Chest');
   const findBone = names => {
-    const wanted = new Set(names.map(name => name.toLowerCase()));
+    const wanted = names.map(name => String(name).replace(/[^a-z0-9]/gi, '').toLowerCase());
     let result = null;
     model.traverse(node => {
       if (result || !node.isBone) return;
-      const name = String(node.name || node.userData?.name || '').replace(/[^a-z]/gi, '').toLowerCase();
-      if (wanted.has(name)) result = node;
+      const raw = String(node.name || node.userData?.name || '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+      if (wanted.some(name => raw === name || raw.endsWith(name) || raw.includes(name))) result = node;
     });
     return result;
   };
   const armBones = {
-    // GLTFLoader sanitises dots in node names; userData.name retains Blender's label.
-    left: ['UpperArmL', 'ForearmL', 'HandL'].map(name => findBone([name])),
-    right: ['UpperArmR', 'ForearmR', 'HandR'].map(name => findBone([name])),
+    left: [
+      findBone(['UpperArmL', 'LeftUpperArm', 'mixamorigLeftArm', 'LeftArm']),
+      findBone(['ForearmL', 'LeftForeArm', 'LeftLowerArm', 'mixamorigLeftForeArm']),
+      findBone(['HandL', 'LeftHand', 'mixamorigLeftHand']),
+    ],
+    right: [
+      findBone(['UpperArmR', 'RightUpperArm', 'mixamorigRightArm', 'RightArm']),
+      findBone(['ForearmR', 'RightForeArm', 'RightLowerArm', 'mixamorigRightForeArm']),
+      findBone(['HandR', 'RightHand', 'mixamorigRightHand']),
+    ],
   };
   // Two-bone aiming keeps the held objects in the actual hands instead of
   // floating beside the running rig. Targets use the character's local space.
@@ -163,7 +186,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   const bones = new Set();
   model.traverse(node => { if (node.isBone) bones.add(node); });
   group.userData.characterAsset = {
-    name: 'Neutraler Abenteurer', source: 'assets/characters/adventurer.glb',
+    name: 'Nebeljäger Tripo', source: PLAYER_MODEL_URL,
     format: 'GLB', skinned: true, joints: bones.size, clips: gltf.animations.map(clip => clip.name),
     meshes: meshes.length, triangles: meshes.reduce((count, mesh) => count +
       (mesh.geometry.index?.count ?? mesh.geometry.attributes.position.count) / 3, 0),
