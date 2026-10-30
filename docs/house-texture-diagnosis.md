@@ -1,5 +1,9 @@
 # Hausdateien: untexturierter Export und weiterer Export mit Texturen
 
+Für die nächste Hausaufbereitung hat der Nutzer ausschließlich die texturierte
+Datei `medieval house interior 3d model (1).glb` ausgewählt. Die Datei ohne
+„(1)“ wird derzeit nicht für den Spieleinbau verwendet.
+
 Inzwischen wurden **beide** hochgeladenen Hausdateien geprüft. Die Datei
 `medieval house interior 3d model.glb` enthält keine Texturen. Die zusätzliche
 `medieval house interior 3d model (1).glb` enthält drei eingebettete Texturbilder
