@@ -322,5 +322,12 @@
     "verdict": "Keine Farbtextur zugewiesen",
     "browserErrors": [],
     "externalRequests": []
+  },
+  "additionalTexturedHouse": {
+    "report": "docs/house-texture-browser-report-1.json",
+    "sourceSha256": "fc0dc4ab96b6cad1cdaea62d11940adb54389d3227fd85e7a5330c57e2c5ac12",
+    "verdict": "Farbtexturen sind eingebettet und zugewiesen",
+    "browserErrors": [],
+    "externalRequests": []
   }
 }
