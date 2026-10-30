@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "baselineCommit": "39c269f",
+  "beforeObjects": 3949,
+  "afterObjects": 953,
+  "removed": {
+    "flower": 124,
+    "tree": 2591,
+    "rock": 279,
+    "mound": 2
+  },
+  "remainingCounts": {
+    "ruin": 5,
+    "shrine": 4,
+    "bush": 129,
+    "bow": 17,
+    "sword": 14,
+    "heart": 17,
+    "chest": 16,
+    "grass": 739,
+    "fireStaff": 1,
+    "iceStaff": 1,
+    "crate": 10
+  },
+  "retainedObjectsUnchanged": true,
+  "lootCount": 66,
+  "lootUnchanged": true,
+  "nonObjectMapDataUnchanged": true,
+  "worldmapSha256": "34ac8f1350d59cf5f8bad1402a6afd120edea0ecd6e015716adf95bf802d8807"
+}

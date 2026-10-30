@@ -8,7 +8,12 @@ import { getMoundDefinition } from '../src/overgrown-mounds.js';
 
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const schema = JSON.parse(readFileSync(new URL('../worldmap.schema.json', import.meta.url), 'utf8'));
-const mounds = map.objects.filter(item => item.kind === 'mound');
+// Legacy fixtures remain useful for recovery/imports even though these objects
+// are no longer part of the current island or offered for new placements.
+const mounds = [
+  makeWorldObject('mound', [47, -58], { id: 'legacy-knoll', variant: 'knoll', rotation: -.35 }),
+  makeWorldObject('mound', [-34, -75], { id: 'legacy-ridge', variant: 'ridge', rotation: .6 }),
+];
 const distance = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const lineDistance = (p, line) => Math.min(...line.points.slice(1).map((b, i) => distanceToSegment(p, line.points[i], b)));
 function coverRadius(item) {
@@ -21,7 +26,9 @@ function coverRadius(item) {
     bow: .9, sword: .9, fireStaff: .9, iceStaff: .9, heart: .9 }[item.kind] ?? 1) * item.scale;
 }
 
-test('authored mounds leave village routes, starter loot and all distributed starts clear', () => {
+test('the cleared map has no mounds; legacy fixtures preserve route and loot clearance', () => {
+  assert.equal(map.objects.some(item => item.kind === 'mound'), false);
+  assert.equal(getObjectDefinition('mound').retired, true);
   assert.ok(mounds.length >= 2);
   assert.ok(mounds.some(item => item.variant === 'ridge'));
   assert.ok(mounds.some(item => item.variant === 'knoll'));

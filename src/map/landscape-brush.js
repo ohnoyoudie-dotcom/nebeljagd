@@ -1,5 +1,5 @@
 import { pointInPolygon, distanceToSegment } from './model.js';
-import { getObjectDefinition, makeWorldObject } from './objects.js';
+import { getObjectDefinition, makeWorldObject, isObjectAvailable } from './objects.js';
 import { BIOME_PRESETS, VEGETATION_TYPES, TERRAIN_TYPES, LANDSCAPE_LIMITS, getLandscape, vegetationSettings, terrainSettings } from './landscape.js';
 import { getMoundDefinition } from '../overgrown-mounds.js';
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
@@ -180,6 +180,9 @@ function strokeBase(map, options, stamp, { vegetation = false } = {}) {
 
 function vegetationOptions(options) {
   const settings = vegetationSettings({ kind: 'grass', variant: options.vegetation?.type === 'short' ? 'short' : 'tall', vegetation: options.vegetation });
+  // Saved flower-meadow presets retain their grass settings, but authoring
+  // must not reintroduce the removed blossoms through an indirect tool.
+  if (settings.type === 'flowers') settings.type = 'meadow';
   const definition = VEGETATION_TYPES.find(item => item.id === settings.type);
   if (!definition) throw new Error('Unbekannter Vegetationstyp.');
   settings.density = number(settings.density, 1, 0, 1, 'Vegetationsdichte');
@@ -196,13 +199,6 @@ function vegetationStamp(point, context, configuration, radius = context.radius)
     name: `${definition.label} · Pinsel`, rotation: round(random() * TAU), scale: 1 });
   object.vegetation = { ...settings, density: round(settings.density * strength), seed: Math.floor(random() * 4294967296) };
   context.addObject(object);
-  // Blumenwiese still uses the imported Rei blossoms. Its ground-cover record
-  // remains an ordinary grass patch with all height/density settings editable.
-  if (settings.type === 'flowers' && !context.full && random() < .8 * strength) {
-    const flower = makeWorldObject('flower', point.map(round), { variant: ['rei-white', 'rei-red', 'rei-gold'][Math.floor(random() * 3)],
-      radius: clamp(radius * .45, .5, 3), name: 'Blumenwiese · Blüten', rotation: round(random() * TAU), scale: .8 + random() * .4 });
-    context.addObject(flower);
-  }
 }
 
 export function createVegetationStroke(map, options = {}) {
@@ -239,8 +235,8 @@ function scatterOptions(options = {}) {
   for (const [key, min, max] of [['density', 0, 1], ['minDistance', .5, 30], ['scaleMin', .25, 3], ['scaleMax', .25, 3], ['clustering', 0, 1]]) result[key] = number(result[key], defaults[key], min, max, key);
   if (result.scaleMin > result.scaleMax) throw new Error('Die kleinste Objektgröße darf die größte nicht überschreiten.');
   result.entries = result.entries.filter(entry => ['tree', 'bush', 'grass', 'rock', 'flower'].includes(entry.kind)
-    && getObjectDefinition(entry.kind)?.variants.some(v => v.id === entry.variant) && Number.isFinite(entry.weight) && entry.weight > 0);
-  if (!result.entries.length) throw new Error('Die Verteilung benötigt mindestens eine vorhandene Vegetations- oder Landschaftsvariante.');
+    && isObjectAvailable(entry.kind, entry.variant) && Number.isFinite(entry.weight) && entry.weight > 0);
+  if (!result.entries.length) throw new Error('Die Verteilung benötigt mindestens eine aktuell verfügbare Vegetations- oder Landschaftsvariante.');
   return result;
 }
 function scatterStamp(point, context, scatter, vegetation) {

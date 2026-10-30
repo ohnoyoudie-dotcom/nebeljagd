@@ -51,15 +51,15 @@ test('vegetation strokes interpolate fast pointer jumps reproducibly, persist al
   assert.equal(retrace.objects.length, 0, 'repainting the same cover does not multiply its instances');
 });
 
-test('zero density/strength paints nothing; the flowers preset keeps editable grass and actual imported blossoms', () => {
+test('zero density/strength paints nothing; the retired flowers preset retains grass without reviving blossoms', () => {
   const empty = createVegetationStroke(fixture(), { vegetation: { type: 'tall', density: 0 } });
   empty.sample([-60, -110]); assert.equal(empty.objects.length, 0);
   const noForce = createTerrainStroke(fixture(), { strength: 0 });
   noForce.sample([-60, -110]); assert.equal(noForce.terrain.length, 0);
   const flowers = createVegetationStroke(fixture(), { radius: 2, seed: 2, vegetation: { type: 'flowers' } });
   flowers.sample([-90, -110]); flowers.sample([-20, -110]);
-  assert.ok(flowers.objects.some(o => o.kind === 'grass' && o.vegetation.type === 'flowers'));
-  assert.ok(flowers.objects.some(o => o.kind === 'flower' && o.variant.startsWith('rei-')));
+  assert.ok(flowers.objects.length > 0);
+  assert.ok(flowers.objects.every(o => o.kind === 'grass' && o.vegetation.type === 'meadow'));
 });
 
 test('paint respects coastline, water, roads and rotated obstacle footprints without blocking open space unnecessarily', () => {
@@ -84,20 +84,20 @@ test('paint respects coastline, water, roads and rotated obstacle footprints wit
   for (const item of brush.objects) assert.equal(guard.reason(item.position, item.radius, 'grass'), null);
 });
 
-test('natural scatter uses saved GLB variants, variable rotation/scale, minimum distances and immutable placements', () => {
+test('natural shrub scatter uses saved GLB variants, variable rotation/scale, clear footprints and immutable placements', () => {
   const map = fixture(), before = JSON.stringify(map);
   const options = { radius: 35, seed: 718, scatter: { density: 1, minDistance: 4, scaleMin: .8, scaleMax: 1.3,
-    clustering: .9, randomRotation: true, entries: [{ kind: 'tree', variant: 'rei-tree01', weight: .7 }, { kind: 'rock', variant: 'granite', weight: .3 }] } };
+    clustering: .9, randomRotation: true, entries: [{ kind: 'bush', variant: 'rei-bush', weight: 1 }] } };
   const stroke = createScatterStroke(map, options);
   stroke.sample([-90, -100]);
   assert.ok(stroke.objects.length > 15);
   assert.equal(JSON.stringify(map), before);
-  assert.ok(stroke.objects.some(o => o.variant === 'rei-tree01'));
+  assert.ok(stroke.objects.some(o => o.variant === 'rei-bush'));
   assert.ok(new Set(stroke.objects.map(o => o.rotation)).size > 10);
   assert.ok(new Set(stroke.objects.map(o => o.scale)).size > 10);
   for (let i = 0; i < stroke.objects.length; i++) for (let j = i + 1; j < stroke.objects.length; j++) {
     const a = stroke.objects[i], b = stroke.objects[j];
-    assert.ok(Math.hypot(a.position[0] - b.position[0], a.position[1] - b.position[1]) >= 4 - .001);
+    assert.ok(Math.hypot(a.position[0] - b.position[0], a.position[1] - b.position[1]) >= .7 * (a.scale + b.scale) - .001);
   }
   const repeat = createScatterStroke(map, options); repeat.sample([-90, -100]);
   assert.deepEqual(drawing(stroke), drawing(repeat), 'same seed gives reproducible geometry, independent IDs');
@@ -170,13 +170,9 @@ test('existing kit walls, fences, crates and compact houses guard their actual r
   assert.equal(guard.reason(toWorld(arch, -offset[0] * scale, -offset[2] * scale), .15, 'grass'), null, 'arch gap stays a gap');
   const pillar = definition.walls[0];
   assert.equal(guard.reason(toWorld(arch, (pillar.minX + pillar.maxX) / 2, (pillar.minZ + pillar.maxZ) / 2), .15, 'grass'), 'structure');
-  const scatter = createScatterStroke(map, { radius: 35, seed: 17, scatter: { density: .8, entries: [{ kind: 'tree', variant: 'kit-oak-autumn', weight: 1 }] } });
-  scatter.sample([-120, -110]);
-  assert.ok(scatter.objects.length > 5);
-  for (const item of scatter.objects) {
-    assert.equal(item.variant, 'kit-oak-autumn');
-    assert.equal(guard.reason(item.position, getEnvironmentKitDefinition(item.kind, item.variant).circles[0].radius * item.scale, 'tree', 4), null);
-  }
+  assert.throws(() => createScatterStroke(map, { radius: 35, seed: 17,
+    scatter: { density: .8, entries: [{ kind: 'tree', variant: 'kit-oak-autumn', weight: 1 }] } }),
+  /aktuell verfügbare/, 'saved tree-only scatter cannot revive a retired model');
   const glbGrass = createScatterStroke(fixture(), { radius: 12, seed: 11, scatter: { density: .5, entries: [{ kind: 'grass', variant: 'kit-tall', weight: 1 }] } });
   glbGrass.sample([-90, -100]);
   assert.ok(glbGrass.objects.length > 0);

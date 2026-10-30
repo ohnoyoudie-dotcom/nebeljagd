@@ -19,9 +19,13 @@ Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
 Die bisherigen Häuser wurden von der Ausgangskarte entfernt. Neue Platzierungen
 verwenden das Tripo-Wirtshaus; alte Entwürfe lassen sich gezielt bereinigen.
-Holzwagen, Holzfass, Steinbrunnen, drei Felsen und die Schatztruhe ergänzen den
+Holzwagen, Holzfass, Steinbrunnen und die Schatztruhe ergänzen den
 Tripo-Katalog. Bedienung und aktueller Prüfstand:
 [`docs/tripo-props-integration.md`](docs/tripo-props-integration.md).
+Bäume, Felsen (einschließlich der bisherigen Tripo-Felsen), Erhöhungen und
+Blumen sind vorübergehend aus Karte und Editor-Auswahl entfernt. Beute bleibt
+erhalten; ältere Entwürfe lassen sich gezielt und rückgängig machbar bereinigen.
+Details: [`docs/scenery-cleanup.md`](docs/scenery-cleanup.md).
 
 Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
 Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
@@ -33,18 +37,18 @@ Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil der Welt. Begehbare Tripo-Wirtshäuser lassen sich im Editor platzieren.
 
-Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Bäume, Häuser,
-Blumenbeete, Grasflächen, Felsen, Sträucher, Ruinen, Schreine und Gegenstände
+Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Häuser,
+Grasflächen, Sträucher, Ruinen, Schreine und Gegenstände
 lassen sich anlegen, verschieben, drehen, skalieren, duplizieren und löschen.
 **„In 3D testen“** öffnet den aktuellen Entwurf im Spiel. Varianten zeigen echte
 Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
-Die bereinigte Ausgangskarte enthält 3.949 gespeicherte Weltobjekte, darunter
-2.591 Bäume, 16 frei platzierte Truhen, 739 Grasflächen, 124 Blumenbeete und zwei
-bewachsene Felskanten beziehungsweise Felskuppen. Die 26 verbliebenen alten Häuser
-und 30 zugehörige beziehungsweise verwaiste Vorratstruhen wurden entfernt;
-neue Gebäude werden bewusst im Editor gesetzt. Zehn Startbereiche bieten Platz
+Die bereinigte Ausgangskarte enthält 953 gespeicherte Weltobjekte: 739
+Grasflächen, 129 Sträucher, 66 Sammel-/Beuteobjekte (darunter 16 Truhen),
+zehn Holzkisten, fünf Ruinen und vier Schreine. Bäume, Felsen, Erhöhungen,
+Blumen und die früheren Häuser sind entfernt; neue Gebäude werden bewusst
+im Editor gesetzt. Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
 Multiplayer, Teams und Schreinfragen sind noch nicht aktiv.

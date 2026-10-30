@@ -1,23 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { validateWorldmap, getWorldmapStats, distanceToSegment, pointInPolygon } from '../src/map/model.js';
 import { OBJECT_CATALOG, getObjectDefinition, makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { seedWorldObjects } from '../scripts/seed-world-objects.js';
 import { isRetiredBuilding } from '../src/map/retired-buildings.js';
+import { isRetiredScenery } from '../src/map/retired-scenery.js';
 
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const clone = () => structuredClone(base);
 const lineDistance = (point, line) => Math.min(...line.points.slice(1).map((next, i) => distanceToSegment(point, line.points[i], next)));
 
 test('world objects are persisted editable instances while the authoring generator remains deterministic', () => {
-  assert.ok(base.objects.length > 3500 && base.objects.length < 5000);
+  assert.ok(base.objects.length > 900 && base.objects.length < 1100);
   const seeded = seedWorldObjects(base, { seed: 271026 });
   assert.deepEqual(seedWorldObjects(base, { seed: 271026 }), seeded);
-  assert.ok(seeded.length > 3500, 'authoring generator still produces a full explicit world');
+  assert.ok(seeded.length > 900, 'authoring generator retains grass, bushes, loot and other active scenery');
   assert.deepEqual(validateWorldmap(base), { valid: true, errors: [], warnings: [] });
   const stats = getWorldmapStats(base);
-  assert.ok(stats.objectCounts.tree >= 2000);
+  for (const kind of ['tree', 'rock', 'mound', 'flower']) assert.equal(stats.objectCounts[kind] ?? 0, 0, `${kind} is retired from the project map`);
+  assert.equal(seeded.some(isRetiredScenery), false, 'Explicit reseeding must not bring retired scenery back');
   assert.equal(stats.objectCounts.house ?? 0, 0, 'The starting map is cleared for the new building collection');
   assert.equal(base.objects.some(isRetiredBuilding), false);
   assert.equal(seeded.some(item => item.kind === 'house'), false, 'Explicit scenery reseeding must not bring old houses back');
@@ -28,7 +31,7 @@ test('world objects are persisted editable instances while the authoring generat
   for (const item of base.objects) assert.equal(pointInPolygon(item.position, base.island.points), true);
 });
 
-test('spawn approach and starter objects remain explicit, accessible and outside trees', () => {
+test('spawn approach and starter loot remain explicit and accessible', () => {
   assert.deepEqual(base.gameplay.spawnPosition, [30, -42]);
   const starter = Object.fromEntries(base.objects.filter(item => item.id.endsWith('-start')).map(item => [item.kind, item]));
   assert.deepEqual(starter.bow.position, [34, -39]);
@@ -36,20 +39,28 @@ test('spawn approach and starter objects remain explicit, accessible and outside
   assert.deepEqual(starter.heart.position, [38, -42]);
   assert.deepEqual(starter.chest.position, [28, -35], 'Unrelated starter loot remains available');
   assert.equal(base.objects.some(item => item.id === 'obj-house-auenwacht-01'), false);
-  const trees = base.objects.filter(item => item.kind === 'tree');
-  for (const item of trees) {
-    const [x, z] = item.position;
-    assert.ok(Math.hypot(x - 30, z + 42) > 8);
-  }
-
 });
 
-test('seeded scatter keeps paths, rivers and distributed starts open', () => {
-  for (const item of base.objects.filter(item => ['tree', 'rock'].includes(item.kind))) {
+test('remaining seeded grass and bushes keep paths, rivers and distributed starts open', () => {
+  const scattered = seedWorldObjects(base).filter(item => ['grass', 'bush'].includes(item.kind) && item.id !== 'obj-grass-start');
+  assert.ok(scattered.length > 800, 'The clearance test must inspect actual surviving scenery');
+  for (const item of scattered) {
     for (const path of base.paths) assert.ok(lineDistance(item.position, path) > path.width / 2 + 1, `${item.id} blocks ${path.id}`);
     for (const river of base.rivers) assert.ok(lineDistance(item.position, river) > river.width / 2 + 1, `${item.id} intersects ${river.id}`);
     for (const spawn of base.spawnAreas) assert.ok(Math.hypot(item.position[0] - spawn.position[0], item.position[1] - spawn.position[1]) > spawn.radius, `${item.id} blocks start ${spawn.id}`);
   }
+});
+
+test('retiring scenery preserves all existing loot and the remaining seeded placements exactly', () => {
+  const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+  const lootKinds = new Set(['heart', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff']);
+  const loot = base.objects.filter(item => lootKinds.has(item.kind));
+  assert.equal(loot.length, 66);
+  // Captured from work 39c269f before retiring tree/rock/mound/flower. This
+  // covers IDs, positions, rotations, scales, names and weapon rarities.
+  assert.equal(hash(loot), 'da72d212dce2d310926d2862f9ec1fdfd9e8731359346ea6b6fa7ac48bff02af');
+  assert.equal(hash(seedWorldObjects(base)), 'd217cfe11c1550a3cd6997d1f8070b3cfc01c3c3cfa21cfa6a6dbac73ae8548d',
+    'Filtering retired scenery must not advance random draws differently or move surviving seeded objects');
 });
 
 test('every catalogue variant can be made, normalized and validated without hidden generation', () => {

@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { distanceToSegment, pointInPolygon, validateWorldmap } from '../src/map/model.js';
 import { getObjectDefinition, makeWorldObject } from '../src/map/objects.js';
+import { isRetiredScenery } from '../src/map/retired-scenery.js';
 
 function randomFactory(seed) {
   return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
@@ -15,7 +16,11 @@ function lineDistance(point, line) {
   return nearest;
 }
 
-/** Explicit generation is an authoring operation, never a hidden runtime scatter. */
+/** Explicit generation is an authoring operation, never a hidden runtime scatter.
+ * Keep the historical random sequence and spacing samples below so retiring
+ * scenery does not move unrelated grass, bushes, loot or crate placements.
+ * Retired kinds are discarded from the authoring result before any map write.
+ */
 export function seedWorldObjects(map, { seed = 271026 } = {}) {
   const random = randomFactory(seed), objects = [], counts = {};
   const { minX, minZ, maxX, maxZ } = map.bounds;
@@ -152,7 +157,7 @@ export function seedWorldObjects(map, { seed = 271026 } = {}) {
     ['obj-crate-moorlicht-01', [-321, 318], .2, 'Moorlicht · Holzkiste am Nordpfad'],
     ['obj-crate-moorlicht-02', [-312, 381], .6, 'Moorlicht · Holzkiste am Südostpfad'],
   ]) add('crate', position, { id, variant: 'kit-wood', rotation, name }, .7);
-  return objects;
+  return objects.filter(object => !isRetiredScenery(object));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

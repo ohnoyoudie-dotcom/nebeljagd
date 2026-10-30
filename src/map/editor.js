@@ -2,7 +2,7 @@ import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, getWorldmapStats, zoneAt, pointInPolygon } from './model.js';
 import { renderWorldmapSvg } from './render.js';
-import { OBJECT_CATALOG, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
+import { AUTHORING_OBJECT_CATALOG, isObjectAvailable, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
 import { canPaintGrass } from './grass-brush.js';
 import { createLandscapePanel } from './landscape-panel.js';
 import { getLandscape, ensureLandscape } from './landscape.js';
@@ -10,6 +10,7 @@ import { eraseLandscapeAt } from './landscape-brush.js';
 import { createObjectEraserStroke, objectEraserTargets } from './object-eraser.js';
 import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
+import { removeRetiredScenery } from './retired-scenery.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -83,6 +84,39 @@ function updateRetiredBuildingsBanner() {
   $('retired-buildings-note').textContent = result.totalRemoved
     ? `Dieser Entwurf enthält ${result.removedBuildings.length} alte Gebäude und ${result.removedDependents.length} zugehörige Vorratstruhen. Das Tripo-Wirtshaus und andere Änderungen bleiben erhalten.`
     : '';
+}
+
+let retiredSceneryBanner = $('retired-scenery-banner');
+if (!retiredSceneryBanner) {
+  retiredSceneryBanner = document.createElement('div');
+  retiredSceneryBanner.id = 'retired-scenery-banner';
+  retiredSceneryBanner.className = 'restore-banner';
+  retiredSceneryBanner.hidden = true;
+  retiredSceneryBanner.setAttribute('role', 'status');
+  const label = document.createElement('span'); label.id = 'retired-scenery-note';
+  const button = document.createElement('button');
+  button.id = 'remove-retired-scenery'; button.className = 'button small';
+  button.textContent = 'Alte Landschaftsobjekte entfernen';
+  retiredSceneryBanner.append(label, button);
+  retiredBuildingsBanner.after(retiredSceneryBanner);
+}
+$('remove-retired-scenery').addEventListener('click', () => {
+  if (pointer) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
+  const result = removeRetiredScenery(map);
+  if (!result.totalChanged) return;
+  selection = null;
+  const preservedMeadows = result.convertedGrass.length
+    ? ` ${result.convertedGrass.length} Blumenwiesen als Gras erhalten.` : '';
+  commit(candidate => { candidate.objects = removeRetiredScenery(candidate).map.objects; },
+    `${result.removedObjects.length} alte Landschaftsobjekte entfernt.${preservedMeadows} Beute und andere Änderungen bleiben erhalten; „Zurück“ stellt den Entwurf wieder her.`);
+});
+function updateRetiredSceneryBanner() {
+  const result = removeRetiredScenery(map);
+  retiredSceneryBanner.hidden = !result.totalChanged;
+  const preservedMeadows = result.convertedGrass.length
+    ? ` ${result.convertedGrass.length} Blumenwiesen werden als Gras erhalten.` : '';
+  $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
+    : `Dieser Entwurf enthält ${result.removedObjects.length} alte Bäume, Felsen, Erhöhungen oder Blumen.${preservedMeadows} Beute, Gebäude und übrige Kartendaten bleiben erhalten.`;
 }
 
 function initialView() {
@@ -172,7 +206,7 @@ function commit(mutator, message) {
   return true;
 }
 function renderAll() {
-  renderMap(); renderList(); renderProperties(); renderFacts(); updateWarnings(); updateRetiredBuildingsBanner();
+  renderMap(); renderList(); renderProperties(); renderFacts(); updateWarnings(); updateRetiredBuildingsBanner(); updateRetiredSceneryBanner();
   $('undo').disabled = !history.length;
   $('redo').disabled = !future.length;
   landscapePanel?.sync();
@@ -382,6 +416,7 @@ function renderProperties() {
   if (selection.type === 'spawn') { $('feature-radius').value = feature.radius; $('feature-capacity').value = feature.capacity; }
   $('object-properties').hidden = selection.type !== 'object';
   $('duplicate-object').hidden = selection.type !== 'object';
+  $('duplicate-object').disabled = selection.type === 'object' && !isObjectAvailable(feature.kind, feature.variant);
   if (selection.type === 'object') {
     fillVariants($('object-variant'), feature.kind, feature.variant);
     renderAssetPreview('object', feature.kind, feature.variant);
@@ -811,6 +846,7 @@ function exportEditor() {
   doc.querySelector('#feature-list').replaceChildren();
   doc.querySelector('#restore-banner').hidden = true;
   doc.querySelector('#retired-buildings-banner').hidden = true;
+  doc.querySelector('#retired-scenery-banner').hidden = true;
   doc.querySelector('#toast').hidden = true;
   download(`<!doctype html>\n${doc.outerHTML}`, 'map-editor.html', 'text/html');
   toast('Eigenständiger Editor mit dem aktuellen Kartenstand gespeichert.');
@@ -884,7 +920,7 @@ function fillVariants(select, kind, value = null) {
   const definition = getObjectDefinition(kind);
   select.replaceChildren();
   for (const variant of definition.variants) {
-    if (variant.retired && variant.id !== value) continue;
+    if ((definition.retired || variant.retired) && variant.id !== value) continue;
     const option = document.createElement('option'); option.value = variant.id; option.textContent = variant.label;
     select.append(option);
   }
@@ -916,7 +952,7 @@ function preparePalette() {
     option.textContent = `${rarity.label} · ×${rarity.multiplier}`; select.append(option);
   }
   $('palette-rarity').value = 'common';
-  for (const definition of OBJECT_CATALOG) {
+  for (const definition of AUTHORING_OBJECT_CATALOG) {
     for (const select of [$('palette-kind'), $('object-kind-filter')]) {
       const option = document.createElement('option'); option.value = definition.kind; option.textContent = definition.label;
       select.append(option);
@@ -930,6 +966,7 @@ function addObjectAt(point) {
   const position = snapped(point);
   if (!pointInPolygon(position, map.island.points)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
   const kind = $('palette-kind').value;
+  if (!isObjectAvailable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   const added = makeWorldObject(kind, position, {variant: $('palette-variant').value, rarity: $('palette-rarity').value});
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
     layers.showObjects = true; $('layer-objects').checked = true;
@@ -953,6 +990,7 @@ function focusSelection() {
 function duplicateObject() {
   const original = selectedFeature();
   if (selection?.type !== 'object' || !original) return;
+  if (!isObjectAvailable(original.kind, original.variant)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   let point = [original.position[0] + 5, original.position[1] + 5];
   if (!pointInPolygon(point, map.island.points)) point = original.position;
   const added = makeWorldObject(original.kind, point, {...original, id: undefined, name: `${original.name} · Kopie`.slice(0,120)});

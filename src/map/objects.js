@@ -1,4 +1,5 @@
 import { WEAPON_TYPES } from '../loot-tiers.js';
+import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
@@ -58,14 +59,24 @@ export const OBJECT_CATALOG = Object.freeze([
     footprintRadius: Math.hypot(.425, .425), footprintWidth: .85, footprintDepth: .85,
     variants: [{ id: 'kit-wood', label: 'Holzkiste · GLB' }] },
 ].map(definition => Object.freeze({ ...definition,
+  retired: RETIRED_SCENERY_KINDS.includes(definition.kind),
   variants: Object.freeze(definition.variants.map(variant => Object.freeze({
     ...variant, assetId: `${definition.kind}:${variant.id}`,
   }))),
 })));
 
+/** Only fresh placement is restricted; legacy definitions still validate and
+ * render saved maps until the user deliberately applies the cleanup action. */
+export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(definition => !definition.retired));
+
 const definitions = new Map(OBJECT_CATALOG.map(item => [item.kind, item]));
 let objectCounter = 0;
 export function getObjectDefinition(kind) { return definitions.get(kind) ?? null; }
+export function isObjectAvailable(kind, variant) {
+  const definition = getObjectDefinition(kind);
+  if (!definition || definition.retired) return false;
+  return variant === undefined || definition.variants.some(entry => entry.id === variant && !entry.retired);
+}
 export function getObjectFootprintRadius(kind, variant) {
   const definition = getObjectDefinition(kind);
   return definition?.variants.find(entry => entry.id === variant)?.footprintRadius ?? definition?.footprintRadius ?? 1;
