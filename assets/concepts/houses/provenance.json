@@ -1,0 +1,231 @@
+{
+  "generator": "OpenAI ImageGen",
+  "createdDate": "2026-10-30",
+  "assetType": "2D reference images for subsequent user-operated Tripo generation",
+  "styleReferences": [
+    {
+      "file": "assets/concepts/inn/inn-reference.png",
+      "bytes": 2610746,
+      "sha256": "39955511c97ca13ec38cc8c70beb82ac365ea359f56e7c79c4d9ac2d0b1d5016"
+    },
+    {
+      "file": "assets/characters/player-portrait.png",
+      "bytes": 200629,
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+    }
+  ],
+  "sizeReference": {
+    "asset": "assets/imported/tripo-tavern/runtime/tavern.glb",
+    "widthMetres": 22,
+    "depthMetres": 17.77
+  },
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "runtimeIntegrated": false,
+  "validation": "PNG signatures, image decoding, dimensions and SHA-256 verified. Final images visually reviewed for style, framing and visible room connections. Concept dimensions are targets only; no 3D geometry, scale or collisions have been validated.",
+  "houses": [
+    {
+      "id": "house-timber-family",
+      "name": "Fachwerk-Wohnhaus",
+      "output": {
+        "file": "assets/concepts/houses/house-timber-family/reference.png",
+        "bytes": 2369715,
+        "sha256": "80fb8b2b38f47300eab8f9d88512c2b772a0739dee9c9252698f67e9189ccb5e"
+      },
+      "imagePixels": [
+        1536,
+        1024
+      ],
+      "targetFootprintMetres": [
+        22,
+        18
+      ],
+      "targetWallHeightMetres": 4.2,
+      "targetClearDoorWidthMetres": [
+        2.8,
+        3.2
+      ],
+      "generations": [
+        {
+          "revision": 1,
+          "prompt": {
+            "file": "assets/concepts/houses/house-timber-family/prompt.txt",
+            "bytes": 3464,
+            "sha256": "f8ec49a23b372716f6a527d5750484a4326791aeeb987e79651d9c62a8e80704"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-160626f5-6286-42ef-ba1b-cedf45b6219d.png",
+            "bytes": 2574370,
+            "sha256": "6bcf98d00589cbcdb71e3977b8ab7488644aad8a5fe5fe640fa97345f891584a"
+          },
+          "references": [
+            "assets/concepts/inn/inn-reference.png",
+            "assets/characters/player-portrait.png"
+          ]
+        },
+        {
+          "revision": 2,
+          "prompt": {
+            "file": "assets/concepts/houses/house-timber-family/refinement-prompt.txt",
+            "bytes": 1158,
+            "sha256": "86c092fd854fd14c7bf35be8ed8598026446f696cfaffbf57f87ae7384308b5a"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-9d1b911b-5c0b-47de-a910-022c1a7cafd8.png",
+            "bytes": 2480022,
+            "sha256": "a930576a240af72afde7e437b25c7376904b3c8ab63ae9646c9f8441bd700a75"
+          },
+          "references": [
+            "/workspace/generated_images/exec-160626f5-6286-42ef-ba1b-cedf45b6219d.png"
+          ]
+        },
+        {
+          "revision": 3,
+          "prompt": {
+            "file": "assets/concepts/houses/house-timber-family/doorway-prompt.txt",
+            "bytes": 1212,
+            "sha256": "2ecd4ec7c852fc4ec761ebe0759de7efa0c311290af91c8a88263f9cc967edac"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-0dfed811-0492-467c-8b85-f80a7ee6a80b.png",
+            "bytes": 2369715,
+            "sha256": "80fb8b2b38f47300eab8f9d88512c2b772a0739dee9c9252698f67e9189ccb5e"
+          },
+          "references": [
+            "/workspace/generated_images/exec-9d1b911b-5c0b-47de-a910-022c1a7cafd8.png"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "house-herbalist",
+      "name": "Kräuter-Wohnhaus",
+      "output": {
+        "file": "assets/concepts/houses/house-herbalist/reference.png",
+        "bytes": 2499223,
+        "sha256": "4086a2e39b4607a607651ba79f275431f7894e4095c47b2b39950da5cd7f1a29"
+      },
+      "imagePixels": [
+        1536,
+        1024
+      ],
+      "targetFootprintMetres": [
+        23,
+        19
+      ],
+      "targetWallHeightMetres": 4.2,
+      "targetClearDoorWidthMetres": [
+        2.8,
+        3.2
+      ],
+      "generations": [
+        {
+          "revision": 1,
+          "prompt": {
+            "file": "assets/concepts/houses/house-herbalist/prompt.txt",
+            "bytes": 3586,
+            "sha256": "9c5091c886c6425a0bd2e703d74bd6f91a556592ec18efd13a91c5413b60ac4f"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-ed74f71e-858b-4eee-9d73-7b1b8c5f9b99.png",
+            "bytes": 2572364,
+            "sha256": "6375fa519faa7dadb0739e49406a83dcd7dcb001e974e343699fd97adcda5549"
+          },
+          "references": [
+            "assets/concepts/inn/inn-reference.png",
+            "assets/characters/player-portrait.png"
+          ]
+        },
+        {
+          "revision": 2,
+          "prompt": {
+            "file": "assets/concepts/houses/house-herbalist/refinement-prompt.txt",
+            "bytes": 1186,
+            "sha256": "f58a75443ab376639fc4e96c04643eb29f0ab7ec18466e1098079d52cca37995"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-19ba9e96-7978-4495-a2ed-150169105e0b.png",
+            "bytes": 2499223,
+            "sha256": "4086a2e39b4607a607651ba79f275431f7894e4095c47b2b39950da5cd7f1a29"
+          },
+          "references": [
+            "/workspace/generated_images/exec-ed74f71e-858b-4eee-9d73-7b1b8c5f9b99.png"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "house-stone-merchant",
+      "name": "Stein-Wohnhaus",
+      "output": {
+        "file": "assets/concepts/houses/house-stone-merchant/reference.png",
+        "bytes": 2561910,
+        "sha256": "774ec142aec9c06c9c800a2ddcddbeda07953d785c50e5f83577b3b899431d26"
+      },
+      "imagePixels": [
+        1536,
+        1024
+      ],
+      "targetFootprintMetres": [
+        22,
+        18
+      ],
+      "targetWallHeightMetres": 4.2,
+      "targetClearDoorWidthMetres": [
+        2.8,
+        3.2
+      ],
+      "generations": [
+        {
+          "revision": 1,
+          "prompt": {
+            "file": "assets/concepts/houses/house-stone-merchant/prompt.txt",
+            "bytes": 3601,
+            "sha256": "d67eced6d9dde852b8cd363b20f3a37a22160e4352b14dd433ed54089469384f"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-7c178d6d-79cd-472d-bf4a-3198a7bba289.png",
+            "bytes": 2676609,
+            "sha256": "28819e9d00289db29defaeaefe4641865b67be20b2b49d077b9e54f97e438753"
+          },
+          "references": [
+            "assets/concepts/inn/inn-reference.png",
+            "assets/characters/player-portrait.png"
+          ]
+        },
+        {
+          "revision": 2,
+          "prompt": {
+            "file": "assets/concepts/houses/house-stone-merchant/refinement-prompt.txt",
+            "bytes": 1290,
+            "sha256": "e30650a862e1e57d79cf2f5e07491e15413fe84a582fcc9096e00060469e9afa"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-3d3ec0ad-cf77-4f4a-bc00-a0be832a7c30.png",
+            "bytes": 2672482,
+            "sha256": "57c1b3a5419c0017e592457b16ddd526f0c20b331acd47452d4440d06cf78684"
+          },
+          "references": [
+            "/workspace/generated_images/exec-7c178d6d-79cd-472d-bf4a-3198a7bba289.png"
+          ]
+        },
+        {
+          "revision": 3,
+          "prompt": {
+            "file": "assets/concepts/houses/house-stone-merchant/doorway-prompt.txt",
+            "bytes": 1066,
+            "sha256": "80034f8a58c6a09ed4e21761a4836af7ae2c9e43ac931f2539e8d45154966de1"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-2f1dffdf-53b4-42af-92ec-d72c4f1f3310.png",
+            "bytes": 2561910,
+            "sha256": "774ec142aec9c06c9c800a2ddcddbeda07953d785c50e5f83577b3b899431d26"
+          },
+          "references": [
+            "/workspace/generated_images/exec-3d3ec0ad-cf77-4f4a-bc00-a0be832a7c30.png"
+          ]
+        }
+      ]
+    }
+  ]
+}
