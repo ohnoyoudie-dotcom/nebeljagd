@@ -1,0 +1,74 @@
+{
+  "asset": "Nebeljagd furnished grand palace reference",
+  "generator": "OpenAI ImageGen",
+  "status": "2D visual concept only; not a model, exact floorplan reconstruction or runtime integration",
+  "prompt": "prompt.txt",
+  "negativePrompt": "Exclusions are preserved inline in prompt.txt",
+  "originalOutput": "/workspace/generated_images/exec-832c211a-20aa-4062-a52b-92c473217e82.png",
+  "image": "castle-reference.png",
+  "dimensionsPx": [
+    1448,
+    1086
+  ],
+  "outputModifications": "None; byte-identical copy of generated image.",
+  "references": [
+    {
+      "path": "assets/concepts/castle-grand-plan/floorplan.png",
+      "role": "Layout reference, revision02",
+      "bytes": 303404,
+      "sha256": "6aacc985a62fd9135916f1519e0d81090864a06d8a8e4388064f7a0a9dd86ecb"
+    },
+    {
+      "path": "assets/characters/player-portrait.png",
+      "role": "Actual avatar material/form style",
+      "bytes": 200629,
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+    },
+    {
+      "path": "assets/concepts/castle/castle-reference.png",
+      "role": "Architecture and materials only, not layout",
+      "bytes": 2663407,
+      "sha256": "32cf71cef5e4d016a50e8c435ef5725a8de7eb6fe149f2d6097a63a167e34e27"
+    }
+  ],
+  "visualReview": {
+    "status": "accepted as a visual concept",
+    "observed": [
+      "Single coherent roofless palace with continuous outer walls.",
+      "Four visible exterior portals.",
+      "Furnished rooms, enclosed garden and clear main circulation."
+    ],
+    "limits": [
+      "Exact count of 30 rooms not verified in image.",
+      "Chapel and sacristy appear combined.",
+      "Additional narrow subdivisions in southern wing.",
+      "Some proportions and internal door positions differ from the plan."
+    ],
+    "exactLayoutSource": "../castle-grand-plan/floorplan.json"
+  },
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "runtimeTested": false,
+  "files": [
+    {
+      "path": "castle-reference.png",
+      "bytes": 3113043,
+      "sha256": "634ef85c681174706474ef93a1f1ef8f5c47c0878bd7bbe4bfec26ee6b51a9b9"
+    },
+    {
+      "path": "prompt.txt",
+      "bytes": 8251,
+      "sha256": "9268df21436c2a3e0dc10f7a17e67ce8f33cc441c4e91ac74304a72af7c3bac1"
+    },
+    {
+      "path": "tripo-description.txt",
+      "bytes": 1309,
+      "sha256": "dc9677c832e109e28f0d3ed39ea9145dc6e838433e929a060e1f46186e065982"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3194,
+      "sha256": "7a5581f8309c80f97208f418f7f2c4e29252a3caf3ef8dab864ed1f176f1d869"
+    }
+  ]
+}

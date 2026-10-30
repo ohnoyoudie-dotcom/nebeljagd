@@ -1,0 +1,46 @@
+Create a premium, highly detailed 3D asset reference image for NEBELJAGD: ONE immense, architecturally coherent roofless fantasy PALACE enclosing a lush interior garden, with THIRTY generously wide furnished rooms. This is the final visual concept to guide image-to-3D reconstruction, not a blueprint. Highest native output resolution available, preferably a very large 4:3 landscape image, razor-sharp legible architecture.
+
+REFERENCES, strictly separated:
+Reference 1 (the numbered plan): authoritative composition and room subdivision. Convert THIS asymmetric thirty-room floorplan into a fully furnished 3D architectural asset. Keep its broad room proportions, varied wing depths, stepped outer outline, continuous galleries, offset garden, projecting right-side service annex and four designated exterior gateways. Do not reproduce any writing, numbers, labels, scale bars, colors of the diagram or legend.
+Reference 2 (the avatar portrait): material/form STYLE only. Premium stylized realism, grounded sculpted shapes, slightly rounded purposeful edges, warm walnut and leather browns, cream linen, pale warm limestone, charcoal iron, subtle aged brass and restrained burgundy / muted teal textiles. NEVER include the person.
+Reference 3 (previous small stone palace): construction, masonry, refined decorative material language only. This is NOT the layout and NOT the size. The new palace must have all thirty rooms of Reference 1, not this smaller palace's few rooms.
+
+ESSENTIAL BUILDING FORM:
+ONE continuous, substantial enclosed palace, all thirty rooms INSIDE the same single connected building on one continuous floor/foundation. Continuous full perimeter exterior walls with four intentional wide OPEN gateways ONLY: offset front/south main entrance; back/north gate; left/west festival gate; far-right/east service gate at projecting annex. No detached cottages, no separate disconnected pavilions, no exploded view, no village, no missing front facade. Show the thickness of continuous outer walls and solid inner partition walls. The palace is intact and well kept, not ruined. Roofs and ceilings completely absent so every room is visible. No towers or upper floors. A single walkable storey. Exterior walls substantial 5.5–6m high, interior walls about 4.5m high; wide door openings and level continuous thresholds. Closed wall tops with carved coping, restrained buttresses and decorative pilasters, small elevated windows that are unmistakably windows, not extra entrance holes.
+
+SPATIAL COMPOSITION:
+Very high elevated near-orthographic view (approximately 72–78 degrees downward from horizontal), viewed slightly from the SOUTH with only a small eastward angle. The plan's north remains at image top. Enough elevation to see every room floor and doorway rather than hide interiors behind tall walls; enough angle to clearly see wall faces, furniture volume and height. Keep the entire irregular silhouette and foundation in frame with 6 percent clean breathing room on every side. Palace dominates almost the whole image. Neutral seamless light grey studio background, no surrounding landscape or separate accessories.
+Massive scale: the plan spans approximately 270 by 220 metres including the projecting eastern service wing. The SHORTEST side of each room is at least 24 metres. Rooms feel broad and spacious, never thin narrow strips. Ordinary chair/table/bed scale remains modest relative to each room. Main corridors 8 metres clear width and the south entrance hall 12 metres wide. Keep four continuous galleries around the 88 by 72 metre garden court. All rooms have clearly visible wide interior doorway connections and coherent circulation.
+
+ROOM LAYOUT AND DRESSING:
+Follow the exact thirty-room partitions in the floorplan. Furnish ALL rooms, with purposeful substantial furnishing groups and 40–55 percent of room floor zones visually dressed, while maintaining continuous unobstructed routes. Rich, inhabited and complete interiors, not bare rectangular empty boxes and not tiny clutter scattered randomly. Large rugs, parquet fields, patterned stone floors, wainscoting, wall shelves and textiles add visual richness without blocking movement.
+NORTH nine rooms as in plan:
+1 library: rows of tall walnut bookcases around walls, several reading tables, upholstered seats, deep burgundy rug.
+2 archive beneath library: archive cupboards, document shelves and broad work tables.
+3 writing chamber: a group of broad desks and cabinets, linen carpet.
+4 council chamber: large oval council table with chairs, tapestries and sideboards.
+5 imposing tall-in-plan throne chamber: throne against far/north wall on a broad low accessible dais, burgundy carpet runner, heraldic wall textiles, carved side seating, long side consoles. A wide approach stays open.
+6 audience chamber: several large seating groups and rugs.
+7 treasury above audience chamber: handsome built-in secure cupboards and display plinths (NO loose treasure chests).
+8 chapel: altar, paired pew groups and quiet stone mosaic, wide central aisle.
+9 sacristy below chapel: cabinets, vestment racks, textile table.
+WEST three rooms:
+10 great ballroom, 54x40 metres: grand large central patterned floor, perimeter seating, wall mirrors/panels, small musician platform and several banquet tables grouped at the sides; free dance/combat space and multiple doors.
+11 music salon: broad seated music corner with harp, bench, cabinet and carpet.
+12 gallery: statues on broad plinths, benches, tapestries and long rugs.
+EAST five rooms:
+13 great dining chamber: two generous banquet table groups with chairs and broad sideboards.
+14 kitchen below it: masonry hearth, oven, countertops along walls, two substantial preparation islands, pots on fixtures.
+15 pantry: fitted shelving with large ceramic jars and food cupboards.
+16 bakery: broad workbenches and masonry ovens, wall shelves.
+17 projecting far-right storeroom: fitted storage cupboards and shelves, neatly grouped sacks or ceramic vessels, but NO crates and NO barrels.
+SOUTH thirteen rooms in the plan's two unequal rows:
+18 indoor winter garden with planters and stone benches; 19 reception salon with large rug and seating; 20 guest lounge with sofa/chair groups and fireplace; 21 and 22 generously furnished guest suites with several beds, rugs, wardrobes and desks; 23 armory with fitted display racks and worktables; 24 staff room with long communal table, bunks and cupboards; 25 west guard room with tables/benches and equipment cabinets; 26 practice chamber with training dummies near perimeter and benches; 27 dressing room with substantial wardrobes and dressing tables; 28 and 29 guest suites with beds, screens, rugs and desks; 30 east guard room with rest furniture and cabinets.
+Keep room layouts individually different, no mirror repetition. No crates, no wooden barrels, no freestanding loot chests anywhere; those will be placed separately in the game.
+
+GARDEN:
+One large green INNER courtyard fully enclosed by the connected palace wings and ring corridor. Offset, natural-looking curving pale gravel paths connecting four courtyard doorways at staggered positions, modest off-centre stone fountain, lawn, clustered low ornamental trees, flowering borders and garden benches. Greenery should not obscure walls or turn into a dense forest. Only this internal courtyard has grass; all interior room and corridor floors are solid and continuous.
+
+RENDER:
+Faithful premium game-ready visual language (visual concept only): broad clean readable medium-scale detail; natural masonry, walnut wood, matte textiles, controlled brass accents, physically coherent soft studio lighting, modest contact shadows, gentle ambient occlusion so all floor plans remain legible. Evenly bright interiors, no black cavern rooms, no dramatic fog or magical light. Distinct rugs/floor materials help separate room functions. No cartoon toy proportions, no photoreal grunge, no modern furniture.
+ABSOLUTELY no text, labels, numbers, UI, borders, people, weapons in foreground, roof, ceilings, floating chandeliers, thick terrain chunk, scattered external props, closed entrance doors, or miniature separate buildings. A single complete impressive furnished architectural asset, crisp and clean for Tripo.
