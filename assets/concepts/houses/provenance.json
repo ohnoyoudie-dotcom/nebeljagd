@@ -22,19 +22,19 @@
   "tripoSubmitted": false,
   "modelGenerated": false,
   "runtimeIntegrated": false,
-  "validation": "PNG signatures, image decoding, dimensions and SHA-256 verified. Final images visually reviewed for style, framing and visible room connections. Concept dimensions are targets only; no 3D geometry, scale or collisions have been validated.",
+  "validation": "PNG signatures, image decoding, dimensions and SHA-256 verified. Final revised images visually reviewed for rectangular footprint intent, centered framing, equal-looking side depths and room access. Residual perspective remains; pixels do not establish exact orthographic geometry. Footprint dimensions are targets only. No 3D geometry, scale or collision validation.",
   "houses": [
     {
       "id": "house-timber-family",
       "name": "Fachwerk-Wohnhaus",
       "output": {
         "file": "assets/concepts/houses/house-timber-family/reference.png",
-        "bytes": 2369715,
-        "sha256": "80fb8b2b38f47300eab8f9d88512c2b772a0739dee9c9252698f67e9189ccb5e"
+        "bytes": 2099821,
+        "sha256": "f726c5e5d81ad30312aa75516711811eaeb27814936e9f7f13f5b796ec9864be"
       },
       "imagePixels": [
-        1536,
-        1024
+        1388,
+        1133
       ],
       "targetFootprintMetres": [
         22,
@@ -94,24 +94,74 @@
           "references": [
             "/workspace/generated_images/exec-9d1b911b-5c0b-47de-a910-022c1a7cafd8.png"
           ]
+        },
+        {
+          "revision": 4,
+          "prompt": {
+            "file": "assets/concepts/houses/house-timber-family/rectangular-prompt.txt",
+            "bytes": 3096,
+            "sha256": "aa47a563c64068b9b9840562721702391b82ad8abdca9b44a0b580c34e909594"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-79fac9af-6339-48fb-8129-e031abea63ba.png",
+            "bytes": 2219331,
+            "sha256": "47cbf878bb3ef39a71cc4f724ce54c20894eb16b2a7f3db840f811758c7c7ef6"
+          },
+          "references": [
+            "/workspace/generated_images/exec-0dfed811-0492-467c-8b85-f80a7ee6a80b.png"
+          ],
+          "referenceSha256": "80fb8b2b38f47300eab8f9d88512c2b772a0739dee9c9252698f67e9189ccb5e"
+        },
+        {
+          "revision": 5,
+          "prompt": {
+            "file": "assets/concepts/houses/house-timber-family/rectangular-doorway-prompt.txt",
+            "bytes": 1004,
+            "sha256": "1a9bce19d8a7ba990c90e9f64841d9a19947907f6b251f3f9c8b50ea2445e847"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-7d2350bc-380c-4bc2-a873-9bbc230e07d9.png",
+            "bytes": 2099821,
+            "sha256": "f726c5e5d81ad30312aa75516711811eaeb27814936e9f7f13f5b796ec9864be"
+          },
+          "references": [
+            "/workspace/generated_images/exec-79fac9af-6339-48fb-8129-e031abea63ba.png"
+          ],
+          "referenceSha256": "47cbf878bb3ef39a71cc4f724ce54c20894eb16b2a7f3db840f811758c7c7ef6"
         }
-      ]
+      ],
+      "supersededOutputs": [
+        {
+          "output": {
+            "file": "assets/concepts/houses/house-timber-family/reference.png",
+            "bytes": 2369715,
+            "sha256": "80fb8b2b38f47300eab8f9d88512c2b772a0739dee9c9252698f67e9189ccb5e"
+          },
+          "imagePixels": [
+            1536,
+            1024
+          ],
+          "reason": "User requested equal opposite exterior walls and an unambiguous rectangular footprint for every house."
+        }
+      ],
+      "footprintIntent": "Rectangle: equal opposing wall lengths, square plan corners, no recesses or projecting rooms.",
+      "view": "Centered steep overhead image; residual perspective, not a measured orthographic plan."
     },
     {
       "id": "house-herbalist",
       "name": "Kräuter-Wohnhaus",
       "output": {
         "file": "assets/concepts/houses/house-herbalist/reference.png",
-        "bytes": 2499223,
-        "sha256": "4086a2e39b4607a607651ba79f275431f7894e4095c47b2b39950da5cd7f1a29"
+        "bytes": 2306526,
+        "sha256": "0367b42d46274c69f65359238ff7621fb21a2285db77e10c5c8489bf082196db"
       },
       "imagePixels": [
-        1536,
-        1024
+        1387,
+        1134
       ],
       "targetFootprintMetres": [
-        23,
-        19
+        22,
+        18
       ],
       "targetWallHeightMetres": 4.2,
       "targetClearDoorWidthMetres": [
@@ -151,20 +201,53 @@
           "references": [
             "/workspace/generated_images/exec-ed74f71e-858b-4eee-9d73-7b1b8c5f9b99.png"
           ]
+        },
+        {
+          "revision": 3,
+          "prompt": {
+            "file": "assets/concepts/houses/house-herbalist/rectangular-prompt.txt",
+            "bytes": 3359,
+            "sha256": "44727013d4e0a41e151e3c4c61359d25aa9f94ff94bcb7b29108b4eef8e38bf5"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-b224e36d-943d-4dc8-8a16-a4902a4e217d.png",
+            "bytes": 2306526,
+            "sha256": "0367b42d46274c69f65359238ff7621fb21a2285db77e10c5c8489bf082196db"
+          },
+          "references": [
+            "/workspace/generated_images/exec-19ba9e96-7978-4495-a2ed-150169105e0b.png"
+          ],
+          "referenceSha256": "4086a2e39b4607a607651ba79f275431f7894e4095c47b2b39950da5cd7f1a29"
         }
-      ]
+      ],
+      "supersededOutputs": [
+        {
+          "output": {
+            "file": "assets/concepts/houses/house-herbalist/reference.png",
+            "bytes": 2499223,
+            "sha256": "4086a2e39b4607a607651ba79f275431f7894e4095c47b2b39950da5cd7f1a29"
+          },
+          "imagePixels": [
+            1536,
+            1024
+          ],
+          "reason": "User requested equal opposite exterior walls and an unambiguous rectangular footprint for every house."
+        }
+      ],
+      "footprintIntent": "Rectangle: equal opposing wall lengths, square plan corners, no recesses or projecting rooms.",
+      "view": "Centered steep overhead image; residual perspective, not a measured orthographic plan."
     },
     {
       "id": "house-stone-merchant",
       "name": "Stein-Wohnhaus",
       "output": {
         "file": "assets/concepts/houses/house-stone-merchant/reference.png",
-        "bytes": 2561910,
-        "sha256": "774ec142aec9c06c9c800a2ddcddbeda07953d785c50e5f83577b3b899431d26"
+        "bytes": 2446086,
+        "sha256": "4ab7fa50253aef67d080593603e11b697777089d101bbcb2a6cf02933f699f12"
       },
       "imagePixels": [
-        1536,
-        1024
+        1388,
+        1133
       ],
       "targetFootprintMetres": [
         22,
@@ -224,8 +307,42 @@
           "references": [
             "/workspace/generated_images/exec-3d3ec0ad-cf77-4f4a-bc00-a0be832a7c30.png"
           ]
+        },
+        {
+          "revision": 4,
+          "prompt": {
+            "file": "assets/concepts/houses/house-stone-merchant/rectangular-prompt.txt",
+            "bytes": 3190,
+            "sha256": "525d6b0c13afb96f82b601c25ade5ea6367f23a1d86f73f6906c11849a3229b8"
+          },
+          "sourceImage": {
+            "file": "/workspace/generated_images/exec-e60056cb-762f-4513-ad57-48678b557f8e.png",
+            "bytes": 2446086,
+            "sha256": "4ab7fa50253aef67d080593603e11b697777089d101bbcb2a6cf02933f699f12"
+          },
+          "references": [
+            "/workspace/generated_images/exec-2f1dffdf-53b4-42af-92ec-d72c4f1f3310.png"
+          ],
+          "referenceSha256": "774ec142aec9c06c9c800a2ddcddbeda07953d785c50e5f83577b3b899431d26"
         }
-      ]
+      ],
+      "supersededOutputs": [
+        {
+          "output": {
+            "file": "assets/concepts/houses/house-stone-merchant/reference.png",
+            "bytes": 2561910,
+            "sha256": "774ec142aec9c06c9c800a2ddcddbeda07953d785c50e5f83577b3b899431d26"
+          },
+          "imagePixels": [
+            1536,
+            1024
+          ],
+          "reason": "User requested equal opposite exterior walls and an unambiguous rectangular footprint for every house."
+        }
+      ],
+      "footprintIntent": "Rectangle: equal opposing wall lengths, square plan corners, no recesses or projecting rooms.",
+      "view": "Centered steep overhead image; residual perspective, not a measured orthographic plan."
     }
-  ]
+  ],
+  "updatedDate": "2026-10-30"
 }
