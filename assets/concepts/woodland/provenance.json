@@ -1,0 +1,81 @@
+{
+  "assetFamily": "Nebeljagd woodland stumps and fallen logs",
+  "generator": "OpenAI ImageGen",
+  "assetType": "2D image references for later Tripo generation",
+  "styleReferences": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+    },
+    {
+      "file": "assets/concepts/barrel/barrel-reference.png",
+      "sha256": "d6eeb423353a11f3d6b436c601de18b40b203fc00edbd1104cbf44ea90077b8c"
+    }
+  ],
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "variants": [
+    {
+      "id": "stump-cut",
+      "designTarget": "0.65m high, 0.85m main diameter, 1.35m root spread",
+      "image": "stump-cut/reference.png",
+      "prompt": "stump-cut/prompt.txt",
+      "imageSha256": "0b76a9c1eb7b0fec68c9632cfb41409d09467e4975caf442271c4eb9e881e30c",
+      "promptSha256": "28d980b3a5af47d124bf11cd4b40fd15e8fc98b341bdf7779c68ec7cfeb16aec",
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "bytes": 2214820,
+      "generatorOutput": "/workspace/generated_images/exec-7961355a-aeea-4a67-88cc-239b8e0831c2.png",
+      "imageVisuallyReviewed": true
+    },
+    {
+      "id": "stump-broken",
+      "designTarget": "1.1m high, 0.8m main diameter, 1.25m root spread",
+      "image": "stump-broken/reference.png",
+      "prompt": "stump-broken/prompt.txt",
+      "imageSha256": "9927bea235b775b5266c5a2b9a081eae25ef771336b3d32452401cc3924a22d6",
+      "promptSha256": "73139454272a482a3df6d6af34678d54219513e26da41d189d1004716d432c76",
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "bytes": 2339923,
+      "generatorOutput": "/workspace/generated_images/exec-47008f0e-e688-4d37-9f57-d8a79d1a64b2.png",
+      "imageVisuallyReviewed": true
+    },
+    {
+      "id": "log-straight",
+      "designTarget": "2.8m long, 0.6m diameter",
+      "image": "log-straight/reference.png",
+      "prompt": "log-straight/prompt.txt",
+      "imageSha256": "ff82c29e841f77d953ea5a816ddbf356e00f97c59a8fcfc9d886b27784aecadd",
+      "promptSha256": "71f93960fb7d15aba55767ab4034c748d56b82dd4e1f8c2b527a0be159a877bc",
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "bytes": 2075040,
+      "generatorOutput": "/workspace/generated_images/exec-d0cfa8de-4f01-4ee6-9792-5e6c176bd4e6.png",
+      "imageVisuallyReviewed": true
+    },
+    {
+      "id": "log-gnarled",
+      "designTarget": "3.8m long, 0.85m diameter; one short thick branch stub",
+      "image": "log-gnarled/reference.png",
+      "prompt": "log-gnarled/prompt.txt",
+      "imageSha256": "b25ca0c5cefc622c855571c87887e9a60a3ff291aae35f294717fb777dcd5db9",
+      "promptSha256": "eee2a31e85acee3b32cf89cbf25dddd88a03364eff3e218fc6918335fed5578e",
+      "dimensionsPx": [
+        1254,
+        1254
+      ],
+      "bytes": 2248102,
+      "generatorOutput": "/workspace/generated_images/exec-c5fae217-2d7b-4ea8-bc65-7a1e6dad9f10.png",
+      "imageVisuallyReviewed": true
+    }
+  ],
+  "dimensionsNote": "Intended proportions only. Exact geometry, ground origin and scale must be checked after GLB generation.",
+  "reviewNotes": "Four separate connected woodland props, two upright stumps and two horizontal logs, consistent warm wood/dark bark family. All have isolated neutral backgrounds, visible cut or broken wood and no attached terrain slabs. Exact dimensions, collision and mesh quality remain to be checked on future GLBs."
+}
