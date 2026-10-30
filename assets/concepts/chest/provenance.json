@@ -1,0 +1,46 @@
+{
+  "asset": "Nebeljagd chest image reference",
+  "generator": "OpenAI ImageGen",
+  "assetType": "2D concept image; no GLB generated or imported",
+  "styleReference": "assets/characters/player-portrait.png",
+  "revision1": {
+    "output": "assets/concepts/chest/chest-reference-v1.png",
+    "prompt": "prompt-v1.txt"
+  },
+  "revision2": {
+    "output": "assets/concepts/chest/chest-reference.png",
+    "prompt": "prompt.txt",
+    "references": [
+      "assets/characters/player-portrait.png",
+      "assets/concepts/chest/chest-reference-v1.png"
+    ]
+  },
+  "files": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056",
+      "dimensions": [
+        384,
+        384
+      ]
+    },
+    {
+      "file": "assets/concepts/chest/chest-reference-v1.png",
+      "sha256": "d1a6a0877d34272ceb924f8a7b5101332a63db52dc305179bf758b375be10c5f",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "file": "assets/concepts/chest/chest-reference.png",
+      "sha256": "702a0001124cef8d9b3e42c4a7cf530d44b53d8c8b91684e664919089ce79971",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "tripoSubmitted": false,
+  "source3DModelUnchanged": true
+}
