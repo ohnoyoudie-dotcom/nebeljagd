@@ -1,0 +1,99 @@
+{
+  "asset": "Nebeljagd three stone wall reference images",
+  "assetType": "2D reference images for later Tripo generation",
+  "generator": "OpenAI ImageGen",
+  "createdDate": "2026-10-31",
+  "styleReferences": [
+    {
+      "file": "assets/characters/player-portrait.png",
+      "bytes": 200629,
+      "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+    },
+    {
+      "file": "assets/concepts/well/well-reference.png",
+      "bytes": 2410790,
+      "sha256": "ce9e28daa47598f9c5f061e2cc86189f874d0600034b048b96172eae9413c075"
+    }
+  ],
+  "designTargets": {
+    "heightMetres": 1.6,
+    "thicknessMetres": 0.65,
+    "straightAndBrokenLengthMetres": 4,
+    "cornerArmLengthMetres": 2
+  },
+  "variants": [
+    {
+      "id": "wall-straight",
+      "name": "Gerade Steinmauer",
+      "prompt": {
+        "file": "assets/concepts/stone-walls/wall-straight/prompt.txt",
+        "bytes": 2646,
+        "sha256": "20ec11f58c8dd967d084fd1c079e5082248af09d21b37a80e52b295f13d6b6d2"
+      },
+      "source": {
+        "file": "/workspace/generated_images/exec-ca992ca9-505d-424e-80cf-66f144ffa688.png",
+        "bytes": 2609467,
+        "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa"
+      },
+      "output": {
+        "file": "assets/concepts/stone-walls/wall-straight/reference.png",
+        "bytes": 2609467,
+        "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa"
+      },
+      "imagePixels": [
+        1774,
+        887
+      ]
+    },
+    {
+      "id": "wall-corner",
+      "name": "Steinmauer-Ecke",
+      "prompt": {
+        "file": "assets/concepts/stone-walls/wall-corner/prompt.txt",
+        "bytes": 2892,
+        "sha256": "263d6af89623de8a012fdf010262fe6534fb61ad564129551aebbd7719bef2ec"
+      },
+      "source": {
+        "file": "/workspace/generated_images/exec-d45545b7-2841-487f-81fc-89a0cbc43227.png",
+        "bytes": 2407257,
+        "sha256": "3d92ae7a208f0c2c785401857af5d94d14ead843c9baf72523b345063b07cbb2"
+      },
+      "output": {
+        "file": "assets/concepts/stone-walls/wall-corner/reference.png",
+        "bytes": 2407257,
+        "sha256": "3d92ae7a208f0c2c785401857af5d94d14ead843c9baf72523b345063b07cbb2"
+      },
+      "imagePixels": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "id": "wall-broken",
+      "name": "Beschädigte Steinmauer",
+      "prompt": {
+        "file": "assets/concepts/stone-walls/wall-broken/prompt.txt",
+        "bytes": 3108,
+        "sha256": "fd5a36a7cedab70756d34b9998a6b5f233991dbf6a2a177d050119ba34b8f300"
+      },
+      "source": {
+        "file": "/workspace/generated_images/exec-7587d448-9d84-4522-ab50-ec846c6152d6.png",
+        "bytes": 2292162,
+        "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d"
+      },
+      "output": {
+        "file": "assets/concepts/stone-walls/wall-broken/reference.png",
+        "bytes": 2292162,
+        "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d"
+      },
+      "imagePixels": [
+        1536,
+        1024
+      ]
+    }
+  ],
+  "visualReview": "Three separate, clearly legible isolated wall concepts: intact straight module, right-angle corner and damaged straight segment. Cohesive warm-grey stone, broad capstones and limited moss. No landscape bases or loose rubble. Exact profiles, heights, corner angle and mating surfaces remain to be measured and adjusted on subsequent 3D assets.",
+  "tripoSubmitted": false,
+  "modelGenerated": false,
+  "runtimeIntegrated": false
+}
