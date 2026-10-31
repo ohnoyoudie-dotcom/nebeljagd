@@ -1,38 +1,38 @@
 {
   "branch": "work",
-  "sourceCommit": "2a3c187fb0a7faac7cb4996c329b74ac8150b3de",
+  "sourceCommit": "5695a0f4b3b9278551aa0bffc910cc1f19bab349",
   "files": {
     "map-editor.html": {
-      "bytes": 45820693,
-      "sha256": "d9fa52463af25baa888146e6fbb6f1bb8ca5b091d099f0082b28e313865693d8"
+      "bytes": 45847059,
+      "sha256": "3b273b1fb4ec40c6c25fe329ea5696e501f0dec506947cdfe72cbe1dcd722f9b"
     },
     "nebeljagd.html": {
-      "bytes": 61298755,
-      "sha256": "19b85c60504a46cf634c18bdf47eea59b2a59170dc87a7f39115308c7ae5de9c"
+      "bytes": 61304683,
+      "sha256": "c53194d3b4f14ff95ae6e0a02b8f2313bff0414872e7af7680e182e602898ba9"
     },
     "index.html": {
-      "bytes": 61298755,
-      "sha256": "19b85c60504a46cf634c18bdf47eea59b2a59170dc87a7f39115308c7ae5de9c"
+      "bytes": 61304683,
+      "sha256": "c53194d3b4f14ff95ae6e0a02b8f2313bff0414872e7af7680e182e602898ba9"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 19280,
-      "sha256": "08aa33416038973a59ed686b124c67fd58f87720e1f69dc5ab663935cc0e9e71"
+      "bytes": 19510,
+      "sha256": "f93f7539276ae5771535c4ad3ecde54dabf6e456a4ac1ab5a500001e4c5c4ea7"
     },
     "worldmap.svg": {
-      "bytes": 41369,
-      "sha256": "81c4291bb723d71d41fb356f6e6c0978fe2b4a5e06d62c84c990770f1a3e1914"
+      "bytes": 41760,
+      "sha256": "3676caf26b35cba2bbf97cf4a1309b6a6ef397aa0345ea0ad0176e2683909d13"
     },
     "worldmap.schema.json": {
-      "bytes": 35374,
-      "sha256": "f8ed1249b7a0189c2d2914ac75fa8898f42de8eb197f535fcd8c645c74bcf095"
+      "bytes": 37965,
+      "sha256": "5552e0bd4d26302a7c075a8672c7321d52d021f58e687184265b7f7411504629"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 68686317,
-      "sha256": "757db79fb472040435896add4347ea686b587b7e7438f26481ecbac452786bb6"
+      "bytes": 68696532,
+      "sha256": "027796f5f5388fda40c9b1aaddc8255209257cf7d964dcf0d0d28adba186d972"
     }
   }
 }

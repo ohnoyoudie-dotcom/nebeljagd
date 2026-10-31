@@ -185,6 +185,7 @@
   <g id="wind-zones" data-layer="wind-zones" inkscape:groupmode="layer" inkscape:label="Lokale Windzonen">
   </g>
   <g id="world-objects" data-layer="world-objects" inkscape:groupmode="layer" inkscape:label="Weltobjekte" clip-path="url(#world-island-clip)">
+    <g id="feature-object-object-house-mvviwx0g-2" data-feature-type="object" data-feature-id="object-house-mvviwx0g-2" data-object-kind="house" data-object-variant="kit-tripo-tavern" transform="translate(9.5 -66.1) rotate(0) scale(1)"><title>Haus · object-house-mvviwx0g-2</title><circle r="14.5" fill="transparent" pointer-events="all"/><use href="#world-object-house-tripo-tavern"/></g>
   </g>
   <g id="zone" data-layer="zone" inkscape:groupmode="layer" inkscape:label="Nebelzone" pointer-events="none">
   </g>

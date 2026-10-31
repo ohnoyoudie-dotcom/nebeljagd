@@ -1316,7 +1316,20 @@
       }
     ]
   },
-  "objects": [],
+  "objects": [
+    {
+      "id": "object-house-mvviwx0g-2",
+      "name": "Haus",
+      "kind": "house",
+      "variant": "kit-tripo-tavern",
+      "position": [
+        9.5,
+        -66.1
+      ],
+      "rotation": 0,
+      "scale": 1
+    }
+  ],
   "landscape": {
     "version": 1,
     "terrain": [],
