@@ -1,38 +1,38 @@
 {
   "branch": "work",
-  "sourceCommit": "fab65f06e2bb601ea80421f0b7ca684d3e062134",
+  "sourceCommit": "ffaac67e60397ae6d3646998b480a730ae7dee33",
   "files": {
     "map-editor.html": {
-      "bytes": 45847059,
-      "sha256": "3b273b1fb4ec40c6c25fe329ea5696e501f0dec506947cdfe72cbe1dcd722f9b"
+      "bytes": 45862917,
+      "sha256": "b390b7244fa68585e179b02567ec8f52d438287249a7896810863f476d494379"
     },
     "nebeljagd.html": {
-      "bytes": 61304622,
-      "sha256": "7fb4231dc6d2acca42df8179604c45ce38cd5aee42f9f170b9aa2aa28a630806"
+      "bytes": 61309982,
+      "sha256": "c1191035a6971696c54210a8e4a22ce37f2b50fb30f327fe4d82909f3680ec6b"
     },
     "index.html": {
-      "bytes": 61304622,
-      "sha256": "7fb4231dc6d2acca42df8179604c45ce38cd5aee42f9f170b9aa2aa28a630806"
+      "bytes": 61309982,
+      "sha256": "c1191035a6971696c54210a8e4a22ce37f2b50fb30f327fe4d82909f3680ec6b"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 19510,
-      "sha256": "f93f7539276ae5771535c4ad3ecde54dabf6e456a4ac1ab5a500001e4c5c4ea7"
+      "bytes": 21229,
+      "sha256": "6bec70b9504b670e7cbb5d4e2f865466dcb21bafcd15d333a36f0e493aa464e1"
     },
     "worldmap.svg": {
-      "bytes": 41760,
-      "sha256": "3676caf26b35cba2bbf97cf4a1309b6a6ef397aa0345ea0ad0176e2683909d13"
+      "bytes": 47655,
+      "sha256": "cbe9b6d48fbbf5de0a126df06fa57f312dd2b637a6725d8e6dd6085ae38b20d0"
     },
     "worldmap.schema.json": {
-      "bytes": 37965,
-      "sha256": "5552e0bd4d26302a7c075a8672c7321d52d021f58e687184265b7f7411504629"
+      "bytes": 38240,
+      "sha256": "775ad5ecab3ddceb9227b38767b8c7f62f3ba02bb1d61d14a26f0c7eef55e188"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 68696554,
-      "sha256": "602cb3ddcaadbe79b94ff0712880c9e26db2622d4f04fb5fd74646e7c7976d69"
+      "bytes": 68708525,
+      "sha256": "ddf0177ea903bf196ba8778cde2126de4bc1ee314e8cb4a7ce3c69f182ee70db"
     }
   }
 }

@@ -977,7 +977,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "kit-stone"
+                  "kit-stone",
+                  "kit-cut-stone"
                 ]
               }
             }
@@ -998,7 +999,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "kit-wood"
+                  "kit-wood",
+                  "kit-cross-wood"
                 ]
               }
             }
@@ -1716,7 +1718,9 @@
         "variant": {
           "enum": [
             "kit-stone",
-            "kit-wood"
+            "kit-cut-stone",
+            "kit-wood",
+            "kit-cross-wood"
           ]
         },
         "points": {
@@ -1768,7 +1772,10 @@
           "then": {
             "properties": {
               "variant": {
-                "const": "kit-stone"
+                "enum": [
+                  "kit-stone",
+                  "kit-cut-stone"
+                ]
               }
             }
           }
@@ -1784,7 +1791,10 @@
           "then": {
             "properties": {
               "variant": {
-                "const": "kit-wood"
+                "enum": [
+                  "kit-wood",
+                  "kit-cross-wood"
+                ]
               }
             }
           }
