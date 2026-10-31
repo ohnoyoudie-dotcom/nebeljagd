@@ -978,7 +978,8 @@
               "variant": {
                 "enum": [
                   "kit-stone",
-                  "kit-cut-stone"
+                  "kit-cut-stone",
+                  "kit-tripo-wall"
                 ]
               }
             }
@@ -1720,7 +1721,8 @@
             "kit-stone",
             "kit-cut-stone",
             "kit-wood",
-            "kit-cross-wood"
+            "kit-cross-wood",
+            "kit-tripo-wall"
           ]
         },
         "points": {
@@ -1774,7 +1776,8 @@
               "variant": {
                 "enum": [
                   "kit-stone",
-                  "kit-cut-stone"
+                  "kit-cut-stone",
+                  "kit-tripo-wall"
                 ]
               }
             }
