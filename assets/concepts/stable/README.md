@@ -7,8 +7,11 @@ Aktuelle zweidimensionale Bildvorlage: [stable-reference.png](stable-reference.p
 - Großes offenes Haupttor vorne (im Bild unten), mit seitlich weggeschobenen
   Holztorflügeln; breiter freier Mittelgang und kleinerer hinterer Ausgang.
 - Rechts vier getrennte, vom Mittelgang zugängliche Pferdeboxen mit Heu/Stroh,
-  Futterraufen und Wassertrögen. Keine Pferde als Bestandteil des Gebäudes.
-- Links Heuvorrat, Futterbehälter und ein Sattel-/Arbeitsbereich.
+  Futterraufen und Wassertrögen. Alle vier Zugänge zum Mittelgang sind in der
+  Bildvorlage bodenbündig und ohne querliegende Schwellenbalken dargestellt.
+  Keine Pferde als Bestandteil des Gebäudes.
+- Links bleiben der Heustapel, ein oberer Futterbehälter und die Sattel-/Werkbank.
+  Die beiden unteren linken Heubehälter sind entfernt; dort ist freie Holzfläche.
 - Überwiegend Holzplanken, kräftige Balken und dunkle Eisenbeschläge auf einem
   niedrigen Steinsockel. Keine zusätzlichen Gebäudeflügel oder ausgesparten Ecken.
 
@@ -18,7 +21,8 @@ einige Wandflächen bleiben sichtbar. Es ist kein exakt orthografischer oder
 maßhaltiger Bauplan. Größen und Tor-/Boxendurchgänge sind später am GLB neben
 der Spielfigur zu prüfen.
 
-Dies ist zunächst nur ein Bild. Es wurde kein Tripo-Modell erzeugt und kein
+Dies ist eine Bildvorlage, kein auf Begehbarkeit geprüftes 3D-Modell.
+Es wurde kein Tripo-Modell erzeugt und kein
 Editor- oder Spieleintrag geändert. Für eine spätere Tripo-Erzeugung nur die
 einzelne PNG-Datei verwenden; Dachfreiheit, offene Durchgänge und kontinuierlichen
 Boden ausdrücklich beibehalten. Feuer-, Tier- oder Dachgeometrie ist nicht vorgesehen.
