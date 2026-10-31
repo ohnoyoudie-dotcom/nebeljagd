@@ -1,0 +1,323 @@
+{
+  "status": "passed",
+  "nodeTests": 231,
+  "editor": {
+    "status": "passed",
+    "url": "http://127.0.0.1:5204",
+    "standalone": true,
+    "checks": [
+      {
+        "name": "Mouse drag creates one editable wall route, preserves placed loot and supports one-step Undo/Redo",
+        "evidence": null
+      },
+      {
+        "name": "Two deliberate openings cut the visible route and persist as independent gap records",
+        "evidence": [
+          {
+            "at": 40,
+            "width": 3
+          },
+          {
+            "at": 100,
+            "width": 3
+          }
+        ]
+      },
+      {
+        "name": "Changing a selected route from stone to wood preserves its exact route, ID and both passages",
+        "evidence": null
+      },
+      {
+        "name": "Existing form handles insert, move and remove corners on a route; Undo restores its complete geometry",
+        "evidence": null
+      },
+      {
+        "name": "The selected route renders actual instanced GLBs in the lazy 3D preview",
+        "evidence": null
+      },
+      {
+        "name": "A mouse freehand stroke preserves deliberate bends while simplifying redundant samples",
+        "evidence": [
+          [
+            -70,
+            10
+          ],
+          [
+            -15,
+            10
+          ],
+          [
+            -15,
+            65
+          ],
+          [
+            50,
+            65
+          ]
+        ]
+      },
+      {
+        "name": "Escape and pointer cancellation discard in-progress routes; changing panes disables the wall tool",
+        "evidence": null
+      },
+      {
+        "name": "A swept line eraser removes every crossed route in one undo step and leaves loot untouched",
+        "evidence": null
+      },
+      {
+        "name": "Normal JSON download/import and local draft restoration preserve routes, bends, styles and multiple gaps",
+        "evidence": null
+      },
+      {
+        "name": "Exported standalone HTML reopens offline with exact multi-gap routes, working drawing tools and unique controls",
+        "evidence": null
+      },
+      {
+        "name": "Spielen transfers canonical routes into the real game and expands them into GLB segments without baking over the original objects",
+        "evidence": {
+          "barrierCount": 2,
+          "barrierSegmentCount": 88,
+          "authoredObjectCount": 2,
+          "totalObjects": 90
+        }
+      },
+      {
+        "name": "Native tablet touch draws one route; touchCancel leaves map and undo history unchanged",
+        "evidence": null
+      }
+    ],
+    "errors": [],
+    "limits": "Chromium SwiftShader and native touch emulation; no physical iPad measurement."
+  },
+  "runtime": {
+    "sourceUnchanged": true,
+    "stats": {
+      "totalObjects": 21,
+      "authoredObjectCount": 1,
+      "barrierCount": 3,
+      "barrierSegmentCount": 20,
+      "chunks": 4,
+      "visibleChunks": 4,
+      "instanceBatches": 6,
+      "treeCount": 0,
+      "houseCount": 0,
+      "moundCount": 0,
+      "grassPatchCount": 0,
+      "grassRendering": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false,
+        "sourceVersion": "nebeljagd-3d-v011",
+        "crossedStalksPerInstance": 4,
+        "totalInstances": 0,
+        "maximumInstances": 500000,
+        "budgetUnitsUsed": 0,
+        "kitInstances": 0,
+        "maximumKitInstances": 12000,
+        "configuredPatches": 0,
+        "legacyBiomeAdaptedPatches": 0,
+        "legacySuppressedGrassInstances": 0,
+        "biomeAdaptiveLegacyGrass": true,
+        "budgetLimitedPatches": 0,
+        "wind": {
+          "gpu": true,
+          "rootAnchored": true,
+          "worldSpaceDirection": true,
+          "zones": 0,
+          "maximumZones": 32,
+          "settings": {
+            "enabled": true,
+            "strength": 0.35,
+            "speed": 1,
+            "direction": 0.65,
+            "gusts": true,
+            "gustStrength": 0.35,
+            "gustFrequency": 0.18,
+            "turbulence": 0.2
+          },
+          "time": 1,
+          "interactors": 0,
+          "maximumInteractors": 8,
+          "interactionMode": "forward-biased",
+          "forwardWeight": 0.82,
+          "radialWeight": 0.18,
+          "firstInteractorStrength": 0,
+          "curvatureVariation": "per-instance-grass",
+          "windVariation": "per-instance-phase-speed-amplitude",
+          "recoveryModel": "variable-directional-wake"
+        },
+        "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+        "colorGradient": [
+          "#315e36",
+          "#bbc975"
+        ],
+        "visibleTallGrassBatches": 0,
+        "tallGrassTriangles": 0
+      },
+      "collisionBodies": 21,
+      "loadedGLBs": 7,
+      "environmentKit": {
+        "loadedModels": 2,
+        "models": [
+          {
+            "id": "wall:kit-stone",
+            "asset": "wall_stone_3m",
+            "targetHeight": 1.5,
+            "height": 1.5071715221587463,
+            "parts": 1,
+            "roofRemoved": false,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          },
+          {
+            "id": "fence:kit-wood",
+            "asset": "fence_wood_3m",
+            "targetHeight": 1.5,
+            "height": 1.5000000132047213,
+            "parts": 1,
+            "roofRemoved": false,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          }
+        ],
+        "placements": 21
+      }
+    },
+    "positions": [
+      {
+        "name": "wall-solid",
+        "input": [
+          -6,
+          0
+        ],
+        "output": [
+          -6,
+          0.8052318142193413
+        ],
+        "moved": 0.8052318142193413
+      },
+      {
+        "name": "wall-gap",
+        "input": [
+          0,
+          0
+        ],
+        "output": [
+          0,
+          0
+        ],
+        "moved": 0
+      },
+      {
+        "name": "wall-corner-arm",
+        "input": [
+          12,
+          6
+        ],
+        "output": [
+          11.194768185780658,
+          6.42
+        ],
+        "moved": 0.9081840532793847
+      },
+      {
+        "name": "fence-solid",
+        "input": [
+          -8,
+          9
+        ],
+        "output": [
+          -8,
+          9.604187518841265
+        ],
+        "moved": 0.6041875188412646
+      },
+      {
+        "name": "fence-gap",
+        "input": [
+          -3.5,
+          9
+        ],
+        "output": [
+          -3.5,
+          9
+        ],
+        "moved": 0
+      },
+      {
+        "name": "diagonal-solid",
+        "input": [
+          -6,
+          -12
+        ],
+        "output": [
+          -6.315547155740865,
+          -11.053358532777404
+        ],
+        "moved": 0.9978477213290109
+      },
+      {
+        "name": "diagonal-gap",
+        "input": [
+          0,
+          -10
+        ],
+        "output": [
+          0,
+          -10
+        ],
+        "moved": 0
+      }
+    ],
+    "crossings": {
+      "wall": {
+        "hit": "test-wall-segment-1",
+        "visible": false
+      },
+      "gap": {
+        "hit": null,
+        "visible": true
+      },
+      "fence": {
+        "hit": "test-fence-segment-1",
+        "visible": false
+      },
+      "fenceGap": {
+        "hit": null,
+        "visible": true
+      },
+      "diagonal": {
+        "hit": "test-diagonal-segment-1",
+        "visible": false
+      },
+      "diagonalGap": {
+        "hit": null,
+        "visible": true
+      }
+    },
+    "legacyWidth": 3.7099606747892437,
+    "solidHeights": [
+      1.5072,
+      1.5,
+      2.2608
+    ],
+    "calls": 7,
+    "triangles": 16454,
+    "obstacleCount": 21
+  },
+  "screenshots": [
+    "docs/barrier-editor.png",
+    "docs/barrier-runtime.png"
+  ],
+  "existingEditorRegression": {
+    "checks": 11,
+    "status": "passed"
+  },
+  "limits": "Chromium/SwiftShader; native touch emulation, no physical iPad performance claim."
+}

@@ -3,6 +3,7 @@ import { getWorldmapStats, validateWorldmap } from './model.js';
 import { biomePreset } from './landscape.js';
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
 import { getObjectFootprintRadius } from './objects.js';
+import { barrierSections } from './barriers.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
@@ -98,6 +99,19 @@ function objectSvg(item) {
     return `    <g ${feature('object', item.id)} data-object-kind="grass" data-object-variant="${escape(item.variant)}" transform="${transform}"><title>${escape(item.name)} · Höhe ${number((settings.height ?? 1) * 100)} % · Dichte ${number((settings.density ?? 1) * 100)} %</title><circle r="${number(radius)}" fill="${tint}" fill-opacity="${number(.12 + .6 * (settings.density ?? 1))}" stroke="${tint}" stroke-width=".15" stroke-dasharray=".5 .4"/><path d="M-.6,.5-.4,-.6-.2,.5M.1,.4 .3,-.8 .5,.4" transform="scale(${number(radius * .55)})" fill="none" stroke="#d4dca0" stroke-width=".15" pointer-events="none"/></g>`;
   }
   return `    <g ${feature('object', item.id)} data-object-kind="${item.kind}" data-object-variant="${escape(item.variant)}"${tier ? ` data-rarity="${tier.id}"` : ''} transform="${transform}"><title>${escape(item.name)}${tier ? ` · ${tier.label}` : ''} · ${escape(item.id)}</title>${halo}<circle r="${number(Math.max(.8, radius))}" fill="transparent" pointer-events="all"/><use href="#world-object-${objectSymbol(item)}"${patch ? ` transform="scale(${number(radius)})"` : ''}${tint ? ` color="${tint}"` : ''}/></g>`;
+}
+
+/** One selectable, editable centreline. Visible strokes use exactly the solid
+ * sections used by the runtime; the wider transparent hit area also permits
+ * selecting a line at its doorway without painting across that opening. */
+export function barrierSvg(barrier) {
+  const definition = getEnvironmentKitDefinition(barrier.kind, barrier.variant);
+  if (!['wall', 'fence'].includes(barrier.kind) || !definition) return '';
+  const thickness = definition.footprint.halfDepth * 2 * barrier.scale;
+  const stone = barrier.kind === 'wall';
+  const line = points(barrier.points);
+  const path = barrierSections(barrier).map(({ a, b }) => `M${number(a[0])},${number(a[1])}L${number(b[0])},${number(b[1])}`).join(' ');
+  return `    <g ${feature('barrier', barrier.id)} data-barrier-kind="${escape(barrier.kind)}" data-barrier-variant="${escape(barrier.variant)}"><title>${escape(barrier.name)} · ${stone ? 'Steinmauer' : 'Holzzaun'}</title><polyline class="barrier-hit" points="${line}" fill="none" stroke="transparent" stroke-width="14" vector-effect="non-scaling-stroke" pointer-events="stroke"/><path class="barrier-outline" d="${path}" fill="none" stroke="${stone ? '#405447' : '#59432e'}" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linecap="butt" pointer-events="none"/><path class="barrier-solid" d="${path}" fill="none" stroke="${stone ? '#b9b59c' : '#b78c53'}" stroke-width="${number(thickness)}" stroke-linecap="butt" pointer-events="none"/><path class="barrier-detail" d="${path}" fill="none" stroke="${stone ? '#646d5f' : '#63462c'}" stroke-width="${number(thickness * .4)}" stroke-dasharray="${stone ? '.12 1' : '.28 2.4'}" stroke-linecap="butt" pointer-events="none"/></g>`;
 }
 
 function placeIcon(place) {
@@ -215,7 +229,18 @@ export function renderWorldmapSvg(map, options = {}) {
     objects.sort((a, b) => (objectLayerOrder[a.kind] ?? 0) - (objectLayerOrder[b.kind] ?? 0));
     for (const item of objects) out.push(objectSvg(item));
   }
-  out.push('  </g>', '  <g id="zone" data-layer="zone" inkscape:groupmode="layer" inkscape:label="Nebelzone" pointer-events="none">');
+  out.push('  </g>');
+  // Preserve authored routes and openings in the editable SVG, while keeping
+  // files without barrier routes byte-for-byte compatible with older exports.
+  if (map.barriers?.length) {
+    out.push(`  <metadata id="barrier-settings">${escape(JSON.stringify(map.barriers))}</metadata>`);
+    out.push('  <g id="barriers" data-layer="barriers" inkscape:groupmode="layer" inkscape:label="Mauern und Zäune" clip-path="url(#world-island-clip)">');
+    if (showObjects) for (const barrier of map.barriers) {
+      if (!objectKinds || objectKinds.has(barrier.kind)) out.push(barrierSvg(barrier));
+    }
+    out.push('  </g>');
+  }
+  out.push('  <g id="zone" data-layer="zone" inkscape:groupmode="layer" inkscape:label="Nebelzone" pointer-events="none">');
   if (showZone) out.push(`    <path d="M${minX},${minZ}H${maxX}V${maxZ}H${minX}Z M${number(map.zone.center[0] - zoneRadius)},${number(map.zone.center[1])} a${number(zoneRadius)},${number(zoneRadius)} 0 1,0 ${number(zoneRadius * 2)},0 a${number(zoneRadius)},${number(zoneRadius)} 0 1,0 ${number(-zoneRadius * 2)},0Z" fill="#4e346e" fill-rule="evenodd" opacity=".52"/><circle cx="${number(map.zone.center[0])}" cy="${number(map.zone.center[1])}" r="${number(zoneRadius)}" fill="none" stroke="#d4a3ed" stroke-width="3" stroke-dasharray="12 7"/>`);
   out.push('  </g>', '  <g id="labels" data-layer="labels" inkscape:groupmode="layer" inkscape:label="Beschriftungen" pointer-events="none" font-family="Georgia, serif" text-anchor="middle">');
   if (showLabels) {

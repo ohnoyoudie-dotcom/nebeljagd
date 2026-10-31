@@ -1,11 +1,11 @@
 {
   "status": "passed",
-  "url": "http://127.0.0.1:4178",
+  "url": "http://127.0.0.1:5205",
   "checks": [
     {
       "name": "The untouched map opens in a four-action editor with an obvious painting palette, permanent undo controls and no empty inspector",
       "evidence": {
-        "objects": 961
+        "objects": 1
       }
     },
     {
@@ -294,16 +294,16 @@
     "mode": "Actual welt/ standalone HTML served by local HTTP",
     "files": {
       "map-editor.html": {
-        "bytes": 27248077,
-        "sha256": "5c9a4bf70cde872369263d149dece56506ed05dfa0dcc98ff6c48d6e6f8d4d0a"
+        "bytes": 45847059,
+        "sha256": "3b273b1fb4ec40c6c25fe329ea5696e501f0dec506947cdfe72cbe1dcd722f9b"
       },
       "nebeljagd.html": {
-        "bytes": 42734338,
-        "sha256": "1d841b03f2a446f46beefd249df988f305c68a5d2c561d6bf80d0496c9034cf7"
+        "bytes": 61304683,
+        "sha256": "c53194d3b4f14ff95ae6e0a02b8f2313bff0414872e7af7680e182e602898ba9"
       },
       "index.html": {
-        "bytes": 42734338,
-        "sha256": "1d841b03f2a446f46beefd249df988f305c68a5d2c561d6bf80d0496c9034cf7"
+        "bytes": 61304683,
+        "sha256": "c53194d3b4f14ff95ae6e0a02b8f2313bff0414872e7af7680e182e602898ba9"
       }
     },
     "unexpectedRequests": []

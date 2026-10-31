@@ -1,7 +1,10 @@
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, getWorldmapStats, zoneAt, pointInPolygon } from './model.js';
-import { renderWorldmapSvg } from './render.js';
+import { renderWorldmapSvg, barrierSvg } from './render.js';
+import { makeBarrier, barrierLength } from './barriers.js';
+import { createBarrierPanel } from './barrier-panel.js';
+import { simplifyBarrierPoints, nearestBarrier, barrierEraseHits } from './barrier-drawing.js';
 import { AUTHORING_OBJECT_CATALOG, isObjectAvailable, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
 import { canPaintGrass } from './grass-brush.js';
 import { createLandscapePanel } from './landscape-panel.js';
@@ -18,14 +21,14 @@ document.body.dataset.fileMode = location.protocol === 'file:' ? 'true' : 'false
 const clone = value => JSON.parse(JSON.stringify(value));
 const STORAGE_KEY = 'nebeljagd.worldmap.v1';
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const collectionKeys = { region: 'regions', path: 'paths', river: 'rivers', place: 'places', spawn: 'spawnAreas', object: 'objects' };
+const collectionKeys = { region: 'regions', path: 'paths', river: 'rivers', place: 'places', spawn: 'spawnAreas', object: 'objects', barrier: 'barriers' };
 const PLAYTEST_KEY = 'nebeljagd.worldmap.playtest.v1';
 const MAX_FILE_BYTES = 5_000_000;
 const FILE_HANDLE_DB = 'nebeljagd-map-file-v1';
 const FILE_HANDLE_STORE = 'handles';
 const FILE_HANDLE_KEY = 'worldmap';
 const playtestWindows = new Map();
-const kindNames = { island: 'Inselumriss', region: 'Region', path: 'Weg', river: 'Fluss', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone' };
+const kindNames = { island: 'Inselumriss', region: 'Region', path: 'Weg', river: 'Fluss', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone', barrier: 'Mauer / Zaun' };
 const initialSnapshot = (() => {
   try {
     const saved = normalizeWorldmap(JSON.parse($('map-snapshot')?.textContent || 'null'));
@@ -47,10 +50,11 @@ let zoneTime = 0;
 let listLimit = 50;
 let hoverPoint = null;
 let landscapePanel = null;
+let barrierPanel = null;
 let mapFileHandle = null;
 let persistedMapFileHandle = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
-const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone'];
+const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
 const layers = { showLabels: true, showSpawns: true, showGrid: false, showZone: false, showObjects: true };
 
 // Deliberately separate from draft restoration: loading a previous draft or
@@ -210,6 +214,7 @@ function renderAll() {
   $('undo').disabled = !history.length;
   $('redo').disabled = !future.length;
   landscapePanel?.sync();
+  barrierPanel?.sync();
 }
 function renderMap(rebuild = true) {
   const zone = zoneAt(map, zoneTime);
@@ -250,6 +255,16 @@ function updatePlacementPreview() {
   svg?.querySelector('#placement-preview')?.remove();
   svg?.querySelector('#eraser-target-preview')?.remove();
   for (const target of svg?.querySelectorAll('.map-erase-target') ?? []) target.classList.remove('map-erase-target');
+  if (mode.startsWith('barrier')) {
+    if (!svg || !hoverPoint || spaceHeld) return;
+    const cursor = document.createElementNS(SVG_NS, 'circle'); cursor.id = 'placement-preview';
+    cursor.setAttribute('cx', hoverPoint[0]); cursor.setAttribute('cy', hoverPoint[1]);
+    cursor.setAttribute('r', mode === 'barrierDraw' ? Math.max(.4, barrierPickRadius() / 3) : barrierPickRadius());
+    cursor.setAttribute('fill', mode === 'barrierErase' ? '#d88e7c55' : '#e3cc8c44');
+    cursor.setAttribute('stroke', mode === 'barrierErase' ? '#9e3e32' : '#fff1c5');
+    cursor.setAttribute('stroke-width', '1.5'); cursor.setAttribute('vector-effect', 'non-scaling-stroke'); cursor.setAttribute('pointer-events', 'none');
+    svg.append(cursor); return;
+  }
   if (!svg || !placementModes.includes(mode) || !hoverPoint || spaceHeld) return;
   const definition = getObjectDefinition($('palette-kind').value);
   const point = mode === 'place' ? snapped(hoverPoint) : hoverPoint;
@@ -310,7 +325,8 @@ function updateMovingDrawing() {
   if (!svg || !feature) return;
   const element = document.getElementById(`feature-${selection.type}-${selection.id}`);
   if (element) {
-    if (feature.points) {
+    if (selection.type === 'barrier') element.outerHTML = barrierSvg(feature);
+    else if (feature.points) {
       const points = feature.points.map(point => point.join(',')).join(' ');
       if (element.tagName.toLowerCase() === 'polygon') element.setAttribute('points', points);
       else for (const geometry of element.querySelectorAll('polygon,polyline')) geometry.setAttribute('points', points);
@@ -422,6 +438,7 @@ function renderProperties() {
   $('selection-empty').hidden = Boolean(feature);
   $('properties-form').hidden = !feature;
   landscapePanel?.renderSelected(feature, selection?.type);
+  barrierPanel?.renderSelected(feature, selection?.type);
   if (!feature) return;
   $('selection-title').textContent = feature.name;
   $('selection-kind').textContent = selection.type === 'object' ? getObjectDefinition(feature.kind).label : kindNames[selection.type];
@@ -479,6 +496,7 @@ function applyProperties(event) {
       if (['grass', 'flower'].includes(feature.kind)) feature.radius = Number($('object-radius').value);
     }
     landscapePanel?.applySelected(feature, selection.type);
+    barrierPanel?.applySelected(feature, selection.type);
   }, 'Eigenschaften übernommen.');
 }
 function coordinateAt(event) {
@@ -589,6 +607,19 @@ function pointerDown(event) {
   const start = coordinateAt(event);
   if (mode === 'place' && !spaceHeld && event.button === 0) { addObjectAt(start); return; }
   const pan = mode === 'pan' || spaceHeld || event.button === 1;
+  if (mode === 'barrierDraw' && !pan) {
+    if (!pointInPolygon(start, map.island.points)) return toast('Die Strecke bitte auf der Insel beginnen.', true);
+    const settings = barrierPanel.settings(), point = barrierPoint(start);
+    pointer = { id: event.pointerId, barrierDraw: { ...settings, raw: [point], points: [point, point] } };
+    selection = null; renderProperties(); $('map-viewport').setPointerCapture(event.pointerId);
+    drawBarrierSample(start); return;
+  }
+  if (mode === 'barrierGap' && !pan) { addBarrierGap(start); return; }
+  if (mode === 'barrierErase' && !pan) {
+    selection = null; renderProperties();
+    pointer = { id: event.pointerId, barrierErase: { last: start, removed: 0 }, previous: clone(map) };
+    $('map-viewport').setPointerCapture(event.pointerId); eraseBarrierSample(start); return;
+  }
   if (mode === 'erase' && !pan) {
     layers.showObjects = true; $('layer-objects').checked = true;
     $('feature-filter').value = 'object'; $('object-kind-filter').value = 'all'; $('feature-search').value = '';
@@ -641,6 +672,8 @@ function pointerMove(event) {
   hoverPoint = point;
   if (placementModes.includes(mode) && !pointer) updatePlacementPreview();
   if (!pointer || pointer.id !== event.pointerId) return;
+  if (pointer.barrierDraw) { event.preventDefault(); drawBarrierSample(point); return; }
+  if (pointer.barrierErase) { event.preventDefault(); eraseBarrierSample(point); return; }
   if (pointer.brush) { event.preventDefault(); paintLandscapeSample(point); return; }
   if (pointer.terrainEraser) { event.preventDefault(); eraseTerrainSample(point); return; }
   if (pointer.eraser) { event.preventDefault(); eraseObjectSample(point); return; }
@@ -670,9 +703,35 @@ function pointerMove(event) {
 }
 function pointerEnd(event, cancelled = false) {
   if (!pointer || pointer.id !== event.pointerId) return;
+  if (pointer.barrierDraw && !cancelled && Number.isFinite(event.clientX)) drawBarrierSample(coordinateAt(event));
+  if (pointer.barrierErase && !cancelled && Number.isFinite(event.clientX)) eraseBarrierSample(coordinateAt(event));
   const finished = pointer; pointer = null;
   if ($('map-viewport').hasPointerCapture(event.pointerId)) $('map-viewport').releasePointerCapture(event.pointerId);
   $('map-viewport').classList.remove('is-dragging');
+  if (finished.barrierDraw) {
+    $('barrier-stroke-preview')?.remove();
+    const stroke = finished.barrierDraw;
+    if (!cancelled) {
+      const points = simplifyBarrierPoints(stroke.points, .65);
+      if (points.length > 128) toast('Zu viele kleine Ecken. Bitte mehrere kürzere Strecken zeichnen.', true);
+      else if (points.reduce((sum, p, i) => sum + (i ? Math.hypot(p[0] - points[i - 1][0], p[1] - points[i - 1][1]) : 0), 0) < 1)
+        toast('Mindestens einen Meter weit ziehen. Zum Bearbeiten „Auswählen“ nutzen.');
+      else {
+        try {
+          const added = makeBarrier(stroke.kind, points);
+          if (commit(candidate => { (candidate.barriers ??= []).push(added); }, 'Strecke gebaut. Mit „Auswählen“ kannst du ihre Punkte verschieben.')) barrierPanel.setPreview(added);
+        } catch (error) { toast(error.message, true); }
+      }
+    }
+    barrierPanel.status(cancelled ? 'Zeichnen abgebrochen.' : 'Weitere Strecke ziehen · Auswählen: Form ändern · Spielen: ausprobieren');
+    renderMap(); return;
+  }
+  if (finished.barrierErase) {
+    if (cancelled) map = finished.previous;
+    else if (finished.barrierErase.removed) remember(finished.previous);
+    barrierPanel.status(cancelled ? 'Radieren abgebrochen.' : `${finished.barrierErase.removed} ganze Strecken entfernt · Rückgängig holt sie zurück`);
+    repairSelection(); renderAll(); return;
+  }
   if (finished.eraser) {
     const result = cancelled ? null : validate(map);
     if (cancelled || !result.valid) {
@@ -761,6 +820,67 @@ function eraseObjectSample(point) {
 }
 function cancelPointer() {
   if (pointer) pointerEnd({ pointerId: pointer.id }, true);
+}
+
+function barrierPickRadius() {
+  const scale = $('map-stage').firstElementChild?.getScreenCTM()?.a ?? 1;
+  return Math.max(.75, 8 / scale);
+}
+function barrierPoint(point) {
+  const step = barrierPanel.settings().snap ? 1 : .1;
+  const result = point.map(value => Math.round(value / step) * step);
+  // Join nearby ends without making the author place the last segment by hand.
+  const endpoints = (map.barriers ?? []).flatMap(item => [item.points[0], item.points.at(-1)]);
+  const closest = endpoints.find(p => Math.hypot(p[0] - result[0], p[1] - result[1]) <= .8);
+  return closest ? [...closest] : result;
+}
+function drawBarrierSample(point) {
+  const stroke = pointer?.barrierDraw;
+  if (!stroke) return;
+  const end = barrierPoint(point), last = stroke.raw.at(-1);
+  if (stroke.shape === 'straight') stroke.points = [stroke.raw[0], end];
+  else {
+    if (Math.hypot(end[0] - last[0], end[1] - last[1]) >= .5) {
+      if (stroke.raw.length >= 500) stroke.raw = simplifyBarrierPoints(stroke.raw, .65);
+      if (stroke.raw.length < 500) stroke.raw.push(end);
+    }
+    stroke.points = stroke.raw;
+  }
+  const svg = $('map-stage').firstElementChild;
+  let preview = $('barrier-stroke-preview');
+  if (!preview) {
+    preview = document.createElementNS(SVG_NS, 'polyline'); preview.id = 'barrier-stroke-preview';
+    for (const [key, value] of Object.entries({ fill: 'none', stroke: '#f3d58e', 'stroke-width': '5', 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', 'pointer-events': 'none' })) preview.setAttribute(key, value);
+    svg.append(preview);
+  }
+  preview.setAttribute('points', stroke.points.map(p => p.join(',')).join(' '));
+  const length = stroke.points.reduce((sum, p, i) => sum + (i ? Math.hypot(p[0] - stroke.points[i - 1][0], p[1] - stroke.points[i - 1][1]) : 0), 0);
+  barrierPanel.status(`${Math.round(length)} m · Loslassen zum Bauen · Esc: abbrechen`);
+}
+function addBarrierGap(point) {
+  const hit = nearestBarrier(map.barriers ?? [], point, barrierPickRadius());
+  if (!hit) return toast('Klicke auf eine gezeichnete Mauer- oder Zaunstrecke.');
+  const width = barrierPanel.settings().gapWidth, length = barrierLength(hit.barrier);
+  if (!Number.isFinite(width) || width < 1.5 || width > 12) return toast('Die Durchgangsbreite muss zwischen 1,5 und 12 Metern liegen.', true);
+  if (length < width + 1) return toast('Diese Strecke ist für den Durchgang zu kurz.', true);
+  const at = Math.max(width / 2 + .25, Math.min(length - width / 2 - .25, hit.at));
+  if ((hit.barrier.gaps ?? []).some(gap => Math.abs(gap.at - at) < (gap.width + width) / 2 + .25)) return toast('Hier ist bereits ein Durchgang. Unter „Auswählen“ kannst du ihn wieder schließen.');
+  if (commit(candidate => {
+    const barrier = candidate.barriers.find(item => item.id === hit.barrier.id);
+    (barrier.gaps ??= []).push({ at: Math.round(at * 100) / 100, width }); barrier.gaps.sort((a, b) => a.at - b.at);
+  }, 'Durchgang geöffnet. Die Öffnung bleibt auch im Spiel frei.')) barrierPanel.setPreview(map.barriers.find(item => item.id === hit.barrier.id));
+}
+function eraseBarrierSample(point) {
+  const stroke = pointer?.barrierErase;
+  if (!stroke) return;
+  const hits = barrierEraseHits(map.barriers ?? [], stroke.last, point, barrierPickRadius());
+  if (hits.length) {
+    const ids = new Set(hits.map(item => item.id)); map.barriers = map.barriers.filter(item => !ids.has(item.id));
+    for (const id of ids) document.getElementById(`feature-barrier-${id}`)?.remove();
+    stroke.removed += hits.length;
+  }
+  stroke.last = point;
+  barrierPanel.status(`${stroke.removed} ganze Strecken entfernt · Loslassen zum Speichern`);
 }
 function download(contents, filename, mime) {
   const url = URL.createObjectURL(new Blob([contents], { type: mime }));
@@ -933,13 +1053,22 @@ function setMode(next) {
     $('feature-filter').value = 'object'; $('object-kind-filter').value = 'all'; $('feature-search').value = '';
     renderList();
   }
+  if (mode.startsWith('barrier')) {
+    layers.showObjects = true; $('layer-objects').checked = true;
+    $('object-kind-filter').value = 'all'; $('feature-filter').value = 'barrier'; $('feature-search').value = '';
+    renderList();
+  }
   landscapePanel?.sync();
+  barrierPanel?.sync();
   const instructions = {
     biome: 'Ziehe auf der Insel, um Landschaft zu malen.', terrain: 'Ziehe auf der Insel, um die Bodenfarbe zu ändern.',
     scatter: 'Ziehe auf der Insel, um Objekte zu verteilen.', windzone: 'Tippe auf die Insel, um eine Windzone zu setzen.',
     terrainErase: 'Berühre gemalte Flächen, um sie zu entfernen.', erase: 'Ziehe über die markierten Objektmittelpunkte.',
     brush: 'Ziehe auf der Insel, um hohes Gras zu malen.', place: 'Tippe auf die Insel, um ein Objekt zu setzen.',
     pan: 'Ziehe die Karte. Mit + und − kannst du zoomen.', select: 'Tippe ein Element an. Ziehe es an eine neue Stelle.',
+    barrierDraw: 'Mauer oder Zaun ziehen. Loslassen baut die Strecke. Esc bricht ab.',
+    barrierGap: 'Tippe auf eine Strecke, um einen freien Durchgang zu öffnen.',
+    barrierErase: 'Ziehe über Mauer- oder Zaunstrecken. Jede berührte Strecke wird ganz entfernt.',
   };
   $('canvas-instruction').textContent = instructions[mode] ?? instructions.select;
   renderMap();
@@ -1050,6 +1179,9 @@ landscapePanel = createLandscapePanel({ getMap: () => map, getMode: () => mode, 
   getPosition: () => selectedFeature()?.position ?? hoverPoint ?? map.gameplay.spawnPosition ?? map.zone.center,
   refreshCursor: () => updatePlacementPreview(),
 });
+barrierPanel = createBarrierPanel({ getMap: () => map, getMode: () => mode, setMode, commit, selectedFeature, cancelPointer,
+  showObjectsPane: () => landscapePanel.showPane('objects'),
+});
 $('palette-kind').addEventListener('change', () => { fillVariants($('palette-variant'), $('palette-kind').value); updatePaletteRarity(); renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
 $('palette-variant').addEventListener('change', () => { renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
 $('object-variant').addEventListener('change', () => { const feature = selectedFeature(); if (feature) renderAssetPreview('object', feature.kind, $('object-variant').value); if (feature?.kind === 'grass') landscapePanel.setSelectedVariant($('object-variant').value); });
@@ -1095,7 +1227,7 @@ $('map-viewport').addEventListener('dblclick', event => {
   if (mode === 'select' && selectedFeature()?.points) { event.preventDefault(); addVertex(coordinateAt(event)); }
 });
 $('map-viewport').addEventListener('wheel', event => {
-  event.preventDefault(); if (pointer?.brush || pointer?.eraser || pointer?.terrainEraser) return; zoomBy(event.deltaY > 0 ? 1.12 : 1 / 1.12, coordinateAt(event));
+  event.preventDefault(); if (pointer?.brush || pointer?.eraser || pointer?.terrainEraser || pointer?.barrierDraw || pointer?.barrierErase) return; zoomBy(event.deltaY > 0 ? 1.12 : 1 / 1.12, coordinateAt(event));
 }, { passive: false });
 document.addEventListener('keydown', event => {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
@@ -1109,7 +1241,7 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape') { selection = null; setMode('select'); renderAll(); }
   if (event.key.toLowerCase() === 'f') { event.preventDefault(); focusSelection(); }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'd' && selection?.type === 'object') { event.preventDefault(); duplicateObject(); }
-  if (event.code === 'Space') { event.preventDefault(); if (!pointer?.brush && !pointer?.eraser && !pointer?.terrainEraser) { spaceHeld = true; renderMap(); } }
+  if (event.code === 'Space') { event.preventDefault(); if (!pointer?.brush && !pointer?.eraser && !pointer?.terrainEraser && !pointer?.barrierDraw && !pointer?.barrierErase) { spaceHeld = true; renderMap(); } }
 });
 document.addEventListener('keyup', event => { if (event.code === 'Space') { spaceHeld = false; renderMap(); } });
 window.addEventListener('blur', () => { cancelPointer(); spaceHeld = false; renderMap(false); });
@@ -1147,6 +1279,7 @@ window.nebeljagdMapTestState = () => ({
   map: clone(map), data: clone(map), selection: clone(selection), mode,
   brush: { radius: Number($('brush-radius').value), activeStroke: Boolean(pointer?.brush), pendingObjects: pointer?.brush?.objects.length ?? 0 },
   eraser: { radius: Number($('eraser-radius').value), filter: $('eraser-filter').value, activeStroke: Boolean(pointer?.eraser), pendingObjects: pointer?.eraser?.objects.length ?? 0 },
+  barriers: { ...barrierPanel?.settings(), activeStroke: Boolean(pointer?.barrierDraw), erasing: Boolean(pointer?.barrierErase), count: map.barriers?.length ?? 0 },
   landscape: landscapePanel?.state(),
   dirty: JSON.stringify(map) !== JSON.stringify(initialSnapshot),
   viewBox: [view.x, view.y, view.width, view.height], view: { ...view }, zoom: (map.bounds.maxX - map.bounds.minX) / view.width,

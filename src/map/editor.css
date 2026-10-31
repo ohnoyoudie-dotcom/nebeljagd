@@ -165,3 +165,21 @@
  .header-actions{order:0;width:auto}.header-actions .button{flex:none}
 }
 .basic-tools .tool-button span svg{display:block}
+
+.barrier-tools{background:#edf2e5!important;border-bottom:1px solid #d2dcc8}
+.barrier-tools>label{display:block;margin-top:12px;font-size:12px;color:#486347}
+.barrier-tools>select,.barrier-tools>input{width:100%;min-height:42px}
+.barrier-tools>#barrier-draw{width:100%;margin-top:14px}
+.barrier-actions{display:flex;gap:7px;margin-top:8px}.barrier-actions>button{flex:1;white-space:normal;line-height:1.3}
+.barrier-tools .landscape-check{display:flex;gap:8px;align-items:center;min-height:36px}
+.barrier-tools button.active{background:#38614a;color:#fff;border-color:#38614a}
+.barrier-tools #barrier-erase.active{background:#92563f;border-color:#92563f}
+#barrier-preview-section{margin-top:12px;border-top:1px solid #cedbc1;padding-top:6px}
+#barrier-preview-section>summary{min-height:42px;padding:10px 0;font-size:13px;cursor:pointer;color:#385e40}
+.barrier-preview{height:190px;width:100%;overflow:hidden;border-radius:9px;background:#dce4d5}
+.barrier-preview canvas{display:block;width:100%;height:100%}
+#barrier-properties>h3{font-size:14px;margin:18px 0 8px}
+.barrier-gap-row{display:flex;align-items:center;gap:8px;border-bottom:1px solid #dce4d6;font-size:11px}
+.barrier-gap-row>span{flex:1}.barrier-gap-row>button{padding:6px}
+#barrier-selection-preview,#barrier-selection-gap{width:100%;margin:6px 0}
+@media(max-width:599px){.barrier-preview{height:160px}.barrier-actions{flex-wrap:wrap}}

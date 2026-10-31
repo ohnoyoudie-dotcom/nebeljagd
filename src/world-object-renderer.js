@@ -12,6 +12,7 @@ import { createMoundPrototype } from './overgrown-mounds.js';
 import { createVegetationWind } from './vegetation-wind.js';
 import { buildVegetationPatch, buildKitGrassPatch, vegetationInstanceTint, vegetationTint, MAX_GRASS_INSTANCES, MAX_KIT_GRASS_INSTANCES } from './vegetation-patches.js';
 import { vegetationSettings } from './map/landscape.js';
+import { expandBarrierMap } from './map/barriers.js';
 import { loadEnvironmentKit } from './environment-kit.js';
 import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { grassBiomeProfile } from './meadow-ground.js';
@@ -223,6 +224,13 @@ async function createGrassPreview(root, { map, groundHeightAt = () => 0, colorAt
  * within one editable patch are instanced details of that asset, not hidden map entries. */
 export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, biomeAt = () => null, quality = 'high', chunkSize = 64, previewOnly = false }) {
   if (previewOnly) return createGrassPreview(root, { map, groundHeightAt, colorAt, quality });
+  const authoredObjectCount = map.objects?.length ?? 0;
+  const barrierCount = map.barriers?.length ?? 0;
+  // Keep the editable paths in the source document. Only the runtime derives
+  // their repeated models, so changing a style never replaces the drawn path.
+  map = expandBarrierMap(map);
+  const barrierObjects = new Set((map.objects ?? []).slice(authoredObjectCount));
+  const barrierSegmentCount = barrierObjects.size;
   let mode = quality, shelter = null;
   const wind = createVegetationWind(map);
   const kitModels = await loadEnvironmentKit(map, { wind });
@@ -445,14 +453,21 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
     } else {
       const key = `${object.kind}:${variant}`;
-      if (prototypes.has(key)) queue(key, object);
+      // Derived line pieces fit the segment on local X only: the established
+      // wall height, fence posts and collision thickness keep their scale.
+      const lengthScale = barrierObjects.has(object) && ['wall', 'fence'].includes(object.kind)
+        ? object.longitudinalScale ?? 1 : 1;
+      if (prototypes.has(key)) queue(key, object, object.position, [lengthScale, 1, 1]);
       if (kit) {
         for (const circle of kit.circles) {
           const body = circleBody(object, circle.radius, circle.maxY, new THREE.Vector3(circle.x, 0, circle.z)); body.imported = true;
           if (object.kind === 'tree') { trees.push({ ...body, asset: `${kit.asset}.glb`, scale }); importedAssets.trees++; }
         }
         if (kit.walls.length) {
-          const structure = addStructure(object, kit.walls, null);
+          const localWalls = lengthScale === 1 ? kit.walls : kit.walls.map(body => ({
+            ...body, minX: body.minX * lengthScale, maxX: body.maxX * lengthScale,
+          }));
+          const structure = addStructure(object, localWalls, null);
           if (object.kind === 'crate' || kit.destructible) {
             const maxHealth = kit.destructible?.health ?? 55;
             destructibles.push({ id: object.id, name: object.name, kind: object.kind, x, z,
@@ -627,7 +642,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     setGrassInteractors(values){ wind.setInteractors(values); },
     dispose() { disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
     get shelter() { return shelter; },
-    get stats() { return { totalObjects: (map.objects ?? []).length, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [2.25, 2.6], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
+    get stats() { return { totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [2.25, 2.6], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
         sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: 4,
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,

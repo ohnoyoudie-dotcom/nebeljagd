@@ -1,6 +1,7 @@
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getObjectDefinition } from './objects.js';
 import { validateLandscape } from './landscape.js';
+import { validateBarriers } from './barriers.js';
 
 /** Nebeljagd map contract v1. Coordinates are world meters: north = -z. */
 const LIMIT = 1e7;
@@ -179,6 +180,7 @@ export function validateWorldmap(map) {
     if (centerValid && islandValid && finite(zone.initialRadius) && map.island.points.some(point => Math.hypot(point[0] - zone.center[0], point[1] - zone.center[1]) > zone.initialRadius)) warnings.push('Teile der Insel liegen bereits am Anfang im Nebel.');
   }
   errors.push(...validateLandscape(map, { ids, checkPoint }));
+  errors.push(...validateBarriers(map, { ids, checkPoint, pointInPolygon, islandValid }));
   return { valid: errors.length === 0, errors, warnings };
 }
 
@@ -194,6 +196,7 @@ export function getWorldmapStats(map) {
     targetPlayers: map.gameplay.targetPlayers, areaPerPlayerM2: landAreaM2 / map.gameplay.targetPlayers,
     regionCount: map.regions.length, pathCount: map.paths.length, riverCount: map.rivers.length, placeCount: map.places.length, spawnAreaCount: map.spawnAreas.length,
     objectCount: map.objects?.length ?? 0,
+    barrierCount: map.barriers?.length ?? 0,
     objectCounts: (map.objects ?? []).reduce((counts, item) => { counts[item.kind] = (counts[item.kind] ?? 0) + 1; return counts; }, {}),
   };
 }

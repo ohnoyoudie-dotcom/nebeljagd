@@ -6,7 +6,9 @@ Der Editor hat vier Hauptbereiche:
   ziehen. Die Pinselgröße bestimmt die Breite. Boden und Bewuchs werden zusammen
   verändert. „Hohes Gras malen“ erzeugt zusätzliche Versteckflächen.
 - **Objekte:** Modell auswählen und auf die Karte setzen. „Mehrere Objekte
-  verteilen“ ist eine zusätzliche, aufklappbare Funktion.
+  verteilen“ ist eine zusätzliche, aufklappbare Funktion. Unter **Mauern & Zäune
+  ziehen** lassen sich ganze Strecken zeichnen, mit Durchgängen versehen und
+  später über ihre Formpunkte bearbeiten; eine 3D-Vorschau zeigt die Modelle.
 - **Radieren:** „Gemalte Landschaft“, „Nur Grasflächen“ oder „Objekte“ wählen
   und über die Karte ziehen. Beim Bereichswechsel ist der Radierer sofort aktiv.
 - **Mehr:** Wege, Flüsse, Karteninhalt, Wind, Ansicht und zusätzliche Dateiformate.
@@ -15,6 +17,9 @@ Der Editor hat vier Hauptbereiche:
 Karte erreichbar. Ein Wechsel des Hauptbereichs beendet den vorherigen Pinsel.
 Eigenschaften erscheinen erst beim Auswählen eines Elements. Auf kleineren
 Bildschirmen können sie mit dem Kreuz wieder geschlossen werden.
+
+Die Anleitung zum neuen Ziehwerkzeug und seinem austauschbaren Modellaufbau
+steht unter [Mauern und Zäune zeichnen](barrier-editor.md).
 
 ## Landschaft und Bodenfarbe
 
