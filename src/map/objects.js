@@ -1,5 +1,6 @@
 import { WEAPON_TYPES } from '../loot-tiers.js';
 import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
+import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
@@ -53,7 +54,10 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'wall', label: 'Mauer', defaultVariant: 'kit-stone', defaultScale: 1,
     footprintRadius: Math.hypot(1.6, .31), footprintWidth: 3.2, footprintDepth: .62,
     variants: [{ id: 'kit-stone', label: 'Steinmauer · GLB' },
-      { id: 'kit-cut-stone', label: 'Steinmauer · Pfeiler & Abdeckung', footprintRadius: Math.hypot(2, .44), footprintWidth: 4, footprintDepth: .88 }] },
+      { id: 'kit-cut-stone', label: 'Steinmauer · Pfeiler & Abdeckung', footprintRadius: Math.hypot(2, .44), footprintWidth: 4, footprintDepth: .88 },
+      { id: 'kit-tripo-wall', label: 'Steinmauer · Verwittert (Tripo)',
+        footprintRadius: Math.hypot(TRIPO_WALL_DEFINITION.footprint.halfWidth, TRIPO_WALL_DEFINITION.footprint.halfDepth),
+        footprintWidth: 2 * TRIPO_WALL_DEFINITION.footprint.halfWidth, footprintDepth: 2 * TRIPO_WALL_DEFINITION.footprint.halfDepth }] },
   { kind: 'fence', label: 'Zaun', defaultVariant: 'kit-wood', defaultScale: 1,
     footprintRadius: Math.hypot(1.6, .2), footprintWidth: 3.2, footprintDepth: .4,
     variants: [{ id: 'kit-wood', label: 'Holzzaun · GLB' },

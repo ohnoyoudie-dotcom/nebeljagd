@@ -1,0 +1,60 @@
+{
+  "package": "nebeljagd-tripo-wall",
+  "version": 1,
+  "sourceOrigin": "Project owner supplied the Tripo GLB in assets/inbox and explicitly requested game/editor integration.",
+  "provider": {
+    "name": "Tripo",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-wall.py",
+    "scriptSha256": "0e5f47483f9e39cb4806a19922917a4512067ce897d527e36cc1fa334a1b2aac",
+    "helperScript": "scripts/prepare-tripo-props.py",
+    "helperScriptSha256": "51444961b4f0e01fda61a9f1e2d2e7fa1446c1636bf0db9c75a91fd9bd9494d7",
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-wall.py",
+    "method": "Uniform metric scale to 6m length, centering/grounding, microscopic duplicate cleanup, collapse simplification retaining UV/PBR, 2K embedded color/roughness textures and 1536px normals. No original modification."
+  },
+  "assets": [
+    {
+      "id": "wall",
+      "source": {
+        "path": "assets/inbox/stone wall 3d model.glb",
+        "bytes": 70791616,
+        "sha256": "ed482de99b6325d4166df73acf69054a03c80eb24c764835baef153948d7423e",
+        "triangles": 1898486,
+        "vertices": 971755,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-wall/runtime/wall.glb",
+        "bytes": 3944784,
+        "sha256": "b8e49ceff639a5ee8fa353c72fcd312729ccb1a71de4caf895d1225b883fcf81",
+        "triangles": 12000,
+        "vertices": 8770,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    }
+  ],
+  "evidenceBoundary": "Static binary validation and actual Blender renders; GPU import/collisions and artistic review are separate."
+}

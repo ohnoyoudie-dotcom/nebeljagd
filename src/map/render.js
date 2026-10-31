@@ -42,6 +42,7 @@ const objectSymbols = [
   '<g id="world-object-house-tripo-tavern"><rect x="-11" y="-8.89" width="22" height="17.78" rx=".35" fill="#926b47" stroke="#493a2e" stroke-width=".45"/><path d="M-10.4,-8H-2.35M0,-8H10.4V8H1.4M-1.5,8H-10.4V-8M2.9,-8V-3.5M2.9,-1.1V0H4.7M6.8,0H10.4" fill="none" stroke="#d6c39b" stroke-width=".5"/><path d="M-1.5,8H1.4M-2.35,-8H0" stroke="#f4e6bc" stroke-width=".7"/><path d="M-8.7,-2H-4.7V.86H-8.7ZM-8.7,2.2H-4.7V5.05H-8.7ZM-7.6,-7.4H-2.5V-5.5H-7.6Z" fill="#644b35" stroke="#bf9966" stroke-width=".2"/></g>',
   '<g id="world-object-wall"><rect x="-1.6" y="-.31" width="3.2" height=".62" fill="#8b9387" stroke="#4d5d53" stroke-width=".13"/><path d="M-.8,-.31V.31M0,-.31V.31M.8,-.31V.31" stroke="#535c50" stroke-width=".1"/></g>',
   '<g id="world-object-wall-cut-stone"><rect x="-2" y="-.31" width="4" height=".62" fill="#d5c6a7" stroke="#5b5b53" stroke-width=".12"/><path d="M-2,-.44H-1.55V.44H-2ZM1.55,-.44H2V.44H1.55Z" fill="#e6d9bd" stroke="#5b5b53" stroke-width=".1"/><path d="M-1,-.31V.31M0,-.31V.31M1,-.31V.31" stroke="#8c877a" stroke-width=".1"/></g>',
+  '<g id="world-object-wall-tripo"><path d="M-3,-.38-2.4,-.44-1.75,-.39-.8,-.43 0,-.39 .85,-.44 1.6,-.38 2.3,-.43 3,-.36V.38L2.4,.44 1.7,.39 .85,.43 0,.37-.8,.44-1.6,.38-2.4,.44-3,.36Z" fill="#827a65" stroke="#403f34" stroke-width=".1"/><path d="M-2.3,-.4-2.35,.4M-1.3,-.4-1.18,.4M-.2,-.4-.3,.4M.9,-.4 1.02,.4M2.1,-.4 2,.4" stroke="#535245" stroke-width=".13"/><path d="M-2.1,.29H-1.7M.3,.28H.66M1.9,-.29H2.25" stroke="#647052" stroke-width=".12"/></g>',
   '<g id="world-object-fence"><path d="M-1.6,-.16H1.6M-1.6,.16H1.6M-1.4,-.28V.28M0,-.28V.28M1.4,-.28V.28" stroke="#b08b54" stroke-width=".2"/></g>',
   '<g id="world-object-fence-cross-wood"><path d="M-2,-.18H2M-2,.18H2M-1.8,-.18L1.8,.18M-1.8,.18L1.8,-.18" stroke="#98643e" stroke-width=".16"/><path d="M-1.8,-.22V.22M1.8,-.22V.22" stroke="#60432f" stroke-width=".35"/></g>',
   '<g id="world-object-crate"><rect x="-.43" y="-.43" width=".86" height=".86" fill="#9e784d" stroke="#5e4931" stroke-width=".12"/><path d="M-.35,-.35 .35,.35M-.35,.35 .35,-.35" stroke="#e0bd7e" stroke-width=".1"/></g>',
@@ -71,6 +72,7 @@ const objectSymbols = [
 ];
 
 function objectSymbol(item) {
+  if (item.kind === 'wall' && item.variant === 'kit-tripo-wall') return 'wall-tripo';
   if (item.kind === 'wall' && item.variant === 'kit-cut-stone') return 'wall-cut-stone';
   if (item.kind === 'fence' && item.variant === 'kit-cross-wood') return 'fence-cross-wood';
   if (item.kind === 'house' && item.variant === 'kit-tripo-castle') return 'house-tripo-castle';
@@ -116,6 +118,7 @@ export function barrierSvg(barrier) {
   const [outline, color, detail, dash] = {
     wall: ['#405447', '#b9b59c', '#646d5f', '.12 1'],
     'wall-cut-stone': ['#5b5b53', '#d5c6a7', '#8c877a', '.45 3.55'],
+    'wall-tripo': ['#403f34', '#827a65', '#535245', '.18 .65 .12 1.05'],
     fence: ['#59432e', '#b78c53', '#63462c', '.28 2.4'],
     'fence-cross-wood': ['#493527', '#98643e', '#dbb17b', '.2 .8 .2 2.8'],
   }[style.id];

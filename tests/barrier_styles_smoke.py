@@ -89,7 +89,7 @@ try:
         page.wait_for_function('window.nebeljagdMapTestState')
         initial = fixture(); import_map(page, initial)
         options = page.locator('#barrier-kind option').evaluate_all('(items)=>items.map(x=>x.value)')
-        assert set(options) == {'wall', 'fence', 'wall-cut-stone', 'fence-cross-wood'}, options
+        assert set(options) == {'wall', 'fence', 'wall-cut-stone', 'fence-cross-wood', 'wall-tripo'}, options
         draw(page, 'wall-cut-stone', [-70, -50], [60, -50])
         wall = copy.deepcopy(routes(page)[0])
         assert wall['kind'] == 'wall' and wall['variant'] == 'kit-cut-stone', wall

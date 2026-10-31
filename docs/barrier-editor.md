@@ -2,8 +2,8 @@
 
 Im Karteneditor unter **Objekte → Mauern & Zäune ziehen**:
 
-1. Eine der vier Optiken wählen: **Steinmauer**, **Steinmauer · Pfeiler & Abdeckung**,
-   **Holzzaun** oder **Holzzaun · Kreuzstreben**.
+1. Eine der fünf Optiken wählen: **Steinmauer**, **Steinmauer · Pfeiler & Abdeckung**,
+   **Steinmauer · Verwittert (Tripo)**, **Holzzaun** oder **Holzzaun · Kreuzstreben**.
 2. **Gerade ziehen** oder **Freihand mit Ecken** einstellen.
 3. **Strecke ziehen** aktivieren, auf der Insel ziehen und loslassen.
 4. **Durchgang setzen** wählen und auf eine Strecke tippen. Die Breite ist
@@ -30,13 +30,19 @@ dem Nebeljagd-Umwelt-Kit. Zwei weitere Spielmodelle ergänzen die Auswahl:
 - `wall:kit-cut-stone`: gesetzte Steinquader, Pfeiler und breite Abdecksteine.
 - `fence:kit-cross-wood`: Holzpfosten mit diagonalen Kreuzstreben.
 
-Die neuen Modelle entstehen direkt aus Spielgeometrie in `src/barrier-models.js`;
+Die Varianten mit Pfeilern und Kreuzstreben entstehen direkt aus Spielgeometrie in `src/barrier-models.js`;
 es werden dafür keine externen Grafiken benötigt. Beide sind auch als einzelne
 Objekte verfügbar. Eine ausgewählte Strecke kann rechts unter **Optik dieser
 Strecke** auf jede Variante umgestellt werden; mit **Übernehmen** bleiben ihre
 Formpunkte, Durchgänge und Größe erhalten. Die 3D-Vorschau zeigt den Wechsel.
 Auch JSON, SVG und eigenständige Editor-Dateien speichern die gewählte Variante.
 Die bestehenden Strecken werden nicht automatisch umgestaltet.
+
+**Steinmauer · Verwittert (Tripo)** verwendet deinen eigenen Export aus
+`assets/inbox/stone wall 3d model.glb`. Die aufbereitete Spielversion liegt in
+`assets/imported/tripo-wall/runtime/wall.glb`; Texturen und Natursteinoptik bleiben
+erhalten. Sie kann einzeln oder als gezeichnete Strecke mit Durchgängen gesetzt
+werden. Die unveränderte Eingangsdatei bleibt im Inbox-Ordner.
 
 Zusätzliche GLBs können später als weitere Stile aufgenommen werden, ohne den
 Verlauf neu zu zeichnen. Normalisierte Modellmaße und Anschlussflächen müssen

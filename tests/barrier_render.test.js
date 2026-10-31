@@ -37,7 +37,7 @@ test('a passage at a bend cuts both adjoining wall sections', () => {
   assert.match(svg, /data-barrier-kind="fence" data-barrier-variant="kit-wood"/);
 });
 
-test('all four layouts have distinct map strokes while keeping the same doorway and route', () => {
+test('all five layouts have distinct map strokes while keeping the same doorway and route', () => {
   const visibleStyles = new Set();
   for (const style of BARRIER_STYLES) {
     const item = makeBarrier(style.id, [[0, 0], [20, 0]], { id: 'style-test', gaps: [{ at: 10, width: 3 }] });
@@ -47,7 +47,7 @@ test('all four layouts have distinct map strokes while keeping the same doorway 
     assert.ok(svg.includes(style.label.replaceAll('&', '&amp;')));
     visibleStyles.add(svg.match(/<path class="barrier-solid"[^>]*>/)[0]);
   }
-  assert.equal(visibleStyles.size, 4);
+  assert.equal(visibleStyles.size, 5);
 });
 
 test('SVG thickness follows the normalized GLB footprint and selected scale', () => {

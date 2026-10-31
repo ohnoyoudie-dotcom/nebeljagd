@@ -714,6 +714,27 @@
         ],
         "span": 4.829797895106047
       }
+    },
+    {
+      "kind": "wall",
+      "variant": "kit-tripo-wall",
+      "label": "Steinmauer · Verwittert (Tripo)",
+      "file": "assets/catalog/wall-kit-tripo-wall.webp",
+      "bytes": 3540,
+      "sha256": "5ac13322723c34d6d0358f12a262f4001e68f00f2766902ec93bec6a8e5d758d",
+      "renderedBounds": {
+        "min": [
+          3757,
+          0.009999999776482582,
+          -0.4386942982673645
+        ],
+        "max": [
+          3763,
+          1.1844540927559137,
+          0.4386942982673645
+        ],
+        "span": 6.917680083036247
+      }
     }
   ],
   "errors": []

@@ -5,6 +5,7 @@ import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
 export const BARRIER_STYLES = Object.freeze([
   Object.freeze({ id: 'wall', label: 'Steinmauer', kind: 'wall', variant: 'kit-stone' }),
   Object.freeze({ id: 'wall-cut-stone', label: 'Steinmauer · Pfeiler & Abdeckung', kind: 'wall', variant: 'kit-cut-stone' }),
+  Object.freeze({ id: 'wall-tripo', label: 'Steinmauer · Verwittert (Tripo)', kind: 'wall', variant: 'kit-tripo-wall' }),
   Object.freeze({ id: 'fence', label: 'Holzzaun', kind: 'fence', variant: 'kit-wood' }),
   Object.freeze({ id: 'fence-cross-wood', label: 'Holzzaun · Kreuzstreben', kind: 'fence', variant: 'kit-cross-wood' }),
 ]);

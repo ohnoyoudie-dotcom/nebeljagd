@@ -32,8 +32,8 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 50);
-  assert.equal(ASSET_CATALOG.length, 50);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 51);
+  assert.equal(ASSET_CATALOG.length, 51);
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {
@@ -59,6 +59,27 @@ test('new wall and fence layouts are available individually and roundtrip withou
     assert.deepEqual(validateWorldmap(map).errors, []);
     assert.deepEqual(normalizeWorldmap(JSON.parse(JSON.stringify(map))).objects.at(-1), item);
   }
+});
+
+test('the weathered Tripo wall stays a distinct textured choice in object and barrier documents', () => {
+  const variant = 'kit-tripo-wall', asset = getVariantAsset('wall', variant);
+  assert.equal(asset.format, 'glb');
+  assert.deepEqual(asset.sourcePaths, ['assets/imported/tripo-wall/runtime/wall.glb', 'assets/inbox/stone wall 3d model.glb']);
+  const map = structuredClone(base), original = JSON.stringify(base);
+  const object = makeWorldObject('wall', [30, -42], { variant, id: 'weathered-wall-object', rotation: .75, scale: 1.2 });
+  map.objects.push(object);
+  const barrier = { id: 'weathered-wall-route', name: 'Verwitterte Mauer', kind: 'wall', variant,
+    points: [[0, 0], [18, 0]], scale: 1.2, gaps: [{ at: 9, width: 3 }] };
+  (map.barriers ??= []).push(barrier);
+  assert.deepEqual(validateWorldmap(map).errors, []);
+  const restored = normalizeWorldmap(JSON.parse(JSON.stringify(map)));
+  assert.deepEqual(restored.objects.at(-1), object);
+  assert.deepEqual(restored.barriers.at(-1), barrier);
+  for (const key of ['worldObject', 'barrier']) {
+    const rule = schema.$defs[key].allOf.find(item => item.if?.properties?.kind?.const === 'wall');
+    assert.ok(rule.then.properties.variant.enum.includes(variant));
+  }
+  assert.equal(JSON.stringify(base), original, 'registering the new design leaves current placements alone');
 });
 
 test('all seven Tripo props agree across editor catalogue, structural schema and map round-trip', () => {

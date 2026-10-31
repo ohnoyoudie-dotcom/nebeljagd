@@ -1,6 +1,7 @@
 import { TRIPO_TAVERN_DEFINITION } from './tripo-tavern-definition.js';
 import { TRIPO_CASTLE_DEFINITION } from './tripo-castle-definition.js';
 import { TRIPO_PROP_DEFINITIONS } from './tripo-prop-definitions.js';
+import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
 
 /** Shared CPU-only dimensions for the project's existing GLB environment kit.
  * Horizontal axes are x/z and all dimensions are metres after glTF import.
@@ -109,7 +110,7 @@ export const ENVIRONMENT_KIT_DEFINITIONS = freeze([...nativeDefinitions.map(defi
       { halfWidth: 2, halfDepth: .22 }, [wall(-2, 2, -.22, .22, 1.55, 'fence')]),
   ].map(definition => ({ ...definition, procedural: true, targetHeight: definition.height,
     normalization: { scale: 1, offset: [0, 0, 0] } })),
-  TRIPO_TAVERN_DEFINITION, TRIPO_CASTLE_DEFINITION, ...TRIPO_PROP_DEFINITIONS]);
+  TRIPO_TAVERN_DEFINITION, TRIPO_CASTLE_DEFINITION, TRIPO_WALL_DEFINITION, ...TRIPO_PROP_DEFINITIONS]);
 
 const byId = new Map(ENVIRONMENT_KIT_DEFINITIONS.map(definition => [definition.id, definition]));
 export function getEnvironmentKitDefinition(kind, variant) { return byId.get(`${kind}:${variant}`) ?? null; }

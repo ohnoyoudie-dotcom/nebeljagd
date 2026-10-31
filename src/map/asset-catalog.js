@@ -63,6 +63,7 @@ export const ASSET_CATALOG = Object.freeze([
   kit('tree', 'kit-oak-green', 'Grüne Eiche · GLB', 'oak_green', 'Grüne Eiche aus dem bestehenden Umwelt-Kit.'),
   kit('tree', 'kit-oak-autumn', 'Herbsteiche · GLB', 'oak_autumn', 'Eichenmodell mit eigenen Herbstfarben; im Herbstbiom verwendbar.'),
   kit('wall', 'kit-stone', 'Steinmauer · GLB', 'wall_stone_3m', 'Modulare Steinmauer mit ungefähr 3,2 × 0,62 Metern Grundfläche.'),
+  tripo('wall', 'kit-tripo-wall', 'Steinmauer · Verwittert (Tripo)', 'wall', 'stone wall 3d model', 'Verwitterte graubraune Natursteinmauer aus deinem Tripo-Modell. Als einzelnes Objekt oder zusammenhängend mit dem Mauerwerkzeug platzierbar.', 'tripo-wall'),
   project('wall', 'kit-cut-stone', 'Steinmauer · Pfeiler & Abdeckung', ['src/barrier-models.js', 'src/environment-kit.js'], 'Vier Meter lange Steinmauer mit gesetzten Quadern, Pfeilern und heller Abdeckung. Im Zeichenwerkzeug als zusammenhängende Strecke verwendbar.'),
   kit('fence', 'kit-wood', 'Holzzaun · GLB', 'fence_wood_3m', 'Modularer Holzzaun mit ungefähr 3,2 × 0,4 Metern Grundfläche.'),
   project('fence', 'kit-cross-wood', 'Holzzaun · Kreuzstreben', ['src/barrier-models.js', 'src/environment-kit.js'], 'Vier Meter langer Holzzaun mit Pfosten und sichtbaren Kreuzstreben. Gleiche Zeichen- und Durchgangsfunktion wie die erste Variante.'),

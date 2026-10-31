@@ -14,6 +14,7 @@ import tripoCastle from '../assets/imported/tripo-castle/runtime/castle.glb?url&
 import tripoWagon from '../assets/imported/tripo-props/runtime/wagon.glb?url&inline';
 import tripoBarrel from '../assets/imported/tripo-props/runtime/barrel.glb?url&inline';
 import tripoWell from '../assets/imported/tripo-props/runtime/well.glb?url&inline';
+import tripoWall from '../assets/imported/tripo-wall/runtime/wall.glb?url&inline';
 import tripoRock01 from '../assets/imported/tripo-props/runtime/rock-01.glb?url&inline';
 import tripoRock02 from '../assets/imported/tripo-props/runtime/rock-02.glb?url&inline';
 import tripoRock03 from '../assets/imported/tripo-props/runtime/rock-03.glb?url&inline';
@@ -34,6 +35,7 @@ const urls = {
   'house:kit-tripo-castle': tripoCastle,
   'wagon:kit-tripo-wagon': tripoWagon, 'barrel:kit-tripo-barrel': tripoBarrel,
   'well:kit-tripo-well': tripoWell,
+  'wall:kit-tripo-wall': tripoWall,
   'rock:kit-tripo-01': tripoRock01, 'rock:kit-tripo-02': tripoRock02, 'rock:kit-tripo-03': tripoRock03,
   'house:kit-timber': timberHouse, 'grass:kit-tall': tallGrass,
   'rock:kit-cluster': rockCluster, 'rock:kit-single': rockSingle,

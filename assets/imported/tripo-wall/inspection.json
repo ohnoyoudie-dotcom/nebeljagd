@@ -1,0 +1,148 @@
+{
+  "id": "wall",
+  "label": "Steinmauer \u00b7 Verwittert (Tripo)",
+  "source": {
+    "path": "assets/inbox/stone wall 3d model.glb",
+    "bytes": 70791616,
+    "sha256": "ed482de99b6325d4166df73acf69054a03c80eb24c764835baef153948d7423e",
+    "triangles": 1898486,
+    "vertices": 971755,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-wall/runtime/wall.glb",
+    "bytes": 3944784,
+    "sha256": "b8e49ceff639a5ee8fa353c72fcd312729ccb1a71de4caf895d1225b883fcf81",
+    "triangles": 12000,
+    "vertices": 8770,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 6.119712391446447,
+    "finalUniformScale": 1.0000909252181411,
+    "blenderSourceBounds": [
+      [
+        -0.4902191162109375,
+        -0.07144927978515625,
+        0.0
+      ],
+      [
+        0.4902191162109375,
+        0.07144927978515625,
+        0.19211579859256744
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      0.0001239776611328125,
+      -0.0014953017234802246,
+      0.0012525178026407957
+    ],
+    "gltfBounds": [
+      [
+        -3.0,
+        0.0,
+        -0.4386942982673645
+      ],
+      [
+        3.0,
+        1.1744540929794312,
+        0.4386942982673645
+      ]
+    ],
+    "dimensions": [
+      6.0,
+      1.1744540929794312,
+      0.877388596534729
+    ],
+    "axes": "glTF +Y up; local X repeat direction; X/Z centered; bottom Y=0; original proportions retained"
+  },
+  "cleanup": {
+    "weldDistanceMetres": 0.00030000000000000003,
+    "before": {
+      "vertices": 971755,
+      "faces": 1898486
+    },
+    "after": {
+      "vertices": 949188,
+      "faces": 1898372
+    }
+  },
+  "textures": [
+    {
+      "name": "stone_wall_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        2048,
+        2048
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "stone_wall_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1536,
+        1536
+      ],
+      "format": "PNG"
+    },
+    {
+      "name": "stone_wall_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        2048,
+        2048
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "length": 6.0,
+    "triangleBudget": 12000,
+    "textureLimit": 2048,
+    "normalTextureLimit": 1536,
+    "fileLimitBytes": 4194304
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true,
+    "embeddedPBRTextures": true,
+    "textureBudgetPassed": true
+  }
+}

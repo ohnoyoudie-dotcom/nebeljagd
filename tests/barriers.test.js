@@ -53,9 +53,9 @@ test('authored line and gaps survive roundtrip and model change without generate
   assert.ok(expandBarrierMap(restored).objects.every(item => item.kind === 'fence'));
 });
 
-test('four distinct styles retain their identity, route and passages through JSON and runtime expansion', () => {
-  assert.equal(BARRIER_STYLES.length, 4);
-  assert.equal(new Set(BARRIER_STYLES.map(style => style.id)).size, 4);
+test('five distinct styles retain their identity, route and passages through JSON and runtime expansion', () => {
+  assert.equal(BARRIER_STYLES.length, 5);
+  assert.equal(new Set(BARRIER_STYLES.map(style => style.id)).size, 5);
   const points = [[-20, 0], [0, 0], [0, 20]], gaps = [{ at: 10, width: 3 }];
   for (const style of BARRIER_STYLES) {
     const source = makeBarrier(style.id, points, { id: 'styled-line', gaps, scale: 1.3 });

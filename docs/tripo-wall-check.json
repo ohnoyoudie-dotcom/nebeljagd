@@ -1,0 +1,149 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5193",
+  "editorUrl": "http://127.0.0.1:5206",
+  "checks": [
+    "The Tripo wall draws, previews and switches with older styles while keeping its route and passage; Undo/Redo works",
+    "JSON save and reimport retain the actual Tripo variant without baking generated pieces into objects",
+    "Actual embedded PBR renders on repeated wall modules, with matching end bounds, solid collisions and an open 3 m passage"
+  ],
+  "errors": [],
+  "limits": "Chromium/SwiftShader visual and interaction checks; no physical iPad performance measurement.",
+  "runtime": {
+    "sourceUnchanged": true,
+    "maps": [
+      {
+        "color": true,
+        "normal": true,
+        "roughness": true,
+        "width": 2048,
+        "height": 2048
+      }
+    ],
+    "bounds": {
+      "min": [
+        -3,
+        0,
+        -0.4386942982673645
+      ],
+      "max": [
+        3,
+        1.1744540929794312,
+        0.4386942982673645
+      ]
+    },
+    "halfWidth": 3,
+    "seams": [
+      0,
+      3,
+      0
+    ],
+    "solidMoved": 0.8586942982673644,
+    "gapMoved": 0,
+    "cornerMoved": 0.8586942982673644,
+    "solidCrossing": {
+      "hit": "weathered-wall-segment-1",
+      "visible": false
+    },
+    "gapCrossing": {
+      "hit": null,
+      "visible": true
+    },
+    "cornerCrossing": {
+      "hit": "weathered-wall-segment-4",
+      "visible": false
+    },
+    "stats": {
+      "totalObjects": 5,
+      "authoredObjectCount": 0,
+      "barrierCount": 1,
+      "barrierSegmentCount": 5,
+      "chunks": 3,
+      "visibleChunks": 3,
+      "instanceBatches": 3,
+      "treeCount": 0,
+      "houseCount": 0,
+      "moundCount": 0,
+      "grassPatchCount": 0,
+      "grassRendering": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false,
+        "sourceVersion": "nebeljagd-3d-v011",
+        "crossedStalksPerInstance": 4,
+        "totalInstances": 0,
+        "maximumInstances": 500000,
+        "budgetUnitsUsed": 0,
+        "kitInstances": 0,
+        "maximumKitInstances": 12000,
+        "configuredPatches": 0,
+        "legacyBiomeAdaptedPatches": 0,
+        "legacySuppressedGrassInstances": 0,
+        "biomeAdaptiveLegacyGrass": true,
+        "budgetLimitedPatches": 0,
+        "wind": {
+          "gpu": true,
+          "rootAnchored": true,
+          "worldSpaceDirection": true,
+          "zones": 0,
+          "maximumZones": 32,
+          "settings": {
+            "enabled": true,
+            "strength": 0.35,
+            "speed": 1,
+            "direction": 0.65,
+            "gusts": true,
+            "gustStrength": 0.35,
+            "gustFrequency": 0.18,
+            "turbulence": 0.2
+          },
+          "time": 1,
+          "interactors": 0,
+          "maximumInteractors": 8,
+          "interactionMode": "forward-biased",
+          "forwardWeight": 0.82,
+          "radialWeight": 0.18,
+          "firstInteractorStrength": 0,
+          "curvatureVariation": "per-instance-grass",
+          "windVariation": "per-instance-phase-speed-amplitude",
+          "recoveryModel": "variable-directional-wake"
+        },
+        "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+        "colorGradient": [
+          "#315e36",
+          "#bbc975"
+        ],
+        "visibleTallGrassBatches": 0,
+        "tallGrassTriangles": 0
+      },
+      "collisionBodies": 5,
+      "loadedGLBs": 6,
+      "environmentKit": {
+        "loadedModels": 1,
+        "models": [
+          {
+            "id": "wall:kit-tripo-wall",
+            "asset": "tripo-wall",
+            "procedural": false,
+            "targetHeight": 1.1744540929794312,
+            "height": 1.1744540929794312,
+            "parts": 1,
+            "roofRemoved": false,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          }
+        ],
+        "placements": 5
+      }
+    },
+    "calls": 4,
+    "triangles": 60002
+  },
+  "sourceSha256": "ed482de99b6325d4166df73acf69054a03c80eb24c764835baef153948d7423e"
+}

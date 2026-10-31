@@ -95,7 +95,7 @@ console.log(JSON.stringify({ importedSources: sourceRecord.originals.length, ver
 
 // User-supplied Tripo uploads stay untouched. Prepared packages carry a closed
 // file roster so browser builds cannot silently use a different derivative.
-for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle']) {
+for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall']) {
   const root = `assets/imported/${name}/`;
   const manifest = JSON.parse(await readFile(root + 'runtime-manifest.json', 'utf8'));
   const sources = manifest.sources ?? [manifest.source];

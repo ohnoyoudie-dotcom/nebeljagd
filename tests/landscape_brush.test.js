@@ -180,7 +180,7 @@ test('existing kit walls, fences, crates and compact houses guard their actual r
 });
 
 test('shared kit normalization preserves the existing model sizes and recentered collider geometry without browser imports', () => {
-  assert.equal(ENVIRONMENT_KIT_DEFINITIONS.length, 23);
+  assert.equal(ENVIRONMENT_KIT_DEFINITIONS.length, 24);
   for (const definition of ENVIRONMENT_KIT_DEFINITIONS) {
     const { nativeBounds, normalization, targetHeight } = definition;
     if (definition.procedural) {

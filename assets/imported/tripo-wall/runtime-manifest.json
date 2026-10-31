@@ -1,0 +1,52 @@
+{
+  "name": "nebeljagd-tripo-wall",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1025,
+      "sha256": "3f595536175d3e5feb5c8722baffa35e4f3dc29f124964dc054fae6a86239d91"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 3102,
+      "sha256": "3319ccb87ba6f1ab4bb3e650071addfac6a663a411ab90f0299336c4c12e8e0b"
+    },
+    {
+      "path": "previews/wall-runtime.png",
+      "bytes": 580270,
+      "sha256": "7a6a4575ea7b436a3087505abd48538d75dbf9a6c9adb5fb5fd0f0733e9b2102"
+    },
+    {
+      "path": "previews/wall-source.png",
+      "bytes": 583207,
+      "sha256": "bc2829ced09b7a140e82d578a65a1ffd4c4bdf4fb462149609810bc2d15db2ae"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 2094,
+      "sha256": "4aca7c4b0cd4ece0894efe2eb54deb3027344e59a0c49de4aea25888a02aeb92"
+    },
+    {
+      "path": "runtime/wall.glb",
+      "bytes": 3944784,
+      "sha256": "b8e49ceff639a5ee8fa353c72fcd312729ccb1a71de4caf895d1225b883fcf81"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/stone wall 3d model.glb",
+      "sha256": "ed482de99b6325d4166df73acf69054a03c80eb24c764835baef153948d7423e"
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "allStaticPoliciesPassed": true
+  },
+  "licenseStatus": "User-provided project asset; separate commercial provider receipt not supplied.",
+  "pending": [
+    "Editor/game GPU import and collision review",
+    "User artistic approval"
+  ]
+}
