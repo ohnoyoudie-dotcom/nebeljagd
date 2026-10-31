@@ -672,6 +672,48 @@
         ],
         "span": 96.19161632618595
       }
+    },
+    {
+      "kind": "wall",
+      "variant": "kit-cut-stone",
+      "label": "Steinmauer · Pfeiler & Abdeckung",
+      "file": "assets/catalog/wall-kit-cut-stone.webp",
+      "bytes": 3326,
+      "sha256": "db9ce38fb486f4b4a4e9d8ed6c64e2791d0802cd345cf6c62a39aeb171418cdd",
+      "renderedBounds": {
+        "min": [
+          3678,
+          0.009999996200203976,
+          -0.4399999976158142
+        ],
+        "max": [
+          3682,
+          2.0599999520927668,
+          0.4399999976158142
+        ],
+        "span": 5.1296611118695115
+      }
+    },
+    {
+      "kind": "fence",
+      "variant": "kit-cross-wood",
+      "label": "Holzzaun · Kreuzstreben",
+      "file": "assets/catalog/fence-kit-cross-wood.webp",
+      "bytes": 3394,
+      "sha256": "274f432f404bd1a201b656ad13884368f0656e18ad73a536ffbbb96e1518750d",
+      "renderedBounds": {
+        "min": [
+          3838,
+          0.009999985471368156,
+          -0.2199999988079071
+        ],
+        "max": [
+          3842,
+          1.5599999520927668,
+          0.2199999988079071
+        ],
+        "span": 4.829797895106047
+      }
     }
   ],
   "errors": []

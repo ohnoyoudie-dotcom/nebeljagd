@@ -4,7 +4,9 @@ import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
  * pieces are disposable runtime data and must never be saved into objects. */
 export const BARRIER_STYLES = Object.freeze([
   Object.freeze({ id: 'wall', label: 'Steinmauer', kind: 'wall', variant: 'kit-stone' }),
+  Object.freeze({ id: 'wall-cut-stone', label: 'Steinmauer · Pfeiler & Abdeckung', kind: 'wall', variant: 'kit-cut-stone' }),
   Object.freeze({ id: 'fence', label: 'Holzzaun', kind: 'fence', variant: 'kit-wood' }),
+  Object.freeze({ id: 'fence-cross-wood', label: 'Holzzaun · Kreuzstreben', kind: 'fence', variant: 'kit-cross-wood' }),
 ]);
 export const BARRIER_LIMITS = Object.freeze({ barriers: 400, points: 128, gaps: 64, length: 5000, objects: 12000 });
 const EPS = 1e-7;
@@ -13,18 +15,21 @@ const point = value => Array.isArray(value) && value.length === 2 && value.every
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const length = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
 const mix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-const styleFor = barrier => BARRIER_STYLES.find(style => style.kind === barrier?.kind && style.variant === barrier?.variant);
+export const getBarrierStyle = barrier => typeof barrier === 'string'
+  ? BARRIER_STYLES.find(style => style.id === barrier)
+  : BARRIER_STYLES.find(style => style.kind === barrier?.kind && style.variant === barrier?.variant);
 const expandedMaps = new WeakSet();
 let counter = 0;
 
-export function makeBarrier(kind, points, options = {}) {
-  const style = BARRIER_STYLES.find(style => style.kind === kind);
+export function makeBarrier(styleId, points, options = {}) {
+  const requested = getBarrierStyle(styleId);
+  const style = options.variant ? getBarrierStyle({ kind: requested?.kind, variant: options.variant }) : requested;
   if (!style) throw new Error('Bitte Steinmauer oder Holzzaun wählen.');
   return {
-    id: options.id ?? `barrier-${kind}-${Date.now().toString(36)}-${(++counter).toString(36)}`,
+    id: options.id ?? `barrier-${style.kind}-${Date.now().toString(36)}-${(++counter).toString(36)}`,
     name: options.name ?? style.label,
     kind: style.kind,
-    variant: options.variant ?? style.variant,
+    variant: style.variant,
     points: points.map(p => [...p]),
     scale: options.scale ?? 1,
     gaps: (options.gaps ?? []).map(gap => ({ ...gap })),
@@ -69,7 +74,7 @@ export function barrierSections(barrier) {
 /** Use the kit's normalized conservative footprint, not the source filename's
  * nominal 3 m. Its tiny overhangs must not intrude into an authored passage. */
 export function generateBarrierObjects(barrier) {
-  if (!styleFor(barrier) || !finite(barrier.scale) || barrier.scale < .25 || barrier.scale > 3) throw new Error('Ungültiges Mauer- oder Zaunmodell.');
+  if (!getBarrierStyle(barrier) || !finite(barrier.scale) || barrier.scale < .25 || barrier.scale > 3) throw new Error('Ungültiges Mauer- oder Zaunmodell.');
   if (barrierLength(barrier) > BARRIER_LIMITS.length) throw new Error('Die Strecke ist zu lang.');
   const kit = getEnvironmentKitDefinition(barrier.kind, barrier.variant);
   const moduleLength = 2 * kit.footprint.halfWidth * barrier.scale;
@@ -142,7 +147,7 @@ export function validateBarriers(map, { ids, checkPoint, pointInPolygon, islandV
     else if (ids.has(barrier.id)) errors.push(`${label}: Die ID ${barrier.id} wird mehrfach verwendet.`);
     else ids.add(barrier.id);
     if (typeof barrier.name !== 'string' || !barrier.name.trim() || barrier.name.length > 120 || /[\u0000-\u0008\u000b-\u001f]/.test(barrier.name)) errors.push(`${label}: Ungültiger Name.`);
-    if (!styleFor(barrier)) errors.push(`${label}: Bitte eine bekannte Mauer- oder Zaunvariante wählen.`);
+    if (!getBarrierStyle(barrier)) errors.push(`${label}: Bitte eine bekannte Mauer- oder Zaunvariante wählen.`);
     if (!finite(barrier.scale) || barrier.scale < .25 || barrier.scale > 3) errors.push(`${label}: Größe muss zwischen 0,25 und 3 liegen.`);
     let geometryValid = Array.isArray(barrier.points) && barrier.points.length >= 2 && barrier.points.length <= BARRIER_LIMITS.points;
     if (!geometryValid) errors.push(`${label}: Eine Strecke benötigt 2 bis ${BARRIER_LIMITS.points} Punkte.`);

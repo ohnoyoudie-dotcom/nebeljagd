@@ -32,8 +32,8 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 48);
-  assert.equal(ASSET_CATALOG.length, 48);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 50);
+  assert.equal(ASSET_CATALOG.length, 50);
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {
@@ -46,6 +46,19 @@ test('the new Tripo inn is schema-valid and remains distinct through map save an
   const restored = normalizeWorldmap(JSON.parse(JSON.stringify(map)));
   assert.deepEqual(restored.objects.at(-1), tavern);
   assert.notEqual(getVariantAsset('house', variant).sourcePaths[0], getVariantAsset('house', 'kit-taverne').sourcePaths[0]);
+});
+
+test('new wall and fence layouts are available individually and roundtrip without substituting the old models', () => {
+  for (const [kind, variant] of [['wall', 'kit-cut-stone'], ['fence', 'kit-cross-wood']]) {
+    const rule = schema.$defs.worldObject.allOf.find(entry => entry.if?.properties?.kind?.const === kind);
+    assert.ok(rule.then.properties.variant.enum.includes(variant));
+    assert.ok(getObjectDefinition(kind).variants.some(item => item.id === variant));
+    assert.equal(getVariantAsset(kind, variant).format, 'procedural');
+    const item = makeWorldObject(kind, [30, -42], { variant, id: `new-${kind}`, rotation: .8, scale: 1.2 });
+    const map = structuredClone(base); map.objects.push(item);
+    assert.deepEqual(validateWorldmap(map).errors, []);
+    assert.deepEqual(normalizeWorldmap(JSON.parse(JSON.stringify(map))).objects.at(-1), item);
+  }
 });
 
 test('all seven Tripo props agree across editor catalogue, structural schema and map round-trip', () => {

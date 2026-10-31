@@ -1,8 +1,8 @@
-import { BARRIER_STYLES, barrierLength, makeBarrier } from './barriers.js';
+import { BARRIER_STYLES, barrierLength, getBarrierStyle, makeBarrier } from './barriers.js';
 import { createBarrierPreview } from './barrier-preview.js';
 
 const $ = id => document.getElementById(id);
-const options = BARRIER_STYLES.map(style => `<option value="${style.kind}">${style.label}</option>`).join('');
+const options = BARRIER_STYLES.map(style => `<option value="${style.id}">${style.label.replaceAll('&', '&amp;')}</option>`).join('');
 
 /** Line controls are separate from the chosen GLB: changing a style never loses the route. */
 export function createBarrierPanel(api) {
@@ -10,7 +10,7 @@ export function createBarrierPanel(api) {
   const section = document.createElement('section');
   section.id = 'barrier-tools'; section.className = 'tool-section barrier-tools';
   section.innerHTML = `<div class="section-heading"><h2>Mauern & Zäune ziehen</h2><span class="count-badge">NEU</span></div>
-    <p class="small-note">Wähle ein Material und ziehe eine Strecke. Die Bauteile setzen sich von selbst zusammen.</p>
+    <p class="small-note">Wähle eine Mauer- oder Zaunoptik und ziehe eine Strecke. Die Bauteile setzen sich von selbst zusammen.</p>
     <label for="barrier-kind">Was möchtest du bauen?</label><select id="barrier-kind">${options}</select>
     <label for="barrier-shape">Linienführung</label><select id="barrier-shape"><option value="straight">Gerade ziehen</option><option value="freehand">Freihand mit Ecken</option></select>
     <button type="button" id="barrier-draw" class="button primary" aria-pressed="false">Strecke ziehen</button>
@@ -21,7 +21,7 @@ export function createBarrierPanel(api) {
     <details id="barrier-preview-section"><summary>3D-Vorschau</summary><div id="barrier-preview" class="barrier-preview"></div><p id="barrier-preview-status" class="small-note" role="status">Zeigt die gewählte Strecke oder ein Beispiel.</p></details>`;
   $('editor-pane-objects').prepend(section);
   const inspector = document.createElement('div'); inspector.id = 'barrier-properties'; inspector.hidden = true;
-  inspector.innerHTML = `<label for="barrier-object-kind">Material dieser Strecke</label><select id="barrier-object-kind">${options}</select>
+  inspector.innerHTML = `<label for="barrier-object-kind">Optik dieser Strecke</label><select id="barrier-object-kind">${options}</select>
     <label for="barrier-object-scale">Größe · Faktor</label><input id="barrier-object-scale" type="number" min="0.25" max="3" step="0.05" value="1">
     <p id="barrier-length" class="small-note"></p><p class="small-note">Die hellen Punkte auf der Karte verschieben. Mit „Punkt hinzufügen“ baust du weitere Ecken.</p>
     <button type="button" id="barrier-selection-preview" class="button small">Strecke in 3D ansehen</button>
@@ -62,7 +62,7 @@ export function createBarrierPanel(api) {
     inspector.hidden = type !== 'barrier' || !feature;
     for (const input of inspector.querySelectorAll('input,select')) input.disabled = inspector.hidden;
     if (inspector.hidden) return;
-    $('barrier-object-kind').value = feature.kind; $('barrier-object-scale').value = feature.scale;
+    $('barrier-object-kind').value = getBarrierStyle(feature)?.id ?? ''; $('barrier-object-scale').value = feature.scale;
     $('barrier-length').textContent = `${barrierLength(feature).toLocaleString('de-DE', { maximumFractionDigits: 1 })} m Länge · ${feature.points.length} Formpunkte`;
     const list = $('barrier-gap-list'); list.replaceChildren();
     if (!feature.gaps?.length) { const note = document.createElement('p'); note.className = 'small-note'; note.textContent = 'Noch kein Durchgang.'; list.append(note); }
@@ -80,11 +80,13 @@ export function createBarrierPanel(api) {
   }
   function applySelected(feature, type) {
     if (type !== 'barrier') return;
-    const style = BARRIER_STYLES.find(item => item.kind === $('barrier-object-kind').value);
+    const style = getBarrierStyle($('barrier-object-kind').value);
     feature.kind = style.kind; feature.variant = style.variant; feature.scale = Number($('barrier-object-scale').value);
   }
   return { sync, renderSelected, applySelected, showPreview,
-    settings: () => ({ kind: $('barrier-kind').value, shape: $('barrier-shape').value, snap: $('barrier-snap').checked, gapWidth: Number($('barrier-gap-width').value) }),
+    settings: () => ({ styleId: $('barrier-kind').value, kind: getBarrierStyle($('barrier-kind').value).kind,
+      variant: getBarrierStyle($('barrier-kind').value).variant,
+      shape: $('barrier-shape').value, snap: $('barrier-snap').checked, gapWidth: Number($('barrier-gap-width').value) }),
     status: text => { $('barrier-status').textContent = text; },
     setPreview: feature => { previewId = feature?.id ?? null; refreshPreview(); },
   };

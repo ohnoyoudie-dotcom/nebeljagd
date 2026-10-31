@@ -99,7 +99,17 @@ export const ENVIRONMENT_KIT_DEFINITIONS = freeze([...nativeDefinitions.map(defi
     height: y(definition.height), ...(interior ? { interior, insideHalfWidth: interior.halfWidth, insideHalfDepth: interior.halfDepth,
       entranceHalfWidth: interior.entranceHalfWidth, floorHeight: y(definition.floorHeight),
       floorBounds: { minX: x(-definition.footprint.halfWidth), maxX: x(definition.footprint.halfWidth), minZ: z(-definition.footprint.halfDepth), maxZ: z(definition.footprint.halfDepth) } } : {}) };
-}), TRIPO_TAVERN_DEFINITION, TRIPO_CASTLE_DEFINITION, ...TRIPO_PROP_DEFINITIONS]);
+}),
+  // Original procedural modules already use runtime metres. Keep them outside
+  // the GLB normalization table and share their exact dimensions with the editor.
+  ...[
+    entry('wall', 'kit-cut-stone', 'wall_cut_stone', 'Steinmauer · Pfeiler & Abdeckung', 2.05,
+      { halfWidth: 2, halfDepth: .44 }, [wall(-2, 2, -.44, .44, 2.05, 'wall')]),
+    entry('fence', 'kit-cross-wood', 'fence_cross_wood', 'Holzzaun · Kreuzstreben', 1.55,
+      { halfWidth: 2, halfDepth: .22 }, [wall(-2, 2, -.22, .22, 1.55, 'fence')]),
+  ].map(definition => ({ ...definition, procedural: true, targetHeight: definition.height,
+    normalization: { scale: 1, offset: [0, 0, 0] } })),
+  TRIPO_TAVERN_DEFINITION, TRIPO_CASTLE_DEFINITION, ...TRIPO_PROP_DEFINITIONS]);
 
 const byId = new Map(ENVIRONMENT_KIT_DEFINITIONS.map(definition => [definition.id, definition]));
 export function getEnvironmentKitDefinition(kind, variant) { return byId.get(`${kind}:${variant}`) ?? null; }

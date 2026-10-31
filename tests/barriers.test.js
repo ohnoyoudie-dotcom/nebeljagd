@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { BARRIER_STYLES, makeBarrier, barrierLength, barrierSections, generateBarrierObjects, expandBarrierMap } from '../src/map/barriers.js';
+import { BARRIER_STYLES, getBarrierStyle, makeBarrier, barrierLength, barrierSections, generateBarrierObjects, expandBarrierMap } from '../src/map/barriers.js';
 import { getEnvironmentKitDefinition } from '../src/map/environment-kit-definitions.js';
 import { validateWorldmap, pointInPolygon } from '../src/map/model.js';
 
@@ -25,6 +25,9 @@ const barrier = (kind = 'wall', options = {}) => makeBarrier(kind, [[-20, 0], [2
 test('legacy documents retain compatibility and no lines are generated implicitly', () => {
   const project = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
   assert.equal(validateWorldmap(project).valid, true);
+  // The editable project may already contain user-drawn routes. A legacy
+  // fixture deliberately omits them instead of depending on an empty map.
+  delete project.barriers;
   assert.equal(expandBarrierMap(project), project);
   const map = mapWith();
   delete map.barriers;
@@ -48,6 +51,33 @@ test('authored line and gaps survive roundtrip and model change without generate
   assert.deepEqual(restored.barriers[0].gaps, source.gaps);
   assert.deepEqual(barrierSections(restored.barriers[0]), barrierSections(source));
   assert.ok(expandBarrierMap(restored).objects.every(item => item.kind === 'fence'));
+});
+
+test('four distinct styles retain their identity, route and passages through JSON and runtime expansion', () => {
+  assert.equal(BARRIER_STYLES.length, 4);
+  assert.equal(new Set(BARRIER_STYLES.map(style => style.id)).size, 4);
+  const points = [[-20, 0], [0, 0], [0, 20]], gaps = [{ at: 10, width: 3 }];
+  for (const style of BARRIER_STYLES) {
+    const source = makeBarrier(style.id, points, { id: 'styled-line', gaps, scale: 1.3 });
+    assert.equal(source.kind, style.kind);
+    assert.equal(source.variant, style.variant);
+    assert.equal(source.name, style.label);
+    assert.equal(getBarrierStyle(source).id, style.id);
+    const restored = JSON.parse(JSON.stringify(mapWith([source])));
+    assert.deepEqual(validateWorldmap(restored).errors, []);
+    const generated = expandBarrierMap(restored).objects;
+    assert.ok(generated.length > 0);
+    assert.ok(generated.every(piece => piece.kind === style.kind && piece.variant === style.variant));
+    assert.deepEqual(restored.barriers[0].points, points);
+    assert.deepEqual(restored.barriers[0].gaps, gaps);
+    assert.deepEqual(restored.objects, []);
+    const changed = { ...source, ...makeBarrier('wall-cut-stone', source.points, { id: source.id, gaps: source.gaps, scale: source.scale }) };
+    assert.deepEqual(barrierSections(changed), barrierSections(source));
+  }
+  assert.equal(makeBarrier('wall', points, { variant: 'kit-cut-stone' }).variant, 'kit-cut-stone');
+  assert.equal(makeBarrier('fence', points, { variant: 'kit-cross-wood' }).variant, 'kit-cross-wood');
+  assert.throws(() => makeBarrier('wall', points, { variant: 'kit-cross-wood' }), /wählen/);
+  assert.throws(() => makeBarrier('fence-cross-wood', points, { variant: 'kit-cut-stone' }), /wählen/);
 });
 
 test('solid sections span endpoints and leave a completely open three metre passage', () => {
@@ -160,6 +190,11 @@ test('the schema describes optional canonical lines and supported style pairs', 
   for (const style of BARRIER_STYLES) {
     assert.ok(schema.$defs.barrier.properties.kind.enum.includes(style.kind));
     assert.ok(schema.$defs.barrier.properties.variant.enum.includes(style.variant));
+    const rule = schema.$defs.barrier.allOf.find(entry => entry.if.properties.kind.const === style.kind);
+    assert.ok(rule.then.properties.variant.enum.includes(style.variant));
+    const otherKind = style.kind === 'wall' ? 'fence' : 'wall';
+    const otherRule = schema.$defs.barrier.allOf.find(entry => entry.if.properties.kind.const === otherKind);
+    assert.equal(otherRule.then.properties.variant.enum.includes(style.variant), false);
     assert.ok(getEnvironmentKitDefinition(style.kind, style.variant));
   }
 });

@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
 import { shouldOmitTavernDetail, TAVERN_DRESSING } from './map/tavern-dressing.js';
+import { createBarrierModelParts } from './barrier-models.js';
 import pineHigh from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_high.glb?url&inline';
 import pineYoung from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_young.glb?url&inline';
 import oakGreen from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_green.glb?url&inline';
@@ -175,10 +176,15 @@ function removeMirroredFaces(geometry) {
 /** Original kit files and separately attributed user models are embedded.
  * Only variants present in the saved map are parsed. */
 export async function loadEnvironmentKit(map, { wind } = {}) {
-  const wanted = [...new Set((map.objects ?? []).map(object => `${object.kind}:${object.variant}`).filter(key => urls[key]))];
+  const wanted = [...new Set((map.objects ?? []).filter(object => urls[`${object.kind}:${object.variant}`]
+    || getEnvironmentKitDefinition(object.kind, object.variant)?.procedural).map(object => `${object.kind}:${object.variant}`))];
   const result = new Map();
   await Promise.all(wanted.map(async key => {
     const [kind, variant] = key.split(':'), definition = getEnvironmentKitDefinition(kind, variant);
+    if (definition.procedural) {
+      result.set(key, { ...definition, parts: createBarrierModelParts(variant), embedded: true });
+      return;
+    }
     const gltf = await new GLTFLoader().loadAsync(urls[key]); gltf.scene.updateWorldMatrix(true, true);
     const { scale, offset } = definition.normalization;
     const transform = new THREE.Matrix4().makeScale(scale, scale, scale).multiply(new THREE.Matrix4().makeTranslation(-offset[0], -offset[1], -offset[2]));

@@ -254,8 +254,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     wind.apply(near.material, { response: .65, height: variant === 'pine' ? 7.2 : 6.8 });
     prototypes.set(`tree:${variant}`, [{ geometry: trunk.geometry, material: trunk.material, castShadow: true }, { geometry: near.geometry, lowGeometry: far.geometry, material: near.material, castShadow: true, foliage: true }]);
   }
-  const importedAssets = { loaded: true, loadedGLBs: 5 + kitModels.size, trees: 0, bushes: 0, flowers: 0, beds: 0, placements: [], sources: ['Rei_treeLeavesGN.glb', 'Rei_treeLeavesGN_samples.glb', 'Rei_flowersGN_sample.blend', 'grassGN3_3_v2_Rei.glb', ...[...kitModels.values()].map(model => `${model.asset}.glb`)], grassSourceContainsBlades: false,
-    environmentKit: [...kitModels.values()].map(model => ({ id: model.id, asset: model.asset, targetHeight: model.targetHeight, height: model.height, parts: model.parts.length,
+  const importedAssets = { loaded: true, loadedGLBs: 5 + [...kitModels.values()].filter(model => !model.procedural).length, trees: 0, bushes: 0, flowers: 0, beds: 0, placements: [], sources: ['Rei_treeLeavesGN.glb', 'Rei_treeLeavesGN_samples.glb', 'Rei_flowersGN_sample.blend', 'grassGN3_3_v2_Rei.glb', ...[...kitModels.values()].map(model => model.procedural ? 'src/barrier-models.js' : `${model.asset}.glb`)], grassSourceContainsBlades: false,
+    environmentKit: [...kitModels.values()].map(model => ({ id: model.id, asset: model.asset, procedural: Boolean(model.procedural), targetHeight: model.targetHeight, height: model.height, parts: model.parts.length,
       roofRemoved: model.roofRemoved, reducedDressing: model.reducedDressing, omittedDetailMeshes: model.omittedDetailMeshes })) };
   const stems = new Map();
   for (const [variant, gltf, nativeHeight, stem] of [['rei-tree01', tree01, 5.8, [.1719965339, 0, .1021305472]], ['rei-tree02', tree02, 5.2, [-.074421525, 0, .008194566]], ['rei-bush', bush, 1.1, null]]) {
@@ -655,7 +655,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         colorGradient: [HIDING_GRASS_STYLE.rootColor, HIDING_GRASS_STYLE.tipColor],
         visibleTallGrassBatches: instanced.filter(entry => entry.tallGrass && entry.mesh.visible && entry.chunk.group.visible).length,
         tallGrassTriangles: instanced.filter(entry => entry.tallGrass && entry.mesh.visible && entry.chunk.group.visible)
-          .reduce((total, entry) => total + entry.mesh.count * (entry.mesh.geometry.index?.count ?? entry.mesh.geometry.attributes.position.count) / 3, 0) }, collisionBodies: projectileObstacles.length, loadedGLBs: 5 + kitModels.size,
+          .reduce((total, entry) => total + entry.mesh.count * (entry.mesh.geometry.index?.count ?? entry.mesh.geometry.attributes.position.count) / 3, 0) }, collisionBodies: projectileObstacles.length, loadedGLBs: 5 + [...kitModels.values()].filter(model => !model.procedural).length,
         environmentKit: { loadedModels: kitModels.size, models: importedAssets.environmentKit, placements: importedAssets.placements.filter(item => item.variant.startsWith('kit-')).length } }; },
   };
 }

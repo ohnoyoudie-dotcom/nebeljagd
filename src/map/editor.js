@@ -718,7 +718,7 @@ function pointerEnd(event, cancelled = false) {
         toast('Mindestens einen Meter weit ziehen. Zum Bearbeiten „Auswählen“ nutzen.');
       else {
         try {
-          const added = makeBarrier(stroke.kind, points);
+          const added = makeBarrier(stroke.styleId, points);
           if (commit(candidate => { (candidate.barriers ??= []).push(added); }, 'Strecke gebaut. Mit „Auswählen“ kannst du ihre Punkte verschieben.')) barrierPanel.setPreview(added);
         } catch (error) { toast(error.message, true); }
       }

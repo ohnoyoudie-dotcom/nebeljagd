@@ -2,13 +2,14 @@
 
 Im Karteneditor unter **Objekte → Mauern & Zäune ziehen**:
 
-1. **Steinmauer** oder **Holzzaun** wählen.
+1. Eine der vier Optiken wählen: **Steinmauer**, **Steinmauer · Pfeiler & Abdeckung**,
+   **Holzzaun** oder **Holzzaun · Kreuzstreben**.
 2. **Gerade ziehen** oder **Freihand mit Ecken** einstellen.
 3. **Strecke ziehen** aktivieren, auf der Insel ziehen und loslassen.
 4. **Durchgang setzen** wählen und auf eine Strecke tippen. Die Breite ist
    einstellbar, voreingestellt sind 3 Meter.
 5. Mit **Auswählen** die Strecke oder ihre hellen Formpunkte verschieben.
-   **Punkt hinzufügen** fügt eine weitere Ecke ein. Rechts lassen sich Material,
+   **Punkt hinzufügen** fügt eine weitere Ecke ein. Rechts lassen sich Optik,
    Größe und Name ändern sowie einzelne Durchgänge wieder schließen.
 
 **Strecken radieren** entfernt ganze berührte Mauer- und Zaunverläufe.
@@ -23,17 +24,28 @@ Strecke mit den tatsächlichen Modellen. Ohne Auswahl wird ein Beispiel gezeigt.
 
 ## Modelle und Austausch
 
-Die erste Version verwendet die vorhandenen Modelle
-`wall:kit-stone` und `fence:kit-wood` aus dem Nebeljagd-Umwelt-Kit. Die neueren
-Tripo-Bildvorlagen sind noch keine eingebauten 3D-Modelle. Zusätzliche GLBs
-können später als weitere Stile aufgenommen werden, ohne den Verlauf neu zu
-zeichnen. Normalisierte Modellmaße und Anschlussflächen müssen dann passend
-definiert werden.
+Die ursprünglichen Modelle `wall:kit-stone` und `fence:kit-wood` stammen aus
+dem Nebeljagd-Umwelt-Kit. Zwei weitere Spielmodelle ergänzen die Auswahl:
+
+- `wall:kit-cut-stone`: gesetzte Steinquader, Pfeiler und breite Abdecksteine.
+- `fence:kit-cross-wood`: Holzpfosten mit diagonalen Kreuzstreben.
+
+Die neuen Modelle entstehen direkt aus Spielgeometrie in `src/barrier-models.js`;
+es werden dafür keine externen Grafiken benötigt. Beide sind auch als einzelne
+Objekte verfügbar. Eine ausgewählte Strecke kann rechts unter **Optik dieser
+Strecke** auf jede Variante umgestellt werden; mit **Übernehmen** bleiben ihre
+Formpunkte, Durchgänge und Größe erhalten. Die 3D-Vorschau zeigt den Wechsel.
+Auch JSON, SVG und eigenständige Editor-Dateien speichern die gewählte Variante.
+Die bestehenden Strecken werden nicht automatisch umgestaltet.
+
+Zusätzliche GLBs können später als weitere Stile aufgenommen werden, ohne den
+Verlauf neu zu zeichnen. Normalisierte Modellmaße und Anschlussflächen müssen
+dann passend definiert werden.
 
 Die Modelle werden wiederholt; Restlängen werden auf die Stücke einer geraden
 Teilstrecke verteilt. Nur ihre Länge wird angepasst, nicht Höhe und Dicke.
 Ecken entstehen durch aneinanderstoßende geradlinige Abschnitte. Eigene
-Eckmodelle, bewegliche Tore und Pfostenvarianten sind noch nicht Teil dieses
+Eckmodelle und bewegliche Tore sind noch nicht Teil dieses
 Werkzeugs. Sicht, Bewegung und Geschosse verwenden die zum Modell gehörenden
 Hindernisse; ein Durchgang erzeugt dort keine Mauerstücke.
 
@@ -73,6 +85,9 @@ Strecken, die zwischen zwei Landpunkten über das Meer führen würden.
   Materialwechsel, Abbrechen, Rückgängig, JSON und eigenständige HTML-Datei.
 - `tests/barrier_runtime_smoke.py`: tatsächliche GLBs mit Bewegungs-, Geschoss-
   und Sichtprüfung an geraden/gedrehten Mauern, Ecken und offenen Durchgängen.
+- `tests/barrier_styles_smoke.py`: alle vier Modelle, Wechsel der Optik mit
+  unveränderten Formpunkten und Durchgängen, Rückgängig sowie Speichern/Laden.
+  `NEBELJAGD_EDITOR_URL` erlaubt dieselbe Prüfung an der fertig gebauten HTML.
 
 Browserprüfungen nutzen Chromium mit Touch-Emulation. Die Bedienung und
 Leistung auf einem physischen iPad sind damit noch nicht gemessen.

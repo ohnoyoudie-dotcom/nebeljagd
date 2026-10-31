@@ -1,0 +1,205 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5193",
+  "editorUrl": "http://127.0.0.1:5204",
+  "checks": [
+    "The new dressed stone wall draws an editable route, accepts a passage and renders in the 3D preview",
+    "Switching old/new styles retains the exact route, passage, ID and scale; Undo/Redo restores the selected design",
+    "The new cross-braced fence draws directly; JSON download and reimport preserve styles without baking or touching objects",
+    "All four real runtime designs render, block movement/projectiles/sight at solids and leave authored passages fully open"
+  ],
+  "errors": [],
+  "limits": "Deterministic Chromium/SwiftShader render and editor interaction; no physical iPad performance measurement.",
+  "runtime": {
+    "checks": [
+      {
+        "kind": "wall",
+        "variant": "kit-stone",
+        "solidMoved": 0.8052318142193418,
+        "gapMoved": 0,
+        "solidCrossing": {
+          "hit": "style-0-segment-1",
+          "visible": false
+        },
+        "gapCrossing": {
+          "hit": null,
+          "visible": true
+        },
+        "height": 1.5071715221587463
+      },
+      {
+        "kind": "wall",
+        "variant": "kit-cut-stone",
+        "solidMoved": 0.6699999999999999,
+        "gapMoved": 0,
+        "solidCrossing": {
+          "hit": "style-1-segment-1",
+          "visible": false
+        },
+        "gapCrossing": {
+          "hit": null,
+          "visible": true
+        },
+        "height": 2.05
+      },
+      {
+        "kind": "fence",
+        "variant": "kit-wood",
+        "solidMoved": 0.6041875188412646,
+        "gapMoved": 0,
+        "solidCrossing": {
+          "hit": "style-2-segment-1",
+          "visible": false
+        },
+        "gapCrossing": {
+          "hit": null,
+          "visible": true
+        },
+        "height": 1.5000000132047213
+      },
+      {
+        "kind": "fence",
+        "variant": "kit-cross-wood",
+        "solidMoved": 0.6621933252457326,
+        "gapMoved": 0,
+        "solidCrossing": {
+          "hit": "style-3-segment-1",
+          "visible": false
+        },
+        "gapCrossing": {
+          "hit": null,
+          "visible": true
+        },
+        "height": 1.55
+      }
+    ],
+    "sourceUnchanged": true,
+    "stats": {
+      "totalObjects": 20,
+      "authoredObjectCount": 0,
+      "barrierCount": 4,
+      "barrierSegmentCount": 20,
+      "chunks": 4,
+      "visibleChunks": 4,
+      "instanceBatches": 8,
+      "treeCount": 0,
+      "houseCount": 0,
+      "moundCount": 0,
+      "grassPatchCount": 0,
+      "grassRendering": {
+        "tallHeight": [
+          2.25,
+          2.6
+        ],
+        "shortHeight": [
+          0.22,
+          0.42
+        ],
+        "bendsAwayFromPlayer": false,
+        "sourceVersion": "nebeljagd-3d-v011",
+        "crossedStalksPerInstance": 4,
+        "totalInstances": 0,
+        "maximumInstances": 500000,
+        "budgetUnitsUsed": 0,
+        "kitInstances": 0,
+        "maximumKitInstances": 12000,
+        "configuredPatches": 0,
+        "legacyBiomeAdaptedPatches": 0,
+        "legacySuppressedGrassInstances": 0,
+        "biomeAdaptiveLegacyGrass": true,
+        "budgetLimitedPatches": 0,
+        "wind": {
+          "gpu": true,
+          "rootAnchored": true,
+          "worldSpaceDirection": true,
+          "zones": 0,
+          "maximumZones": 32,
+          "settings": {
+            "enabled": true,
+            "strength": 0.35,
+            "speed": 1,
+            "direction": 0.65,
+            "gusts": true,
+            "gustStrength": 0.35,
+            "gustFrequency": 0.18,
+            "turbulence": 0.2
+          },
+          "time": 1,
+          "interactors": 0,
+          "maximumInteractors": 8,
+          "interactionMode": "forward-biased",
+          "forwardWeight": 0.82,
+          "radialWeight": 0.18,
+          "firstInteractorStrength": 0,
+          "curvatureVariation": "per-instance-grass",
+          "windVariation": "per-instance-phase-speed-amplitude",
+          "recoveryModel": "variable-directional-wake"
+        },
+        "crossedStalkDensityPerSquareMeter": 35.367765131532295,
+        "colorGradient": [
+          "#315e36",
+          "#bbc975"
+        ],
+        "visibleTallGrassBatches": 0,
+        "tallGrassTriangles": 0
+      },
+      "collisionBodies": 20,
+      "loadedGLBs": 7,
+      "environmentKit": {
+        "loadedModels": 4,
+        "models": [
+          {
+            "id": "wall:kit-cut-stone",
+            "asset": "wall_cut_stone",
+            "procedural": true,
+            "targetHeight": 2.05,
+            "height": 2.05,
+            "parts": 1,
+            "roofRemoved": null,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          },
+          {
+            "id": "fence:kit-cross-wood",
+            "asset": "fence_cross_wood",
+            "procedural": true,
+            "targetHeight": 1.55,
+            "height": 1.55,
+            "parts": 1,
+            "roofRemoved": null,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          },
+          {
+            "id": "wall:kit-stone",
+            "asset": "wall_stone_3m",
+            "procedural": false,
+            "targetHeight": 1.5,
+            "height": 1.5071715221587463,
+            "parts": 1,
+            "roofRemoved": false,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          },
+          {
+            "id": "fence:kit-wood",
+            "asset": "fence_wood_3m",
+            "procedural": false,
+            "targetHeight": 1.5,
+            "height": 1.5000000132047213,
+            "parts": 1,
+            "roofRemoved": false,
+            "reducedDressing": null,
+            "omittedDetailMeshes": null
+          }
+        ],
+        "placements": 20
+      }
+    },
+    "calls": 9,
+    "triangles": 37106
+  },
+  "screenshots": [
+    "barrier-styles.png"
+  ]
+}

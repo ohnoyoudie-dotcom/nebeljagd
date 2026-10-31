@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { barrierSvg, renderWorldmapSvg } from '../src/map/render.js';
 import { getEnvironmentKitDefinition } from '../src/map/environment-kit-definitions.js';
+import { BARRIER_STYLES, makeBarrier } from '../src/map/barriers.js';
 
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const barrier = (kind = 'wall', options = {}) => ({
@@ -34,6 +35,19 @@ test('a passage at a bend cuts both adjoining wall sections', () => {
   }));
   assert.equal(solidPath(svg), 'M0,0L8,0 M10,2L10,10');
   assert.match(svg, /data-barrier-kind="fence" data-barrier-variant="kit-wood"/);
+});
+
+test('all four layouts have distinct map strokes while keeping the same doorway and route', () => {
+  const visibleStyles = new Set();
+  for (const style of BARRIER_STYLES) {
+    const item = makeBarrier(style.id, [[0, 0], [20, 0]], { id: 'style-test', gaps: [{ at: 10, width: 3 }] });
+    const svg = barrierSvg(item);
+    assert.equal(solidPath(svg), 'M0,0L8.5,0 M11.5,0L20,0');
+    assert.ok(svg.includes(`data-barrier-variant="${style.variant}"`));
+    assert.ok(svg.includes(style.label.replaceAll('&', '&amp;')));
+    visibleStyles.add(svg.match(/<path class="barrier-solid"[^>]*>/)[0]);
+  }
+  assert.equal(visibleStyles.size, 4);
 });
 
 test('SVG thickness follows the normalized GLB footprint and selected scale', () => {
@@ -83,6 +97,7 @@ test('SVG exports do not mutate route or map data; maps without routes stay unch
   const before = JSON.stringify(map);
   renderWorldmapSvg(map, { editor: true });
   assert.equal(JSON.stringify(map), before);
-  const original = renderWorldmapSvg(base);
-  assert.equal(renderWorldmapSvg({ ...base, barriers: [] }), original);
+  const legacy = structuredClone(base); delete legacy.barriers;
+  const original = renderWorldmapSvg(legacy);
+  assert.equal(renderWorldmapSvg({ ...legacy, barriers: [] }), original);
 });
