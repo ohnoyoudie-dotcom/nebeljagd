@@ -95,6 +95,7 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     }
   };
   for (const line of [...(map.paths ?? []), ...(map.rivers ?? [])]) {
+    // This clearance belongs to roads and water, not to placed scenery.
     const radius = (line.width ?? 0) / 2 + padding;
     for (let i = 1; i < line.points.length; i++) {
       const a = line.points[i - 1], b = line.points[i];
@@ -103,29 +104,33 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     }
   }
   const extents = {
-    chest: [1.05, .8], crate: [.8, .8], rock: [1.35, 1.35], shrine: [1.15, 1.15],
-    mound: [4.6, 3.5], house: [9.4, 9.2], wagon: [.82, 1.46], barrel: [.46, .46], well: [1.13, .92],
+    chest: [.86, .63], crate: [.8, .8], rock: [1.35, 1.35], shrine: [1.15, 1.15],
+    mound: [4.6, 3.5], house: [8.325, 7.325], wagon: [.82, 1.46], barrel: [.46, .46], well: [1.13, .92],
   };
   for (const object of map.objects ?? []) {
     if (!extents[object.kind]) continue;
     const scale = object.scale ?? 1;
     let [hx, hz] = extents[object.kind];
     if (object.kind === 'mound' && object.variant === 'knoll') [hx, hz] = [3.3, 2.8];
-    if (object.kind === 'house' && object.variant === 'kit-timber') [hx, hz] = [3.8, 4.1];
-    if (object.kind === 'house' && object.variant?.startsWith('tavern-')) [hx, hz] = [12.4, 12.4];
-    if (object.kind === 'house' && object.variant === 'kit-tripo-tavern') [hx, hz] = [11.2, 9.1];
-    if (object.variant?.startsWith('kit-tripo-')) {
-      const footprint = getEnvironmentKitDefinition(object.kind, object.variant)?.footprint;
-      // Keep the existing tavern clearance while covering the complete
-      // measured footprint of larger imported houses such as the castle.
-      if (footprint) [hx, hz] = object.kind === 'house'
-        ? [Math.max(hx, footprint.halfWidth), Math.max(hz, footprint.halfDepth)]
-        : [footprint.halfWidth, footprint.halfDepth];
-    }
-    hx = hx * scale + padding; hz = hz * scale + padding;
+    if (object.kind === 'chest' && object.variant === 'kit-tripo-chest') [hx, hz] = [.87, .575];
+    const footprint = getEnvironmentKitDefinition(object.kind, object.variant)?.footprint;
+    // Match the normalized model, including its saved rotation and scale.
+    // A legacy house rectangle or an added safety margin leaves a conspicuous
+    // bare moat. Only roots under the object/floor are removed: grass outside
+    // its measured edge can meet the foundation, while interiors stay clear.
+    if (footprint) [hx, hz] = [footprint.halfWidth, footprint.halfDepth];
+    hx *= scale; hz *= scale;
     const [x, z] = object.position, rotation = object.rotation ?? 0, c = Math.cos(rotation), s = Math.sin(rotation);
     const radius = Math.hypot(hx, hz);
     insert({ kind: 'box', x, z, hx, hz, c, s }, x - radius, z - radius, x + radius, z + radius);
+    if (object.kind === 'house' && ['herbal', 'inn', 'hunter'].includes(object.variant)) {
+      // The old cottages have a small front porch, not a cleared strip along
+      // the whole facade. Follow that separate 4.4 × 2.2 m stone step.
+      const px = x + s * 8 * scale, pz = z + c * 8 * scale;
+      const reach = Math.hypot(2.2, 1.1) * scale;
+      insert({ kind: 'box', x: px, z: pz, hx: 2.2 * scale, hz: 1.1 * scale, c, s },
+        px - reach, pz - reach, px + reach, pz + reach);
+    }
   }
   return (x, z) => {
     for (const shape of cells.get(`${Math.floor(x / cellSize)},${Math.floor(z / cellSize)}`) ?? []) {
