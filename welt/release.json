@@ -1,38 +1,38 @@
 {
   "branch": "work",
-  "sourceCommit": "d5f395c073383d40e2e9eba26554e801c10b731b",
+  "sourceCommit": "4afe9be459f2155b94f8028164fe8f25e607c68b",
   "files": {
     "map-editor.html": {
-      "bytes": 51129172,
-      "sha256": "02f14d8b14d89ac3667d26e1d937cad09bdc0dc23130105d5cc1444c21b973c0"
+      "bytes": 51133622,
+      "sha256": "6103c9a69315925107bb69f585d0b55fc3e6b22a1b097cd0336c6a76902c8246"
     },
     "nebeljagd.html": {
-      "bytes": 66570609,
-      "sha256": "117d915650c09b657f68eed07c64fbb453036161e9c581d72b114f01a720f90b"
+      "bytes": 66571839,
+      "sha256": "9c1051a1152f4ca0d972a032aa26f6834232670ccfba6247ebacb54bcbf618bc"
     },
     "index.html": {
-      "bytes": 66570609,
-      "sha256": "117d915650c09b657f68eed07c64fbb453036161e9c581d72b114f01a720f90b"
+      "bytes": 66571839,
+      "sha256": "9c1051a1152f4ca0d972a032aa26f6834232670ccfba6247ebacb54bcbf618bc"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 21229,
-      "sha256": "6bec70b9504b670e7cbb5d4e2f865466dcb21bafcd15d333a36f0e493aa464e1"
+      "bytes": 21289,
+      "sha256": "d49b5b2963105f28a16bd132cb7ae77efa7ce5c028c69872b05da7e6c5446768"
     },
     "worldmap.svg": {
-      "bytes": 48109,
-      "sha256": "d42ac729c18e99699c7f6ad3d8ea496c2e728ad9668782f01f442294cc14c7ff"
+      "bytes": 49210,
+      "sha256": "cf32f19f74fb1289109c651d96dad12e6aa2d1d485aa2ba4c1addbd8c16b13fe"
     },
     "worldmap.schema.json": {
-      "bytes": 38342,
-      "sha256": "6c4d0c500a8664dc4086a39f14e1aa1bb1a8020de2b184dc41fd8aef29dc0d33"
+      "bytes": 39301,
+      "sha256": "e7844add388c1060712f22a1f276b4ae285b950ba8ff3a3e00f400ba96e76e47"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 76475335,
-      "sha256": "c6d0a3064f96d5739e324ba392d9aa55221cd7e74c202630d1f30a822fe88490"
+      "bytes": 76477085,
+      "sha256": "cfdbc9927435505b2362be4f43ef1c801fe9cdf8d45f5be76d68647de197d8ef"
     }
   }
 }

@@ -1323,8 +1323,20 @@
       "kind": "house",
       "variant": "kit-tripo-tavern",
       "position": [
-        9.5,
-        -66.1
+        2.7,
+        -70.5
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-house-mvwkiaej-3",
+      "name": "Haus",
+      "kind": "house",
+      "variant": "kit-tripo-castle",
+      "position": [
+        -34.8,
+        16.1
       ],
       "rotation": 0,
       "scale": 1
@@ -1349,116 +1361,90 @@
   },
   "barriers": [
     {
-      "id": "barrier-wall-mvwcg9pr-1",
+      "id": "barrier-wall-mvwkdprc-1",
       "name": "Steinmauer",
       "kind": "wall",
       "variant": "kit-stone",
       "points": [
         [
-          18,
-          -45
+          -10,
+          -36
         ],
         [
-          4,
-          -41
+          17,
+          -44
         ]
       ],
       "scale": 1,
       "gaps": []
     },
     {
-      "id": "barrier-wall-mvwcgep9-2",
-      "name": "Steinmauer",
+      "id": "barrier-wall-mvwkdudz-2",
+      "name": "Steinmauer · Pfeiler & Abdeckung",
       "kind": "wall",
-      "variant": "kit-stone",
+      "variant": "kit-cut-stone",
       "points": [
         [
-          37,
-          -50
+          -8,
+          -32
         ],
         [
-          37,
-          -45
-        ],
-        [
-          36,
-          -45
-        ],
-        [
-          36,
-          -36
-        ],
-        [
-          37,
-          -36
-        ],
-        [
-          37,
-          -35
-        ],
-        [
-          39,
-          -35
-        ],
-        [
-          41,
-          -41
+          17,
+          -39
         ]
       ],
       "scale": 1,
       "gaps": []
     },
     {
-      "id": "barrier-fence-mvwcgkr5-3",
+      "id": "barrier-wall-mvwkdy5m-3",
+      "name": "Steinmauer · Verwittert (Tripo)",
+      "kind": "wall",
+      "variant": "kit-tripo-wall",
+      "points": [
+        [
+          -7,
+          -28
+        ],
+        [
+          16,
+          -34
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-fence-mvwke2cy-4",
       "name": "Holzzaun",
       "kind": "fence",
       "variant": "kit-wood",
       "points": [
         [
-          17,
+          35,
+          -43
+        ],
+        [
+          53,
+          -51
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-fence-mvwke5jq-5",
+      "name": "Holzzaun · Kreuzstreben",
+      "kind": "fence",
+      "variant": "kit-cross-wood",
+      "points": [
+        [
+          35,
           -38
         ],
         [
-          3,
-          -35
-        ]
-      ],
-      "scale": 1,
-      "gaps": []
-    },
-    {
-      "id": "barrier-fence-mvwcgs72-4",
-      "name": "Holzzaun",
-      "kind": "fence",
-      "variant": "kit-wood",
-      "points": [
-        [
-          42,
-          -53
-        ],
-        [
-          42,
-          -49
-        ],
-        [
-          45,
+          55,
           -47
-        ],
-        [
-          45,
-          -35
-        ],
-        [
-          43,
-          -34
-        ],
-        [
-          44,
-          -34
-        ],
-        [
-          45,
-          -32
         ]
       ],
       "scale": 1,
