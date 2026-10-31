@@ -1,0 +1,89 @@
+{
+  "checker": "Nebeljagd GLB-Texturcheck",
+  "version": 1,
+  "generatedAt": "2026-10-30T22:44:11.942Z",
+  "file": {
+    "name": "medieval house interior 3d model (1).glb",
+    "sizeBytes": 65708616,
+    "metadataSha256": "9a62ae44f18874f7a33458c93e3a34a31b283282762a996933f0fcfc6f6a4c4e"
+  },
+  "verdict": "Farbtexturen sind eingebettet und zugewiesen",
+  "explanation": "Dieser Export enthält Farbtexturbilder mit passenden Verweisen und deklarierten UV-Koordinaten. Unten kannst du die Bilddaten ansehen. Ob Tripo oder das Spiel sie korrekt rendert, ist damit noch nicht geprüft.",
+  "severity": "good",
+  "scope": "Local structural inspection of mesh references, color texture links, image ranges and declared UV sets. No network access, geometry rendering or complete glTF validation.",
+  "counts": {
+    "meshes": 1,
+    "meshParts": 1,
+    "materials": 1,
+    "images": 3,
+    "textures": 3,
+    "partsWithColorTexture": 1,
+    "partsWithEmbeddedColorTexture": 1
+  },
+  "extensionsRequired": [],
+  "issues": [],
+  "primitives": [
+    {
+      "meshIndex": 0,
+      "primitiveIndex": 0,
+      "materialIndex": 0,
+      "materialName": "tripo_material_1c319726-1746-4605-ba9f-b9e8f45b2b25",
+      "invalidMaterial": false,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "vertexColors": false,
+      "colorTexture": {
+        "valid": true,
+        "textureIndex": 0,
+        "imageIndex": 0,
+        "texCoord": 0,
+        "storage": "embedded-buffer",
+        "offset": 2048,
+        "byteLength": 4018690,
+        "mimeType": "image/jpeg"
+      },
+      "uvDeclared": true,
+      "compressedGeometry": false
+    }
+  ],
+  "images": [
+    {
+      "index": 0,
+      "name": "medieval_house_interior_3d_model_basecolor.jpg",
+      "storage": "embedded-buffer",
+      "offset": 2048,
+      "byteLength": 4018690,
+      "mimeType": "image/jpeg"
+    },
+    {
+      "index": 1,
+      "name": "medieval_house_interior_3d_model_rm.jpg",
+      "storage": "embedded-buffer",
+      "offset": 4020740,
+      "byteLength": 2585079,
+      "mimeType": "image/jpeg"
+    },
+    {
+      "index": 2,
+      "name": "medieval_house_interior_3d_model_normal.png",
+      "storage": "embedded-buffer",
+      "offset": 6605820,
+      "byteLength": 3821218,
+      "mimeType": "image/png"
+    }
+  ],
+  "previewResults": [
+    {
+      "imageIndex": 0,
+      "status": "decoded",
+      "width": 4096,
+      "height": 4096,
+      "sampleColoredFraction": 0.806,
+      "sampleNote": "64×64-Stichprobe; geringe Farbdifferenz allein beweist keinen Texturfehler."
+    }
+  ]
+}

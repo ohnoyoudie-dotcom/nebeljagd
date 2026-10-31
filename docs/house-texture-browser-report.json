@@ -1,0 +1,46 @@
+{
+  "checker": "Nebeljagd GLB-Texturcheck",
+  "version": 1,
+  "generatedAt": "2026-10-30T22:42:25.603Z",
+  "file": {
+    "name": "medieval house interior 3d model.glb",
+    "sizeBytes": 43841988,
+    "metadataSha256": "7d107f737dd5ed2cfccf8e00909f160a347043a83b20580f7578be7339758aeb"
+  },
+  "verdict": "Keine Farbtextur zugewiesen",
+  "explanation": "In diesem Export gibt es weder Texturbilder noch eine Farbtexturzuordnung. Ein anderer Anzeigemodus kann daraus keine Holz- oder Stofffarben herstellen.",
+  "severity": "warn",
+  "scope": "Local structural inspection of mesh references, color texture links, image ranges and declared UV sets. No network access, geometry rendering or complete glTF validation.",
+  "counts": {
+    "meshes": 1,
+    "meshParts": 1,
+    "materials": 1,
+    "images": 0,
+    "textures": 0,
+    "partsWithColorTexture": 0,
+    "partsWithEmbeddedColorTexture": 0
+  },
+  "extensionsRequired": [],
+  "issues": [],
+  "primitives": [
+    {
+      "meshIndex": 0,
+      "primitiveIndex": 0,
+      "materialIndex": 0,
+      "materialName": "material",
+      "invalidMaterial": false,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "vertexColors": false,
+      "colorTexture": null,
+      "uvDeclared": null,
+      "compressedGeometry": false
+    }
+  ],
+  "images": [],
+  "previewResults": []
+}
