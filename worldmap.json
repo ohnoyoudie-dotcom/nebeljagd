@@ -1346,5 +1346,123 @@
     "windZones": [],
     "biomes": [],
     "presets": []
-  }
+  },
+  "barriers": [
+    {
+      "id": "barrier-wall-mvwcg9pr-1",
+      "name": "Steinmauer",
+      "kind": "wall",
+      "variant": "kit-stone",
+      "points": [
+        [
+          18,
+          -45
+        ],
+        [
+          4,
+          -41
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-wall-mvwcgep9-2",
+      "name": "Steinmauer",
+      "kind": "wall",
+      "variant": "kit-stone",
+      "points": [
+        [
+          37,
+          -50
+        ],
+        [
+          37,
+          -45
+        ],
+        [
+          36,
+          -45
+        ],
+        [
+          36,
+          -36
+        ],
+        [
+          37,
+          -36
+        ],
+        [
+          37,
+          -35
+        ],
+        [
+          39,
+          -35
+        ],
+        [
+          41,
+          -41
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-fence-mvwcgkr5-3",
+      "name": "Holzzaun",
+      "kind": "fence",
+      "variant": "kit-wood",
+      "points": [
+        [
+          17,
+          -38
+        ],
+        [
+          3,
+          -35
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-fence-mvwcgs72-4",
+      "name": "Holzzaun",
+      "kind": "fence",
+      "variant": "kit-wood",
+      "points": [
+        [
+          42,
+          -53
+        ],
+        [
+          42,
+          -49
+        ],
+        [
+          45,
+          -47
+        ],
+        [
+          45,
+          -35
+        ],
+        [
+          43,
+          -34
+        ],
+        [
+          44,
+          -34
+        ],
+        [
+          45,
+          -32
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    }
+  ]
 }
