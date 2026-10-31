@@ -166,7 +166,7 @@ try:
         assert result['stats']['authoredObjectCount'] == 0 and result['calls'] > 0
         assert result['solidMoved'] > .4 and result['cornerMoved'] > .4 and result['gapMoved'] < 1e-7
         for name in ['solidCrossing', 'cornerCrossing']:
-            assert result[name]['hit'] and not result[name]['visible'], result[name]
+            assert result[name]['hit'] and result[name]['visible'], 'The natural 1.17 m wall stops arrows but permits sight over it: ' + str(result[name])
         assert result['gapCrossing']['hit'] is None and result['gapCrossing']['visible']
         assert all(item['color'] and item['normal'] and item['roughness'] for item in result['maps']), result['maps']
         assert all(abs(value) < .025 or abs(value-3) < .025 for value in result['seams']), result['seams']

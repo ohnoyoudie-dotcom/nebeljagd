@@ -93,7 +93,8 @@ with sync_playwright() as p:
         if 'gap' in name.lower():
             assert crossing['hit'] is None and crossing['visible'], (name, crossing)
         else:
-            assert crossing['hit'] is not None and not crossing['visible'], (name, crossing)
+            assert crossing['hit'] is not None, (name, crossing)
+            assert crossing['visible'] == (name != 'diagonal'), (name, crossing)  # Only the scaled 2.25 m wall blocks sight.
     assert 3.70 < result['legacyWidth'] < 3.72, result['legacyWidth']
     assert result['calls'] > 0 and result['triangles'] > 0, result
     assert not errors, errors

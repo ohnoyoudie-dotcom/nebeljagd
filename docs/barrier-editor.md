@@ -22,6 +22,24 @@ Strecke mit den tatsächlichen Modellen. Ohne Auswahl wird ein Beispiel gezeigt.
 **Spielen** öffnet die gesamte aktuelle Karte. **Speichern** sichert sie als
 `worldmap.json`; auch eine exportierte Editor-HTML behält die Strecken.
 
+## Mauerhöhe und Sichtschutz
+
+**Höhe · Meter** steht beim Zeichnen neuer Strecken sowie rechts bei einer
+ausgewählten Mauer oder einem Zaun bereit. Auch einzelne Mauer- und Zaunobjekte
+haben dieses Feld. Werte zwischen **0,25 und 8 Metern** sind möglich.
+
+- **Unter 2 Metern:** Die Sicht darüber bleibt frei.
+- **Ab genau 2 Metern:** Die Mauer blockiert die Sicht und erzeugt einen Sichtschatten.
+- **Jede Höhe:** Die Mauer bleibt ein Hindernis für die Bewegung.
+
+Eine eingetragene Höhe gilt unabhängig vom Größenfaktor. Das Ändern der Höhe
+lässt Länge, Dicke, Formpunkte und Durchgänge unverändert. Mit **Änderungen
+übernehmen** wird die Höhe einer bestehenden Strecke gespeichert und in der
+3D-Vorschau angezeigt. Der Hinweis unter dem Feld zeigt die Sichtwirkung.
+Ein leeres Feld verwendet wieder die ursprüngliche Modellhöhe mal Größenfaktor.
+Alte Karten behalten dadurch ihre bisherigen Maße und erhalten keine automatische
+Höhenänderung. Geschosse verwenden weiterhin die tatsächliche Hindernishöhe.
+
 ## Modelle und Austausch
 
 Die ursprünglichen Modelle `wall:kit-stone` und `fence:kit-wood` stammen aus
@@ -67,6 +85,7 @@ Die optionale Liste `barriers` speichert die Form unabhängig von den Modellen:
   "variant": "kit-stone",
   "points": [[0, 0], [24, 0], [24, 12]],
   "scale": 1,
+  "height": 2,
   "gaps": [{ "at": 12, "width": 3 }]
 }
 ```
@@ -74,6 +93,8 @@ Die optionale Liste `barriers` speichert die Form unabhängig von den Modellen:
 `points` sind Meterkoordinaten auf den horizontalen Achsen x/z. `at` ist die
 Entfernung der Durchgangsmitte vom Anfang entlang der gesamten Strecke;
 `width` bleibt eine Breite in Weltmetern, auch bei einem Materialwechsel.
+`height` ist optional und speichert eine absolute Höhe in Metern; ohne dieses
+Feld gelten die Modellmaße einschließlich `scale`.
 Beim Kürzen einer Strecke darf kein Durchgang außerhalb der Strecke liegen;
 solche Änderungen werden mit einem Hinweis verworfen und sind korrigierbar.
 

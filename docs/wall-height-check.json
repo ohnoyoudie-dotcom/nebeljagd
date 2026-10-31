@@ -1,0 +1,337 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5193",
+  "editorUrl": "http://127.0.0.1:5206",
+  "checks": [
+    "Draw and selected-line height controls accept 1.99/2/3 m, preserve route/gaps, survive model changes and support blank model height plus Undo/Redo",
+    "Individual wall height is independently editable, remains optional for old maps, and roundtrips with drawn heights through JSON",
+    "Actual model and collision heights match 1.99/2/3 m across rotated, scaled, individual and elevated walls; low walls permit sight but block walking and low shots",
+    "The actual 3D preview matches 1.99/3 m wall and fence heights without changing their width/depth",
+    "The real game LOS shader leaves ground beyond 1.99 m walls bright and casts a sight shadow beyond exactly 2 m walls"
+  ],
+  "errors": [],
+  "limits": "Actual Chromium/SwiftShader editor and game renderer; no physical iPad performance measurement.",
+  "runtime": {
+    "checks": [
+      {
+        "id": "draw-low",
+        "height": 1.99,
+        "base": 0,
+        "visible": true,
+        "moved": 0.8586942982673644,
+        "lowHit": true,
+        "overHit": false,
+        "gap": {
+          "moved": 0,
+          "visible": true,
+          "hit": false
+        },
+        "renderedHeight": 1.9900000000242102,
+        "colliderHeights": [
+          1.99,
+          1.99
+        ],
+        "bodyCount": 2
+      },
+      {
+        "id": "draw-exact",
+        "height": 2,
+        "base": 0,
+        "visible": false,
+        "moved": 0.8586942982673644,
+        "lowHit": true,
+        "overHit": false,
+        "gap": {
+          "moved": 0,
+          "visible": true,
+          "hit": false
+        },
+        "renderedHeight": 2.0000000570116327,
+        "colliderHeights": [
+          2,
+          2
+        ],
+        "bodyCount": 2
+      },
+      {
+        "id": "draw-high",
+        "height": 3,
+        "base": 0,
+        "visible": false,
+        "moved": 0.9887133377142397,
+        "lowHit": true,
+        "overHit": false,
+        "gap": {
+          "moved": 0,
+          "visible": true,
+          "hit": false
+        },
+        "renderedHeight": 3.00000001551453,
+        "colliderHeights": [
+          2.9999999999999996,
+          2.9999999999999996,
+          2.9999999999999996,
+          2.9999999999999996
+        ],
+        "bodyCount": 4
+      },
+      {
+        "id": "draw-elevated-exact",
+        "height": 2,
+        "base": 20,
+        "visible": false,
+        "moved": 1.1219108772277757,
+        "lowHit": true,
+        "overHit": false,
+        "gap": {
+          "moved": 0,
+          "visible": true,
+          "hit": false
+        },
+        "renderedHeight": 2.0000000570116327,
+        "colliderHeights": [
+          2,
+          2
+        ],
+        "bodyCount": 2
+      },
+      {
+        "id": "draw-elevated-low",
+        "height": 1.99,
+        "base": 20,
+        "visible": true,
+        "moved": 1.0341720175743068,
+        "lowHit": true,
+        "overHit": false,
+        "gap": {
+          "moved": 0,
+          "visible": true,
+          "hit": false
+        },
+        "renderedHeight": 1.9900000000242102,
+        "colliderHeights": [
+          1.9899999999999984,
+          1.9899999999999984
+        ],
+        "bodyCount": 2
+      },
+      {
+        "id": "draw-negative-exact",
+        "height": 2,
+        "base": -5,
+        "visible": false,
+        "moved": 0.9569142562248335,
+        "lowHit": true,
+        "overHit": false,
+        "gap": {
+          "moved": 0,
+          "visible": true,
+          "hit": false
+        },
+        "renderedHeight": 2.0000000570116327,
+        "colliderHeights": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "bodyCount": 4
+      },
+      {
+        "id": "single-low",
+        "height": 1.99,
+        "base": -5,
+        "visible": true,
+        "moved": 1.0780414474010467,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 1.9900000000242102,
+        "colliderHeights": [
+          1.9900000000000002
+        ],
+        "bodyCount": 1
+      },
+      {
+        "id": "single-exact",
+        "height": 2,
+        "base": 20,
+        "visible": false,
+        "moved": 1.2973885965347303,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 2.0000000570116327,
+        "colliderHeights": [
+          2
+        ],
+        "bodyCount": 1
+      },
+      {
+        "id": "single-high",
+        "height": 3,
+        "base": 0,
+        "visible": false,
+        "moved": 0.6832165789604181,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 3.00000001551453,
+        "colliderHeights": [
+          3
+        ],
+        "bodyCount": 1
+      },
+      {
+        "id": "legacy-small",
+        "height": 1.1744540929794312,
+        "base": 0,
+        "visible": true,
+        "moved": 0.8586942982673693,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 1.1744540929794312,
+        "colliderHeights": [
+          1.1744540929794312
+        ],
+        "bodyCount": 1
+      },
+      {
+        "id": "legacy-large",
+        "height": 2.3489081859588623,
+        "base": 0,
+        "visible": false,
+        "moved": 1.2973885965347405,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 2.3489081859588623,
+        "colliderHeights": [
+          2.3489081859588623
+        ],
+        "bodyCount": 1
+      },
+      {
+        "id": "fence-low",
+        "height": 1.99,
+        "base": 0,
+        "visible": true,
+        "moved": 0.6400000000000132,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 1.9899999070782821,
+        "colliderHeights": [
+          1.9900000000000002
+        ],
+        "bodyCount": 1
+      },
+      {
+        "id": "fence-exact",
+        "height": 2,
+        "base": 0,
+        "visible": false,
+        "moved": 0.5849999999999953,
+        "lowHit": true,
+        "overHit": false,
+        "gap": null,
+        "renderedHeight": 1.9999998973261934,
+        "colliderHeights": [
+          2
+        ],
+        "bodyCount": 1
+      }
+    ],
+    "previewBounds": [
+      {
+        "kind": "wall",
+        "variant": "kit-tripo-wall",
+        "sizes": [
+          {
+            "height": 1.99,
+            "x": 12.549332166810721,
+            "y": 1.9900000000242102,
+            "z": 7.098664333621443
+          },
+          {
+            "height": 3,
+            "x": 12.549332166810721,
+            "y": 3.00000001551453,
+            "z": 7.098664333621443
+          }
+        ]
+      },
+      {
+        "kind": "wall",
+        "variant": "kit-stone",
+        "sizes": [
+          {
+            "height": 1.99,
+            "x": 12.464143344414978,
+            "y": 1.990000069141388,
+            "z": 6.956249403910306
+          },
+          {
+            "height": 3,
+            "x": 12.464143344414978,
+            "y": 3,
+            "z": 6.956249403910306
+          }
+        ]
+      },
+      {
+        "kind": "fence",
+        "variant": "kit-cross-wood",
+        "sizes": [
+          {
+            "height": 1.99,
+            "x": 12.27548358052707,
+            "y": 1.9899999070782821,
+            "z": 6.550967161054139
+          },
+          {
+            "height": 3,
+            "x": 12.27548358052707,
+            "y": 2.99999984598929,
+            "z": 6.550967161054139
+          }
+        ]
+      }
+    ],
+    "sourceUnchanged": true,
+    "visual": {
+      "lowPixel": [
+        117,
+        144,
+        75,
+        255
+      ],
+      "highPixel": [
+        71,
+        94,
+        41,
+        255
+      ],
+      "visibleLow": true,
+      "visibleHigh": false,
+      "sight": {
+        "radius": 80,
+        "direction": "360-degree",
+        "appearance": "single-soft-edge",
+        "sceneryTransmission": 1,
+        "edgeFeatherMeters": 1.4,
+        "blockerCount": 2,
+        "samples": 2048,
+        "updates": 2,
+        "origin": {
+          "x": 0,
+          "y": 0,
+          "z": 8
+        },
+        "materials": 2
+      },
+      "calls": 3
+    }
+  }
+}

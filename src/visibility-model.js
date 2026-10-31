@@ -1,3 +1,5 @@
+import { BARRIER_SIGHT_HEIGHT } from './map/barrier-height.js';
+
 /** 2D tactical line of sight. Static blocker cells make the cost local to the
  * observer, independent of island size. Walls keep their rotated corner shape. */
 export function createSightModel({ obstacles = [], radius = 18, samples = 512, cellSize = 16 } = {}) {
@@ -57,8 +59,19 @@ export function createSightModel({ obstacles = [], radius = 18, samples = 512, c
         for (const body of cells.get(`${x},${z}`) ?? []) candidates.add(body);
       }
     }
-    // A tree or wall far below eye level cannot hide a traveller on a ridge.
-    nearby = [...candidates].filter(body => !body.destroyed && (body.maxY ?? Infinity) >= observer.y + .85 && (body.minY ?? -Infinity) <= observer.y + 2.3);
+    // Low freestanding walls remain physical obstacles but allow sight over
+    // them. This shared filter drives both actor/loot visibility and the soft
+    // scenery shadow. House walls and other environmental blockers keep their
+    // own existing behavior. Use authored physical height, not world altitude.
+    nearby = [...candidates].filter(body => {
+      if (body.destroyed) return false;
+      if (body.type === 'wall' || body.type === 'fence') {
+        const height = body.barrierHeight ?? ((body.maxY ?? Infinity) - (body.minY ?? 0));
+        if (height < BARRIER_SIGHT_HEIGHT) return false;
+      }
+      // A tree or wall far below eye level cannot hide a traveller on a ridge.
+      return (body.maxY ?? Infinity) >= observer.y + .85 && (body.minY ?? -Infinity) <= observer.y + 2.3;
+    });
     for (let i = 0; i < samples; i++) {
       const angle = i / samples * tau;
       distances[i] = rayDistance(Math.cos(angle), Math.sin(angle));

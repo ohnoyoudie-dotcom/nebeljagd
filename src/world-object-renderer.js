@@ -13,6 +13,7 @@ import { createVegetationWind } from './vegetation-wind.js';
 import { buildVegetationPatch, buildKitGrassPatch, vegetationInstanceTint, vegetationTint, MAX_GRASS_INSTANCES, MAX_KIT_GRASS_INSTANCES } from './vegetation-patches.js';
 import { vegetationSettings } from './map/landscape.js';
 import { expandBarrierMap } from './map/barriers.js';
+import { getBarrierHeight, getBarrierHeightScale, isHeightAdjustable } from './map/barrier-height.js';
 import { loadEnvironmentKit } from './environment-kit.js';
 import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { grassBiomeProfile } from './meadow-ground.js';
@@ -321,7 +322,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const corners = [[body.minX, body.minZ], [body.maxX, body.minZ], [body.maxX, body.maxZ], [body.minX, body.maxZ]].map(([a, b]) => toWorld({ x: a, z: b }));
       const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, destructibleId: local.furnitureId ? `${object.id}-furniture-${local.furnitureId}` : undefined,
         type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
-        minY: y + local.minY * scale, maxY: y + local.maxY * scale, rotation, oriented: true, corners };
+        minY: y + local.minY * scale, maxY: y + local.maxY * scale, rotation, oriented: true, corners,
+        ...(isHeightAdjustable(object) ? { barrierHeight: getBarrierHeight(object) } : {}) };
       if (!local.movementOnly) projectileObstacles.push(worldBody);
       local.worldBody = worldBody; return local;
     });
@@ -453,19 +455,25 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
     } else {
       const key = `${object.kind}:${variant}`;
-      // Derived line pieces fit the segment on local X only: the established
-      // wall height, fence posts and collision thickness keep their scale.
+      // Route fitting affects local X; an authored metre height affects only Y.
+      // Neither operation changes the saved route, openings or wall thickness.
       const lengthScale = barrierObjects.has(object) && ['wall', 'fence'].includes(object.kind)
         ? object.longitudinalScale ?? 1 : 1;
-      if (prototypes.has(key)) queue(key, object, object.position, [lengthScale, 1, 1]);
+      const heightScale = getBarrierHeightScale(object);
+      if (prototypes.has(key)) queue(key, object, object.position, [lengthScale, heightScale, 1]);
       if (kit) {
         for (const circle of kit.circles) {
           const body = circleBody(object, circle.radius, circle.maxY, new THREE.Vector3(circle.x, 0, circle.z)); body.imported = true;
           if (object.kind === 'tree') { trees.push({ ...body, asset: `${kit.asset}.glb`, scale }); importedAssets.trees++; }
         }
         if (kit.walls.length) {
-          const localWalls = lengthScale === 1 ? kit.walls : kit.walls.map(body => ({
+          // Legacy kits have slightly conservative collider tops. Normalize
+          // those separately from visual mesh height to hit the exact metre
+          // setting, including the inclusive 2 m sight threshold on hills.
+          const colliderHeightScale = isHeightAdjustable(object) ? getBarrierHeight(object) / (kit.height * scale) : 1;
+          const localWalls = lengthScale === 1 && colliderHeightScale === 1 ? kit.walls : kit.walls.map(body => ({
             ...body, minX: body.minX * lengthScale, maxX: body.maxX * lengthScale,
+            minY: (body.minY ?? 0) * colliderHeightScale, maxY: body.maxY * colliderHeightScale,
           }));
           const structure = addStructure(object, localWalls, null);
           if (object.kind === 'crate' || kit.destructible) {

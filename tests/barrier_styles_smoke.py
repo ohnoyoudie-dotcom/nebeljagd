@@ -178,11 +178,12 @@ try:
         assert result['stats']['authoredObjectCount'] == 0 and result['calls'] > 0, result
         for check in result['checks']:
             assert check['solidMoved'] > .4 and check['gapMoved'] < 1e-7, check
-            assert check['solidCrossing']['hit'] and not check['solidCrossing']['visible'], check
+            assert check['solidCrossing']['hit'], check
+            assert check['solidCrossing']['visible'] == (check['height'] < 2), check
             assert check['gapCrossing']['hit'] is None and check['gapCrossing']['visible'], check
         runtime.screenshot(path=str(OUT / 'four-designs.png'))
         report['runtime'] = result
-        passed('All four real runtime designs render, block movement/projectiles/sight at solids and leave authored passages fully open')
+        passed('All four runtime designs block movement and projectiles, block sight only at 2 m or above, and keep passages open')
         assert not report['errors'], report['errors']
         report['status'] = 'passed'
         browser.close()

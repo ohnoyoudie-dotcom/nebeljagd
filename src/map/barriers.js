@@ -1,4 +1,5 @@
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
+import { isValidBarrierHeight } from './barrier-height.js';
 
 /** The authored centreline is independent of the selected model. Generated
  * pieces are disposable runtime data and must never be saved into objects. */
@@ -33,6 +34,7 @@ export function makeBarrier(styleId, points, options = {}) {
     variant: style.variant,
     points: points.map(p => [...p]),
     scale: options.scale ?? 1,
+    ...(options.height !== undefined ? { height: options.height } : {}),
     gaps: (options.gaps ?? []).map(gap => ({ ...gap })),
   };
 }
@@ -76,6 +78,7 @@ export function barrierSections(barrier) {
  * nominal 3 m. Its tiny overhangs must not intrude into an authored passage. */
 export function generateBarrierObjects(barrier) {
   if (!getBarrierStyle(barrier) || !finite(barrier.scale) || barrier.scale < .25 || barrier.scale > 3) throw new Error('Ungültiges Mauer- oder Zaunmodell.');
+  if (barrier.height !== undefined && !isValidBarrierHeight(barrier.height)) throw new Error('Mauerhöhe muss zwischen 0,25 und 8 Metern liegen.');
   if (barrierLength(barrier) > BARRIER_LIMITS.length) throw new Error('Die Strecke ist zu lang.');
   const kit = getEnvironmentKitDefinition(barrier.kind, barrier.variant);
   const moduleLength = 2 * kit.footprint.halfWidth * barrier.scale;
@@ -95,6 +98,7 @@ export function generateBarrierObjects(barrier) {
       position: mix(section.a, section.b, (i + .5) / count),
       rotation,
       scale: barrier.scale,
+      ...(barrier.height !== undefined ? { height: barrier.height } : {}),
       longitudinalScale: size / count / moduleLength,
       barrierId: barrier.id,
     });
@@ -150,6 +154,7 @@ export function validateBarriers(map, { ids, checkPoint, pointInPolygon, islandV
     if (typeof barrier.name !== 'string' || !barrier.name.trim() || barrier.name.length > 120 || /[\u0000-\u0008\u000b-\u001f]/.test(barrier.name)) errors.push(`${label}: Ungültiger Name.`);
     if (!getBarrierStyle(barrier)) errors.push(`${label}: Bitte eine bekannte Mauer- oder Zaunvariante wählen.`);
     if (!finite(barrier.scale) || barrier.scale < .25 || barrier.scale > 3) errors.push(`${label}: Größe muss zwischen 0,25 und 3 liegen.`);
+    if (barrier.height !== undefined && !isValidBarrierHeight(barrier.height)) errors.push(`${label}: Höhe muss zwischen 0,25 und 8 Metern liegen.`);
     let geometryValid = Array.isArray(barrier.points) && barrier.points.length >= 2 && barrier.points.length <= BARRIER_LIMITS.points;
     if (!geometryValid) errors.push(`${label}: Eine Strecke benötigt 2 bis ${BARRIER_LIMITS.points} Punkte.`);
     else {

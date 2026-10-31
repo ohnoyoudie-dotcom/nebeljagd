@@ -4,6 +4,7 @@ import { validateWorldmap, getWorldmapStats, zoneAt, pointInPolygon } from './mo
 import { renderWorldmapSvg, barrierSvg } from './render.js';
 import { makeBarrier, barrierLength } from './barriers.js';
 import { createBarrierPanel } from './barrier-panel.js';
+import { barrierHeightHint, isHeightAdjustable } from './barrier-height.js';
 import { simplifyBarrierPoints, nearestBarrier, barrierEraseHits } from './barrier-drawing.js';
 import { AUTHORING_OBJECT_CATALOG, isObjectAvailable, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
 import { canPaintGrass } from './grass-brush.js';
@@ -462,6 +463,9 @@ function renderProperties() {
     updateRarityHint();
     $('object-rotation').value = Math.round(feature.rotation * 180 / Math.PI * 100) / 100;
     $('object-scale').value = feature.scale;
+    $('object-height-property').hidden = !isHeightAdjustable(feature);
+    $('object-height').value = feature.height ?? '';
+    updateObjectHeightHint();
     $('object-radius-property').hidden = !['grass', 'flower'].includes(feature.kind);
     $('object-radius').value = feature.radius ?? getObjectDefinition(feature.kind).defaultRadius ?? 1;
     $('object-radius').disabled = $('object-radius-property').hidden;
@@ -478,6 +482,14 @@ function renderProperties() {
     $('selected-vertex-info').textContent = selection.vertex === null ? 'Kein Formpunkt ausgewählt' : `Punkt ${selection.vertex + 1}: x ${Math.round(feature.points[selection.vertex][0])} · z ${Math.round(feature.points[selection.vertex][1])}`;
   }
 }
+function updateObjectHeightHint() {
+  const feature = selectedFeature();
+  if (!feature || !isHeightAdjustable(feature)) return;
+  const draft = { ...feature, variant: $('object-variant').value, scale: Number($('object-scale').value) };
+  delete draft.height;
+  if ($('object-height').value.trim() !== '') draft.height = Number($('object-height').value);
+  $('object-height-hint').textContent = $('object-height').validity.valid ? barrierHeightHint(draft) : 'Bitte eine Höhe zwischen 0,25 und 8 Metern eingeben.';
+}
 function applyProperties(event) {
   event.preventDefault();
   if (!selectedFeature()) return;
@@ -493,6 +505,10 @@ function applyProperties(event) {
       if (WEAPON_TYPES.includes(feature.kind)) feature.rarity = $('object-rarity').value;
       feature.rotation = Number($('object-rotation').value) * Math.PI / 180;
       feature.scale = Number($('object-scale').value);
+      if (isHeightAdjustable(feature)) {
+        if ($('object-height').value.trim() === '') delete feature.height;
+        else feature.height = Number($('object-height').value);
+      }
       if (['grass', 'flower'].includes(feature.kind)) feature.radius = Number($('object-radius').value);
     }
     landscapePanel?.applySelected(feature, selection.type);
@@ -609,6 +625,7 @@ function pointerDown(event) {
   const pan = mode === 'pan' || spaceHeld || event.button === 1;
   if (mode === 'barrierDraw' && !pan) {
     if (!pointInPolygon(start, map.island.points)) return toast('Die Strecke bitte auf der Insel beginnen.', true);
+    if (!barrierPanel.canDraw()) return;
     const settings = barrierPanel.settings(), point = barrierPoint(start);
     pointer = { id: event.pointerId, barrierDraw: { ...settings, raw: [point], points: [point, point] } };
     selection = null; renderProperties(); $('map-viewport').setPointerCapture(event.pointerId);
@@ -718,7 +735,7 @@ function pointerEnd(event, cancelled = false) {
         toast('Mindestens einen Meter weit ziehen. Zum Bearbeiten „Auswählen“ nutzen.');
       else {
         try {
-          const added = makeBarrier(stroke.styleId, points);
+          const added = makeBarrier(stroke.styleId, points, { height: stroke.height });
           if (commit(candidate => { (candidate.barriers ??= []).push(added); }, 'Strecke gebaut. Mit „Auswählen“ kannst du ihre Punkte verschieben.')) barrierPanel.setPreview(added);
         } catch (error) { toast(error.message, true); }
       }
@@ -1184,6 +1201,7 @@ barrierPanel = createBarrierPanel({ getMap: () => map, getMode: () => mode, setM
 });
 $('palette-kind').addEventListener('change', () => { fillVariants($('palette-variant'), $('palette-kind').value); updatePaletteRarity(); renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
 $('palette-variant').addEventListener('change', () => { renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
+for (const id of ['object-height', 'object-scale', 'object-variant']) $(id).addEventListener('input', updateObjectHeightHint);
 $('object-variant').addEventListener('change', () => { const feature = selectedFeature(); if (feature) renderAssetPreview('object', feature.kind, $('object-variant').value); if (feature?.kind === 'grass') landscapePanel.setSelectedVariant($('object-variant').value); });
 $('grass-brush').addEventListener('click', () => setMode(mode === 'brush' ? 'select' : 'brush'));
 $('object-eraser').addEventListener('click', () => setMode(mode === 'erase' ? 'select' : 'erase'));

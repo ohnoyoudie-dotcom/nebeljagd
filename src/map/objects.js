@@ -101,6 +101,7 @@ export function makeWorldObject(kind, position, options = {}) {
     position: [...position],
     rotation: options.rotation ?? 0,
     scale: options.scale ?? definition.defaultScale,
+    ...(options.height !== undefined ? { height: options.height } : {}),
     ...(WEAPON_TYPES.includes(kind) ? { rarity: options.rarity ?? 'common' } : {}),
     ...(definition.defaultRadius ? { radius: options.radius ?? definition.defaultRadius } : {}),
   };

@@ -2,6 +2,7 @@ import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getObjectDefinition } from './objects.js';
 import { validateLandscape } from './landscape.js';
 import { validateBarriers } from './barriers.js';
+import { isHeightAdjustable, isValidBarrierHeight } from './barrier-height.js';
 
 /** Nebeljagd map contract v1. Coordinates are world meters: north = -z. */
 const LIMIT = 1e7;
@@ -158,6 +159,7 @@ export function validateWorldmap(map) {
     if (checkPoint(item.position, `Weltobjekt ${item.id}`) && islandValid && !pointInPolygon(item.position, map.island.points)) error(`Weltobjekt ${item.name} liegt außerhalb der Insel.`);
     if (!finite(item.rotation) || Math.abs(item.rotation) > Math.PI * 20) error(`${item.id}: Drehung muss in Radiant zwischen -20π und 20π liegen.`);
     if (!finite(item.scale) || item.scale < .25 || item.scale > 3) error(`${item.id}: Größe muss zwischen 0,25 und 3 liegen.`);
+    if (item.height !== undefined && (!isHeightAdjustable(item) || !isValidBarrierHeight(item.height))) error(`${item.id}: Höhe ist nur für Mauern und Zäune erlaubt und muss zwischen 0,25 und 8 Metern liegen.`);
     if (['grass', 'flower'].includes(item.kind) && (!finite(item.radius) || item.radius < .5 || item.radius > 20)) error(`${item.id}: Flächenradius muss zwischen 0,5 und 20 Metern liegen.`);
     for (const key of ['radius', 'width', 'depth']) if (item[key] !== undefined && (!finite(item[key]) || item[key] < .25 || item[key] > 100)) error(`${item.id}: ${key} muss zwischen 0,25 und 100 liegen.`);
   }

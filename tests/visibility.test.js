@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSightModel } from '../src/visibility-model.js';
+import { createCollisionIndex } from '../src/collision.js';
 
 test('sight is finite in every direction and follows the observer', () => {
   const sight = createSightModel({ radius: 18 });
@@ -36,6 +37,40 @@ test('destroyed crates stop hiding what is behind them after the next sight upda
   crate.destroyed = true;
   sight.update({ x: 0, y: 0, z: 0 });
   assert.equal(sight.isVisible({ x: 8, z: 0 }), true);
+});
+
+test('freestanding walls and fences hide actors and shade the ground only from 2 metres upwards', () => {
+  for (const type of ['wall', 'fence']) for (const height of [.25, 1.5, 1.99, 1.9999, 2, 2.01, 3]) {
+    for (const ground of [-5, 0, 20, 123.456789]) {
+      const body = { type, minX: 4, maxX: 4.6, minZ: -2, maxZ: 2,
+        minY: ground, maxY: ground + height, barrierHeight: height };
+      const original = { ...body }, sight = createSightModel({ obstacles: [body], radius: 18 });
+      sight.update({ x: 0, y: ground, z: 0 });
+      const blocked = height >= 2;
+      assert.equal(sight.isVisible({ x: 8, z: 0 }), !blocked, `${type} at ${height}m on ${ground}m ground`);
+      assert.equal(sight.distanceAtAngle(0), blocked ? 4 : 18, 'same contour feeds the soft vision shadow');
+      assert.equal(sight.distances[0], blocked ? 4 : 18);
+      const collision = createCollisionIndex([], [body]), position = { x: 4.3, y: ground, z: 0 };
+      collision.resolve(position, .42);
+      assert.ok(Math.hypot(position.x - 4.3, position.z) > .4, 'a visible-over wall remains impassable');
+      assert.ok(collision.traceSegment({ x: 0, y: ground + height / 2, z: 0 }, { x: 8, y: ground + height / 2, z: 0 }, .02), 'low projectiles hit the actual wall');
+      assert.equal(collision.traceSegment({ x: 0, y: ground + height + .2, z: 0 }, { x: 8, y: ground + height + .2, z: 0 }, .02), null, 'shots above its physical top remain clear');
+      assert.deepEqual(body, original, 'sight filtering must not remove or mutate physical obstacles');
+    }
+  }
+});
+
+test('legacy wall colliders use physical height, while house partitions and crates retain existing sight rules', () => {
+  for (const [type, height, blocked] of [['wall', 1.5, false], ['wall', 2, true], ['fence', 1, false], ['fence', 2, true], ['house-wall', 1.5, true], ['crate', 1, true], ['rock', 1.5, true]]) {
+    const body = { type, minX: 4, maxX: 4.6, minZ: -1, maxZ: 1, minY: 20, maxY: 20 + height };
+    const sight = createSightModel({ obstacles: [body] });
+    sight.update({ x: 0, y: 20, z: 0 });
+    assert.equal(sight.isVisible({ x: 8, z: 0 }), !blocked, type);
+  }
+  const sight = createSightModel({ obstacles: [{ type: 'wall', minX: 4, maxX: 4.6, minZ: -1, maxZ: 1,
+    minY: 0, maxY: 3, barrierHeight: 3 }] });
+  sight.update({ x: 0, y: 5, z: 0 });
+  assert.equal(sight.isVisible({ x: 8, z: 0 }), true, 'observer far above the wall still sees over it');
 });
 
 test('a house doorway admits sight while adjacent walls conceal its rooms', () => {

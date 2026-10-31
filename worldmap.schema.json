@@ -555,6 +555,12 @@
         },
         "vegetation": {
           "$ref": "#/$defs/landscapeVegetation"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 8,
+          "description": "Absolute Mauer- oder Zaunhöhe in Metern. Ohne Angabe bleibt die Modellhöhe mal Größe erhalten. Ab 2 Metern wird die Sicht blockiert; Bewegung bleibt bei jeder Höhe blockiert."
         }
       },
       "allOf": [
@@ -1077,6 +1083,23 @@
               "variant": {
                 "enum": [
                   "kit-tripo-well"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "height"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "wall",
+                  "fence"
                 ]
               }
             }
@@ -1760,6 +1783,12 @@
               }
             }
           }
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 8,
+          "description": "Absolute Mauer- oder Zaunhöhe in Metern. Ohne Angabe bleibt die Modellhöhe mal Größe erhalten. Ab 2 Metern wird die Sicht blockiert; Bewegung bleibt bei jeder Höhe blockiert."
         }
       },
       "allOf": [

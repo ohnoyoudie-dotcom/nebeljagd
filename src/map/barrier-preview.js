@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { loadEnvironmentKit } from '../environment-kit.js';
 import { generateBarrierObjects } from './barriers.js';
+import { getBarrierHeightScale } from './barrier-height.js';
 
 /** Static, lazily created preview of the actual wall/fence GLBs. The saved
  * line is never changed. Prototypes belong to this preview's cache and are
@@ -140,7 +141,7 @@ export function createBarrierPreview(container, statusElement) {
         objects.forEach((object, index) => {
           transform.position.set(object.position[0] - origin[0], 0, object.position[1] - origin[1]);
           transform.rotation.set(0, object.rotation, 0);
-          transform.scale.set(object.scale * (object.longitudinalScale ?? 1), object.scale, object.scale);
+          transform.scale.set(object.scale * (object.longitudinalScale ?? 1), object.scale * getBarrierHeightScale(object), object.scale);
           transform.updateMatrix(); mesh.setMatrixAt(index, transform.matrix);
         });
         mesh.instanceMatrix.needsUpdate = true;
