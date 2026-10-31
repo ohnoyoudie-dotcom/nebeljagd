@@ -1,5 +1,5 @@
 {
-  "asset": "Nebeljagd three stone wall reference images",
+  "asset": "Nebeljagd four stone wall reference images",
   "assetType": "2D reference images for later Tripo generation",
   "generator": "OpenAI ImageGen",
   "createdDate": "2026-10-31",
@@ -18,31 +18,72 @@
   "designTargets": {
     "heightMetres": 1.6,
     "thicknessMetres": 0.65,
-    "straightAndBrokenLengthMetres": 4,
-    "cornerArmLengthMetres": 2
+    "straightAndBrokenLengthMetres": 12,
+    "cornerArmLengthMetres": 2,
+    "passageTotalSpanMetres": 12,
+    "passageOpeningMetres": 3,
+    "passageHalfLengthMetres": 4.5
   },
   "variants": [
     {
       "id": "wall-straight",
-      "name": "Gerade Steinmauer",
+      "name": "Lange gerade Steinmauer",
       "prompt": {
-        "file": "assets/concepts/stone-walls/wall-straight/prompt.txt",
-        "bytes": 2646,
-        "sha256": "20ec11f58c8dd967d084fd1c079e5082248af09d21b37a80e52b295f13d6b6d2"
+        "file": "assets/concepts/stone-walls/wall-straight/long-wall-prompt.txt",
+        "bytes": 2409,
+        "sha256": "bc80d7a4e585d3ba85db7013b03dd6a6b31b605df283edd7fa532e28a9aad41a"
       },
       "source": {
-        "file": "/workspace/generated_images/exec-ca992ca9-505d-424e-80cf-66f144ffa688.png",
-        "bytes": 2609467,
-        "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa"
+        "file": "/workspace/generated_images/exec-3c9b1445-6434-45af-b932-7827c31e935d.png",
+        "bytes": 2215158,
+        "sha256": "98505eb7f02bd3a698d596185a11ca832458d22d00737ef916056cbef7abd676"
       },
       "output": {
         "file": "assets/concepts/stone-walls/wall-straight/reference.png",
-        "bytes": 2609467,
-        "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa"
+        "bytes": 2215158,
+        "sha256": "98505eb7f02bd3a698d596185a11ca832458d22d00737ef916056cbef7abd676"
       },
       "imagePixels": [
-        1774,
-        887
+        2172,
+        724
+      ],
+      "history": [
+        {
+          "version": "original-short-wall",
+          "designLengthMetres": 4,
+          "prompt": {
+            "file": "assets/concepts/stone-walls/wall-straight/prompt.txt",
+            "bytes": 2646,
+            "sha256": "20ec11f58c8dd967d084fd1c079e5082248af09d21b37a80e52b295f13d6b6d2"
+          },
+          "source": {
+            "file": "/workspace/generated_images/exec-ca992ca9-505d-424e-80cf-66f144ffa688.png",
+            "bytes": 2609467,
+            "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa"
+          },
+          "output": {
+            "file": "assets/concepts/stone-walls/wall-straight/reference.png",
+            "bytes": 2609467,
+            "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa"
+          },
+          "imagePixels": [
+            1774,
+            887
+          ]
+        }
+      ],
+      "editReferences": [
+        {
+          "file": "assets/concepts/stone-walls/wall-straight/reference.png",
+          "bytes": 2609467,
+          "sha256": "1ebb889ef41c6c65b6547adeaa946d922359762b7d5dec26d0df89733a884afa",
+          "originalSource": "/workspace/generated_images/exec-ca992ca9-505d-424e-80cf-66f144ffa688.png"
+        },
+        {
+          "file": "assets/characters/player-portrait.png",
+          "bytes": 200629,
+          "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+        }
       ]
     },
     {
@@ -70,30 +111,105 @@
     },
     {
       "id": "wall-broken",
-      "name": "Beschädigte Steinmauer",
+      "name": "Lange beschädigte Steinmauer",
       "prompt": {
-        "file": "assets/concepts/stone-walls/wall-broken/prompt.txt",
-        "bytes": 3108,
-        "sha256": "fd5a36a7cedab70756d34b9998a6b5f233991dbf6a2a177d050119ba34b8f300"
+        "file": "assets/concepts/stone-walls/wall-broken/long-wall-prompt.txt",
+        "bytes": 2605,
+        "sha256": "602057ff69511c15cd4508ef1182203ccbc8ecba3b238117f248afcf4c415453"
       },
       "source": {
-        "file": "/workspace/generated_images/exec-7587d448-9d84-4522-ab50-ec846c6152d6.png",
-        "bytes": 2292162,
-        "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d"
+        "file": "/workspace/generated_images/exec-00b92df6-bb1b-42cd-bdf0-ec1ff87bcc06.png",
+        "bytes": 2031675,
+        "sha256": "edf3b303d32229a88e0b4fa3efd3a4b5d165c18dd2569fec6aac9f12143eea68"
       },
       "output": {
         "file": "assets/concepts/stone-walls/wall-broken/reference.png",
-        "bytes": 2292162,
-        "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d"
+        "bytes": 2031675,
+        "sha256": "edf3b303d32229a88e0b4fa3efd3a4b5d165c18dd2569fec6aac9f12143eea68"
       },
       "imagePixels": [
-        1536,
-        1024
+        2172,
+        724
+      ],
+      "history": [
+        {
+          "version": "original-short-wall",
+          "designLengthMetres": 4,
+          "prompt": {
+            "file": "assets/concepts/stone-walls/wall-broken/prompt.txt",
+            "bytes": 3108,
+            "sha256": "fd5a36a7cedab70756d34b9998a6b5f233991dbf6a2a177d050119ba34b8f300"
+          },
+          "source": {
+            "file": "/workspace/generated_images/exec-7587d448-9d84-4522-ab50-ec846c6152d6.png",
+            "bytes": 2292162,
+            "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d"
+          },
+          "output": {
+            "file": "assets/concepts/stone-walls/wall-broken/reference.png",
+            "bytes": 2292162,
+            "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d"
+          },
+          "imagePixels": [
+            1536,
+            1024
+          ]
+        }
+      ],
+      "editReferences": [
+        {
+          "file": "assets/concepts/stone-walls/wall-broken/reference.png",
+          "bytes": 2292162,
+          "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d",
+          "originalSource": "/workspace/generated_images/exec-7587d448-9d84-4522-ab50-ec846c6152d6.png"
+        },
+        {
+          "file": "assets/characters/player-portrait.png",
+          "bytes": 200629,
+          "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+        }
+      ]
+    },
+    {
+      "id": "wall-passage",
+      "editReferences": [
+        {
+          "file": "assets/concepts/stone-walls/wall-broken/reference.png",
+          "bytes": 2292162,
+          "sha256": "f06d9e1dc8c55c5ef9e7ccedf29842438357f3e7db875731a6a9e0ca70de711d",
+          "originalSource": "/workspace/generated_images/exec-7587d448-9d84-4522-ab50-ec846c6152d6.png"
+        },
+        {
+          "file": "assets/characters/player-portrait.png",
+          "bytes": 200629,
+          "sha256": "4925b6cc75b0e90d4359ffb39c36d3a5b9b9fa1e9bea5858f7e70191cca34056"
+        }
+      ],
+      "name": "Lange Steinmauer mit Durchgang",
+      "prompt": {
+        "file": "assets/concepts/stone-walls/wall-passage/long-wall-prompt.txt",
+        "bytes": 3244,
+        "sha256": "fd07842ff3bbd121348b3f2189bf49abf1e19b6957515d3ceda6aa7defdf0fa8"
+      },
+      "source": {
+        "file": "/workspace/generated_images/exec-6ff3a238-9d2e-4d80-ba13-e2ecb5a5eec7.png",
+        "bytes": 2037919,
+        "sha256": "aa4a5c658437069fd3a2cf595117740711ec5fd731e8b15775c8d3564b51a30e"
+      },
+      "output": {
+        "file": "assets/concepts/stone-walls/wall-passage/reference.png",
+        "bytes": 2037919,
+        "sha256": "aa4a5c658437069fd3a2cf595117740711ec5fd731e8b15775c8d3564b51a30e"
+      },
+      "imagePixels": [
+        2170,
+        725
       ]
     }
   ],
-  "visualReview": "Three separate, clearly legible isolated wall concepts: intact straight module, right-angle corner and damaged straight segment. Cohesive warm-grey stone, broad capstones and limited moss. No landscape bases or loose rubble. Exact profiles, heights, corner angle and mating surfaces remain to be measured and adjusted on subsequent 3D assets.",
+  "visualReview": "Long intact and damaged wall concepts show many normal-sized stone blocks rather than stretched blocks. New passage variant has two aligned wall halves with a completely clear ground-level gap and no sill or connecting base. The small corner image is unchanged. These are visual concepts: exact 12 m spans, 3 m opening, heights, thicknesses and mating surfaces must be measured and adjusted on the subsequent 3D models.",
   "tripoSubmitted": false,
   "modelGenerated": false,
-  "runtimeIntegrated": false
+  "runtimeIntegrated": false,
+  "updatedDate": "2026-10-31"
 }
