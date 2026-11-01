@@ -11,7 +11,31 @@ Projektkarte und eigenem lokalen Entwurf wählen. Der geprüfte Build wird auf
 Die Versionslinks in den folgenden historischen Berichten dokumentieren deren
 damalige Veröffentlichung, sie wählen keine historische Karte aus.
 
-## Aktueller Editor mit korrigierten Projektiltreffern
+## Levelaufstieg direkt an Figur und Zahl
+
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+und **Spielen** wählen. Beim Levelaufstieg erscheinen zwei goldene Wellen,
+ein kurzer Lichtschein und größere Funken direkt am Spieler. Die Levelzahl
+über der Figur und im HUD vergrößert sich kurz und leuchtet auf. Das bisherige
+Textfenster ist entfernt. Die Lebensbalken behalten ihre Breite; reduzierte
+Animationen verwenden eine ruhige Aufhellung.
+
+Lokal geprüfte Quelle: `189190d3de97744570d6ee31779be8d1721c699d`, Build
+`78320efa6823`. 409 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild sind
+bestanden. Der Browsercheck verwendet die erzeugte Spiel-Datei und einen
+echten Gegner-Kill: Level 2, +25 Lebenspunkte, Zahlenpuls, beide Wellen und
+Funken sowie Ablauf und Neustart. Desktop-/Touch-Anzeigen und reduzierte
+Animationen wurden zusätzlich separat geprüft.
+[Prüfbericht](level-up-direct-feedback-check.json) ·
+[Spielaufnahme](level-up-direct-feedback-game.png).
+
+Der bestehende Workflow veröffentlicht diesen Stand gemeinsam mit dem Editor
+über den festen Einstieg. Der dort angezeigte Build benennt die tatsächlich
+bereitgestellte Ausgabe; die lokale Build-Kennung oben dokumentiert den
+Browsercheck. Karte, Originalmodelle, Waffen- und Projektilregeln bleiben
+erhalten.
+
+## Vorherige Ausgabe mit korrigierten Projektiltreffern
 
 [Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=31c920e).
 Feuer- und Eisstäbe richten ihre echte Kristallspitze beim Abschuss auf
