@@ -877,7 +877,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "steel"
+                  "steel",
+                  "kit-tripo-sword"
                 ]
               }
             }
@@ -924,7 +925,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "ember"
+                  "ember",
+                  "kit-tripo-lava-staff"
                 ]
               }
             }
@@ -945,7 +947,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "frost"
+                  "frost",
+                  "kit-tripo-crystal-staff"
                 ]
               }
             }
