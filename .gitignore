@@ -6,3 +6,6 @@ work-smoke/
 *.log
 __pycache__/
 *.pyc
+.nebeljagd/
+.env
+.env.local

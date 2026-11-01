@@ -64,7 +64,7 @@ try:
                     return
                 REPORT['delivery']['unexpectedRequests'].append(request.url)
             context.on('request', resource)
-        path = '/nebeljagd.html' if STANDALONE else '/index.html'
+        path = '/nebeljagd.html' if STANDALONE else '/game.html'
         page.goto(URL + path + '?quality=low', wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
         expect(page.locator('#errorScreen')).to_be_hidden()

@@ -1,0 +1,7 @@
+body[data-mode="lobby"] .zone-panel,
+body[data-mode="lobby"] .world-map-actions { display: none; }
+.lobby-tools { display: flex; gap: 8px; align-items: center; }
+.lobby-exit { min-height: 39px; border: 1px solid var(--line); border-radius: 7px; background: #18362bed; padding: 8px 12px; color: #eee5cc; font-size: 12px; }
+.lobby-session { display: block; margin-top: 8px; color: #d3dfba; font-size: 10px; letter-spacing: .2px; }
+.lobby-intro-exit { display: inline-block; margin-top: 12px; color: #d3dfba; background: transparent; border: 0; padding: 8px 0; font-size: 12px; }
+@media (max-width: 700px) { .lobby-exit { max-width: 130px; min-height: 34px; padding: 6px 9px; font-size: 10px; } .lobby-session { max-width: 180px; font-size: 8px; } }

@@ -1,0 +1,105 @@
+{
+  "name": "nebeljagd-tripo-weapons",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1275,
+      "sha256": "89e3c11d79fb1ad3d7df6b4502c1ac76c5c4200bb4bdfeafaf1c9ed2de4b9407"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 11518,
+      "sha256": "61319b5b5dc62fa1bea6661f62f9b1ff2d9e7d2f5e073b9d1a32e2da3caf4909"
+    },
+    {
+      "path": "inspections/fire-staff.json",
+      "bytes": 3244,
+      "sha256": "b3feb8138f6d239e3cb191f560b36ed054908edb7444f2be7c8e657d13cc99a6"
+    },
+    {
+      "path": "inspections/ice-staff.json",
+      "bytes": 3206,
+      "sha256": "50b7a6a64fe692e36a015046e5cf1630c08417e1d6dd15b3962826e3cae59458"
+    },
+    {
+      "path": "inspections/sword.json",
+      "bytes": 3184,
+      "sha256": "d71c45a7f95905a5679e1aaecaa07094f09b1dc685c5ccf2a618d28092578150"
+    },
+    {
+      "path": "previews/fire-staff-runtime.png",
+      "bytes": 436549,
+      "sha256": "ec9f40087864395ef863bb31dd6edc1677004022169936a3dfe0ce16e0d4e55b"
+    },
+    {
+      "path": "previews/fire-staff-source.png",
+      "bytes": 437846,
+      "sha256": "b3df7b55c8474d2343aa08eafbbb503a2f9bac9470d6ca512f591d81f87a8648"
+    },
+    {
+      "path": "previews/ice-staff-runtime.png",
+      "bytes": 433367,
+      "sha256": "7f97858bf4ba83b71543d722b4a7397bee88a3a6c2d77426c09c2a9ccef5ac8b"
+    },
+    {
+      "path": "previews/ice-staff-source.png",
+      "bytes": 434622,
+      "sha256": "d30021b7f48c564a22bddbc3183a2e13a0c71e7a2cba6ad45343a617ef288c41"
+    },
+    {
+      "path": "previews/sword-runtime.png",
+      "bytes": 430353,
+      "sha256": "ecb9730168269726d1b882daef140a9553d3f8c8c73d2922f4810ec90288f31c"
+    },
+    {
+      "path": "previews/sword-source.png",
+      "bytes": 431754,
+      "sha256": "8dc5d02ed6d3f6d85ce87640cc9c53c4093e3d51c65a82cb8a77779a7ada48bf"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 4022,
+      "sha256": "aeb565e7751bddf38a7bd2d003f8a2bbb76160e0369c91629d97193ac1001cfb"
+    },
+    {
+      "path": "runtime/fire-staff.glb",
+      "bytes": 1750720,
+      "sha256": "4ab1094bbb4db8b88925639ab33e6d9a70057658d31e3674dfc4aa29dde18120"
+    },
+    {
+      "path": "runtime/ice-staff.glb",
+      "bytes": 1976080,
+      "sha256": "59d44deed07f503f5602e75409441c6d1214a8fad3d689732cbf4ee2fbf701f0"
+    },
+    {
+      "path": "runtime/sword.glb",
+      "bytes": 1847248,
+      "sha256": "d528da9a5968ecefa481ec86742a857cc486375887572a2f166fd2d699318686"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/fantasy sword 3d model.glb",
+      "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92"
+    },
+    {
+      "path": "assets/inbox/crystal staff 3d model.glb",
+      "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5"
+    },
+    {
+      "path": "assets/inbox/lava crystal staff 3d model.glb",
+      "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087"
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "allStaticPoliciesPassed": true
+  },
+  "licenseStatus": "User-provided project assets; separate commercial provider receipt not supplied.",
+  "pending": [
+    "Game/editor runtime rendering and animation checks",
+    "User artistic approval"
+  ]
+}

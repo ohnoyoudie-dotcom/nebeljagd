@@ -1,0 +1,154 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5191",
+  "checks": [
+    {
+      "name": "Editor preview, placement, transform, rarity and undo/redo",
+      "evidence": {
+        "kind": "sword",
+        "variant": "kit-tripo-sword"
+      }
+    },
+    {
+      "name": "Editor preview, placement, transform, rarity and undo/redo",
+      "evidence": {
+        "kind": "iceStaff",
+        "variant": "kit-tripo-ice-staff"
+      }
+    },
+    {
+      "name": "Editor preview, placement, transform, rarity and undo/redo",
+      "evidence": {
+        "kind": "fireStaff",
+        "variant": "kit-tripo-fire-staff"
+      }
+    },
+    {
+      "name": "Actual exported JSON reimports with all weapon variants and transforms intact",
+      "evidence": null
+    },
+    {
+      "name": "Editor Spielen transfers the actual custom-weapon document to the rendered game",
+      "evidence": null
+    },
+    {
+      "name": "Pickup preserves model; hand grip and attack animate together",
+      "evidence": {
+        "kind": "sword",
+        "variant": "kit-tripo-sword",
+        "gripError": 0.0,
+        "phases": [
+          "follow-through",
+          "idle",
+          "strike",
+          "windup"
+        ],
+        "tipMovement": 2.304894804968385,
+        "spellOrigin": null
+      }
+    },
+    {
+      "name": "Pickup preserves model; hand grip and attack animate together",
+      "evidence": {
+        "kind": "iceStaff",
+        "variant": "kit-tripo-ice-staff",
+        "gripError": 0.0,
+        "phases": [
+          "channel",
+          "idle",
+          "recover",
+          "release"
+        ],
+        "tipMovement": 0.9038543130357668,
+        "spellOrigin": {
+          "x": 34.835346394710484,
+          "y": 4.859560176957926,
+          "z": -39.86681302210668
+        }
+      }
+    },
+    {
+      "name": "Pickup preserves model; hand grip and attack animate together",
+      "evidence": {
+        "kind": "fireStaff",
+        "variant": "kit-tripo-fire-staff",
+        "gripError": 0.0,
+        "phases": [
+          "channel",
+          "idle",
+          "recover",
+          "release"
+        ],
+        "tipMovement": 0.9162152906535115,
+        "spellOrigin": {
+          "x": 39.56454797703539,
+          "y": 4.934253059429589,
+          "z": -39.85192366226741
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "test-results/tripo-weapons/editor-three-models.png",
+    "test-results/tripo-weapons/held-sword.png",
+    "test-results/tripo-weapons/held-iceStaff.png",
+    "test-results/tripo-weapons/held-fireStaff.png"
+  ],
+  "stage": "Equip and attack with kit-tripo-fire-staff",
+  "delivery": {
+    "directory": "welt",
+    "files": {
+      "map-editor.html": {
+        "bytes": 60502112,
+        "sha256": "50961946effaf397ed02a998adfa585a359ba8ce426ae576b1d6b9aebda61590"
+      },
+      "nebeljagd.html": {
+        "bytes": 83343602,
+        "sha256": "68850fcaa920548a03e4401f381abdee049ed97bfb8c055521205b8823b8bde8"
+      },
+      "index.html": {
+        "bytes": 83343602,
+        "sha256": "68850fcaa920548a03e4401f381abdee049ed97bfb8c055521205b8823b8bde8"
+      },
+      "avatar-preview.html": {
+        "bytes": 14841476,
+        "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
+      },
+      "worldmap.json": {
+        "bytes": 19060,
+        "sha256": "83e3462239ba8607b23953aa71dbb710c0c5ec71d5f7f8296bac52ff12295bfc"
+      },
+      "worldmap.svg": {
+        "bytes": 43919,
+        "sha256": "b6bafc0086e0b4aa0e7fa8dd8d11c9daa87277db811484975fddb9e136b22546"
+      },
+      "worldmap.schema.json": {
+        "bytes": 40051,
+        "sha256": "88684a4b190235ecd27efaf0ccb16ebd6db102a5cd47a1b7b82e01145f43850d"
+      },
+      "nebeljagd-welt-und-editor.zip": {
+        "bytes": 93775054,
+        "sha256": "89d64055bb3759f1b7736ba87ffeaea6199ba3d29aff3dd83628b0455f730a79"
+      }
+    }
+  },
+  "unitTests": {
+    "command": "node --test --test-isolation=none tests/*.test.js",
+    "passed": 314,
+    "failed": 0,
+    "skipped": 0
+  },
+  "assetVerification": {
+    "command": "npm run verify:assets",
+    "status": "passed",
+    "newPackage": "tripo-weapons",
+    "originalsPreserved": 3,
+    "verifiedFiles": 15
+  },
+  "build": {
+    "command": "npm run build",
+    "status": "passed"
+  },
+  "limits": "Chromium with software WebGL over local HTTP; finger pose uses the existing character animation. No physical-device performance or GitHub publication claim."
+}

@@ -1,4 +1,5 @@
 import previews from '../../assets/catalog/previews.json' with { type: 'json' };
+import { TRIPO_WEAPON_DEFINITIONS } from './tripo-weapon-definitions.js';
 
 /** Explicit mapping to models already used by the game. Preview images are
  * captures of those models, embedded so the standalone editor stays offline.
@@ -58,6 +59,16 @@ export const ASSET_CATALOG = Object.freeze([
   project('sword', 'steel', 'Stahlschwert', ['src/weapons.js'], 'Vorhandenes Schwertmodell; Leuchtfarbe folgt der Seltenheit.'),
   project('fireStaff', 'ember', 'Glutstab · Verbrennung', ['src/weapons.js'], 'Feuerstab mit Glutspitze; verursacht Brandschaden.'),
   project('iceStaff', 'frost', 'Froststab · Verlangsamung', ['src/weapons.js'], 'Eisstab mit Frostspitze; verlangsamt getroffene Ziele.'),
+  ...TRIPO_WEAPON_DEFINITIONS.map(({ kind, variant, label, runtimePath, sourcePath }) => ({
+    id: `${kind}:${variant}`, kind, variant, label, format: 'glb',
+    sourceLabel: 'Eigener Tripo-Export · aufbereitetes Waffenmodell',
+    sourcePaths: [runtimePath, sourcePath], renderer: 'src/weapons.js',
+    status: 'available', previewKind: 'render',
+    notes: kind === 'sword'
+      ? 'Dein Schwertmodell mit angepasstem Handgriff. Als Beute platzierbar; wird beim Aufheben in der Hand gehalten.'
+      : 'Dein Zauberstab mit angepasstem Handgriff. Als Beute platzierbar; Zauber entstehen an der Modellspitze.',
+    provenance: 'assets/imported/tripo-weapons/provenance.json',
+  })),
   kit('tree', 'kit-pine-high', 'Große Kiefer · GLB', 'pine_high', 'Hohe Kiefer aus dem bereits eingebundenen Nebeljagd-Umwelt-Kit.'),
   kit('tree', 'kit-pine-young', 'Junge Kiefer · GLB', 'pine_young', 'Kleine Kiefer für gemischte Baumgruppen.'),
   kit('tree', 'kit-oak-green', 'Grüne Eiche · GLB', 'oak_green', 'Grüne Eiche aus dem bestehenden Umwelt-Kit.'),

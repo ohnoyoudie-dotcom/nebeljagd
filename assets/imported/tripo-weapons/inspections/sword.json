@@ -1,0 +1,155 @@
+{
+  "id": "sword",
+  "kind": "sword",
+  "variant": "kit-tripo-sword",
+  "label": "Fantasieschwert \u00b7 Tripo",
+  "source": {
+    "path": "assets/inbox/fantasy sword 3d model.glb",
+    "bytes": 68670048,
+    "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+    "triangles": 1923344,
+    "vertices": 978537,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "animations": 0
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-weapons/runtime/sword.glb",
+    "bytes": 1847248,
+    "sha256": "d528da9a5968ecefa481ec86742a857cc486375887572a2f166fd2d699318686",
+    "triangles": 11991,
+    "vertices": 7728,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "animations": 0
+  },
+  "length": 1.25,
+  "grip": [
+    0,
+    0,
+    0
+  ],
+  "tip": [
+    -0.07745815813541412,
+    1.0734424591064453,
+    0.0015213018050417304
+  ],
+  "normalization": {
+    "blenderSourceBounds": [
+      [
+        -0.155029296875,
+        -0.07368090748786926,
+        0.0
+      ],
+      [
+        0.155029296875,
+        0.07368090748786926,
+        0.985260009765625
+      ]
+    ],
+    "handleAxisBlender": [
+      0.22201268636595517,
+      0.08826153891720456,
+      0.9710408167737024
+    ],
+    "rotationQuaternionWXYZ": [
+      0.9927337765693665,
+      0.04445377737283707,
+      -0.1118188425898552,
+      0.0
+    ],
+    "uniformScale": 1.2557594132166374,
+    "gripOffsetBlender": [
+      -0.07272953582364451,
+      -0.03423683624497306,
+      0.16007680025992396
+    ],
+    "gltfBounds": [
+      [
+        -0.2038407325744629,
+        -0.17360703647136688,
+        -0.07324112951755524
+      ],
+      [
+        0.19016097486019135,
+        1.0769343376159668,
+        0.07713590562343597
+      ]
+    ],
+    "axes": "metres, glTF +Y along leather handle; origin at leather grip; source curvature retained"
+  },
+  "cleanup": {
+    "weldDistanceMetres": 5e-05,
+    "before": {
+      "vertices": 978537,
+      "faces": 1923344
+    },
+    "after": {
+      "vertices": 961294,
+      "faces": 1922579
+    }
+  },
+  "textures": [
+    {
+      "name": "fantasy_sword_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "fantasy_sword_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ]
+    },
+    {
+      "name": "fantasy_sword_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ]
+    }
+  ],
+  "policy": {
+    "triangleBudget": 12000,
+    "textureLimit": 1024,
+    "fileLimitBytes": 5242880
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true,
+    "textureBudgetPassed": true
+  }
+}

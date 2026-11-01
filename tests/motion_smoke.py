@@ -26,7 +26,7 @@ with sync_playwright() as p:
     page.route_web_socket('**/*', lambda ws: None)
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.on('console', lambda message: errors.append(message.text) if message.type == 'error' else None)
-    page.goto(BASE + '/?inspect=1&quality=low', wait_until='domcontentloaded')
+    page.goto(BASE + '/game.html?inspect=1&quality=low', wait_until='domcontentloaded')
     page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls > 0')
     page.locator('#startBtn').click()
     page.evaluate('nebeljagdInspect({x:30,z:-42,direction:0,health:100})')

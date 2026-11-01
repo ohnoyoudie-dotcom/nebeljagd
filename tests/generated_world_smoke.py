@@ -56,7 +56,7 @@ def state(page, full=False):
     }''')
 
 
-def ready(page, path='/?inspect=1&quality=low'):
+def ready(page, path='/game.html?inspect=1&quality=low'):
     monitor(page)
     page.goto(URL + path, wait_until='domcontentloaded')
     page.wait_for_function('window.nebeljagdTestState && window.nebeljagdInspect && window.nebeljagdTestState().rendering.calls > 0')

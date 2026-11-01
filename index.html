@@ -1,17 +1,45 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-    <meta name="theme-color" content="#173c32" />
-    <meta name="description" content="Erkunde die Nebelinsel: eine lebendige 3D-Fantasy-Welt mit verborgenen Häusern, reaktivem Gras, Wolkenschatten und giftigem Nebel." />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23183c32'/%3E%3Cpath d='M32 8 50 42H38v14H26V42H14Z' fill='%23d7b976'/%3E%3C/svg%3E" />
-    <title>Nebeljagd · Die Nebelinsel</title>
-  </head>
-  <body>
-    <div id="app"><canvas id="game" aria-label="Dreidimensionale Fantasy-Spielwelt"></canvas><div id="ui"></div></div>
-    <noscript>Bitte aktiviere JavaScript, um Nebeljagd zu spielen.</noscript>
-    <script id="worldmap-snapshot" type="application/json">null</script>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173c32">
+  <meta name="description" content="Dein Zugang zur Nebelinsel. Mit dem Code deiner Lehrkraft geht es auf die Übungswiese.">
+  <title>Nebeljagd · Willkommen</title>
+</head>
+<body data-page="login">
+  <div class="portal-shell">
+    <header class="portal-header"><a class="brand" href="./index.html" aria-label="Nebeljagd Startseite"><span class="brand-mark" aria-hidden="true">N</span><span>NEBELJAGD<small>Die Nebelinsel</small></span></a><span class="header-note">Ein Code. Ein gemeinsamer Start.</span></header>
+    <main class="welcome-layout">
+      <section class="welcome-story" aria-labelledby="welcome-title">
+        <p class="eyebrow"><span class="small-spark" aria-hidden="true">✦</span> Willkommen auf der Nebelinsel</p>
+        <h1 id="welcome-title">Neugier mitbringen.<br>Abenteuer finden.</h1>
+        <p class="welcome-copy">Betritt die Übungswiese, entdecke die Ausrüstung und mach dich mit deiner Spielfigur vertraut. Deine Lehrkraft gibt dir den Zugangscode.</p>
+        <div class="island-scene" aria-hidden="true">
+          <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#dbe8dc"/><stop offset="1" stop-color="#eef1d9"/></linearGradient><linearGradient id="land" x2="0" y2="1"><stop stop-color="#8ca574"/><stop offset="1" stop-color="#466e4d"/></linearGradient></defs><path d="M0 67C133 1 214 69 329 26S585 4 700 64V290H0Z" fill="url(#sky)"/><circle cx="516" cy="71" r="26" fill="#f4e8b9"/><path d="M0 217C93 160 173 207 265 156S477 178 569 148S675 170 700 166V290H0Z" fill="#aec1a0"/><path d="M12 235L86 200 173 211 238 174 322 191 384 166 491 185 548 218 644 223 687 252 571 284 118 282Z" fill="url(#land)"/><path d="M127 260Q217 233 275 243T423 222Q454 208 480 213" fill="none" stroke="#cbbd8b" stroke-width="15" stroke-linecap="round"/><g fill="#345d47"><path d="M119 118l-32 73h21v37h22v-37h21Z"/><path d="M170 143l-25 61h17v29h17v-29h17Z"/><path d="M568 98l-36 84h25v44h22v-44h25Z"/><path d="M611 142l-26 61h17v34h18v-34h17Z"/><path d="M360 127l-23 54h15v26h16v-26h15Z"/></g><g fill="#567b52"><path d="M72 161l-20 47h14v24h14v-24h13Z"/><path d="M523 156l-22 49h14v28h15v-28h15Z"/></g><g transform="translate(440 185)"><path d="M-31 12h62v39h-62Z" fill="#b9a87b"/><path d="M-40 14L0-18l40 32Z" fill="#5c5544"/><path d="M-7 26h14v25H-7Z" fill="#4e654c"/></g><path d="M0 252Q154 225 300 263T700 246V290H0Z" fill="#f3f3e8" opacity=".35"/><g fill="#e7d68b"><path d="M282 202l3 9 9 3-9 3-3 9-3-9-9-3 9-3Z"/><path d="M493 113l2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g></svg>
+          <span class="scene-caption">Erkunden · Ausprobieren · Gemeinsam starten</span>
+        </div>
+      </section>
+      <section class="entry-card" aria-label="Anmeldung">
+        <div class="entry-tabs" role="tablist" aria-label="Zugang wählen"><button id="student-tab" role="tab" aria-controls="student-panel" aria-selected="true" type="button">Schülerinnen &amp; Schüler</button><button id="teacher-tab" role="tab" aria-controls="teacher-panel" aria-selected="false" tabindex="-1" type="button">Lehrkraft</button></div>
+        <p id="connection-status" class="connection-status" role="status">Zugang wird vorbereitet …</p>
+        <div id="student-panel" role="tabpanel" aria-labelledby="student-tab">
+          <span class="card-symbol" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span><h2>Auf die Übungswiese</h2><p>Gib den Code deiner Lehrkraft ein. Ein eigenes Konto brauchst du dafür nicht.</p>
+          <form id="student-form"><label for="access-code">Dein Zugangscode</label><input id="access-code" name="code" class="code-input" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" minlength="8" placeholder="ABCD 2345" aria-describedby="code-hint" required><span id="code-hint" class="field-hint">8 Zeichen · Groß- und Kleinschreibung sind egal</span><button class="button primary full" type="submit" disabled>Übungswiese betreten <span aria-hidden="true">→</span></button></form>
+          <p class="privacy-note"><span aria-hidden="true">◇</span> Nur dein Zugangscode. Kein Name, keine E-Mail-Adresse.</p>
+        </div>
+        <div id="teacher-panel" role="tabpanel" aria-labelledby="teacher-tab" hidden>
+          <span class="card-symbol" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="4"/><path d="m11 11 9 9m-5-5 3-3m-1 5 3-3"/></svg></span><h2>Deine Klasse. Deine Insel.</h2><p>Erstelle Zugangscodes und öffne den aktuellen Karteneditor an einem festen Ort.</p>
+          <form id="teacher-form"><label for="teacher-password">Lehrkraft-Passwort</label><input id="teacher-password" name="password" type="password" autocomplete="current-password" required><button class="button primary full" type="submit" disabled>Als Lehrkraft anmelden <span aria-hidden="true">→</span></button></form>
+          <p id="teacher-setup" class="setup-note" hidden>Der Lehrkraft-Zugang ist noch nicht eingerichtet. Führe auf dem Nebeljagd-Server einmal <code>npm run school:setup</code> aus, um dein Passwort festzulegen.</p>
+        </div>
+        <p id="form-message" class="form-message" role="alert" hidden></p>
+        <div id="offline-access" class="offline-access" hidden><strong>Zugangscodes benötigen den Nebeljagd-Server.</strong><p>Diese Datei ist gerade ohne Code-Verwaltung geöffnet. Den gespeicherten Editor kannst du trotzdem verwenden.</p><a class="button secondary full" href="./map-editor.html">Offline-Editor öffnen <span aria-hidden="true">→</span></a></div>
+      </section>
+    </main>
+    <footer class="portal-footer"><span>NEBELJAGD · Lernen beginnt mit Entdecken</span><span>Eine Insel voller Möglichkeiten.</span></footer>
+  </div>
+  <noscript><p>Bitte aktiviere JavaScript, um dich anzumelden. <a href="./map-editor.html">Offline-Editor öffnen</a></p></noscript>
+  <script type="module" src="/src/portal.js"></script>
+</body>
 </html>

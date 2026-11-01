@@ -260,7 +260,7 @@ try:
             passed('Exported standalone HTML reopens the exact map and retains the islet editing controls')
 
         game=context.new_page();monitor(game);game.set_viewport_size({'width':960,'height':600})
-        game.goto(URL+('/nebeljagd.html' if STANDALONE else '/index.html')+'?quality=low',wait_until='domcontentloaded')
+        game.goto(URL+('/nebeljagd.html' if STANDALONE else '/game.html')+'?quality=low',wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
         assert game_state(game)['world']['mapName']==SOURCE['name']
         for label,identifier,point,keys,entry_seconds,middle_seconds,exit_seconds,expected_biome in [

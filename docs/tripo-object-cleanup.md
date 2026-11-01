@@ -1,9 +1,11 @@
 # Tripo-Objektauswahl und Kartenbereinigung
 
-Unter **Objekte** stehen neun Varianten in sechs Kategorien bereit:
+Unter **Objekte** stehen zwölf Varianten in neun Kategorien bereit:
 Wirtshaus und Wohnhaus 2, drei Tripo-Felsen, Holzwagen, Holzfass,
-Steinbrunnen und Schatztruhe. Die Truhe startet direkt mit dem Tripo-Modell.
-Das kleine Schloss, Herz, alte Holztruhe, Bogen, Schwert, Feuer-/Eisstab
+Steinbrunnen, Schatztruhe sowie die neuen Modelle für Schwert, Feuer- und
+Eisstab. Die [Waffenmodelle](tripo-weapons.md) bleiben auch bei der Bereinigung
+erhalten. Die Truhe startet direkt mit dem Tripo-Modell.
+Das kleine Schloss, Herz, alte Holztruhe, Bogen und die bisherigen Waffenmodelle
 und die übrigen alten Modelle werden nicht mehr als neue Einzelobjekte angeboten.
 Auch „Natürlich verteilen“ nutzt ausschließlich die Tripo-Felsen.
 
@@ -19,7 +21,8 @@ Wege, Regionen, Bodenflächen oder Startbereiche.
 Bei einem älteren lokalen Entwurf zunächst **Wiederherstellen**, dann
 **Auf Tripo-Objekte bereinigen** wählen. Dieselbe Bereinigung steht nach
 JSON-Import bereit. Sie entfernt alte Einzelobjekte einschließlich platzierter
-Beute, Grasobjekte, einzelner Mauer-/Zaunobjekte und des kleinen Schlosses.
+alter Beute, Grasobjekte, einzelner Mauer-/Zaunobjekte und des kleinen Schlosses.
+Die drei neuen Waffenvarianten werden ausdrücklich behalten.
 Die vier aktuellen gezeichneten Mauer-/Zaunstile bleiben samt Verlauf,
 Höhe und Durchgängen erhalten. Die Bereinigung lässt sich mit **Zurück**
 rückgängig machen. Danach die Karte speichern.

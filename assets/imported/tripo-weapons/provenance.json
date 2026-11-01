@@ -1,0 +1,132 @@
+{
+  "package": "nebeljagd-tripo-weapons",
+  "version": 1,
+  "sourceOrigin": "User-created/supplied models pushed to project assets/inbox; user explicitly requested game/editor integration.",
+  "provider": {
+    "name": "Tripo (original files)",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-weapons.py",
+    "scriptSha256": "4da573ebd296b29926f12138625101fd7a48cb33f989c62dfddff8aceb88d88b",
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-weapons.py",
+    "method": "Fit leather handle axis and rotate to glTF +Y; uniform metric scale; grip-centred origin; microscopic duplicate cleanup, decimation, original embedded PBR maps downsampled to 1024. Original bytes unchanged."
+  },
+  "assets": [
+    {
+      "id": "sword",
+      "source": {
+        "path": "assets/inbox/fantasy sword 3d model.glb",
+        "bytes": 68670048,
+        "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+        "triangles": 1923344,
+        "vertices": 978537,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/sword.glb",
+        "bytes": 1847248,
+        "sha256": "d528da9a5968ecefa481ec86742a857cc486375887572a2f166fd2d699318686",
+        "triangles": 11991,
+        "vertices": 7728,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      }
+    },
+    {
+      "id": "ice-staff",
+      "source": {
+        "path": "assets/inbox/crystal staff 3d model.glb",
+        "bytes": 70914608,
+        "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5",
+        "triangles": 1968184,
+        "vertices": 1003559,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/ice-staff.glb",
+        "bytes": 1976080,
+        "sha256": "59d44deed07f503f5602e75409441c6d1214a8fad3d689732cbf4ee2fbf701f0",
+        "triangles": 13992,
+        "vertices": 9034,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      }
+    },
+    {
+      "id": "fire-staff",
+      "source": {
+        "path": "assets/inbox/lava crystal staff 3d model.glb",
+        "bytes": 67783736,
+        "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087",
+        "triangles": 1938632,
+        "vertices": 987529,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/fire-staff.glb",
+        "bytes": 1750720,
+        "sha256": "4ab1094bbb4db8b88925639ab33e6d9a70057658d31e3674dfc4aa29dde18120",
+        "triangles": 13992,
+        "vertices": 8929,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      }
+    }
+  ],
+  "evidenceBoundary": "Static GLB inspection and Blender rendered previews; game/editor import, animation and artistic review are separate."
+}

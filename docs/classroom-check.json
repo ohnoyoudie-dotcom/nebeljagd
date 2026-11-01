@@ -1,0 +1,86 @@
+{
+  "status": "passed",
+  "buildId": "e7ebb0b04b9f",
+  "builtAt": "2026-11-01T12:12:50.930Z",
+  "unitTests": {
+    "passed": 326,
+    "failed": 0,
+    "command": "node --test --test-isolation=none tests/*.test.js",
+    "followup": "Final server guard: 4 HTTP tests; final cache lifecycle: 8 lobby tests, all passed."
+  },
+  "assetVerification": "passed",
+  "delivery": {
+    "synchronizedFiles": 10,
+    "checks": "welt bytes and SHA-256 match dist and release metadata; ZIP contents match generated browser files"
+  },
+  "browser": {
+    "checks": [
+      {
+        "name": "Anonymous editor/lobby routes require login; landing works at 390 px and desktop",
+        "evidence": null
+      },
+      {
+        "name": "Unknown pupil code and incorrect teacher password are rejected",
+        "evidence": null
+      },
+      {
+        "name": "Teacher login creates an eight-character classroom code without an optional room name",
+        "evidence": null
+      },
+      {
+        "name": "Teacher link opens the current uncached built editor with sword and two staff models",
+        "evidence": {
+          "buildId": "e7ebb0b04b9f"
+        }
+      },
+      {
+        "name": "Code joins a separate pupil session; pupil cannot open teacher/editor or create codes",
+        "evidence": null
+      },
+      {
+        "name": "Practice meadow contains all three weapons and props; keyboard pickup/casting works without zone pressure",
+        "evidence": {
+          "objects": 42,
+          "kinds": [
+            "barrel",
+            "bow",
+            "chest",
+            "fireStaff",
+            "grass",
+            "heart",
+            "iceStaff",
+            "rock",
+            "sword",
+            "wagon",
+            "well"
+          ]
+        }
+      },
+      {
+        "name": "Pupil leave button logs out and the still-active code allows a fresh login",
+        "evidence": null
+      },
+      {
+        "name": "Restored page keeps checking access; closing the room revokes the pupil and the old code",
+        "evidence": {
+          "revokedAfterSeconds": 22.06
+        }
+      },
+      {
+        "name": "Teacher logout clears the server session",
+        "evidence": null
+      }
+    ],
+    "errors": [],
+    "command": "python3 tests/classroom_smoke.py",
+    "screenshots": [
+      "test-results/classroom/landing-desktop.png",
+      "test-results/classroom/landing-mobile.png",
+      "test-results/classroom/teacher-dashboard.png",
+      "test-results/classroom/latest-editor-uploaded-weapon.png",
+      "test-results/classroom/practice-meadow-equipped-staff.png"
+    ],
+    "renderer": "Chromium with SwiftShader software WebGL"
+  },
+  "deployment": "Local generated files verified; not pushed or publicly deployed. No production teacher password configured."
+}

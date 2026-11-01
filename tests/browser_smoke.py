@@ -15,7 +15,7 @@ def state(page):
     return page.evaluate('window.nebeljagdTestState()')
 
 
-def start(page, url=URL):
+def start(page, url=URL if URL.endswith('.html') else URL.rstrip('/') + '/game.html'):
     page.goto(url)
     page.wait_for_function('window.nebeljagdTestState && window.nebeljagdTestState().rendering.calls > 0')
     expect(page.locator('#startBtn')).to_be_enabled()

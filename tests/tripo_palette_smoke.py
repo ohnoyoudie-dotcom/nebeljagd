@@ -153,7 +153,7 @@ try:
                    for o in BASE['objects']), 'The delivered map must contain only retained Tripo objects'
         page.locator('#editor-tab-objects').click()
         kinds = options(page, '#palette-kind')
-        assert {x['value'] for x in kinds} == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well'}, kinds
+        assert {x['value'] for x in kinds} == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well', 'sword', 'fireStaff', 'iceStaff'}, kinds
         catalog = {}
         for item in kinds:
             page.locator('#palette-kind').select_option(item['value'])
@@ -163,6 +163,9 @@ try:
         assert [x['value'] for x in catalog['house']] == ['kit-tripo-tavern', 'kit-tripo-house-02']
         assert [x['value'] for x in catalog['chest']] == ['kit-tripo-chest']
         assert [x['value'] for x in catalog['rock']] == ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']
+        assert [x['value'] for x in catalog['sword']] == ['kit-tripo-sword']
+        assert [x['value'] for x in catalog['fireStaff']] == ['kit-tripo-fire-staff']
+        assert [x['value'] for x in catalog['iceStaff']] == ['kit-tripo-ice-staff']
         assert not any('Holztruhe' in x['label'] for x in kinds)
         passed('Objects offers only Tripo props, exactly two houses, three Tripo rocks and the Tripo treasure chest',
                {'kinds': kinds, 'variants': catalog})

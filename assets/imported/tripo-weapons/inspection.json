@@ -1,0 +1,469 @@
+{
+  "assets": [
+    {
+      "id": "sword",
+      "kind": "sword",
+      "variant": "kit-tripo-sword",
+      "label": "Fantasieschwert \u00b7 Tripo",
+      "source": {
+        "path": "assets/inbox/fantasy sword 3d model.glb",
+        "bytes": 68670048,
+        "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+        "triangles": 1923344,
+        "vertices": 978537,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/sword.glb",
+        "bytes": 1847248,
+        "sha256": "d528da9a5968ecefa481ec86742a857cc486375887572a2f166fd2d699318686",
+        "triangles": 11991,
+        "vertices": 7728,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "length": 1.25,
+      "grip": [
+        0,
+        0,
+        0
+      ],
+      "tip": [
+        -0.07745815813541412,
+        1.0734424591064453,
+        0.0015213018050417304
+      ],
+      "normalization": {
+        "blenderSourceBounds": [
+          [
+            -0.155029296875,
+            -0.07368090748786926,
+            0.0
+          ],
+          [
+            0.155029296875,
+            0.07368090748786926,
+            0.985260009765625
+          ]
+        ],
+        "handleAxisBlender": [
+          0.22201268636595517,
+          0.08826153891720456,
+          0.9710408167737024
+        ],
+        "rotationQuaternionWXYZ": [
+          0.9927337765693665,
+          0.04445377737283707,
+          -0.1118188425898552,
+          0.0
+        ],
+        "uniformScale": 1.2557594132166374,
+        "gripOffsetBlender": [
+          -0.07272953582364451,
+          -0.03423683624497306,
+          0.16007680025992396
+        ],
+        "gltfBounds": [
+          [
+            -0.2038407325744629,
+            -0.17360703647136688,
+            -0.07324112951755524
+          ],
+          [
+            0.19016097486019135,
+            1.0769343376159668,
+            0.07713590562343597
+          ]
+        ],
+        "axes": "metres, glTF +Y along leather handle; origin at leather grip; source curvature retained"
+      },
+      "cleanup": {
+        "weldDistanceMetres": 5e-05,
+        "before": {
+          "vertices": 978537,
+          "faces": 1923344
+        },
+        "after": {
+          "vertices": 961294,
+          "faces": 1922579
+        }
+      },
+      "textures": [
+        {
+          "name": "fantasy_sword_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "fantasy_sword_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "fantasy_sword_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 5242880
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true,
+        "textureBudgetPassed": true
+      }
+    },
+    {
+      "id": "ice-staff",
+      "kind": "iceStaff",
+      "variant": "kit-tripo-ice-staff",
+      "label": "Kristallstab \u00b7 Tripo",
+      "source": {
+        "path": "assets/inbox/crystal staff 3d model.glb",
+        "bytes": 70914608,
+        "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5",
+        "triangles": 1968184,
+        "vertices": 1003559,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/ice-staff.glb",
+        "bytes": 1976080,
+        "sha256": "59d44deed07f503f5602e75409441c6d1214a8fad3d689732cbf4ee2fbf701f0",
+        "triangles": 13992,
+        "vertices": 9034,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "length": 1.5,
+      "grip": [
+        0,
+        0,
+        0
+      ],
+      "tip": [
+        0.03987526521086693,
+        1.2821812629699707,
+        0.23688502609729767
+      ],
+      "normalization": {
+        "blenderSourceBounds": [
+          [
+            -0.11077880859375,
+            -0.3203430473804474,
+            0.0
+          ],
+          [
+            0.11077880859375,
+            0.3203430473804474,
+            0.9818115234375
+          ]
+        ],
+        "handleAxisBlender": [
+          0.03749343202154846,
+          0.68120315634311,
+          0.7311337103043666
+        ],
+        "rotationQuaternionWXYZ": [
+          0.9303584694862366,
+          0.3660971522331238,
+          -0.020149996504187584,
+          0.0
+        ],
+        "uniformScale": 1.303281250744449,
+        "gripOffsetBlender": [
+          -0.04856598798223971,
+          -0.3309338798424907,
+          -0.06373541119831247
+        ],
+        "gltfBounds": [
+          [
+            -0.13708840310573578,
+            -0.21698611974716187,
+            -0.0802445262670517
+          ],
+          [
+            0.15265844762325287,
+            1.283676266670227,
+            0.33423587679862976
+          ]
+        ],
+        "axes": "metres, glTF +Y along leather handle; origin at leather grip; source curvature retained"
+      },
+      "cleanup": {
+        "weldDistanceMetres": 6.000000000000001e-05,
+        "before": {
+          "vertices": 1003559,
+          "faces": 1968184
+        },
+        "after": {
+          "vertices": 984061,
+          "faces": 1968128
+        }
+      },
+      "textures": [
+        {
+          "name": "crystal_staff_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "crystal_staff_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "crystal_staff_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "policy": {
+        "triangleBudget": 14000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 5242880
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true,
+        "textureBudgetPassed": true
+      }
+    },
+    {
+      "id": "fire-staff",
+      "kind": "fireStaff",
+      "variant": "kit-tripo-fire-staff",
+      "label": "Lavakristallstab \u00b7 Tripo",
+      "source": {
+        "path": "assets/inbox/lava crystal staff 3d model.glb",
+        "bytes": 67783736,
+        "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087",
+        "triangles": 1938632,
+        "vertices": 987529,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/fire-staff.glb",
+        "bytes": 1750720,
+        "sha256": "4ab1094bbb4db8b88925639ab33e6d9a70057658d31e3674dfc4aa29dde18120",
+        "triangles": 13992,
+        "vertices": 8929,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "animations": 0
+      },
+      "length": 1.5,
+      "grip": [
+        0,
+        0,
+        0
+      ],
+      "tip": [
+        -0.18648625910282135,
+        1.2869995832443237,
+        0.21164251863956451
+      ],
+      "normalization": {
+        "blenderSourceBounds": [
+          [
+            -0.18666836619377136,
+            -0.20281222462654114,
+            0.0
+          ],
+          [
+            0.18666836619377136,
+            0.20281222462654114,
+            0.97967529296875
+          ]
+        ],
+        "handleAxisBlender": [
+          0.3577025072804426,
+          0.40274009437107317,
+          0.8425255679629333
+        ],
+        "rotationQuaternionWXYZ": [
+          0.9598243236541748,
+          0.20979885756969452,
+          -0.18633747100830078,
+          0.0
+        ],
+        "uniformScale": 1.4676428159530612,
+        "gripOffsetBlender": [
+          -0.21157593871244965,
+          -0.2314570728678149,
+          0.0374356591425001
+        ],
+        "gltfBounds": [
+          [
+            -0.33741632103919983,
+            -0.21160955727100372,
+            -0.08638935536146164
+          ],
+          [
+            0.08088669925928116,
+            1.2882965803146362,
+            0.3536638617515564
+          ]
+        ],
+        "axes": "metres, glTF +Y along leather handle; origin at leather grip; source curvature retained"
+      },
+      "cleanup": {
+        "weldDistanceMetres": 6.000000000000001e-05,
+        "before": {
+          "vertices": 987529,
+          "faces": 1938632
+        },
+        "after": {
+          "vertices": 969298,
+          "faces": 1938597
+        }
+      },
+      "textures": [
+        {
+          "name": "lava_crystal_staff_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "lava_crystal_staff_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "lava_crystal_staff_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "policy": {
+        "triangleBudget": 14000,
+        "textureLimit": 1024,
+        "fileLimitBytes": 5242880
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true,
+        "textureBudgetPassed": true
+      }
+    }
+  ]
+}

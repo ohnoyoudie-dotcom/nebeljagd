@@ -247,7 +247,7 @@ try:
             # Keep software rendering bounded during travel; captures use the
             # same full desktop size as the editor for visual review.
             game.set_viewport_size({'width': 960, 'height': 600})
-            game.goto(URL + ('/nebeljagd.html' if STANDALONE else '/index.html') + '?quality=low', wait_until='domcontentloaded')
+            game.goto(URL + ('/nebeljagd.html' if STANDALONE else '/game.html') + '?quality=low', wait_until='domcontentloaded')
             game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
             expect(game.locator('#startBtn')).to_be_enabled()
             assert game_state(game)['world']['mapName'] == SOURCE['name']

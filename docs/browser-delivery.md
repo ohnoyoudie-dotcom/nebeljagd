@@ -1,63 +1,69 @@
-# Öffentliche Browser- und Download-Adressen
+# Browser-Einstieg und erzeugte Dateien
 
-## Separate Browser-Vorschau für die aktuelle Entwicklung
+## Aktueller lokaler Build
 
-Die aktuelle Entwicklung ist unter einem eigenen, stabilen GitHub-Pages-Pfad
-erreichbar; die bestehende Hauptseite und `welt/` bleiben erhalten:
+`npm run build` erzeugt den vollständigen Browserstand in `dist/` und
+synchronisiert ihn automatisch nach `welt/`:
 
-- Spiel: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html
-- Kurzlink: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/
-- Editor: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html
+- `welt/index.html`: Startseite mit Schüler- und Lehrkraftzugang.
+- `welt/teacher.html`: Lehrkraftbereich mit Codeverwaltung und Editor-Link.
+- `welt/lobby.html`: Einstieg in die Übungswiese nach Anmeldung.
+- `welt/map-editor.html`: aktueller eigenständiger Editor.
+- `welt/nebeljagd.html`: eigenständiges Spiel, auch für Editor-Spieltests.
+- `welt/nebeljagd-welt-und-editor.zip`: Browserdateien, Kartendaten und Anleitung.
 
-Der veröffentlichte Ordner `preview/` enthält nur den eigenständigen Build und
-Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
-`work`. Neue Builds aktualisieren ausschließlich diese Vorschau-Dateien.
+`welt/index.html` ist die Startseite. Sie darf beim Veröffentlichen nicht durch
+eine Kopie des Spiels ersetzt werden. **In 3D testen** öffnet aus dem gebauten
+Editor ausdrücklich `nebeljagd.html?mapSource=editor` und übergibt den Entwurf.
+In Vite wird stattdessen `game.html?mapSource=editor` verwendet.
 
-## Aktuelle Entwicklung: Landschaftswerkzeuge auf `work`
+`welt/release.json` enthält die Build-Kennung sowie Größen und SHA-256-Werte
+aller ausgelieferten Dateien. Der Lehrkraftbereich verlinkt den Editor dieses
+Serverstands und zeigt dessen Erstellungszeit. Der Schulserver liefert die
+HTML-Dateien ohne Browsercache aus.
 
-Die neue Landschaftserweiterung wird ausdrücklich **nur auf `work`** gesichert.
-`main` enthält dafür ausschließlich die zusätzlich veröffentlichte
-`preview/`-Ausgabe; die bestehende Spielseite, `welt/` und die Quelldateien
-bleiben unverändert. Der geprüfte Entwicklungsbuild steht im Verzeichnis
-`development/`; sein [ZIP-Download](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/development/nebeljagd-welt-und-editor.zip)
-enthält Spiel, Editor und Kartendaten für die Offline-Nutzung.
+## Klassenbetrieb und Offline-Dateien
 
-## Bestehende Veröffentlichung
+Für gemeinsam gültige Zugangscodes läuft der Node-Schulserver mit `welt/` als
+Browserverzeichnis. Einrichtung und Start stehen in [classroom.md](classroom.md).
+GitHub Pages und das Öffnen einer lokalen HTML-Datei führen diesen Server
+nicht aus. Ohne Server erklärt die Startseite den Offline-Modus und bietet
+den eigenständigen Editor an; Spiel und Editor lassen sich weiterhin direkt
+öffnen. Das ZIP ist ein Offline-Paket und richtet keinen Schulserver ein.
 
-Die Dateianhänge dieses Chats ließen sich beim Nutzer nicht herunterladen.
-Der geprüfte Browser-Build liegt deshalb zusätzlich auf dem bereits bestehenden
-GitHub-Pages-Server des Projekts:
+## Aktualisieren und bereitstellen
 
-- Spiel: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/
-- Editor: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html
-- Komplettpaket: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip
+Die URLs bleiben bei Aktualisierungen desselben Serververzeichnisses gleich.
+Nach Quellcodeänderungen Tests und `npm run build` ausführen, dann die erzeugten
+Dateien prüfen. Ein lokaler Build aktualisiert `welt/` in der Arbeitskopie;
+er überträgt die Dateien nicht automatisch auf andere Rechner oder ins Internet.
 
-Der erste veröffentlichte Stand wurde mit Commit `c79e642` auf `main` unter
-`welt/` ergänzt. Commit `63d2a73` aktualisiert diese Dateien um taktische Sicht,
-Truhen, Gold, Seltenheiten und Elementarwaffen. GitHub Pages verwendet weiterhin `main` und den Repository-Stamm;
-das ältere Spiel auf der Hauptebene bleibt erreichbar. Die Projektquellen
-dieser Cloud-Arbeitskopie und die erzeugten Dateien in `dist/` sind davon
-getrennt. `welt/` im veröffentlichten Repository ist ein erzeugter Build.
+Der Workflow `work-build-check.yml` prüft und veröffentlicht den vollständigen
+Build ausschließlich auf `work`. Historische Gras-Patch-Workflows erzeugen
+Prüfartefakte und überschreiben keine aktuellen `welt/`-Dateien mehr.
+Eine Veröffentlichung auf `main` oder einem öffentlichen Server ist ein eigener,
+expliziter Bereitstellungsschritt. Dabei den vollständigen aktuellen Stand
+übertragen und `index.html` als Startseite erhalten; den Editor-Spiel-Übergang
+und beim Schulserver beide Anmeldewege auf der tatsächlichen Adresse prüfen.
 
-`welt/index.html` ist identisch mit der eigenständigen Spielversion. Dadurch
-führt „In 3D testen“ aus dem daneben liegenden Editor zur passenden neuen
-Spielversion und übernimmt deren Entwurf. Das ZIP enthält dieselben HTML-Dateien
-für die Offline-Nutzung. `welt/release.json` hält Größen und SHA-256-Werte fest.
+Browseränderungen im Editor müssen weiterhin als JSON gespeichert und für einen
+neuen Projektstand als `worldmap.json` übernommen werden. Sie ändern die
+veröffentlichte Ausgangskarte nicht automatisch.
 
-## Künftige Aktualisierungen
+## Bestehende öffentliche Adressen und ältere Stände
 
-Die URLs bleiben bei Aktualisierungen desselben Verzeichnisses gleich.
-Ein lokaler Build veröffentlicht noch nichts: nach `npm run build` müssen die
-neuen Dateien bewusst nur in `preview/` auf dem Pages-Quellbranch übernommen
-werden. Dazu eine separate Arbeitskopie vom aktuellen `origin/main` verwenden,
-damit die laufenden Quellcodeänderungen dieser Arbeitskopie erhalten bleiben.
+Die bisherigen GitHub-Pages-Adressen verwenden `main` und wurden durch den
+lokalen Klassenportal-Build nicht aktualisiert:
 
-Zu übernehmen sind `dist/nebeljagd.html` als `preview/nebeljagd.html` und
-`preview/index.html`, `dist/map-editor.html`, JSON, SVG und JSON-Schema. Die
-Prüfsummen in `preview/release.json` aktualisieren. Nach dem Push auf die
-Bereitstellung warten und die HTTPS-Dateien sowie den Editor-zu-Spiel-Übergang
-prüfen. Der Nutzer muss Änderungen im Browser-Editor weiterhin als JSON
-speichern; sie verändern die veröffentlichte Ausgangskarte nicht automatisch.
+- [Bisheriger Einstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/)
+- [Bisheriger Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html)
+- [Bisheriges Offline-Paket](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip)
+- [Separate ältere Entwicklungsvorschau](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
+
+Der erste veröffentlichte Stand wurde mit Commit `c79e642` unter `welt/`
+ergänzt. Commit `63d2a73` aktualisierte ihn um taktische Sicht, Truhen, Gold,
+Seltenheiten und Elementarwaffen. Die folgenden Angaben dokumentieren frühere
+Veröffentlichungen und gelten nicht als Prüfung des neuen Klassenportals:
 
 Commit `4b5812a` aktualisiert denselben Pfad um den Graspinsel, 24 Modellvorschauen,
 helleren Sichtnebel, Bewegungsübergänge, automatische erste Waffenaufnahme,

@@ -20,7 +20,10 @@ async function inlineEntry(source, destination) {
   await writeFile(resolve(root, destination), html);
 }
 
-await inlineEntry('index.html', 'nebeljagd.html');
+await inlineEntry('index.html', 'index.html');
+await inlineEntry('teacher.html', 'teacher.html');
+await inlineEntry('lobby.html', 'lobby.html');
+await inlineEntry('game.html', 'nebeljagd.html');
 await inlineEntry('map-editor.html', 'map-editor.html');
 await inlineEntry('avatar-preview.html', 'avatar-preview.html');
 for (const file of ['worldmap.json', 'worldmap.schema.json']) {

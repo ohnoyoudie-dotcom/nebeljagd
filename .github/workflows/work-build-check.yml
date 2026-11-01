@@ -5,13 +5,23 @@ on:
     paths:
       - 'src/**'
       - 'assets/characters/**'
+      - 'assets/imported/**'
+      - 'assets/catalog/**'
       - 'avatar-preview.html'
+      - 'index.html'
+      - 'teacher.html'
+      - 'lobby.html'
+      - 'game.html'
+      - 'map-editor.html'
+      - 'server/**'
       - 'tests/**'
       - 'scripts/**'
       - 'worldmap.json'
       - 'worldmap.schema.json'
       - 'package.json'
       - 'package-lock.json'
+      - 'vite.config.js'
+      - 'render.yaml'
       - '.github/workflows/work-build-check.yml'
 permissions:
   contents: write
@@ -22,7 +32,7 @@ concurrency:
 jobs:
   verify-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,27 +63,11 @@ jobs:
           python tests/work_meadow_vision_smoke.py
           python tests/avatar_smoke.py
           python tests/avatar_preview_smoke.py
+      - name: Verify classroom login, practice lobby and current editor
+        run: python tests/classroom_smoke.py
       - name: Publish verified build to welt
         run: |
-          cp dist/map-editor.html welt/map-editor.html
-          cp dist/nebeljagd.html welt/nebeljagd.html
-          cp dist/nebeljagd.html welt/index.html
-          cp dist/avatar-preview.html welt/avatar-preview.html
-          cp dist/worldmap.json welt/worldmap.json
-          cp dist/worldmap.svg welt/worldmap.svg
-          cp dist/worldmap.schema.json welt/worldmap.schema.json
-          cp dist/nebeljagd-welt-und-editor.zip welt/nebeljagd-welt-und-editor.zip
-          python - <<'PY'
-          from pathlib import Path
-          import hashlib,json
-          root=Path('welt')
-          names=['map-editor.html','nebeljagd.html','index.html','avatar-preview.html','worldmap.json','worldmap.svg','worldmap.schema.json','nebeljagd-welt-und-editor.zip']
-          data={'branch':'work','sourceCommit':'${{ github.sha }}','files':{}}
-          for name in names:
-              raw=(root/name).read_bytes()
-              data['files'][name]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
-          (root/'release.json').write_text(json.dumps(data,indent=2)+'\n')
-          PY
+          # npm run build already synchronizes the complete portal and editor.
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add welt
@@ -89,6 +83,7 @@ jobs:
             work-smoke
             docs/avatar-check-*
             test-results/avatar-preview
+            test-results/classroom
             assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

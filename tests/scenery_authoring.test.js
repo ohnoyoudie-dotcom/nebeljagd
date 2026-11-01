@@ -41,8 +41,9 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
 test('individual placement offers exactly the admitted Tripo models and valid defaults without changing legacy or loot definitions', () => {
   const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02',
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
-    'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest'];
-  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest']);
+    'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
+    'sword:kit-tripo-sword', 'fireStaff:kit-tripo-fire-staff', 'iceStaff:kit-tripo-ice-staff'];
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'sword', 'fireStaff', 'iceStaff']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {
     assert.equal(isObjectPlaceable(definition.kind), true);

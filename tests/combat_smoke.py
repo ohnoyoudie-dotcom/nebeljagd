@@ -87,7 +87,7 @@ try:
         page.set_default_timeout(90000)
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.on('console', lambda message: errors.append(message.text) if message.type == 'error' else None)
-        page.goto(f'{URL}/?inspect=1&quality=low', wait_until='domcontentloaded')
+        page.goto(f'{URL}/game.html?inspect=1&quality=low', wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdTestState && window.nebeljagdInspect && window.nebeljagdTestState().rendering.calls > 0')
         page.locator('#startBtn').click()
         inspect(page, -8, 8)

@@ -38,7 +38,8 @@ const portrait = `<img src="${portraitUrl}" width="64" height="64" alt="" aria-h
 const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
 const timeLabel = seconds => `${pad(seconds / 60)}:${pad(seconds % 60)}`;
 
-export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onInteract, onQualityChange, onMapImport } = {}) {
+export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
+  const practice = Boolean(practiceSession);
   const root = document.getElementById('ui');
   root.dataset.phase = 'ready';
   root.innerHTML = `
@@ -54,7 +55,8 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="zone-track"><div id="zoneProgress"></div></div>
     </div>
 
-    <div class="top-tools playing-only">
+    <div class="top-tools playing-only ${practice ? 'lobby-tools' : ''}">
+      ${practice ? '<button id="leaveLobbyBtn" class="lobby-exit lobby-leave" type="button">Übungswiese verlassen</button>' : ''}
       <button id="pauseBtn" class="icon-button" aria-label="Spiel pausieren" title="Pause · Esc">${icon('pause')}</button>
     </div>
     <aside class="map-panel playing-only" aria-label="Minikarte der Insel">
@@ -97,6 +99,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         <div class="intro-world-summary"><strong id="worldName">Die Nebelinsel</strong><span id="worldStats">Die Welt wird vorbereitet …</span></div>
         <div class="intro-features"><span>${icon('leaf')}Erkunden</span><span>${icon('chest')}Schätze finden</span><span>${icon('shield')}Überleben</span></div>
         <button id="startBtn" class="primary-button"><span>Insel betreten</span>${icon('arrow')}</button>
+        ${practice ? '<button class="lobby-intro-exit lobby-leave" type="button">Zurück zur Startseite</button>' : ''}
         <div class="world-map-actions"><button id="loadMapBtn" class="map-load-button" type="button" disabled>Eigene Karte laden</button><a href="./map-editor.html" target="_blank" rel="noopener">Im Karteneditor gestalten ${icon('arrow')}</a></div>
         <input id="worldMapFile" type="file" accept=".json,application/json" hidden>
         <div class="intro-controls"><span class="desktop-hint">WASD / PFEILE <b>BEWEGEN</b><span>·</span> LEERTASTE <b>ROLLE</b><span>·</span> F <b>ANGRIFF</b><span>·</span> E <b>WECHSELN / ÖFFNEN</b><br>ERSTE WAFFE <b>AUTOMATISCH BEIM DARÜBERLAUFEN</b></span><span class="touch-hint">JOYSTICK ZUM BEWEGEN · TASTEN FÜR ROLLE UND ANGRIFF</span></div>
@@ -108,6 +111,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="modal-card"><span class="modal-emblem">${icon('leaf')}</span><div class="eyebrow">EIN MOMENT DER RUHE</div><h2 id="pauseTitle">Durchatmen.</h2><p>Die Insel wartet auf dich.</p>
         <button id="resumeBtn" class="primary-button"><span>Weiter erkunden</span>${icon('arrow')}</button>
         <button id="restartBtn" class="secondary-button">Neu beginnen</button>
+        ${practice ? '<button class="secondary-button lobby-leave" type="button">Übungswiese verlassen</button>' : ''}
         ${onQualityChange ? '<label class="quality-option" for="qualityMode">Darstellung<select id="qualityMode"><option value="high">Detailreich</option><option value="low">Leistung</option></select></label>' : ''}
         <p class="pause-help desktop-hint">WASD / Pfeile · Bewegen<br>Leertaste · Rolle &nbsp; F · Angriff &nbsp; E · Aufheben / Truhe öffnen<br>Esc · Pause</p>
       </div>
@@ -119,6 +123,25 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   `;
 
   const $ = id => document.getElementById(id);
+  if (practice) {
+    root.querySelector('.brand-subtitle').textContent = 'ÜBUNGSWIESE';
+    const sessionLabel = document.createElement('span');
+    sessionLabel.className = 'lobby-session';
+    sessionLabel.id = 'lobbySessionLabel';
+    sessionLabel.textContent = practiceSession.role === 'teacher' ? 'Vorschau für die Lehrkraft' : `Kurscode ${practiceSession.room.code}`;
+    root.querySelector('.brand-lockup > div:last-child').append(sessionLabel);
+    root.querySelector('.intro-eyebrow').textContent = 'DEIN PLATZ ZUM AUSPROBIEREN';
+    $('introTitle').innerHTML = 'Die Wiese<br><em>wartet.</em>';
+    root.querySelector('.intro-description').textContent = 'Eine große grüne Wiese für deine ersten Schritte. Probiere Schwert und Zauberstäbe an Übungsgegnern aus, öffne Truhen und entdecke Gegenstände. Du kannst in Ruhe üben und jederzeit alles zurücksetzen.';
+    root.querySelector('.intro-features').innerHTML = `<span>${icon('leaf')}Bewegen</span><span>${icon('sword')}Waffen testen</span><span>${icon('chest')}Entdecken</span>`;
+    root.querySelector('.intro-location > div').innerHTML = 'Übungswiese<small>Freies Üben ohne Zeitdruck</small>';
+    root.querySelector('#pauseScreen .modal-card > p').textContent = 'Deine Übungswiese wartet auf dich.';
+    $('restartBtn').textContent = 'Übungswiese zurücksetzen';
+    $('mapMode-island').textContent = 'Wiese';
+    root.querySelector('.map-panel').setAttribute('aria-label', 'Minikarte der Übungswiese');
+    $('minimap').setAttribute('aria-label', 'Deine Position und Gegenstände auf der Übungswiese');
+    root.querySelectorAll('.lobby-leave').forEach(button => button.addEventListener('click', () => onLeave?.()));
+  }
   const healthFill = $('healthFill');
   const healthValue = $('healthValue');
   const healthBar = $('healthBar');
@@ -325,7 +348,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     const ctx = mapBackdrop.getContext('2d'); ctx.setTransform(2, 0, 0, 2, 0, 0); drawGeography(ctx, false);
     $('worldName').textContent = data.name || 'Die Nebelinsel';
     const area = (getWorldmapStats(data).landAreaM2 / 1e6).toLocaleString('de-DE', { maximumFractionDigits: 2 });
-    $('worldStats').textContent = `${area} km² · ${(data.regions || []).length} Landschaften · ${landmarkObjects.filter(item => item.kind === 'house').length} begehbare Häuser`;
+    $('worldStats').textContent = practice ? `${maxX - minX} × ${maxZ - minZ} Meter · Schwert, Feuerstab und Eisstab · Übungsgegner` : `${area} km² · ${(data.regions || []).length} Landschaften · ${landmarkObjects.filter(item => item.kind === 'house').length} begehbare Häuser`;
     lastMapTime = -Infinity; drawMap(latestState);
   }
   function drawMap(state) {
@@ -339,7 +362,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     mapProjection = local ? makeMapProjection(viewer.x, viewer.z, LOCAL_SPAN) : atlasProjection;
     if (local) drawGeography(ctx, true); else ctx.drawImage(mapBackdrop, 0, 0, size, size);
     const point = mapProjection.point, scale = mapProjection.scale;
-    if (state.zoneRadius != null) {
+    if (!practice && state.zoneRadius != null) {
       const zoneCenter = state.zoneCenter || worldmap.zone?.center || [0, 0];
       const [zx, zy] = Array.isArray(zoneCenter) ? point(...zoneCenter) : point(zoneCenter.x, zoneCenter.z);
       const zr = Math.max(.01, state.zoneRadius) * scale;
@@ -416,7 +439,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     zoneProgress.style.transform = `scaleX(${Math.max(0, Math.min(1, state.zoneProgress ?? 0))})`;
     zonePanel.classList.toggle('is-danger', danger);
     zoneLabel.textContent = danger ? 'IM GEFÄHRLICHEN NEBEL' : (state.zoneShrinking ? 'DIE ZONE SCHRUMPFT' : (state.zoneProgress >= 1 ? 'DIE LETZTE ZUFLUCHT' : 'DER NEBEL ZIEHT AUF'));
-    playerStatus.textContent = state.shelter ? `In ${state.shelter}` :
+    playerStatus.textContent = practice ? 'Übungsmodus · Volle Lebenskraft' : state.shelter ? `In ${state.shelter}` :
       (state.hiddenInGrass ? 'Im hohen Gras verborgen' :
         (danger ? 'Der Nebel zehrt an dir' : (health < maxHealth ? 'Herzen geben dir neue Kraft' : 'Voller Lebenskraft')));
     root.classList.toggle('in-danger', danger);
@@ -485,7 +508,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),
     joystick: $('joystick'), joystickKnob: $('joystickKnob'), dashButton, attackButton, interactButton,
-    setLoading(message) { $('startBtn').disabled = Boolean(message); $('loadMapBtn').disabled = Boolean(message); $('startBtn').querySelector('span').textContent = message || 'Insel betreten'; },
+    setLoading(message) { $('startBtn').disabled = Boolean(message); $('loadMapBtn').disabled = practice || Boolean(message); $('startBtn').querySelector('span').textContent = message || (practice ? 'Übungswiese betreten' : 'Insel betreten'); },
     showError(message) { $('errorMessage').textContent = message; $('errorScreen').hidden = false; },
   };
 }

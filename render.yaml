@@ -1,0 +1,40 @@
+# Hosting preparation only: creating this Blueprint on Render starts a paid
+# web service and persistent disk. Review Render's current price before deploying.
+# Publish/reconcile the complete classroom sources on work before using it.
+services:
+  - type: web
+    name: nebeljagd-schule
+    runtime: node
+    repo: https://github.com/ohnoyoudie-dotcom/nebeljagd
+    branch: work
+    region: frankfurt
+    plan: starter
+    numInstances: 1
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run school
+    healthCheckPath: /api/session
+    autoDeploy: true
+    buildFilter:
+      ignoredPaths:
+        - welt/**
+        - docs/**
+        - '**/*.md'
+    disk:
+      name: nebeljagd-schuldaten
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: NEBELJAGD_DATA_DIR
+        value: /var/data/nebeljagd
+      - key: NEBELJAGD_SECURE_COOKIES
+        value: '1'
+      - key: NEBELJAGD_REQUIRE_TEACHER
+        value: '1'
+      - key: NEBELJAGD_INITIAL_TEACHER_PASSWORD
+        sync: false

@@ -1,5 +1,20 @@
 # Nebeljagd · Die Nebelinsel
 
+Der gemeinsame Einstieg liegt unter [`welt/index.html`](welt/index.html):
+Schüler betreten mit dem automatisch erzeugten Lehrkraft-Code eine grüne
+Übungswiese. Lehrkräfte öffnen nach der Anmeldung direkt den aktuellen Editor
+und verwalten die Zugänge. Einrichtung und Serverbetrieb:
+[Klassenstart](docs/classroom.md). `npm run build` aktualisiert alle Browserdateien
+in `welt/` automatisch, einschließlich des Editors.
+
+Eine feste Internetadresse für die Klasse ist mit der vorbereiteten
+[Render-Einrichtung](docs/hosting.md) möglich. Die Vorlage liegt in
+[`render.yaml`](render.yaml); ein Hosting-Dienst wurde noch nicht angelegt.
+
+Die neuen Waffenmodelle (Fantasieschwert, Kristallstab und Lavakristallstab)
+sind im Editor platzierbar und werden im Spiel mit angepasstem Griff gehalten.
+Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons.md).
+
 **Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
 getrennte Landflächen; zwei begehbare Brücken überspannen die freie Lücke.
@@ -78,7 +93,9 @@ npm ci
 npm run dev
 ```
 
-Die Serveradresse öffnet das Spiel; `/map-editor.html` öffnet den Editor. Für
+Die Serveradresse öffnet die Startseite; `/game.html` öffnet das Spiel und
+`/map-editor.html` den Editor. Für den Klassenbetrieb einmalig
+`npm run school:setup` ausführen und `npm run school` starten. Für
 ein iPad im selben Netzwerk die Netzwerkadresse des Entwicklungsrechners
 verwenden. Der Entwicklungsserver bindet bereits an alle Netzwerkschnittstellen.
 
@@ -86,8 +103,9 @@ verwenden. Der Entwicklungsserver bindet bereits an alle Netzwerkschnittstellen.
 npm test              # Spielregeln, Kollisionen, Karten, Weltgeometrie und Loot
 npm run verify:assets # Importdateien, GLB-Budgets und erhaltene Versionen
 npm run map:check     # Kartendaten und Übereinstimmung der SVG prüfen
-npm run build         # Produktionsdateien in dist/
+npm run build         # Produktionsdateien in dist/ und aktueller Stand in welt/
 npm run preview       # Fertigen Build lokal prüfen
+npm run school        # Startseite mit echtem Klassen-Zugang auf Port 5200
 ```
 
 Die Landschaftsdaten sind eine optionale, separat versionierte Erweiterung
@@ -98,10 +116,13 @@ Frühere Browserentwürfe und JSON-Importe bleiben erhalten;
 **Alte Gebäude entfernen** bereinigt sie gezielt und lässt sich mit **Zurück**
 rückgängig machen.
 
-Ein Produktionsserver muss nur `dist/` ausliefern. Relative Pfade unterstützen
-Hosting unter einem Unterverzeichnis. Der Build erzeugt außerdem zwei
-Einzeldateien mit eingebettetem JavaScript, CSS und allen benötigten Modellen:
+Für Einzelspieler und Editor genügt eine statische Auslieferung der erzeugten
+Dateien. Der Klassen-Zugang benötigt den Node-Server; `npm run school` liefert
+die Dateien aus `welt/` aus und verwaltet Lehrkraft-Anmeldung und Zugangscodes.
+Der Build erzeugt Einzeldateien mit eingebettetem JavaScript, CSS und allen
+benötigten Modellen:
 
+- **`dist/index.html`**: Startseite für Schüler und Lehrkräfte.
 - **`dist/nebeljagd.html`**: Spiel direkt im Browser öffnen.
 - **`dist/map-editor.html`**: Editor direkt im Browser öffnen.
 
@@ -113,7 +134,7 @@ Für „Spielen“ bei lokal geöffneten Dateien beide HTML-Dateien in denselben
 Ordner legen. Alternativ im Editor JSON speichern und im Spiel über **„Eigene
 Karte laden“** öffnen. Normales Spielen und Bearbeiten benötigen keine externen
 Grafikdienste, Zugangsdaten oder heruntergeladenen Schriftarten. Die Quelldateien
-`index.html` und `map-editor.html` benötigen hingegen Vite oder den Build.
+`index.html`, `game.html` und `map-editor.html` benötigen hingegen Vite oder den Build.
 
 Browseränderungen werden lokal gespeichert und überschreiben keine Projektdatei.
 Für einen dauerhaften Projektstand die exportierte Datei als `worldmap.json`
