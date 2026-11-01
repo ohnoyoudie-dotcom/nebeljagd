@@ -1258,6 +1258,8 @@ function playtestWorld() {
   if (!['http:', 'https:', 'file:'].includes(location.protocol)) return toast('JSON speichern und im Spiel laden, oder den Editor als HTML-Datei im Browser öffnen.', true);
   const gamePath = import.meta.env?.DEV ? './game.html' : './nebeljagd.html';
   const url = new URL(`${gamePath}?mapSource=editor`, location.href);
+  const version = new URLSearchParams(location.search).get('v');
+  if (version) url.searchParams.set('v', version);
   const popup = window.open(url.href, '_blank');
   if (!popup) return toast('Der Browser hat das neue Fenster blockiert. Pop-ups für diesen Editor erlauben oder JSON im Spiel laden.', true);
   playtestWindows.set(popup, {map: snapshot, origin: location.origin});

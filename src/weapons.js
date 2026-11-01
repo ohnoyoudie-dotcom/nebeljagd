@@ -237,6 +237,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     group.add(halo); scene.add(group);
     const item = { ...definition, ...stats, id: definition.id ?? `drop-weapon-${++dropSerial}`,
       type, variant, model: visual.userData.model, x, z, phase: items.length * 1.7, groundY, group, floating, visual, ring,
+      initialPlacement: { x, z, groundY },
       ringMaterial, glow, glowingMaterials, collected: false, dynamic: !initial, popAge: pop ? 0 : 1,
       origin: definition.origin ?? [x, z] };
     if (pop) { ring.visible = halo.visible = false; group.position.set(item.origin[0], heightAt?.(...item.origin) ?? groundY, item.origin[1]); }
@@ -395,7 +396,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const up = new THREE.Vector3(0, 1, 0);
   const leftHand = new THREE.Vector3(), rightHand = new THREE.Vector3();
   const combatPose = { weapon: null, phase: 'idle', leftHand, rightHand, chestTwist: 0 };
-  let equippedType = null, equippedItem = null;
+  let equippedType = null, equippedItem = null, equippedPickup = null;
   let cooldown = 0, attackAge = -1, attackDuration = 0;
   let shotReleased = false, bowDraw = 0, swordSweep = 0;
   let attackPhase = 'idle', shotCount = 0, impactCount = 0, lastImpact = null, particleCursor = 0;
@@ -423,10 +424,24 @@ export function createWeapons(scene, characterGroup, world, character = null,
     return result;
   }
 
+  function returnToGround(item, { x, z, groundY }) {
+    Object.assign(item, { x, z, groundY, position: [x, z], origin: [x, z], popAge: 1, collected: false });
+    item.group.position.set(x, groundY, z);
+    item.group.visible = true;
+    item.floating.position.set(0, .75, 0);
+    item.floating.rotation.set(0, 0, 0);
+    item.ring.visible = item.halo.visible = true;
+  }
+
   function equip(item, automatic = false) {
     if (!item) return null;
     const held = selectHeldVisual(item.type, item.variant);
+    // Exchange the existing pickups. The new pickup's position has already
+    // passed visibility, height and reach checks, so the old weapon stays
+    // reachable instead of disappearing or returning to its original map spot.
+    if (equippedPickup) returnToGround(equippedPickup, item);
     item.collected = true; item.group.visible = false;
+    equippedPickup = item;
     equippedType = item.type;
     equippedItem = { ...weaponStats(item.type, item.rarity), id: item.id, variant: item.variant, model: item.model,
       rotation: item.rotation ?? 0, scale: item.scale ?? 1 };
@@ -738,7 +753,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function reset() {
-    equippedType = null; equippedItem = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
+    equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = null;
     heldBow.visible = heldSword.visible = heldFireStaff.visible = heldIceStaff.visible = slash.visible = nockedArrow.visible = false;
     slashMaterial.opacity = 0; character?.setCombatState?.(null);
@@ -749,7 +764,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
         disposeWeaponVisual(item.visual);
         item.ringMaterial.dispose(); item.halo.material.dispose();
       }
-      else { item.collected = false; item.group.visible = true; }
+      else returnToGround(item, item.initialPlacement);
     }
     for (const spell of spells) { spell.life = 0; spell.group.visible = false; }
     damageHits = 0; lastDamage = null;

@@ -86,6 +86,13 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
     if (index) {
       assert.equal(weapons.tryAutoPickup(actor.position), null, 'auto-pickup never replaces an equipped weapon');
       assert.equal(weapons.interact(actor.position).variant, variant);
+      const previous = weapons.items.find(item => item.id === placements[index - 1].id);
+      assert.equal(previous.collected, false, 'the previous imported weapon becomes a ground pickup again');
+      assert.equal(previous.group.visible, true);
+      assert.equal(previous.variant, placements[index - 1].variant);
+      assert.equal(previous.model, 'tripo');
+      assert.deepEqual(previous.group.position.toArray(), [index * 4, 0, 0]);
+      assert.equal(previous.group.rotation.y, .65); assert.equal(previous.group.scale.x, 1.2);
     }
     assert.equal(weapons.equippedItem.variant, variant); assert.equal(weapons.equippedItem.model, 'tripo');
     assert.equal(weapons.equippedItem.damage, weaponStats(kind, 'rare').damage);
@@ -105,6 +112,7 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
   assert.equal(weapons.equippedItem, null); assert.equal(weapons.telemetry.heldModel, null);
   assert.equal(weapons.items.length, 3);
   assert.ok(weapons.items.every(item => !item.collected && item.group.visible));
+  assert.deepEqual(weapons.items.map(item => [item.x, item.z]), placements.map(item => item.position));
   actor.position.set(0, 0, 0);
   assert.equal(weapons.tryAutoPickup(actor.position).variant, 'kit-tripo-sword');
 });
