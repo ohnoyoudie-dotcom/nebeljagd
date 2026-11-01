@@ -14,7 +14,7 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
 Die aktuelle Browser-Vorschau ist unter
-[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250)
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb)
 und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
 Auf `main` enthält dafür nur `preview/` den aktuellen Entwicklungsbuild.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):

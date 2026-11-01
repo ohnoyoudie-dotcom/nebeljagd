@@ -855,5 +855,17 @@
         ]
       }
     }
+  },
+  "publication": {
+    "runId": "41306820635",
+    "url": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41306820635",
+    "publishCommit": "2dc0dfbda768eee80a81dca1c189b63287e721f8",
+    "commitConfirmed": true,
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    },
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb",
+    "verificationBoundary": "Pages success and exact commit verified through allowed github.com Actions metadata; byte-identical editor/game tested locally under /preview. Direct Pages HTTPS is blocked by the managed network policy."
   }
 }

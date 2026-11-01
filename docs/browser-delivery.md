@@ -1,6 +1,28 @@
 # Öffentliche Browser- und Download-Adressen
 
-## Bereinigte Vier-Biome-Karte · 1. November 2026
+## Drei Tripo-Waffen · 1. November 2026
+
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb).
+Unter **Objekte → Einzeln** sind **Schwert**, **Feuerstab (Lavastab)** und
+**Eisstab (Kristallstab)** mit echten Tripo-Modellvorschauen auswählbar.
+Die Modelle erscheinen auch als Beute und in der Hand der Spielfigur.
+Die vorhandene Vier-Biome-Karte bleibt unverändert.
+
+Veröffentlichungscommit: `2dc0dfbda768eee80a81dca1c189b63287e721f8`, ausschließlich
+`preview/` auf `main`. Quellstand: `06cdee7`; geprüfter Browserbuild auf `work`:
+`28bd19a`. `preview/release.json` enthält die acht Dateigrößen und Prüfsummen.
+**311 Node-Tests**, Assetprüfung, Kartenprüfung und Build sowie jeweils acht
+Editor- und Spielprüfungen bestanden. Der tatsächliche relative Übergang
+`/preview/map-editor.html` → `/preview/index.html?mapSource=editor` wurde mit
+bytegleichen Dateien lokal geprüft, ohne Browserfehler oder zusätzliche Anfragen.
+Befunde und Screenshots: [Waffenintegration](tripo-weapons-integration.md).
+
+GitHub Pages hat diesen exakten Commit erfolgreich bereitgestellt:
+[Build und Veröffentlichung](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41306820635).
+Der direkte Pages-HTTPS-Aufruf ist in dieser Umgebung durch die Netzwerkpolicy
+gesperrt; der Bereitstellungsstatus wurde über die GitHub-Actions-Webseite bestätigt.
+
+## Bereinigte Vier-Biome-Karte · vorherige Ausgabe vom 1. November 2026
 
 Die aktuelle Ausgabe liegt im öffentlichen Vorschauordner:
 [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250).
