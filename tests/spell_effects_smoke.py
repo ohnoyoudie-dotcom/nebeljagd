@@ -4,7 +4,9 @@ Run after npm run build: python3 tests/spell_effects_smoke.py.
 The source map stays untouched: a wall is imported into the browser draft and
 two staves are placed with normal editor controls. Actual E/F input performs
 combat; the existing inspect hook only positions the actor. A RAF observer uses
-the normal pause button to freeze charge, launch, flight and impact screenshots.
+the normal pause button to freeze charge, launch, flight and two impact frames.
+NEBELJAGD_QA_OUT selects a separate comparison directory without replacing an
+earlier report or its screenshots.
 """
 from __future__ import annotations
 
@@ -33,6 +35,9 @@ MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
 STAVES = [('fireStaff', 'kit-tripo-lava-staff', [36, -54]),
           ('iceStaff', 'kit-tripo-crystal-staff', [44, -54])]
 REPORT = {'status': 'running', 'checks': [], 'errors': [], 'screenshots': [], 'documents': [],
+          'captureProtocol': {'viewport': {'width': 960, 'height': 640},
+                              'flightDistanceFromActor': 3.4,
+                              'lateImpactDelaySeconds': .17},
           'limits': 'Chromium software WebGL with the actual standalone editor/game files. '
                     'QA adds inspect and low-quality query switches and positions the actor; '
                     'F launches spells and the normal Pause button freezes screenshots. '
@@ -50,10 +55,17 @@ def passed(name, evidence=None):
 
 
 def monitor(page):
+    def record_error(message):
+        REPORT['errors'].append(message)
+        print('BROWSER ERROR', message, flush=True)
+
     page.set_default_timeout(120000)
-    page.on('pageerror', lambda error: REPORT['errors'].append(str(error)))
-    page.on('console', lambda message: REPORT['errors'].append(message.text) if message.type == 'error' else None)
-    page.on('response', lambda response: REPORT['errors'].append(
+    page.on('pageerror', lambda error: record_error(str(error)))
+    page.on('console', lambda message: record_error(message.text)
+            if message.type == 'error' or re.search(
+                r'GL_INVALID|INVALID_OPERATION|INVALID_VALUE|shader error|program is not valid',
+                message.text, re.IGNORECASE) else None)
+    page.on('response', lambda response: record_error(
         f'HTTP {response.status}: {urlsplit(response.url).path}') if response.status >= 400 else None)
 
 
@@ -130,7 +142,7 @@ def wait_settled(page):
     page.wait_for_function('''() => {
       const s=nebeljagdTestState(), e=s.combat.effects;
       return s.attackCooldown===0 && s.combat.spellsActive===0 &&
-        e.activeParticles===0 && e.activeBursts===0 && !e.channelActive;
+        e.activeParticles===0 && e.activeBursts===0 && (e.activeTrails??0)===0 && !e.channelActive;
     }''')
 
 
@@ -145,9 +157,12 @@ def arm_capture(page, mode, before):
         const matches = mode==='charge' ? e.channelActive&&e.channelVisible&&c.shotsFired===before.shotsFired
           : mode==='launch' ? c.shotsFired===before.shotsFired+1&&e.bursts.some(b=>b.kind==='muzzle'&&b.visible)
           : mode==='flight' ? flying.some(p=>Math.hypot(p.position.x-s.position.x,p.position.z-s.position.z)>3.4)
+          : mode==='impact-late' ? c.impacts===before.impacts+1&&s.elapsed>=before.impactAt+.17&&
+              e.bursts.some(b=>b.kind==='impact'&&b.visible)
           : c.impacts===before.impacts+1&&e.activeBursts>0;
         if(s.phase==='playing'&&matches) {
-          window.__spellCapture={mode,combat:structuredClone(c),position:{...s.position}};
+          window.__spellCapture={mode,elapsed:s.elapsed,combat:structuredClone(c),
+            position:{...s.position},camera:structuredClone(s.camera),rendering:{...s.rendering}};
           window.__spellCaptureMode=null;
           document.querySelector('#pauseBtn').click();
         } else requestAnimationFrame(sample);
@@ -166,13 +181,14 @@ def frozen_capture(page, name):
     assert after['effects']['activeParticles'] == frozen['combat']['effects']['activeParticles'], 'Paused effects must not emit or expire particles'
     assert after['effects']['emitted'] == frozen['combat']['effects']['emitted'], 'Paused frames must not repeat launch/impact events'
     assert after['spells'] == frozen['combat']['spells'], 'Paused projectiles must stay at their captured positions'
+    assert not REPORT['errors'], REPORT['errors']
     return frozen
 
 
 def exercise_staff(page, obj):
     kind = obj['kind']
     name = 'fire' if kind == 'fireStaff' else 'ice'
-    stage(f'Capture {name} charge, launch, flight and impact from a real F attack')
+    stage(f'Capture {name} charge, launch, flight and layered impact from a real F attack')
     inspect_at(page, obj['position'])
     page.wait_for_function('kind=>nebeljagdTestState().equippedItem?.type===kind || nebeljagdTestState().nearWeapon===kind', arg=kind)
     if state(page)['equippedItem'] is None or state(page)['equippedItem']['id'] != obj['id']:
@@ -190,9 +206,15 @@ def exercise_staff(page, obj):
         arm_capture(page, phase, before)
         page.keyboard.press('Escape')
         frames[phase] = frozen_capture(page, name + '-' + phase)
+    arm_capture(page, 'impact-late', {**before, 'impactAt': frames['impact']['elapsed']})
+    page.keyboard.press('Escape')
+    frames['impact-late'] = frozen_capture(page, name + '-impact-late')
     flight = frames['flight']['combat']
     assert flight['shotsFired'] == before['shotsFired'] + 1
-    assert flight['spellsActive'] == 1 and flight['effects']['visibleParticles'] > 0, flight
+    assert flight['spellsActive'] == 1, flight
+    assert flight['effects']['visibleParticles'] > 0 or flight['effects'].get('visibleTrailSegments', 0) > 1, flight
+    if 'activeTrails' in flight['effects']:
+        assert flight['effects']['activeTrails'] == 1 and flight['effects']['visibleTrailSegments'] > 1, flight['effects']
     active = [p for p in flight['spells'] if p['mode'] == 'flying' and p['visible']]
     assert len(active) == 1 and active[0]['type'] == kind, active
     assert active[0]['position']['z'] > -62, 'The projectile must remain on the near side before impact'
@@ -204,6 +226,10 @@ def exercise_staff(page, obj):
     assert abs(point['z'] + 62) < .8 and 32 <= point['x'] <= 48, point
     assert any(b['kind'] == 'impact' and b['type'] == kind and b['visible'] for b in impact['effects']['bursts'])
     assert impact['effects']['visibleParticles'] > 0
+    late = frames['impact-late']
+    assert late['elapsed'] >= frames['impact']['elapsed'] + .17
+    assert late['combat']['impacts'] == impact['impacts'] and late['combat']['shotsFired'] == impact['shotsFired']
+    assert any(b['kind'] == 'impact' and b['type'] == kind and b['visible'] for b in late['combat']['effects']['bursts'])
     emitted = impact['effects']['emitted'][kind]
     assert emitted['launches'] == before['effects']['emitted'][kind]['launches'] + 1
     assert emitted['impacts'] == before['effects']['emitted'][kind]['impacts'] + 1
@@ -215,6 +241,7 @@ def exercise_staff(page, obj):
     wait_settled(page)
     final = state(page)['combat']
     assert final['effects']['activeParticles'] == 0 and final['effects']['activeBursts'] == 0
+    assert final['effects'].get('activeTrails', 0) == 0
     assert final['spellsActive'] == 0 and final['shotsFired'] == before['shotsFired'] + 1
     passed(f'{name.title()} charge, muzzle flash, moving projectile/trail and wall impact render and expire', frames)
 
@@ -297,6 +324,7 @@ def run(url):
             initial = state(game)
             assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
             assert 'effects' in initial['combat'] and 'spells' in initial['combat']
+            REPORT['presentation'] = initial['combat']['effects'].get('presentation')
             passed('Spielen transfers the real draft and matching version to the generated game', REPORT['editorPlayNavigation'])
             game.locator('#startBtn').click()
             for obj in objects:
@@ -313,6 +341,7 @@ def run(url):
             effects = reset['combat']['effects']
             assert reset['equippedItem'] is None and reset['combat']['spellsActive'] == 0
             assert effects['activeParticles'] == 0 and effects['activeBursts'] == 0 and not effects['channelActive'], effects
+            assert effects.get('activeTrails', 0) == 0 and effects.get('visibleTrailSegments', 0) == 0, effects
             assert reset['combat']['shotsFired'] == 0 and reset['combat']['impacts'] == 0
             assert all(value == 0 for counts in effects['emitted'].values() for value in counts.values())
             assert reset['world']['objects'] == edited['objects']

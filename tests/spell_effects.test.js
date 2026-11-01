@@ -211,3 +211,96 @@ test('fog hides projectiles, charge, release connectors and impact particles at 
   assert.equal(effects.telemetry.channelVisible, true);
   effects.dispose();
 });
+
+test('a world-space trail outlives its projectile briefly, then expires or clears immediately on reset', () => {
+  const scene = new THREE.Scene(), effects = createSpellEffects(scene);
+  const visual = effects.createProjectile();
+  const start = new THREE.Vector3(0, 1.4, 0), finish = new THREE.Vector3(0, 1.4, 3.6);
+  effects.launch(visual, 'fireStaff', start, 0);
+  effects.advance(visual, start, finish, .2, .2); effects.update(.2, .2);
+  assert.equal(effects.telemetry.activeTrails, 1);
+  assert.ok(effects.telemetry.visibleTrailSegments > 0);
+  effects.end(visual);
+  assert.equal(effects.telemetry.activeProjectiles, 0);
+  assert.equal(effects.telemetry.activeTrails, 1, 'ending the projectile preserves its fading wake');
+  const stopped = effects.telemetry;
+  effects.update(0, 500);
+  assert.deepEqual(effects.telemetry, stopped, 'paused wall-clock time cannot expire the remaining trail');
+  for (let i = 0; i < 3; i++) effects.update(.1, .3 + i * .1);
+  assert.equal(effects.telemetry.activeTrails, 0);
+  assert.equal(effects.telemetry.visibleTrailSegments, 0);
+  effects.launch(visual, 'iceStaff', start, 0);
+  effects.advance(visual, start, finish, .2, .7); effects.update(.2, .7);
+  assert.equal(effects.telemetry.activeTrails, 1);
+  effects.reset();
+  assert.equal(effects.telemetry.activeTrails, 0, 'restart removes the wake without waiting for its fade');
+  assert.equal(effects.telemetry.visibleTrailSegments, 0);
+  effects.dispose();
+});
+
+test('visible trail sections remain behind a hidden projectile without revealing their fogged continuation', () => {
+  let visibility = 'left';
+  const scene = new THREE.Scene(), effects = createSpellEffects(scene, {
+    isVisible: point => visibility === 'all' || (visibility === 'left' && point.x < 0),
+  });
+  const visual = effects.createProjectile();
+  const start = new THREE.Vector3(-2, 1.4, 0), finish = new THREE.Vector3(2, 1.4, 0);
+  effects.launch(visual, 'iceStaff', start, Math.PI / 2);
+  effects.advance(visual, start, finish, .2, .2); effects.update(.2, .2);
+  const partial = effects.telemetry;
+  assert.equal(partial.activeProjectiles, 1);
+  assert.equal(partial.visibleProjectiles, 0, 'the projectile head has entered the hidden half');
+  assert.equal(partial.activeTrails, 1);
+  assert.ok(partial.visibleTrailSegments > 0, 'the already-visible portion of the wake stays in the world');
+  visibility = 'all'; effects.update(0, .2);
+  assert.ok(effects.telemetry.visibleTrailSegments > partial.visibleTrailSegments,
+    'revealing the hidden half exposes additional sections, rather than an entire previously leaking ribbon');
+  visibility = 'none'; effects.update(0, .2);
+  assert.equal(effects.telemetry.activeTrails, 1);
+  assert.equal(effects.telemetry.visibleTrailSegments, 0);
+  effects.dispose();
+});
+
+test('animated effect transforms and shader uniforms stay finite and freeze with a paused simulation', () => {
+  const scene = new THREE.Scene(), effects = createSpellEffects(scene);
+  const visual = effects.createProjectile(), origin = new THREE.Vector3(0, 1.4, 0), tip = new THREE.Vector3(0, 2.8, 0);
+  const end = new THREE.Vector3(0, 1.4, 1.8);
+  effects.launch(visual, 'fireStaff', origin, 0);
+  effects.advance(visual, origin, end, .1, .1);
+  effects.fire('fireStaff', tip, 0, origin);
+  effects.impact('iceStaff', new THREE.Vector3(2, 1.4, 0), null, 0);
+  effects.channel('fireStaff', tip, 0, .5); effects.update(.1, .1);
+
+  function snapshot() {
+    const objects = [];
+    scene.traverseVisible(object => {
+      const transform = [...object.position.toArray(), ...object.quaternion.toArray(), ...object.scale.toArray()];
+      assert.ok(transform.every(Number.isFinite));
+      const uniforms = [];
+      for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+        for (const [name, uniform] of Object.entries(material?.uniforms ?? {})) {
+          const value = uniform.value;
+          const numbers = typeof value === 'number' ? [value] : value?.toArray ? value.toArray() :
+            ArrayBuffer.isView(value) ? Array.from(value) : null;
+          if (numbers) {
+            assert.ok(numbers.every(Number.isFinite), `${name} has finite shader inputs`);
+            uniforms.push([name, numbers]);
+          }
+        }
+      }
+      objects.push({ id: object.uuid, transform, uniforms,
+        instances: object.isInstancedMesh ? Array.from(object.instanceMatrix.array) : null });
+    });
+    return objects;
+  }
+
+  const before = snapshot();
+  for (let i = 0; i < 8; i++) {
+    effects.advance(visual, end, end, 0, 100 + i);
+    effects.update(0, 100 + i);
+  }
+  assert.deepEqual(snapshot(), before, 'global render time may advance while the actual effect animation is paused');
+  effects.update(Number.NaN, Number.POSITIVE_INFINITY);
+  assert.deepEqual(snapshot(), before, 'invalid elapsed time cannot poison active transforms or shader uniforms');
+  effects.dispose();
+});
