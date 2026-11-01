@@ -49,6 +49,11 @@ ausdrücklich über die GitHub-API an und wartet auf **genau den gerade
 veröffentlichten Commit**. Ein älterer erfolgreicher Build gilt nicht als
 Nachweis. Veröffentlichungen auf GitHub und deren tatsächliche Bereitstellung
 bleiben unterscheidbare Schritte.
+Vorübergehende Lesefehler werden begrenzt wiederholt. Ein ersetzter oder
+abgebrochener Pages-Versuch beendet die Prüfung nicht vorzeitig, wenn noch
+ein Nachfolger für denselben Commit erfolgreich werden kann. Ohne Bestätigung
+innerhalb des festen Zeitfensters bleibt die Bereitstellung unbestätigt;
+Zugriffs- und Konfigurationsfehler werden sofort gemeldet.
 
 Voraussetzungen sind die bestehende GitHub-Pages-Konfiguration mit Quelle
 **main / Repository-Stamm**, Schreibrechte des normalen Workflow-Tokens für
