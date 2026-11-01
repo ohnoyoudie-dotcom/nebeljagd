@@ -1,27 +1,25 @@
 {
-  "name": "Nebeljagd – stabile Entwicklungsvorschau",
-  "type": "static-game-editor-preview",
-  "sourceBranch": "work",
-  "sourceCommit": "e6789b60ed15c93c00991eaea7893c139f0033d8",
-  "deliveryCommit": "ca84165250c1d6fa8006d017dde44737d3c42eac",
-  "buildId": "6856882b5f3f",
-  "builtAt": "2026-11-01T18:04:05.613Z",
-  "preparedAt": "2026-11-01T18:05:06.767375+00:00",
-  "targetBranch": "main",
-  "targetDirectory": "preview",
-  "loginAvailable": false,
+  "buildId": "3c20401fae09",
+  "builtAt": "2026-11-01T18:33:01.786Z",
+  "sourceCommit": "17d8e38fce4a57cece3c5466d76dd59df9c1c888",
+  "mapSha256": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b",
+  "sourceBaseCommit": "17d8e38fce4a57cece3c5466d76dd59df9c1c888",
   "files": {
+    "editor.html": {
+      "bytes": 7670,
+      "sha256": "fbfc4289ac316b94562bfa57ed7a46666b1a7303951377c51662c0dac9d3163d"
+    },
     "map-editor.html": {
-      "bytes": 60508389,
-      "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df"
+      "bytes": 60513332,
+      "sha256": "0ad90eb202ec7ba2e17605544e7646cf1cc95ca8eeb34f0d8c3ec9ae7c39b111"
     },
     "nebeljagd.html": {
-      "bytes": 81320419,
-      "sha256": "7fcd8864b4221974fbb0672f7d9514bd1899bbcde938bf49325872d0c28c5d6d"
+      "bytes": 81320688,
+      "sha256": "d28664ed3e02c40e0d5f0c18509afcd556714e672d266cb8ada7a32d6db00f98"
     },
     "avatar-preview.html": {
-      "bytes": 14841476,
-      "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
+      "bytes": 14841745,
+      "sha256": "133cd78e45a7a35df2de5f1b34de74cfccf7c693a6cba09c27814e327cf130b4"
     },
     "worldmap.json": {
       "bytes": 15761,
@@ -35,13 +33,21 @@
       "bytes": 40055,
       "sha256": "9ce30b4f1b369ac65cc5c59092ff4f7e4c27b335ab576e37a9d349bcafef4e45"
     },
-    "index.html": {
-      "bytes": 81320419,
-      "sha256": "7fcd8864b4221974fbb0672f7d9514bd1899bbcde938bf49325872d0c28c5d6d"
-    },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 92635209,
-      "sha256": "0802059e4ef76255fbd7c5feb472c6c92a6fdcaa668e977f08a70cfa59c45032"
+      "bytes": 92274672,
+      "sha256": "9ee77266ae3262795b91d78f5e1cc095ab71cbd66ba84a1125defbea8d000a1d"
+    },
+    "index.html": {
+      "bytes": 81320688,
+      "sha256": "d28664ed3e02c40e0d5f0c18509afcd556714e672d266cb8ada7a32d6db00f98"
     }
+  },
+  "name": "Nebeljagd – aktuelle Spielwelt und Editor",
+  "type": "static-game-editor-preview",
+  "sourceBranch": "work",
+  "loginAvailable": false,
+  "projectMap": {
+    "name": "Nebelinsel · Vier Biome und zwei freie Brücken",
+    "sha256": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
   }
 }
