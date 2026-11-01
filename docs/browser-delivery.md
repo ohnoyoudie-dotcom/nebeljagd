@@ -1,8 +1,58 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Aktueller Editor mit korrigierter Griffposition
+## Aktueller Editor mit Levelaufstiegen
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4).
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571).
+Über **Spielen** wird dieselbe Karte in der aktualisierten Spielversion geöffnet.
+Jeder besiegte Gegner erhöht das Level um eins und die aktuellen/maximalen
+Lebenspunkte um 25. Die Levelzahl steht links am Balken; seine Breite bleibt gleich und die
+25-LP-Abschnitte werden feiner. Die Übungswiese verwendet ebenfalls das neue
+Maximum und beginnt nach Zurücksetzen wieder bei Level 1 mit 100/100 LP.
+
+Quellstand: `9447a30b73fd3c9b34b2efd7c0fcd8493e61bacf`; Build `ad5a6521cf3a`;
+Auslieferung auf `work`: `d516eface8c9b4cc994d377ba99b81d62dbab35e`.
+Veröffentlichungscommit: `d214571b3d85bfa6cfe2af32f9895ba23ceeed63`, ausschließlich
+vier Dateien im bestehenden statischen `preview/`. Der Portal-Einstieg unter
+`welt/index.html` und Dateien außerhalb der Vorschau bleiben erhalten.
+Die Vorschau bietet weiterhin keine Klassenanmeldung; der echte Klassenserver
+wurde für die Prüfung nur temporär lokal gestartet.
+
+369 Node-Tests, Asset- und Kartenprüfung, sieben Spielabläufe, fünf echte
+Klassenserver-/Übungsabläufe und die normale Editor-zu-Spiel-Übergabe bestanden.
+Alle Browserprüfungen verwendeten die tatsächlichen erzeugten Dateien.
+Keine Browser-/Shaderfehler; die Nutzerkarte einschließlich ihrer drei Waffen
+ist unverändert. Details: [Levelsystem](level-progression.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41328827556)
+hat genau den Veröffentlichungscommit `d214571` erfolgreich bereitgestellt.
+Die Browserprüfungen verwendeten lokal bytegleiche Dateien, da die Pages-Domain
+durch die Netzwerkpolicy dieser Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit einhändiger Zauberanimation
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=476f9d0).
+Beim Zaubern führt nur der Stabarm die Vorwärtsbewegung aus; die freie Hand
+behält ihre natürliche Stand-/Laufbewegung. Das Projektil beginnt direkt an
+der Kristallspitze und geht von dort kontinuierlich in die bisherige Flugbahn
+über. Alten Spiel-Tab schließen und im aktuellen Editor **Spielen** öffnen.
+Details: [Einhändiges Zaubern](one-handed-cast.md).
+
+Quellstand: `5857a3c1fe451bc9257f0126470e4a82fa9d907a`; Build `0e8227126343`.
+Veröffentlichungscommit: `476f9d042c4d0e053c2f4ee6444bbf5f127823e6`, ausschließlich vier Dateien unter
+`preview/` auf `main`; alle neun Paketdateien verifiziert.
+358 Node-Tests und sechs Browserprüfungen bestanden. Acht Spielaufnahmen aus
+beiden Seitenrichtungen geprüft; keine Browser-, Shader-, WebGL- oder
+HTTP-Fehler. Die Nutzerkarte und Modelle bleiben unverändert.
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41327380636)
+hat genau diesen Commit erfolgreich bereitgestellt. Die unveränderliche
+Versionsdatei stimmt mit dem geprüften Paket überein. Der Browsercheck verwendete
+lokal identische Dateien, da die Pages-Domain durch die Netzwerkpolicy dieser
+Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit korrigierter Griffposition
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4).
 Feuer- und Eisstab sitzen nun in der rechten Handfläche. Der Griffpunkt folgt
 der Hand beim Laufen, Drehen und Zaubern. Alten Spiel-Tab schließen und im
 aktuellen Editor **Spielen** öffnen. Details: [Griffposition](weapon-grip.md).
@@ -180,7 +230,7 @@ Die veröffentlichte Ausgabe liegt unter einem stabilen GitHub-Pages-Pfad auf
 
 - [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
 - [Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/)
-- [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4)
+- [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=476f9d0)
 
 Der veröffentlichte Ordner `preview/` enthält den eigenständigen Build und
 Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf

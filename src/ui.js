@@ -67,9 +67,9 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     </aside>
 
     <section class="player-panel playing-only" aria-label="Spielfigur und Gesundheit">
-      <div class="portrait">${portrait}<span class="portrait-level">I</span></div>
+      <div class="portrait">${portrait}</div>
       <div class="player-info"><div class="player-name-row"><strong>Abenteurer</strong><span id="healthValue">75 <small>/ 100</small></span></div>
-        <div id="healthBar" class="health-track" role="progressbar" aria-label="Lebenspunkte" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75"><div id="healthFill"></div><span class="health-segments"></span></div>
+        <div class="player-health-row"><span id="playerLevel" class="player-level" aria-label="Level 1" title="Level 1">1</span><div id="healthBar" class="health-track" role="progressbar" aria-label="Lebenspunkte" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75" data-level="1" data-segments="4"><div id="healthFill"></div><span class="health-segments" aria-hidden="true"></span></div></div>
         <div class="player-status" id="playerStatusWrap"><span class="status-dot"></span><span id="playerStatus">Bereit für das Unbekannte</span></div>
       </div>
     </section>
@@ -145,6 +145,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   const healthFill = $('healthFill');
   const healthValue = $('healthValue');
   const healthBar = $('healthBar');
+  const playerLevel = $('playerLevel');
   const zoneTime = $('zoneTime');
   const zoneRadius = $('zoneRadius');
   const zonePanel = $('zonePanel');
@@ -172,6 +173,8 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   let toastTimeout;
   let lastMapTime = -Infinity;
   let lastHealth = -1;
+  let lastMaxHealth = -1;
+  let lastLevel = -1;
   let lastDanger = false;
   let lastWeaponType;
   let lastNearWeaponType;
@@ -416,14 +419,28 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   function update(state) {
     latestState = state;
     if (state.phase && state.phase !== currentPhase) setPhase(state.phase);
-    const maxHealth = state.maxHealth || 100;
+    const maxHealth = Number.isFinite(state.maxHealth) && state.maxHealth > 0 ? state.maxHealth : 100;
+    const level = Number.isFinite(state.level) ? Math.max(1, Math.floor(state.level)) : 1;
     const health = Math.max(0, Math.min(maxHealth, state.health ?? maxHealth));
     const roundedHealth = Math.ceil(health);
-    if (health !== lastHealth) {
+    if (level !== lastLevel) {
+      playerLevel.textContent = String(level);
+      playerLevel.setAttribute('aria-label', `Level ${level}`);
+      playerLevel.title = `Level ${level}`;
+      // The reserved level column never takes space from the health track.
+      playerLevel.style.fontSize = `${Math.min(11, 40 / String(level).length)}px`;
+      healthBar.dataset.level = String(level);
+    }
+    if (health !== lastHealth || maxHealth !== lastMaxHealth || level !== lastLevel) {
       healthFill.style.width = `${(health / maxHealth) * 100}%`;
       healthValue.innerHTML = `${roundedHealth} <small>/ ${maxHealth}</small>`;
       healthBar.setAttribute('aria-valuenow', String(roundedHealth));
       healthBar.setAttribute('aria-valuemax', String(maxHealth));
+      healthBar.setAttribute('aria-valuetext', `${roundedHealth} von ${maxHealth} Lebenspunkten, Level ${level}`);
+      // Every full subdivision represents 25 HP, including when the maximum
+      // is not an exact multiple and the last segment is shorter.
+      healthBar.style.setProperty('--health-segment-step', `${Math.min(100, 25 / maxHealth * 100)}%`);
+      healthBar.dataset.segments = String(Math.ceil(maxHealth / 25));
       healthBar.classList.toggle('low-health', health / maxHealth < .3);
       if (lastHealth >= 0 && roundedHealth < Math.ceil(lastHealth)) {
         root.classList.remove('hit');
@@ -431,6 +448,8 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         requestAnimationFrame(() => root.classList.add('hit'));
       }
       lastHealth = health;
+      lastMaxHealth = maxHealth;
+      lastLevel = level;
     }
     const danger = Boolean(state.inDanger);
     root.classList.toggle('in-tall-grass', Boolean(state.hiddenInGrass));

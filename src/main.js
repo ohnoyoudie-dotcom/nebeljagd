@@ -21,6 +21,7 @@ import { createHealthBars } from './health-bars.js';
 import { createPracticeActors } from './practice-actors.js';
 import { createSnowFootprints } from './snow-footprints.js';
 import { createDamageFeedback } from './damage-feedback.js';
+import { createProgressionState, awardDefeat } from './progression.js';
 import { MAX_HEALTH, START_HEALTH, ROLL_SPEED, ROLL_DURATION, ROLL_COOLDOWN,
   healedHealth } from './rules.js';
 
@@ -32,7 +33,7 @@ const startingHealth = lobbyMode ? MAX_HEALTH : START_HEALTH;
 const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
 const requestedQuality = new URLSearchParams(location.search).get('quality');
 const state = {
-  phase: 'ready', health: startingHealth, maxHealth: MAX_HEALTH, elapsed: 0,
+  phase: 'ready', ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0,
   gold: 0, inDanger: false, moving: false, distance: 0, snowWeight: 0,
   rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
   quality: requestedQuality === 'low' || (requestedQuality !== 'high' && coarsePointer) ? 'low' : 'high',
@@ -128,7 +129,8 @@ const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
 const healthBars = createHealthBars(world.root);
-healthBars.add('player', { position: player, health: state.health, maxHealth: MAX_HEALTH, local: true, height: 2.9 });
+healthBars.add('player', { position: player, health: state.health, maxHealth: state.maxHealth,
+  level: state.level, local: true, height: 2.9 });
 const damageFeedback = createDamageFeedback(world.root, {
   isVisible: (position, options = {}) => vision.isVisible(position, {
     ...options, concealed: options.concealed ?? world.concealmentAt(position.x, position.z) > .01,
@@ -141,6 +143,14 @@ const combat = createCombat({ onHit: (result, target) => {
     if (result.killed) world.destroyDestructible(target.id);
   }
   damageFeedback.addHit(result, target);
+}, onDefeat: (result, target) => {
+  if (state.phase !== 'playing') return;
+  const advancement = awardDefeat(state, result, target);
+  if (!advancement) return;
+  state.lastDefeat = { targetId: result.targetId, sourceId: result.sourceId, type: result.type, level: state.level };
+  healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, snap: true });
+  ui.toast(`Level ${state.level} · +${advancement.healthGained} Lebenspunkte`, 'success');
+  updateUI();
 } });
 for (const object of world.destructibles ?? []) {
   const target = combat.addTarget({ id: object.id, name: object.name, position: object.position, radius: object.radius,
@@ -189,14 +199,14 @@ function setPhase(phase) {
 }
 
 function reset() {
-  Object.assign(state, { health: startingHealth, elapsed: 0, gold: 0, inDanger: false,
+  Object.assign(state, { ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0, gold: 0, inDanger: false,
     distance: 0, moving: false, actualSpeed: 0, snowWeight: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
   cameraFocus.copy(player).multiplyScalar(visualScale);
   pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); snowFootprints.reset(); world.resetDestructibles?.(); character.setConcealed(false);
   damageFeedback.reset();
-  healthBars.set('player', { health: startingHealth, snap: true });
+  healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, snap: true });
   healthBars.reset();
   character.resetMotion?.(state.direction);
   playerGrassStrength = 0; playerGrassDirX = Math.sin(state.direction); playerGrassDirZ = Math.cos(state.direction);
@@ -293,7 +303,7 @@ function simulate(dt) {
   if (state.inDanger && !wasInDanger) ui.toast('Der Nebel zehrt an deiner Kraft. Zurück in den Kreis!', 'danger');
   if (!state.inDanger && wasInDanger) ui.toast('Du bist wieder in Sicherheit.', 'success');
   const previousHealth = state.health;
-  state.health = lobbyMode ? MAX_HEALTH : Math.max(0, state.health - (state.inDanger ? world.map.zone.damagePerSecond * dt : 0));
+  state.health = lobbyMode ? state.maxHealth : Math.max(0, state.health - (state.inDanger ? world.map.zone.damagePerSecond * dt : 0));
   if (state.health < previousHealth) damageFeedback.addHit({ targetId: 'player', damage: previousHealth - state.health, type: 'zone' },
     { id: 'player', position: player, local: true });
   if (state.health === 0) setPhase('dead');
@@ -301,7 +311,7 @@ function simulate(dt) {
 
 function onCollect(item) {
   if (item.type === 'heart') {
-    state.health = healedHealth(state.health, item.amount);
+    state.health = healedHealth(state.health, item.amount, state.maxHealth);
     ui.toast(`+${Math.round(item.amount)} Leben · Ein Geschenk des Waldes`, 'success');
   } else {
     state.gold += item.amount;
@@ -383,6 +393,7 @@ document.querySelector('#game').addEventListener('webglcontextlost', (event) => 
 window.nebeljagdTestState = () => ({
   mode: lobbyMode ? 'lobby' : 'game',
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
+  level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
   position: { x: player.x, y: player.y, z: player.z }, direction: state.direction,
   rollCooldown: state.rollCooldown, dashCooldown: state.rollCooldown,
@@ -438,7 +449,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
     practiceActors.resolvePlayerMovement(player, .42);
     world.resolveMovement(player, .42);
     player.y = world.heightAt(player.x, player.z);
-    state.elapsed = Math.max(0, elapsed); state.health = THREE.MathUtils.clamp(health, 1, MAX_HEALTH);
+    state.elapsed = Math.max(0, elapsed); state.health = THREE.MathUtils.clamp(health, 1, state.maxHealth);
     state.direction = direction; state.actualSpeed = 0; state.moving = false; character.group.rotation.y = direction;
     character.resetMotion?.(direction);
     currentZone = zoneAt(state.elapsed);
@@ -530,7 +541,7 @@ function frame(now) {
     if (automaticPickup) { ui.toast(automaticPickup.message, 'success'); updateUI(); }
   }
   pickups.update(playDelta, time, state.phase === 'playing' ? player : inactivePlayer,
-    { health: state.health, maxHealth: MAX_HEALTH, onCollect, viewerPosition: player });
+    { health: state.health, maxHealth: state.maxHealth, onCollect, viewerPosition: player });
   zone?.update(time, currentZone.radius, state.inDanger, player);
   cameraTarget.set(player.x * visualScale, player.y * visualScale, (player.z - 1.5) * visualScale);
   cameraFocus.lerp(cameraTarget, 1 - Math.exp(-dt * 4));
@@ -538,7 +549,7 @@ function frame(now) {
   sun.position.copy(cameraFocus).add(sunlightOffset);
   sun.target.position.copy(cameraFocus);
   sun.target.updateMatrixWorld();
-  healthBars.set('player', { health: state.health, maxHealth: MAX_HEALTH });
+  healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level });
   healthBars.update(camera, { isVisible, dt: playDelta });
   damageFeedback.update(playDelta, camera);
   renderer.render(scene, camera);

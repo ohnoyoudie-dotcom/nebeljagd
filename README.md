@@ -20,6 +20,8 @@ Feuer und Eis besitzen eigene Lade-, Abschuss-, Flug- und Treffereffekte:
 [Zaubereffekte mit fließenden Schweifen und verfeinerten Materialien](docs/spell-effects-v2.md).
 Beide Stäbe sitzen an einem mitbewegten Griffpunkt in der Handfläche:
 [Griffkorrektur](docs/weapon-grip.md).
+Zaubern erfolgt einhändig; Projektile starten an der Kristallspitze:
+[Einhändige Zauberanimation](docs/one-handed-cast.md).
 
 **Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
@@ -35,7 +37,7 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
 Die aktuelle Browser-Vorschau ist unter
-[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4)
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571)
 und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
 Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
 Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht
@@ -195,6 +197,11 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
 - Lebensbalken stehen über den Figuren; Treffer lassen sie kurz aufleuchten
   und zeigen aufsteigende Schadenszahlen. Die Lebenswerte ändern sich sofort.
   Verdeckte Gegner verraten sich auch nicht durch ihren Balken oder Schadenszahlen. Wolkenschatten ziehen über Gelände und Gebäude.
+- Jeder besiegte Gegner erhöht das Spielerlevel um eins und die aktuellen
+  sowie maximalen Lebenspunkte um 25. Das Level steht links neben dem
+  Lebensbalken. Dessen Breite bleibt gleich; jeder Abschnitt entspricht
+  25 Lebenspunkten. Ein Rundenneustart setzt Level und Lebenspunkte zurück.
+  Regeln und Prüfung: [`docs/level-progression.md`](docs/level-progression.md).
 
 Die größere Minikarte schaltet zwischen Umgebung und gesamter Insel um.
 Die vorhandene Figur blendet Stand und Gang weicher und dreht sich fließender.

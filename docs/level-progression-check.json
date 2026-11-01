@@ -1,0 +1,1534 @@
+{
+  "status": "passed",
+  "nodeTests": 369,
+  "assets": "passed",
+  "map": "passed",
+  "build": {
+    "buildId": "ad5a6521cf3a",
+    "builtAt": "2026-11-01T16:45:03.394Z",
+    "sourceBaseCommit": "9447a30b73fd3c9b34b2efd7c0fcd8493e61bacf",
+    "localBuild": true,
+    "files": {
+      "index.html": {
+        "bytes": 23209,
+        "sha256": "3d130d09180c379ca85b8f499d75207db92446f6dec52c26258c31b74573b2dd"
+      },
+      "teacher.html": {
+        "bytes": 20910,
+        "sha256": "0ebdbbd85903b30ac756ae37772f0a5bd301f1041bc9bb372172fa919d0dc14f"
+      },
+      "lobby.html": {
+        "bytes": 1602,
+        "sha256": "f7ec3ff549f0d1efe9f952b1ad263a8d1d30e0e152beb594ab6ac2d2b679ca4a"
+      },
+      "nebeljagd.html": {
+        "bytes": 81312361,
+        "sha256": "540c56113d5972f70e8f33d33e7ce26d3872fa6b74fdf413d4ddc783c85fdcd5"
+      },
+      "map-editor.html": {
+        "bytes": 60508389,
+        "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df"
+      },
+      "avatar-preview.html": {
+        "bytes": 14841476,
+        "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
+      },
+      "worldmap.json": {
+        "bytes": 15761,
+        "sha256": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+      },
+      "worldmap.svg": {
+        "bytes": 33266,
+        "sha256": "0848f0c10b78c26afe162e5aa9f4cb5bc377e0295a178f8eaf367263ef5dccbf"
+      },
+      "worldmap.schema.json": {
+        "bytes": 40055,
+        "sha256": "9ce30b4f1b369ac65cc5c59092ff4f7e4c27b335ab576e37a9d349bcafef4e45"
+      },
+      "nebeljagd-welt-und-editor.zip": {
+        "bytes": 92266295,
+        "sha256": "797123804ebceb87e923cd916fd6790b4a43cb845dfd33edf372e26e6e0d8b1f"
+      }
+    }
+  },
+  "game": {
+    "status": "passed",
+    "url": "http://127.0.0.1:5232",
+    "checks": [
+      {
+        "name": "A fresh round starts at level 1 with 72/100 HP and four fixed-width segments",
+        "evidence": {
+          "hud": {
+            "width": 154,
+            "left": 143,
+            "levelRight": 137,
+            "label": "1",
+            "levelAria": "Level 1",
+            "segments": 4,
+            "level": 1,
+            "max": 100,
+            "current": 72,
+            "step": 25,
+            "fill": 72
+          },
+          "overhead": {
+            "id": "player",
+            "health": 72,
+            "maxHealth": 100,
+            "level": 1,
+            "levelLabel": "1",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.72,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 4,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          }
+        }
+      },
+      {
+        "name": "Only a defeated opponent grants level 2, exactly +25 current/max HP and a fifth segment",
+        "evidence": {
+          "hud": {
+            "width": 154,
+            "left": 143,
+            "levelRight": 137,
+            "label": "2",
+            "levelAria": "Level 2",
+            "segments": 5,
+            "level": 2,
+            "max": 125,
+            "current": 97,
+            "step": 20,
+            "fill": 77.6
+          },
+          "overhead": {
+            "id": "player",
+            "health": 97,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.776,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          }
+        }
+      },
+      {
+        "name": "Attacking an already defeated opponent cannot grant a second level",
+        "evidence": null
+      },
+      {
+        "name": "The next opponent grants level 3 and six finer segments without changing bar width",
+        "evidence": {
+          "hud": {
+            "width": 154,
+            "left": 143,
+            "levelRight": 137,
+            "label": "3",
+            "levelAria": "Level 3",
+            "segments": 6,
+            "level": 3,
+            "max": 150,
+            "current": 122,
+            "step": 16.666666666666664,
+            "fill": 81.3333
+          },
+          "overhead": {
+            "id": "player",
+            "health": 122,
+            "maxHealth": 150,
+            "level": 3,
+            "levelLabel": "3",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.8133333333333334,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 6,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          }
+        }
+      },
+      {
+        "name": "Hearts heal above 100 to the increased maximum and remain unconsumed at full health",
+        "evidence": {
+          "hud": {
+            "width": 154,
+            "left": 143,
+            "levelRight": 137,
+            "label": "3",
+            "levelAria": "Level 3",
+            "segments": 6,
+            "level": 3,
+            "max": 150,
+            "current": 150,
+            "step": 16.666666666666664,
+            "fill": 100
+          },
+          "overhead": {
+            "id": "player",
+            "health": 150,
+            "maxHealth": 150,
+            "level": 3,
+            "levelLabel": "3",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 1,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 6,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          }
+        }
+      },
+      {
+        "name": "A lethal burn credits its player exactly once and grants level 4 / 175 HP",
+        "evidence": {
+          "afterDirectHit": {
+            "id": "practice-3",
+            "name": "Übungsgegner 3",
+            "practice": true,
+            "position": {
+              "x": 12.807245000000014,
+              "y": 1.444647248039117,
+              "z": 4
+            },
+            "health": 7.600000000000001,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 2.9000000000000004,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 6.3038550000000715
+          },
+          "afterBurn": {
+            "hud": {
+              "width": 154,
+              "left": 143,
+              "levelRight": 137,
+              "label": "4",
+              "levelAria": "Level 4",
+              "segments": 7,
+              "level": 4,
+              "max": 175,
+              "current": 175,
+              "step": 14.285714285714285,
+              "fill": 100
+            },
+            "overhead": {
+              "id": "player",
+              "health": 175,
+              "maxHealth": 175,
+              "level": 4,
+              "levelLabel": "4",
+              "local": true,
+              "visible": true,
+              "displayedRatio": 1,
+              "flash": 0,
+              "healthPerSegment": 25,
+              "segmentCount": 7,
+              "barWidth": 1.805,
+              "barBounds": {
+                "left": -0.95,
+                "right": 0.95
+              },
+              "levelBounds": {
+                "left": -1.38,
+                "right": -1.03
+              }
+            }
+          },
+          "lastDefeat": {
+            "targetId": "practice-3",
+            "sourceId": "player",
+            "type": "burn",
+            "level": 4
+          }
+        }
+      },
+      {
+        "name": "A new round resets level, health capacity, divider spacing and defeated opponents",
+        "evidence": {
+          "hud": {
+            "width": 154,
+            "left": 143,
+            "levelRight": 137,
+            "label": "1",
+            "levelAria": "Level 1",
+            "segments": 4,
+            "level": 1,
+            "max": 100,
+            "current": 72,
+            "step": 25,
+            "fill": 72
+          },
+          "overhead": {
+            "id": "player",
+            "health": 72,
+            "maxHealth": 100,
+            "level": 1,
+            "levelLabel": "1",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.72,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 4,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "unexpectedRequests": [],
+    "screenshots": [
+      "/tmp/nebeljagd-level-final-qa/level-2-five-segments.png",
+      "/tmp/nebeljagd-level-final-qa/level-3-six-segments.png",
+      "/tmp/nebeljagd-level-final-qa/level-4-burn-victory.png"
+    ],
+    "limits": "Actual standalone game in Chromium/SwiftShader with an imported test island and real NPC kills; no physical-device performance or live-multiplayer claim.",
+    "delivery": {
+      "file": "/workspace/nebeljagd/welt/nebeljagd.html",
+      "bytes": 81312361,
+      "sha256": "540c56113d5972f70e8f33d33e7ce26d3872fa6b74fdf413d4ddc783c85fdcd5"
+    },
+    "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+  },
+  "visualReview": "Actual final level-3 screenshot inspected: numeral left of overhead/HUD health bar; six divisions, 122/150 HP, unchanged bar width. Shared atlas shader reviewed at multiple levels.",
+  "hud": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "level": 1,
+      "result": {
+        "bar": {
+          "x": 143,
+          "y": 832.5,
+          "width": 154,
+          "height": 7,
+          "top": 832.5,
+          "right": 297,
+          "bottom": 839.5,
+          "left": 143
+        },
+        "level": {
+          "x": 109,
+          "y": 827,
+          "width": 28,
+          "height": 18,
+          "top": 827,
+          "right": 137,
+          "bottom": 845,
+          "left": 109
+        },
+        "label": "1",
+        "ariaMax": "100",
+        "ariaNow": "72",
+        "ariaText": "72 von 100 Lebenspunkten, Level 1",
+        "fill": "72%",
+        "step": "25%",
+        "segments": "4",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) 25%)",
+        "status": {
+          "x": 109,
+          "y": 846.5,
+          "width": 188,
+          "height": 9,
+          "top": 846.5,
+          "right": 297,
+          "bottom": 855.5,
+          "left": 109
+        },
+        "panel": {
+          "x": 30,
+          "y": 791,
+          "width": 284,
+          "height": 80,
+          "top": 791,
+          "right": 314,
+          "bottom": 871,
+          "left": 30
+        },
+        "inventory": {
+          "x": 1140.484375,
+          "y": 818,
+          "width": 108.515625,
+          "height": 50,
+          "top": 818,
+          "right": 1249,
+          "bottom": 868,
+          "left": 1140.484375
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "level": 2,
+      "result": {
+        "bar": {
+          "x": 143,
+          "y": 832.5,
+          "width": 154,
+          "height": 7,
+          "top": 832.5,
+          "right": 297,
+          "bottom": 839.5,
+          "left": 143
+        },
+        "level": {
+          "x": 109,
+          "y": 827,
+          "width": 28,
+          "height": 18,
+          "top": 827,
+          "right": 137,
+          "bottom": 845,
+          "left": 109
+        },
+        "label": "2",
+        "ariaMax": "125",
+        "ariaNow": "97",
+        "ariaText": "97 von 125 Lebenspunkten, Level 2",
+        "fill": "77.6%",
+        "step": "20%",
+        "segments": "5",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(20% - min(1px, 3.6%)), rgba(11, 43, 36, 0.47) calc(20% - min(1px, 3.6%)), rgba(11, 43, 36, 0.47) 20%)",
+        "status": {
+          "x": 109,
+          "y": 846.5,
+          "width": 188,
+          "height": 9,
+          "top": 846.5,
+          "right": 297,
+          "bottom": 855.5,
+          "left": 109
+        },
+        "panel": {
+          "x": 30,
+          "y": 791,
+          "width": 284,
+          "height": 80,
+          "top": 791,
+          "right": 314,
+          "bottom": 871,
+          "left": 30
+        },
+        "inventory": {
+          "x": 1140.484375,
+          "y": 818,
+          "width": 108.515625,
+          "height": 50,
+          "top": 818,
+          "right": 1249,
+          "bottom": 868,
+          "left": 1140.484375
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "level": 3,
+      "result": {
+        "bar": {
+          "x": 143,
+          "y": 832.5,
+          "width": 154,
+          "height": 7,
+          "top": 832.5,
+          "right": 297,
+          "bottom": 839.5,
+          "left": 143
+        },
+        "level": {
+          "x": 109,
+          "y": 827,
+          "width": 28,
+          "height": 18,
+          "top": 827,
+          "right": 137,
+          "bottom": 845,
+          "left": 109
+        },
+        "label": "3",
+        "ariaMax": "150",
+        "ariaNow": "122",
+        "ariaText": "122 von 150 Lebenspunkten, Level 3",
+        "fill": "81.3333%",
+        "step": "16.666666666666664%",
+        "segments": "6",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(16.6667% - min(1px, 3%)), rgba(11, 43, 36, 0.47) calc(16.6667% - min(1px, 3%)), rgba(11, 43, 36, 0.47) 16.6667%)",
+        "status": {
+          "x": 109,
+          "y": 846.5,
+          "width": 188,
+          "height": 9,
+          "top": 846.5,
+          "right": 297,
+          "bottom": 855.5,
+          "left": 109
+        },
+        "panel": {
+          "x": 30,
+          "y": 791,
+          "width": 284,
+          "height": 80,
+          "top": 791,
+          "right": 314,
+          "bottom": 871,
+          "left": 30
+        },
+        "inventory": {
+          "x": 1140.484375,
+          "y": 818,
+          "width": 108.515625,
+          "height": 50,
+          "top": 818,
+          "right": 1249,
+          "bottom": 868,
+          "left": 1140.484375
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "level": 102,
+      "result": {
+        "bar": {
+          "x": 143,
+          "y": 832.5,
+          "width": 154,
+          "height": 7,
+          "top": 832.5,
+          "right": 297,
+          "bottom": 839.5,
+          "left": 143
+        },
+        "level": {
+          "x": 109,
+          "y": 827,
+          "width": 28,
+          "height": 18,
+          "top": 827,
+          "right": 137,
+          "bottom": 845,
+          "left": 109
+        },
+        "label": "102",
+        "ariaMax": "2625",
+        "ariaNow": "2597",
+        "ariaText": "2597 von 2625 Lebenspunkten, Level 102",
+        "fill": "98.9333%",
+        "step": "0.9523809523809524%",
+        "segments": "105",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(0.952381% - min(1px, 0.171429%)), rgba(11, 43, 36, 0.47) calc(0.952381% - min(1px, 0.171429%)), rgba(11, 43, 36, 0.47) 0.952381%)",
+        "status": {
+          "x": 109,
+          "y": 846.5,
+          "width": 188,
+          "height": 9,
+          "top": 846.5,
+          "right": 297,
+          "bottom": 855.5,
+          "left": 109
+        },
+        "panel": {
+          "x": 30,
+          "y": 791,
+          "width": 284,
+          "height": 80,
+          "top": 791,
+          "right": 314,
+          "bottom": 871,
+          "left": 30
+        },
+        "inventory": {
+          "x": 1140.484375,
+          "y": 818,
+          "width": 108.515625,
+          "height": 50,
+          "top": 818,
+          "right": 1249,
+          "bottom": 868,
+          "left": 1140.484375
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "level": 103,
+      "result": {
+        "bar": {
+          "x": 143,
+          "y": 832.5,
+          "width": 154,
+          "height": 7,
+          "top": 832.5,
+          "right": 297,
+          "bottom": 839.5,
+          "left": 143
+        },
+        "level": {
+          "x": 109,
+          "y": 827,
+          "width": 28,
+          "height": 18,
+          "top": 827,
+          "right": 137,
+          "bottom": 845,
+          "left": 109
+        },
+        "label": "103",
+        "ariaMax": "2650",
+        "ariaNow": "2597",
+        "ariaText": "2597 von 2650 Lebenspunkten, Level 103",
+        "fill": "98%",
+        "step": "0.9433962264150944%",
+        "segments": "106",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(0.943396% - min(1px, 0.169811%)), rgba(11, 43, 36, 0.47) calc(0.943396% - min(1px, 0.169811%)), rgba(11, 43, 36, 0.47) 0.943396%)",
+        "status": {
+          "x": 109,
+          "y": 846.5,
+          "width": 188,
+          "height": 9,
+          "top": 846.5,
+          "right": 297,
+          "bottom": 855.5,
+          "left": 109
+        },
+        "panel": {
+          "x": 30,
+          "y": 791,
+          "width": 284,
+          "height": 80,
+          "top": 791,
+          "right": 314,
+          "bottom": 871,
+          "left": 30
+        },
+        "inventory": {
+          "x": 1140.484375,
+          "y": 818,
+          "width": 108.515625,
+          "height": 50,
+          "top": 818,
+          "right": 1249,
+          "bottom": 868,
+          "left": 1140.484375
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "level": 1,
+      "result": {
+        "bar": {
+          "x": 143,
+          "y": 832.5,
+          "width": 154,
+          "height": 7,
+          "top": 832.5,
+          "right": 297,
+          "bottom": 839.5,
+          "left": 143
+        },
+        "level": {
+          "x": 109,
+          "y": 827,
+          "width": 28,
+          "height": 18,
+          "top": 827,
+          "right": 137,
+          "bottom": 845,
+          "left": 109
+        },
+        "label": "1",
+        "ariaMax": "100",
+        "ariaNow": "72",
+        "ariaText": "72 von 100 Lebenspunkten, Level 1",
+        "fill": "72%",
+        "step": "25%",
+        "segments": "4",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) 25%)",
+        "status": {
+          "x": 109,
+          "y": 846.5,
+          "width": 188,
+          "height": 9,
+          "top": 846.5,
+          "right": 297,
+          "bottom": 855.5,
+          "left": 109
+        },
+        "panel": {
+          "x": 30,
+          "y": 791,
+          "width": 284,
+          "height": 80,
+          "top": 791,
+          "right": 314,
+          "bottom": 871,
+          "left": 30
+        },
+        "inventory": {
+          "x": 1140.484375,
+          "y": 818,
+          "width": 108.515625,
+          "height": 50,
+          "top": 818,
+          "right": 1249,
+          "bottom": 868,
+          "left": 1140.484375
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "level": 1,
+      "result": {
+        "bar": {
+          "x": 62,
+          "y": 179.5,
+          "width": 120,
+          "height": 6,
+          "top": 179.5,
+          "right": 182,
+          "bottom": 185.5,
+          "left": 62
+        },
+        "level": {
+          "x": 28,
+          "y": 173.5,
+          "width": 28,
+          "height": 18,
+          "top": 173.5,
+          "right": 56,
+          "bottom": 191.5,
+          "left": 28
+        },
+        "label": "1",
+        "ariaMax": "100",
+        "ariaNow": "72",
+        "ariaText": "72 von 100 Lebenspunkten, Level 1",
+        "fill": "72%",
+        "step": "25%",
+        "segments": "4",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) 25%)",
+        "status": {
+          "x": 28,
+          "y": 192,
+          "width": 154,
+          "height": 7,
+          "top": 192,
+          "right": 182,
+          "bottom": 199,
+          "left": 28
+        },
+        "panel": {
+          "x": 18,
+          "y": 148,
+          "width": 174,
+          "height": 61,
+          "top": 148,
+          "right": 192,
+          "bottom": 209,
+          "left": 18
+        },
+        "inventory": {
+          "x": 18,
+          "y": 216,
+          "width": 80.90625,
+          "height": 35,
+          "top": 216,
+          "right": 98.90625,
+          "bottom": 251,
+          "left": 18
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "level": 2,
+      "result": {
+        "bar": {
+          "x": 62,
+          "y": 179.5,
+          "width": 120,
+          "height": 6,
+          "top": 179.5,
+          "right": 182,
+          "bottom": 185.5,
+          "left": 62
+        },
+        "level": {
+          "x": 28,
+          "y": 173.5,
+          "width": 28,
+          "height": 18,
+          "top": 173.5,
+          "right": 56,
+          "bottom": 191.5,
+          "left": 28
+        },
+        "label": "2",
+        "ariaMax": "125",
+        "ariaNow": "97",
+        "ariaText": "97 von 125 Lebenspunkten, Level 2",
+        "fill": "77.6%",
+        "step": "20%",
+        "segments": "5",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(20% - min(1px, 3.6%)), rgba(11, 43, 36, 0.47) calc(20% - min(1px, 3.6%)), rgba(11, 43, 36, 0.47) 20%)",
+        "status": {
+          "x": 28,
+          "y": 192,
+          "width": 154,
+          "height": 7,
+          "top": 192,
+          "right": 182,
+          "bottom": 199,
+          "left": 28
+        },
+        "panel": {
+          "x": 18,
+          "y": 148,
+          "width": 174,
+          "height": 61,
+          "top": 148,
+          "right": 192,
+          "bottom": 209,
+          "left": 18
+        },
+        "inventory": {
+          "x": 18,
+          "y": 216,
+          "width": 80.90625,
+          "height": 35,
+          "top": 216,
+          "right": 98.90625,
+          "bottom": 251,
+          "left": 18
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "level": 3,
+      "result": {
+        "bar": {
+          "x": 62,
+          "y": 179.5,
+          "width": 120,
+          "height": 6,
+          "top": 179.5,
+          "right": 182,
+          "bottom": 185.5,
+          "left": 62
+        },
+        "level": {
+          "x": 28,
+          "y": 173.5,
+          "width": 28,
+          "height": 18,
+          "top": 173.5,
+          "right": 56,
+          "bottom": 191.5,
+          "left": 28
+        },
+        "label": "3",
+        "ariaMax": "150",
+        "ariaNow": "122",
+        "ariaText": "122 von 150 Lebenspunkten, Level 3",
+        "fill": "81.3333%",
+        "step": "16.666666666666664%",
+        "segments": "6",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(16.6667% - min(1px, 3%)), rgba(11, 43, 36, 0.47) calc(16.6667% - min(1px, 3%)), rgba(11, 43, 36, 0.47) 16.6667%)",
+        "status": {
+          "x": 28,
+          "y": 192,
+          "width": 154,
+          "height": 7,
+          "top": 192,
+          "right": 182,
+          "bottom": 199,
+          "left": 28
+        },
+        "panel": {
+          "x": 18,
+          "y": 148,
+          "width": 174,
+          "height": 61,
+          "top": 148,
+          "right": 192,
+          "bottom": 209,
+          "left": 18
+        },
+        "inventory": {
+          "x": 18,
+          "y": 216,
+          "width": 80.90625,
+          "height": 35,
+          "top": 216,
+          "right": 98.90625,
+          "bottom": 251,
+          "left": 18
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "level": 102,
+      "result": {
+        "bar": {
+          "x": 62,
+          "y": 179.5,
+          "width": 120,
+          "height": 6,
+          "top": 179.5,
+          "right": 182,
+          "bottom": 185.5,
+          "left": 62
+        },
+        "level": {
+          "x": 28,
+          "y": 173.5,
+          "width": 28,
+          "height": 18,
+          "top": 173.5,
+          "right": 56,
+          "bottom": 191.5,
+          "left": 28
+        },
+        "label": "102",
+        "ariaMax": "2625",
+        "ariaNow": "2597",
+        "ariaText": "2597 von 2625 Lebenspunkten, Level 102",
+        "fill": "98.9333%",
+        "step": "0.9523809523809524%",
+        "segments": "105",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(0.952381% - min(1px, 0.171429%)), rgba(11, 43, 36, 0.47) calc(0.952381% - min(1px, 0.171429%)), rgba(11, 43, 36, 0.47) 0.952381%)",
+        "status": {
+          "x": 28,
+          "y": 192,
+          "width": 154,
+          "height": 7,
+          "top": 192,
+          "right": 182,
+          "bottom": 199,
+          "left": 28
+        },
+        "panel": {
+          "x": 18,
+          "y": 148,
+          "width": 174,
+          "height": 61,
+          "top": 148,
+          "right": 192,
+          "bottom": 209,
+          "left": 18
+        },
+        "inventory": {
+          "x": 18,
+          "y": 216,
+          "width": 80.90625,
+          "height": 35,
+          "top": 216,
+          "right": 98.90625,
+          "bottom": 251,
+          "left": 18
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "level": 103,
+      "result": {
+        "bar": {
+          "x": 62,
+          "y": 179.5,
+          "width": 120,
+          "height": 6,
+          "top": 179.5,
+          "right": 182,
+          "bottom": 185.5,
+          "left": 62
+        },
+        "level": {
+          "x": 28,
+          "y": 173.5,
+          "width": 28,
+          "height": 18,
+          "top": 173.5,
+          "right": 56,
+          "bottom": 191.5,
+          "left": 28
+        },
+        "label": "103",
+        "ariaMax": "2650",
+        "ariaNow": "2597",
+        "ariaText": "2597 von 2650 Lebenspunkten, Level 103",
+        "fill": "98%",
+        "step": "0.9433962264150944%",
+        "segments": "106",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(0.943396% - min(1px, 0.169811%)), rgba(11, 43, 36, 0.47) calc(0.943396% - min(1px, 0.169811%)), rgba(11, 43, 36, 0.47) 0.943396%)",
+        "status": {
+          "x": 28,
+          "y": 192,
+          "width": 154,
+          "height": 7,
+          "top": 192,
+          "right": 182,
+          "bottom": 199,
+          "left": 28
+        },
+        "panel": {
+          "x": 18,
+          "y": 148,
+          "width": 174,
+          "height": 61,
+          "top": 148,
+          "right": 192,
+          "bottom": 209,
+          "left": 18
+        },
+        "inventory": {
+          "x": 18,
+          "y": 216,
+          "width": 80.90625,
+          "height": 35,
+          "top": 216,
+          "right": 98.90625,
+          "bottom": 251,
+          "left": 18
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "level": 1,
+      "result": {
+        "bar": {
+          "x": 62,
+          "y": 179.5,
+          "width": 120,
+          "height": 6,
+          "top": 179.5,
+          "right": 182,
+          "bottom": 185.5,
+          "left": 62
+        },
+        "level": {
+          "x": 28,
+          "y": 173.5,
+          "width": 28,
+          "height": 18,
+          "top": 173.5,
+          "right": 56,
+          "bottom": 191.5,
+          "left": 28
+        },
+        "label": "1",
+        "ariaMax": "100",
+        "ariaNow": "72",
+        "ariaText": "72 von 100 Lebenspunkten, Level 1",
+        "fill": "72%",
+        "step": "25%",
+        "segments": "4",
+        "gradient": "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0) 0px, rgba(0, 0, 0, 0) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) calc(25% - min(1px, 4.5%)), rgba(11, 43, 36, 0.47) 25%)",
+        "status": {
+          "x": 28,
+          "y": 192,
+          "width": 154,
+          "height": 7,
+          "top": 192,
+          "right": 182,
+          "bottom": 199,
+          "left": 28
+        },
+        "panel": {
+          "x": 18,
+          "y": 148,
+          "width": 174,
+          "height": 61,
+          "top": 148,
+          "right": 192,
+          "bottom": 209,
+          "left": 18
+        },
+        "inventory": {
+          "x": 18,
+          "y": 216,
+          "width": 80.90625,
+          "height": 35,
+          "top": 216,
+          "right": 98.90625,
+          "bottom": 251,
+          "left": 18
+        }
+      }
+    }
+  ],
+  "authenticatedPracticeLobby": {
+    "status": "passed",
+    "checks": [
+      {
+        "name": "A real temporary classroom admits a separate student session without mocked authentication",
+        "evidence": null
+      },
+      {
+        "name": "The authenticated practice lobby starts at level 1 with 100/100 HP and four segments",
+        "evidence": {
+          "mode": "lobby",
+          "phase": "playing",
+          "level": 1,
+          "health": 100,
+          "maxHealth": 100,
+          "defeats": 0,
+          "lastDefeat": null,
+          "worldSource": "lobby",
+          "overhead": {
+            "id": "player",
+            "health": 100,
+            "maxHealth": 100,
+            "level": 1,
+            "levelLabel": "1",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 1,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 4,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          },
+          "hud": {
+            "level": "1",
+            "segments": 4,
+            "maximum": "100",
+            "current": "100",
+            "width": 139,
+            "labelRight": 127,
+            "barLeft": 133,
+            "fill": "100%",
+            "spacing": "25%"
+          }
+        }
+      },
+      {
+        "name": "A real opponent defeat gives level 2 and 125/125 HP; both fixed-width bars show five segments",
+        "evidence": {
+          "mode": "lobby",
+          "phase": "playing",
+          "level": 2,
+          "health": 125,
+          "maxHealth": 125,
+          "defeats": 1,
+          "lastDefeat": {
+            "targetId": "practice-1",
+            "sourceId": "player",
+            "type": "sword",
+            "level": 2
+          },
+          "worldSource": "lobby",
+          "overhead": {
+            "id": "player",
+            "health": 125,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 1,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          },
+          "hud": {
+            "level": "2",
+            "segments": 5,
+            "maximum": "125",
+            "current": "125",
+            "width": 139,
+            "labelRight": 127,
+            "barLeft": 133,
+            "fill": "100%",
+            "spacing": "20%"
+          }
+        }
+      },
+      {
+        "name": "The practice simulation restores the upgraded maximum rather than clamping back to 100",
+        "evidence": {
+          "mode": "lobby",
+          "phase": "playing",
+          "level": 2,
+          "health": 125,
+          "maxHealth": 125,
+          "defeats": 1,
+          "lastDefeat": {
+            "targetId": "practice-1",
+            "sourceId": "player",
+            "type": "sword",
+            "level": 2
+          },
+          "worldSource": "lobby",
+          "overhead": {
+            "id": "player",
+            "health": 125,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 1,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          },
+          "hud": {
+            "level": "2",
+            "segments": 5,
+            "maximum": "125",
+            "current": "125",
+            "width": 139,
+            "labelRight": 127,
+            "barLeft": 133,
+            "fill": "100%",
+            "spacing": "20%"
+          }
+        }
+      },
+      {
+        "name": "Reset restores level 1, 100/100 practice health, four segments and live opponents",
+        "evidence": {
+          "mode": "lobby",
+          "phase": "playing",
+          "level": 1,
+          "health": 100,
+          "maxHealth": 100,
+          "defeats": 0,
+          "lastDefeat": null,
+          "worldSource": "lobby",
+          "overhead": {
+            "id": "player",
+            "health": 100,
+            "maxHealth": 100,
+            "level": 1,
+            "levelLabel": "1",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 1,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 4,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.38,
+              "right": -1.03
+            }
+          },
+          "hud": {
+            "level": "1",
+            "segments": 4,
+            "maximum": "100",
+            "current": "100",
+            "width": 139,
+            "labelRight": 127,
+            "barLeft": 133,
+            "fill": "100%",
+            "spacing": "25%"
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "screenshots": [
+      "/tmp/nebeljagd-lobby-level-qa/practice-level-2.png"
+    ],
+    "limits": "Real disposable classroom HTTP backend and separate teacher/student cookie sessions; local Chromium/SwiftShader, not shared multiplayer.",
+    "delivery": {
+      "file": "/workspace/nebeljagd/welt/nebeljagd.html",
+      "bytes": 81312361,
+      "sha256": "540c56113d5972f70e8f33d33e7ce26d3872fa6b74fdf413d4ddc783c85fdcd5",
+      "buildId": "ad5a6521cf3a"
+    },
+    "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+  },
+  "previewHandoff": {
+    "status": "passed",
+    "url": "http://127.0.0.1:5233/preview",
+    "version": "ad5a6521cf3a",
+    "errors": [],
+    "unexpectedRequests": [],
+    "documents": [
+      {
+        "name": "map-editor.html",
+        "bytes": 60508389,
+        "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df",
+        "matches": "welt/map-editor.html"
+      },
+      {
+        "name": "nebeljagd.html",
+        "bytes": 81312361,
+        "sha256": "540c56113d5972f70e8f33d33e7ce26d3872fa6b74fdf413d4ddc783c85fdcd5",
+        "matches": "welt/nebeljagd.html"
+      }
+    ],
+    "popupUrl": "http://127.0.0.1:5233/preview/nebeljagd.html?mapSource=editor&v=ad5a6521cf3a",
+    "state": {
+      "phase": "playing",
+      "level": 1,
+      "health": 72,
+      "maxHealth": 100,
+      "defeats": 0,
+      "source": "editor",
+      "objects": [
+        {
+          "id": "object-house-mvviwx0g-2",
+          "name": "Haus",
+          "kind": "house",
+          "variant": "kit-tripo-tavern",
+          "position": [
+            2.7,
+            -70.5
+          ],
+          "rotation": 0,
+          "scale": 1
+        },
+        {
+          "id": "object-sword-mvxue2sl-1",
+          "name": "Schwert",
+          "kind": "sword",
+          "variant": "kit-tripo-sword",
+          "position": [
+            34.8,
+            -42.6
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "common"
+        },
+        {
+          "id": "object-fireStaff-mvxueb0c-2",
+          "name": "Feuerstab",
+          "kind": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "position": [
+            39.8,
+            -44.7
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "common"
+        },
+        {
+          "id": "object-iceStaff-mvxuedo9-3",
+          "name": "Eisstab",
+          "kind": "iceStaff",
+          "variant": "kit-tripo-crystal-staff",
+          "position": [
+            45.6,
+            -45.9
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "common"
+        }
+      ],
+      "mapId": "nebeljagd-world-v1",
+      "weaponDrops": [
+        {
+          "id": "object-sword-mvxue2sl-1",
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rarity": "common",
+          "x": 34.8,
+          "z": -42.6,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-fireStaff-mvxueb0c-2",
+          "type": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "model": "tripo",
+          "rarity": "common",
+          "x": 39.8,
+          "z": -44.7,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-iceStaff-mvxuedo9-3",
+          "type": "iceStaff",
+          "variant": "kit-tripo-crystal-staff",
+          "model": "tripo",
+          "rarity": "common",
+          "x": 45.6,
+          "z": -45.9,
+          "collected": false,
+          "visible": true
+        }
+      ],
+      "rendering": {
+        "calls": 177,
+        "triangles": 937120,
+        "geometries": 50,
+        "textures": 25,
+        "frameMs": 3672.0833333333335
+      },
+      "localBar": {
+        "id": "player",
+        "health": 72,
+        "maxHealth": 100,
+        "level": 1,
+        "levelLabel": "1",
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.72,
+        "flash": 0,
+        "healthPerSegment": 25,
+        "segmentCount": 4,
+        "barWidth": 1.805,
+        "barBounds": {
+          "left": -0.95,
+          "right": 0.95
+        },
+        "levelBounds": {
+          "left": -1.38,
+          "right": -1.03
+        }
+      },
+      "hud": {
+        "level": "1",
+        "segments": 4,
+        "max": 100,
+        "current": 72
+      }
+    },
+    "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+  },
+  "deployment": {
+    "runId": "41328827556",
+    "url": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41328827556",
+    "verifiedCommit": "d214571b3d85bfa6cfe2af32f9895ba23ceeed63",
+    "commitMatches": true,
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    },
+    "publicEditor": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571",
+    "directPagesAccess": "blocked by environment network policy; browser checks used byte-identical local preview files"
+  }
+}
