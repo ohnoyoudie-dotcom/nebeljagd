@@ -1,5 +1,16 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
+## Fester Editor-Einstieg
+
+Das dauerhafte Lesezeichen ist nach Veröffentlichung
+[Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html).
+Es prüft den veröffentlichten Build, zeigt dessen Version und lässt zwischen
+Projektkarte und eigenem lokalen Entwurf wählen. Der geprüfte Build wird auf
+`work` gemeinsam erzeugt und nach `main/preview` veröffentlicht;
+[Ablauf und Voraussetzungen](online-editor.md).
+Die Versionslinks in den folgenden historischen Berichten dokumentieren deren
+damalige Veröffentlichung, sie wählen keine historische Karte aus.
+
 ## Aktueller Editor mit korrigierten Projektiltreffern
 
 [Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=31c920e).

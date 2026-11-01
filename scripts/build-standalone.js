@@ -1,7 +1,9 @@
 import { copyFile, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { renderWorldmapSvg } from '../src/map/render.js';
 import { packageWorldBundle } from './package-world-bundle.js';
+import { createBuildInfo, embedBuildInfo } from './build-info.js';
 
 const root = resolve('dist');
 async function inlineEntry(source, destination) {
@@ -31,7 +33,22 @@ for (const file of ['worldmap.json', 'worldmap.schema.json']) {
 }
 const map = JSON.parse(await readFile(resolve('worldmap.json'), 'utf8'));
 await writeFile(resolve(root, 'worldmap.svg'), renderWorldmapSvg(map, { showSpawns: false, showZone: false, showLabels: false }));
+const htmlNames = ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html',
+  'map-editor.html', 'avatar-preview.html', 'editor.html'];
+const versionedNames = [...htmlNames, 'worldmap.json', 'worldmap.schema.json', 'worldmap.svg'];
+const versioned = await Promise.all(versionedNames.map(async name => ({
+  name, bytes: await readFile(resolve(root, name)),
+})));
+let sourceCommit = null;
+try { sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); } catch {}
+const buildInfo = createBuildInfo(versioned, { sourceCommit });
+for (const { name, bytes } of versioned) {
+  if (htmlNames.includes(name)) {
+    await writeFile(resolve(root, name), embedBuildInfo(bytes.toString('utf8'), buildInfo));
+  }
+}
 console.log('Standalone browser files: dist/nebeljagd.html and dist/map-editor.html');
+console.log(`Online editor entry: dist/editor.html (build ${buildInfo.buildId})`);
 console.log('Character review: dist/avatar-preview.html');
 console.log('Editable map data: dist/worldmap.json, dist/worldmap.svg, dist/worldmap.schema.json');
 await packageWorldBundle(root);

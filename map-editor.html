@@ -12,10 +12,16 @@
     <div id="map-editor">
       <header class="editor-header">
         <a class="brand" href="./index.html" title="Zur Spielversion"><span class="brand-mark" aria-hidden="true">N</span><span>NEBELJAGD<small>Kartenatelier</small></span></a>
-        <div class="document-title"><span class="eyebrow">DEINE SPIELWELT</span><strong id="map-name">Die Nebelinsel</strong><span class="document-status" id="save-status" role="status">Planungsbasis</span></div>
+        <div class="document-title"><span class="eyebrow">DEINE SPIELWELT</span><strong id="map-name">Die Nebelinsel</strong><span class="document-status" id="save-status" role="status">Planungsbasis</span><div class="editor-version-line"><span id="editor-build-version">Editor · Entwicklung</span><span id="editor-map-source">Projektkarte</span></div></div>
         <div class="header-actions"><button id="playtest-world" class="button playtest-button" title="Deine Karte im Spiel ausprobieren"><span aria-hidden="true">▷</span> Spielen</button><button id="import-json" class="button quiet" title="Eine gespeicherte Karte öffnen">Öffnen</button><button id="export-json" class="button primary" title="Deine Karte als worldmap.json speichern">Speichern</button></div>
       </header>
-      <div class="restore-banner" id="restore-banner" hidden><span>Es gibt einen lokal gespeicherten Entwurf.</span><button class="button small" id="restore-draft">Wiederherstellen</button><button class="text-button" id="discard-draft">Verwerfen</button></div>
+      <div class="restore-banner" id="restore-banner" hidden><span id="restore-draft-note">Es gibt einen lokal gespeicherten Entwurf.</span><button class="button small" id="restore-draft">Wiederherstellen</button><button class="text-button" id="download-pending-draft">Entwurf sichern</button><button class="text-button" id="discard-draft">Verwerfen</button></div>
+      <dialog id="editor-start-dialog" class="editor-start-dialog" aria-labelledby="editor-start-title" aria-describedby="editor-start-help">
+        <span class="eyebrow">DEIN KARTENATELIER</span><h2 id="editor-start-title">Mit welcher Karte möchtest du starten?</h2>
+        <p id="editor-start-help">Du kannst die aktuelle Projektkarte öffnen oder deinen gespeicherten Entwurf fortsetzen. Dein Entwurf bleibt erhalten.</p>
+        <div class="editor-start-actions"><button id="start-project-map" class="button primary">Aktuelle Projektkarte öffnen</button><button id="start-restore-draft" class="button quiet">Eigenen Entwurf fortsetzen</button></div>
+        <p class="small-note">Der Entwurf ist in diesem Browser gespeichert. Mit „Speichern“ sicherst du ihn zusätzlich als JSON-Datei.</p>
+      </dialog>
       <main class="editor-layout">
         <aside class="sidebar" aria-label="Kartenwerkzeuge">
           <section class="overview"><span class="eyebrow">DEINE INSEL, DEINE WELT</span><h1>Deine Insel gestalten.</h1><p>Wähle eine Landschaft und male auf der Karte. Mit dem Radiergummi kannst du sie wieder entfernen.</p><div class="map-facts"><span><strong id="players-fact">50</strong>Spieler geplant</span><span><strong id="area-fact">–</strong>Landfläche</span><span><strong id="size-fact">–</strong>Ausdehnung</span><span><strong id="world-object-count">–</strong>Weltobjekte</span></div></section>
@@ -36,6 +42,7 @@
       <input id="json-file-input" class="sr-only" type="file" accept=".json,application/json">
     </div>
     <script id="map-snapshot" type="application/json">null</script>
+    <script id="editor-build-info" type="application/json">null</script>
     <script type="module" src="/src/map/editor.js"></script>
   </body>
 </html>

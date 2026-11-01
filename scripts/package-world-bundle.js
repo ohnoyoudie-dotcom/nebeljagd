@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 /** A small deterministic ZIP, using only Node's built-in modules. */
 export async function packageWorldBundle(directory = resolve('dist')) {
-  const names = ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
+  const names = ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
   const entries = await Promise.all(names.map(async name => ({ name, bytes: await readFile(resolve(directory, name)) })));
   entries.push({ name: 'Anleitung.txt', bytes: Buffer.from(`NEBELJAGD – SPIELWELT UND EDITOR
 
@@ -14,6 +14,8 @@ export async function packageWorldBundle(directory = resolve('dist')) {
    im Repository. Eine HTML-Datei allein stellt keinen gemeinsamen Server bereit.
    nebeljagd.html lässt sich weiterhin direkt als Einzelspiel öffnen.
 3. map-editor.html im Browser öffnen: Weltobjekte anlegen und verändern.
+   editor.html ist der feste Online-Einstieg. In einer lokalen ZIP-Kopie bietet
+   er den Offline-Editor an; diese Kopie aktualisiert sich nicht automatisch.
 4. Im Editor „In 3D testen“ öffnet deinen aktuellen Entwurf im Spiel.
    Beide HTML-Dateien müssen dafür im selben Ordner liegen.
 5. avatar-preview.html zeigt den neuen Abenteurer aus der Nähe, aus der

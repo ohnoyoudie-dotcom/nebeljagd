@@ -15,6 +15,7 @@ import { createObjectEraserStroke, objectEraserTargets } from './object-eraser.j
 import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
 import { removeNonTripoObjects } from './tripo-object-cleanup.js';
+import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -30,13 +31,30 @@ const FILE_HANDLE_STORE = 'handles';
 const FILE_HANDLE_KEY = 'worldmap';
 const playtestWindows = new Map();
 const kindNames = { island: 'Hauptland', islet: 'Landfläche', region: 'Region', path: 'Weg', river: 'Fluss', waterArea: 'Gewässerfläche', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone', barrier: 'Mauer / Zaun' };
-const initialSnapshot = (() => {
+const projectMap = normalizeWorldmap(defaultMap);
+const embeddedSnapshot = (() => {
   try {
     const saved = normalizeWorldmap(JSON.parse($('map-snapshot')?.textContent || 'null'));
-    return saved && validateWorldmap(saved).valid ? saved : normalizeWorldmap(defaultMap);
-  } catch { return normalizeWorldmap(defaultMap); }
+    return saved && validateWorldmap(saved).valid ? saved : null;
+  } catch { return null; }
 })();
+let storedDraftText = null;
+let validStoredDraft = null;
+let startupStorageAvailable = true;
+try { storedDraftText = localStorage.getItem(STORAGE_KEY); }
+catch { startupStorageAvailable = false; }
+if (storedDraftText && storedDraftText.length <= MAX_FILE_BYTES) {
+  try {
+    const candidate = normalizeWorldmap(JSON.parse(storedDraftText));
+    if (validate(candidate).valid) validStoredDraft = candidate;
+  } catch { /* Keep unreadable drafts untouched so they can be downloaded. */ }
+}
+const startup = planEditorStart({ project: projectMap, snapshot: embeddedSnapshot,
+  draft: validStoredDraft, requested: requestedEditorStart(location.search) });
+const initialSnapshot = startup.map;
 let map = clone(initialSnapshot);
+let mapSource = startup.source;
+let mapSourceBase = JSON.stringify(map);
 let selection = null;
 let mode = 'select';
 let history = [];
@@ -44,8 +62,9 @@ let future = [];
 let pointer = null;
 let spaceHeld = false;
 let toastTimer;
-let restoredDraft = null;
-let storageAvailable = true;
+let restoredDraft = startup.pendingDraft;
+let unreadableDraftPending = Boolean(storedDraftText && !validStoredDraft);
+let storageAvailable = startupStorageAvailable;
 let view = initialView();
 let zoneTime = 0;
 let listLimit = 50;
@@ -167,7 +186,7 @@ function updateWarnings(result = validate(map)) {
 }
 const directFileSaveSupported = () => typeof window.showSaveFilePicker === 'function';
 function updateSaveStatus({ saved = false } = {}) {
-  if (restoredDraft !== null) {
+  if (restoredDraft !== null || unreadableDraftPending) {
     $('save-status').textContent = mapFileHandle ? `Voriger Entwurf wartet · ${mapFileHandle.name}` : 'Voriger Entwurf wartet · Strg+S';
     return;
   }
@@ -184,7 +203,7 @@ function updateSaveStatus({ saved = false } = {}) {
     : 'Lokal gesichert · Browser-Download nötig';
 }
 function saveDraft() {
-  if (restoredDraft !== null) {
+  if (restoredDraft !== null || unreadableDraftPending) {
     updateSaveStatus();
     return;
   }
@@ -243,6 +262,7 @@ function commit(mutator, message) {
   return true;
 }
 function renderAll() {
+  $('editor-map-source').textContent = editorMapSourceLabel(mapSource, JSON.stringify(map) !== mapSourceBase);
   renderMap(); renderList(); renderProperties(); renderFacts(); updateWarnings(); updateRetiredBuildingsBanner(); updateRetiredSceneryBanner();
   $('undo').disabled = !history.length;
   $('redo').disabled = !future.length;
@@ -1073,6 +1093,7 @@ function exportEditor() {
   doc.querySelector('#map-stage').replaceChildren();
   doc.querySelector('#feature-list').replaceChildren();
   doc.querySelector('#restore-banner').hidden = true;
+  doc.querySelector('#editor-start-dialog')?.removeAttribute('open');
   doc.querySelector('#retired-buildings-banner').hidden = true;
   doc.querySelector('#retired-scenery-banner').hidden = true;
   doc.querySelector('#toast').hidden = true;
@@ -1089,6 +1110,7 @@ async function loadMapFile(file, handle = null) {
   if (!result.valid) return toast(`Karte nicht geöffnet: ${result.errors.slice(0, 4).join(' ')}`, true);
   const previous = clone(map);
   map = candidate; selection = null; zoneTime = 0; $('zone-time').value = 0; view = initialView();
+  mapSource = 'imported'; mapSourceBase = JSON.stringify(map);
   if (handle) {
     mapFileHandle = handle; persistedMapFileHandle = handle;
     await persistMapFileHandle(handle);
@@ -1116,6 +1138,7 @@ async function openJson() {
 function resetMap() {
   const previous = clone(map);
   map = normalizeWorldmap(defaultMap); selection = null; view = initialView(); zoneTime = 0; $('zone-time').value = 0;
+  mapSource = 'project'; mapSourceBase = JSON.stringify(map);
   $('reset-confirm').hidden = true;
   remember(previous); renderAll(); toast('Ausgangskarte geladen. Der vorige Stand bleibt unter „Zurück“ erhalten.');
 }
@@ -1329,6 +1352,7 @@ $('map-viewport').addEventListener('wheel', event => {
   event.preventDefault(); if (pointer?.brush || pointer?.eraser || pointer?.terrainEraser || pointer?.barrierDraw || pointer?.barrierErase) return; zoomBy(event.deltaY > 0 ? 1.12 : 1 / 1.12, coordinateAt(event));
 }, { passive: false });
 document.addEventListener('keydown', event => {
+  if ($('editor-start-dialog').open) return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
     event.preventDefault(); void exportJson(); return;
   }
@@ -1354,28 +1378,57 @@ void readPersistedMapFileHandle().then(async handle => {
   }
 });
 
-try {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored && stored.length <= MAX_FILE_BYTES) {
-    const candidate = normalizeWorldmap(JSON.parse(stored));
-    if (validate(candidate).valid && JSON.stringify(candidate) !== JSON.stringify(map)) {
-      restoredDraft = candidate; $('restore-banner').hidden = false;
-    }
-  }
-} catch { storageAvailable = false; }
-$('restore-draft').addEventListener('click', () => {
+function updatePendingDraftBanner() {
+  $('restore-banner').hidden = restoredDraft === null && !unreadableDraftPending;
+  $('restore-draft').hidden = unreadableDraftPending;
+  $('restore-draft-note').textContent = unreadableDraftPending
+    ? 'Der gespeicherte Entwurf kann mit diesem Editor nicht geöffnet werden. Du kannst ihn als Datei sichern.'
+    : 'Dein vorheriger Entwurf bleibt in diesem Browser erhalten. Sichere oder öffne ihn, bevor du ihn verwirfst.';
+}
+function restorePendingDraft() {
   if (!restoredDraft) return;
   const previous = clone(map); map = clone(restoredDraft); selection = null; view = initialView();
+  mapSource = 'draft'; mapSourceBase = JSON.stringify(map);
   restoredDraft = null;
+  updatePendingDraftBanner();
   remember(previous); renderAll(); toast('Lokalen Entwurf wiederhergestellt.');
+}
+$('restore-draft').addEventListener('click', restorePendingDraft);
+$('download-pending-draft').addEventListener('click', () => {
+  const contents = restoredDraft ? JSON.stringify(restoredDraft, null, 2) + '\n' : storedDraftText;
+  if (contents) download(contents, 'nebeljagd-gespeicherter-entwurf.json', 'application/json');
 });
 $('discard-draft').addEventListener('click', () => {
   try { localStorage.removeItem(STORAGE_KEY); } catch { storageAvailable = false; }
-  restoredDraft = null; $('restore-banner').hidden = true;
+  restoredDraft = null; unreadableDraftPending = false; storedDraftText = null;
+  updatePendingDraftBanner(); updateSaveStatus();
   if (JSON.stringify(map) !== JSON.stringify(initialSnapshot)) saveDraft();
 });
+
+const startDialog = $('editor-start-dialog');
+$('start-project-map').addEventListener('click', () => {
+  // The project is already visible. Keep the saved draft protected until the
+  // user restores, downloads or explicitly discards it.
+  startDialog.close(); updatePendingDraftBanner();
+  $('map-viewport').focus();
+});
+$('start-restore-draft').addEventListener('click', () => {
+  startDialog.close(); restorePendingDraft(); $('map-viewport').focus();
+});
+startDialog.addEventListener('cancel', event => {
+  event.preventDefault(); startDialog.close(); $('map-viewport').focus();
+});
+let buildInfo = null;
+try { buildInfo = JSON.parse($('editor-build-info')?.textContent || 'null'); } catch {}
+$('editor-build-version').textContent = editorVersionLabel(buildInfo);
+if (buildInfo?.builtAt) {
+  const date = new Date(buildInfo.builtAt);
+  if (!Number.isNaN(date.valueOf())) $('editor-build-version').title = `Erstellt am ${date.toLocaleString('de-DE')}`;
+}
+updatePendingDraftBanner();
 window.nebeljagdMapTestState = () => ({
   map: clone(map), data: clone(map), selection: clone(selection), mode,
+  startup: { source: mapSource, buildId: buildInfo?.buildId ?? null, pendingDraft: Boolean(restoredDraft || unreadableDraftPending) },
   brush: { radius: Number($('brush-radius').value), activeStroke: Boolean(pointer?.brush), pendingObjects: pointer?.brush?.objects.length ?? 0 },
   eraser: { radius: Number($('eraser-radius').value), filter: $('eraser-filter').value, activeStroke: Boolean(pointer?.eraser), pendingObjects: pointer?.eraser?.objects.length ?? 0 },
   barriers: { ...barrierPanel?.settings(), activeStroke: Boolean(pointer?.barrierDraw), erasing: Boolean(pointer?.barrierErase), count: map.barriers?.length ?? 0 },
@@ -1386,3 +1439,5 @@ window.nebeljagdMapTestState = () => ({
 });
 renderAll();
 if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();
+if (startup.offerChoice) startDialog.showModal();
+if (startup.missingDraft) toast('Kein passender Entwurf in diesem Browser gefunden. Die Projektkarte wurde geöffnet; eine gespeicherte JSON-Datei kannst du über „Öffnen“ laden.', true);

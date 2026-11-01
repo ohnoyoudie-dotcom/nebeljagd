@@ -38,11 +38,14 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
 Die aktuelle Browser-Vorschau ist unter
-[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=31c920e)
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
 und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
 Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
 Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht
 veröffentlicht; sie benötigt den oben beschriebenen Schulserver.
+Der feste Editor-Einstieg prüft bei jedem Öffnen den veröffentlichten Stand.
+Er bietet die aktuelle Projektkarte oder den eigenen lokalen Entwurf an und
+zeigt die Build-Version. Details: [Online-Editor und Aktualisierung](docs/online-editor.md).
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
