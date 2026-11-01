@@ -38,6 +38,10 @@ Danach übernimmt er den Build nach `work/welt` und ausschließlich die geprüft
 Vorschau nach `main/preview`. Ein zwischenzeitlich geänderter `work`-Stand
 blockiert eine veraltete Veröffentlichung. Konflikte auf `main` führen zum
 Abbruch; der Workflow setzt oder überschreibt keine fremden Commits.
+Jeder Push auf `work` startet einen Nachfolger, auch eine reine
+Dokumentationsänderung. So lässt die Prüfung auf neuere Commits keinen
+Editorstand ohne nachfolgenden Veröffentlichungslauf liegen. Die vom normalen
+Workflow-Token erzeugten Build-Commits lösen selbst keinen neuen Lauf aus.
 
 Ein Push mit dem Workflow-Token löst keinen normalen automatischen Pages-Build
 aus. Deshalb fordert der Workflow anschließend den bestehenden Pages-Build

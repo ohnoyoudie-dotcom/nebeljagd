@@ -3,28 +3,9 @@ on:
   workflow_dispatch:
   push:
     branches: ['work']
-    paths:
-      - 'src/**'
-      - 'assets/characters/**'
-      - 'assets/imported/**'
-      - 'assets/catalog/**'
-      - 'avatar-preview.html'
-      - 'index.html'
-      - 'teacher.html'
-      - 'lobby.html'
-      - 'game.html'
-      - 'map-editor.html'
-      - 'public/editor.html'
-      - 'server/**'
-      - 'tests/**'
-      - 'scripts/**'
-      - 'worldmap.json'
-      - 'worldmap.schema.json'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'vite.config.js'
-      - 'render.yaml'
-      - '.github/workflows/work-build-check.yml'
+    # Every newer work commit needs a successor run, including docs-only edits.
+    # Otherwise the strict freshness guard could abort a release with no newer
+    # run to replace it. Token-authored build commits do not trigger themselves.
 permissions:
   contents: write
   pages: write
