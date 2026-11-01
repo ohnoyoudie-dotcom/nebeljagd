@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OBJECT_CATALOG, makeWorldObject } from '../../src/map/objects.js';
 import { createWorldObjectRenderer } from '../../src/world-object-renderer.js';
 import { createWeapons } from '../../src/weapons.js';
+import { loadTripoWeapons } from '../../src/tripo-weapons.js';
 import { createChests } from '../../src/chests.js';
 import { loadTripoChest } from '../../src/tripo-chest.js';
 import { createPickups } from '../../src/pickups.js';
@@ -13,7 +14,7 @@ const definitions=OBJECT_CATALOG.flatMap(item=>item.variants.map(variant=>({kind
 const objects=definitions.map((item,index)=>makeWorldObject(item.kind,[index*80,0],{id:`preview-${item.kind}-${item.variant}`,variant:item.variant,name:item.label,rarity:'common'}));
 const root=new THREE.Group();scene.add(root);const scenery=await createWorldObjectRenderer(root,{map:{objects},heightAt:()=>0,groundHeightAt:()=>0,quality:'high'});
 const actor=new THREE.Group();root.add(actor);const world={heightAt:()=>0,bounds:5000,traceProjectile:()=>null};
-const weapons=createWeapons(root,actor,world,null,{placements:objects,heightAt:()=>0});
+const weapons=createWeapons(root,actor,world,null,{placements:objects,heightAt:()=>0,tripoPrototypes:await loadTripoWeapons(objects)});
 const chests=createChests(root,{placements:objects,heightAt:()=>0,tripoPrototype:await loadTripoChest(objects)});const pickups=createPickups(root,{placements:objects,heightAt:()=>0});
 const plane=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshStandardMaterial({color:'#aebba3',roughness:1}));plane.rotation.x=-Math.PI/2;plane.position.y=-.025;root.add(plane);
 const camera=new THREE.OrthographicCamera(-8,8,6,-6,.01,500);const focus=new THREE.Vector3();let time=5;

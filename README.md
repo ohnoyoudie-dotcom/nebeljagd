@@ -30,7 +30,12 @@ Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
 Die Objektauswahl enthält ausschließlich freigegebene Tripo-Modelle:
 Wirtshaus, **Wohnhaus 2**, drei Felsenvarianten, Holzwagen, Holzfass,
-Steinbrunnen und Schatztruhe. Das kleine Schloss und die alten Einzelobjekte
+Steinbrunnen, Schatztruhe und die drei neuen Waffen: **Schwert, Feuerstab
+(Lavastab) und Eisstab (Kristallstab)**. Die Waffen stehen unter **Objekte →
+Einzeln** bei der jeweiligen Objektart; ihr Modell trägt den Zusatz **Tripo**.
+Seltenheit wählen, **Auf Karte setzen** aktivieren und auf die Karte klicken.
+Import und Spielverhalten: [`docs/tripo-weapons-integration.md`](docs/tripo-weapons-integration.md).
+Das kleine Schloss und die alten Einzelobjekte
 sind entfernt. Mauern und Zäune werden weiterhin über ihr Zeichenwerkzeug
 gezogen; Gras hat einen eigenen Pinsel. Ältere lokale Karten lassen sich mit
 **Auf Tripo-Objekte bereinigen** samt Rückgängig-Funktion aufräumen.

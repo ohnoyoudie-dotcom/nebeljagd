@@ -1,0 +1,35 @@
+{
+  "kind": "local-source-runtime-visual-comparison",
+  "reviewedAtUtc": "2026-11-01T12:19:16.601969+00:00",
+  "reviewers": [
+    "Codex root agent",
+    "Codex asset-preparation agent"
+  ],
+  "evidence": "Actual Blender 4.3.2 PBR renders of normalized source geometry and prepared runtime models, with identical camera and lighting.",
+  "result": "All three weapon identities, silhouettes, sword blade edge/guard, colored crystals, and visible grips retained. Slight normal-detail softening is acceptable at gameplay scale.",
+  "assets": [
+    {
+      "id": "sword",
+      "sourceSha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+      "runtimeSha256": "1377bb78ab9379b72ccbb428bf9e39af9e66ae931a2331300fbb6fdeebbf0371",
+      "sourcePreview": "previews/sword-source.png",
+      "runtimePreview": "previews/sword-runtime.png"
+    },
+    {
+      "id": "lava-staff",
+      "sourceSha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087",
+      "runtimeSha256": "57b7556f312ea4d08ef36714b9a94cc1a66f86bb651860102f05e5d74602316b",
+      "sourcePreview": "previews/lava-staff-source.png",
+      "runtimePreview": "previews/lava-staff-runtime.png"
+    },
+    {
+      "id": "crystal-staff",
+      "sourceSha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5",
+      "runtimeSha256": "1de5b51e25827cb47d9854b5ee2b2c5f290c58d8edc33faa8de8580254028bed",
+      "sourcePreview": "previews/crystal-staff-source.png",
+      "runtimePreview": "previews/crystal-staff-runtime.png"
+    }
+  ],
+  "userArtisticApproval": false,
+  "scope": "Agent review of the listed exact source/runtime bytes. Does not certify game GPU import, runtime attachment alignment, or user artistic approval."
+}

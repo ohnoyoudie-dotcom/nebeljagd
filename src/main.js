@@ -8,6 +8,7 @@ import { createCharacter } from './character.js';
 import { createPickups } from './pickups.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
+import { loadTripoWeapons } from './tripo-weapons.js';
 import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
@@ -135,7 +136,8 @@ for (const object of world.destructibles ?? []) {
 }
 const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
-  { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false });
+  { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
+    tripoPrototypes: await loadTripoWeapons(world.map.objects) });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {
@@ -385,7 +387,7 @@ window.nebeljagdTestState = () => ({
     projectileObstacles: new URLSearchParams(location.search).has('inspect') ? world.projectileObstacles : undefined },
   nearWeapon: weapons.nearest(player)?.type ?? null,
   nearChest: chests.nearest(player)?.id ?? null,
-  weaponDrops: weapons.items.map(({ id, type, rarity, x, z, collected, group }) => ({ id, type, rarity, x, z, collected, visible: group.visible })),
+  weaponDrops: weapons.items.map(({ id, type, variant, model, rarity, x, z, collected, group }) => ({ id, type, variant, model, rarity, x, z, collected, visible: group.visible })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,

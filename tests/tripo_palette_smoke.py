@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -23,6 +24,9 @@ OUT = ROOT / 'test-results/tripo-palette'
 OUT.mkdir(parents=True, exist_ok=True)
 BASE = json.loads((ROOT / 'worldmap.json').read_text())
 MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
+TRIPO_WEAPONS = [('sword', 'kit-tripo-sword', 'rare'),
+                 ('fireStaff', 'kit-tripo-lava-staff', 'legendary'),
+                 ('iceStaff', 'kit-tripo-crystal-staff', 'uncommon')]
 REPORT = {'status': 'running', 'url': URL, 'standalone': STANDALONE,
           'checks': [], 'errors': [], 'screenshots': [],
           'limits': 'Real Chromium/SwiftShader editor interactions over local HTTP; no new game runtime or physical-device performance claim.'}
@@ -48,6 +52,7 @@ def fixture():
     value['regions'] = [{'id': 'qa-meadow', 'name': 'Wiese', 'biome': 'meadow', 'color': '#5a8844',
                          'points': copy.deepcopy(value['island']['points']), 'label': [0, 0]}]
     value['paths'] = []; value['rivers'] = []; value['places'] = []
+    value['islets'] = []; value['bridges'] = []; value['waterAreas'] = []
     value['gameplay']['spawnPosition'] = [0, 0]
     value['spawnAreas'] = [{'id': 'qa-start', 'name': 'Start', 'position': [0, 0], 'radius': 8, 'capacity': 50}]
     value['zone']['center'] = [0, 0]
@@ -75,6 +80,10 @@ def fixture():
         {'id': 'qa-retained-chest', 'name': 'Tripo chest', 'kind': 'chest', 'variant': 'kit-tripo-chest',
          'position': [-90, 75], 'rotation': 0, 'scale': .8},
     ])
+    value['objects'].extend({'id': f'qa-retained-{kind}', 'name': f'Tripo {kind}', 'kind': kind,
+                            'variant': variant, 'rarity': rarity, 'position': [-60 + i * 20, 75],
+                            'rotation': .4, 'scale': 1.2}
+                           for i, (kind, variant, rarity) in enumerate(TRIPO_WEAPONS))
     return value
 
 
@@ -118,11 +127,12 @@ def options(page, selector):
     return page.locator(selector + ' option').evaluate_all('(xs)=>xs.map(x=>({value:x.value,label:x.textContent.trim()}))')
 
 
-def place(page, kind, variant=None, position=None):
+def place(page, kind, variant=None, position=None, rarity=None):
     page.locator('#editor-tab-objects').click()
     page.locator('#editor-tool-objects-place').click()
     page.locator('#palette-kind').select_option(kind)
     if variant: page.locator('#palette-variant').select_option(variant)
+    if rarity: page.locator('#palette-rarity').select_option(rarity)
     before = len(state(page)['map']['objects'])
     page.locator('#add-object-center').click()
     page.wait_for_function('n=>nebeljagdMapTestState().map.objects.length===n', arg=before+1)
@@ -153,7 +163,8 @@ try:
                    for o in BASE['objects']), 'The delivered map must contain only retained Tripo objects'
         page.locator('#editor-tab-objects').click()
         kinds = options(page, '#palette-kind')
-        assert {x['value'] for x in kinds} == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well'}, kinds
+        assert {x['value'] for x in kinds} == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well',
+                                             'sword', 'fireStaff', 'iceStaff'}, kinds
         catalog = {}
         for item in kinds:
             page.locator('#palette-kind').select_option(item['value'])
@@ -163,8 +174,10 @@ try:
         assert [x['value'] for x in catalog['house']] == ['kit-tripo-tavern', 'kit-tripo-house-02']
         assert [x['value'] for x in catalog['chest']] == ['kit-tripo-chest']
         assert [x['value'] for x in catalog['rock']] == ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']
+        for kind, variant, _ in TRIPO_WEAPONS:
+            assert [x['value'] for x in catalog[kind]] == [variant]
         assert not any('Holztruhe' in x['label'] for x in kinds)
-        passed('Objects offers only Tripo props, exactly two houses, three Tripo rocks and the Tripo treasure chest',
+        passed('Objects offers the admitted Tripo props, two houses, three rocks, treasure chest and all three uploaded weapons',
                {'kinds': kinds, 'variants': catalog})
 
         legacy = fixture(); import_map(page, legacy)
@@ -180,7 +193,7 @@ try:
         expect(page.locator('#retired-scenery-banner')).to_be_visible()
         open_control(page, 'remove-retired-scenery').click()
         cleaned = copy.deepcopy(legacy)
-        cleaned['objects'] = legacy['objects'][-2:]
+        cleaned['objects'] = legacy['objects'][-5:]
         cleaned['barriers'] = legacy['barriers'][:2]
         assert state(page)['map'] == cleaned
         expect(page.locator('#retired-scenery-banner')).to_be_hidden()
@@ -203,6 +216,38 @@ try:
             obj = place(page, 'rock', variant, [-70 + i * 15, 20])
             assert obj['variant'] == variant
         passed('Normal placement and duplication use the Tripo chest; both houses and all three Tripo rock variants can be placed')
+
+        placed_weapons = []
+        for i, (kind, variant, rarity) in enumerate(TRIPO_WEAPONS):
+            obj = place(page, kind, variant, [-65 + i * 22, -25], rarity=rarity)
+            assert obj['variant'] == variant and obj['rarity'] == rarity, obj
+            expect(page.locator('#palette-rarity-property')).to_be_visible()
+            expect(page.locator('#object-rarity-property')).to_be_visible()
+            assert page.locator('#object-rarity').input_value() == rarity
+            assert page.locator('#palette-preview-image image').get_attribute('href').startswith('data:image/webp;base64,')
+            rotation, scale = 35 + i * 15, 1.1 + i * .2
+            page.locator('#object-rotation').fill(str(rotation))
+            page.locator('#object-scale').fill(str(scale))
+            page.locator('.apply-properties').click()
+            transformed = state(page)['map']['objects'][-1]
+            assert math.isclose(transformed['rotation'], math.radians(rotation))
+            assert math.isclose(transformed['scale'], scale)
+            page.locator('#object-rarity').select_option('normal')
+            page.locator('.apply-properties').click()
+            obj = state(page)['map']['objects'][-1]
+            assert obj['variant'] == variant and obj['rarity'] == 'normal'
+            page.locator('#undo').click()
+            assert state(page)['map']['objects'][-1] == transformed
+            placed_weapons.append(state(page)['map']['objects'][-1])
+        page.locator('#duplicate-object').click()
+        duplicate = state(page)['map']['objects'][-1]
+        assert duplicate['variant'] == placed_weapons[-1]['variant']
+        assert duplicate['rarity'] == placed_weapons[-1]['rarity'] and duplicate['id'] != placed_weapons[-1]['id']
+        assert duplicate['rotation'] == placed_weapons[-1]['rotation'] and duplicate['scale'] == placed_weapons[-1]['scale']
+        passed('All three Tripo weapons have real previews, place with selected rarity, rotate/scale, support rarity editing/Undo and duplicate without losing the model',
+               {'weapons': placed_weapons, 'duplicate': duplicate})
+        screenshot = OUT / 'weapon-palette.png'; page.screenshot(path=str(screenshot))
+        REPORT['screenshots'].append(str(screenshot.relative_to(ROOT)))
 
         page.locator('#editor-tab-objects').click()
         styles = options(page, '#barrier-kind')

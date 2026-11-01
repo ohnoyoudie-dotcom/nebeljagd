@@ -1,0 +1,189 @@
+{
+  "id": "sword",
+  "label": "Tripo-Schwert",
+  "source": {
+    "path": "assets/inbox/fantasy sword 3d model.glb",
+    "bytes": 68670048,
+    "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+    "triangles": 1923344,
+    "vertices": 978537,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-weapons/runtime/sword.glb",
+    "bytes": 1358244,
+    "sha256": "1377bb78ab9379b72ccbb428bf9e39af9e66ae931a2331300fbb6fdeebbf0371",
+    "triangles": 11999,
+    "vertices": 7721,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.155029296875,
+        -0.07368090748786926,
+        0.0
+      ],
+      [
+        0.155029296875,
+        0.07368090748786926,
+        0.985260009765625
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.025707004591822624,
+      0.1500091552734375,
+      0.01477767899632454
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.14494025707244873,
+      0.9852396249771118,
+      -0.09107854217290878
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9963030815124512,
+      0.045708250254392624,
+      -0.07273904234170914,
+      0.0
+    ],
+    "uniformScale": 1.2526907006416348,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.25,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.1895713359117508,
+        -0.18735727667808533,
+        -0.0733361691236496
+      ],
+      [
+        0.20380748808383942,
+        1.0626426935195923,
+        0.07675780355930328
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -0.18963833153247833,
+        -0.18743896484375,
+        -0.0733741968870163
+      ],
+      [
+        0.20399929583072662,
+        1.062619686126709,
+        0.07675936073064804
+      ]
+    ],
+    "tipPoint": [
+      0.0063064140267670155,
+      1.062619686126709,
+      0.002278537256643176
+    ],
+    "dimensions": [
+      0.39363762736320496,
+      1.250058650970459,
+      0.15013355761766434
+    ]
+  },
+  "cleanup": {
+    "weldDistanceMetres": 5e-05,
+    "before": {
+      "vertices": 978537,
+      "faces": 1923344
+    },
+    "after": {
+      "vertices": 961293,
+      "faces": 1922577
+    }
+  },
+  "textures": [
+    {
+      "name": "fantasy_sword_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "fantasy_sword_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        768,
+        768
+      ],
+      "format": "PNG"
+    },
+    {
+      "name": "fantasy_sword_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 12000,
+    "textureLimit": 1024,
+    "normalMapLimit": 768,
+    "fileLimitBytes": 1572864
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "textureBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialChannels": true,
+    "preservedEmbeddedImageCount": true
+  }
+}

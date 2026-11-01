@@ -1,0 +1,121 @@
+{
+  "name": "nebeljagd-tripo-weapons",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2559,
+      "sha256": "11acf568989e17a8c77e922146d345e92faded9553d05e9532cf7fe208b669b6"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 14311,
+      "sha256": "11cf34c53c511c66c51189677a4f0f4922bb1f72369147090ec963e590391423"
+    },
+    {
+      "path": "inspections/crystal-staff.json",
+      "bytes": 4008,
+      "sha256": "dbdd5af111301059af3fdbe076e83a8e4c828138c08903c55052e8da6a1067e0"
+    },
+    {
+      "path": "inspections/lava-staff.json",
+      "bytes": 4025,
+      "sha256": "5d4521d998f47798e6e9cc0a54bd8b6049a0debab09b5e1c1597a2f14c177565"
+    },
+    {
+      "path": "inspections/sword.json",
+      "bytes": 3986,
+      "sha256": "40e4ceb9e12deed7341e11c4bc97e22532da6b69513700ace6972a1c92bbb2c8"
+    },
+    {
+      "path": "previews/comparison.png",
+      "bytes": 399616,
+      "sha256": "346348f9f9c8f8d8c2aa05e9bee6d277dd17e9c310312cfb8c2718e79a917d74"
+    },
+    {
+      "path": "previews/crystal-staff-runtime.png",
+      "bytes": 287198,
+      "sha256": "d951fd60fc286a54823d08addb223ad6bd6e01655731ff501e5404b86c29641d"
+    },
+    {
+      "path": "previews/crystal-staff-source.png",
+      "bytes": 288340,
+      "sha256": "03081d56990ab48321c5522364f4621b5f4e07d9786113c160827bf49c34dd32"
+    },
+    {
+      "path": "previews/lava-staff-runtime.png",
+      "bytes": 288750,
+      "sha256": "89b57bf4d95587b572485a75a7bfa804e4dd30a8955bcb00b9fd5bd2e0f14244"
+    },
+    {
+      "path": "previews/lava-staff-source.png",
+      "bytes": 290256,
+      "sha256": "6c923dde76b7fd424d64f5e30e4f14d3cb01d67dedf8b5a2046021f30d64fe21"
+    },
+    {
+      "path": "previews/review.html",
+      "bytes": 739,
+      "sha256": "7311d9cb31035086a8e076f9b04cbb2178af2fbfbe5217da4b17519c6beb6a63"
+    },
+    {
+      "path": "previews/sword-runtime.png",
+      "bytes": 286202,
+      "sha256": "8cfd75309925dba785642753b834bdf331a947ad62a4e7091f732206fe790916"
+    },
+    {
+      "path": "previews/sword-source.png",
+      "bytes": 287874,
+      "sha256": "96b7350e6eef3ed1eca87060326e62f03b2fd191c88de4c8c474527ce5248994"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 5232,
+      "sha256": "de3600cbb7606c3925b83850f43910004eb6c37404a072405346fb2e285b798c"
+    },
+    {
+      "path": "reviews/visual-comparison.json",
+      "bytes": 1738,
+      "sha256": "dd1b26cd48155dac15547bff302b9e4819b2ca9dfff76af4c7f382f6357c6393"
+    },
+    {
+      "path": "runtime/crystal-staff.glb",
+      "bytes": 1404412,
+      "sha256": "1de5b51e25827cb47d9854b5ee2b2c5f290c58d8edc33faa8de8580254028bed"
+    },
+    {
+      "path": "runtime/lava-staff.glb",
+      "bytes": 1263104,
+      "sha256": "57b7556f312ea4d08ef36714b9a94cc1a66f86bb651860102f05e5d74602316b"
+    },
+    {
+      "path": "runtime/sword.glb",
+      "bytes": 1358244,
+      "sha256": "1377bb78ab9379b72ccbb428bf9e39af9e66ae931a2331300fbb6fdeebbf0371"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/fantasy sword 3d model.glb",
+      "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92"
+    },
+    {
+      "path": "assets/inbox/lava crystal staff 3d model.glb",
+      "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087"
+    },
+    {
+      "path": "assets/inbox/crystal staff 3d model.glb",
+      "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5"
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "allStaticPoliciesPassed": true,
+    "totalRuntimeBudgetPassed": true
+  },
+  "licenseStatus": "User-provided project assets; separate commercial provider receipt not supplied.",
+  "pending": [
+    "Editor/game GPU import and held-weapon alignment review",
+    "User artistic approval"
+  ]
+}

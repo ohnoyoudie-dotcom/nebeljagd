@@ -1,0 +1,189 @@
+{
+  "id": "lava-staff",
+  "label": "Tripo-Lavastab",
+  "source": {
+    "path": "assets/inbox/lava crystal staff 3d model.glb",
+    "bytes": 67783736,
+    "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087",
+    "triangles": 1938632,
+    "vertices": 987529,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-weapons/runtime/lava-staff.glb",
+    "bytes": 1263104,
+    "sha256": "57b7556f312ea4d08ef36714b9a94cc1a66f86bb651860102f05e5d74602316b",
+    "triangles": 12000,
+    "vertices": 7793,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.18666836619377136,
+        -0.20281222462654114,
+        0.0
+      ],
+      [
+        0.18666836619377136,
+        0.20281222462654114,
+        0.97967529296875
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.09482381492853165,
+      0.1999969482421875,
+      0.10390475392341614
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.26878640055656433,
+      0.9168511629104614,
+      -0.29519110918045044
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9789921045303345,
+      0.15076275169849396,
+      -0.13727709650993347,
+      0.0
+    ],
+    "uniformScale": 1.6354701851950921,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.25175538659095764,
+        -0.34490466117858887,
+        -0.17100615799427032
+      ],
+      [
+        0.1588328331708908,
+        1.3550952672958374,
+        0.2440536618232727
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -0.2516428828239441,
+        -0.34475424885749817,
+        -0.17084641754627228
+      ],
+      [
+        0.15849320590496063,
+        1.3545362949371338,
+        0.2442202866077423
+      ]
+    ],
+    "tipPoint": [
+      -0.05423910915851593,
+      1.3545362949371338,
+      0.05166328325867653
+    ],
+    "dimensions": [
+      0.4101360887289047,
+      1.699290543794632,
+      0.4150667041540146
+    ]
+  },
+  "cleanup": {
+    "weldDistanceMetres": 6.8e-05,
+    "before": {
+      "vertices": 987529,
+      "faces": 1938632
+    },
+    "after": {
+      "vertices": 969297,
+      "faces": 1938595
+    }
+  },
+  "textures": [
+    {
+      "name": "lava_crystal_staff_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "lava_crystal_staff_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        768,
+        768
+      ],
+      "format": "PNG"
+    },
+    {
+      "name": "lava_crystal_staff_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 12000,
+    "textureLimit": 1024,
+    "normalMapLimit": 768,
+    "fileLimitBytes": 1572864
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "textureBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialChannels": true,
+    "preservedEmbeddedImageCount": true
+  }
+}

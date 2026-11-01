@@ -47,11 +47,11 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'bow', label: 'Bogen', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'wood', label: 'Holzbogen' }] },
   { kind: 'sword', label: 'Schwert', defaultVariant: 'steel', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'steel', label: 'Stahlschwert' }] },
+    variants: [{ id: 'steel', label: 'Stahlschwert' }, { id: 'kit-tripo-sword', label: 'Schwert · Tripo' }] },
   { kind: 'fireStaff', label: 'Feuerstab', defaultVariant: 'ember', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'ember', label: 'Glutstab · Verbrennung' }] },
+    variants: [{ id: 'ember', label: 'Glutstab · Verbrennung' }, { id: 'kit-tripo-lava-staff', label: 'Feuerstab (Lavastab) · Tripo' }] },
   { kind: 'iceStaff', label: 'Eisstab', defaultVariant: 'frost', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'frost', label: 'Froststab · Verlangsamung' }] },
+    variants: [{ id: 'frost', label: 'Froststab · Verlangsamung' }, { id: 'kit-tripo-crystal-staff', label: 'Eisstab (Kristallstab) · Tripo' }] },
   // Dimensions follow the already committed environment-kit collision hints.
   // Model placement stays explicit; adding a catalogue item never adds scenery.
   { kind: 'wall', label: 'Mauer', defaultVariant: 'kit-stone', defaultScale: 1,
@@ -86,6 +86,7 @@ const placementAssetIds = new Set([
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
+  'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
 ]);
 export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.flatMap(definition => {
   const variants = definition.variants.filter(variant => !variant.retired && placementAssetIds.has(variant.assetId));

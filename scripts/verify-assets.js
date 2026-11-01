@@ -95,7 +95,7 @@ console.log(JSON.stringify({ importedSources: sourceRecord.originals.length, ver
 
 // User-supplied Tripo uploads stay untouched. Prepared packages carry a closed
 // file roster so browser builds cannot silently use a different derivative.
-for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses']) {
+for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons']) {
   const root = `assets/imported/${name}/`;
   const manifest = JSON.parse(await readFile(root + 'runtime-manifest.json', 'utf8'));
   const sources = manifest.sources ?? [manifest.source];
@@ -117,3 +117,40 @@ for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle'
   }
   console.log(JSON.stringify({ status: 'passed', package: name, originals: sources.length, verifiedFiles: manifest.files.length }));
 }
+
+// Weapon uploads contain nearly two million triangles each. Validate the
+// actual prepared GLBs, rather than trusting their inspection reports, before
+// embedding them in the offline browser build.
+let weaponBytes = 0;
+for (const [name, length] of [['sword', 1.25], ['lava-staff', 1.7], ['crystal-staff', 1.7]]) {
+  const path = `assets/imported/tripo-weapons/runtime/${name}.glb`;
+  const bytes = await readFile(path);
+  weaponBytes += bytes.length;
+  assert.equal(bytes.toString('ascii', 0, 4), 'glTF', path);
+  assert.equal(bytes.readUInt32LE(4), 2, path);
+  assert.equal(bytes.readUInt32LE(8), bytes.length, path);
+  assert.ok(bytes.length <= 1.5 * 1024 * 1024, `${name}: browser file budget`);
+  const model = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
+  assert.ok(model.buffers?.length && model.buffers.every(buffer => !buffer.uri), `${name}: embedded buffers`);
+  assert.ok(model.images?.length && model.images.every(image => image.bufferView !== undefined && !image.uri), `${name}: embedded textures`);
+  assert.ok(model.materials?.length && model.materials.every(material =>
+    material.normalTexture && material.pbrMetallicRoughness?.baseColorTexture
+    && material.pbrMetallicRoughness.metallicRoughnessTexture), `${name}: original PBR channels`);
+  let triangles = 0;
+  let bottom = Infinity, top = -Infinity;
+  for (const mesh of model.meshes) for (const primitive of mesh.primitives) {
+    assert.ok(primitive.mode === undefined || primitive.mode === 4, `${name}: triangle primitives`);
+    for (const attribute of ['POSITION', 'NORMAL', 'TEXCOORD_0']) {
+      assert.notEqual(primitive.attributes[attribute], undefined, `${name}: ${attribute}`);
+    }
+    const position = model.accessors[primitive.attributes.POSITION];
+    triangles += (primitive.indices === undefined ? position.count : model.accessors[primitive.indices].count) / 3;
+    bottom = Math.min(bottom, position.min[1]);
+    top = Math.max(top, position.max[1]);
+  }
+  assert.ok(triangles > 0 && triangles <= 12010, `${name}: 12k triangle budget (${triangles})`);
+  assert.ok(bottom < 0 && top > 0, `${name}: grip-origin must lie inside the weapon`);
+  assert.ok(Math.abs(top - bottom - length) <= .06, `${name}: metric length`);
+  console.log(JSON.stringify({ status: 'passed', weapon: name, bytes: bytes.length, triangles, length: top - bottom }));
+}
+assert.ok(weaponBytes <= 4 * 1024 * 1024, 'Combined weapon browser payload must stay within 4 MiB');

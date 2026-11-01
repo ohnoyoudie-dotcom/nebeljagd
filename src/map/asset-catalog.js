@@ -1,4 +1,5 @@
 import previews from '../../assets/catalog/previews.json' with { type: 'json' };
+import { WEAPON_TYPES } from '../loot-tiers.js';
 
 /** Explicit mapping to models already used by the game. Preview images are
  * captures of those models, embedded so the standalone editor stays offline.
@@ -26,7 +27,8 @@ const tripo = (kind, variant, label, filename, original, notes, packageName = 't
   id: `${kind}:${variant}`, kind, variant, label, format: 'glb',
   sourceLabel: 'Eigener Tripo-Export · aufbereitetes Spielmodell',
   sourcePaths: [`assets/imported/${packageName}/runtime/${filename}.glb`, `assets/inbox/${original}.glb`],
-  renderer: kind === 'chest' ? 'src/tripo-chest.js' : 'src/world-object-renderer.js',
+  renderer: WEAPON_TYPES.includes(kind) ? 'src/tripo-weapons.js'
+    : kind === 'chest' ? 'src/tripo-chest.js' : 'src/world-object-renderer.js',
   status: 'available', previewKind: 'render', notes,
   provenance: `assets/imported/${packageName}/provenance.json`,
 });
@@ -95,6 +97,12 @@ export const ASSET_CATALOG = Object.freeze([
   tripo('rock', 'kit-tripo-02', 'Findling · Tripo', 'rock-02', 'rock boulder 3d model', 'Kompakter Findling mit verwitterter Oberfläche als feste Deckung.'),
   tripo('rock', 'kit-tripo-03', 'Hohe Felsgruppe · Tripo', 'rock-03', 'rock formation 3d model', 'Hohe Felsformation mit markanter Silhouette als Sicht- und Bewegungshindernis.'),
   tripo('chest', 'kit-tripo-chest', 'Schatztruhe · Tripo', 'chest', 'treasure chest 3d model', 'Texturierte Schatztruhe mit beweglichem Deckel; öffnet sich mit E und wirft Gold und Ausrüstung aus.', 'tripo-chest'),
+  tripo('sword', 'kit-tripo-sword', 'Schwert · Tripo', 'sword', 'fantasy sword 3d model',
+    'Dein texturiertes Tripo-Schwert. Als aufhebbare Nahkampfwaffe platzierbar; die Seltenheit bestimmt die Stärke.', 'tripo-weapons'),
+  tripo('fireStaff', 'kit-tripo-lava-staff', 'Feuerstab (Lavastab) · Tripo', 'lava-staff', 'lava crystal staff 3d model',
+    'Dein texturierter Lavastab als Feuerwaffe mit Brandschaden. Die Seltenheit ist frei wählbar.', 'tripo-weapons'),
+  tripo('iceStaff', 'kit-tripo-crystal-staff', 'Eisstab (Kristallstab) · Tripo', 'crystal-staff', 'crystal staff 3d model',
+    'Dein texturierter Kristallstab als Eiswaffe, die getroffene Ziele verlangsamt. Die Seltenheit ist frei wählbar.', 'tripo-weapons'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
 const byId = new Map(ASSET_CATALOG.map(asset => [asset.id, asset]));

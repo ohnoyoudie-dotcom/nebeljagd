@@ -1,0 +1,571 @@
+{
+  "assets": [
+    {
+      "id": "sword",
+      "label": "Tripo-Schwert",
+      "source": {
+        "path": "assets/inbox/fantasy sword 3d model.glb",
+        "bytes": 68670048,
+        "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+        "triangles": 1923344,
+        "vertices": 978537,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/sword.glb",
+        "bytes": 1358244,
+        "sha256": "1377bb78ab9379b72ccbb428bf9e39af9e66ae931a2331300fbb6fdeebbf0371",
+        "triangles": 11999,
+        "vertices": 7721,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "normalization": {
+        "sourceBoundsBlender": [
+          [
+            -0.155029296875,
+            -0.07368090748786926,
+            0.0
+          ],
+          [
+            0.155029296875,
+            0.07368090748786926,
+            0.985260009765625
+          ]
+        ],
+        "sourceGripPointGltf": [
+          -0.025707004591822624,
+          0.1500091552734375,
+          0.01477767899632454
+        ],
+        "sourceLongitudinalAxisGltf": [
+          0.14494025707244873,
+          0.9852396249771118,
+          -0.09107854217290878
+        ],
+        "normalizingRotationQuaternionBlenderWxyz": [
+          0.9963030815124512,
+          0.045708250254392624,
+          -0.07273904234170914,
+          0.0
+        ],
+        "uniformScale": 1.2526907006416348,
+        "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+        "gripPoint": [
+          0,
+          0,
+          0
+        ],
+        "nominalLengthMetres": 1.25,
+        "normalizedSourceBoundsGltf": [
+          [
+            -0.1895713359117508,
+            -0.18735727667808533,
+            -0.0733361691236496
+          ],
+          [
+            0.20380748808383942,
+            1.0626426935195923,
+            0.07675780355930328
+          ]
+        ],
+        "gltfBounds": [
+          [
+            -0.18963833153247833,
+            -0.18743896484375,
+            -0.0733741968870163
+          ],
+          [
+            0.20399929583072662,
+            1.062619686126709,
+            0.07675936073064804
+          ]
+        ],
+        "tipPoint": [
+          0.0063064140267670155,
+          1.062619686126709,
+          0.002278537256643176
+        ],
+        "dimensions": [
+          0.39363762736320496,
+          1.250058650970459,
+          0.15013355761766434
+        ]
+      },
+      "cleanup": {
+        "weldDistanceMetres": 5e-05,
+        "before": {
+          "vertices": 978537,
+          "faces": 1923344
+        },
+        "after": {
+          "vertices": 961293,
+          "faces": 1922577
+        }
+      },
+      "textures": [
+        {
+          "name": "fantasy_sword_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "fantasy_sword_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            768,
+            768
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "fantasy_sword_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "normalMapLimit": 768,
+        "fileLimitBytes": 1572864
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "textureBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialChannels": true,
+        "preservedEmbeddedImageCount": true
+      }
+    },
+    {
+      "id": "lava-staff",
+      "label": "Tripo-Lavastab",
+      "source": {
+        "path": "assets/inbox/lava crystal staff 3d model.glb",
+        "bytes": 67783736,
+        "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087",
+        "triangles": 1938632,
+        "vertices": 987529,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/lava-staff.glb",
+        "bytes": 1263104,
+        "sha256": "57b7556f312ea4d08ef36714b9a94cc1a66f86bb651860102f05e5d74602316b",
+        "triangles": 12000,
+        "vertices": 7793,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "normalization": {
+        "sourceBoundsBlender": [
+          [
+            -0.18666836619377136,
+            -0.20281222462654114,
+            0.0
+          ],
+          [
+            0.18666836619377136,
+            0.20281222462654114,
+            0.97967529296875
+          ]
+        ],
+        "sourceGripPointGltf": [
+          -0.09482381492853165,
+          0.1999969482421875,
+          0.10390475392341614
+        ],
+        "sourceLongitudinalAxisGltf": [
+          0.26878640055656433,
+          0.9168511629104614,
+          -0.29519110918045044
+        ],
+        "normalizingRotationQuaternionBlenderWxyz": [
+          0.9789921045303345,
+          0.15076275169849396,
+          -0.13727709650993347,
+          0.0
+        ],
+        "uniformScale": 1.6354701851950921,
+        "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+        "gripPoint": [
+          0,
+          0,
+          0
+        ],
+        "nominalLengthMetres": 1.7,
+        "normalizedSourceBoundsGltf": [
+          [
+            -0.25175538659095764,
+            -0.34490466117858887,
+            -0.17100615799427032
+          ],
+          [
+            0.1588328331708908,
+            1.3550952672958374,
+            0.2440536618232727
+          ]
+        ],
+        "gltfBounds": [
+          [
+            -0.2516428828239441,
+            -0.34475424885749817,
+            -0.17084641754627228
+          ],
+          [
+            0.15849320590496063,
+            1.3545362949371338,
+            0.2442202866077423
+          ]
+        ],
+        "tipPoint": [
+          -0.05423910915851593,
+          1.3545362949371338,
+          0.05166328325867653
+        ],
+        "dimensions": [
+          0.4101360887289047,
+          1.699290543794632,
+          0.4150667041540146
+        ]
+      },
+      "cleanup": {
+        "weldDistanceMetres": 6.8e-05,
+        "before": {
+          "vertices": 987529,
+          "faces": 1938632
+        },
+        "after": {
+          "vertices": 969297,
+          "faces": 1938595
+        }
+      },
+      "textures": [
+        {
+          "name": "lava_crystal_staff_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "lava_crystal_staff_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            768,
+            768
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "lava_crystal_staff_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "normalMapLimit": 768,
+        "fileLimitBytes": 1572864
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "textureBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialChannels": true,
+        "preservedEmbeddedImageCount": true
+      }
+    },
+    {
+      "id": "crystal-staff",
+      "label": "Tripo-Kristallstab",
+      "source": {
+        "path": "assets/inbox/crystal staff 3d model.glb",
+        "bytes": 70914608,
+        "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5",
+        "triangles": 1968184,
+        "vertices": 1003559,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/crystal-staff.glb",
+        "bytes": 1404412,
+        "sha256": "1de5b51e25827cb47d9854b5ee2b2c5f290c58d8edc33faa8de8580254028bed",
+        "triangles": 12000,
+        "vertices": 7889,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "normalization": {
+        "sourceBoundsBlender": [
+          [
+            -0.11077880859375,
+            -0.3203430473804474,
+            0.0
+          ],
+          [
+            0.11077880859375,
+            0.3203430473804474,
+            0.9818115234375
+          ]
+        ],
+        "sourceGripPointGltf": [
+          -0.034199316054582596,
+          0.1999969482421875,
+          0.173801451921463
+        ],
+        "sourceLongitudinalAxisGltf": [
+          0.057251300662755966,
+          0.842677891254425,
+          -0.535365641117096
+        ],
+        "normalizingRotationQuaternionBlenderWxyz": [
+          0.9598640203475952,
+          0.2788757383823395,
+          -0.029822608456015587,
+          0.0
+        ],
+        "uniformScale": 1.4537962476249295,
+        "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+        "gripPoint": [
+          0,
+          0,
+          0
+        ],
+        "nominalLengthMetres": 1.7,
+        "normalizedSourceBoundsGltf": [
+          [
+            -0.1677287071943283,
+            -0.3538163900375366,
+            -0.12452074885368347
+          ],
+          [
+            0.15600746870040894,
+            1.3461836576461792,
+            0.16899818181991577
+          ]
+        ],
+        "gltfBounds": [
+          [
+            -0.1678019016981125,
+            -0.35384517908096313,
+            -0.12456578761339188
+          ],
+          [
+            0.15609733760356903,
+            1.3466986417770386,
+            0.1692465841770172
+          ]
+        ],
+        "tipPoint": [
+          0.022067788988351822,
+          1.3466986417770386,
+          0.0062968251295387745
+        ],
+        "dimensions": [
+          0.3238992393016815,
+          1.7005438208580017,
+          0.2938123717904091
+        ]
+      },
+      "cleanup": {
+        "weldDistanceMetres": 6.8e-05,
+        "before": {
+          "vertices": 1003559,
+          "faces": 1968184
+        },
+        "after": {
+          "vertices": 984058,
+          "faces": 1968122
+        }
+      },
+      "textures": [
+        {
+          "name": "crystal_staff_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "crystal_staff_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            768,
+            768
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "crystal_staff_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "normalMapLimit": 768,
+        "fileLimitBytes": 1572864
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "textureBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialChannels": true,
+        "preservedEmbeddedImageCount": true
+      }
+    }
+  ]
+}

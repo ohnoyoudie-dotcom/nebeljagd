@@ -1,0 +1,174 @@
+{
+  "package": "nebeljagd-tripo-weapons",
+  "version": 1,
+  "sourceOrigin": "User supplied Tripo GLBs in project assets/inbox and explicitly requested editor/game integration.",
+  "provider": {
+    "name": "Tripo (original sources)",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-weapons.py",
+    "scriptSha256": "d7015743865da8bb30ffd06b862aea1b10cea60179a4c536cb67a0df5fc4810d",
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-weapons.py",
+    "method": "Rigid shaft-axis correction, uniform metric scale and physical grip origin; sub-millimetre duplicate/degenerate cleanup preserving loop UVs; collapse decimation; original Base Color/Metallic-Roughness textures downsampled to 1024 and lossless normal maps to 768. No source modification."
+  },
+  "assets": [
+    {
+      "id": "sword",
+      "source": {
+        "path": "assets/inbox/fantasy sword 3d model.glb",
+        "bytes": 68670048,
+        "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92",
+        "triangles": 1923344,
+        "vertices": 978537,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/sword.glb",
+        "bytes": 1358244,
+        "sha256": "1377bb78ab9379b72ccbb428bf9e39af9e66ae931a2331300fbb6fdeebbf0371",
+        "triangles": 11999,
+        "vertices": 7721,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "lava-staff",
+      "source": {
+        "path": "assets/inbox/lava crystal staff 3d model.glb",
+        "bytes": 67783736,
+        "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087",
+        "triangles": 1938632,
+        "vertices": 987529,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/lava-staff.glb",
+        "bytes": 1263104,
+        "sha256": "57b7556f312ea4d08ef36714b9a94cc1a66f86bb651860102f05e5d74602316b",
+        "triangles": 12000,
+        "vertices": 7793,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "crystal-staff",
+      "source": {
+        "path": "assets/inbox/crystal staff 3d model.glb",
+        "bytes": 70914608,
+        "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5",
+        "triangles": 1968184,
+        "vertices": 1003559,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-weapons/runtime/crystal-staff.glb",
+        "bytes": 1404412,
+        "sha256": "1de5b51e25827cb47d9854b5ee2b2c5f290c58d8edc33faa8de8580254028bed",
+        "triangles": 12000,
+        "vertices": 7889,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      }
+    }
+  ],
+  "evidenceBoundary": "Static validation and actual Blender PBR renders. Editor/game GPU import, equipment alignment, gameplay, and artistic approval are assessed separately."
+}

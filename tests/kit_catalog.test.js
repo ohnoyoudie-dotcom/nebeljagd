@@ -6,6 +6,7 @@ import { OBJECT_CATALOG, getObjectDefinition, makeWorldObject, normalizeWorldmap
 import { getVariantAsset, ASSET_CATALOG } from '../src/map/asset-catalog.js';
 import { validateWorldmap } from '../src/map/model.js';
 import { ensureLandscape, vegetationSettings, BIOME_PRESETS } from '../src/map/landscape.js';
+import { RARITIES } from '../src/loot-tiers.js';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
 const base = JSON.parse(read('worldmap.json'));
@@ -32,8 +33,8 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 52);
-  assert.equal(ASSET_CATALOG.length, 52);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 55);
+  assert.equal(ASSET_CATALOG.length, 55);
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {
@@ -96,6 +97,30 @@ test('all seven Tripo props agree across editor catalogue, structural schema and
   map.objects.push(...objects);
   assert.deepEqual(validateWorldmap(map).errors, []);
   assert.deepEqual(normalizeWorldmap(JSON.parse(JSON.stringify(map))).objects.slice(-objects.length), objects);
+});
+
+test('uploaded Tripo weapons retain model, rarity and transforms through export and import alongside legacy weapons', () => {
+  const map = structuredClone(base);
+  const variants = [['sword', 'kit-tripo-sword', 'steel'], ['fireStaff', 'kit-tripo-lava-staff', 'ember'],
+    ['iceStaff', 'kit-tripo-crystal-staff', 'frost']];
+  const objects = variants.flatMap(([kind, variant, legacy]) => {
+    const rule = schema.$defs.worldObject.allOf.find(entry => entry.if?.properties?.kind?.const === kind);
+    assert.ok(rule.then.properties.variant.enum.includes(variant), `${kind}:${variant} is schema-valid`);
+    assert.ok(rule.then.properties.variant.enum.includes(legacy), 'existing maps remain importable');
+    const asset = getVariantAsset(kind, variant);
+    assert.equal(asset.format, 'glb');
+    assert.equal(asset.renderer, 'src/tripo-weapons.js');
+    assert.equal(asset.provenance, 'assets/imported/tripo-weapons/provenance.json');
+    return [legacy, variant].flatMap(model => Object.keys(RARITIES).map(rarity =>
+      makeWorldObject(kind, [30, -42], { variant: model, rarity, id: `${kind}-${model}-${rarity}`,
+        name: `Meine Waffe ${rarity}`, rotation: .7, scale: 1.3 })));
+  });
+  map.objects.push(...objects);
+  assert.deepEqual(validateWorldmap(map).errors, []);
+  assert.deepEqual(normalizeWorldmap(JSON.parse(JSON.stringify(map))).objects.slice(-objects.length), objects);
+  const invalid = structuredClone(map);
+  invalid.objects.at(-1).variant = 'kit-tripo-lava-staff';
+  assert.equal(validateWorldmap(invalid).valid, false, 'a fire staff cannot masquerade as the ice model');
 });
 
 test('the uploaded tavern GLB is a valid selectable map asset with a traversable main entrance', () => {
