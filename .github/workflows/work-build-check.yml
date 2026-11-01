@@ -38,7 +38,7 @@ jobs:
         run: |
           python -m pip install --quiet playwright
           python -m playwright install --with-deps chromium
-      - name: Verify meadow, vision and shadow runtime
+      - name: Start the generated browser preview
         run: |
           npm run preview -- --port 4174 >/tmp/nebeljagd-preview.log 2>&1 &
           echo $! >/tmp/nebeljagd-preview.pid
@@ -46,6 +46,13 @@ jobs:
             curl -fsS http://127.0.0.1:4174/nebeljagd.html >/dev/null && break
             sleep 1
           done
+      - name: Verify uploaded weapon models, pickup, swaps and attacks
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+          NEBELJAGD_QA_OUT: test-results/tripo-weapons
+        run: python tests/tripo_weapon_editor_smoke.py
+      - name: Verify meadow, vision and shadow runtime
+        run: |
           python tests/work_meadow_vision_smoke.py
           python tests/avatar_smoke.py
           python tests/avatar_preview_smoke.py
@@ -53,11 +60,6 @@ jobs:
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
-      - name: Verify uploaded weapon models, pickup, swaps and attacks
-        env:
-          NEBELJAGD_URL: http://127.0.0.1:4174
-          NEBELJAGD_QA_OUT: test-results/tripo-weapons
-        run: python tests/tripo_weapon_editor_smoke.py
       - name: Publish verified build to welt
         id: save-work
         env:

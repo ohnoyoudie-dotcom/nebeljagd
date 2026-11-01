@@ -13,6 +13,7 @@ import math
 import os
 from pathlib import Path
 import shutil
+import traceback
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
@@ -34,7 +35,7 @@ WEAPONS = [
 ]
 WEAPON_KINDS = {entry[0] for entry in WEAPONS}
 EXPECTED_DROPS = sum(obj['kind'] in WEAPON_KINDS for obj in BASE['objects']) + len(WEAPONS)
-REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [],
+REPORT = {'status': 'running', 'stage': 'launch browser', 'url': URL, 'checks': [], 'errors': [],
           'unexpectedRequests': [], 'screenshots': [], 'documents': [],
           'limits': 'Actual standalone HTML in Chromium/SwiftShader over local HTTP; no physical-device performance or public-host HTTP claim.'}
 
@@ -62,7 +63,9 @@ def record_document(path, local_name):
             digest.update(chunk)
             size += len(chunk)
     expected = ROOT / 'welt' / local_name
-    assert digest.hexdigest() == hashlib.sha256(expected.read_bytes()).hexdigest()
+    expected_hash = hashlib.sha256(expected.read_bytes()).hexdigest()
+    assert digest.hexdigest() == expected_hash, {
+        'document': path, 'servedSha256': digest.hexdigest(), 'deliveredSha256': expected_hash}
     REPORT['documents'].append({'url': URL + '/' + path, 'sha256': digest.hexdigest(), 'bytes': size,
                                 'matchesDeliveredFile': str(expected.relative_to(ROOT))})
 
@@ -166,6 +169,7 @@ try:
                 REPORT['unexpectedRequests'].append(request.url)
 
         context.on('request', resource)
+        REPORT['stage'] = 'open generated editor and verify its project map'
         editor = context.new_page()
         response = editor.goto(URL + '/map-editor.html', wait_until='domcontentloaded')
         assert response.status == 200
@@ -174,6 +178,7 @@ try:
         assert editor_state(editor)['map'] == BASE
         objects = []
         for index, (kind, variant, rarity, position) in enumerate(WEAPONS):
+            REPORT['stage'] = 'place ' + variant
             editor.locator('#editor-tab-objects').click()
             editor.locator('#editor-tool-objects-place').click()
             editor.locator('#palette-kind').select_option(kind)
@@ -193,6 +198,7 @@ try:
         capture(editor, 'editor-six-weapons')
         passed('All six Tripo weapon models can be placed without changing the authored map or existing objects', objects)
 
+        REPORT['stage'] = 'open Spielen popup and verify exact map/model handoff'
         with editor.expect_popup() as popup:
             editor.locator('#playtest-world').click()
         game = popup.value
@@ -221,11 +227,13 @@ try:
         capture(game, 'six-ground-models')
 
         first = objects[0]
+        REPORT['stage'] = 'auto-pickup ' + first['variant']
         inspect(game, *first['position'])
         equipped = assert_equipped(game, first)
         capture(game, 'held-sword')
         passed('The first Tripo sword auto-equips with its real held model and chosen rarity', equipped)
         for obj in objects[1:]:
+            REPORT['stage'] = 'swap to ' + obj['variant']
             previous = game_state(game)['equippedWeapon']
             inspect(game, *obj['position'])
             assert game_state(game)['equippedWeapon'] == previous
@@ -236,6 +244,7 @@ try:
 
         targets = ['practice-2', 'practice-3', 'practice-1', 'practice-3', 'practice-1', 'practice-2']
         for obj, target, distance in zip(objects, targets, [1.3, 3, 3, 3, 3, 3]):
+            REPORT['stage'] = 'reset, pickup and attack with ' + obj['variant']
             restored = reset(game)
             assert len(restored['weaponDrops']) == EXPECTED_DROPS
             assert all(d['model'] == 'tripo' for d in restored['weaponDrops'])
@@ -277,9 +286,12 @@ try:
     assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == MAP_HASH
     REPORT['sourceMapUnchanged'] = MAP_HASH
     REPORT['status'] = 'passed'
+    REPORT['stage'] = 'complete'
 except BaseException as error:
     REPORT['status'] = 'failed'
     REPORT['failure'] = str(error)
+    REPORT['exceptionType'] = type(error).__name__
+    REPORT['traceback'] = traceback.format_exc()
     try:
         capture(game if 'game' in globals() else editor, 'failure')
     except Exception:
@@ -287,5 +299,12 @@ except BaseException as error:
     raise
 finally:
     (OUT / 'report.json').write_text(json.dumps(REPORT, ensure_ascii=False, indent=2) + '\n')
+    if os.environ.get('GITHUB_STEP_SUMMARY'):
+        diagnostic = {key: REPORT.get(key) for key in
+                      ('status', 'stage', 'exceptionType', 'failure', 'traceback', 'errors', 'unexpectedRequests')}
+        diagnostic['passedChecks'] = [check['name'] for check in REPORT['checks']]
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+            summary.write('### Uploaded weapon browser check\n\n```json\n' +
+                          json.dumps(diagnostic, ensure_ascii=False, indent=2) + '\n```\n')
     print(json.dumps({'status': REPORT['status'], 'checks': len(REPORT['checks']),
                      'errors': REPORT['errors'], 'failure': REPORT.get('failure')}, ensure_ascii=False), flush=True)
