@@ -72,3 +72,9 @@ werden nicht gespeichert oder in den Prüfbericht übernommen.
 
 [Prüfbericht](level-progression-check.json) ·
 [Spielaufnahme mit Level 3 und sechs Abschnitten](level-progression-game.png)
+
+Die goldene Levelanzeige und Aufstiegseffekte wurden zusätzlich mit einem
+echten Gegner-Kill in der erzeugten Browserdatei geprüft: einmaliges Auslösen,
+Ablauf und Neustart bestanden ohne Browserfehler. Desktop-/Touch-HUD, erneutes
+Auslösen und reduzierte Bewegung wurden separat geprüft.
+[Effekt-Prüfbericht](level-up-feedback-check.json) · [Spielaufnahme](level-up-feedback-game.png).
