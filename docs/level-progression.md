@@ -49,3 +49,12 @@ Die Lebensbalkentests prüfen Unterteilung, konstante Breite und gemeinsame
 Sichtbarkeit von Level und Balken. `tests/level_progression_smoke.py` prüft
 echte Waffenangriffe, Levelaufstiege, Heilung und Anzeigen im Browser auf einer
 importierten Testkarte. Die Projektkarte wird dabei nicht verändert.
+
+**369 Node-Tests**, Asset- und Kartenprüfung sowie der Produktionsbuild sind
+bestanden. Der Browserlauf prüft sieben Abläufe mit echten Schwert- und
+Brandkills bis Level 4, Heilung über 100 und Rundenneustart. Es gab keine
+Browser-/Shaderfehler oder zusätzlichen Ressourcenanfragen. Die tatsächliche
+Darstellung auf Level 3 wurde visuell geprüft.
+
+[Prüfbericht](level-progression-check.json) ·
+[Spielaufnahme mit Level 3 und sechs Abschnitten](level-progression-game.png)
