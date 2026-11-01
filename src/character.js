@@ -5,6 +5,7 @@ import { createLocomotionController } from './locomotion.js';
 import { createAvatarAnimator } from './avatar-animation.js';
 import { preparePlayerGeometry } from './player-model.js';
 import { createHandGripSocket } from './hand-grip.js';
+import { createCombatPoseController } from './character-combat-pose.js';
 
 const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
 
@@ -148,68 +149,19 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
       `mixamorig${label}HandIndex1`, `${label}HandIndex1`]);
     return [side, createHandGripSocket(armBones[side][2], finger)];
   }));
-  // Two-bone aiming keeps the held objects in the actual hands instead of
-  // floating beside the running rig. Targets use the character's local space.
-  const shoulder = new THREE.Vector3(), handTarget = new THREE.Vector3();
-  const currentElbow = new THREE.Vector3(), currentHand = new THREE.Vector3();
-  const reach = new THREE.Vector3(), bend = new THREE.Vector3(), elbow = new THREE.Vector3();
-  const from = new THREE.Vector3(), end = new THREE.Vector3(), worldTarget = new THREE.Vector3();
-  const oldDirection = new THREE.Vector3(), newDirection = new THREE.Vector3();
-  const worldRotation = new THREE.Quaternion(), parentInverse = new THREE.Quaternion();
-  const correction = new THREE.Quaternion();
-  const animatedPose = new Map([chest, ...armBones.left.slice(0, 2), ...armBones.right.slice(0, 2)]
-    .filter(Boolean).map(bone => [bone, bone.quaternion.clone()]));
-  let poseApplied = false;
-  function restoreAnimatedPose() {
-    if (!poseApplied) return;
-    for (const [bone, rotation] of animatedPose) bone.quaternion.copy(rotation);
-    poseApplied = false;
-  }
-  function aimBone(bone, child, localTarget) {
-    group.updateWorldMatrix(true, true);
-    bone.getWorldPosition(from); child.getWorldPosition(end);
-    group.localToWorld(worldTarget.copy(localTarget));
-    oldDirection.subVectors(end, from).normalize();
-    newDirection.subVectors(worldTarget, from).normalize();
-    correction.setFromUnitVectors(oldDirection, newDirection);
-    bone.getWorldQuaternion(worldRotation);
-    bone.parent.getWorldQuaternion(parentInverse).invert();
-    bone.quaternion.copy(parentInverse.multiply(correction).multiply(worldRotation));
-  }
-  function poseArm(side, target) {
-    const [upper, forearm, hand] = armBones[side];
-    if (!upper || !forearm || !hand || !target) return;
-    group.updateWorldMatrix(true, true);
-    upper.getWorldPosition(shoulder); group.worldToLocal(shoulder);
-    handTarget.set(target.x, target.y, target.z);
-    reach.subVectors(handTarget, shoulder);
-    // Segment lengths must use the same normalized coordinate space as the
-    // targets; raw Mixamo translations are roughly half the displayed size.
-    forearm.getWorldPosition(currentElbow); group.worldToLocal(currentElbow);
-    hand.getWorldPosition(currentHand); group.worldToLocal(currentHand);
-    const firstLength = shoulder.distanceTo(currentElbow), secondLength = currentElbow.distanceTo(currentHand);
-    if (firstLength < .001 || secondLength < .001) return;
-    const distance = THREE.MathUtils.clamp(reach.length(), .04, firstLength + secondLength - .004);
-    reach.normalize(); handTarget.copy(shoulder).addScaledVector(reach, distance);
-    // Elbows point outward and down, away from the bow string and sword blade.
-    bend.set(side === 'left' ? .7 : -.7, -.55, -.12);
-    bend.addScaledVector(reach, -bend.dot(reach)).normalize();
-    const along = (firstLength * firstLength - secondLength * secondLength + distance * distance) / (2 * distance);
-    const height = Math.sqrt(Math.max(0, firstLength * firstLength - along * along));
-    elbow.copy(shoulder).addScaledVector(reach, along).addScaledVector(bend, height);
-    aimBone(upper, forearm, elbow);
-    aimBone(forearm, hand, handTarget);
-    group.updateWorldMatrix(true, true);
-  }
+  const legBones = Object.fromEntries(['left', 'right'].map(side => {
+    const label = side === 'left' ? 'Left' : 'Right', suffix = side === 'left' ? 'L' : 'R';
+    return [side, [findBone([`mixamorig${label}UpLeg`, `${label}UpLeg`, `Thigh${suffix}`]),
+      findBone([`mixamorig${label}Leg`, `${label}Leg`, `Shin${suffix}`]),
+      findBone([`mixamorig${label}Foot`, `${label}Foot`, `Foot${suffix}`])]];
+  }));
+  const combatPose = createCombatPoseController(group, { chest, hips: findBone(['mixamorigHips', 'Hips']), arms: armBones, legs: legBones });
+  const restoreAnimatedPose = () => combatPose.restore();
   function setCombatState(next) {
     restoreAnimatedPose();
     group.userData.weaponPose = next ? { weapon: next.weapon, phase: next.phase } : null;
     if (!next || dead || animator.rolling) return;
-    for (const [bone, rotation] of animatedPose) rotation.copy(bone.quaternion);
-    if (chest) chest.rotation.y += next.chestTwist || 0;
-    poseArm('left', next.leftHand);
-    poseArm('right', next.rightHand);
-    poseApplied = true;
+    combatPose.apply(next, { walkWeight: group.userData.locomotion?.walkWeight ?? 0 });
   }
   group.userData.hiddenFromOtherPlayers = false;
   group.userData.concealmentOpacity = 1;
@@ -311,6 +263,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
       group.userData.locomotion = locomotion.update(0, { direction: group.rotation.y, currentYaw: group.rotation.y });
     },
     setCombatState,
+    inspectCombatPose: () => combatPose.inspect(),
     getGripPosition(side, target = new THREE.Vector3()) {
       return (gripSockets[side] ?? gripSockets.right).getPosition(group, target);
     },

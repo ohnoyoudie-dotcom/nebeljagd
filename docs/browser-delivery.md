@@ -1,8 +1,66 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Aktueller Editor mit Levelaufstiegen
+## Aktueller Editor mit Zauberhaltung und geradem Flug
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571).
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=0598781).
+Die freie Hand nimmt beim Zaubern eine angewinkelte Gegenhaltung ein. Im Stand
+stehen die Füße leicht breiter und versetzt; beim Laufen bleibt die Schrittbewegung
+frei. Projektile fliegen ab der Kristallspitze geradeaus auf konstanter Höhe.
+Die goldene Levelanzeige und Aufstiegseffekte des neuesten Projektstands bleiben
+erhalten. Alten Spiel-Tab schließen und über **Spielen** neu starten.
+Details: [Zauberhaltung und Flugbahn](cast-stance.md).
+
+Quellstand: `1bf711863fa52036dbcef6cfaea7d860107c0aa7`; Build `89423bdc7ca0`.
+Veröffentlichungscommit: `059878144b4bbe8c75fd8b161f8e78d6f91bc61f`, ausschließlich vier Dateien unter
+`preview/` auf `main`; alle neun Paketdateien verifiziert.
+372 Node-Tests und 8 Browserprüfungen bestanden; 10 Spielaufnahmen
+geprüft, keine Browser-, Shader-, WebGL- oder HTTP-Fehler. Die Nutzerkarte und
+Originalmodelle sind unverändert. Zwischenzeitliche Änderungen auf `work`,
+einschließlich Levelanzeige und Bogen-Original in der Inbox, wurden erhalten.
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41333301027)
+hat genau diesen Commit erfolgreich bereitgestellt. Die unveränderliche
+Versionsdatei stimmt mit dem geprüften Paket überein. Der Browsercheck verwendete
+lokal identische Dateien, da die Pages-Domain durch die Netzwerkpolicy dieser
+Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit goldener Levelplakette
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=191fa0a).
+Über **Spielen** öffnet sich die aktualisierte Spielversion. Die Levelzahl steht
+in einer goldenen Plakette; beim Aufstieg erscheinen kurz „Level aufgestiegen“,
+das neue Level und „+25 Leben“ sowie ein Ring mit Funken an der Figur.
+Die Lebensbalken bleiben gleich breit. Für reduzierte Animationen gibt es eine
+ruhige Variante ohne aufsteigende Partikel.
+
+Quellstand: `13787c8f16ca39fe9f92e9163dc2f6d6355efa1f`; Build `0b0a9af46fa4`;
+Auslieferung auf `work`: `b9a4726f47d3618890a9d066c201b374d291291c`.
+Vorschaucommit: `191fa0a7501c9e2c4560ea8007a58f9fbc38b8b6`, ausschließlich vier
+Dateien im vorhandenen statischen `preview/`. Karte, Objekte, Portal und
+Klassenanmeldung bleiben unverändert. Die Vorschau enthält weiterhin keinen
+Klassenserver und kein Live-Mehrspielerspiel.
+
+369 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild bestanden. Die
+HUD-Prüfung deckt Desktop, Touch, erneutes Auslösen, automatisches Ausblenden,
+Pause/Neustart und reduzierte Bewegung ab. Die Overheadplaketten verwenden
+weiterhin einen gemeinsamen Draw Call; sechs Leveldarstellungen wurden ohne
+Shaderfehler geprüft. Details: [Levelsystem](level-progression.md).
+
+Der abschließende Browserlauf mit der tatsächlichen erzeugten Datei prüft
+einen echten Gegner-Kill, einmalige Auslösung, Ablauf und Neustart. Alle vier
+Abläufe bestanden ohne Browser-/Shaderfehler. Der kurze Hinweis wird beim
+Auslösen im DOM erfasst; ein Screenshot zeigt die Funken und die neue Plakette
+in der Spielwelt. [Prüfbericht](level-up-feedback-check.json) ·
+[Spielaufnahme](level-up-feedback-game.png).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41331586402)
+hat genau den Vorschaucommit `191fa0a` erfolgreich bereitgestellt. Die
+Browserprüfung verwendete bytegleiche lokale Dateien, weil die Pages-Domain
+durch die Netzwerkpolicy dieser Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit Levelaufstiegen
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571).
 Über **Spielen** wird dieselbe Karte in der aktualisierten Spielversion geöffnet.
 Jeder besiegte Gegner erhöht das Level um eins und die aktuellen/maximalen
 Lebenspunkte um 25. Die Levelzahl steht links am Balken; seine Breite bleibt gleich und die

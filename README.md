@@ -20,8 +20,9 @@ Feuer und Eis besitzen eigene Lade-, Abschuss-, Flug- und Treffereffekte:
 [Zaubereffekte mit fließenden Schweifen und verfeinerten Materialien](docs/spell-effects-v2.md).
 Beide Stäbe sitzen an einem mitbewegten Griffpunkt in der Handfläche:
 [Griffkorrektur](docs/weapon-grip.md).
-Zaubern erfolgt einhändig; Projektile starten an der Kristallspitze:
-[Einhändige Zauberanimation](docs/one-handed-cast.md).
+Die freie Hand wird beim Zaubern angewinkelt, die Füße stehen leicht versetzt.
+Projektile fliegen ab der Kristallspitze geradeaus auf konstanter Höhe:
+[Zauberhaltung und gerader Flug](docs/cast-stance.md).
 
 **Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
@@ -37,7 +38,7 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
 Die aktuelle Browser-Vorschau ist unter
-[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571)
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=0598781)
 und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
 Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
 Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht

@@ -5,9 +5,11 @@ const BAR_HEIGHT = .26;
 const BAR_INSET = .025;
 const HEALTH_PER_SEGMENT = 25;
 const LEVEL_GAP = .08;
-const GLYPH_WIDTH = .19;
+const GLYPH_WIDTH = .24;
+const LEVEL_PADDING = .20;
+const LEVEL_HEIGHT = .48;
 const GLYPHS = '0123456789.kMBTP';
-const LEVEL_RESERVE = 1.04;
+const LEVEL_RESERVE = LEVEL_GAP + LEVEL_PADDING + GLYPH_WIDTH * 4 + .04;
 const validLevel = value => Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
 const capacityOf = value => Number.isFinite(value) ? Math.max(1, value) : 100;
 
@@ -31,7 +33,7 @@ function makeLevelAtlas() {
     const context = canvas.getContext('2d');
     if (context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
-      context.fillStyle = '#ffffff'; context.font = '700 54px sans-serif';
+      context.fillStyle = '#ffffff'; context.font = 'bold 56px Georgia, serif';
       context.textAlign = 'center'; context.textBaseline = 'middle';
       for (let index = 0; index < GLYPHS.length; index++) context.fillText(GLYPHS[index], (index + .5) * cell, cell * .52);
       const texture = new THREE.CanvasTexture(canvas);
@@ -49,7 +51,7 @@ function makeLevelAtlas() {
 export function createHealthBars(scene, { capacity = 128 } = {}) {
   // Reserve space only to the left: the original bar keeps its width, centre
   // and height regardless of its maximum health or the number of level digits.
-  const geometry = new THREE.PlaneGeometry(BAR_WIDTH + LEVEL_RESERVE, .36);
+  const geometry = new THREE.PlaneGeometry(BAR_WIDTH + LEVEL_RESERVE, LEVEL_HEIGHT + .04);
   geometry.translate(-LEVEL_RESERVE / 2, 0, 0);
   const healthRatios = new Float32Array(capacity);
   const displayedRatios = new Float32Array(capacity);
@@ -113,18 +115,30 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
         vec2 barUv = vec2(vPosition.x / ${BAR_WIDTH} + .5, vPosition.y / ${BAR_HEIGHT} + .5);
         if (barUv.x < 0.0) {
           float badgeRight = -${BAR_WIDTH / 2 + LEVEL_GAP};
-          float badgeWidth = .16 + vLength * ${GLYPH_WIDTH};
-          vec2 q = abs(vec2(vPosition.x - badgeRight + badgeWidth * .5, vPosition.y)) - vec2(badgeWidth * .5 - .07, .10);
-          float edge = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - .07;
+          float badgeWidth = ${LEVEL_PADDING} + vLength * ${GLYPH_WIDTH};
+          vec2 badge = abs(vec2(vPosition.x - badgeRight + badgeWidth * .5, vPosition.y));
+          vec2 halfSize = vec2(badgeWidth * .5, ${LEVEL_HEIGHT / 2});
+          // Clipped corners and two inset metal rims read as a small rank
+          // medallion. Its extra space extends left, never into the health bar.
+          float edge = max(max(badge.x - halfSize.x, badge.y - halfSize.y),
+            (badge.x + badge.y - halfSize.x - halfSize.y + .075) * .7071);
           if (edge > 0.0) discard;
-          vec3 badgeColor = edge > -.014 ? vec3(.60, .56, .35) : vec3(.045, .085, .065);
-          float textX = (vPosition.x - badgeRight + badgeWidth - .08) / ${GLYPH_WIDTH};
-          float textY = vPosition.y / .30 + .5;
+          float light = clamp(vPosition.y / ${LEVEL_HEIGHT} + .5, 0.0, 1.0);
+          vec3 gold = mix(vec3(.55, .25, .055), vec3(1.0, .77, .32), light);
+          vec3 badgeColor = mix(vec3(.055, .032, .012), vec3(.16, .10, .028), light);
+          if (edge > -.024) badgeColor = gold;
+          else if (edge > -.043) badgeColor = vec3(.045, .025, .008);
+          else if (edge > -.055) badgeColor = gold * .66;
+          float textX = (vPosition.x - badgeRight + badgeWidth - ${LEVEL_PADDING / 2}) / ${GLYPH_WIDTH};
+          float textY = vPosition.y / .44 + .5;
           if (textX >= 0.0 && textX < vLength && textY > 0.0 && textY < 1.0) {
             float slot = floor(textX);
             float glyph = slot < .5 ? vGlyphs.x : slot < 1.5 ? vGlyphs.y : slot < 2.5 ? vGlyphs.z : vGlyphs.w;
-            float ink = texture2D(levelAtlas, vec2((glyph + fract(textX)) / ${GLYPHS.length}.0, textY)).a;
-            badgeColor = mix(badgeColor, vec3(.94, .91, .74), ink);
+            vec2 glyphUv = vec2((glyph + fract(textX)) / ${GLYPHS.length}.0, textY);
+            float shadow = texture2D(levelAtlas, glyphUv + vec2(-.022 / ${GLYPHS.length}.0, .035)).a;
+            float ink = texture2D(levelAtlas, glyphUv).a;
+            badgeColor = mix(badgeColor, vec3(.012, .007, .002), shadow * .9);
+            badgeColor = mix(badgeColor, mix(vec3(1.0, .69, .24), vec3(1.0, .96, .72), light), ink);
           }
           gl_FragColor = vec4(badgeColor, .98);
         } else {
@@ -242,7 +256,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       id, health, maxHealth, level, levelLabel, local, visible: rendered, displayedRatio, flash,
       healthPerSegment: HEALTH_PER_SEGMENT, segmentCount: Math.ceil(capacityOf(maxHealth) / HEALTH_PER_SEGMENT),
       barWidth: BAR_WIDTH * (1 - BAR_INSET * 2), barBounds: { left: -BAR_WIDTH / 2, right: BAR_WIDTH / 2 },
-      levelBounds: { left: -BAR_WIDTH / 2 - LEVEL_GAP - .16 - GLYPH_WIDTH * levelLabel.length, right: -BAR_WIDTH / 2 - LEVEL_GAP },
+      levelBounds: { left: -BAR_WIDTH / 2 - LEVEL_GAP - LEVEL_PADDING - GLYPH_WIDTH * levelLabel.length, right: -BAR_WIDTH / 2 - LEVEL_GAP },
     })); },
     reset() { for (const bar of bars.values()) { bar.displayedRatio = Math.max(0, Math.min(1, bar.health / Math.max(1, bar.maxHealth))); bar.flash = bar.flashCooldown = 0; } },
     dispose() { scene.remove(mesh); geometry.dispose(); material.dispose(); levelAtlas.dispose(); bars.clear(); },

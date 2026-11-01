@@ -1,8 +1,8 @@
-"""Check one-handed casts and the real projectile start in side views.
+"""Check braced casts, standing feet and straight flight from the staff tip.
 
 Run after npm run build: python3 tests/staff_cast_smoke.py.
-Four real F attacks cover both Tripo staves and opposite side views. Eight
-screenshots cover channel/release/recovery plus the opposite release. The
+Four side-view F attacks cover both Tripo staves; two more compare the standing
+cast with walking. Ten screenshots cover the two side views and standing/gait. The
 shared grip-smoke helpers only serve files, inspect state, and take screenshots;
 this script runs its own bounded editor/game journey and never rewrites a map.
 """
@@ -21,7 +21,7 @@ import weapon_grip_smoke as support
 
 
 ROOT = support.ROOT
-OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', str(ROOT / 'test-results/staff-cast')))
+OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', str(ROOT / 'test-results/cast-stance')))
 BASE = support.BASE
 SOURCE_HASH = support.SOURCE_HASH
 STAVES = support.STAVES
@@ -44,8 +44,31 @@ def check_hands(combat):
     support.grip_error({'combat': combat})
     hands = combat['hands']
     assert all(math.isfinite(hands[side][axis]) for side in ['left', 'right'] for axis in 'xyz'), hands
-    assert hands['right']['z'] - hands['left']['z'] >= .10, 'The free hand must stay behind the casting hand'
-    assert hands['right']['y'] - hands['left']['y'] >= .08, 'The free hand must remain lower, nearer the body'
+    rig = combat['rigPose']
+    if rig['castWeight'] < .65:
+        return
+    assert hands['right']['z'] - hands['left']['z'] >= .10, 'The support hand must stay behind the casting hand'
+    assert hands['right']['y'] - hands['left']['y'] >= .08, 'The support hand must remain lower than the casting hand'
+    arm = rig['leftArm']
+    assert arm['hand']['x'] - arm['shoulder']['x'] >= .08, 'The support hand should sit to the side of the torso'
+    upper = [arm['shoulder'][axis] - arm['elbow'][axis] for axis in 'xyz']
+    forearm = [arm['hand'][axis] - arm['elbow'][axis] for axis in 'xyz']
+    length = math.sqrt(sum(value * value for value in upper) * sum(value * value for value in forearm))
+    assert length > 1e-5
+    cosine = max(-1, min(1, sum(a * b for a, b in zip(upper, forearm)) / length))
+    angle = math.degrees(math.acos(cosine))
+    assert 25 < angle < 155, f'The support elbow should be visibly bent, got {angle:.2f} degrees'
+
+
+def check_stance(rig):
+    assert rig['stanceWeight'] >= .95, rig
+    feet = rig['feet']
+    assert all(math.isfinite(feet[side][axis]) for side in ['left', 'right'] for axis in 'xyz'), feet
+    width = abs(feet['left']['x'] - feet['right']['x'])
+    stagger = abs(feet['left']['z'] - feet['right']['z'])
+    assert width >= .20, f'Standing ankles should be separated, got {width:.4f}m'
+    assert stagger >= .10, f'Standing ankles should be staggered, got {stagger:.4f}m'
+    return {'width': width, 'stagger': stagger, 'feet': feet, 'hips': rig['hips']}
 
 
 def wait_settled(page):
@@ -68,14 +91,14 @@ def start_observer(page):
         if(s.phase==='playing') {
           const sample={elapsed:s.elapsed,position:{...s.position},combat:{
             attackPhase:c.attackPhase,shotsFired:c.shotsFired,hands:c.hands,
-            heldGrip:c.heldGrip,staffTip:c.staffTip,lastSpellLaunch:c.lastSpellLaunch,
+            heldGrip:c.heldGrip,staffTip:c.staffTip,lastSpellLaunch:c.lastSpellLaunch,rigPose:c.rigPose,
             spells:c.spells}};
           window.__staffCastSamples.push(structuredClone(sample));
           const mode=window.__staffMode;
-          const hit=mode==='channel' ? c.attackPhase==='channel'&&c.shotsFired===before
+          const hit=mode==='channel' ? c.attackPhase==='channel'&&c.rigPose.castWeight>=.65&&c.shotsFired===before
             : mode==='release' ? c.attackPhase==='release'&&c.shotsFired===before+1
             : mode==='recover' ? c.attackPhase==='recover'&&c.shotsFired===before+1
-            : mode==='finished' ? c.attackPhase==='idle'&&s.attackCooldown===0&&c.shotsFired===before+1
+            : mode==='finished' ? c.attackPhase==='idle'&&s.attackCooldown===0&&c.spellsActive===0&&c.shotsFired===before+1
             : false;
           if(hit) {
             window.__staffCapture=structuredClone(sample); window.__staffMode=null;
@@ -110,17 +133,16 @@ def check_trajectory(samples, kind, before):
     assert math.isfinite(launch['flightHeight'])
     projectiles = [spell for combat in fired for spell in combat['spells'] if spell['type'] == kind and spell['mode'] == 'flying']
     assert len(projectiles) >= 2, 'Capture at least two actual flight frames'
-    tip_y, plane_y = launch['tip']['y'], launch['flightHeight']
-    span = abs(tip_y - plane_y)
-    assert span > .02, 'The side-view fixture must exercise the former launch-height mismatch'
+    tip_y = launch['tip']['y']
+    assert math.isclose(launch['flightHeight'], tip_y, abs_tol=1e-6), 'Flight height must equal the actual launch height'
     heights = [spell['position']['y'] for spell in projectiles]
-    assert min(tip_y, plane_y) - 1e-6 <= min(heights)
-    assert max(heights) <= max(tip_y, plane_y) + 1e-6
-    assert abs(heights[0] - plane_y) > .001, 'The first flight frame must not snap immediately to the old flight plane'
-    distances = [span, *[abs(height - plane_y) for height in heights]]
-    assert all(later <= earlier + 1e-6 for earlier, later in zip(distances, distances[1:])), distances
-    assert distances[-1] < 1e-6, 'The projectile must settle onto the unchanged flight plane'
+    assert all(math.isfinite(height) and abs(height - tip_y) < 1e-6 for height in heights), 'Projectile must never dip from the launch plane'
+    peaks = [c for c in fired if c['rigPose']['castWeight'] >= .65]
+    assert peaks, 'Observe the actual braced release pose'
+    for combat in peaks:
+        check_hands(combat)
     return {'launch': launch, 'sampledHeights': heights,
+            'maximumHeightDrift': max(abs(height - tip_y) for height in heights),
             'maximumPalmError': max(c['heldGrip']['error'] for c in fired)}
 
 
@@ -144,9 +166,84 @@ def cast_from_side(page, obj, heading, label, detailed):
     evidence = check_trajectory(samples, obj['kind'], before)
     evidence['phases'] = snapshots
     REPORT['samples'].append({'weapon': obj['kind'], 'side': label, 'frames': samples})
-    support.passed(f'{obj["kind"]} {label}: free arm rests and projectile starts at the staff tip', evidence)
+    support.passed(f'{obj["kind"]} {label}: bent support arm and level flight from the staff tip', evidence)
     page.keyboard.press('Escape')
     wait_settled(page)
+
+
+def exercise_stance_and_gait(page):
+    support.stage('Compare standing feet with natural gait while casting')
+    support.position(page, CAST_POSITION, 0)
+    page.evaluate('nebeljagdInspectCamera({zoom:4})')
+    wait_settled(page)
+    idle = support.state(page)['combat']['rigPose']
+    assert idle['stanceWeight'] == 0, 'The wider stance should only blend in during a standing cast'
+    page.evaluate('''()=>{
+      window.__standingCapture=null;
+      const observe=()=>{
+        const s=nebeljagdTestState();
+        if(s.phase==='playing'&&s.combat.rigPose.stanceWeight>=.95) {
+          window.__standingCapture=structuredClone(s.combat.rigPose);
+          document.querySelector('#pauseBtn').click();return;
+        }
+        requestAnimationFrame(observe);
+      };
+      requestAnimationFrame(observe);
+    }''')
+    page.keyboard.press('f')
+    page.wait_for_function('window.__standingCapture&&nebeljagdTestState().phase==="paused"')
+    standing = support.state(page)
+    standing_measurement = check_stance(standing['combat']['rigPose'])
+    idle_width = abs(idle['feet']['left']['x'] - idle['feet']['right']['x'])
+    assert standing_measurement['width'] - idle_width >= .07, 'Standing casts should visibly widen the idle stance'
+    support.capture(page, 'feet-standing-front-close')
+    page.keyboard.press('Escape')
+    wait_settled(page)
+    page.evaluate('''()=>{
+      window.__gaitSamples=[];window.__gaitCapture=null;window.__gaitStart=null;window.__gaitObserve=true;
+      const observe=()=>{
+        if(!window.__gaitObserve) return;
+        const s=nebeljagdTestState(),c=s.combat;
+        if(s.phase==='playing'&&s.moving) {
+          if(window.__gaitStart===null) window.__gaitStart=s.elapsed;
+          const sample={elapsed:s.elapsed,moving:s.moving,combat:{attackPhase:c.attackPhase,
+            hands:c.hands,heldGrip:c.heldGrip,rigPose:c.rigPose}};
+          window.__gaitSamples.push(structuredClone(sample));
+          if(c.rigPose.castWeight>=.65&&c.rigPose.stanceWeight<.15) {
+            window.__gaitCapture=structuredClone(sample);window.__gaitObserve=false;
+            document.querySelector('#pauseBtn').click();return;
+          }
+        }
+        requestAnimationFrame(observe);
+      };
+      requestAnimationFrame(observe);
+    }''')
+    page.keyboard.down('w')
+    page.wait_for_function('''()=>{
+      const s=nebeljagdTestState();
+      return window.__gaitStart!==null&&s.elapsed>=window.__gaitStart+.75&&
+        s.moving&&s.combat.rigPose.stanceWeight<.15;
+    }''')
+    page.keyboard.press('f')
+    page.wait_for_function('window.__gaitCapture&&nebeljagdTestState().phase==="paused"')
+    page.keyboard.up('w')
+    moving = page.evaluate('window.__gaitCapture')
+    samples = page.evaluate('window.__gaitSamples')
+    check_hands(moving['combat'])
+    support.capture(page, 'feet-walking-cast-close')
+    natural = [sample['combat']['rigPose'] for sample in samples if sample['combat']['rigPose']['stanceWeight'] < .15]
+    assert len(natural) >= 4, 'Observe several unconstrained gait frames'
+    stride = [rig['feet']['left']['z'] - rig['feet']['right']['z'] for rig in natural]
+    assert max(stride) - min(stride) > .12, 'The feet must move through the natural gait, not remain fixed in the standing stance'
+    page.keyboard.press('Escape')
+    wait_settled(page)
+    page.wait_for_function('nebeljagdTestState().combat.rigPose.stanceWeight===0&&!nebeljagdTestState().moving')
+    restored = support.state(page)['combat']['rigPose']
+    assert restored['castWeight'] == 0, 'Recovering must restore the authored idle pose'
+    evidence = {'idleBefore': idle, 'standing': standing_measurement, 'walkingCast': moving, 'gaitSamples': samples,
+                'signedStrideRange': [min(stride), max(stride)], 'idleAfter': restored}
+    REPORT['gait'] = evidence
+    support.passed('Standing feet are wider and staggered; casting while walking preserves the natural gait', evidence)
 
 
 def run(url):
@@ -208,7 +305,7 @@ def run(url):
             assert current['world']['source'] == 'editor' and current['world']['objects'] == draft['objects']
             support.passed('Spielen opens the exact generated game and editor draft', REPORT['editorPlayNavigation'])
             game.locator('#startBtn').click()
-            for obj in objects:
+            for index, obj in enumerate(objects):
                 support.position(game, obj['position'], math.pi / 2)
                 game.wait_for_function('id=>nebeljagdTestState().equippedItem?.id===id||nebeljagdTestState().nearWeapon!==null', arg=obj['id'])
                 if support.state(game)['equippedItem'] is None or support.state(game)['equippedItem']['id'] != obj['id']:
@@ -216,8 +313,14 @@ def run(url):
                 game.wait_for_function('id=>nebeljagdTestState().equippedItem?.id===id', arg=obj['id'])
                 cast_from_side(game, obj, math.pi / 2, 'east', True)
                 cast_from_side(game, obj, -math.pi / 2, 'west', False)
+                if index == 0:
+                    exercise_stance_and_gait(game)
             assert support.state(game)['world']['objects'] == draft['objects']
+            game.close()
+            editor.bring_to_front()
+            expect(editor.locator('#playtest-world')).to_be_visible()
             assert editor.evaluate('nebeljagdMapTestState().map') == draft
+            support.passed('Returning from the game preserves the open standalone editor and its exact draft')
             assert not REPORT['errors'], REPORT['errors']
         except BaseException:
             try:
