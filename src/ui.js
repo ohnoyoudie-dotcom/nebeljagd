@@ -88,6 +88,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     </div>
 
     <div class="danger-warning playing-only" id="dangerWarning" role="status">${icon('fog')}<span>Du bist im Nebel. Zurück in die sichere Zone!</span></div>
+    <div id="levelUpNotice" class="level-up-notice" role="status" aria-live="polite" aria-atomic="true" hidden><span class="level-up-eyebrow">LEVEL AUFGESTIEGEN</span><strong id="levelUpTitle"></strong><span id="levelUpHealth" class="level-up-health"></span></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <section class="intro-screen" id="startScreen" aria-labelledby="introTitle">
@@ -157,6 +158,9 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   const map = $('minimap');
   const mapContext = map.getContext('2d');
   const toastElement = $('toast');
+  const levelUpNotice = $('levelUpNotice');
+  const levelUpTitle = $('levelUpTitle');
+  const levelUpHealth = $('levelUpHealth');
   const dashButton = $('dashBtn');
   const attackButton = $('attackBtn');
   const interactButton = $('pickupBtn');
@@ -171,6 +175,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   let currentPhase = 'ready';
   let latestState = {};
   let toastTimeout;
+  let levelUpTimeout;
   let lastMapTime = -Infinity;
   let lastHealth = -1;
   let lastMaxHealth = -1;
@@ -207,6 +212,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
 
   function setPhase(phase) {
     if (!['ready', 'playing', 'paused', 'dead'].includes(phase)) return;
+    clearLevelUp();
     currentPhase = phase;
     root.dataset.phase = phase;
     $('startScreen').hidden = phase !== 'ready';
@@ -428,7 +434,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       playerLevel.setAttribute('aria-label', `Level ${level}`);
       playerLevel.title = `Level ${level}`;
       // The reserved level column never takes space from the health track.
-      playerLevel.style.fontSize = `${Math.min(11, 40 / String(level).length)}px`;
+      playerLevel.style.fontSize = `${Math.min(13, 40 / String(level).length)}px`;
       healthBar.dataset.level = String(level);
     }
     if (health !== lastHealth || maxHealth !== lastMaxHealth || level !== lastLevel) {
@@ -521,8 +527,35 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     toastTimeout = setTimeout(() => toastElement.classList.remove('visible'), 2800);
   }
 
+  function clearLevelUp() {
+    clearTimeout(levelUpTimeout);
+    levelUpTimeout = undefined;
+    levelUpNotice.hidden = true;
+    levelUpNotice.classList.remove('visible');
+    playerLevel.classList.remove('is-leveling');
+  }
+
+  function showLevelUp({ level, healthGain = 25 } = {}) {
+    if (currentPhase !== 'playing' || !Number.isFinite(level) || level < 1) return false;
+    clearLevelUp();
+    const shownLevel = Math.floor(level);
+    const gainedHealth = Number.isFinite(healthGain) ? Math.max(0, healthGain) : 25;
+    levelUpTitle.textContent = `Level ${shownLevel}`;
+    levelUpHealth.textContent = `+${gainedHealth} Leben`;
+    levelUpNotice.dataset.level = String(shownLevel);
+    levelUpNotice.dataset.healthGain = String(gainedHealth);
+    levelUpNotice.hidden = false;
+    // Restart the short celebration even when two opponents fall together.
+    // This read happens only on a level-up, never in the render loop.
+    void levelUpNotice.offsetWidth;
+    levelUpNotice.classList.add('visible');
+    playerLevel.classList.add('is-leveling');
+    levelUpTimeout = setTimeout(clearLevelUp, 2200);
+    return true;
+  }
+
   return {
-    update, setPhase, toast, setWorldmap,
+    update, setPhase, toast, setWorldmap, showLevelUp, clearLevelUp,
     inspectMinimap: () => ({ mode: mapMode, canvasPixels: map.width, displayWidth: map.getBoundingClientRect().width,
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),

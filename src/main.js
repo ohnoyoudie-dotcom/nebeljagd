@@ -22,6 +22,7 @@ import { createPracticeActors } from './practice-actors.js';
 import { createSnowFootprints } from './snow-footprints.js';
 import { createDamageFeedback } from './damage-feedback.js';
 import { createProgressionState, awardDefeat } from './progression.js';
+import { createLevelUpEffect } from './level-up-effect.js';
 import { MAX_HEALTH, START_HEALTH, ROLL_SPEED, ROLL_DURATION, ROLL_COOLDOWN,
   healedHealth } from './rules.js';
 
@@ -131,6 +132,7 @@ const isVisible = (position, options = { concealed: false }) => vision.isVisible
 const healthBars = createHealthBars(world.root);
 healthBars.add('player', { position: player, health: state.health, maxHealth: state.maxHealth,
   level: state.level, local: true, height: 2.9 });
+const levelUpEffect = createLevelUpEffect(world.root);
 const damageFeedback = createDamageFeedback(world.root, {
   isVisible: (position, options = {}) => vision.isVisible(position, {
     ...options, concealed: options.concealed ?? world.concealmentAt(position.x, position.z) > .01,
@@ -149,8 +151,10 @@ const combat = createCombat({ onHit: (result, target) => {
   if (!advancement) return;
   state.lastDefeat = { targetId: result.targetId, sourceId: result.sourceId, type: result.type, level: state.level };
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, snap: true });
-  ui.toast(`Level ${state.level} · +${advancement.healthGained} Lebenspunkte`, 'success');
   updateUI();
+  ui.showLevelUp({ level: state.level, healthGain: advancement.healthGained });
+  levelUpEffect.trigger({ position: player, level: state.level,
+    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches });
 } });
 for (const object of world.destructibles ?? []) {
   const target = combat.addTarget({ id: object.id, name: object.name, position: object.position, radius: object.radius,
@@ -191,6 +195,7 @@ function clearInput() {
 
 function setPhase(phase) {
   state.phase = phase;
+  if (phase !== 'playing') levelUpEffect.reset();
   clearInput();
   state.moving = false;
   ui.setPhase(phase);
@@ -206,6 +211,7 @@ function reset() {
   cameraFocus.copy(player).multiplyScalar(visualScale);
   pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); snowFootprints.reset(); world.resetDestructibles?.(); character.setConcealed(false);
   damageFeedback.reset();
+  levelUpEffect.reset(); ui.clearLevelUp();
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, snap: true });
   healthBars.reset();
   character.resetMotion?.(state.direction);
@@ -403,6 +409,7 @@ window.nebeljagdTestState = () => ({
   vision: vision.inspect(), healthBars: healthBars.inspect(), practiceActors: practiceActors.inspect(),
   snowFootprints: snowFootprints.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
+  levelUpEffect: levelUpEffect.inspect(),
   chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid }) => ({ id, x, z, opened, variant, model, lidRotation: lid.rotation.x, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
@@ -552,6 +559,7 @@ function frame(now) {
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level });
   healthBars.update(camera, { isVisible, dt: playDelta });
   damageFeedback.update(playDelta, camera);
+  levelUpEffect.update(playDelta, player);
   renderer.render(scene, camera);
   uiTimer += dt;
   if (uiTimer > 0.08) { updateUI(); uiTimer = 0; }
