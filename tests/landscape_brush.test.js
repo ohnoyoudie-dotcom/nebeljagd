@@ -11,6 +11,7 @@ const original = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta
 function fixture(objects = []) {
   const map = structuredClone(original);
   map.island.points = [[-220, -220], [220, -220], [220, 220], [-220, 220]];
+  map.waterAreas = []; // Synthetic brush island owns its coastline and river fixture.
   map.regions = [{ id: 'fixture-region', name: 'Wiese', biome: 'meadow', color: '#5a8844', points: map.island.points, label: [-100, -100] }];
   map.paths = [{ id: 'fixture-path', name: 'Freier Weg', kind: 'main', width: 5, points: [[0, -220], [0, 220]] }];
   map.rivers = [{ id: 'fixture-river', name: 'Wasser', width: 9, points: [[-220, 50], [220, 50]] }];

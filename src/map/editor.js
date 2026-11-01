@@ -1,6 +1,6 @@
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
-import { validateWorldmap, getWorldmapStats, zoneAt, pointInPolygon } from './model.js';
+import { validateWorldmap, getWorldmapStats, zoneAt, isLandPoint } from './model.js';
 import { renderWorldmapSvg, barrierSvg } from './render.js';
 import { makeBarrier, barrierLength } from './barriers.js';
 import { createBarrierPanel } from './barrier-panel.js';
@@ -22,14 +22,14 @@ document.body.dataset.fileMode = location.protocol === 'file:' ? 'true' : 'false
 const clone = value => JSON.parse(JSON.stringify(value));
 const STORAGE_KEY = 'nebeljagd.worldmap.v1';
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const collectionKeys = { region: 'regions', path: 'paths', river: 'rivers', place: 'places', spawn: 'spawnAreas', object: 'objects', barrier: 'barriers' };
+const collectionKeys = { region: 'regions', path: 'paths', river: 'rivers', waterArea: 'waterAreas', place: 'places', spawn: 'spawnAreas', object: 'objects', barrier: 'barriers' };
 const PLAYTEST_KEY = 'nebeljagd.worldmap.playtest.v1';
 const MAX_FILE_BYTES = 5_000_000;
 const FILE_HANDLE_DB = 'nebeljagd-map-file-v1';
 const FILE_HANDLE_STORE = 'handles';
 const FILE_HANDLE_KEY = 'worldmap';
 const playtestWindows = new Map();
-const kindNames = { island: 'Inselumriss', region: 'Region', path: 'Weg', river: 'Fluss', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone', barrier: 'Mauer / Zaun' };
+const kindNames = { island: 'Inselumriss', region: 'Region', path: 'Weg', river: 'Fluss', waterArea: 'Gewässerfläche', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone', barrier: 'Mauer / Zaun' };
 const initialSnapshot = (() => {
   try {
     const saved = normalizeWorldmap(JSON.parse($('map-snapshot')?.textContent || 'null'));
@@ -204,11 +204,30 @@ function remember(previous) {
   future = [];
   saveDraft();
 }
+function validateEdit(candidate, previous) {
+  const result = validate(candidate);
+  if (!result.valid) return result;
+  const waterChanged = JSON.stringify(candidate.waterAreas ?? []) !== JSON.stringify(previous.waterAreas ?? []);
+  const originals = new Map((previous.objects ?? []).map(item => [item.id, item]));
+  for (const item of candidate.objects ?? []) {
+    const original = originals.get(item.id);
+    const moved = !original || ['position', 'scale', 'rotation', 'variant', 'radius'].some(key => JSON.stringify(item[key]) !== JSON.stringify(original[key]));
+    if (!moved && !waterChanged) continue;
+    const fits = canPaintGrass(item.position, candidate, objectFootprint(item));
+    const newlyFlooded = waterChanged && original && canPaintGrass(original.position, previous, objectFootprint(original)) && !fits;
+    if (moved && !fits || newlyFlooded) {
+      result.errors.push(`${item.name}: Die gesamte Grundfläche muss auf trockenem Land liegen.`);
+      result.valid = false;
+      break;
+    }
+  }
+  return result;
+}
 function commit(mutator, message) {
   const previous = clone(map);
   const candidate = clone(map);
   mutator(candidate);
-  const result = validate(candidate);
+  const result = validateEdit(candidate, previous);
   if (!result.valid) {
     toast(`Änderung nicht übernommen: ${result.errors.slice(0, 3).join(' ')}`, true);
     renderProperties();
@@ -282,7 +301,7 @@ function updatePlacementPreview() {
   const point = mode === 'place' ? snapped(hoverPoint) : hoverPoint;
   const radius = mode === 'erase' ? Number($('eraser-radius').value) : mode !== 'place' ? landscapePanel?.radius(mode) ?? 4 : definition.defaultRadius ?? getObjectFootprintRadius(definition.kind, $('palette-variant').value);
   const circle = document.createElementNS(SVG_NS, 'circle');
-  const valid = ['erase','terrainErase'].includes(mode) || (mode === 'brush' ? canPaintGrass(point, map.island.points, radius) : pointInPolygon(point, map.island.points));
+  const valid = ['erase','terrainErase'].includes(mode) || (['brush', 'place'].includes(mode) ? canPaintGrass(point, map, radius) : isLandPoint(map, point));
   const pixel = 1 / (svg.getScreenCTM()?.a || 1);
   circle.id = 'placement-preview';
   circle.setAttribute('cx', point[0]); circle.setAttribute('cy', point[1]);
@@ -335,6 +354,9 @@ function updateMovingDrawing() {
   const svg = $('map-stage').firstElementChild;
   const feature = selectedFeature();
   if (!svg || !feature) return;
+  // Water polygons and island paths share an even-odd terrain cutout. Rebuild
+  // both while dragging so the visible shores never lag behind their handles.
+  if (selection.type === 'waterArea' || selection.type === 'island' && map.waterAreas?.length) { renderMap(); return; }
   const element = document.getElementById(`feature-${selection.type}-${selection.id}`);
   if (element) {
     if (selection.type === 'barrier') element.outerHTML = barrierSvg(feature);
@@ -365,7 +387,7 @@ function appendSelection(svg) {
   outline.setAttribute('class', 'map-selection-outline');
   if (feature.points) {
     const points = [...feature.points];
-    if (['island', 'region'].includes(selection.type)) points.push(points[0]);
+    if (['island', 'region', 'waterArea'].includes(selection.type)) points.push(points[0]);
     outline.setAttribute('points', points.map(point => point.join(',')).join(' '));
   } else {
     outline.setAttribute('cx', feature.position[0]); outline.setAttribute('cy', feature.position[1]);
@@ -423,7 +445,7 @@ function renderList() {
     button.setAttribute('aria-pressed', selection?.type === type && selection.id === item.id ? 'true' : 'false');
     const swatch = document.createElement('span'); swatch.className = 'feature-swatch';
     if (item.color) swatch.style.backgroundColor = item.color;
-    if (type === 'river') swatch.style.backgroundColor = '#6ba5ae';
+    if (['river', 'waterArea'].includes(type)) swatch.style.backgroundColor = '#6ba5ae';
     if (type === 'path') swatch.style.backgroundColor = '#beaa7d';
     if (type === 'object') {
       swatch.classList.add(`swatch-${item.kind}`);
@@ -489,7 +511,7 @@ function renderProperties() {
   $('delete-feature').hidden = selection.type === 'island';
   if (feature.points) {
     $('vertex-count').textContent = feature.points.length;
-    $('delete-vertex').disabled = selection.vertex === null || feature.points.length <= (['island', 'region'].includes(selection.type) ? 3 : 2);
+    $('delete-vertex').disabled = selection.vertex === null || feature.points.length <= (['island', 'region', 'waterArea'].includes(selection.type) ? 3 : 2);
     $('selected-vertex-info').textContent = selection.vertex === null ? 'Kein Formpunkt ausgewählt' : `Punkt ${selection.vertex + 1}: x ${Math.round(feature.points[selection.vertex][0])} · z ${Math.round(feature.points[selection.vertex][1])}`;
   }
 }
@@ -538,7 +560,7 @@ function snapped(point) {
 }
 function pointForAddition() {
   const center = [Math.round(view.x + view.width / 2), Math.round(view.y + view.height / 2)];
-  return pointInPolygon(center, map.island.points) ? center : clone(map.zone.center);
+  return isLandPoint(map, center) ? center : clone(map.zone.center);
 }
 function addFeature(type) {
   const position = pointForAddition();
@@ -548,7 +570,26 @@ function addFeature(type) {
   if (type === 'region') added = { id, name: 'Neue Region', biome: 'meadow', color: '#a3b674', points: [[position[0] - 60, position[1] - 50], [position[0] + 60, position[1] - 50], [position[0] + 60, position[1] + 50], [position[0] - 60, position[1] + 50]], label: clone(position) };
   if (type === 'path') added = { id, name: 'Neuer Weg', kind: 'trail', width: 5, points: [[position[0] - 50, position[1]], [position[0] + 50, position[1]]] };
   if (type === 'river') added = { id, name: 'Neuer Fluss', width: 12, points: [[position[0], position[1] - 50], [position[0], position[1] + 50]] };
-  if (commit(candidate => { candidate[collectionKeys[type]].push(added); }, `${kindNames[type]} hinzugefügt. Ziehen und benennen, um weiterzuarbeiten.`)) {
+  if (type === 'waterArea') {
+    // A water polygon cannot cover a spawn, object or the fog centre. Start
+    // nearby on clear ground instead of creating an invalid default at [0,0].
+    const offsets = [[0, 0]];
+    for (const radius of [60, 120, 180, 240]) for (let step = 0; step < 8; step++) {
+      const angle = step * Math.PI / 4;
+      offsets.push([Math.round(Math.cos(angle) * radius), Math.round(Math.sin(angle) * radius)]);
+    }
+    for (const offset of offsets) {
+      const centre = [position[0] + offset[0], position[1] + offset[1]];
+      if (!canPaintGrass(centre, map, 26)) continue;
+      const points = [[-14, -14], [14, -14], [20, -8], [20, 8], [14, 14], [-14, 14], [-20, 8], [-20, -8]]
+        .map(point => [centre[0] + point[0], centre[1] + point[1]]);
+      const proposal = { id, name: 'Neue Gewässerfläche', points };
+      const candidate = { ...map, waterAreas: [...(map.waterAreas ?? []), proposal] };
+      if (validateEdit(candidate, map).valid) { added = proposal; break; }
+    }
+    if (!added) return toast('Hier ist kein freier Platz für eine Gewässerfläche. Verschiebe die Ansicht zu einer freien Landfläche.', true);
+  }
+  if (commit(candidate => { (candidate[collectionKeys[type]] ??= []).push(added); }, `${kindNames[type]} hinzugefügt. Ziehen und benennen, um weiterzuarbeiten.`)) {
     if (type === 'spawn') { layers.showSpawns = true; $('layer-spawns').checked = true; }
     $('feature-filter').value = 'all';
     select(type, id);
@@ -560,7 +601,7 @@ function deleteFeature() {
   const type = selection.type;
   if (commit(candidate => {
     if (type === 'terrain' || type === 'wind') { const key = type === 'terrain' ? 'terrain' : 'windZones'; const landscape = ensureLandscape(candidate); landscape[key] = landscape[key].filter(feature => feature.id !== id); }
-    else { const key = collectionKeys[type]; candidate[key] = candidate[key].filter(feature => feature.id !== id); }
+    else { const key = collectionKeys[type]; candidate[key] = (candidate[key] ?? []).filter(feature => feature.id !== id); }
   }, 'Element entfernt. Mit „Zurück“ wiederherstellen.')) {
     selection = null; renderAll();
   }
@@ -568,7 +609,7 @@ function deleteFeature() {
 function addVertex(point = null) {
   const feature = selectedFeature();
   if (!feature?.points) return;
-  const isPolygon = ['island', 'region'].includes(selection.type);
+  const isPolygon = ['island', 'region', 'waterArea'].includes(selection.type);
   const segmentCount = feature.points.length - (isPolygon ? 0 : 1);
   let index = selection.vertex ?? 0;
   if (index >= segmentCount) index = segmentCount - 1;
@@ -591,7 +632,7 @@ function addVertex(point = null) {
 function deleteVertex() {
   const feature = selectedFeature();
   if (!feature?.points || selection.vertex === null) return;
-  const minimum = ['island', 'region'].includes(selection.type) ? 3 : 2;
+  const minimum = ['island', 'region', 'waterArea'].includes(selection.type) ? 3 : 2;
   if (feature.points.length <= minimum) return toast(`Mindestens ${minimum} Formpunkte müssen bestehen bleiben.`, true);
   const index = selection.vertex;
   // Clear before render because the old last index may cease to exist.
@@ -635,7 +676,7 @@ function pointerDown(event) {
   if (mode === 'place' && !spaceHeld && event.button === 0) { addObjectAt(start); return; }
   const pan = mode === 'pan' || spaceHeld || event.button === 1;
   if (mode === 'barrierDraw' && !pan) {
-    if (!pointInPolygon(start, map.island.points)) return toast('Die Strecke bitte auf der Insel beginnen.', true);
+    if (!isLandPoint(map, start)) return toast('Die Strecke bitte auf der Insel beginnen.', true);
     if (!barrierPanel.canDraw()) return;
     const settings = barrierPanel.settings(), point = barrierPoint(start);
     pointer = { id: event.pointerId, barrierDraw: { ...settings, raw: [point], points: [point, point] } };
@@ -660,7 +701,7 @@ function pointerDown(event) {
     return;
   }
   if (mode === 'windzone' && !pan) {
-    if (!pointInPolygon(start, map.island.points)) return toast('Bitte eine Windzone auf der Insel setzen.', true);
+    if (!isLandPoint(map, start)) return toast('Bitte eine Windzone auf der Insel setzen.', true);
     const zone = landscapePanel.createZone(snapped(start));
     if (commit(candidate => { ensureLandscape(candidate).windZones.push(zone); }, 'Windzone gesetzt. Am Kreisrand auswählen und verschieben.')) select('wind', zone.id);
     return;
@@ -789,7 +830,7 @@ function pointerEnd(event, cancelled = false) {
     repairSelection(); renderAll(); return;
   }
   if (!finished.pan && finished.moved) {
-    const result = validate(map);
+    const result = validateEdit(map, finished.previous);
     if (cancelled || !result.valid) {
       map = finished.previous;
       if (!cancelled) toast(`Verschieben nicht übernommen: ${result.errors.slice(0, 2).join(' ')}`, true);
@@ -1156,10 +1197,11 @@ function preparePalette() {
 }
 function addObjectAt(point) {
   const position = snapped(point);
-  if (!pointInPolygon(position, map.island.points)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
+  if (!isLandPoint(map, position)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
   const kind = $('palette-kind').value;
   if (!isObjectPlaceable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   const added = makeWorldObject(kind, position, {variant: $('palette-variant').value, rarity: $('palette-rarity').value});
+  if (!canPaintGrass(position, map, objectFootprint(added))) return toast('Bitte genug Abstand zum Ufer halten: Das ganze Objekt muss auf Land stehen.', true);
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
     layers.showObjects = true; $('layer-objects').checked = true;
     $('feature-filter').value = 'object'; $('object-kind-filter').value = kind; $('feature-search').value = ''; listLimit = 50;
@@ -1184,7 +1226,7 @@ function duplicateObject() {
   if (selection?.type !== 'object' || !original) return;
   if (!isObjectPlaceable(original.kind, original.variant)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   let point = [original.position[0] + 5, original.position[1] + 5];
-  if (!pointInPolygon(point, map.island.points)) point = original.position;
+  if (!canPaintGrass(point, map, objectFootprint(original))) point = original.position;
   const added = makeWorldObject(original.kind, point, {...original, id: undefined, name: `${original.name} · Kopie`.slice(0,120)});
   if (original.vegetation) added.vegetation = clone(original.vegetation);
   if (commit(candidate => { candidate.objects.push(added); }, 'Objekt dupliziert. Die Kopie lässt sich unabhängig verschieben.')) select('object', added.id);
@@ -1241,7 +1283,7 @@ $('clear-selection').addEventListener('click', () => { selection = null; renderA
 $('undo').addEventListener('click', undo); $('redo').addEventListener('click', redo);
 $('add-vertex').addEventListener('click', () => addVertex()); $('delete-vertex').addEventListener('click', deleteVertex);
 $('delete-feature').addEventListener('click', deleteFeature);
-for (const type of ['place', 'region', 'path', 'river']) $(`add-${type}`).addEventListener('click', () => addFeature(type));
+for (const type of ['place', 'region', 'path', 'river', 'waterArea']) $(`add-${type}`).addEventListener('click', () => addFeature(type));
 for (const type of ['select', 'pan']) $(`tool-${type}`).addEventListener('click', () => setMode(type));
 $('zoom-in').addEventListener('click', () => zoomBy(.8)); $('zoom-out').addEventListener('click', () => zoomBy(1.25));
 $('fit-map').addEventListener('click', () => { view = initialView(); renderMap(); });

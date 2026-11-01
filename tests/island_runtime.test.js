@@ -1,22 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import * as THREE from 'three';
-import { createWorldSpatialModel } from '../src/generated-spatial.js';
+import { createWorldSpatialModel, triangulateWorldLand } from '../src/generated-spatial.js';
 import { pointInPolygon, polygonArea } from '../src/map/model.js';
 
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
 // This is the same source triangulation consumed by createGeneratedWorld.
 // Uniform/adaptive refinement has its separate seam tests.
-const outline = map.island.points.map(([x, z]) => new THREE.Vector2(x, z));
-const triangles = THREE.ShapeUtils.triangulateShape(outline, [])
-  .map(indices => indices.map(index => map.island.points[index]));
+const triangles = triangulateWorldLand(map);
 
 test('runtime island triangulation follows the concave coastline without filling bays or losing land', () => {
   assert.ok(triangles.length > 0);
   const area = triangles.reduce((sum, triangle) => sum + polygonArea(triangle), 0);
-  assert.ok(Math.abs(area - polygonArea(map.island.points)) < 1e-6);
+  const landArea = polygonArea(map.island.points) - (map.waterAreas ?? []).reduce((sum, area) => sum + polygonArea(area.points), 0);
+  assert.ok(Math.abs(area - landArea) < 1e-6);
   for (const triangle of triangles) {
     assert.ok(polygonArea(triangle) > 1e-8, 'no degenerate source triangles');
     const center = [0, 1].map(axis => triangle.reduce((sum, point) => sum + point[axis], 0) / 3);

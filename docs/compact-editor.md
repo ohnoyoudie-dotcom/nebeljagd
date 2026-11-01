@@ -2,10 +2,12 @@
 
 Die Kartenbasis hat jetzt ausgeprägte Buchten, eine nördliche Frostzunge,
 eine östliche Aschenhalbinsel und eine eingeschnittene Moorküste. Organischere
-Regionsgrenzen und angepasste Wege verbinden die sieben Landschaften.
-Die Landfläche bleibt mit rund 1,09 km² ähnlich groß. Taverne, vier bestehende
+Regionsgrenzen gliedern die sieben Landschaften. Die Goldheide-Lagune trennt
+den Osten bis auf zwei Landzugänge ab; Wege, Flüsse und Brücken sind entfernt.
+Die Landfläche beträgt rund 1,02 km². Taverne, vier bestehende
 Mauer-/Zaunstrecken, gemalte Landschaft und Spielstart bleiben erhalten.
 Die neue Geometrie wird von Editor, 3D-Spiel und Minikarte gemeinsam verwendet.
+Aktuelle Karte und Prüfung: [Zwei Landzugänge](two-access-island.md).
 
 ## Ein Werkzeug auf einmal
 
@@ -41,7 +43,7 @@ Die aktuelle `worldmap.json` lässt sich über **Öffnen** laden; eigene Entwür
 vor einem Wechsel speichern. Speichern, JSON-Rundlauf und HTML-Export bleiben
 verfügbar. `main` wird durch die Aktualisierung von `work` nicht veröffentlicht.
 
-## Prüfung
+## Prüfung der ursprünglichen Editor-Überarbeitung
 
 Alle 266 Node-Tests und der Build sind erfolgreich. Neun Browserprüfungen
 der ausgelieferten Editor-HTML-Datei sind bestanden, einschließlich des
@@ -57,3 +59,5 @@ JSON- und HTML-Rundlauf, Mobilansicht sowie Spielstart und Minikarte.
 Berichte: `docs/compact-editor-check.json`, `docs/island-runtime-check.json`.
 Die Browserprüfungen verwenden Chromium mit Software-WebGL; sie sind keine
 Leistungsmessung auf einem physischen Tablet.
+Die neuere Lagune und die Entfernung des Wegenetzes werden im verlinkten
+Bericht zu den zwei Landzugängen geprüft.

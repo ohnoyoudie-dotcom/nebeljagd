@@ -8,6 +8,7 @@ import { barrierSections, getBarrierStyle } from './barriers.js';
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
 const points = list => list.map(([x, z]) => `${number(x)},${number(z)}`).join(' ');
+const ringPath = list => `M${list.map(([x, z]) => `${number(x)},${number(z)}`).join('L')}Z`;
 const feature = (type, id) => `id="feature-${type}-${escape(id)}" data-feature-type="${type}" data-feature-id="${escape(id)}"`;
 const biomePattern = { snow: 'mountain', forest: 'forest', meadow: 'meadow', heath: 'heath', marsh: 'marsh', volcanic: 'ash', dunes: 'dune' };
 const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8 };
@@ -155,12 +156,15 @@ export function renderWorldmapSvg(map, options = {}) {
   const terrain = map.landscape?.terrain ?? [], paintedBiomes = map.landscape?.biomes ?? [], windZones = map.landscape?.windZones ?? [];
   const zoneRadius = Number.isFinite(options.zoneRadius) ? Math.max(0, Math.min(1e7, options.zoneRadius)) : map.zone.initialRadius;
   const coast = points(map.island.points);
+  const waterAreas = map.waterAreas ?? [];
+  const landPath = waterAreas.length
+    ? [map.island.points, ...waterAreas.map(area => area.points)].map(ringPath).join(' ') : null;
   const out = [
     `<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="${minX} ${minZ} ${width} ${height}" role="img" aria-labelledby="worldmap-title worldmap-description">`,
     `  <title id="worldmap-title">${escape(map.name)}</title>`,
     `  <desc id="worldmap-description">Editierbare schematische Fantasy-Insel: ${stats.regionCount} grobe Regionen, Wege, Flüsse und wichtige Orte. Nord ist oben. Ein Koordinatenschritt entspricht einem geplanten Meter. ${escape(map.description ?? '')}</desc>`,
     '  <defs>',
-    `    <clipPath id="world-island-clip"><use href="#feature-island-${escape(map.island.id)}"/></clipPath>`,
+    `    <clipPath id="world-island-clip"><use href="#feature-island-${escape(map.island.id)}"${landPath ? ' clip-rule="evenodd"' : ''}/></clipPath>`,
     '    <linearGradient id="world-sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#142a3c"/><stop offset="1" stop-color="#0c1c2e"/></linearGradient>',
     '    <pattern id="world-grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M100,0H0V100" fill="none" stroke="#d0e2d4" stroke-width=".7" opacity=".3"/></pattern>',
     '    <pattern id="world-pattern-mountain" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M12,55 31,21 51,55 M27,29 32,37 36,31 M64,86 83,48 105,86" fill="none" stroke="#536c7a" stroke-width="2.1" opacity=".38"/></pattern>',
@@ -185,7 +189,9 @@ export function renderWorldmapSvg(map, options = {}) {
     `    <use href="#feature-island-${escape(map.island.id)}" fill="none" stroke="#4d9baf" stroke-width="13" opacity=".4" stroke-linejoin="round"/>`,
     '  </g>',
     '  <g id="island" data-layer="island" inkscape:groupmode="layer" inkscape:label="Inselumriss" fill="#c9c59b" stroke="#e2d6aa" stroke-width="6" stroke-linejoin="round">',
-    `    <polygon ${feature('island', map.island.id)} points="${coast}"><title>${escape(map.island.name)}</title></polygon>`,
+    landPath
+      ? `    <path ${feature('island', map.island.id)} d="${landPath}" fill-rule="evenodd" clip-rule="evenodd"><title>${escape(map.island.name)}</title></path>`
+      : `    <polygon ${feature('island', map.island.id)} points="${coast}"><title>${escape(map.island.name)}</title></polygon>`,
     '  </g>',
     '  <g id="regions" data-layer="regions" inkscape:groupmode="layer" inkscape:label="Regionen" clip-path="url(#world-island-clip)">',
   ];
@@ -210,6 +216,11 @@ export function renderWorldmapSvg(map, options = {}) {
       }
       out.push('  </g>');
     }
+  }
+  if (waterAreas.length) {
+    out.push('  <g id="water-areas" data-layer="water-areas" inkscape:groupmode="layer" inkscape:label="Wasserflächen">');
+    for (const area of waterAreas) out.push(`    <polygon ${feature('waterArea', area.id)} points="${points(area.points)}" fill="transparent" stroke="#4d9baf" stroke-width="3" stroke-linejoin="round" pointer-events="all"><title>${escape(area.name)}</title></polygon>`);
+    out.push('  </g>');
   }
   out.push('  <g id="rivers" data-layer="rivers" inkscape:groupmode="layer" inkscape:label="Flüsse" clip-path="url(#world-island-clip)" fill="none" stroke-linecap="round" stroke-linejoin="round">');
   for (const river of map.rivers) out.push(`    <g ${feature('river', river.id)}><title>${escape(river.name)}</title><polyline points="${points(river.points)}" stroke="#315f6a" stroke-width="${number(river.width + 4)}"/><polyline points="${points(river.points)}" stroke="#72b0ba" stroke-width="${number(river.width)}"/><polyline points="${points(river.points)}" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>`);

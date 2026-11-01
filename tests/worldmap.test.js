@@ -57,7 +57,7 @@ test('invalid and nonfinite geometry, duplicate ids and unsafe style attributes 
     m => { m.island.points[0][0] = Infinity; },
     m => { m.regions[0].points = [[0, 0], [100, 100], [100, 0], [0, 100]]; },
     m => { m.regions[0].points = [[0, 0], [10, 0], [20, 0]]; },
-    m => { m.paths[0].points = [[0, 0], [0, 0]]; },
+    m => { m.paths = [{ id: 'invalid-path', name: 'Ungültiger Weg', kind: 'main', width: 8, points: [[0, 0], [0, 0]] }]; },
     m => { m.places[0].position = [NaN, 0]; },
     m => { m.places[0].id = m.places[1].id; },
     m => { m.places[0].id = ['looks-like-an-id']; },
@@ -66,7 +66,7 @@ test('invalid and nonfinite geometry, duplicate ids and unsafe style attributes 
     m => { m.regions[0].color = ['#ffffff']; },
     m => { m.regions = []; },
     m => { m.bounds.maxX = m.bounds.minX; },
-    m => { m.paths[0].width = 0; },
+    m => { m.paths = [{ id: 'invalid-path', name: 'Ungültiger Weg', kind: 'main', width: 0, points: [[0, 0], [10, 10]] }]; },
     m => { m.spawnAreas[0].capacity = .5; },
     m => { m.spawnAreas = []; },
     m => { m.zone.phases[0].radius = 900; },
@@ -107,7 +107,11 @@ test('SVG exports named editable layers and geometry without external images or 
   assert.ok(links.every(link => /^#(?:feature-island-|world-object-)/.test(link)), 'all SVG references must remain local');
   assert.ok(svg.includes('id="world-objects"'));
   for (const object of base.objects ?? []) assert.ok(svg.includes(`data-feature-id="${object.id}"`));
-  assert.equal((svg.match(new RegExp(`points="${base.island.points.map(p => p.join(',')).join(' ')}"`, 'g')) ?? []).length, 1);
+  assert.equal((svg.match(new RegExp(`<(?:path|polygon) id="feature-island-${base.island.id}"`, 'g')) ?? []).length, 1);
+  if (base.waterAreas?.length) {
+    assert.match(svg, /fill-rule="evenodd" clip-rule="evenodd"/);
+    for (const area of base.waterAreas) assert.ok(svg.includes(`data-feature-type="waterArea" data-feature-id="${area.id}"`));
+  }
   assert.match(svg, /inkscape:groupmode="layer" inkscape:label="Regionen"/);
   const original = JSON.stringify(base);
   renderWorldmapSvg(base, { showZone: true, zoneRadius: 200, showGrid: true, editor: true });

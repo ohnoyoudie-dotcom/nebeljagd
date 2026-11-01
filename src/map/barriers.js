@@ -126,9 +126,9 @@ export function expandBarrierMap(map) {
 
 /** Check every interval made by polygon-edge intersections. Checking only the
  * endpoints or midpoint would miss narrow bays in a concave island. */
-function staysOnIsland(a, b, ring, pointInPolygon) {
+function staysOnIsland(a, b, rings, isLand) {
   const dx = b[0] - a[0], dz = b[1] - a[1], cuts = [0, 1];
-  for (let i = 0; i < ring.length; i++) {
+  for (const ring of rings) for (let i = 0; i < ring.length; i++) {
     const c = ring[i], d = ring[(i + 1) % ring.length], ex = d[0] - c[0], ez = d[1] - c[1];
     const determinant = dx * ez - dz * ex;
     if (Math.abs(determinant) < EPS) continue;
@@ -137,11 +137,11 @@ function staysOnIsland(a, b, ring, pointInPolygon) {
     if (t > 0 && t < 1 && u >= -EPS && u <= 1 + EPS) cuts.push(t);
   }
   cuts.sort((x, y) => x - y);
-  return pointInPolygon(a, ring) && pointInPolygon(b, ring)
-    && cuts.slice(1).every((t, i) => pointInPolygon(mix(a, b, (cuts[i] + t) / 2), ring));
+  return cuts.every(t => isLand(mix(a, b, t)))
+    && cuts.slice(1).every((t, i) => isLand(mix(a, b, (cuts[i] + t) / 2)));
 }
 
-export function validateBarriers(map, { ids, checkPoint, pointInPolygon, islandValid }) {
+export function validateBarriers(map, { ids, checkPoint, islandValid, boundaryRings, isLand }) {
   const errors = [], valid = [];
   if (map.barriers === undefined) return errors;
   if (!Array.isArray(map.barriers) || map.barriers.length > BARRIER_LIMITS.barriers) return [`barriers muss eine Liste mit höchstens ${BARRIER_LIMITS.barriers} Strecken sein.`];
@@ -165,7 +165,7 @@ export function validateBarriers(map, { ids, checkPoint, pointInPolygon, islandV
       else {
         for (let i = 1; i < barrier.points.length; i++) {
           if (length(barrier.points[i - 1], barrier.points[i]) < .1) errors.push(`${label}: Benachbarte Punkte müssen mindestens 10 cm auseinanderliegen.`);
-          if (islandValid && !staysOnIsland(barrier.points[i - 1], barrier.points[i], map.island.points, pointInPolygon)) errors.push(`${label}: Die Strecke muss vollständig auf der Insel liegen.`);
+          if (islandValid && !staysOnIsland(barrier.points[i - 1], barrier.points[i], boundaryRings, isLand)) errors.push(`${label}: Die Strecke muss vollständig auf der Insel und außerhalb der Wasserflächen liegen.`);
         }
         if (barrierLength(barrier) > BARRIER_LIMITS.length) errors.push(`${label}: Die Strecke darf höchstens ${BARRIER_LIMITS.length} m lang sein.`);
       }

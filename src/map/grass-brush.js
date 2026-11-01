@@ -1,15 +1,18 @@
-import { pointInPolygon, distanceToSegment } from './model.js';
+import { pointInPolygon, distanceToSegment, isLandPoint, landBoundaryRings } from './model.js';
 import { makeWorldObject } from './objects.js';
 
 export const MAX_WORLD_OBJECTS = 12000;
 export const GRASS_BRUSH_MIN_RADIUS = 1;
 export const GRASS_BRUSH_MAX_RADIUS = 16;
 
-/** Keep the whole brush footprint on land, including concave coastline edges. */
-export function canPaintGrass(point, island, radius) {
-  if (!Array.isArray(point) || !point.every(Number.isFinite) || !pointInPolygon(point, island)) return false;
-  for (let i = 0; i < island.length; i++) {
-    if (distanceToSegment(point, island[i], island[(i + 1) % island.length]) < radius) return false;
+/** Accept a legacy outer ring or a full map; full maps also protect inner shores. */
+export function canPaintGrass(point, islandOrMap, radius) {
+  if (!Array.isArray(point) || !point.every(Number.isFinite)) return false;
+  const legacy = Array.isArray(islandOrMap);
+  if (!(legacy ? pointInPolygon(point, islandOrMap) : isLandPoint(islandOrMap, point))) return false;
+  const rings = legacy ? [islandOrMap] : landBoundaryRings(islandOrMap);
+  for (const ring of rings) for (let i = 0; i < ring.length; i++) {
+    if (distanceToSegment(point, ring[i], ring[(i + 1) % ring.length]) < radius) return false;
   }
   return true;
 }
@@ -47,7 +50,7 @@ export function createGrassBrushStroke(map, { radius = 4, maxObjects = MAX_WORLD
   function stamp(point) {
     if (objects.length >= room) { full = true; return; }
     const position = point.map(value => Math.round(value * 100) / 100);
-    if (!canPaintGrass(position, map.island.points, radius) || covered(position)) { skipped++; return; }
+    if (!canPaintGrass(position, map, radius) || covered(position)) { skipped++; return; }
     const item = makeWorldObject('grass', position, { variant: 'tall', radius, name: 'Versteckgras · Pinsel', rotation: 0, scale: 1 });
     objects.push(item); addToIndex(position, radius);
   }

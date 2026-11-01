@@ -45,6 +45,20 @@ export function pointInPolygon(point, points) {
   return inside;
 }
 
+/** Every coastline, with the exterior first. Optional inland water polygons
+ * are holes, not rivers, and older documents need no extra collection. */
+export function landBoundaryRings(map) {
+  return [map?.island?.points ?? [], ...(Array.isArray(map?.waterAreas) ? map.waterAreas : [])
+    .filter(area => Array.isArray(area?.points) && area.points.length >= 3 && area.points.every(coordinate))
+    .map(area => area.points)];
+}
+
+/** Exterior shoreline is land; inland-water edges belong to the water. */
+export function isLandPoint(map, point) {
+  return pointInPolygon(point, map?.island?.points)
+    && !landBoundaryRings(map).slice(1).some(ring => pointInPolygon(point, ring));
+}
+
 function intersects(a, b, c, d) {
   const p = cross(a, b, c), q = cross(a, b, d), r = cross(c, d, a), s = cross(c, d, b);
   const eps = 1e-7;
@@ -53,6 +67,11 @@ function intersects(a, b, c, d) {
     || Math.abs(q) < eps && distanceToSegment(d, a, b) < eps
     || Math.abs(r) < eps && distanceToSegment(a, c, d) < eps
     || Math.abs(s) < eps && distanceToSegment(b, c, d) < eps;
+}
+
+function ringsIntersect(first, second) {
+  const a = openRing(first), b = openRing(second);
+  return a.some((point, i) => b.some((other, j) => intersects(point, a[(i + 1) % a.length], other, b[(j + 1) % b.length])));
 }
 
 /** Return validation messages, never execute imported content or mutate the map. */
@@ -104,7 +123,22 @@ export function validateWorldmap(map) {
   const game = map.gameplay;
   if (!object(game) || !Number.isInteger(game.targetPlayers) || game.targetPlayers < 1 || game.targetPlayers > 1000 || !finite(game.walkSpeedMetersPerSecond) || game.walkSpeedMetersPerSecond <= 0 || game.walkSpeedMetersPerSecond > 100) error('gameplay benötigt 1–1000 Zielspieler und eine positive Laufgeschwindigkeit bis 100 m/s.');
   const islandValid = common(map.island, 'Insel') && points(map.island, 'Insel', true);
-  if (object(game) && game.spawnPosition !== undefined && checkPoint(game.spawnPosition, 'Spielstart') && islandValid && !pointInPolygon(game.spawnPosition, map.island.points)) error('Der Spielstart liegt außerhalb der Insel.');
+  if (map.waterAreas !== undefined && (!Array.isArray(map.waterAreas) || map.waterAreas.length > 50)) error('waterAreas muss eine Liste mit höchstens 50 Wasserflächen sein.');
+  const waterAreas = [];
+  for (const area of Array.isArray(map.waterAreas) ? map.waterAreas.slice(0, 50) : []) {
+    const before = errors.length;
+    if (!common(area, 'Wasserfläche')) continue;
+    if (!points(area, `Wasserfläche ${area.id}`, true) || errors.length !== before) continue;
+    if (islandValid && (!area.points.every(point => pointInPolygon(point, map.island.points))
+      || ringsIntersect(area.points, map.island.points))) error(`Wasserfläche ${area.name} muss vollständig innerhalb der Insel liegen und Abstand zur Außenküste halten.`);
+    for (const other of waterAreas) {
+      if (ringsIntersect(area.points, other.points) || pointInPolygon(area.points[0], other.points) || pointInPolygon(other.points[0], area.points)) {
+        error(`Wasserflächen ${area.name} und ${other.name} dürfen sich nicht überlappen, berühren oder ineinander liegen.`);
+      }
+    }
+    waterAreas.push(area);
+  }
+  if (object(game) && game.spawnPosition !== undefined && checkPoint(game.spawnPosition, 'Spielstart') && islandValid && !isLandPoint(map, game.spawnPosition)) error('Der Spielstart liegt außerhalb der Insel oder in einer Wasserfläche.');
   const collections = [['regions', 100], ['paths', 300], ['rivers', 100], ['places', 500], ['spawnAreas', 200]];
   for (const [key, limit] of collections) if (!Array.isArray(map[key]) || map[key].length > limit) error(`${key} muss eine Liste mit höchstens ${limit} Einträgen sein.`);
   if (Array.isArray(map.regions) && map.regions.length < 1) error('Die Karte benötigt mindestens eine Region.');
@@ -125,7 +159,7 @@ export function validateWorldmap(map) {
   }
   for (const place of Array.isArray(map.places) ? map.places.slice(0, 500) : []) {
     if (!common(place, 'Ort')) continue;
-    if (checkPoint(place.position, `Ort ${place.id}`) && islandValid && !pointInPolygon(place.position, map.island.points)) error(`Ort ${place.name} liegt außerhalb der Insel.`);
+    if (checkPoint(place.position, `Ort ${place.id}`) && islandValid && !isLandPoint(map, place.position)) error(`Ort ${place.name} liegt außerhalb der Insel oder in einer Wasserfläche.`);
     if (!['village', 'ruin', 'shrine', 'landmark', 'harbor'].includes(place.kind)) error(`${place.id}: Unbekannte Ortsart.`);
   }
   let capacity = 0;
@@ -138,8 +172,12 @@ export function validateWorldmap(map) {
     if (!Number.isInteger(spawn.capacity) || spawn.capacity < 1 || spawn.capacity > 1000) error(`${spawn.id}: Kapazität muss eine ganze Zahl von 1 bis 1000 sein.`);
     else capacity += spawn.capacity;
     if (positionValid && islandValid) {
-      const ring = openRing(map.island.points);
-      if (!pointInPolygon(spawn.position, ring) || radiusValid && ring.some((a, i) => distanceToSegment(spawn.position, a, ring[(i + 1) % ring.length]) < spawn.radius)) error(`Startbereich ${spawn.name} liegt teilweise außerhalb der Insel.`);
+      const rings = landBoundaryRings(map).map(openRing);
+      const touchesWater = radiusValid && rings.some((ring, boundary) => ring.some((a, i) => {
+        const distance = distanceToSegment(spawn.position, a, ring[(i + 1) % ring.length]);
+        return boundary === 0 ? distance < spawn.radius : distance <= spawn.radius + 1e-7;
+      }));
+      if (!isLandPoint(map, spawn.position) || touchesWater) error(`Startbereich ${spawn.name} liegt teilweise außerhalb der Insel oder in einer Wasserfläche.`);
     }
   }
   if (object(game) && Number.isInteger(game.targetPlayers) && capacity < game.targetPlayers) error(`Startbereiche bieten ${capacity} Plätze für ${game.targetPlayers} Zielspieler.`);
@@ -156,7 +194,7 @@ export function validateWorldmap(map) {
     if (!definition) error(`${item.id}: Unbekannte Objektart.`);
     else if (!definition.variants.some(variant => variant.id === item.variant)) error(`${item.id}: Unbekannte Variante für ${definition.label}.`);
     if (item.rarity !== undefined && (typeof item.rarity !== 'string' || !Object.hasOwn(RARITIES, item.rarity) || !WEAPON_TYPES.includes(item.kind))) error(`${item.id}: Seltenheit muss einer gültigen Waffenstufe entsprechen.`);
-    if (checkPoint(item.position, `Weltobjekt ${item.id}`) && islandValid && !pointInPolygon(item.position, map.island.points)) error(`Weltobjekt ${item.name} liegt außerhalb der Insel.`);
+    if (checkPoint(item.position, `Weltobjekt ${item.id}`) && islandValid && !isLandPoint(map, item.position)) error(`Weltobjekt ${item.name} liegt außerhalb der Insel oder in einer Wasserfläche.`);
     if (!finite(item.rotation) || Math.abs(item.rotation) > Math.PI * 20) error(`${item.id}: Drehung muss in Radiant zwischen -20π und 20π liegen.`);
     if (!finite(item.scale) || item.scale < .25 || item.scale > 3) error(`${item.id}: Größe muss zwischen 0,25 und 3 liegen.`);
     if (item.height !== undefined && (!isHeightAdjustable(item) || !isValidBarrierHeight(item.height))) error(`${item.id}: Höhe ist nur für Mauern und Zäune erlaubt und muss zwischen 0,25 und 8 Metern liegen.`);
@@ -167,7 +205,7 @@ export function validateWorldmap(map) {
   if (!object(zone)) error('Die Nebelzone fehlt.');
   else {
     const centerValid = checkPoint(zone.center, 'Nebelzentrum');
-    if (centerValid && islandValid && !pointInPolygon(zone.center, map.island.points)) error('Das Nebelzentrum muss auf der Insel liegen.');
+    if (centerValid && islandValid && !isLandPoint(map, zone.center)) error('Das Nebelzentrum muss auf trockenem Land der Insel liegen.');
     if (!finite(zone.initialRadius) || zone.initialRadius <= 0 || zone.initialRadius > LIMIT) error('Die Nebelzone benötigt einen positiven Anfangsradius.');
     if (!finite(zone.damagePerSecond) || zone.damagePerSecond < 0 || zone.damagePerSecond > 1000) error('Nebelschaden muss zwischen 0 und 1000 liegen.');
     if (!Array.isArray(zone.phases) || zone.phases.length < 1 || zone.phases.length > 20) error('Die Nebelzone benötigt 1 bis 20 Phasen.');
@@ -182,14 +220,15 @@ export function validateWorldmap(map) {
     if (centerValid && islandValid && finite(zone.initialRadius) && map.island.points.some(point => Math.hypot(point[0] - zone.center[0], point[1] - zone.center[1]) > zone.initialRadius)) warnings.push('Teile der Insel liegen bereits am Anfang im Nebel.');
   }
   errors.push(...validateLandscape(map, { ids, checkPoint }));
-  errors.push(...validateBarriers(map, { ids, checkPoint, pointInPolygon, islandValid }));
+  errors.push(...validateBarriers(map, { ids, checkPoint, islandValid,
+    boundaryRings: landBoundaryRings(map), isLand: point => isLandPoint(map, point) }));
   return { valid: errors.length === 0, errors, warnings };
 }
 
 export function getWorldmapStats(map) {
   const xs = map.island.points.map(point => point[0]), zs = map.island.points.map(point => point[1]);
   const widthM = Math.max(...xs) - Math.min(...xs), heightM = Math.max(...zs) - Math.min(...zs);
-  const landAreaM2 = polygonArea(map.island.points);
+  const landAreaM2 = polygonArea(map.island.points) - landBoundaryRings(map).slice(1).reduce((sum, ring) => sum + polygonArea(ring), 0);
   return {
     landAreaM2, widthM, heightM,
     walkAcrossSeconds: Math.max(widthM, heightM) / map.gameplay.walkSpeedMetersPerSecond,

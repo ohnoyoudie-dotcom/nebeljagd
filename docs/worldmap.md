@@ -126,6 +126,7 @@ SVG-`x/y` entspricht JSON-`x/z`. IDs bleiben bei Umbenennungen erhalten.
 | --- | --- |
 | `bounds` | Zeichenfläche und zulässiger Koordinatenrahmen |
 | `island.points` | Einfacher Küstenumriss als Polygon |
+| `waterAreas` | Optionale Gewässerpolygone mit `id`, `name` und `points`; tatsächliche Löcher im Inselboden |
 | `regions` | Biome-Polygone, Farben und Beschriftungspositionen |
 | `paths` | Linienzüge mit Breite und Art `main`, `trail` oder `bridge` |
 | `rivers` | Wasserlinienzüge mit Breite |
@@ -134,6 +135,12 @@ SVG-`x/y` entspricht JSON-`x/z`. IDs bleiben bei Umbenennungen erhalten.
 | `spawnAreas` | Geplante Startbereiche mit Mittelpunkt, Radius und Kapazität |
 | `zone` | Zentrum, Anfangsradius, Phasen und Nebelschaden |
 | `gameplay` | Zielspielerzahl, Laufgeschwindigkeit und `spawnPosition` |
+
+Gewässerflächen müssen vollständig innerhalb der Küste liegen und dürfen
+sich weder berühren noch überlappen. Küste und Gewässerufer begrenzen zusammen
+die begehbare Fläche. Der aktuelle Kartenstand enthält eine Lagune und leere
+`paths`-/`rivers`-Listen. Die beiden Landzugänge und ihre Prüfungen beschreibt
+[Zwei Landzugänge](two-access-island.md).
 
 Beispiel eines Weltobjekts:
 

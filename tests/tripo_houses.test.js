@@ -17,7 +17,8 @@ const json = path => JSON.parse(read(path));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const variant = 'kit-tripo-house-02';
 const house = getEnvironmentKitDefinition('house', variant);
-const base = json('worldmap.json');
+// Asset contracts use a dry site independently of the evolving project lagoon.
+const base = { ...json('worldmap.json'), waterAreas: [] };
 const point = ([x, z], y = 1.2) => ({ x, y, z });
 
 function imageSize(bytes) {

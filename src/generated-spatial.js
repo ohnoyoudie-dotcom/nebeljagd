@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { pointInPolygon, distanceToSegment } from './map/model.js';
+import { pointInPolygon, distanceToSegment, isLandPoint, landBoundaryRings } from './map/model.js';
 import { terrainPalette } from './terrain-art.js';
 import { createTerrainPaintIndex, applyTerrainPaint } from './map/terrain-paint.js';
 import { getLandscape, biomeRuntimeId } from './map/landscape.js';
@@ -14,6 +14,15 @@ export function projection(x, z, a, b) {
   const t = length ? clamp(((x - a[0]) * dx + (z - a[1]) * dz) / length, 0, 1) : 0;
   const px = a[0] + dx * t, pz = a[1] + dz * t;
   return { x: px, z: pz, t, dx, dz, distance: Math.hypot(x - px, z - pz) };
+}
+
+/** Triangulate actual dry land; water polygons are holes, not painted overlays.
+ * Work on copies because Three removes repeated closing vertices in place. */
+export function triangulateWorldLand(map) {
+  const [outline, ...holes] = landBoundaryRings(map).map(ring => ring.map(([x, z]) => new THREE.Vector2(x, z)));
+  const indices = THREE.ShapeUtils.triangulateShape(outline, holes);
+  const points = [outline, ...holes].flat().map(point => [point.x, point.y]);
+  return indices.map(triangle => triangle.map(index => points[index]));
 }
 
 function segmentIndex(lines, padding = 0, cellSize = 32) {
@@ -60,7 +69,18 @@ export function createWorldSpatialModel(map) {
       }
     }
   }
-  const coast = segmentIndex([{ points: [...map.island.points, map.island.points[0]], width: 0 }], 30);
+  const coast = segmentIndex(landBoundaryRings(map).map(ring => ({ points: [...ring, ring[0]], width: 0 })), 30);
+  const waterAreas = (map.waterAreas ?? []).map(area => ({ ...area,
+    minX: Math.min(...area.points.map(point => point[0])), maxX: Math.max(...area.points.map(point => point[0])),
+    minZ: Math.min(...area.points.map(point => point[1])), maxZ: Math.max(...area.points.map(point => point[1])) }));
+  const isLand = (x, z) => isLandPoint(map, [x, z]);
+  function inWaterArea(x, z, padding = 0) {
+    return waterAreas.some(area => {
+      if (x < area.minX - padding || x > area.maxX + padding || z < area.minZ - padding || z > area.maxZ + padding) return false;
+      if (pointInPolygon([x, z], area.points)) return true;
+      return padding > 0 && area.points.some((point, i, ring) => distanceToSegment([x, z], point, ring[(i + 1) % ring.length]) < padding);
+    });
+  }
   const rivers = segmentIndex(map.rivers, 14);
   const bridges = segmentIndex(map.paths.filter(path => path.kind === 'bridge'), 2);
   const houseSites = (map.objects ?? []).filter(item => item.kind === 'house');
@@ -175,6 +195,8 @@ export function createWorldSpatialModel(map) {
       && maxZ >= house.position[1] - house.radius && minZ <= house.position[1] + house.radius);
   }
   function bridgeAt(x, z, padding = 0) {
+    // River bridges do not turn a polygonal lagoon into traversable land.
+    if (inWaterArea(x, z)) return null;
     for (const segment of bridges.near(x, z)) {
       const dx = segment.b[0] - segment.a[0], dz = segment.b[1] - segment.a[1];
       const along = ((x - segment.a[0]) * dx + (z - segment.a[1]) * dz) / (dx * dx + dz * dz);
@@ -205,7 +227,31 @@ export function createWorldSpatialModel(map) {
     baseColorAt(x, z, target);
     return terrainPaint.length ? applyTerrainPaint(terrainPaint, x, z, target, false, paintScratch) : target;
   }
+  function resolveShoreMovement(position, radius = .42) {
+    let shore = coast.closest(position.x, position.z);
+    if (!isLand(position.x, position.z) || shore && shore.distance < radius + .04) {
+      if (!shore) {
+        let minimum = Infinity;
+        for (const segment of coast.segments) {
+          const candidate = projection(position.x, position.z, segment.a, segment.b);
+          if (candidate.distance < minimum) { shore = candidate; minimum = candidate.distance; }
+        }
+      }
+      if (shore) {
+        const length = Math.hypot(shore.dx, shore.dz) || 1;
+        let nx = -shore.dz / length, nz = shore.dx / length;
+        if (!isLand(shore.x + nx * (radius + .1), shore.z + nz * (radius + .1))) { nx *= -1; nz *= -1; }
+        position.x = shore.x + nx * (radius + .08);
+        position.z = shore.z + nz * (radius + .08);
+      }
+    }
+    return position;
+  }
   return { groundAt, refineTerrainTriangle, rawLand, regionAt, biomeAt, biomeWeightsAt, colorAt, baseColorAt, terrainPaint, waterAt, bridgeAt, coast, rivers,
-    isLand: (x, z) => pointInPolygon([x, z], map.island.points),
-    isWater: (x, z, padding = 0) => { const water = waterAt(x, z); return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z)); } };
+    isLand, resolveShoreMovement,
+    isWater: (x, z, padding = 0) => {
+      if (inWaterArea(x, z, padding)) return true;
+      const water = waterAt(x, z);
+      return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z));
+    } };
 }

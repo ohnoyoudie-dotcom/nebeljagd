@@ -1,5 +1,10 @@
 # Nebelinsel: Buchten und Halbinseln
 
+Dieser Bericht beschreibt die erste Überarbeitung der Küste. Anschließend
+wurde die Goldheide-Lagune mit zwei Landzugängen ergänzt und das Wegenetz samt
+Flüssen und Brücken entfernt. Aktueller Stand: [Zwei Landzugänge](two-access-island.md).
+Die folgenden Zahlen und Prüfungen dokumentieren den damaligen Stand.
+
 Die Kartenbasis besitzt jetzt eine stärker gegliederte Küste: ein nördliches
 Frostkap, eine tiefe Bucht zwischen den beiden Armen der Goldheide, kleinere
 Ostbuchten, eine vorspringende Aschenhalbinsel und eine Moorbucht im Südwesten.

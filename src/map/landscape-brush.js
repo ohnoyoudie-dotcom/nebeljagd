@@ -1,5 +1,5 @@
-import { pointInPolygon, distanceToSegment } from './model.js';
-import { getObjectDefinition, makeWorldObject, isObjectPlaceable } from './objects.js';
+import { distanceToSegment, isLandPoint, landBoundaryRings } from './model.js';
+import { getObjectDefinition, getObjectFootprintRadius, makeWorldObject, isObjectPlaceable } from './objects.js';
 import { BIOME_PRESETS, VEGETATION_TYPES, TERRAIN_TYPES, LANDSCAPE_LIMITS, getLandscape, vegetationSettings, terrainSettings } from './landscape.js';
 import { getMoundDefinition } from '../overgrown-mounds.js';
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
@@ -67,6 +67,7 @@ function cellsIndex() {
  * in their own coordinates, not as large circles around their centres. */
 export function createLandscapePlacementGuard(map) {
   const objects = cellsIndex(), segments = cellsIndex();
+  const boundaries = landBoundaryRings(map);
   const addObject = item => {
     if (pointValid(item?.position)) objects.add(item, item.position, objectBound(item));
   };
@@ -81,8 +82,8 @@ export function createLandscapePlacementGuard(map) {
     }
   }
   function reason(position, radius = 0, kind = 'grass', minDistance = 0, type) {
-    if (!pointValid(position) || !pointInPolygon(position, map.island.points)) return 'coast';
-    if (map.island.points.some((p, i, ring) => distanceToSegment(position, p, ring[(i + 1) % ring.length]) < radius)) return 'coast';
+    if (!pointValid(position) || !isLandPoint(map, position)) return 'coast';
+    if (boundaries.some(ring => ring.some((p, i) => distanceToSegment(position, p, ring[(i + 1) % ring.length]) < radius))) return 'coast';
     for (const segment of segments.near(position, radius)) {
       if (distanceToSegment(position, segment.a, segment.b) < segment.half + radius + .3) return segment.kind;
     }
@@ -126,7 +127,7 @@ export function createLandscapePlacementGuard(map) {
     return null;
   }
   function terrainReason(position, radius = 0) {
-    if (!pointValid(position) || !pointInPolygon(position, map.island.points)) return 'coast';
+    if (!pointValid(position) || !isLandPoint(map, position)) return 'coast';
     for (const segment of segments.near(position)) if (segment.kind === 'water' && distanceToSegment(position, segment.a, segment.b) < segment.half) return 'water';
     return null;
   }
@@ -270,7 +271,10 @@ function scatterStamp(point, context, scatter, vegetation) {
       object.vegetation = { ...settings, seed: Math.floor(random() * 4294967296) };
       if (object.vegetation.density === 0) continue;
     }
-    const reason = guard.reason(object.position, collisionRadius(object), object.kind, scatter.minDistance, object.vegetation?.type);
+    // The collision proxy can be smaller than the visible rock. Keep its full
+    // authored footprint clear of shores as well as neighbouring obstacles.
+    const footprint = Math.max(collisionRadius(object), getObjectFootprintRadius(object.kind, object.variant) * object.scale);
+    const reason = guard.reason(object.position, footprint, object.kind, scatter.minDistance, object.vegetation?.type);
     if (reason) { context.skippedAt(reason); continue; }
     if (context.addObject(object)) placed++;
   }

@@ -2,8 +2,8 @@
   "$schema": "./worldmap.schema.json",
   "schemaVersion": 1,
   "id": "nebeljagd-world-v1",
-  "name": "Nebelinsel · Buchten und Halbinseln",
-  "description": "Sieben miteinander verbundene Landschaften auf einer asymmetrischen Insel: Frostkap, Hafenbucht, westlicher Waldarm, Moorbucht und südöstliche Sonnenhalbinsel. Breite Landverbindungen und mehrere Wege halten die Regionen erreichbar. Die Kartenbasis enthält nur die vorhandenen freigegebenen Tripo-Platzierungen.",
+  "name": "Nebelinsel · Die zwei Zugänge",
+  "description": "Sieben Landschaften mit markanten Buchten und einem östlichen Teilgebiet, das nur über zwei natürliche Landzugänge erreichbar ist. Die Goldheide-Lagune trennt diesen Bereich vom Inselkern. Wege, Flüsse und Brücken sind für die spätere Gestaltung entfernt; alle gesetzten Modelle bleiben erhalten.",
   "coordinateSystem": {
     "units": "meters",
     "horizontalAxes": [
@@ -1080,784 +1080,8 @@
       ]
     }
   ],
-  "paths": [
-    {
-      "id": "nordweg",
-      "name": "Nordweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          30,
-          -60
-        ],
-        [
-          34,
-          -118
-        ],
-        [
-          28,
-          -165
-        ],
-        [
-          20,
-          -210
-        ],
-        [
-          -18,
-          -234
-        ],
-        [
-          -46,
-          -259
-        ],
-        [
-          -70,
-          -285
-        ],
-        [
-          -96,
-          -318
-        ],
-        [
-          -123,
-          -340
-        ],
-        [
-          -150,
-          -360
-        ],
-        [
-          -210,
-          -398
-        ],
-        [
-          -252,
-          -439
-        ],
-        [
-          -290,
-          -480
-        ]
-      ]
-    },
-    {
-      "id": "mondweg",
-      "name": "Mondweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          20,
-          -210
-        ],
-        [
-          67,
-          -240
-        ],
-        [
-          100,
-          -273
-        ],
-        [
-          130,
-          -305
-        ],
-        [
-          161,
-          -358
-        ],
-        [
-          196,
-          -396
-        ],
-        [
-          230,
-          -430
-        ]
-      ]
-    },
-    {
-      "id": "goldweg",
-      "name": "Goldweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          30,
-          -60
-        ],
-        [
-          89,
-          -92
-        ],
-        [
-          132,
-          -128
-        ],
-        [
-          170,
-          -165
-        ],
-        [
-          231,
-          -184
-        ],
-        [
-          285,
-          -188
-        ],
-        [
-          335,
-          -190
-        ],
-        [
-          371,
-          -154
-        ],
-        [
-          406,
-          -130
-        ],
-        [
-          440,
-          -110
-        ]
-      ]
-    },
-    {
-      "id": "westweg",
-      "name": "Westweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          30,
-          -60
-        ],
-        [
-          -30,
-          -49
-        ],
-        [
-          -77,
-          -30
-        ],
-        [
-          -120,
-          -10
-        ],
-        [
-          -160,
-          -18
-        ],
-        [
-          -191,
-          -31
-        ],
-        [
-          -220,
-          -45
-        ],
-        [
-          -265,
-          -53
-        ],
-        [
-          -304,
-          -53
-        ],
-        [
-          -340,
-          -50
-        ]
-      ]
-    },
-    {
-      "id": "auenweg",
-      "name": "Auenweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          30,
-          -60
-        ],
-        [
-          12,
-          -14
-        ],
-        [
-          5,
-          26
-        ],
-        [
-          0,
-          65
-        ],
-        [
-          -25,
-          106
-        ],
-        [
-          -53,
-          134
-        ],
-        [
-          -80,
-          160
-        ]
-      ]
-    },
-    {
-      "id": "moorweg",
-      "name": "Moorweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          -80,
-          160
-        ],
-        [
-          -142,
-          186
-        ],
-        [
-          -188,
-          218
-        ],
-        [
-          -230,
-          250
-        ],
-        [
-          -259,
-          293
-        ],
-        [
-          -289,
-          323
-        ],
-        [
-          -320,
-          350
-        ],
-        [
-          -272,
-          396
-        ],
-        [
-          -226,
-          425
-        ],
-        [
-          -180,
-          450
-        ]
-      ]
-    },
-    {
-      "id": "uferpfad",
-      "name": "Uferpfad",
-      "kind": "trail",
-      "width": 5,
-      "points": [
-        [
-          -340,
-          -50
-        ],
-        [
-          -350,
-          2
-        ],
-        [
-          -367,
-          43
-        ],
-        [
-          -385,
-          80
-        ],
-        [
-          -395,
-          139
-        ],
-        [
-          -394,
-          188
-        ],
-        [
-          -390,
-          235
-        ],
-        [
-          -357,
-          275
-        ],
-        [
-          -337,
-          313
-        ],
-        [
-          -320,
-          350
-        ]
-      ]
-    },
-    {
-      "id": "aschenweg",
-      "name": "Aschenweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          -80,
-          160
-        ],
-        [
-          -55,
-          189
-        ],
-        [
-          -30,
-          208
-        ],
-        [
-          -5,
-          225
-        ],
-        [
-          58,
-          231
-        ],
-        [
-          108,
-          247
-        ],
-        [
-          155,
-          265
-        ],
-        [
-          184,
-          269
-        ],
-        [
-          208,
-          268
-        ],
-        [
-          230,
-          265
-        ],
-        [
-          250,
-          215
-        ],
-        [
-          315,
-          190
-        ],
-        [
-          360,
-          205
-        ]
-      ]
-    },
-    {
-      "id": "sonnenweg",
-      "name": "Sonnenweg",
-      "kind": "main",
-      "width": 8,
-      "points": [
-        [
-          -5,
-          225
-        ],
-        [
-          2,
-          271
-        ],
-        [
-          15,
-          307
-        ],
-        [
-          30,
-          340
-        ],
-        [
-          54,
-          371
-        ],
-        [
-          68,
-          401
-        ],
-        [
-          80,
-          430
-        ],
-        [
-          110,
-          462
-        ],
-        [
-          140,
-          482
-        ],
-        [
-          170,
-          500
-        ],
-        [
-          122,
-          519
-        ],
-        [
-          80,
-          526
-        ],
-        [
-          40,
-          530
-        ]
-      ]
-    },
-    {
-      "id": "hafenpfad",
-      "name": "Hafenpfad",
-      "kind": "trail",
-      "width": 5,
-      "points": [
-        [
-          170,
-          500
-        ],
-        [
-          218,
-          488
-        ],
-        [
-          256,
-          469
-        ],
-        [
-          290,
-          450
-        ],
-        [
-          330,
-          448
-        ],
-        [
-          364,
-          453
-        ],
-        [
-          395,
-          460
-        ]
-      ]
-    },
-    {
-      "id": "suedbogen",
-      "name": "Südbogen",
-      "kind": "trail",
-      "width": 5,
-      "points": [
-        [
-          -180,
-          450
-        ],
-        [
-          -128,
-          465
-        ],
-        [
-          -83,
-          469
-        ],
-        [
-          -40,
-          470
-        ],
-        [
-          -6,
-          488
-        ],
-        [
-          18,
-          509
-        ],
-        [
-          40,
-          530
-        ]
-      ]
-    },
-    {
-      "id": "goldbogen",
-      "name": "Goldbogen",
-      "kind": "trail",
-      "width": 5,
-      "points": [
-        [
-          335,
-          -190
-        ],
-        [
-          333,
-          -124
-        ],
-        [
-          343,
-          -70
-        ],
-        [
-          355,
-          -20
-        ],
-        [
-          369,
-          65
-        ],
-        [
-          366,
-          137
-        ],
-        [
-          360,
-          205
-        ]
-      ]
-    },
-    {
-      "id": "glutpfad",
-      "name": "Glutpfad",
-      "kind": "trail",
-      "width": 5,
-      "points": [
-        [
-          230,
-          265
-        ],
-        [
-          245,
-          320
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-01",
-      "name": "Nordweg · Silberlauf",
-      "kind": "bridge",
-      "width": 14,
-      "points": [
-        [
-          -88.03,
-          -311.51
-        ],
-        [
-          -136.02,
-          -350.61
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-02",
-      "name": "Goldweg · Goldbach",
-      "kind": "bridge",
-      "width": 14,
-      "points": [
-        [
-          106.95,
-          -103.61
-        ],
-        [
-          163.26,
-          -158.43
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-03",
-      "name": "Westweg · Silberlauf",
-      "kind": "bridge",
-      "width": 14,
-      "points": [
-        [
-          -76.85,
-          -30.07
-        ],
-        [
-          -116.59,
-          -11.58
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-04",
-      "name": "Moorweg · Silberlauf",
-      "kind": "bridge",
-      "width": 14,
-      "points": [
-        [
-          -79.3,
-          159.71
-        ],
-        [
-          -107.05,
-          171.34
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-05",
-      "name": "Aschenweg · Goldbach",
-      "kind": "bridge",
-      "width": 14,
-      "points": [
-        [
-          74.77,
-          236.37
-        ],
-        [
-          102.14,
-          245.13
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-06",
-      "name": "Hafenpfad · Goldbach",
-      "kind": "bridge",
-      "width": 11,
-      "points": [
-        [
-          237.45,
-          478.27
-        ],
-        [
-          261.05,
-          466.48
-        ]
-      ]
-    },
-    {
-      "id": "bruecke-07",
-      "name": "Südbogen · Silberlauf",
-      "kind": "bridge",
-      "width": 11,
-      "points": [
-        [
-          -183.19,
-          449.08
-        ],
-        [
-          -152.77,
-          457.86
-        ]
-      ]
-    }
-  ],
-  "rivers": [
-    {
-      "id": "silberlauf",
-      "name": "Silberlauf",
-      "width": 14,
-      "points": [
-        [
-          -105,
-          -515
-        ],
-        [
-          -125,
-          -360
-        ],
-        [
-          -60,
-          -215
-        ],
-        [
-          -70,
-          -80
-        ],
-        [
-          -140,
-          75
-        ],
-        [
-          -65,
-          220
-        ],
-        [
-          -100,
-          360
-        ],
-        [
-          -180,
-          470
-        ],
-        [
-          -220,
-          550
-        ]
-      ]
-    },
-    {
-      "id": "goldbach",
-      "name": "Goldbach",
-      "width": 10,
-      "points": [
-        [
-          180,
-          -330
-        ],
-        [
-          100,
-          -250
-        ],
-        [
-          140,
-          -140
-        ],
-        [
-          80,
-          -30
-        ],
-        [
-          70,
-          130
-        ],
-        [
-          90,
-          250
-        ],
-        [
-          220,
-          370
-        ],
-        [
-          270,
-          545
-        ],
-        [
-          295,
-          610
-        ],
-        [
-          305,
-          665
-        ],
-        [
-          310,
-          700
-        ]
-      ]
-    }
-  ],
+  "paths": [],
+  "rivers": [],
   "places": [
     {
       "id": "eiswacht",
@@ -1900,8 +1124,8 @@
       "name": "Heideschrein",
       "kind": "shrine",
       "position": [
-        170,
-        -165
+        335,
+        -120
       ]
     },
     {
@@ -2263,6 +1487,78 @@
       ],
       "scale": 1,
       "gaps": []
+    }
+  ],
+  "waterAreas": [
+    {
+      "id": "goldheide-lagune",
+      "name": "Goldheide-Lagune",
+      "points": [
+        [
+          175,
+          -290
+        ],
+        [
+          215,
+          -270
+        ],
+        [
+          255,
+          -215
+        ],
+        [
+          280,
+          -130
+        ],
+        [
+          295,
+          -30
+        ],
+        [
+          290,
+          60
+        ],
+        [
+          272,
+          145
+        ],
+        [
+          252,
+          220
+        ],
+        [
+          233,
+          282
+        ],
+        [
+          183,
+          250
+        ],
+        [
+          160,
+          180
+        ],
+        [
+          150,
+          90
+        ],
+        [
+          155,
+          0
+        ],
+        [
+          140,
+          -95
+        ],
+        [
+          138,
+          -185
+        ],
+        [
+          145,
+          -250
+        ]
+      ]
     }
   ]
 }

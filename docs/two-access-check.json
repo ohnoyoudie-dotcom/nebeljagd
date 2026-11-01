@@ -1,0 +1,279 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5208",
+  "standalone": true,
+  "sourceSha256": "fce0d00185a3a4020751c9c5e56d1e02d20522c67c85682f4c1e21bb8a2cffa7",
+  "checks": [
+    {
+      "name": "The source and editor show the lagoon with two land necks and no saved paths, rivers or bridges",
+      "evidence": {
+        "waterArea": {
+          "id": "goldheide-lagune",
+          "name": "Goldheide-Lagune",
+          "points": [
+            [
+              175,
+              -290
+            ],
+            [
+              215,
+              -270
+            ],
+            [
+              255,
+              -215
+            ],
+            [
+              280,
+              -130
+            ],
+            [
+              295,
+              -30
+            ],
+            [
+              290,
+              60
+            ],
+            [
+              272,
+              145
+            ],
+            [
+              252,
+              220
+            ],
+            [
+              233,
+              282
+            ],
+            [
+              183,
+              250
+            ],
+            [
+              160,
+              180
+            ],
+            [
+              150,
+              90
+            ],
+            [
+              155,
+              0
+            ],
+            [
+              140,
+              -95
+            ],
+            [
+              138,
+              -185
+            ],
+            [
+              145,
+              -250
+            ]
+          ]
+        },
+        "objects": [
+          {
+            "id": "object-house-mvviwx0g-2",
+            "name": "Haus",
+            "kind": "house",
+            "variant": "kit-tripo-tavern",
+            "position": [
+              2.7,
+              -70.5
+            ],
+            "rotation": 0,
+            "scale": 1
+          }
+        ],
+        "barriers": [
+          {
+            "id": "barrier-wall-mvwkdprc-1",
+            "name": "Steinmauer",
+            "kind": "wall",
+            "variant": "kit-stone",
+            "points": [
+              [
+                -10,
+                -36
+              ],
+              [
+                17,
+                -44
+              ]
+            ],
+            "scale": 1,
+            "gaps": []
+          },
+          {
+            "id": "barrier-wall-mvwkdudz-2",
+            "name": "Steinmauer · Pfeiler & Abdeckung",
+            "kind": "wall",
+            "variant": "kit-cut-stone",
+            "points": [
+              [
+                -8,
+                -32
+              ],
+              [
+                17,
+                -39
+              ]
+            ],
+            "scale": 1,
+            "gaps": []
+          },
+          {
+            "id": "barrier-wall-mvwkdy5m-3",
+            "name": "Steinmauer · Verwittert (Tripo)",
+            "kind": "wall",
+            "variant": "kit-tripo-wall",
+            "points": [
+              [
+                -7,
+                -28
+              ],
+              [
+                16,
+                -34
+              ]
+            ],
+            "scale": 1,
+            "gaps": []
+          },
+          {
+            "id": "barrier-fence-mvwke5jq-5",
+            "name": "Holzzaun · Kreuzstreben",
+            "kind": "fence",
+            "variant": "kit-cross-wood",
+            "points": [
+              [
+                35,
+                -38
+              ],
+              [
+                55,
+                -47
+              ]
+            ],
+            "scale": 1,
+            "gaps": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "Water polygons are selectable and their vertices use the existing complete Undo/Redo history",
+      "evidence": null
+    },
+    {
+      "name": "Dragging an island vertex updates the visible shoreline immediately even when the island contains water holes",
+      "evidence": null
+    },
+    {
+      "name": "Ordinary object placement and the grass brush cannot create placements inside the lagoon",
+      "evidence": null
+    },
+    {
+      "name": "JSON save/open preserves water polygons exactly, while older documents without waterAreas remain readable",
+      "evidence": null
+    },
+    {
+      "name": "Exported standalone HTML reopens the exact lagoon geometry and retains the water-area controls",
+      "evidence": null
+    },
+    {
+      "name": "Nordzugang is crossed on foot using ordinary keyboard controls on the actual imported map",
+      "evidence": {
+        "from": {
+          "x": 180,
+          "y": 2.185976472727094,
+          "z": -305
+        },
+        "to": {
+          "x": 192.8693434175969,
+          "y": 1.3608958471628019,
+          "z": -292.1306565824031
+        },
+        "elapsed": 3.2499999999999933
+      }
+    },
+    {
+      "name": "Suedzugang is crossed on foot using ordinary keyboard controls on the actual imported map",
+      "evidence": {
+        "from": {
+          "x": 239,
+          "y": 9.79694881300833,
+          "z": 296
+        },
+        "to": {
+          "x": 252.06733331632915,
+          "y": 9.376786774441408,
+          "z": 282.93266668367085
+        },
+        "elapsed": 3.299999999999993
+      }
+    },
+    {
+      "name": "The lagoon bank blocks continued walking and a forward roll; the runtime and island minimap show water rather than terrain",
+      "evidence": {
+        "walkStart": {
+          "x": 151,
+          "y": 0.5870128773543488,
+          "z": 0
+        },
+        "bank": {
+          "x": 154.49759181434098,
+          "y": 0.5208029984993813,
+          "z": 0.029469153202531708
+        },
+        "blocked": {
+          "x": 154.4976108576949,
+          "y": 0.5208026861556216,
+          "z": 0.029126372831816263
+        },
+        "rollStart": {
+          "x": 151.69761085769488,
+          "y": 0.5674924696239759,
+          "z": 0.029126372831816263
+        },
+        "rollDirection": 1.5707963267948966,
+        "afterRoll": {
+          "x": 154.49796717976113,
+          "y": 0.5207968418608501,
+          "z": 0.022712575639834278
+        },
+        "rollCooldown": 1.6000000000000032,
+        "minimapMode": "island"
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/two-access-editor.png",
+    "docs/two-access-runtime.png"
+  ],
+  "limits": "Chromium with software WebGL; imported fixture starts and ordinary movement. Topological isolation is independently covered by the map graph tests; no device-performance claim.",
+  "delivery": {
+    "files": {
+      "map-editor.html": {
+        "bytes": 60485414,
+        "sha256": "c62485d9c3753c4c751352dd7a893b49ab83c80b1caa303b86b04a193f60840f"
+      },
+      "nebeljagd.html": {
+        "bytes": 75903607,
+        "sha256": "72ec8187cebcfdd6a1eaf054fed910e2341604196fcdddd1e7db5e272ff2c620"
+      },
+      "worldmap.json": {
+        "bytes": 21722,
+        "sha256": "fce0d00185a3a4020751c9c5e56d1e02d20522c67c85682f4c1e21bb8a2cffa7"
+      }
+    },
+    "unexpectedRequests": []
+  }
+}

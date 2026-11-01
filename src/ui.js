@@ -1,6 +1,7 @@
 import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
 import { WEAPON_TYPES, weaponStats } from './loot-tiers.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
+import { getWorldmapStats, landBoundaryRings } from './map/model.js';
 
 function describeWeapon(item) {
   const type = item.type || item.kind;
@@ -205,13 +206,17 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     return { scale, centerX, centerZ, span,
       point: (x, z) => [MAP_SIZE / 2 + (x - centerX) * scale, MAP_SIZE / 2 + (z - centerZ) * scale] };
   }
-  function traceMapLine(ctx, points, closed = false) {
-    ctx.beginPath();
+  function traceMapLine(ctx, points, closed = false, begin = true) {
+    if (begin) ctx.beginPath();
     points.forEach(([x, z], index) => {
       const [px, py] = mapProjection.point(x, z);
       index ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
     });
     if (closed) ctx.closePath();
+  }
+  function traceMapLand(ctx) {
+    ctx.beginPath();
+    for (const ring of landBoundaryRings(worldmap)) traceMapLine(ctx, ring, true, false);
   }
   function mapSymbol(ctx, kind, x, y, size = 6, color = '#f0ddad') {
     ctx.save(); ctx.translate(x, y); ctx.lineJoin = 'round'; ctx.lineWidth = 1.4;
@@ -251,10 +256,10 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     // Fine contour-like sea lines stay fixed to the map, never to the player.
     ctx.strokeStyle = '#83b1b915'; ctx.lineWidth = .5;
     for (let line = 14; line < size; line += 22) { ctx.beginPath(); ctx.moveTo(0, line); ctx.lineTo(size, line); ctx.stroke(); }
-    traceMapLine(ctx, worldmap.island.points, true);
-    ctx.fillStyle = '#6f885d'; ctx.fill();
+    traceMapLand(ctx);
+    ctx.fillStyle = '#6f885d'; ctx.fill('evenodd');
     ctx.strokeStyle = '#86b9b78c'; ctx.lineWidth = local ? 7 : 5; ctx.lineJoin = 'round'; ctx.stroke();
-    ctx.save(); traceMapLine(ctx, worldmap.island.points, true); ctx.clip();
+    ctx.save(); traceMapLand(ctx); ctx.clip('evenodd');
     for (const region of worldmap.regions || []) {
       traceMapLine(ctx, region.points, true); ctx.fillStyle = region.color; ctx.fill();
     }
@@ -292,7 +297,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       } else mapSymbol(ctx, object.kind, px, py, 5, object.kind === 'shrine' ? '#e3c4ed' : '#e2dac4');
     }
     ctx.restore();
-    traceMapLine(ctx, worldmap.island.points, true); ctx.strokeStyle = '#e8dfb8b3'; ctx.lineWidth = local ? 1.4 : .8; ctx.stroke();
+    traceMapLand(ctx); ctx.strokeStyle = '#e8dfb8b3'; ctx.lineWidth = local ? 1.4 : .8; ctx.stroke();
     for (const place of worldmap.places || []) {
       const [px, py] = mapProjection.point(...place.position);
       if (px < 12 || py < 13 || px > size - 12 || py > size - 13) continue;
@@ -314,9 +319,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     mapBackdrop = document.createElement('canvas'); mapBackdrop.width = mapBackdrop.height = 512;
     const ctx = mapBackdrop.getContext('2d'); ctx.setTransform(2, 0, 0, 2, 0, 0); drawGeography(ctx, false);
     $('worldName').textContent = data.name || 'Die Nebelinsel';
-    let twiceArea = 0;
-    data.island.points.forEach((p, i) => { const n = data.island.points[(i + 1) % data.island.points.length]; twiceArea += p[0] * n[1] - n[0] * p[1]; });
-    const area = (Math.abs(twiceArea) / 2e6).toLocaleString('de-DE', { maximumFractionDigits: 2 });
+    const area = (getWorldmapStats(data).landAreaM2 / 1e6).toLocaleString('de-DE', { maximumFractionDigits: 2 });
     $('worldStats').textContent = `${area} km² · ${(data.regions || []).length} Landschaften · ${landmarkObjects.filter(item => item.kind === 'house').length} begehbare Häuser`;
     lastMapTime = -Infinity; drawMap(latestState);
   }
@@ -335,7 +338,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       const zoneCenter = state.zoneCenter || worldmap.zone?.center || [0, 0];
       const [zx, zy] = Array.isArray(zoneCenter) ? point(...zoneCenter) : point(zoneCenter.x, zoneCenter.z);
       const zr = Math.max(.01, state.zoneRadius) * scale;
-      ctx.save(); traceMapLine(ctx, worldmap.island.points, true); ctx.clip();
+      ctx.save(); traceMapLand(ctx); ctx.clip('evenodd');
       ctx.fillStyle = '#74587e80'; ctx.beginPath(); ctx.rect(0, 0, size, size); ctx.arc(zx, zy, zr, 0, Math.PI * 2, true); ctx.fill('evenodd'); ctx.restore();
       ctx.setLineDash([5, 3]); ctx.strokeStyle = state.inDanger ? '#ffa99c' : '#edcfff'; ctx.lineWidth = 1.7;
       ctx.beginPath(); ctx.arc(zx, zy, zr, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);

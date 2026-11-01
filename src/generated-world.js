@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { validateWorldmap } from './map/model.js';
+import { validateWorldmap, landBoundaryRings } from './map/model.js';
 import { createRiverWater } from './water.js';
 import { createWorldObjectRenderer } from './world-object-renderer.js';
 import { createTerrainArtwork } from './terrain-art.js';
@@ -9,7 +9,7 @@ import { createMeadowGround } from './meadow-ground.js';
 import { createSnowCover } from './snow-cover.js';
 import { emitTerrainTriangles } from './terrain-triangulation.js';
 
-import { createWorldSpatialModel, projection } from './generated-spatial.js';
+import { createWorldSpatialModel, triangulateWorldLand } from './generated-spatial.js';
 export { createWorldSpatialModel } from './generated-spatial.js';
 
 const CHUNK = 64;
@@ -59,8 +59,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       const cell = `${x},${z}`; if (!surfaceCells.has(cell)) surfaceCells.set(cell, []); surfaceCells.get(cell).push(id);
     }
   }
-  const outline = map.island.points.map(([x, z]) => new THREE.Vector2(x, z));
-  const terrainSource = THREE.ShapeUtils.triangulateShape(outline, []).map(tri => tri.map(index => vertex(...map.island.points[index])));
+  const terrainSource = triangulateWorldLand(map).map(triangle => triangle.map(point => vertex(...point)));
   emitTerrainTriangles(terrainSource, { depth: 6, vertex, shouldRefine: spatial.refineTerrainTriangle, emit: addTriangle });
   const terrainArtwork = createTerrainArtwork();
   const groundTexture = terrainArtwork.ground;
@@ -109,10 +108,13 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     new THREE.MeshStandardMaterial({ color: '#376e83', roughness: .49, metalness: .12 }));
   sea.rotation.x = -Math.PI / 2; sea.position.set((map.bounds.minX + map.bounds.maxX) / 2, -.9, (map.bounds.minZ + map.bounds.maxZ) / 2); sea.name = 'Meer um die Nebelinsel'; root.add(sea);
   const shorePositions = [], shoreIndices = [];
-  for (let i = 0; i <= map.island.points.length; i++) {
-    const [x, z] = map.island.points[i % map.island.points.length];
-    shorePositions.push(x, spatial.groundAt(x, z) - .03, z, x, -1.2, z);
-    if (i < map.island.points.length) { const a = i * 2; shoreIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  for (const ring of landBoundaryRings(map)) {
+    const start = shorePositions.length / 3;
+    for (let i = 0; i <= ring.length; i++) {
+      const [x, z] = ring[i % ring.length];
+      shorePositions.push(x, spatial.groundAt(x, z) - .03, z, x, -1.2, z);
+      if (i < ring.length) { const a = start + i * 2; shoreIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    }
   }
   const shoreGeo = new THREE.BufferGeometry(); shoreGeo.setAttribute('position', new THREE.Float32BufferAttribute(shorePositions, 3)); shoreGeo.setIndex(shoreIndices); shoreGeo.computeVertexNormals();
   root.add(new THREE.Mesh(shoreGeo, new THREE.MeshStandardMaterial({ color: '#b4aa7f', side: THREE.DoubleSide, roughness: .98 })));
@@ -204,15 +206,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   if (!spatial.isLand(spawn.x, spawn.z) || spatial.isWater(spawn.x, spawn.z)) { const candidate = map.spawnAreas.find(area => spatial.isLand(...area.position) && !spatial.isWater(...area.position)); spawn.x = candidate?.position[0] ?? map.zone.center[0]; spawn.z = candidate?.position[1] ?? map.zone.center[1]; }
   function resolveMovement(position, radius = .42) {
     objects.resolveMovement(position, radius);
-    let shore = spatial.coast.closest(position.x, position.z);
-    if (!spatial.isLand(position.x, position.z) || shore && shore.distance < radius + .04) {
-      if (!shore) { let minimum = Infinity; for (const segment of spatial.coast.segments) { const p = projection(position.x, position.z, segment.a, segment.b); if (p.distance < minimum) { shore = p; minimum = p.distance; } } }
-      if (shore) {
-        const length = Math.hypot(shore.dx, shore.dz) || 1; let nx = -shore.dz / length, nz = shore.dx / length;
-        if (!spatial.isLand(shore.x + nx * (radius + .1), shore.z + nz * (radius + .1))) { nx *= -1; nz *= -1; }
-        position.x = shore.x + nx * (radius + .08); position.z = shore.z + nz * (radius + .08);
-      }
-    }
+    spatial.resolveShoreMovement(position, radius);
     const water = spatial.waterAt(position.x, position.z);
     if (water && water.distance < water.line.width / 2 + radius && !spatial.bridgeAt(position.x, position.z, -radius * .1)) {
       let dx = position.x - water.x, dz = position.z - water.z, length = Math.hypot(dx, dz);

@@ -10,7 +10,8 @@ import { createGroundGrassExclusion } from '../src/meadow-ground.js';
 import { createWorldSpatialModel } from '../src/generated-spatial.js';
 
 const read = path => JSON.parse(readFileSync(new URL('../' + path, import.meta.url)));
-const base = read('worldmap.json'), schema = read('worldmap.schema.json');
+// Asset contracts use a dry site independently of the evolving project lagoon.
+const base = { ...read('worldmap.json'), waterAreas: [] }, schema = read('worldmap.schema.json');
 const variant = 'kit-tripo-castle';
 const castle = getEnvironmentKitDefinition('house', variant);
 

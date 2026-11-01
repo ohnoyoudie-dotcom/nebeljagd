@@ -1,7 +1,11 @@
 # Nebeljagd · Die Nebelinsel
 
-**Entwicklungsstand auf `work`:** Die Insel hat jetzt markante Buchten,
-Halbinseln und organischere Regionsgrenzen. Der Editor zeigt pro Hauptbereich
+**Entwicklungsstand auf `work`:** Die Insel hat markante Buchten,
+Halbinseln und organischere Regionsgrenzen. Die neue Goldheide-Lagune trennt
+einen großen östlichen Bereich ab, der nur über zwei rund 28 Meter breite
+Landzugänge erreichbar ist. Wege, Flüsse und Brücken sind aus der Kartenbasis
+entfernt. Vorschau und Prüfung: [`docs/two-access-island.md`](docs/two-access-island.md).
+Der Editor zeigt pro Hauptbereich
 nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
@@ -31,8 +35,8 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 [`docs/art-style.md`](docs/art-style.md).
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
-wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,09 km²**
-Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
+wird direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,02 km²**
+Land mit sieben Landschaften, einer Lagune und Ortsmarkern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor
 platzieren; das kleine Tripo-Schloss ist aus der aktiven Auswahl entfernt.
@@ -44,7 +48,8 @@ Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
 Die aktuelle Projektkarte enthält ein Tripo-Wirtshaus und vier gezeichnete
-Mauer-/Zaunstrecken. Landschaft und Wege wurden bei dieser Bereinigung erhalten.
+Mauer-/Zaunstrecken. Die Landschaft bleibt erhalten; Wege, Flüsse und Brücken
+werden später neu gestaltet.
 Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
@@ -87,8 +92,8 @@ npm run preview       # Fertigen Build lokal prüfen
 Die Landschaftsdaten sind eine optionale, separat versionierte Erweiterung
 `landscape.version = 1`. Alte Karten bleiben gültig; bestehende Objekte erhalten
 erst beim Bearbeiten neue `vegetation`-Eigenschaften. Die aktuelle Ausgangskarte
-und ihre 3.949 Platzierungen werden beim Öffnen des Editors nicht automatisch
-verändert. Frühere Browserentwürfe und JSON-Importe bleiben erhalten;
+wird beim Öffnen des Editors nicht automatisch verändert.
+Frühere Browserentwürfe und JSON-Importe bleiben erhalten;
 **Alte Gebäude entfernen** bereinigt sie gezielt und lässt sich mit **Zurück**
 rückgängig machen.
 
@@ -127,7 +132,8 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
 - Die sichere Zone startet mit **800 Metern Radius**. Nach drei Minuten beginnt
   die erste Schrumpfphase. Fünf Phasen führen in insgesamt 20 Minuten auf
   20 Meter Radius. Der Nebel verursacht derzeit 11 Schadenspunkte pro Sekunde.
-- Flüsse werden über die gespeicherten Brücken überquert. Bäume, Felsen,
+- Die Lagune kann nur über den nördlichen oder südlichen Landzugang umgangen
+  werden; Laufen und Rollen enden am Ufer. Bäume, Felsen,
   bewachsene Erhöhungen, Hauswände, Wasser und Küste begrenzen die Bewegung. Pfeile prüfen ihre gesamte
   Flugstrecke gegen Hindernisse und prallen gedämpft ab.
 - Das neue Wirtshaus ist dauerhaft ohne Dach und enthält Gastraum und Küche.
@@ -153,8 +159,8 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
 Die größere Minikarte schaltet zwischen Umgebung und gesamter Insel um.
 Die vorhandene Figur blendet Stand und Gang weicher und dreht sich fließender.
 Hohes Gras ist bei Standardskalierung 2,25–2,60 Meter hoch und verwendet wieder
-die dichten, breiten Büschel aus dem früheren Walddorf. Hauptwege tragen graues
-Natursteinpflaster; Nebenwege bleiben Erdpfade. Bewachsene Felskanten und
+die dichten, breiten Büschel aus dem früheren Walddorf. Die Wege- und
+Flusswerkzeuge bleiben für den späteren Ausbau verfügbar. Bewachsene Felskanten und
 Felskuppen blockieren Bewegung, Rollen, Pfeile und die Sicht auf Figuren dahinter.
 
 Sicht, Beute und Statuswerte: [`docs/tactical-combat.md`](docs/tactical-combat.md).
