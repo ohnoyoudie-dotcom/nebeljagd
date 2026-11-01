@@ -1,5 +1,30 @@
 # Öffentliche Browser- und Download-Adressen
 
+## Bereinigte Vier-Biome-Karte · 1. November 2026
+
+Die aktuelle Ausgabe liegt im öffentlichen Vorschauordner:
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250).
+Veröffentlicht wurde ausschließlich `preview/` auf `main` mit Commit
+`df3b250b686ac244a14e1a03b23cd7ef5714f1c2`. Die Dateien entsprechen exakt dem
+geprüften `welt/`-Build aus `work`-Commit `9c9ac60`, mit Quellstand `4aeee98`.
+`preview/release.json` enthält Herkunft, Dateigrößen und SHA-256-Prüfsummen.
+
+Die Karte enthält vier Biome und zwei Brücken sowie die vorhandenen Objekte;
+Orts-/Häusersymbole, Regionsbeschriftungen und Spawn-Zonen sind entfernt.
+Editor und Spiel sind als zusammenpassende Ausgabe veröffentlicht. Lokal unter
+dem tatsächlichen `/preview/`-Pfad geprüft: frischer Editor mit aktueller Karte
+und Übergabe über **Spielen** an das rendernde Spiel, einschließlich Spielstart.
+Beide Prüfungen bestanden ohne Browserfehler oder externe Anfragen.
+
+GitHub-Pages-Bereitstellung erfolgreich abgeschlossen:
+[pages build and deployment](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41303186334).
+Der direkte HTTPS-Aufruf der Pages-Domain ist in dieser Cloud-Umgebung durch
+die Netzwerkpolicy gesperrt. Der Veröffentlichungsstatus wird daher über die
+GitHub-Actions-Webseite geprüft; der Browsercheck erfolgte mit identischen
+Dateien lokal. Alte lokale Entwürfe werden nur nach ausdrücklich gewähltem
+**Wiederherstellen** geladen. Der Versionsparameter im Link umgeht einen
+zwischengespeicherten älteren Editor.
+
 ## Separate Browser-Vorschau für die aktuelle Entwicklung
 
 Die aktuelle Entwicklung ist unter einem eigenen, stabilen GitHub-Pages-Pfad
@@ -11,7 +36,7 @@ erreichbar; die bestehende Hauptseite und `welt/` bleiben erhalten:
 
 Der veröffentlichte Ordner `preview/` enthält nur den eigenständigen Build und
 Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
-`work`. Neue Builds aktualisieren ausschließlich diese Vorschau-Dateien.
+`work`. Neue öffentliche Entwicklungsbuilds aktualisieren ausschließlich diese Vorschau-Dateien.
 
 ## Aktuelle Entwicklung: Landschaftswerkzeuge auf `work`
 
@@ -19,7 +44,7 @@ Die neue Landschaftserweiterung wird ausdrücklich **nur auf `work`** gesichert.
 `main` enthält dafür ausschließlich die zusätzlich veröffentlichte
 `preview/`-Ausgabe; die bestehende Spielseite, `welt/` und die Quelldateien
 bleiben unverändert. Der geprüfte Entwicklungsbuild steht im Verzeichnis
-`development/`; sein [ZIP-Download](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/development/nebeljagd-welt-und-editor.zip)
+`welt/` auf `work`; sein [ZIP-Download](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
 enthält Spiel, Editor und Kartendaten für die Offline-Nutzung.
 
 ## Bestehende Veröffentlichung

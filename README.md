@@ -13,7 +13,10 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
-Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
+Die aktuelle Browser-Vorschau ist unter
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250)
+und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
+Auf `main` enthält dafür nur `preview/` den aktuellen Entwicklungsbuild.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
@@ -65,7 +68,7 @@ Gras und Gelände nach der Bildreferenz: [`docs/grass-restoration.md`](docs/gras
 und [`docs/reference-terrain.md`](docs/reference-terrain.md).
 Vorgemerkte Pakete: [`docs/next-packages.md`](docs/next-packages.md).
 
-Öffentliche Version auf `main` (ohne die neuen Landschaftswerkzeuge):
+Ältere Veröffentlichung unter `welt/` (ohne die neuen Landschaftswerkzeuge):
 [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/) ·
 [Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html) ·
 [ZIP herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip).

@@ -18,6 +18,9 @@ Küsten, Biomgrenzen, Brücken, normaler Spielstart und Nebelplan.
 
 ## Öffnen
 
+Browser-Link zur aktuellen Veröffentlichung:
+[Bereinigten Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250).
+
 Die aktuellen Dateien liegen auf `work` unter `welt/map-editor.html` und
 `welt/nebeljagd.html`. Der Editor beginnt eine neue Sitzung mit der bereinigten
 Karte. Ein älterer eigener Entwurf wird durch diese Aktualisierung nicht
