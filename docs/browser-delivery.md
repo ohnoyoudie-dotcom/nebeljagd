@@ -1,9 +1,30 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
 
-## Aktueller Editor mit Feuer- und Eiseffekten
+## Aktueller Editor mit verfeinerten Zaubereffekten
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7). Feuer und Eis besitzen eigene Lade- und
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=8cc85dd). Feuer besitzt weich bewegte orangefarbene
+Flammen und einen zusammenhängenden Schweif. Eis zeigt beleuchtete
+Kristallflächen, Glanzpunkte und eine feine Frostfahne. Einschläge klingen in
+mehreren Schichten aus. Alte Spiel-Tabs schließen, **Spielen** öffnen und mit
+**F** zaubern. Die gespeicherte Nutzerkarte bleibt unverändert.
+
+Quellstand: `71ec3f72db356167cc320452a886d3c251569389`; Build `325de0c67035`.
+Veröffentlichungscommit: `8cc85dd8e2f9856a10a944242f4d2d165213b7ad`, ausschließlich
+`preview/` auf `main`. Alle 347 Node-Tests und fünf Browserprüfungen bestanden;
+zwölf Spielaufnahmen im Vergleich mit der ersten Fassung geprüft.
+Keine Browser-, Shader-, WebGL- oder HTTP-Fehler.
+Details: [Verfeinerte Zaubereffekte](spell-effects-v2.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41315205697) hat genau diesen Commit erfolgreich bereitgestellt.
+Die veröffentlichte Versionsdatei bestätigt den geprüften Build. Browserprüfungen
+verwendeten lokal identische Dateien, da direkte Pages-HTTP-Aufrufe durch die
+Netzwerkpolicy dieser Umgebung gesperrt sind. Der Klassenserver wurde durch
+diese statische Vorschau nicht veröffentlicht.
+
+## Erste Ausgabe mit Feuer- und Eiseffekten
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7). Feuer und Eis besitzen eigene Lade- und
 Abschusseffekte, sichtbar unterschiedliche Projektile und Schweife sowie
 Trefferimpulse. Im Editor **Spielen** öffnen, einen Stab aufnehmen und **F** drücken.
 Alte Spiel-Tabs schließen und neu über den aktualisierten Editor öffnen.
@@ -140,7 +161,7 @@ Die veröffentlichte Ausgabe liegt unter einem stabilen GitHub-Pages-Pfad auf
 
 - [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
 - [Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/)
-- [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7)
+- [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=8cc85dd)
 
 Der veröffentlichte Ordner `preview/` enthält den eigenständigen Build und
 Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf

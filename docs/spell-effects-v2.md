@@ -37,3 +37,17 @@ tatsächlichen Editor und dessen **Spielen**-Übergang. Er erfasst beide Stäbe 
 Laden, Abschuss, Flug, frühen und späten Einschlag und prüft anschließend das
 Zurücksetzen laufender Effekte. Der Testentwurf verändert die gespeicherte
 Nutzerkarte nicht.
+
+Geprüfter Build: `325de0c67035`. Alle 347 Node-Tests und fünf Browserprüfungen
+bestanden. Zwölf Spielaufnahmen wurden mit der ersten Fassung verglichen;
+keine Browser-, Shader-, WebGL- oder HTTP-Fehler. Zusätzlich wurde eine kleine
+Grafikvorschau unter denselben Kamera- und Farbeinstellungen geprüft.
+Bericht: [spell-effects-v2-check.json](spell-effects-v2-check.json).
+
+Veröffentlicht: [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=8cc85dd). Alte Spiel-Tabs schließen und über
+**Spielen** neu öffnen. Commit `8cc85dd8e2f9856a10a944242f4d2d165213b7ad` aktualisiert ausschließlich
+`preview/` auf `main`. Quellstand: `71ec3f72db356167cc320452a886d3c251569389`.
+[GitHub-Pages-Bereitstellung](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41315205697) erfolgreich; die veröffentlichte
+Versionsdatei stimmt mit dem geprüften Paket überein.
+Der direkte Pages-HTTP-Aufruf ist in dieser Umgebung durch die Netzwerkpolicy
+gesperrt. Der Browsercheck verwendete lokal identische Dateien.
