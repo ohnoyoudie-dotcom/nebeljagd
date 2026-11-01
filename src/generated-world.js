@@ -188,7 +188,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         const plank = new THREE.BoxGeometry(path.width, .14, span - .025); plank.applyMatrix4(transform.matrix); pieces.push(plank);
         // The railing makes the collision edge readable while leaving both
         // landings fully open. It follows the same sloped deck profile.
-        const channel = spatial.waterAt(x, z), overWater = channel && channel.distance < channel.line.width / 2 + .6;
+        const channel = spatial.waterAt(x, z), overWater = !spatial.isLand(x, z) || channel && channel.distance < channel.line.width / 2 + .6;
         for (const side of overWater ? [-1, 1] : []) {
           transform.position.set(x + dz / length * (path.width / 2 - .08) * side, (start + end) / 2 + .85, z - dx / length * (path.width / 2 - .08) * side);
           transform.updateMatrix();
@@ -199,7 +199,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       for (let post = 0; post <= posts; post++) {
         const t = post / posts, x = a[0] + dx * t, z = a[1] + dz * t;
         const height = spatial.bridgeAt(x, z)?.height ?? surfaceHeightAt(x, z);
-        const channel = spatial.waterAt(x, z), overWater = channel && channel.distance < channel.line.width / 2 + .6;
+        const channel = spatial.waterAt(x, z), overWater = !spatial.isLand(x, z) || channel && channel.distance < channel.line.width / 2 + .6;
         for (const side of overWater ? [-1, 1] : []) {
           transform.position.set(x + dz / length * (path.width / 2 - .08) * side, height + .44, z - dx / length * (path.width / 2 - .08) * side);
           transform.rotation.set(0, rotation, 0); transform.updateMatrix();

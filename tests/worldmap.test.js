@@ -7,11 +7,11 @@ import { renderWorldmapSvg } from '../src/map/render.js';
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const copy = () => structuredClone(base);
 
-test('world-map data is valid, readable, has seven regions and fifty distributed spawn slots', () => {
+test('world-map data is valid, readable, has four regions and fifty distributed spawn slots', () => {
   assert.deepEqual(validateWorldmap(base), { valid: true, errors: [], warnings: [] });
   assert.deepEqual(JSON.parse(JSON.stringify(base)), base);
   const stats = getWorldmapStats(base);
-  assert.equal(stats.regionCount, 7);
+  assert.equal(stats.regionCount, 4);
   assert.equal(stats.targetPlayers, 50);
   assert.equal(stats.spawnAreaCount, 10);
   assert.equal(stats.spawnCapacity, 50);
@@ -103,11 +103,15 @@ test('SVG exports named editable layers and geometry without external images or 
   assert.ok(svg.includes('clip-path="url(#world-island-clip)"'));
   assert.ok(!/<script|<foreignObject|\bonload=|<image/i.test(svg));
   const links = [...svg.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
-  assert.deepEqual(links.filter(link => link.startsWith('#feature-island-')), Array(3).fill(`#feature-island-${base.island.id}`));
-  assert.ok(links.every(link => /^#(?:feature-island-|world-object-)/.test(link)), 'all SVG references must remain local');
+  assert.ok(links.length > 0);
+  for (const link of links) {
+    assert.ok(link.startsWith('#'), 'all SVG references must remain local');
+    assert.ok(svg.includes(`id="${link.slice(1)}"`), `SVG reference ${link} must resolve`);
+  }
   assert.ok(svg.includes('id="world-objects"'));
   for (const object of base.objects ?? []) assert.ok(svg.includes(`data-feature-id="${object.id}"`));
   assert.equal((svg.match(new RegExp(`<(?:path|polygon) id="feature-island-${base.island.id}"`, 'g')) ?? []).length, 1);
+  for (const islet of base.islets ?? []) assert.ok(svg.includes(`data-feature-type="islet" data-feature-id="${islet.id}"`));
   if (base.waterAreas?.length) {
     assert.match(svg, /fill-rule="evenodd" clip-rule="evenodd"/);
     for (const area of base.waterAreas) assert.ok(svg.includes(`data-feature-type="waterArea" data-feature-id="${area.id}"`));

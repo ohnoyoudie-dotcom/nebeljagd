@@ -10,8 +10,11 @@ import { createGroundGrassExclusion } from '../src/meadow-ground.js';
 import { createWorldSpatialModel } from '../src/generated-spatial.js';
 
 const read = path => JSON.parse(readFileSync(new URL('../' + path, import.meta.url)));
-// Asset contracts use a dry site independently of the evolving project lagoon.
-const base = { ...read('worldmap.json'), waterAreas: [] }, schema = read('worldmap.schema.json');
+// Asset contracts use an explicit dry rectangle independently of the project coastline.
+const base = read('worldmap.json'), schema = read('worldmap.schema.json');
+const { minX, minZ, maxX, maxZ } = base.bounds;
+base.island = { ...base.island, points: [[minX, minZ], [maxX, minZ], [maxX, maxZ], [minX, maxZ]] };
+base.islets = []; base.waterAreas = []; base.paths = []; base.rivers = [];
 const variant = 'kit-tripo-castle';
 const castle = getEnvironmentKitDefinition('house', variant);
 

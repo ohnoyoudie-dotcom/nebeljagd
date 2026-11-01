@@ -18,6 +18,11 @@ export function canPaintGrass(point, islandOrMap, radius) {
   if (!legacy) for (const river of islandOrMap.rivers ?? []) for (let i = 1; i < river.points.length; i++) {
     if (distanceToSegment(point, river.points[i - 1], river.points[i]) < river.width / 2 + radius) return false;
   }
+  if (!legacy) for (const bridge of (islandOrMap.paths ?? []).filter(path => path.kind === 'bridge')) {
+    for (let i = 1; i < bridge.points.length; i++) {
+      if (distanceToSegment(point, bridge.points[i - 1], bridge.points[i]) < bridge.width / 2 + radius) return false;
+    }
+  }
   return true;
 }
 

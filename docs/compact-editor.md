@@ -1,14 +1,15 @@
 # Kompakter Editor und neue Inselform
 
 Die Kartenbasis hat jetzt ausgeprägte Buchten, eine nördliche Frostzunge,
-eine östliche Aschenhalbinsel und eine eingeschnittene Moorküste. Organischere
-Regionsgrenzen gliedern die sieben Landschaften nach der Kartenreferenz. Ein
-Meeresarm trennt den Osten ab; zwei Brücken führen über seine Wasserkanäle.
+ein abgetrenntes Ostland und eine eingeschnittene Moorküste. Organischere
+Regionsgrenzen gliedern vier Landschaften: Schnee, Grün/Wald, Wüste/Sand und
+Sumpf. Das Ostland ist eine eigenständige Landfläche; zwei Brücken führen
+über die freie Lücke dorthin. Die Flusskanäle sind entfernt.
 Das übrige Wegenetz bleibt für den späteren Ausbau frei.
 Die Landfläche beträgt rund 1,02 km². Taverne, vier bestehende
 Mauer-/Zaunstrecken, gemalte Landschaft und Spielstart bleiben erhalten.
 Die neue Geometrie wird von Editor, 3D-Spiel und Minikarte gemeinsam verwendet.
-Aktuelle Karte und Prüfung: [Layout nach Kartenreferenz](reference-layout.md).
+Aktuelle Karte und Prüfung: [Vier Biome und offene Brücken](open-gap-layout.md).
 
 ## Ein Werkzeug auf einmal
 
@@ -60,5 +61,6 @@ JSON- und HTML-Rundlauf, Mobilansicht sowie Spielstart und Minikarte.
 Berichte: `docs/compact-editor-check.json`, `docs/island-runtime-check.json`.
 Die Browserprüfungen verwenden Chromium mit Software-WebGL; sie sind keine
 Leistungsmessung auf einem physischen Tablet.
-Die neuere Biomeinteilung, die Wasserkanäle und die beiden Brücken werden im
-verlinkten Bericht zum Layout nach Kartenreferenz geprüft.
+Die aktuelle Einteilung in vier Biome und die beiden Brücken über echte
+Geländelücken werden im Bericht [Vier Biome und offene Brücken](open-gap-layout.md)
+geprüft.

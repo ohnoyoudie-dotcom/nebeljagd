@@ -5,7 +5,9 @@ import { createWorldSpatialModel, SEA_LEVEL } from '../src/generated-spatial.js'
 import { emitTerrainTriangles } from '../src/terrain-triangulation.js';
 import { ROLL_SPEED } from '../src/rules.js';
 
-const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+// Historical channel-based layout remains a regression fixture. The active
+// map now uses independent land polygons and is covered by open_gap_runtime.
+const map = JSON.parse(readFileSync(new URL('./fixtures/reference-channel-worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
 const bridges = map.paths.filter(path => path.kind === 'bridge');
 const interpolate = (a, b, t) => a.map((value, axis) => value + (b[axis] - value) * t);

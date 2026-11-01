@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { pointInPolygon, distanceToSegment, isLandPoint, landBoundaryRings } from './map/model.js';
+import { pointInPolygon, distanceToSegment, isLandPoint, outerLandRings, waterBoundaryRings, landBoundaryRings } from './map/model.js';
 import { terrainPalette } from './terrain-art.js';
 import { createTerrainPaintIndex, applyTerrainPaint } from './map/terrain-paint.js';
 import { getLandscape, biomeRuntimeId } from './map/landscape.js';
@@ -20,10 +20,15 @@ export function projection(x, z, a, b) {
 /** Triangulate actual dry land; water polygons are holes, not painted overlays.
  * Work on copies because Three removes repeated closing vertices in place. */
 export function triangulateWorldLand(map) {
-  const [outline, ...holes] = landBoundaryRings(map).map(ring => ring.map(([x, z]) => new THREE.Vector2(x, z)));
-  const indices = THREE.ShapeUtils.triangulateShape(outline, holes);
-  const points = [outline, ...holes].flat().map(point => [point.x, point.y]);
-  return indices.map(triangle => triangle.map(index => points[index]));
+  const water = waterBoundaryRings(map);
+  return outerLandRings(map).flatMap(ring => {
+    const outline = ring.map(([x, z]) => new THREE.Vector2(x, z));
+    const holes = water.filter(hole => pointInPolygon(hole[0], ring))
+      .map(hole => hole.map(([x, z]) => new THREE.Vector2(x, z)));
+    const indices = THREE.ShapeUtils.triangulateShape(outline, holes);
+    const points = [outline, ...holes].flat().map(point => [point.x, point.y]);
+    return indices.map(triangle => triangle.map(index => points[index]));
+  });
 }
 
 function segmentIndex(lines, padding = 0, cellSize = 32) {
@@ -181,6 +186,9 @@ export function createWorldSpatialModel(map) {
     }
   }
   function unshapedGroundAt(x, z) {
+    // A gap between independent coastlines contains no raised terrain. Keep
+    // the exact hole boundary compatible with existing inland-water shores.
+    if (!isLand(x, z) && (coast.closest(x, z)?.distance ?? Infinity) > 1e-7) return SEA_LEVEL - .7;
     let height = baseGround(x, z);
     for (const house of houseCells.get(`${Math.floor(x / CHUNK)},${Math.floor(z / CHUNK)}`) ?? []) {
       const dx = x - house.position[0], dz = z - house.position[1];
@@ -217,7 +225,8 @@ export function createWorldSpatialModel(map) {
       const count = Math.max(1, Math.ceil(span / 2));
       for (let step = 0; step <= count; step++) {
         const x = a[0] + (b[0] - a[0]) * step / count, z = a[1] + (b[1] - a[1]) * step / count;
-        deck = Math.max(deck, unshapedGroundAt(x, z) + .12, (waterAt(x, z)?.height ?? -Infinity) + .67);
+        const waterHeight = !isLand(x, z) ? SEA_LEVEL : waterAt(x, z)?.height ?? -Infinity;
+        deck = Math.max(deck, unshapedGroundAt(x, z) + .12, waterHeight + .67);
       }
       length += span; offsets.push(length);
     }
@@ -237,6 +246,9 @@ export function createWorldSpatialModel(map) {
   }
   function groundAt(x, z) {
     let height = unshapedGroundAt(x, z);
+    // Shape only real banks. The deck must never manufacture a land causeway
+    // under itself across an open coast-to-coast gap.
+    if (!isLand(x, z)) return height;
     for (const segment of bridgeTerrain.near(x, z)) {
       const dx = segment.b[0] - segment.a[0], dz = segment.b[1] - segment.a[1], length = Math.hypot(dx, dz);
       const alongSegment = ((x - segment.a[0]) * dx + (z - segment.a[1]) * dz) / length;
@@ -253,7 +265,9 @@ export function createWorldSpatialModel(map) {
       const fromEnd = Math.min(clamp(along, 0, profile.length), clamp(profile.length - along, 0, profile.length));
       const clearance = .035 + .065 * smooth(0, 3, fromEnd), underside = deckHeightAt(profile, along) - clearance;
       const water = waterAt(x, z);
-      const dryBank = water ? smooth(water.line.width / 2 + .3, water.line.width / 2 + 7, water.distance) : 1;
+      const shoreDistance = coast.closest(x, z)?.distance ?? Infinity;
+      const dryBank = water ? smooth(water.line.width / 2 + .3, water.line.width / 2 + 7, water.distance)
+        : smooth(0, 3, shoreDistance);
       // Excavate high banks beneath the planks. Only raise dry approaches;
       // the channel bed and its open sea connection must remain submerged.
       const target = THREE.MathUtils.lerp(Math.min(height, underside), underside, dryBank);
@@ -267,7 +281,9 @@ export function createWorldSpatialModel(map) {
     for (const segment of bridges.near(x, z)) {
       const dx = segment.b[0] - segment.a[0], dz = segment.b[1] - segment.a[1];
       const along = ((x - segment.a[0]) * dx + (z - segment.a[1]) * dz) / (dx * dx + dz * dz);
-      if (along < 0 || along > 1) continue;
+      // A rotated end-cap point can round just beyond 0 or 1. Projection
+      // remains clamped, so this tolerance does not extend the authored deck.
+      if (along < -1e-9 || along > 1 + 1e-9) continue;
       const p = projection(x, z, segment.a, segment.b);
       if (p.distance <= segment.line.width / 2 + padding) {
         return { ...p, line: segment.line, height: bridgeDeckHeight(segment, p.t) };
@@ -294,8 +310,10 @@ export function createWorldSpatialModel(map) {
     return terrainPaint.length ? applyTerrainPaint(terrainPaint, x, z, target, false, paintScratch) : target;
   }
   function resolveShoreMovement(position, radius = .42) {
+    if (bridgeAt(position.x, position.z, -radius - .06)) return position;
     let shore = coast.closest(position.x, position.z);
     if (!isLand(position.x, position.z) || shore && shore.distance < radius + .04) {
+      if (clampToBridgeSide(position, radius)) return position;
       if (!shore) {
         let minimum = Infinity;
         for (const segment of coast.segments) {
@@ -313,21 +331,27 @@ export function createWorldSpatialModel(map) {
     }
     return position;
   }
+  function clampToBridgeSide(position, radius) {
+    for (const segment of bridges.near(position.x, position.z)) {
+      const p = projection(position.x, position.z, segment.a, segment.b);
+      const halfWidth = segment.line.width / 2;
+      if (p.t <= 0 || p.t >= 1 || p.distance > halfWidth + radius + 1.2 || !bridgeAt(p.x, p.z)) continue;
+      const safe = Math.max(0, halfWidth - radius - .06), divisor = p.distance || 1;
+      const x = p.x + (position.x - p.x) / divisor * Math.min(p.distance, safe);
+      const z = p.z + (position.z - p.z) / divisor * Math.min(p.distance, safe);
+      if (!bridgeAt(x, z, -radius - .055)) continue;
+      position.x = x; position.z = z;
+      return true;
+    }
+    return false;
+  }
   function resolveWaterMovement(position, radius = .42) {
     resolveShoreMovement(position, radius);
     const water = waterAt(position.x, position.z);
     if (!water || water.distance >= water.line.width / 2 + radius || bridgeAt(position.x, position.z, -radius - .06)) return position;
     // A lateral step off a bridge meets its rail. Projecting it all the way to
     // the riverbank would teleport the player several metres through water.
-    for (const segment of bridges.near(position.x, position.z)) {
-      const p = projection(position.x, position.z, segment.a, segment.b);
-      const halfWidth = segment.line.width / 2;
-      if (p.t <= 0 || p.t >= 1 || p.distance > halfWidth + radius + 1.2) continue;
-      const safe = Math.max(0, halfWidth - radius - .06), divisor = p.distance || 1;
-      position.x = p.x + (position.x - p.x) / divisor * Math.min(p.distance, safe);
-      position.z = p.z + (position.z - p.z) / divisor * Math.min(p.distance, safe);
-      return resolveShoreMovement(position, radius);
-    }
+    if (clampToBridgeSide(position, radius)) return resolveShoreMovement(position, radius);
     let dx = position.x - water.x, dz = position.z - water.z, length = Math.hypot(dx, dz);
     if (length < .00001) { const l = Math.hypot(water.dx, water.dz) || 1; dx = water.dz / l; dz = -water.dx / l; length = 1; }
     position.x = water.x + dx / length * (water.line.width / 2 + radius);
@@ -338,7 +362,10 @@ export function createWorldSpatialModel(map) {
     isLand, resolveShoreMovement, resolveWaterMovement,
     isWater: (x, z, padding = 0) => {
       if (inWaterArea(x, z, padding)) return true;
+      if (bridgeAt(x, z, -Math.max(0, padding))) return false;
+      if (!isLand(x, z)) return true;
+      if (padding > 0 && (coast.closest(x, z)?.distance ?? Infinity) < padding) return true;
       const water = waterAt(x, z);
-      return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z, -Math.max(0, padding)));
+      return Boolean(water && water.distance < water.line.width / 2 + padding);
     } };
 }

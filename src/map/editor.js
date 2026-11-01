@@ -1,6 +1,6 @@
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
-import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint } from './model.js';
+import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint, pointInPolygon } from './model.js';
 import { renderWorldmapSvg, barrierSvg } from './render.js';
 import { makeBarrier, barrierLength } from './barriers.js';
 import { createBarrierPanel } from './barrier-panel.js';
@@ -22,14 +22,14 @@ document.body.dataset.fileMode = location.protocol === 'file:' ? 'true' : 'false
 const clone = value => JSON.parse(JSON.stringify(value));
 const STORAGE_KEY = 'nebeljagd.worldmap.v1';
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const collectionKeys = { region: 'regions', path: 'paths', river: 'rivers', waterArea: 'waterAreas', place: 'places', spawn: 'spawnAreas', object: 'objects', barrier: 'barriers' };
+const collectionKeys = { islet: 'islets', region: 'regions', path: 'paths', river: 'rivers', waterArea: 'waterAreas', place: 'places', spawn: 'spawnAreas', object: 'objects', barrier: 'barriers' };
 const PLAYTEST_KEY = 'nebeljagd.worldmap.playtest.v1';
 const MAX_FILE_BYTES = 5_000_000;
 const FILE_HANDLE_DB = 'nebeljagd-map-file-v1';
 const FILE_HANDLE_STORE = 'handles';
 const FILE_HANDLE_KEY = 'worldmap';
 const playtestWindows = new Map();
-const kindNames = { island: 'Inselumriss', region: 'Region', path: 'Weg', river: 'Fluss', waterArea: 'Gewässerfläche', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone', barrier: 'Mauer / Zaun' };
+const kindNames = { island: 'Hauptland', islet: 'Landfläche', region: 'Region', path: 'Weg', river: 'Fluss', waterArea: 'Gewässerfläche', place: 'Ort', spawn: 'Startbereich', object: 'Weltobjekt', terrain: 'Bodenfläche', wind: 'Windzone', barrier: 'Mauer / Zaun' };
 const initialSnapshot = (() => {
   try {
     const saved = normalizeWorldmap(JSON.parse($('map-snapshot')?.textContent || 'null'));
@@ -209,7 +209,7 @@ function validateEdit(candidate, previous) {
   if (!result.valid) return result;
   result.errors.push(...validateStartRiverEdit(candidate, previous));
   if (result.errors.length) { result.valid = false; return result; }
-  const waterChanged = ['waterAreas', 'rivers'].some(key => JSON.stringify(candidate[key] ?? []) !== JSON.stringify(previous[key] ?? []));
+  const waterChanged = ['island', 'islets', 'waterAreas', 'rivers', 'paths'].some(key => JSON.stringify(candidate[key] ?? []) !== JSON.stringify(previous[key] ?? []));
   const originals = new Map((previous.objects ?? []).map(item => [item.id, item]));
   for (const item of candidate.objects ?? []) {
     const original = originals.get(item.id);
@@ -356,9 +356,9 @@ function updateMovingDrawing() {
   const svg = $('map-stage').firstElementChild;
   const feature = selectedFeature();
   if (!svg || !feature) return;
-  // Water polygons and island paths share an even-odd terrain cutout. Rebuild
-  // both while dragging so the visible shores never lag behind their handles.
-  if (selection.type === 'waterArea' || selection.type === 'island' && map.waterAreas?.length) { renderMap(); return; }
+  // Every coast contributes to the shared land clip. Rebuild it during the
+  // gesture, so separate islands and water holes follow their handles live.
+  if (['waterArea', 'island', 'islet'].includes(selection.type)) { renderMap(); return; }
   const element = document.getElementById(`feature-${selection.type}-${selection.id}`);
   if (element) {
     if (selection.type === 'barrier') element.outerHTML = barrierSvg(feature);
@@ -389,7 +389,7 @@ function appendSelection(svg) {
   outline.setAttribute('class', 'map-selection-outline');
   if (feature.points) {
     const points = [...feature.points];
-    if (['island', 'region', 'waterArea'].includes(selection.type)) points.push(points[0]);
+    if (['island', 'islet', 'region', 'waterArea'].includes(selection.type)) points.push(points[0]);
     outline.setAttribute('points', points.map(point => point.join(',')).join(' '));
   } else {
     outline.setAttribute('cx', feature.position[0]); outline.setAttribute('cy', feature.position[1]);
@@ -513,7 +513,7 @@ function renderProperties() {
   $('delete-feature').hidden = selection.type === 'island';
   if (feature.points) {
     $('vertex-count').textContent = feature.points.length;
-    $('delete-vertex').disabled = selection.vertex === null || feature.points.length <= (['island', 'region', 'waterArea'].includes(selection.type) ? 3 : 2);
+    $('delete-vertex').disabled = selection.vertex === null || feature.points.length <= (['island', 'islet', 'region', 'waterArea'].includes(selection.type) ? 3 : 2);
     $('selected-vertex-info').textContent = selection.vertex === null ? 'Kein Formpunkt ausgewählt' : `Punkt ${selection.vertex + 1}: x ${Math.round(feature.points[selection.vertex][0])} · z ${Math.round(feature.points[selection.vertex][1])}`;
   }
 }
@@ -569,9 +569,26 @@ function addFeature(type) {
   const id = `${type}-${Date.now().toString(36)}`;
   let added;
   if (type === 'place') added = { id, name: 'Neuer Ort', kind: 'landmark', position };
-  if (type === 'region') added = { id, name: 'Neue Region', biome: 'meadow', color: '#a3b674', points: [[position[0] - 60, position[1] - 50], [position[0] + 60, position[1] - 50], [position[0] + 60, position[1] + 50], [position[0] - 60, position[1] + 50]], label: clone(position) };
+  if (type === 'region') {
+    const local = [...map.regions].reverse().find(region => pointInPolygon(position, region.points)) ?? map.regions[0];
+    added = { id, name: 'Neue Region', biome: local.biome, color: local.color, points: [[position[0] - 60, position[1] - 50], [position[0] + 60, position[1] - 50], [position[0] + 60, position[1] + 50], [position[0] - 60, position[1] + 50]], label: clone(position) };
+  }
   if (type === 'path') added = { id, name: 'Neuer Weg', kind: 'trail', width: 5, points: [[position[0] - 50, position[1]], [position[0] + 50, position[1]]] };
   if (type === 'river') added = { id, name: 'Neuer Fluss', width: 12, points: [[position[0], position[1] - 50], [position[0], position[1] + 50]] };
+  if (type === 'islet') {
+    const centre = [view.x + view.width / 2, view.y + view.height / 2], candidates = [centre];
+    for (let x = map.bounds.minX + 35; x < map.bounds.maxX - 35; x += 60) {
+      for (let z = map.bounds.minZ + 35; z < map.bounds.maxZ - 35; z += 60) candidates.push([x, z]);
+    }
+    candidates.sort((a, b) => Math.hypot(a[0] - centre[0], a[1] - centre[1]) - Math.hypot(b[0] - centre[0], b[1] - centre[1]));
+    for (const point of candidates) {
+      if (isLandPoint(map, point)) continue;
+      const points = [[-25, -18], [18, -22], [28, 5], [12, 24], [-22, 20]].map(offset => [point[0] + offset[0], point[1] + offset[1]]);
+      const proposal = { id, name: 'Neue Landfläche', points };
+      if (validateEdit({ ...map, islets: [...(map.islets ?? []), proposal] }, map).valid) { added = proposal; break; }
+    }
+    if (!added) return toast('Kein freier Platz für eine weitere Landfläche innerhalb der Karte.', true);
+  }
   if (type === 'waterArea') {
     // A water polygon cannot cover a spawn, object or the fog centre. Start
     // nearby on clear ground instead of creating an invalid default at [0,0].
@@ -611,7 +628,7 @@ function deleteFeature() {
 function addVertex(point = null) {
   const feature = selectedFeature();
   if (!feature?.points) return;
-  const isPolygon = ['island', 'region', 'waterArea'].includes(selection.type);
+  const isPolygon = ['island', 'islet', 'region', 'waterArea'].includes(selection.type);
   const segmentCount = feature.points.length - (isPolygon ? 0 : 1);
   let index = selection.vertex ?? 0;
   if (index >= segmentCount) index = segmentCount - 1;
@@ -634,7 +651,7 @@ function addVertex(point = null) {
 function deleteVertex() {
   const feature = selectedFeature();
   if (!feature?.points || selection.vertex === null) return;
-  const minimum = ['island', 'region', 'waterArea'].includes(selection.type) ? 3 : 2;
+  const minimum = ['island', 'islet', 'region', 'waterArea'].includes(selection.type) ? 3 : 2;
   if (feature.points.length <= minimum) return toast(`Mindestens ${minimum} Formpunkte müssen bestehen bleiben.`, true);
   const index = selection.vertex;
   // Clear before render because the old last index may cease to exist.
@@ -1285,7 +1302,7 @@ $('clear-selection').addEventListener('click', () => { selection = null; renderA
 $('undo').addEventListener('click', undo); $('redo').addEventListener('click', redo);
 $('add-vertex').addEventListener('click', () => addVertex()); $('delete-vertex').addEventListener('click', deleteVertex);
 $('delete-feature').addEventListener('click', deleteFeature);
-for (const type of ['place', 'region', 'path', 'river', 'waterArea']) $(`add-${type}`).addEventListener('click', () => addFeature(type));
+for (const type of ['place', 'region', 'path', 'river', 'waterArea', 'islet']) $(`add-${type}`).addEventListener('click', () => addFeature(type));
 for (const type of ['select', 'pan']) $(`tool-${type}`).addEventListener('click', () => setMode(type));
 $('zoom-in').addEventListener('click', () => zoomBy(.8)); $('zoom-out').addEventListener('click', () => zoomBy(1.25));
 $('fit-map').addEventListener('click', () => { view = initialView(); renderMap(); });

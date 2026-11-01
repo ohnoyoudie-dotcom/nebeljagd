@@ -1,11 +1,11 @@
 # Nebeljagd · Die Nebelinsel
 
-**Entwicklungsstand auf `work`:** Die Biome folgen der Kartenreferenz: ein
-kleineres Frostgebiet im Nordwesten, ein großer grüner Kern, Moor im Südwesten,
-trockenes Gelände im Süden und ein goldbrauner Osten. Ein organisch geformter
-Meeresarm trennt den östlichen Bereich ab; genau zwei begehbare Brücken verbinden
-ihn mit der Hauptinsel. Das übrige Wegenetz bleibt für den späteren Ausbau frei.
-Vorschau und Prüfung: [`docs/reference-layout.md`](docs/reference-layout.md).
+**Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
+**Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
+getrennte Landflächen; zwei begehbare Brücken überspannen die freie Lücke.
+Die bisherigen Flusskanäle sind vollständig entfernt. Das übrige Wegenetz
+bleibt für den späteren Ausbau frei.
+Vorschau und Prüfung: [`docs/open-gap-layout.md`](docs/open-gap-layout.md).
 Der Editor zeigt pro Hauptbereich
 nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
@@ -37,7 +37,7 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,02 km²**
-Land mit sieben Landschaften, einem Meeresarm, zwei Brücken und Ortsmarkern. Der
+Land mit vier Landschaften, zwei getrennten Landflächen, zwei Brücken und Ortsmarkern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor
 platzieren; das kleine Tripo-Schloss ist aus der aktiven Auswahl entfernt.
@@ -49,9 +49,8 @@ Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
 Die aktuelle Projektkarte enthält ein Tripo-Wirtshaus und vier gezeichnete
-Mauer-/Zaunstrecken. Die beiden Brücken queren kurze Wasserkanäle, die den
-Meeresarm mit dem offenen Wasser verbinden. Weitere Wege und Flüsse werden
-später gestaltet.
+Mauer-/Zaunstrecken. Die beiden Brücken führen direkt über die freie Lücke
+zwischen den Landflächen. Es gibt keine eingezeichneten Flüsse.
 Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;

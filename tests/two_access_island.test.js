@@ -1,72 +1,85 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { isLandPoint, pointInPolygon, landBoundaryRings, distanceToSegment, validateWorldmap } from '../src/map/model.js';
-import { createWorldSpatialModel } from '../src/generated-spatial.js';
+import { isLandPoint, pointInPolygon, landBoundaryRings, outerLandRings, distanceToSegment, validateWorldmap } from '../src/map/model.js';
+import { createWorldSpatialModel, triangulateWorldLand } from '../src/generated-spatial.js';
 
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
 const boundarySegments = landBoundaryRings(map).flatMap(ring => ring.map((a, i) => [a, ring[(i + 1) % ring.length]]));
 const gates = [
-  { id: 'nordbruecke', channel: 'nordpassage', approach: [[158, -327], [213, -272]] },
-  { id: 'suedbruecke', channel: 'suedpassage', approach: [[223, 316], [267, 272]] },
+  { id: 'nordbruecke', approach: [[158, -327], [213, -272]], gap: [185, -300] },
+  { id: 'suedbruecke', approach: [[220, 315], [268, 267]], gap: [244, 291] },
 ];
-const channelDistance = (point, channel) => Math.min(...channel.points.slice(1).map((next, i) => distanceToSegment(point, channel.points[i], next)));
 
-// Die Körperreserve wird auch an Brückenseiten berücksichtigt. Ohne Deck
-// bleiben die beiden vollständigen Wasserkanäle unpassierbar.
+// An den Küsten tragen die Decks den ganzen Körper auch über den freien Raum.
+// Ohne Deck zählen nur trockene Punkte mit 0,8 Meter Küstenabstand als begehbar.
 function routeAt(point) {
-  if (!isLandPoint(map, point) || boundarySegments.some(([a, b]) => distanceToSegment(point, a, b) < .8)) return null;
-  const inChannel = map.rivers.some(channel => channelDistance(point, channel) < channel.width / 2 + .8);
-  if (!inChannel) return { gate: 0 };
+  const ground = isLandPoint(map, point) && boundarySegments.every(([a, b]) => distanceToSegment(point, a, b) >= .8);
+  if (ground) return { gate: 0 };
   const bridge = spatial.bridgeAt(...point, -.8);
   const index = gates.findIndex(gate => gate.id === bridge?.line.id);
   return index >= 0 ? { gate: 1 << index } : null;
 }
 
-test('the reference layout has exactly two sea channels and bridge routes with fully dry start areas', () => {
+test('the four-biome map has two actual land masses, no rivers or water overlays and fully dry start areas', () => {
   assert.equal(map.paths.length, 2);
   assert.ok(map.paths.every(path => path.kind === 'bridge'));
-  assert.equal(map.rivers.length, 2);
-  assert.equal(map.waterAreas.length, 1);
+  assert.deepEqual(map.rivers, []);
+  assert.deepEqual(map.waterAreas, []);
+  assert.equal(map.islets.length, 1);
+  assert.equal(map.islets[0].id, 'ostinsel');
+  assert.equal(outerLandRings(map).length, 2);
   assert.deepEqual(validateWorldmap(map), { valid: true, errors: [], warnings: [] });
-  for (const channel of map.rivers) {
-    assert.ok(pointInPolygon(channel.points[0], map.waterAreas[0].points), `${channel.id}: Anschluss in der Lagune`);
-    assert.ok(!pointInPolygon(channel.points.at(-1), map.island.points), `${channel.id}: Anschluss im offenen Meer`);
-  }
   for (const spawn of map.spawnAreas) {
-    assert.ok(routeAt(spawn.position), spawn.id);
-    for (const [a, b] of boundarySegments) assert.ok(distanceToSegment(spawn.position, a, b) >= spawn.radius, `${spawn.id}: Küstenabstand`);
-    for (const channel of map.rivers) assert.ok(channelDistance(spawn.position, channel) > spawn.radius + channel.width / 2, `${spawn.id}: vollständiger Kreis außerhalb des Kanals`);
+    assert.ok(isLandPoint(map, spawn.position), spawn.id);
+    for (const [a, b] of boundarySegments) assert.ok(distanceToSegment(spawn.position, a, b) >= spawn.radius,
+      `${spawn.id}: vollständiger Startkreis hält Küstenabstand`);
   }
   assert.equal(map.spawnAreas.reduce((sum, spawn) => sum + spawn.capacity, 0), 50);
+  assert.ok(isLandPoint(map, map.gameplay.spawnPosition));
 });
 
-test('both bridge decks cross real water, keep their complete width on the land necks and have dry landings', () => {
+test('the two bridges span genuine terrain gaps, carry their full usable width and meet dry land at both ends', () => {
+  const terrain = triangulateWorldLand(map);
   const withoutBridges = createWorldSpatialModel({ ...map, paths: [] });
   for (const gate of gates) {
-    const bridge = map.paths.find(path => path.id === gate.id), channel = map.rivers.find(river => river.id === gate.channel);
+    const bridge = map.paths.find(path => path.id === gate.id);
     const [a, b] = bridge.points, dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
-    for (const point of [a, b]) assert.ok(channelDistance(point, channel) >= channel.width / 2 + 10, `${gate.id}: mindestens zehn Meter feste Landauflage`);
-    let waterSamples = 0;
-    for (let step = 0; step <= 100; step++) {
-      const centre = [a[0] + dx * step / 100, a[1] + dz * step / 100];
-      if (withoutBridges.isWater(...centre)) waterSamples++;
-      assert.ok(routeAt(centre), `${gate.id}: durchgängiger Weg bei ${centre}`);
+    assert.equal(isLandPoint(map, gate.gap), false, `${gate.id}: unter der Brückenmitte ist kein Land`);
+    assert.equal(withoutBridges.isWater(...gate.gap), true, `${gate.id}: freier Raum ohne Deck unpassierbar`);
+    assert.equal(terrain.some(triangle => pointInPolygon(gate.gap, triangle)), false, `${gate.id}: kein versteckter Bodensteg`);
+    for (const end of [a, b]) {
+      assert.ok(boundarySegments.every(([c, d]) => distanceToSegment(end, c, d) > 10), `${gate.id}: feste Landauflage`);
       for (const side of [-bridge.width / 2 - .8, bridge.width / 2 + .8]) {
-        const point = [centre[0] - dz / length * side, centre[1] + dx / length * side];
-        assert.ok(isLandPoint(map, point), `${gate.id}: Deck reicht nicht in Außenmeer oder Lagune`);
+        const point = [end[0] - dz / length * side, end[1] + dx / length * side];
+        assert.ok(isLandPoint(map, point), `${gate.id}: gesamte Auflagenbreite auf Land`);
       }
     }
-    assert.ok(waterSamples > 15, `${gate.id}: wirkliche Wasserquerung statt Brücke auf trockenem Boden`);
-    for (const point of gate.approach) assert.ok(routeAt(point), `${gate.id}: zugängliche Anfahrt`);
+    let gapSamples = 0;
+    for (let step = 0; step <= 100; step++) {
+      const centre = [a[0] + dx * step / 100, a[1] + dz * step / 100];
+      assert.ok(routeAt(centre), `${gate.id}: durchgängige Querung bei ${centre}`);
+      if (!isLandPoint(map, centre)) {
+        gapSamples++;
+        assert.equal(terrain.some(triangle => pointInPolygon(centre, triangle)), false, `${gate.id}: echte Lücke bei ${centre}`);
+      }
+      for (const side of [-bridge.width / 2 + 1, bridge.width / 2 - 1]) {
+        const point = [centre[0] - dz / length * side, centre[1] + dx / length * side];
+        assert.ok(spatial.bridgeAt(...point, -.8), `${gate.id}: volle begehbare Deckbreite bei ${point}`);
+      }
+    }
+    assert.ok(gapSamples > 20, `${gate.id}: nennenswerte Querung über den freien Raum`);
+    for (const point of gate.approach) assert.ok(isLandPoint(map, point) && routeAt(point), `${gate.id}: trockene Anfahrt`);
   }
 });
 
-test('biomes follow the reference: small snowy northwest, dominant green core, southwest marsh and dry south/east', () => {
+test('exactly four biomes cover the map: snowy northwest, green core, southwest swamp and sandy south/east', () => {
+  assert.equal(map.regions.length, 4);
+  assert.deepEqual(map.regions.map(region => region.biome).sort(), ['dunes', 'forest', 'marsh', 'snow']);
   const expected = [
-    [[-350, -480], 'snow'], [[-20, -270], 'meadow'], [[-350, -40], 'forest'],
-    [[-250, 340], 'marsh'], [[100, 520], 'dunes'], [[375, -200], 'heath'], [[470, 175], 'volcanic'],
+    [[-350, -480], 'snow'], [[-20, -270], 'forest'], [[-350, -40], 'forest'],
+    [[-250, 340], 'marsh'], [[100, 520], 'dunes'], [[375, -200], 'dunes'], [[470, 175], 'dunes'],
   ];
   for (const [point, biome] of expected) assert.equal(spatial.biomeAt(...point), biome, point.join(','));
   const counts = new Map(); let total = 0;
@@ -80,16 +93,14 @@ test('biomes follow the reference: small snowy northwest, dominant green core, s
   }
   const share = biome => (counts.get(biome) ?? 0) / total;
   assert.ok(share('snow') > .12 && share('snow') < .2);
-  assert.ok(share('forest') + share('meadow') > .4);
+  assert.ok(share('forest') > .4 && share('forest') < .5);
   assert.ok(share('marsh') > .06 && share('marsh') < .15);
-  assert.ok(share('dunes') > .15 && share('dunes') < .25);
-  assert.ok(share('heath') > .1 && share('heath') < .2);
-  assert.ok(share('volcanic') > 0 && share('volcanic') < .05);
+  assert.ok(share('dunes') > .28 && share('dunes') < .36);
 });
 
 test('the eastern territory is reachable through either bridge and fully disconnected when both decks are removed', () => {
   // Vier-Meter-Raster mit 0,8 m Körperreserve. Entfernte Deckzellen entsprechen
-  // echten Kanal-Wasserflächen; es gibt keine erfundenen Testsperren im Gelände.
+  // dem echten freien Raum zwischen den Küsten; es gibt keine erfundenen Testsperren im Gelände.
   const step = 4, columns = Math.ceil((map.bounds.maxX - map.bounds.minX) / step);
   const rows = Math.ceil((map.bounds.maxZ - map.bounds.minZ) / step);
   const land = new Uint8Array(columns * rows), gateBits = new Uint8Array(land.length);

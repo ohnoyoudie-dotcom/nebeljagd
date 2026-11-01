@@ -11,6 +11,7 @@ function fixture() {
   map.regions = [{ id: 'brush-region', name: 'Wiese', biome: 'meadow', color: '#5a8844', points: map.island.points, label: [-60, 0] }];
   map.waterAreas = [{ id: 'brush-water', name: 'Gewässer', points: [[-20, -20], [20, -20], [20, 20], [-20, 20]] }];
   map.objects = []; map.paths = []; map.rivers = []; map.places = []; map.barriers = [];
+  delete map.islets;
   map.spawnAreas = []; map.gameplay.spawnPosition = [-80, -80];
   delete map.landscape;
   return map;
@@ -38,7 +39,8 @@ test('river connections to a lagoon stay clear of scenery, including banks and b
   assert.equal(canPaintGrass([0, -50], map.island.points, 2), true, 'legacy outer-ring calls retain their original meaning');
   assert.equal(canPaintGrass([0, -50], map, 2), false, 'bridge decks must stay free of grass and object footprints');
   assert.equal(canPaintGrass([7, -50], map, 2), false, 'a dry centre does not permit overhanging the channel bank');
-  assert.equal(canPaintGrass([9, -50], map, 2), true);
+  assert.equal(canPaintGrass([9, -50], map, 2), false, 'dry bridge approaches remain clear too');
+  assert.equal(canPaintGrass([9, -56], map, 2), true);
   assert.equal(canPaintGrass([0, -80], map, 2), false, 'open channel water blocks placements away from the bridge too');
   const stroke = createGrassBrushStroke(map, { radius: 2 });
   stroke.sample([-35, -50]); stroke.sample([35, -50]);

@@ -1,5 +1,10 @@
 # Inselaufteilung nach der Kartenreferenz
 
+Dieser Bericht dokumentiert den vorherigen Stand mit sieben Regionen und
+zwei Flusskanälen. Die aktuelle Karte verwendet genau vier Biome und zwei
+getrennte Landflächen mit Brücken über der freien Lücke:
+[Vier Biome und offene Brücken](open-gap-layout.md).
+
 Die neue Kartenbasis übernimmt die räumliche Gliederung der Vorlage: ein
 kleineres Frostgebiet im Nordwesten, einen zusammenhängenden grünen Kern,
 Moor im Südwesten und in der unteren Mitte, einen trockenen Süden und einen

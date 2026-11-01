@@ -1,5 +1,5 @@
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
-import { getWorldmapStats, validateWorldmap } from './model.js';
+import { getWorldmapStats, validateWorldmap, pointInPolygon, landBoundaryRings } from './model.js';
 import { biomePreset } from './landscape.js';
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
 import { getObjectFootprintRadius } from './objects.js';
@@ -155,16 +155,23 @@ export function renderWorldmapSvg(map, options = {}) {
   const stats = getWorldmapStats(map);
   const terrain = map.landscape?.terrain ?? [], paintedBiomes = map.landscape?.biomes ?? [], windZones = map.landscape?.windZones ?? [];
   const zoneRadius = Number.isFinite(options.zoneRadius) ? Math.max(0, Math.min(1e7, options.zoneRadius)) : map.zone.initialRadius;
-  const coast = points(map.island.points);
   const waterAreas = map.waterAreas ?? [];
-  const landPath = waterAreas.length
-    ? [map.island.points, ...waterAreas.map(area => area.points)].map(ringPath).join(' ') : null;
+  const islets = map.islets ?? [];
+  const coastShape = (type, item) => {
+    const holes = waterAreas.filter(area => pointInPolygon(area.points[0], item.points));
+    return holes.length
+      ? `    <path ${feature(type, item.id)} d="${[item.points, ...holes.map(area => area.points)].map(ringPath).join(' ')}" fill-rule="evenodd" clip-rule="evenodd"><title>${escape(item.name)}</title></path>`
+      : `    <polygon ${feature(type, item.id)} points="${points(item.points)}"><title>${escape(item.name)}</title></polygon>`;
+  };
+  const coastId = islets.length ? 'world-land-shape' : `feature-island-${escape(map.island.id)}`;
+  const compoundLand = islets.length > 0 || waterAreas.length > 0;
   const out = [
     `<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="${minX} ${minZ} ${width} ${height}" role="img" aria-labelledby="worldmap-title worldmap-description">`,
     `  <title id="worldmap-title">${escape(map.name)}</title>`,
     `  <desc id="worldmap-description">Editierbare schematische Fantasy-Insel: ${stats.regionCount} grobe Regionen, Wege, Flüsse und wichtige Orte. Nord ist oben. Ein Koordinatenschritt entspricht einem geplanten Meter. ${escape(map.description ?? '')}</desc>`,
     '  <defs>',
-    `    <clipPath id="world-island-clip"><use href="#feature-island-${escape(map.island.id)}"${landPath ? ' clip-rule="evenodd"' : ''}/></clipPath>`,
+    ...(islets.length ? [`    <path id="world-land-shape" d="${landBoundaryRings(map).map(ringPath).join(' ')}" fill-rule="evenodd" clip-rule="evenodd"/>`] : []),
+    `    <clipPath id="world-island-clip"><use href="#${coastId}"${compoundLand ? ' clip-rule="evenodd"' : ''}/></clipPath>`,
     '    <linearGradient id="world-sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#142a3c"/><stop offset="1" stop-color="#0c1c2e"/></linearGradient>',
     '    <pattern id="world-grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M100,0H0V100" fill="none" stroke="#d0e2d4" stroke-width=".7" opacity=".3"/></pattern>',
     '    <pattern id="world-pattern-mountain" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M12,55 31,21 51,55 M27,29 32,37 36,31 M64,86 83,48 105,86" fill="none" stroke="#536c7a" stroke-width="2.1" opacity=".38"/></pattern>',
@@ -185,14 +192,14 @@ export function renderWorldmapSvg(map, options = {}) {
     '  </defs>',
     '  <g id="sea" data-layer="sea" inkscape:groupmode="layer" inkscape:label="Meer">',
     `    <rect x="${minX}" y="${minZ}" width="${width}" height="${height}" fill="url(#world-sea)"/>`,
-    `    <use href="#feature-island-${escape(map.island.id)}" fill="none" stroke="#2d7291" stroke-width="29" opacity=".25" stroke-linejoin="round"/>`,
-    `    <use href="#feature-island-${escape(map.island.id)}" fill="none" stroke="#4d9baf" stroke-width="13" opacity=".4" stroke-linejoin="round"/>`,
+    `    <use href="#${coastId}" fill="none" stroke="#2d7291" stroke-width="29" opacity=".25" stroke-linejoin="round"/>`,
+    `    <use href="#${coastId}" fill="none" stroke="#4d9baf" stroke-width="13" opacity=".4" stroke-linejoin="round"/>`,
     '  </g>',
     '  <g id="island" data-layer="island" inkscape:groupmode="layer" inkscape:label="Inselumriss" fill="#c9c59b" stroke="#e2d6aa" stroke-width="6" stroke-linejoin="round">',
-    landPath
-      ? `    <path ${feature('island', map.island.id)} d="${landPath}" fill-rule="evenodd" clip-rule="evenodd"><title>${escape(map.island.name)}</title></path>`
-      : `    <polygon ${feature('island', map.island.id)} points="${coast}"><title>${escape(map.island.name)}</title></polygon>`,
+    coastShape('island', map.island),
     '  </g>',
+    ...(islets.length ? ['  <g id="islets" data-layer="islets" inkscape:groupmode="layer" inkscape:label="Weitere Landflächen" fill="#c9c59b" stroke="#e2d6aa" stroke-width="6" stroke-linejoin="round">',
+      ...islets.map(islet => coastShape('islet', islet)), '  </g>'] : []),
     '  <g id="regions" data-layer="regions" inkscape:groupmode="layer" inkscape:label="Regionen" clip-path="url(#world-island-clip)">',
   ];
   for (const region of map.regions) {
@@ -224,10 +231,10 @@ export function renderWorldmapSvg(map, options = {}) {
   }
   out.push('  <g id="rivers" data-layer="rivers" inkscape:groupmode="layer" inkscape:label="Flüsse" clip-path="url(#world-island-clip)" fill="none" stroke-linecap="round" stroke-linejoin="round">');
   for (const river of map.rivers) out.push(`    <g ${feature('river', river.id)}><title>${escape(river.name)}</title><polyline points="${points(river.points)}" stroke="#315f6a" stroke-width="${number(river.width + 4)}"/><polyline points="${points(river.points)}" stroke="#72b0ba" stroke-width="${number(river.width)}"/><polyline points="${points(river.points)}" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>`);
-  out.push('  </g>', '  <g id="paths" data-layer="paths" inkscape:groupmode="layer" inkscape:label="Wege und Brücken" clip-path="url(#world-island-clip)" fill="none" stroke-linecap="round" stroke-linejoin="round">');
+  out.push('  </g>', '  <g id="paths" data-layer="paths" inkscape:groupmode="layer" inkscape:label="Wege und Brücken" fill="none" stroke-linecap="round" stroke-linejoin="round">');
   for (const path of [...map.paths].sort((a, b) => Number(a.kind === 'bridge') - Number(b.kind === 'bridge'))) {
     const bridge = path.kind === 'bridge', trail = path.kind === 'trail';
-    out.push(`    <g ${feature('path', path.id)}><title>${escape(path.name)}</title>`);
+    out.push(`    <g ${feature('path', path.id)}${bridge ? '' : ' clip-path="url(#world-island-clip)"'}><title>${escape(path.name)}</title>`);
     if (bridge) out.push(`      <polyline points="${points(path.points)}" stroke="#594e3b" stroke-width="${number(path.width + 5)}"/><polyline points="${points(path.points)}" stroke="#d4bc8d" stroke-width="${number(path.width)}" stroke-dasharray="3 3"/>`);
     else out.push(`      <polyline points="${points(path.points)}" stroke="#6b7351" stroke-opacity=".38" stroke-width="${number(path.width + 3)}"${trail ? ' stroke-dasharray="4 8"' : ''}/><polyline points="${points(path.points)}" stroke="${trail ? '#c7c79e' : '#d8cda3'}" stroke-width="${number(path.width)}"${trail ? ' stroke-dasharray="4 8"' : ''}/>`);
     out.push('    </g>');

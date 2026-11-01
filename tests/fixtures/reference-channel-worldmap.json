@@ -1,0 +1,1540 @@
+{
+  "$schema": "./worldmap.schema.json",
+  "schemaVersion": 1,
+  "id": "nebeljagd-world-v1",
+  "name": "Nebelinsel · Zwei Brücken und sieben Landschaften",
+  "description": "Eine gegliederte Fantasy-Insel mit kleinem Frostgebiet im Nordwesten, grünem Inselkern, Moor im Südwesten, trockenem Süden und goldener Ostinsel. Ein geschwungener Wasserarm trennt den Osten ab; nur zwei begehbare Brücken verbinden ihn mit dem Inselkern.",
+  "coordinateSystem": {
+    "units": "meters",
+    "horizontalAxes": [
+      "x",
+      "z"
+    ],
+    "north": "-z",
+    "metersPerUnit": 1
+  },
+  "bounds": {
+    "minX": -600,
+    "minZ": -720,
+    "maxX": 600,
+    "maxZ": 720
+  },
+  "gameplay": {
+    "targetPlayers": 50,
+    "walkSpeedMetersPerSecond": 5.6,
+    "spawnPosition": [
+      30,
+      -42
+    ],
+    "notes": "10 verteilte Startbereiche für je 5 Spieler; konkrete Team- und Spawnregeln sowie Balance werden später im Multiplayer geprüft."
+  },
+  "island": {
+    "id": "nebelinsel",
+    "name": "Nebelinsel",
+    "points": [
+      [
+        -460,
+        -560
+      ],
+      [
+        -425,
+        -630
+      ],
+      [
+        -355,
+        -650
+      ],
+      [
+        -260,
+        -560
+      ],
+      [
+        -205,
+        -545
+      ],
+      [
+        -175,
+        -600
+      ],
+      [
+        -185,
+        -650
+      ],
+      [
+        -80,
+        -705
+      ],
+      [
+        -20,
+        -680
+      ],
+      [
+        15,
+        -625
+      ],
+      [
+        -50,
+        -530
+      ],
+      [
+        -35,
+        -480
+      ],
+      [
+        30,
+        -465
+      ],
+      [
+        205,
+        -565
+      ],
+      [
+        270,
+        -550
+      ],
+      [
+        300,
+        -505
+      ],
+      [
+        375,
+        -510
+      ],
+      [
+        415,
+        -465
+      ],
+      [
+        395,
+        -405
+      ],
+      [
+        335,
+        -385
+      ],
+      [
+        225,
+        -405
+      ],
+      [
+        185,
+        -365
+      ],
+      [
+        195,
+        -310
+      ],
+      [
+        245,
+        -280
+      ],
+      [
+        355,
+        -330
+      ],
+      [
+        415,
+        -320
+      ],
+      [
+        485,
+        -350
+      ],
+      [
+        535,
+        -315
+      ],
+      [
+        555,
+        -245
+      ],
+      [
+        545,
+        -195
+      ],
+      [
+        550,
+        -145
+      ],
+      [
+        485,
+        -55
+      ],
+      [
+        445,
+        -90
+      ],
+      [
+        405,
+        -70
+      ],
+      [
+        395,
+        30
+      ],
+      [
+        440,
+        50
+      ],
+      [
+        490,
+        35
+      ],
+      [
+        535,
+        75
+      ],
+      [
+        550,
+        140
+      ],
+      [
+        475,
+        225
+      ],
+      [
+        460,
+        295
+      ],
+      [
+        415,
+        335
+      ],
+      [
+        285,
+        260
+      ],
+      [
+        255,
+        300
+      ],
+      [
+        270,
+        355
+      ],
+      [
+        325,
+        400
+      ],
+      [
+        435,
+        380
+      ],
+      [
+        495,
+        405
+      ],
+      [
+        530,
+        455
+      ],
+      [
+        505,
+        515
+      ],
+      [
+        440,
+        535
+      ],
+      [
+        415,
+        590
+      ],
+      [
+        235,
+        680
+      ],
+      [
+        175,
+        670
+      ],
+      [
+        115,
+        680
+      ],
+      [
+        55,
+        660
+      ],
+      [
+        20,
+        600
+      ],
+      [
+        -40,
+        580
+      ],
+      [
+        -100,
+        605
+      ],
+      [
+        -170,
+        590
+      ],
+      [
+        -205,
+        540
+      ],
+      [
+        -190,
+        490
+      ],
+      [
+        -220,
+        450
+      ],
+      [
+        -265,
+        460
+      ],
+      [
+        -350,
+        540
+      ],
+      [
+        -410,
+        525
+      ],
+      [
+        -445,
+        480
+      ],
+      [
+        -430,
+        425
+      ],
+      [
+        -520,
+        345
+      ],
+      [
+        -450,
+        195
+      ],
+      [
+        -475,
+        160
+      ],
+      [
+        -535,
+        150
+      ],
+      [
+        -565,
+        100
+      ],
+      [
+        -550,
+        30
+      ],
+      [
+        -470,
+        -15
+      ],
+      [
+        -445,
+        -65
+      ],
+      [
+        -460,
+        -110
+      ],
+      [
+        -555,
+        -195
+      ],
+      [
+        -545,
+        -260
+      ],
+      [
+        -435,
+        -375
+      ],
+      [
+        -460,
+        -420
+      ],
+      [
+        -510,
+        -435
+      ],
+      [
+        -535,
+        -485
+      ],
+      [
+        -505,
+        -540
+      ]
+    ]
+  },
+  "regions": [
+    {
+      "id": "frostkamm",
+      "name": "Frostkamm",
+      "biome": "snow",
+      "color": "#aabfc8",
+      "points": [
+        [
+          -600,
+          -720
+        ],
+        [
+          100,
+          -720
+        ],
+        [
+          70,
+          -600
+        ],
+        [
+          20,
+          -530
+        ],
+        [
+          -55,
+          -465
+        ],
+        [
+          -120,
+          -405
+        ],
+        [
+          -170,
+          -320
+        ],
+        [
+          -260,
+          -270
+        ],
+        [
+          -360,
+          -260
+        ],
+        [
+          -450,
+          -270
+        ],
+        [
+          -600,
+          -240
+        ]
+      ],
+      "label": [
+        -320,
+        -540
+      ]
+    },
+    {
+      "id": "goldheide",
+      "name": "Goldheide",
+      "biome": "heath",
+      "color": "#b59b49",
+      "points": [
+        [
+          600,
+          -360
+        ],
+        [
+          300,
+          -360
+        ],
+        [
+          210,
+          -335
+        ],
+        [
+          185,
+          -290
+        ],
+        [
+          200,
+          -210
+        ],
+        [
+          190,
+          -120
+        ],
+        [
+          220,
+          -45
+        ],
+        [
+          210,
+          45
+        ],
+        [
+          230,
+          125
+        ],
+        [
+          224,
+          200
+        ],
+        [
+          238,
+          270
+        ],
+        [
+          244,
+          291
+        ],
+        [
+          288,
+          327
+        ],
+        [
+          330,
+          320
+        ],
+        [
+          370,
+          330
+        ],
+        [
+          400,
+          270
+        ],
+        [
+          450,
+          225
+        ],
+        [
+          455,
+          155
+        ],
+        [
+          490,
+          110
+        ],
+        [
+          600,
+          100
+        ]
+      ],
+      "label": [
+        400,
+        -225
+      ]
+    },
+    {
+      "id": "herzauen",
+      "name": "Herzauen",
+      "biome": "meadow",
+      "color": "#6f9858",
+      "points": [
+        [
+          -170,
+          -320
+        ],
+        [
+          -120,
+          -405
+        ],
+        [
+          -55,
+          -465
+        ],
+        [
+          20,
+          -530
+        ],
+        [
+          70,
+          -600
+        ],
+        [
+          100,
+          -720
+        ],
+        [
+          600,
+          -720
+        ],
+        [
+          600,
+          -360
+        ],
+        [
+          300,
+          -360
+        ],
+        [
+          210,
+          -335
+        ],
+        [
+          185,
+          -290
+        ],
+        [
+          200,
+          -210
+        ],
+        [
+          190,
+          -120
+        ],
+        [
+          220,
+          -45
+        ],
+        [
+          210,
+          45
+        ],
+        [
+          230,
+          125
+        ],
+        [
+          224,
+          200
+        ],
+        [
+          238,
+          270
+        ],
+        [
+          244,
+          291
+        ],
+        [
+          160,
+          350
+        ],
+        [
+          115,
+          335
+        ],
+        [
+          65,
+          360
+        ],
+        [
+          5,
+          325
+        ],
+        [
+          0,
+          270
+        ],
+        [
+          -40,
+          225
+        ],
+        [
+          -110,
+          210
+        ],
+        [
+          -140,
+          175
+        ],
+        [
+          -175,
+          100
+        ],
+        [
+          -200,
+          15
+        ],
+        [
+          -180,
+          -65
+        ],
+        [
+          -195,
+          -150
+        ],
+        [
+          -175,
+          -240
+        ],
+        [
+          -120,
+          -300
+        ]
+      ],
+      "label": [
+        15,
+        -235
+      ]
+    },
+    {
+      "id": "dunkelhain",
+      "name": "Dunkelhain",
+      "biome": "forest",
+      "color": "#376f50",
+      "points": [
+        [
+          -600,
+          -240
+        ],
+        [
+          -450,
+          -270
+        ],
+        [
+          -360,
+          -260
+        ],
+        [
+          -260,
+          -270
+        ],
+        [
+          -170,
+          -320
+        ],
+        [
+          -120,
+          -300
+        ],
+        [
+          -175,
+          -240
+        ],
+        [
+          -195,
+          -150
+        ],
+        [
+          -180,
+          -65
+        ],
+        [
+          -200,
+          15
+        ],
+        [
+          -175,
+          100
+        ],
+        [
+          -140,
+          175
+        ],
+        [
+          -110,
+          210
+        ],
+        [
+          -180,
+          230
+        ],
+        [
+          -250,
+          210
+        ],
+        [
+          -300,
+          250
+        ],
+        [
+          -390,
+          250
+        ],
+        [
+          -600,
+          240
+        ]
+      ],
+      "label": [
+        -360,
+        -125
+      ]
+    },
+    {
+      "id": "nebelmoor",
+      "name": "Nebelmoor",
+      "biome": "marsh",
+      "color": "#408f7e",
+      "points": [
+        [
+          -600,
+          240
+        ],
+        [
+          -390,
+          250
+        ],
+        [
+          -300,
+          250
+        ],
+        [
+          -250,
+          210
+        ],
+        [
+          -180,
+          230
+        ],
+        [
+          -110,
+          210
+        ],
+        [
+          -40,
+          225
+        ],
+        [
+          0,
+          270
+        ],
+        [
+          5,
+          325
+        ],
+        [
+          65,
+          360
+        ],
+        [
+          25,
+          410
+        ],
+        [
+          -50,
+          440
+        ],
+        [
+          -130,
+          415
+        ],
+        [
+          -180,
+          450
+        ],
+        [
+          -260,
+          425
+        ],
+        [
+          -330,
+          450
+        ],
+        [
+          -400,
+          420
+        ],
+        [
+          -460,
+          430
+        ],
+        [
+          -600,
+          440
+        ]
+      ],
+      "label": [
+        -235,
+        330
+      ]
+    },
+    {
+      "id": "aschenhoehen",
+      "name": "Aschenhöhen",
+      "biome": "volcanic",
+      "color": "#87786b",
+      "points": [
+        [
+          370,
+          330
+        ],
+        [
+          400,
+          270
+        ],
+        [
+          450,
+          225
+        ],
+        [
+          455,
+          155
+        ],
+        [
+          490,
+          110
+        ],
+        [
+          600,
+          100
+        ],
+        [
+          600,
+          350
+        ],
+        [
+          470,
+          360
+        ]
+      ],
+      "label": [
+        475,
+        140
+      ]
+    },
+    {
+      "id": "sonnenduene",
+      "name": "Sonnendünen",
+      "biome": "dunes",
+      "color": "#bd9d69",
+      "points": [
+        [
+          -600,
+          440
+        ],
+        [
+          -460,
+          430
+        ],
+        [
+          -400,
+          420
+        ],
+        [
+          -330,
+          450
+        ],
+        [
+          -260,
+          425
+        ],
+        [
+          -180,
+          450
+        ],
+        [
+          -130,
+          415
+        ],
+        [
+          -50,
+          440
+        ],
+        [
+          25,
+          410
+        ],
+        [
+          65,
+          360
+        ],
+        [
+          115,
+          335
+        ],
+        [
+          160,
+          350
+        ],
+        [
+          244,
+          291
+        ],
+        [
+          288,
+          327
+        ],
+        [
+          330,
+          320
+        ],
+        [
+          370,
+          330
+        ],
+        [
+          470,
+          360
+        ],
+        [
+          600,
+          350
+        ],
+        [
+          600,
+          720
+        ],
+        [
+          -600,
+          720
+        ]
+      ],
+      "label": [
+        60,
+        595
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "nordbruecke",
+      "name": "Nordbrücke",
+      "kind": "bridge",
+      "width": 12,
+      "points": [
+        [
+          161,
+          -324
+        ],
+        [
+          209,
+          -276
+        ]
+      ]
+    },
+    {
+      "id": "suedbruecke",
+      "name": "Südbrücke",
+      "kind": "bridge",
+      "width": 10,
+      "points": [
+        [
+          226,
+          313
+        ],
+        [
+          262,
+          269
+        ]
+      ]
+    }
+  ],
+  "rivers": [
+    {
+      "id": "nordpassage",
+      "name": "Nördlicher Meeresdurchlass",
+      "width": 24,
+      "points": [
+        [
+          150,
+          -265
+        ],
+        [
+          220,
+          -335
+        ]
+      ]
+    },
+    {
+      "id": "suedpassage",
+      "name": "Südlicher Meeresdurchlass",
+      "width": 18,
+      "points": [
+        [
+          200,
+          255
+        ],
+        [
+          288,
+          327
+        ]
+      ]
+    }
+  ],
+  "places": [
+    {
+      "id": "eiswacht",
+      "name": "Eiswacht",
+      "kind": "ruin",
+      "position": [
+        -290,
+        -480
+      ]
+    },
+    {
+      "id": "frostschrein",
+      "name": "Frostschrein",
+      "kind": "shrine",
+      "position": [
+        -250,
+        -390
+      ]
+    },
+    {
+      "id": "mondhain",
+      "name": "Mondhain",
+      "kind": "village",
+      "position": [
+        230,
+        -430
+      ]
+    },
+    {
+      "id": "goldruinen",
+      "name": "Goldruinen",
+      "kind": "ruin",
+      "position": [
+        335,
+        -190
+      ]
+    },
+    {
+      "id": "heideschrein",
+      "name": "Heideschrein",
+      "kind": "shrine",
+      "position": [
+        335,
+        -120
+      ]
+    },
+    {
+      "id": "mooswinkel",
+      "name": "Mooswinkel",
+      "kind": "village",
+      "position": [
+        -340,
+        -50
+      ]
+    },
+    {
+      "id": "auenwacht",
+      "name": "Auenwacht",
+      "kind": "village",
+      "position": [
+        30,
+        -60
+      ]
+    },
+    {
+      "id": "wildheide",
+      "name": "Wildheide",
+      "kind": "village",
+      "position": [
+        -80,
+        160
+      ]
+    },
+    {
+      "id": "osthafen",
+      "name": "Osthafen",
+      "kind": "harbor",
+      "position": [
+        440,
+        -110
+      ]
+    },
+    {
+      "id": "versunkener-hof",
+      "name": "Versunkener Hof",
+      "kind": "ruin",
+      "position": [
+        -390,
+        235
+      ]
+    },
+    {
+      "id": "moorlicht",
+      "name": "Moorlicht",
+      "kind": "village",
+      "position": [
+        -320,
+        350
+      ]
+    },
+    {
+      "id": "moorschrein",
+      "name": "Moorschrein",
+      "kind": "shrine",
+      "position": [
+        -180,
+        370
+      ]
+    },
+    {
+      "id": "aschenfeste",
+      "name": "Aschenfeste",
+      "kind": "ruin",
+      "position": [
+        470,
+        175
+      ]
+    },
+    {
+      "id": "glutschrein",
+      "name": "Glutschrein",
+      "kind": "shrine",
+      "position": [
+        445,
+        255
+      ]
+    },
+    {
+      "id": "sonnentempel",
+      "name": "Sonnentempel",
+      "kind": "ruin",
+      "position": [
+        170,
+        500
+      ]
+    },
+    {
+      "id": "suedhafen",
+      "name": "Südhafen",
+      "kind": "harbor",
+      "position": [
+        395,
+        460
+      ]
+    },
+    {
+      "id": "wanderstein",
+      "name": "Wanderstein",
+      "kind": "landmark",
+      "position": [
+        40,
+        530
+      ]
+    }
+  ],
+  "spawnAreas": [
+    {
+      "id": "frost-west",
+      "name": "Frost · West",
+      "position": [
+        -375,
+        -375
+      ],
+      "radius": 44,
+      "capacity": 5
+    },
+    {
+      "id": "frost-ost",
+      "name": "Frost · Ost",
+      "position": [
+        -90,
+        -625
+      ],
+      "radius": 44,
+      "capacity": 5
+    },
+    {
+      "id": "heide-nord",
+      "name": "Auen · Nord",
+      "position": [
+        240,
+        -475
+      ],
+      "radius": 40,
+      "capacity": 5
+    },
+    {
+      "id": "heide-ost",
+      "name": "Heide · Ost",
+      "position": [
+        410,
+        -275
+      ],
+      "radius": 42,
+      "capacity": 5
+    },
+    {
+      "id": "wald-west",
+      "name": "Wald · West",
+      "position": [
+        -410,
+        90
+      ],
+      "radius": 44,
+      "capacity": 5
+    },
+    {
+      "id": "auen-mitte",
+      "name": "Auen · Mitte",
+      "position": [
+        0,
+        95
+      ],
+      "radius": 44,
+      "capacity": 5
+    },
+    {
+      "id": "moor-west",
+      "name": "Moor · West",
+      "position": [
+        -400,
+        390
+      ],
+      "radius": 42,
+      "capacity": 5
+    },
+    {
+      "id": "moor-ost",
+      "name": "Moor · Ost",
+      "position": [
+        -245,
+        380
+      ],
+      "radius": 42,
+      "capacity": 5
+    },
+    {
+      "id": "asche-ost",
+      "name": "Heide · Süd",
+      "position": [
+        390,
+        255
+      ],
+      "radius": 44,
+      "capacity": 5
+    },
+    {
+      "id": "duene-sued",
+      "name": "Düne · Süd",
+      "position": [
+        205,
+        585
+      ],
+      "radius": 40,
+      "capacity": 5
+    }
+  ],
+  "zone": {
+    "center": [
+      0,
+      0
+    ],
+    "initialRadius": 800,
+    "damagePerSecond": 11,
+    "phases": [
+      {
+        "id": "erste-nebel",
+        "name": "Erster Nebel",
+        "holdSeconds": 180,
+        "shrinkSeconds": 180,
+        "radius": 560
+      },
+      {
+        "id": "rueckzug",
+        "name": "Rückzug",
+        "holdSeconds": 120,
+        "shrinkSeconds": 180,
+        "radius": 380
+      },
+      {
+        "id": "enge-pfade",
+        "name": "Enge Pfade",
+        "holdSeconds": 90,
+        "shrinkSeconds": 150,
+        "radius": 210
+      },
+      {
+        "id": "letzte-zuflucht",
+        "name": "Letzte Zuflucht",
+        "holdSeconds": 60,
+        "shrinkSeconds": 120,
+        "radius": 75
+      },
+      {
+        "id": "finale",
+        "name": "Finale",
+        "holdSeconds": 0,
+        "shrinkSeconds": 120,
+        "radius": 20
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": "object-house-mvviwx0g-2",
+      "name": "Haus",
+      "kind": "house",
+      "variant": "kit-tripo-tavern",
+      "position": [
+        2.7,
+        -70.5
+      ],
+      "rotation": 0,
+      "scale": 1
+    }
+  ],
+  "landscape": {
+    "version": 1,
+    "terrain": [],
+    "wind": {
+      "enabled": true,
+      "strength": 0.35,
+      "speed": 1,
+      "direction": 0.65,
+      "gusts": true,
+      "gustStrength": 0.35,
+      "gustFrequency": 0.18,
+      "turbulence": 0.2
+    },
+    "windZones": [],
+    "biomes": [],
+    "presets": []
+  },
+  "barriers": [
+    {
+      "id": "barrier-wall-mvwkdprc-1",
+      "name": "Steinmauer",
+      "kind": "wall",
+      "variant": "kit-stone",
+      "points": [
+        [
+          -10,
+          -36
+        ],
+        [
+          17,
+          -44
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-wall-mvwkdudz-2",
+      "name": "Steinmauer · Pfeiler & Abdeckung",
+      "kind": "wall",
+      "variant": "kit-cut-stone",
+      "points": [
+        [
+          -8,
+          -32
+        ],
+        [
+          17,
+          -39
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-wall-mvwkdy5m-3",
+      "name": "Steinmauer · Verwittert (Tripo)",
+      "kind": "wall",
+      "variant": "kit-tripo-wall",
+      "points": [
+        [
+          -7,
+          -28
+        ],
+        [
+          16,
+          -34
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-fence-mvwke5jq-5",
+      "name": "Holzzaun · Kreuzstreben",
+      "kind": "fence",
+      "variant": "kit-cross-wood",
+      "points": [
+        [
+          35,
+          -38
+        ],
+        [
+          55,
+          -47
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    }
+  ],
+  "waterAreas": [
+    {
+      "id": "goldheide-lagune",
+      "name": "Goldheide-Meerenge",
+      "points": [
+        [
+          175,
+          -290
+        ],
+        [
+          210,
+          -255
+        ],
+        [
+          245,
+          -215
+        ],
+        [
+          262,
+          -148
+        ],
+        [
+          310,
+          -85
+        ],
+        [
+          302,
+          -25
+        ],
+        [
+          320,
+          50
+        ],
+        [
+          283,
+          112
+        ],
+        [
+          268,
+          185
+        ],
+        [
+          242,
+          235
+        ],
+        [
+          233,
+          282
+        ],
+        [
+          185,
+          265
+        ],
+        [
+          158,
+          215
+        ],
+        [
+          151,
+          155
+        ],
+        [
+          181,
+          90
+        ],
+        [
+          163,
+          35
+        ],
+        [
+          125,
+          -25
+        ],
+        [
+          142,
+          -95
+        ],
+        [
+          116,
+          -160
+        ],
+        [
+          110,
+          -220
+        ],
+        [
+          110,
+          -260
+        ]
+      ]
+    }
+  ]
+}

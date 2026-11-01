@@ -1,0 +1,4557 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5208",
+  "standalone": true,
+  "sourceSha256": "83e3462239ba8607b23953aa71dbb710c0c5ec71d5f7f8296bac52ff12295bfc",
+  "checks": [
+    {
+      "name": "The exact source has four biomes and two separated landmasses; both bridges remain visible across the true empty gap without river or water-area features",
+      "evidence": {
+        "regions": [
+          {
+            "id": "frostkamm",
+            "name": "Frostkamm",
+            "biome": "snow",
+            "color": "#aabfc8",
+            "points": [
+              [
+                -600,
+                -720
+              ],
+              [
+                100,
+                -720
+              ],
+              [
+                70,
+                -600
+              ],
+              [
+                20,
+                -530
+              ],
+              [
+                -55,
+                -465
+              ],
+              [
+                -120,
+                -405
+              ],
+              [
+                -170,
+                -320
+              ],
+              [
+                -260,
+                -270
+              ],
+              [
+                -360,
+                -260
+              ],
+              [
+                -450,
+                -270
+              ],
+              [
+                -600,
+                -240
+              ]
+            ],
+            "label": [
+              -320,
+              -540
+            ]
+          },
+          {
+            "id": "dunkelhain",
+            "name": "Grünwald",
+            "biome": "forest",
+            "color": "#568753",
+            "points": [
+              [
+                -600,
+                -240
+              ],
+              [
+                -450,
+                -270
+              ],
+              [
+                -360,
+                -260
+              ],
+              [
+                -260,
+                -270
+              ],
+              [
+                -170,
+                -320
+              ],
+              [
+                -120,
+                -405
+              ],
+              [
+                -55,
+                -465
+              ],
+              [
+                20,
+                -530
+              ],
+              [
+                70,
+                -600
+              ],
+              [
+                100,
+                -720
+              ],
+              [
+                600,
+                -720
+              ],
+              [
+                600,
+                -360
+              ],
+              [
+                300,
+                -360
+              ],
+              [
+                210,
+                -335
+              ],
+              [
+                185,
+                -290
+              ],
+              [
+                200,
+                -210
+              ],
+              [
+                190,
+                -120
+              ],
+              [
+                220,
+                -45
+              ],
+              [
+                210,
+                45
+              ],
+              [
+                230,
+                125
+              ],
+              [
+                224,
+                200
+              ],
+              [
+                238,
+                270
+              ],
+              [
+                244,
+                291
+              ],
+              [
+                160,
+                350
+              ],
+              [
+                115,
+                335
+              ],
+              [
+                65,
+                360
+              ],
+              [
+                5,
+                325
+              ],
+              [
+                0,
+                270
+              ],
+              [
+                -40,
+                225
+              ],
+              [
+                -110,
+                210
+              ],
+              [
+                -180,
+                230
+              ],
+              [
+                -250,
+                210
+              ],
+              [
+                -300,
+                250
+              ],
+              [
+                -390,
+                250
+              ],
+              [
+                -600,
+                240
+              ]
+            ],
+            "label": [
+              -100,
+              -180
+            ]
+          },
+          {
+            "id": "nebelmoor",
+            "name": "Nebelmoor",
+            "biome": "marsh",
+            "color": "#408f7e",
+            "points": [
+              [
+                -600,
+                240
+              ],
+              [
+                -390,
+                250
+              ],
+              [
+                -300,
+                250
+              ],
+              [
+                -250,
+                210
+              ],
+              [
+                -180,
+                230
+              ],
+              [
+                -110,
+                210
+              ],
+              [
+                -40,
+                225
+              ],
+              [
+                0,
+                270
+              ],
+              [
+                5,
+                325
+              ],
+              [
+                65,
+                360
+              ],
+              [
+                25,
+                410
+              ],
+              [
+                -50,
+                440
+              ],
+              [
+                -130,
+                415
+              ],
+              [
+                -180,
+                450
+              ],
+              [
+                -260,
+                425
+              ],
+              [
+                -330,
+                450
+              ],
+              [
+                -400,
+                420
+              ],
+              [
+                -460,
+                430
+              ],
+              [
+                -600,
+                440
+              ]
+            ],
+            "label": [
+              -235,
+              330
+            ]
+          },
+          {
+            "id": "sonnenduene",
+            "name": "Sandlande",
+            "biome": "dunes",
+            "color": "#bd9d69",
+            "points": [
+              [
+                -600,
+                440
+              ],
+              [
+                -460,
+                430
+              ],
+              [
+                -400,
+                420
+              ],
+              [
+                -330,
+                450
+              ],
+              [
+                -260,
+                425
+              ],
+              [
+                -180,
+                450
+              ],
+              [
+                -130,
+                415
+              ],
+              [
+                -50,
+                440
+              ],
+              [
+                25,
+                410
+              ],
+              [
+                65,
+                360
+              ],
+              [
+                115,
+                335
+              ],
+              [
+                160,
+                350
+              ],
+              [
+                244,
+                291
+              ],
+              [
+                238,
+                270
+              ],
+              [
+                224,
+                200
+              ],
+              [
+                230,
+                125
+              ],
+              [
+                210,
+                45
+              ],
+              [
+                220,
+                -45
+              ],
+              [
+                190,
+                -120
+              ],
+              [
+                200,
+                -210
+              ],
+              [
+                185,
+                -290
+              ],
+              [
+                210,
+                -335
+              ],
+              [
+                300,
+                -360
+              ],
+              [
+                600,
+                -360
+              ],
+              [
+                600,
+                100
+              ],
+              [
+                600,
+                350
+              ],
+              [
+                600,
+                720
+              ],
+              [
+                -600,
+                720
+              ]
+            ],
+            "label": [
+              65,
+              590
+            ]
+          }
+        ],
+        "islet": "ostinsel",
+        "bridges": [
+          {
+            "id": "nordbruecke",
+            "clipped": false,
+            "hit": "nordbruecke"
+          },
+          {
+            "id": "suedbruecke",
+            "clipped": false,
+            "hit": "suedbruecke"
+          }
+        ]
+      }
+    },
+    {
+      "name": "The eastern islet is selectable and editable; adding/removing separate land and vertex edits have complete Undo/Redo",
+      "evidence": null
+    },
+    {
+      "name": "Objects can be placed on the new eastern land while objects and grass cannot be placed in the empty sea gap",
+      "evidence": null
+    },
+    {
+      "name": "JSON save/open preserves the new map exactly and a valid earlier channel map without islets still imports",
+      "evidence": {
+        "legacyFixture": "tests/fixtures/reference-channel-worldmap.json",
+        "legacyName": "Nebelinsel · Zwei Brücken und sieben Landschaften"
+      }
+    },
+    {
+      "name": "Exported standalone HTML reopens the exact map and retains the islet editing controls",
+      "evidence": null
+    },
+    {
+      "name": "south bridge is crossed from main land over actual sea to the eastern islet using ordinary WASD and a roll over the gap; both landings remain continuous and the other bridge is visible on the minimap",
+      "evidence": {
+        "bridge": "suedbruecke",
+        "entry": [
+          {
+            "elapsed": 0,
+            "position": {
+              "x": 220,
+              "y": 1.8251174241033326,
+              "z": 315
+            },
+            "isWater": false,
+            "groundHeight": 1.8251174241033326,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.09999999999999999,
+            "position": {
+              "x": 220.39597979746452,
+              "y": 1.8002369523657287,
+              "z": 314.6040202025355
+            },
+            "isWater": false,
+            "groundHeight": 1.8002369523657287,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.19999999999999998,
+            "position": {
+              "x": 220.79195959492904,
+              "y": 1.779506458292692,
+              "z": 314.20804040507096
+            },
+            "isWater": false,
+            "groundHeight": 1.779506458292692,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.3,
+            "position": {
+              "x": 221.18793939239356,
+              "y": 1.7616407292476786,
+              "z": 313.81206060760644
+            },
+            "isWater": false,
+            "groundHeight": 1.7616407292476786,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.39999999999999997,
+            "position": {
+              "x": 221.58391918985808,
+              "y": 1.7469840006471098,
+              "z": 313.4160808101419
+            },
+            "isWater": false,
+            "groundHeight": 1.7469840006471098,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.49999999999999994,
+            "position": {
+              "x": 221.9798989873226,
+              "y": 1.7399935045166122,
+              "z": 313.0201010126774
+            },
+            "isWater": false,
+            "groundHeight": 1.7399935045166122,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.6000000000000002,
+            "position": {
+              "x": 222.37587878478712,
+              "y": 1.7366120252080706,
+              "z": 312.6241212152129
+            },
+            "isWater": false,
+            "groundHeight": 1.7366120252080706,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.7000000000000005,
+            "position": {
+              "x": 222.77185858225164,
+              "y": 1.7361785670130887,
+              "z": 312.22814141774836
+            },
+            "isWater": false,
+            "groundHeight": 1.7361785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.8000000000000008,
+            "position": {
+              "x": 223.16783837971616,
+              "y": 1.7361785670130887,
+              "z": 311.83216162028384
+            },
+            "isWater": false,
+            "groundHeight": 1.7361785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.9000000000000011,
+            "position": {
+              "x": 223.56381817718068,
+              "y": 1.7360203913006136,
+              "z": 311.4361818228193
+            },
+            "isWater": false,
+            "groundHeight": 1.7360203913006136,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.0000000000000013,
+            "position": {
+              "x": 223.9597979746452,
+              "y": 1.7713055751324862,
+              "z": 311.0402020253548
+            },
+            "isWater": false,
+            "groundHeight": 1.734842185345166,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.100000000000001,
+            "position": {
+              "x": 224.35577777210972,
+              "y": 1.7726569798328276,
+              "z": 310.6442222278903
+            },
+            "isWater": false,
+            "groundHeight": 1.7255100745569303,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.2000000000000006,
+            "position": {
+              "x": 224.75175756957424,
+              "y": 1.7753442182229455,
+              "z": 310.24824243042576
+            },
+            "isWater": false,
+            "groundHeight": 1.7130899527192114,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.3000000000000003,
+            "position": {
+              "x": 225.14773736703876,
+              "y": 1.7791908157085632,
+              "z": 309.85226263296124
+            },
+            "isWater": false,
+            "groundHeight": 1.6995286576921957,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.4,
+            "position": {
+              "x": 225.54371716450328,
+              "y": 1.784020297695403,
+              "z": 309.4562828354967
+            },
+            "isWater": false,
+            "groundHeight": 1.691232556940382,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.4999999999999996,
+            "position": {
+              "x": 225.9396969619678,
+              "y": 1.7896561895891885,
+              "z": 309.0603030380322
+            },
+            "isWater": false,
+            "groundHeight": 1.6909839450022246,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.566666666666666,
+            "position": {
+              "x": 226.2036834936108,
+              "y": 1.7937743084077793,
+              "z": 308.7963165063892
+            },
+            "isWater": false,
+            "groundHeight": 1.6940693613090665,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.6666666666666656,
+            "position": {
+              "x": 226.59966329107533,
+              "y": 1.8003620510480798,
+              "z": 308.40033670892467
+            },
+            "isWater": false,
+            "groundHeight": 1.7003638599889954,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.7666666666666653,
+            "position": {
+              "x": 226.99564308853985,
+              "y": 1.807285604677253,
+              "z": 308.00435691146015
+            },
+            "isWater": false,
+            "groundHeight": 1.7072877024018742,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.866666666666665,
+            "position": {
+              "x": 227.39162288600437,
+              "y": 1.8143684947010223,
+              "z": 307.60837711399563
+            },
+            "isWater": false,
+            "groundHeight": 1.7143683520922686,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.9666666666666646,
+            "position": {
+              "x": 227.7876026834689,
+              "y": 1.82143424652511,
+              "z": 307.2123973165311
+            },
+            "isWater": false,
+            "groundHeight": 1.7214328194490367,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 2.066666666666664,
+            "position": {
+              "x": 228.1835824809334,
+              "y": 1.8283063855552393,
+              "z": 306.8164175190666
+            },
+            "isWater": false,
+            "groundHeight": 1.7283027337212769,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 2.166666666666664,
+            "position": {
+              "x": 228.57956227839793,
+              "y": 1.834808437197133,
+              "z": 306.42043772160207
+            },
+            "isWater": false,
+            "groundHeight": 1.734805990605383,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 2.2666666666666635,
+            "position": {
+              "x": 228.97554207586245,
+              "y": 1.840763926856514,
+              "z": 306.02445792413755
+            },
+            "isWater": false,
+            "groundHeight": 1.7407581335636015,
+            "biome": "dunes",
+            "rollRemaining": 0
+          }
+        ],
+        "seaSpan": [
+          {
+            "elapsed": 3.016666666666661,
+            "position": {
+              "x": 228.97554207586245,
+              "y": 1.840763926856514,
+              "z": 306.02445792413755
+            },
+            "isWater": false,
+            "groundHeight": 1.7407581335636015,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.1166666666666605,
+            "position": {
+              "x": 229.37152187332697,
+              "y": 1.845996379939105,
+              "z": 305.62847812667303
+            },
+            "isWater": false,
+            "groundHeight": 1.745992575281748,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.21666666666666,
+            "position": {
+              "x": 229.7675016707915,
+              "y": 1.8503293218506291,
+              "z": 305.2324983292085
+            },
+            "isWater": false,
+            "groundHeight": 1.7503202058729683,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.2333333333333267,
+            "position": {
+              "x": 229.83349830370224,
+              "y": 1.8509516350120916,
+              "z": 305.16650169629776
+            },
+            "isWater": false,
+            "groundHeight": 1.75094753827038,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.3333333333333264,
+            "position": {
+              "x": 230.22947810116676,
+              "y": 1.8540121029451593,
+              "z": 304.77052189883324
+            },
+            "isWater": false,
+            "groundHeight": 1.7539985578361224,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.3666666666666596,
+            "position": {
+              "x": 230.36147136698827,
+              "y": 1.8547561130971832,
+              "z": 304.63852863301173
+            },
+            "isWater": false,
+            "groundHeight": 1.7547408871688903,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.4666666666666592,
+            "position": {
+              "x": 230.7574511644528,
+              "y": 1.856068200731077,
+              "z": 304.2425488355472
+            },
+            "isWater": false,
+            "groundHeight": 1.7560564917638066,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.483333333333326,
+            "position": {
+              "x": 230.82344779736354,
+              "y": 1.856144145049048,
+              "z": 304.17655220263646
+            },
+            "isWater": false,
+            "groundHeight": 1.7561350064281127,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.5833333333333255,
+            "position": {
+              "x": 231.21942759482806,
+              "y": 1.8561785670130888,
+              "z": 303.78057240517194
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130885,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.683333333333325,
+            "position": {
+              "x": 231.61540739229258,
+              "y": 1.8561785670130888,
+              "z": 303.3845926077074
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.7833333333333248,
+            "position": {
+              "x": 232.0113871897571,
+              "y": 1.8561785670130888,
+              "z": 302.9886128102429
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.8833333333333244,
+            "position": {
+              "x": 232.40736698722162,
+              "y": 1.8561785670130888,
+              "z": 302.5926330127784
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.983333333333324,
+            "position": {
+              "x": 232.80334678468614,
+              "y": 1.8561785670130888,
+              "z": 302.19665321531386
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.083333333333324,
+            "position": {
+              "x": 233.19932658215066,
+              "y": 1.8561785670130888,
+              "z": 301.80067341784934
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.183333333333324,
+            "position": {
+              "x": 233.59530637961518,
+              "y": 1.8561785670130888,
+              "z": 301.4046936203848
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.2833333333333234,
+            "position": {
+              "x": 233.9912861770797,
+              "y": 1.8561785670130888,
+              "z": 301.0087138229203
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.383333333333323,
+            "position": {
+              "x": 234.38726597454422,
+              "y": 1.8561785670130888,
+              "z": 300.6127340254558
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.483333333333323,
+            "position": {
+              "x": 234.78324577200874,
+              "y": 1.8561785670130888,
+              "z": 300.21675422799126
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.583333333333322,
+            "position": {
+              "x": 235.17922556947326,
+              "y": 1.8561785670130888,
+              "z": 299.82077443052674
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.683333333333322,
+            "position": {
+              "x": 235.57520536693778,
+              "y": 1.8561785670130888,
+              "z": 299.4247946330622
+            },
+            "isWater": false,
+            "groundHeight": 1.7470957631646307,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.783333333333322,
+            "position": {
+              "x": 235.9711851644023,
+              "y": 1.8561785670130888,
+              "z": 299.0288148355977
+            },
+            "isWater": false,
+            "groundHeight": 1.5888847069064194,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.883333333333321,
+            "position": {
+              "x": 236.36716496186682,
+              "y": 1.8561785670130888,
+              "z": 298.6328350381332
+            },
+            "isWater": false,
+            "groundHeight": 1.2925643078746223,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.983333333333321,
+            "position": {
+              "x": 236.76314475933134,
+              "y": 1.8561785670130888,
+              "z": 298.23685524066866
+            },
+            "isWater": false,
+            "groundHeight": 0.9514429233747216,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.083333333333321,
+            "position": {
+              "x": 237.15912455679586,
+              "y": 1.8561785670130888,
+              "z": 297.84087544320414
+            },
+            "isWater": false,
+            "groundHeight": 0.6618937948342538,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.18333333333332,
+            "position": {
+              "x": 237.55510435426038,
+              "y": 1.8561785670130888,
+              "z": 297.4448956457396
+            },
+            "isWater": false,
+            "groundHeight": 0.5236240219331229,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.28333333333332,
+            "position": {
+              "x": 237.9510841517249,
+              "y": 1.8561785670130888,
+              "z": 297.0489158482751
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.3833333333333195,
+            "position": {
+              "x": 238.34706394918942,
+              "y": 1.8561785670130888,
+              "z": 296.6529360508106
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.483333333333319,
+            "position": {
+              "x": 238.74304374665394,
+              "y": 1.8561785670130888,
+              "z": 296.25695625334606
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.583333333333319,
+            "position": {
+              "x": 239.13902354411846,
+              "y": 1.8561785670130888,
+              "z": 295.86097645588154
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.6833333333333185,
+            "position": {
+              "x": 239.53500334158298,
+              "y": 1.8561785670130888,
+              "z": 295.464996658417
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.783333333333318,
+            "position": {
+              "x": 239.9309831390475,
+              "y": 1.8561785670130888,
+              "z": 295.0690168609525
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.883333333333318,
+            "position": {
+              "x": 240.32696293651202,
+              "y": 1.8561785670130888,
+              "z": 294.673037063488
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.983333333333317,
+            "position": {
+              "x": 240.72294273397654,
+              "y": 1.8561785670130888,
+              "z": 294.27705726602346
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.083333333333317,
+            "position": {
+              "x": 241.11892253144106,
+              "y": 1.8561785670130888,
+              "z": 293.88107746855894
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.083333333333317,
+            "position": {
+              "x": 241.11892253144106,
+              "y": 1.8561785670130888,
+              "z": 293.88107746855894
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.72
+          },
+          {
+            "elapsed": 6.183333333333317,
+            "position": {
+              "x": 241.74117649888518,
+              "y": 1.8561785670130888,
+              "z": 293.25882350111465
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.6199999999999997
+          },
+          {
+            "elapsed": 6.283333333333316,
+            "position": {
+              "x": 242.3634304663293,
+              "y": 1.8561785670130888,
+              "z": 292.63656953367035
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.5199999999999994
+          },
+          {
+            "elapsed": 6.383333333333316,
+            "position": {
+              "x": 242.98568443377343,
+              "y": 1.8561785670130888,
+              "z": 292.01431556622606
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.4199999999999993
+          },
+          {
+            "elapsed": 6.416666666666649,
+            "position": {
+              "x": 243.19310242292147,
+              "y": 1.8561785670130888,
+              "z": 291.80689757707796
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.386666666666666
+          },
+          {
+            "elapsed": 6.516666666666649,
+            "position": {
+              "x": 243.8153563903656,
+              "y": 1.8561785670130888,
+              "z": 291.18464360963367
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.286666666666666
+          },
+          {
+            "elapsed": 6.6166666666666485,
+            "position": {
+              "x": 244.43761035780972,
+              "y": 1.8561785670130888,
+              "z": 290.5623896421894
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.18666666666666604
+          },
+          {
+            "elapsed": 6.716666666666648,
+            "position": {
+              "x": 245.05986432525384,
+              "y": 1.8561785670130888,
+              "z": 289.9401356747451
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0.08666666666666606
+          },
+          {
+            "elapsed": 6.816666666666648,
+            "position": {
+              "x": 245.6444059310347,
+              "y": 1.8561785670130888,
+              "z": 289.3555940689641
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.916666666666647,
+            "position": {
+              "x": 246.04038572849922,
+              "y": 1.8561785670130888,
+              "z": 288.95961427149956
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          }
+        ],
+        "exit": [
+          {
+            "elapsed": 7.566666666666645,
+            "position": {
+              "x": 246.04038572849922,
+              "y": 1.8561785670130888,
+              "z": 288.95961427149956
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.666666666666645,
+            "position": {
+              "x": 246.43636552596374,
+              "y": 1.8561785670130888,
+              "z": 288.56363447403504
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.766666666666644,
+            "position": {
+              "x": 246.83234532342826,
+              "y": 1.8561785670130888,
+              "z": 288.1676546765705
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.866666666666644,
+            "position": {
+              "x": 247.22832512089278,
+              "y": 1.8561785670130888,
+              "z": 287.771674879106
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.883333333333311,
+            "position": {
+              "x": 247.29432175380353,
+              "y": 1.8561785670130888,
+              "z": 287.70567824619525
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.899999999999977,
+            "position": {
+              "x": 247.36031838671428,
+              "y": 1.8561785670130888,
+              "z": 287.6396816132845
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.999999999999977,
+            "position": {
+              "x": 247.7562981841788,
+              "y": 1.8561785670130888,
+              "z": 287.24370181582
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.016666666666644,
+            "position": {
+              "x": 247.82229481708956,
+              "y": 1.8561785670130888,
+              "z": 287.1777051829092
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.11666666666665,
+            "position": {
+              "x": 248.21827461455408,
+              "y": 1.8561785670130888,
+              "z": 286.7817253854447
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.216666666666654,
+            "position": {
+              "x": 248.6142544120186,
+              "y": 1.8561785670130888,
+              "z": 286.3857455879802
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.31666666666666,
+            "position": {
+              "x": 249.01023420948312,
+              "y": 1.8561785670130888,
+              "z": 285.98976579051566
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.416666666666664,
+            "position": {
+              "x": 249.40621400694764,
+              "y": 1.8561785670130888,
+              "z": 285.59378599305114
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.51666666666667,
+            "position": {
+              "x": 249.80219380441216,
+              "y": 1.8561785670130888,
+              "z": 285.1978061955866
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.616666666666674,
+            "position": {
+              "x": 250.19817360187668,
+              "y": 1.8561785670130888,
+              "z": 284.8018263981221
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.71666666666668,
+            "position": {
+              "x": 250.5941533993412,
+              "y": 1.8561785670130888,
+              "z": 284.4058466006576
+            },
+            "isWater": false,
+            "groundHeight": 0.5840407063520623,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.816666666666684,
+            "position": {
+              "x": 250.99013319680571,
+              "y": 1.8561785670130888,
+              "z": 284.00986680319306
+            },
+            "isWater": false,
+            "groundHeight": 0.7716900164914753,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.91666666666669,
+            "position": {
+              "x": 251.38611299427023,
+              "y": 1.8561785670130888,
+              "z": 283.61388700572854
+            },
+            "isWater": false,
+            "groundHeight": 1.0774640954199672,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.016666666666694,
+            "position": {
+              "x": 251.78209279173475,
+              "y": 1.8561785670130888,
+              "z": 283.217907208264
+            },
+            "isWater": false,
+            "groundHeight": 1.4106499778945274,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.1166666666667,
+            "position": {
+              "x": 252.17807258919927,
+              "y": 1.8561785670130888,
+              "z": 282.8219274107995
+            },
+            "isWater": false,
+            "groundHeight": 1.6627656550200385,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.216666666666704,
+            "position": {
+              "x": 252.5740523866638,
+              "y": 1.8561785670130888,
+              "z": 282.425947613335
+            },
+            "isWater": false,
+            "groundHeight": 1.7414744089000354,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.316666666666709,
+            "position": {
+              "x": 252.9700321841283,
+              "y": 1.8561785670130888,
+              "z": 282.02996781587046
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.416666666666714,
+            "position": {
+              "x": 253.36601198159283,
+              "y": 1.8561785670130888,
+              "z": 281.63398801840594
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.516666666666719,
+            "position": {
+              "x": 253.76199177905735,
+              "y": 1.8561785670130888,
+              "z": 281.2380082209414
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.616666666666724,
+            "position": {
+              "x": 254.15797157652187,
+              "y": 1.8561785670130888,
+              "z": 280.8420284234769
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.716666666666729,
+            "position": {
+              "x": 254.5539513739864,
+              "y": 1.8561785670130888,
+              "z": 280.4460486260124
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.816666666666734,
+            "position": {
+              "x": 254.9499311714509,
+              "y": 1.8561785670130888,
+              "z": 280.05006882854786
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.916666666666739,
+            "position": {
+              "x": 255.34591096891543,
+              "y": 1.8561785670130888,
+              "z": 279.65408903108334
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130885,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.016666666666744,
+            "position": {
+              "x": 255.74189076637995,
+              "y": 1.8561785670130888,
+              "z": 279.2581092336188
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.116666666666749,
+            "position": {
+              "x": 256.13787056384444,
+              "y": 1.8561785670130888,
+              "z": 278.8621294361543
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.216666666666754,
+            "position": {
+              "x": 256.53385036130896,
+              "y": 1.8561785670130888,
+              "z": 278.4661496386898
+            },
+            "isWater": false,
+            "groundHeight": 1.7561785670130887,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.316666666666759,
+            "position": {
+              "x": 256.9298301587735,
+              "y": 1.8561785670130888,
+              "z": 278.07016984122527
+            },
+            "isWater": false,
+            "groundHeight": 1.755946925943114,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.416666666666764,
+            "position": {
+              "x": 257.325809956238,
+              "y": 1.8539751327228977,
+              "z": 277.67419004376075
+            },
+            "isWater": false,
+            "groundHeight": 1.7525398004592303,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.516666666666769,
+            "position": {
+              "x": 257.7217897537025,
+              "y": 1.8406597268409681,
+              "z": 277.2782102462962
+            },
+            "isWater": false,
+            "groundHeight": 1.739991375627826,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.616666666666774,
+            "position": {
+              "x": 258.11776955116704,
+              "y": 1.8165539572007592,
+              "z": 276.8822304488317
+            },
+            "isWater": false,
+            "groundHeight": 1.7164310109046639,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.716666666666779,
+            "position": {
+              "x": 258.51374934863156,
+              "y": 1.7831185772248843,
+              "z": 276.4862506513672
+            },
+            "isWater": false,
+            "groundHeight": 1.6824296091231574,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.816666666666784,
+            "position": {
+              "x": 258.9097291460961,
+              "y": 1.741814340335957,
+              "z": 276.09027085390267
+            },
+            "isWater": false,
+            "groundHeight": 1.6409337332794862,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.916666666666789,
+            "position": {
+              "x": 259.3057089435606,
+              "y": 1.6941019999565916,
+              "z": 275.69429105643815
+            },
+            "isWater": false,
+            "groundHeight": 1.5932980370234042,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.016666666666794,
+            "position": {
+              "x": 259.7016887410251,
+              "y": 1.6414423095094013,
+              "z": 275.2983112589736
+            },
+            "isWater": false,
+            "groundHeight": 1.5408771740077882,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.116666666666799,
+            "position": {
+              "x": 260.09766853848964,
+              "y": 1.585296022417001,
+              "z": 274.9023314615091
+            },
+            "isWater": false,
+            "groundHeight": 1.4850257978788304,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.216666666666804,
+            "position": {
+              "x": 260.49364833595416,
+              "y": 1.5271238921020025,
+              "z": 274.5063516640446
+            },
+            "isWater": false,
+            "groundHeight": 1.4270985623215346,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.316666666666809,
+            "position": {
+              "x": 260.8896281334187,
+              "y": 1.4683866719870207,
+              "z": 274.11037186658007
+            },
+            "isWater": false,
+            "groundHeight": 1.3684501209900783,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.416666666666814,
+            "position": {
+              "x": 261.2856079308832,
+              "y": 1.4105451154946698,
+              "z": 273.71439206911555
+            },
+            "isWater": false,
+            "groundHeight": 1.3106068199053131,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.516666666666818,
+            "position": {
+              "x": 261.6815877283477,
+              "y": 1.3550599760475621,
+              "z": 273.318412271651
+            },
+            "isWater": false,
+            "groundHeight": 1.25540055100462,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.616666666666823,
+            "position": {
+              "x": 262.07756752581224,
+              "y": 1.3033920070683132,
+              "z": 272.9224324741865
+            },
+            "isWater": false,
+            "groundHeight": 1.204752333055767,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.716666666666828,
+            "position": {
+              "x": 262.47354732327676,
+              "y": 1.2570019619795345,
+              "z": 272.526452676722
+            },
+            "isWater": false,
+            "groundHeight": 1.165637434859284,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.816666666666833,
+            "position": {
+              "x": 262.8695271207413,
+              "y": 1.2173505942038414,
+              "z": 272.13047287925747
+            },
+            "isWater": false,
+            "groundHeight": 1.1398352760751949,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.916666666666838,
+            "position": {
+              "x": 263.2655069182058,
+              "y": 1.1858986571638475,
+              "z": 271.73449308179295
+            },
+            "isWater": false,
+            "groundHeight": 1.1254144772050392,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.016666666666843,
+            "position": {
+              "x": 263.6614867156703,
+              "y": 1.1641069042821657,
+              "z": 271.3385132843284
+            },
+            "isWater": false,
+            "groundHeight": 1.1190945373540564,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.116666666666848,
+            "position": {
+              "x": 264.05746651313484,
+              "y": 1.1534360889814104,
+              "z": 270.9425334868639
+            },
+            "isWater": false,
+            "groundHeight": 1.1176090114317137,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.216666666666853,
+            "position": {
+              "x": 264.45344631059936,
+              "y": 1.117599281314268,
+              "z": 270.5465536893994
+            },
+            "isWater": false,
+            "groundHeight": 1.117599281314268,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.316666666666858,
+            "position": {
+              "x": 264.8494261080639,
+              "y": 1.11759830702859,
+              "z": 270.15057389193487
+            },
+            "isWater": false,
+            "groundHeight": 1.11759830702859,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.416666666666863,
+            "position": {
+              "x": 265.2454059055284,
+              "y": 1.11759830702859,
+              "z": 269.75459409447035
+            },
+            "isWater": false,
+            "groundHeight": 1.11759830702859,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.516666666666868,
+            "position": {
+              "x": 265.6413857029929,
+              "y": 1.1170035383400698,
+              "z": 269.35861429700583
+            },
+            "isWater": false,
+            "groundHeight": 1.1170035383400698,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.616666666666873,
+            "position": {
+              "x": 266.03736550045744,
+              "y": 1.1132927143271134,
+              "z": 268.9626344995413
+            },
+            "isWater": false,
+            "groundHeight": 1.1132927143271134,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.716666666666878,
+            "position": {
+              "x": 266.43334529792196,
+              "y": 1.1041853137210742,
+              "z": 268.5666547020768
+            },
+            "isWater": false,
+            "groundHeight": 1.1041853137210742,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.816666666666883,
+            "position": {
+              "x": 266.8293250953865,
+              "y": 1.089826098603815,
+              "z": 268.17067490461227
+            },
+            "isWater": false,
+            "groundHeight": 1.089826098603815,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.916666666666888,
+            "position": {
+              "x": 267.225304892851,
+              "y": 1.0712187755793545,
+              "z": 267.77469510714775
+            },
+            "isWater": false,
+            "groundHeight": 1.0712187755793545,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.016666666666893,
+            "position": {
+              "x": 267.6212846903155,
+              "y": 1.0477817512020327,
+              "z": 267.37871530968323
+            },
+            "isWater": false,
+            "groundHeight": 1.0477817512020327,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.116666666666898,
+            "position": {
+              "x": 268.01726448778004,
+              "y": 1.0211854476407027,
+              "z": 266.9827355122187
+            },
+            "isWater": false,
+            "groundHeight": 1.0211854476407027,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.216666666666903,
+            "position": {
+              "x": 268.41324428524456,
+              "y": 0.9933392624513999,
+              "z": 266.5867557147542
+            },
+            "isWater": false,
+            "groundHeight": 0.9933392624513999,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.316666666666908,
+            "position": {
+              "x": 268.8092240827091,
+              "y": 0.9642645410640724,
+              "z": 266.19077591728967
+            },
+            "isWater": false,
+            "groundHeight": 0.9642645410640724,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.416666666666913,
+            "position": {
+              "x": 269.2052038801736,
+              "y": 0.9345049069453211,
+              "z": 265.79479611982515
+            },
+            "isWater": false,
+            "groundHeight": 0.9345049069453211,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.516666666666918,
+            "position": {
+              "x": 269.6011836776381,
+              "y": 0.9059685960769088,
+              "z": 265.39881632236063
+            },
+            "isWater": false,
+            "groundHeight": 0.9059685960769088,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.616666666666923,
+            "position": {
+              "x": 269.99716347510264,
+              "y": 0.8799417550279167,
+              "z": 265.0028365248961
+            },
+            "isWater": false,
+            "groundHeight": 0.8799417550279167,
+            "biome": "dunes",
+            "rollRemaining": 0
+          }
+        ],
+        "minimapBridgePixels": {
+          "mode": "island",
+          "point": [
+            185,
+            -300
+          ],
+          "pixel": [
+            315,
+            159
+          ],
+          "colors": [
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              155,
+              139,
+              104,
+              255
+            ],
+            [
+              78,
+              96,
+              89,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              155,
+              139,
+              104,
+              255
+            ],
+            [
+              198,
+              178,
+              135,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              69,
+              61,
+              42,
+              255
+            ],
+            [
+              198,
+              178,
+              135,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              83,
+              114,
+              113,
+              255
+            ],
+            [
+              69,
+              61,
+              42,
+              255
+            ],
+            [
+              198,
+              178,
+              135,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "name": "Normal sideways walking over the empty sea stops at the northern bridge rail without snapping to either shore",
+      "evidence": {
+        "approach": [
+          {
+            "elapsed": 8.199999999999987,
+            "position": {
+              "x": 187.01023420948312,
+              "y": 4.164173665292555,
+              "z": -297.98976579051566
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.299999999999992,
+            "position": {
+              "x": 187.40621400694764,
+              "y": 4.164173665292555,
+              "z": -298.3857455879802
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.399999999999997,
+            "position": {
+              "x": 187.80219380441216,
+              "y": 4.164173665292555,
+              "z": -298.7817253854447
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.416666666666664,
+            "position": {
+              "x": 187.8681904373229,
+              "y": 4.164173665292555,
+              "z": -298.84772201835546
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.51666666666667,
+            "position": {
+              "x": 188.26417023478743,
+              "y": 4.164173665292555,
+              "z": -299.24370181582
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.616666666666674,
+            "position": {
+              "x": 188.66015003225195,
+              "y": 4.164173665292555,
+              "z": -299.6396816132845
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.71666666666668,
+            "position": {
+              "x": 189.05612982971647,
+              "y": 4.164173665292555,
+              "z": -300.035661410749
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.816666666666684,
+            "position": {
+              "x": 189.452109627181,
+              "y": 4.164173665292555,
+              "z": -300.43164120821353
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 8.91666666666669,
+            "position": {
+              "x": 189.8480894246455,
+              "y": 4.164173665292555,
+              "z": -300.82762100567805
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.016666666666694,
+            "position": {
+              "x": 190.24406922211003,
+              "y": 4.164173665292555,
+              "z": -301.2236008031426
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.1166666666667,
+            "position": {
+              "x": 190.64004901957455,
+              "y": 4.164173665292555,
+              "z": -301.6195806006071
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.216666666666704,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.316666666666709,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.416666666666714,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.516666666666719,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.616666666666724,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.716666666666729,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          }
+        ],
+        "continued": [
+          {
+            "elapsed": 9.716666666666729,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.816666666666734,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 9.916666666666739,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.016666666666744,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.050000000000079,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.150000000000084,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 10.250000000000089,
+            "position": {
+              "x": 190.91346364163346,
+              "y": 4.164173665292555,
+              "z": -301.892995222666
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "north bridge is crossed from main land over actual sea to the eastern islet using ordinary WASD and a roll over the gap; both landings remain continuous and the other bridge is visible on the minimap",
+      "evidence": {
+        "bridge": "nordbruecke",
+        "entry": [
+          {
+            "elapsed": 0,
+            "position": {
+              "x": 158,
+              "y": 4.060457966551865,
+              "z": -327
+            },
+            "isWater": false,
+            "groundHeight": 4.060457966551865,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.09999999999999999,
+            "position": {
+              "x": 158.39597979746452,
+              "y": 4.053747009578689,
+              "z": -326.6040202025355
+            },
+            "isWater": false,
+            "groundHeight": 4.053747009578689,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.19999999999999998,
+            "position": {
+              "x": 158.79195959492904,
+              "y": 4.0486343985101865,
+              "z": -326.20804040507096
+            },
+            "isWater": false,
+            "groundHeight": 4.0486343985101865,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.3,
+            "position": {
+              "x": 159.18793939239356,
+              "y": 4.04537012797628,
+              "z": -325.81206060760644
+            },
+            "isWater": false,
+            "groundHeight": 4.04537012797628,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.31666666666666665,
+            "position": {
+              "x": 159.2539360253043,
+              "y": 4.044996303752773,
+              "z": -325.7460639746957
+            },
+            "isWater": false,
+            "groundHeight": 4.044996303752773,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.41666666666666663,
+            "position": {
+              "x": 159.64991582276883,
+              "y": 4.044178480664403,
+              "z": -325.35008417723117
+            },
+            "isWater": false,
+            "groundHeight": 4.044178480664403,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.5166666666666666,
+            "position": {
+              "x": 160.04589562023335,
+              "y": 4.044173665292555,
+              "z": -324.95410437976665
+            },
+            "isWater": false,
+            "groundHeight": 4.044173665292555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.5333333333333333,
+            "position": {
+              "x": 160.1118922531441,
+              "y": 4.044173665292555,
+              "z": -324.8881077468559
+            },
+            "isWater": false,
+            "groundHeight": 4.044173665292555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.6333333333333336,
+            "position": {
+              "x": 160.50787205060863,
+              "y": 4.044173665292555,
+              "z": -324.4921279493914
+            },
+            "isWater": false,
+            "groundHeight": 4.044173665292555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.733333333333334,
+            "position": {
+              "x": 160.90385184807315,
+              "y": 4.044153157469802,
+              "z": -324.09614815192685
+            },
+            "isWater": false,
+            "groundHeight": 4.044153157469802,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.8333333333333343,
+            "position": {
+              "x": 161.29983164553767,
+              "y": 4.07961918963627,
+              "z": -323.70016835446233
+            },
+            "isWater": false,
+            "groundHeight": 4.0409994728106735,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.850000000000001,
+            "position": {
+              "x": 161.36582827844842,
+              "y": 4.079832658927196,
+              "z": -323.6341717215516
+            },
+            "isWater": false,
+            "groundHeight": 4.039556137071485,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 0.9500000000000013,
+            "position": {
+              "x": 161.76180807591294,
+              "y": 4.081920874141617,
+              "z": -323.23819192408706
+            },
+            "isWater": false,
+            "groundHeight": 4.027731514969689,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.0500000000000012,
+            "position": {
+              "x": 162.15778787337746,
+              "y": 4.085263832277909,
+              "z": -322.84221212662254
+            },
+            "isWater": false,
+            "groundHeight": 4.013375831291157,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.1500000000000008,
+            "position": {
+              "x": 162.55376767084198,
+              "y": 4.08968240501607,
+              "z": -322.446232329158
+            },
+            "isWater": false,
+            "groundHeight": 4.001312605281895,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.2500000000000004,
+            "position": {
+              "x": 162.9497474683065,
+              "y": 4.094997464036102,
+              "z": -322.0502525316935
+            },
+            "isWater": false,
+            "groundHeight": 3.9964150768218643,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.35,
+            "position": {
+              "x": 163.34572726577102,
+              "y": 4.101029881018004,
+              "z": -321.654272734229
+            },
+            "isWater": false,
+            "groundHeight": 4.001036617251215,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.4499999999999997,
+            "position": {
+              "x": 163.74170706323554,
+              "y": 4.107600527641777,
+              "z": -321.25829293676446
+            },
+            "isWater": false,
+            "groundHeight": 4.007604900174236,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.5499999999999994,
+            "position": {
+              "x": 164.13768686070006,
+              "y": 4.114530275587418,
+              "z": -320.86231313929994
+            },
+            "isWater": false,
+            "groundHeight": 4.014533706092509,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.649999999999999,
+            "position": {
+              "x": 164.53366665816458,
+              "y": 4.12163999653493,
+              "z": -320.4663333418354
+            },
+            "isWater": false,
+            "groundHeight": 4.021639732504474,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.7499999999999987,
+            "position": {
+              "x": 164.9296464556291,
+              "y": 4.128750562164312,
+              "z": -320.0703535443709
+            },
+            "isWater": false,
+            "groundHeight": 4.028746504563092,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.8499999999999983,
+            "position": {
+              "x": 165.32562625309362,
+              "y": 4.135682844155564,
+              "z": -319.6743737469064
+            },
+            "isWater": false,
+            "groundHeight": 4.035673382268666,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 1.949999999999998,
+            "position": {
+              "x": 165.72160605055814,
+              "y": 4.142257714188685,
+              "z": -319.27839394944186
+            },
+            "isWater": false,
+            "groundHeight": 4.042242661351029,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 2.0499999999999976,
+            "position": {
+              "x": 166.11758584802266,
+              "y": 4.148296043943676,
+              "z": -318.88241415197734
+            },
+            "isWater": false,
+            "groundHeight": 4.048276637539781,
+            "biome": "forest",
+            "rollRemaining": 0
+          }
+        ],
+        "seaSpan": [
+          {
+            "elapsed": 2.799999999999995,
+            "position": {
+              "x": 166.11758584802266,
+              "y": 4.148296043943676,
+              "z": -318.88241415197734
+            },
+            "isWater": false,
+            "groundHeight": 4.048276637539781,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 2.8999999999999946,
+            "position": {
+              "x": 166.51356564548718,
+              "y": 4.153618705100537,
+              "z": -318.4864343545128
+            },
+            "isWater": false,
+            "groundHeight": 4.053597606565326,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 2.9999999999999942,
+            "position": {
+              "x": 166.9095454429517,
+              "y": 4.158046569339266,
+              "z": -318.0904545570483
+            },
+            "isWater": false,
+            "groundHeight": 4.058027864158482,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.016666666666661,
+            "position": {
+              "x": 166.97554207586245,
+              "y": 4.158684974884607,
+              "z": -318.02445792413755
+            },
+            "isWater": false,
+            "groundHeight": 4.058668411932949,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.1166666666666605,
+            "position": {
+              "x": 167.37152187332697,
+              "y": 4.161842511092185,
+              "z": -317.62847812667303
+            },
+            "isWater": false,
+            "groundHeight": 4.061814094925456,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.21666666666666,
+            "position": {
+              "x": 167.7675016707915,
+              "y": 4.163717139021631,
+              "z": -317.2324983292085
+            },
+            "isWater": false,
+            "groundHeight": 4.063678421509403,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.3166666666666598,
+            "position": {
+              "x": 168.163481468256,
+              "y": 4.164173665292555,
+              "z": -316.836518531744
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.4166666666666594,
+            "position": {
+              "x": 168.55946126572053,
+              "y": 4.164173665292555,
+              "z": -316.44053873427947
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.516666666666659,
+            "position": {
+              "x": 168.95544106318505,
+              "y": 4.164173665292555,
+              "z": -316.04455893681495
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.6166666666666587,
+            "position": {
+              "x": 169.35142086064957,
+              "y": 4.164173665292555,
+              "z": -315.64857913935043
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.7166666666666583,
+            "position": {
+              "x": 169.7474006581141,
+              "y": 4.164173665292555,
+              "z": -315.2525993418859
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.816666666666658,
+            "position": {
+              "x": 170.1433804555786,
+              "y": 4.164173665292555,
+              "z": -314.8566195444214
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 3.9166666666666576,
+            "position": {
+              "x": 170.53936025304313,
+              "y": 4.164173665292555,
+              "z": -314.4606397469569
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.016666666666658,
+            "position": {
+              "x": 170.93534005050765,
+              "y": 4.164173665292555,
+              "z": -314.06465994949235
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.116666666666657,
+            "position": {
+              "x": 171.33131984797217,
+              "y": 4.164173665292555,
+              "z": -313.66868015202783
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.216666666666657,
+            "position": {
+              "x": 171.7272996454367,
+              "y": 4.164173665292555,
+              "z": -313.2727003545633
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.316666666666657,
+            "position": {
+              "x": 172.1232794429012,
+              "y": 4.164173665292555,
+              "z": -312.8767205570988
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.416666666666656,
+            "position": {
+              "x": 172.51925924036573,
+              "y": 4.164173665292555,
+              "z": -312.4807407596343
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.433333333333323,
+            "position": {
+              "x": 172.58525587327648,
+              "y": 4.164173665292555,
+              "z": -312.4147441267235
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.516666666666656,
+            "position": {
+              "x": 172.91523903783025,
+              "y": 4.164173665292555,
+              "z": -312.08476096216975
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.616666666666656,
+            "position": {
+              "x": 173.31121883529477,
+              "y": 4.164173665292555,
+              "z": -311.68878116470523
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.716666666666655,
+            "position": {
+              "x": 173.7071986327593,
+              "y": 4.164173665292555,
+              "z": -311.2928013672407
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.816666666666655,
+            "position": {
+              "x": 174.1031784302238,
+              "y": 4.164173665292555,
+              "z": -310.8968215697762
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 4.9166666666666545,
+            "position": {
+              "x": 174.49915822768833,
+              "y": 4.164173665292555,
+              "z": -310.5008417723117
+            },
+            "isWater": false,
+            "groundHeight": 4.0260709329975,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.016666666666654,
+            "position": {
+              "x": 174.89513802515285,
+              "y": 4.164173665292555,
+              "z": -310.10486197484715
+            },
+            "isWater": false,
+            "groundHeight": 3.5650083879240637,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.116666666666654,
+            "position": {
+              "x": 175.29111782261737,
+              "y": 4.164173665292555,
+              "z": -309.70888217738263
+            },
+            "isWater": false,
+            "groundHeight": 2.7124624141282947,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.2166666666666535,
+            "position": {
+              "x": 175.6870976200819,
+              "y": 4.164173665292555,
+              "z": -309.3129023799181
+            },
+            "isWater": false,
+            "groundHeight": 1.736325156476459,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.316666666666653,
+            "position": {
+              "x": 176.0830774175464,
+              "y": 4.164173665292555,
+              "z": -308.9169225824536
+            },
+            "isWater": false,
+            "groundHeight": 0.9160246234817867,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.416666666666653,
+            "position": {
+              "x": 176.47905721501093,
+              "y": 4.164173665292555,
+              "z": -308.5209427849891
+            },
+            "isWater": false,
+            "groundHeight": 0.5350926476875625,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.516666666666652,
+            "position": {
+              "x": 176.87503701247545,
+              "y": 4.164173665292555,
+              "z": -308.12496298752455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.616666666666652,
+            "position": {
+              "x": 177.27101680993997,
+              "y": 4.164173665292555,
+              "z": -307.72898319006003
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.716666666666652,
+            "position": {
+              "x": 177.66699660740449,
+              "y": 4.164173665292555,
+              "z": -307.3330033925955
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.816666666666651,
+            "position": {
+              "x": 178.062976404869,
+              "y": 4.164173665292555,
+              "z": -306.937023595131
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 5.916666666666651,
+            "position": {
+              "x": 178.45895620233352,
+              "y": 4.164173665292555,
+              "z": -306.5410437976665
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.016666666666651,
+            "position": {
+              "x": 178.85493599979804,
+              "y": 4.164173665292555,
+              "z": -306.14506400020196
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.11666666666665,
+            "position": {
+              "x": 179.25091579726256,
+              "y": 4.164173665292555,
+              "z": -305.74908420273744
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.21666666666665,
+            "position": {
+              "x": 179.64689559472708,
+              "y": 4.164173665292555,
+              "z": -305.3531044052729
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.3166666666666496,
+            "position": {
+              "x": 180.0428753921916,
+              "y": 4.164173665292555,
+              "z": -304.9571246078084
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.416666666666649,
+            "position": {
+              "x": 180.43885518965612,
+              "y": 4.164173665292555,
+              "z": -304.5611448103439
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.516666666666649,
+            "position": {
+              "x": 180.83483498712064,
+              "y": 4.164173665292555,
+              "z": -304.16516501287936
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.6166666666666485,
+            "position": {
+              "x": 181.23081478458516,
+              "y": 4.164173665292555,
+              "z": -303.76918521541484
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.716666666666648,
+            "position": {
+              "x": 181.62679458204968,
+              "y": 4.164173665292555,
+              "z": -303.3732054179503
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.816666666666648,
+            "position": {
+              "x": 182.0227743795142,
+              "y": 4.164173665292555,
+              "z": -302.9772256204858
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 6.816666666666648,
+            "position": {
+              "x": 182.0227743795142,
+              "y": 4.164173665292555,
+              "z": -302.9772256204858
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.72
+          },
+          {
+            "elapsed": 6.916666666666647,
+            "position": {
+              "x": 182.64502834695833,
+              "y": 4.164173665292555,
+              "z": -302.3549716530415
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.6199999999999997
+          },
+          {
+            "elapsed": 7.016666666666647,
+            "position": {
+              "x": 183.26728231440245,
+              "y": 4.164173665292555,
+              "z": -301.7327176855972
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.5199999999999994
+          },
+          {
+            "elapsed": 7.116666666666647,
+            "position": {
+              "x": 183.88953628184657,
+              "y": 4.164173665292555,
+              "z": -301.1104637181529
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.4199999999999993
+          },
+          {
+            "elapsed": 7.216666666666646,
+            "position": {
+              "x": 184.5117902492907,
+              "y": 4.164173665292555,
+              "z": -300.4882097507086
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.31999999999999934
+          },
+          {
+            "elapsed": 7.316666666666646,
+            "position": {
+              "x": 185.13404421673482,
+              "y": 4.164173665292555,
+              "z": -299.8659557832643
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.21999999999999936
+          },
+          {
+            "elapsed": 7.416666666666646,
+            "position": {
+              "x": 185.75629818417895,
+              "y": 4.164173665292555,
+              "z": -299.24370181582003
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.11999999999999938
+          },
+          {
+            "elapsed": 7.4666666666666455,
+            "position": {
+              "x": 186.067425167901,
+              "y": 4.164173665292555,
+              "z": -298.9325748320979
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0.0699999999999994
+          },
+          {
+            "elapsed": 7.566666666666645,
+            "position": {
+              "x": 186.6142544120186,
+              "y": 4.164173665292555,
+              "z": -298.3857455879802
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 7.666666666666645,
+            "position": {
+              "x": 187.01023420948312,
+              "y": 4.164173665292555,
+              "z": -297.98976579051566
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          }
+        ],
+        "exit": [
+          {
+            "elapsed": 11.516666666666818,
+            "position": {
+              "x": 187.54763536318504,
+              "y": 4.164173665292555,
+              "z": -298.5271669442176
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.616666666666823,
+            "position": {
+              "x": 187.94361516064956,
+              "y": 4.164173665292555,
+              "z": -298.13118714675306
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.716666666666828,
+            "position": {
+              "x": 188.33959495811408,
+              "y": 4.164173665292555,
+              "z": -297.73520734928854
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.816666666666833,
+            "position": {
+              "x": 188.7355747555786,
+              "y": 4.164173665292555,
+              "z": -297.339227551824
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.833333333333501,
+            "position": {
+              "x": 188.80157138848935,
+              "y": 4.164173665292555,
+              "z": -297.27323091891327
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "forest",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 11.933333333333506,
+            "position": {
+              "x": 189.19755118595387,
+              "y": 4.164173665292555,
+              "z": -296.87725112144875
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.03333333333351,
+            "position": {
+              "x": 189.5935309834184,
+              "y": 4.164173665292555,
+              "z": -296.48127132398423
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.133333333333516,
+            "position": {
+              "x": 189.9895107808829,
+              "y": 4.164173665292555,
+              "z": -296.0852915265197
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.23333333333352,
+            "position": {
+              "x": 190.38549057834743,
+              "y": 4.164173665292555,
+              "z": -295.6893117290552
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.333333333333526,
+            "position": {
+              "x": 190.78147037581195,
+              "y": 4.164173665292555,
+              "z": -295.29333193159067
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.43333333333353,
+            "position": {
+              "x": 191.17745017327647,
+              "y": 4.164173665292555,
+              "z": -294.89735213412615
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.533333333333536,
+            "position": {
+              "x": 191.573429970741,
+              "y": 4.164173665292555,
+              "z": -294.50137233666163
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.63333333333354,
+            "position": {
+              "x": 191.9694097682055,
+              "y": 4.164173665292555,
+              "z": -294.1053925391971
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.733333333333546,
+            "position": {
+              "x": 192.36538956567003,
+              "y": 4.164173665292555,
+              "z": -293.7094127417326
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.83333333333355,
+            "position": {
+              "x": 192.76136936313455,
+              "y": 4.164173665292555,
+              "z": -293.3134329442681
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 12.933333333333556,
+            "position": {
+              "x": 193.15734916059907,
+              "y": 4.164173665292555,
+              "z": -292.91745314680355
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.03333333333356,
+            "position": {
+              "x": 193.5533289580636,
+              "y": 4.164173665292555,
+              "z": -292.52147334933903
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.133333333333566,
+            "position": {
+              "x": 193.9493087555281,
+              "y": 4.164173665292555,
+              "z": -292.1254935518745
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.23333333333357,
+            "position": {
+              "x": 194.34528855299263,
+              "y": 4.164173665292555,
+              "z": -291.72951375441
+            },
+            "isWater": false,
+            "groundHeight": 0.7977825995216002,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.333333333333576,
+            "position": {
+              "x": 194.74126835045715,
+              "y": 4.164173665292555,
+              "z": -291.3335339569455
+            },
+            "isWater": false,
+            "groundHeight": 1.5043722623797842,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.43333333333358,
+            "position": {
+              "x": 195.13724814792167,
+              "y": 4.164173665292555,
+              "z": -290.93755415948095
+            },
+            "isWater": false,
+            "groundHeight": 2.4403759792094433,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.533333333333585,
+            "position": {
+              "x": 195.5332279453862,
+              "y": 4.164173665292555,
+              "z": -290.54157436201643
+            },
+            "isWater": false,
+            "groundHeight": 3.326488493225285,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.63333333333359,
+            "position": {
+              "x": 195.9292077428507,
+              "y": 4.164173665292555,
+              "z": -290.1455945645519
+            },
+            "isWater": false,
+            "groundHeight": 3.890968997702486,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.733333333333595,
+            "position": {
+              "x": 196.32518754031523,
+              "y": 4.164173665292555,
+              "z": -289.7496147670874
+            },
+            "isWater": false,
+            "groundHeight": 4.061690395936595,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.8333333333336,
+            "position": {
+              "x": 196.72116733777975,
+              "y": 4.164173665292555,
+              "z": -289.3536349696229
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 13.933333333333605,
+            "position": {
+              "x": 197.11714713524427,
+              "y": 4.164173665292555,
+              "z": -288.95765517215835
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.03333333333361,
+            "position": {
+              "x": 197.5131269327088,
+              "y": 4.164173665292555,
+              "z": -288.56167537469383
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.133333333333615,
+            "position": {
+              "x": 197.9091067301733,
+              "y": 4.164173665292555,
+              "z": -288.1656955772293
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.23333333333362,
+            "position": {
+              "x": 198.30508652763783,
+              "y": 4.164173665292555,
+              "z": -287.7697157797648
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.333333333333625,
+            "position": {
+              "x": 198.70106632510235,
+              "y": 4.164173665292555,
+              "z": -287.3737359823003
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.43333333333363,
+            "position": {
+              "x": 199.09704612256687,
+              "y": 4.164173665292555,
+              "z": -286.97775618483575
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.533333333333635,
+            "position": {
+              "x": 199.49302592003139,
+              "y": 4.164173665292555,
+              "z": -286.58177638737124
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.63333333333364,
+            "position": {
+              "x": 199.8890057174959,
+              "y": 4.164173665292555,
+              "z": -286.1857965899067
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.733333333333645,
+            "position": {
+              "x": 200.28498551496043,
+              "y": 4.164173665292555,
+              "z": -285.7898167924422
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.83333333333365,
+            "position": {
+              "x": 200.68096531242495,
+              "y": 4.164173665292555,
+              "z": -285.3938369949777
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 14.933333333333655,
+            "position": {
+              "x": 201.07694510988946,
+              "y": 4.164173665292555,
+              "z": -284.99785719751316
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.03333333333366,
+            "position": {
+              "x": 201.47292490735398,
+              "y": 4.164173665292555,
+              "z": -284.60187740004864
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.133333333333665,
+            "position": {
+              "x": 201.8689047048185,
+              "y": 4.164173665292555,
+              "z": -284.2058976025841
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.23333333333367,
+            "position": {
+              "x": 202.26488450228302,
+              "y": 4.164173665292555,
+              "z": -283.8099178051196
+            },
+            "isWater": false,
+            "groundHeight": 4.0641736652925555,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.333333333333675,
+            "position": {
+              "x": 202.66086429974754,
+              "y": 4.159889757968839,
+              "z": -283.4139380076551
+            },
+            "isWater": false,
+            "groundHeight": 4.057877721993982,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.43333333333368,
+            "position": {
+              "x": 203.05684409721206,
+              "y": 4.126200273553621,
+              "z": -283.01795821019056
+            },
+            "isWater": false,
+            "groundHeight": 4.023550712684188,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.533333333333685,
+            "position": {
+              "x": 203.45282389467658,
+              "y": 4.062386866256008,
+              "z": -282.62197841272604
+            },
+            "isWater": false,
+            "groundHeight": 3.9597256478042504,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.63333333333369,
+            "position": {
+              "x": 203.8488036921411,
+              "y": 3.9724999167596162,
+              "z": -282.2259986152615
+            },
+            "isWater": false,
+            "groundHeight": 3.869990263106375,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.733333333333695,
+            "position": {
+              "x": 204.24478348960562,
+              "y": 3.860589805748056,
+              "z": -281.830018817797
+            },
+            "isWater": false,
+            "groundHeight": 3.758368149894582,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.8333333333337,
+            "position": {
+              "x": 204.64076328707014,
+              "y": 3.73070691390494,
+              "z": -281.4340390203325
+            },
+            "isWater": false,
+            "groundHeight": 3.6288828994728917,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.850000000000367,
+            "position": {
+              "x": 204.7067599199809,
+              "y": 3.7075968133025645,
+              "z": -281.3680423874217
+            },
+            "isWater": false,
+            "groundHeight": 3.606314241718549,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 15.950000000000372,
+            "position": {
+              "x": 205.10273971744542,
+              "y": 3.5618649082977574,
+              "z": -280.9720625899572
+            },
+            "isWater": false,
+            "groundHeight": 3.460835564943597,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.05000000000037,
+            "position": {
+              "x": 205.49871951490994,
+              "y": 3.406936047275891,
+              "z": -280.5760827924927
+            },
+            "isWater": false,
+            "groundHeight": 3.306279879467557,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.150000000000365,
+            "position": {
+              "x": 205.89469931237446,
+              "y": 3.2468606109205798,
+              "z": -280.18010299502816
+            },
+            "isWater": false,
+            "groundHeight": 3.146670776594445,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.25000000000036,
+            "position": {
+              "x": 206.29067910983898,
+              "y": 3.085688979915431,
+              "z": -279.78412319756364
+            },
+            "isWater": false,
+            "groundHeight": 2.986031847628284,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.350000000000353,
+            "position": {
+              "x": 206.6866589073035,
+              "y": 2.927471534944063,
+              "z": -279.3881434000991
+            },
+            "isWater": false,
+            "groundHeight": 2.8283866838730916,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.450000000000347,
+            "position": {
+              "x": 207.08263870476802,
+              "y": 2.7762586566900853,
+              "z": -278.9921636026346
+            },
+            "isWater": false,
+            "groundHeight": 2.677758876632893,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.55000000000034,
+            "position": {
+              "x": 207.47861850223254,
+              "y": 2.636100725837114,
+              "z": -278.5961838051701
+            },
+            "isWater": false,
+            "groundHeight": 2.539639533279475,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.650000000000336,
+            "position": {
+              "x": 207.87459829969706,
+              "y": 2.51104812306876,
+              "z": -278.20020400770557
+            },
+            "isWater": false,
+            "groundHeight": 2.419840481939247,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.75000000000033,
+            "position": {
+              "x": 208.27057809716158,
+              "y": 2.4051512290686365,
+              "z": -277.80422421024105
+            },
+            "isWater": false,
+            "groundHeight": 2.3307182560737814,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.850000000000325,
+            "position": {
+              "x": 208.6665578946261,
+              "y": 2.3224604245203557,
+              "z": -277.4082444127765
+            },
+            "isWater": false,
+            "groundHeight": 2.266581804134754,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 16.95000000000032,
+            "position": {
+              "x": 209.06253769209061,
+              "y": 2.2670260901075316,
+              "z": -277.012264615312
+            },
+            "isWater": false,
+            "groundHeight": 2.2270414500622953,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.050000000000313,
+            "position": {
+              "x": 209.45851748955513,
+              "y": 2.2428986065137755,
+              "z": -276.6162848178475
+            },
+            "isWater": false,
+            "groundHeight": 2.2099444813765894,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.150000000000308,
+            "position": {
+              "x": 209.85449728701965,
+              "y": 2.2071863541462404,
+              "z": -276.22030502038297
+            },
+            "isWater": false,
+            "groundHeight": 2.2071863541462404,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.250000000000302,
+            "position": {
+              "x": 210.25047708448417,
+              "y": 2.2071863541462404,
+              "z": -275.82432522291845
+            },
+            "isWater": false,
+            "groundHeight": 2.2071863541462404,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.350000000000296,
+            "position": {
+              "x": 210.6464568819487,
+              "y": 2.2071863541462404,
+              "z": -275.4283454254539
+            },
+            "isWater": false,
+            "groundHeight": 2.2071863541462404,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.45000000000029,
+            "position": {
+              "x": 211.0424366794132,
+              "y": 2.207678247507733,
+              "z": -275.0323656279894
+            },
+            "isWater": false,
+            "groundHeight": 2.207678247507733,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.550000000000285,
+            "position": {
+              "x": 211.43841647687773,
+              "y": 2.210275188227433,
+              "z": -274.6363858305249
+            },
+            "isWater": false,
+            "groundHeight": 2.210275188227433,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.65000000000028,
+            "position": {
+              "x": 211.83439627434225,
+              "y": 2.217004626437948,
+              "z": -274.24040603306037
+            },
+            "isWater": false,
+            "groundHeight": 2.217004626437948,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.750000000000274,
+            "position": {
+              "x": 212.23037607180677,
+              "y": 2.227255841359177,
+              "z": -273.84442623559585
+            },
+            "isWater": false,
+            "groundHeight": 2.227255841359177,
+            "biome": "dunes",
+            "rollRemaining": 0
+          },
+          {
+            "elapsed": 17.850000000000268,
+            "position": {
+              "x": 212.6263558692713,
+              "y": 2.2414966858064633,
+              "z": -273.4484464381313
+            },
+            "isWater": false,
+            "groundHeight": 2.2414966858064633,
+            "biome": "dunes",
+            "rollRemaining": 0
+          }
+        ],
+        "minimapBridgePixels": {
+          "mode": "island",
+          "point": [
+            244,
+            291
+          ],
+          "pixel": [
+            334,
+            349
+          ],
+          "colors": [
+            [
+              83,
+              114,
+              113,
+              255
+            ],
+            [
+              69,
+              61,
+              42,
+              255
+            ],
+            [
+              155,
+              139,
+              104,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              69,
+              61,
+              42,
+              255
+            ],
+            [
+              155,
+              139,
+              104,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              155,
+              139,
+              104,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              112,
+              100,
+              73,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              241,
+              216,
+              165,
+              255
+            ],
+            [
+              155,
+              139,
+              104,
+              255
+            ],
+            [
+              74,
+              79,
+              66,
+              255
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/open-gap-editor.png",
+    "docs/open-gap-south-west-landing.png",
+    "docs/open-gap-south-sea-span.png",
+    "docs/open-gap-south-east-landing.png",
+    "docs/open-gap-north-west-landing.png",
+    "docs/open-gap-north-sea-span.png",
+    "docs/open-gap-north-water-edge.png",
+    "docs/open-gap-north-east-landing.png"
+  ],
+  "limits": "Chromium software WebGL. One ordinary full traversal per bridge supplies both landing images; no device-performance claim.",
+  "delivery": {
+    "files": {
+      "map-editor.html": {
+        "bytes": 60490568,
+        "sha256": "50369e11d8d725acf5bbf50cc8a4593a8d989f55480211e6bb2ea4aef7df2ea5"
+      },
+      "nebeljagd.html": {
+        "bytes": 75907149,
+        "sha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245"
+      },
+      "worldmap.json": {
+        "bytes": 19060,
+        "sha256": "83e3462239ba8607b23953aa71dbb710c0c5ec71d5f7f8296bac52ff12295bfc"
+      }
+    },
+    "unexpectedRequests": []
+  },
+  "checkedAt": "2026-11-01T11:10:02.226629+00:00",
+  "runtimeViewport": {
+    "width": 960,
+    "height": 600
+  },
+  "screenshotViewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "screenshotArtifacts": [
+    {
+      "path": "docs/open-gap-editor.png",
+      "html": "map-editor.html",
+      "htmlSha256": "50369e11d8d725acf5bbf50cc8a4593a8d989f55480211e6bb2ea4aef7df2ea5",
+      "imageSha256": "00535d581bec19e725a645f0e89c2f4014027325e75911f9c792284ae04dd540"
+    },
+    {
+      "path": "docs/open-gap-south-west-landing.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "091baffc418c87559339deba317999965b00701d3452d49846fbced5b961f340"
+    },
+    {
+      "path": "docs/open-gap-south-sea-span.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "449d02889e0708503dfaf50f26f45b084b7436205de3c0b5787500615ac0c036"
+    },
+    {
+      "path": "docs/open-gap-south-east-landing.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "765a2a0df5a8ea36b0ea77719a4a34de5d025d2bb2bc3f5740e022617ac0a997"
+    },
+    {
+      "path": "docs/open-gap-north-west-landing.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "e2df951422ba56d7c891b8f02f3afb05775dd1ed0e29b3df8f11f2480d2b339f"
+    },
+    {
+      "path": "docs/open-gap-north-sea-span.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "23eb11c3ac0fa5744f81e4b6967a6c0af10e863fd12d12278778a31ada940aa9"
+    },
+    {
+      "path": "docs/open-gap-north-water-edge.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "f0479a18681279fcc82a61470f69f53a91db15a2073f4795c786b9f4a644d7ab"
+    },
+    {
+      "path": "docs/open-gap-north-east-landing.png",
+      "html": "nebeljagd.html",
+      "htmlSha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245",
+      "imageSha256": "8ad773d7c8dfcdaf91cce6b0dc81b2e6d3501a5f988c8403465e841c56c6125d"
+    }
+  ],
+  "summary": {
+    "suedbruecke": {
+      "from": {
+        "x": 220,
+        "y": 1.8251174241033326,
+        "z": 315
+      },
+      "to": {
+        "x": 269.99716347510264,
+        "y": 0.8799417550279167,
+        "z": 265.0028365248961
+      },
+      "startBiome": "dunes",
+      "endBiome": "dunes",
+      "seaSpanGroundHeight": -1.6,
+      "rollSamples": 8,
+      "maxVerticalStep": 0.058737220114981836,
+      "maxHorizontalStep": 0.8800000000000666,
+      "otherBridgeMinimapCenterRGBA": [
+        241,
+        216,
+        165,
+        255
+      ]
+    },
+    "nordbruecke": {
+      "from": {
+        "x": 158,
+        "y": 4.060457966551865,
+        "z": -327
+      },
+      "to": {
+        "x": 212.6263558692713,
+        "y": 2.2414966858064633,
+        "z": -273.4484464381313
+      },
+      "startBiome": "forest",
+      "endBiome": "dunes",
+      "seaSpanGroundHeight": -1.6,
+      "rollSamples": 8,
+      "maxVerticalStep": 0.16117163100514897,
+      "maxHorizontalStep": 0.8800000000000666,
+      "otherBridgeMinimapCenterRGBA": [
+        241,
+        216,
+        165,
+        255
+      ]
+    }
+  },
+  "visualReview": {
+    "fourLandings": "All four full-width landings inspected: no terrain over the deck or visible gaps at the ground connections.",
+    "seaSpans": "Both sea spans and the northern water-facing edge inspected; visible water below intact decks and railings.",
+    "editor": "Four region types and an editable eastern islet separated by the open sea gap; both bridges visible."
+  }
+}
