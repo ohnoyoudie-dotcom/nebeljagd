@@ -1,0 +1,415 @@
+{
+  "status": "passed",
+  "buildId": "6856882b5f3f",
+  "delivery": {
+    "bytes": 81320419,
+    "sha256": "7fcd8864b4221974fbb0672f7d9514bd1899bbcde938bf49325872d0c28c5d6d"
+  },
+  "checks": [
+    {
+      "name": "fireStaff-npc-direct-4m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 1,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "terrain",
+        "point": {
+          "x": 24.977625277705098,
+          "y": 4.610213150062922,
+          "z": -32.796656811593586
+        }
+      },
+      "launch": {
+        "type": "fireStaff",
+        "direction": 1.5707963267948966,
+        "tip": {
+          "x": 23.45907547737469,
+          "y": 4.610213150062922,
+          "z": -32.796656811593586
+        },
+        "position": {
+          "x": 23.45907547737469,
+          "y": 4.610213150062922,
+          "z": -32.796656811593586
+        },
+        "flightHeight": 4.610213150062922,
+        "bodyOrigin": {
+          "x": 21.17,
+          "y": 4.610213150062922,
+          "z": -33
+        }
+      },
+      "screenshot": "/tmp/nebeljagd-projectile-near-fixed/fireStaff-npc-direct-4m-actual-impact.png"
+    },
+    {
+      "name": "fireStaff-npc-near-2.2m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 1,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "terrain",
+        "point": {
+          "x": 26.160477203286874,
+          "y": 4.684407270977832,
+          "z": -32.38138004106579
+        }
+      },
+      "launch": {
+        "type": "fireStaff",
+        "direction": 3.141592653589793,
+        "tip": {
+          "x": 26.223343225877773,
+          "y": 4.684407270977832,
+          "z": -33.089075461107925
+        },
+        "position": {
+          "x": 26.223343225877773,
+          "y": 4.684407270977832,
+          "z": -33.089075461107925
+        },
+        "flightHeight": 4.684407270977832,
+        "bodyOrigin": {
+          "x": 26.02000000000001,
+          "y": 4.684407270977832,
+          "z": -30.8
+        }
+      },
+      "screenshot": null
+    },
+    {
+      "name": "fireStaff-fence-near-2.2m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 0,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "fence",
+        "point": {
+          "x": 45.29349210095944,
+          "z": -42.24826648194117,
+          "y": 4.699279422033976
+        }
+      },
+      "launch": {
+        "type": "fireStaff",
+        "direction": -2.7187387274933292,
+        "tip": {
+          "x": 45.14887958312041,
+          "y": 4.699279422033976,
+          "z": -42.66467469163865
+        },
+        "position": {
+          "x": 45.14887958312041,
+          "y": 4.699279422033976,
+          "z": -42.66467469163865
+        },
+        "flightHeight": 4.699279422033976,
+        "bodyOrigin": {
+          "x": 45.90280229006,
+          "y": 4.699279422033976,
+          "z": -40.49377268856
+        }
+      },
+      "screenshot": null
+    },
+    {
+      "name": "fireStaff-tripo-wall-near-2.2m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 0,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "wall",
+        "point": {
+          "x": 3.7457433726649674,
+          "z": -34.69688571699612,
+          "y": 4.53274693611738
+        }
+      },
+      "launch": {
+        "type": "fireStaff",
+        "direction": -2.8864102630152524,
+        "tip": {
+          "x": 4.67427376067906,
+          "y": 4.53274693611738,
+          "z": -31.13751922893438
+        },
+        "position": {
+          "x": 4.67427376067906,
+          "y": 4.53274693611738,
+          "z": -31.13751922893438
+        },
+        "flightHeight": 4.53274693611738,
+        "bodyOrigin": {
+          "x": 5.05532817362,
+          "y": 4.53274693611738,
+          "z": -28.87124200072
+        }
+      },
+      "screenshot": null,
+      "lowWallEvidence": [
+        {
+          "id": "barrier-wall-mvwkdy5m-3-segment-1-wall-0",
+          "objectId": "barrier-wall-mvwkdy5m-3-segment-1",
+          "destructibleId": null,
+          "type": "wall",
+          "minX": -1.3607360470362209,
+          "maxX": 4.610736047036221,
+          "minZ": -31.424488180305516,
+          "maxZ": -29.075511819694484,
+          "minY": 3.085904219129846,
+          "maxY": 4.260358312109277,
+          "rotation": 0.2551823906208184,
+          "oriented": true,
+          "corners": [
+            {
+              "x": -1.3607360470362209,
+              "z": -29.924488180305516,
+              "y": 3.085904219129846
+            },
+            {
+              "x": 4.389263952963779,
+              "z": -31.424488180305516,
+              "y": 3.085904219129846
+            },
+            {
+              "x": 4.610736047036221,
+              "z": -30.575511819694484,
+              "y": 3.085904219129846
+            },
+            {
+              "x": -1.1392639529637782,
+              "z": -29.075511819694484,
+              "y": 3.085904219129846
+            }
+          ],
+          "barrierHeight": 1.1744540929794312
+        },
+        {
+          "id": "barrier-wall-mvwkdy5m-3-segment-2-wall-0",
+          "objectId": "barrier-wall-mvwkdy5m-3-segment-2",
+          "destructibleId": null,
+          "type": "wall",
+          "minX": 4.389263952963779,
+          "maxX": 10.360736047036221,
+          "minZ": -32.92448818030552,
+          "maxZ": -30.575511819694484,
+          "minY": 3.113486418696906,
+          "maxY": 4.287940511676338,
+          "rotation": 0.2551823906208184,
+          "oriented": true,
+          "corners": [
+            {
+              "x": 4.389263952963779,
+              "z": -31.424488180305516,
+              "y": 3.113486418696906
+            },
+            {
+              "x": 10.139263952963779,
+              "z": -32.92448818030552,
+              "y": 3.113486418696906
+            },
+            {
+              "x": 10.360736047036221,
+              "z": -32.07551181969448,
+              "y": 3.113486418696906
+            },
+            {
+              "x": 4.610736047036221,
+              "z": -30.575511819694484,
+              "y": 3.113486418696906
+            }
+          ],
+          "barrierHeight": 1.1744540929794312
+        }
+      ],
+      "expectedBehavior": "Pass above the 1.174-m first wall, then stop at the taller second stone wall."
+    },
+    {
+      "name": "iceStaff-npc-direct-4m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 1,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "terrain",
+        "point": {
+          "x": 25.04860460074901,
+          "y": 4.610213150062922,
+          "z": -32.79612830710368
+        }
+      },
+      "launch": {
+        "type": "iceStaff",
+        "direction": 1.5707963267948966,
+        "tip": {
+          "x": 23.44955679198291,
+          "y": 4.610213150062922,
+          "z": -32.79612830710368
+        },
+        "position": {
+          "x": 23.44955679198291,
+          "y": 4.610213150062922,
+          "z": -32.79612830710368
+        },
+        "flightHeight": 4.610213150062922,
+        "bodyOrigin": {
+          "x": 21.17,
+          "y": 4.610213150062922,
+          "z": -33
+        }
+      },
+      "screenshot": "/tmp/nebeljagd-projectile-fixed-ice/iceStaff-npc-direct-4m-actual-impact.png"
+    },
+    {
+      "name": "iceStaff-npc-near-2.2m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 1,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "terrain",
+        "point": {
+          "x": 26.01701768538532,
+          "y": 4.6830990928798855,
+          "z": -32.35075343362926
+        }
+      },
+      "launch": {
+        "type": "iceStaff",
+        "direction": 3.141592653589793,
+        "tip": {
+          "x": 26.08221219837962,
+          "y": 4.6830990928798855,
+          "z": -33.07960252626175
+        },
+        "position": {
+          "x": 26.08221219837962,
+          "y": 4.6830990928798855,
+          "z": -33.07960252626175
+        },
+        "flightHeight": 4.6830990928798855,
+        "bodyOrigin": {
+          "x": 25.878305000000008,
+          "y": 4.6830990928798855,
+          "z": -30.8
+        }
+      },
+      "screenshot": null
+    },
+    {
+      "name": "iceStaff-fence-near-2.2m",
+      "status": "passed",
+      "shots": 1,
+      "damageHits": 0,
+      "impacts": 1,
+      "lastImpact": {
+        "type": "fence",
+        "point": {
+          "x": 45.29453224228815,
+          "z": -42.248734545539094,
+          "y": 4.699279422033976
+        }
+      },
+      "launch": {
+        "type": "iceStaff",
+        "direction": -2.7187387274933292,
+        "tip": {
+          "x": 45.153281239625706,
+          "y": 4.699279422033976,
+          "z": -42.65626755302594
+        },
+        "position": {
+          "x": 45.153281239625706,
+          "y": 4.699279422033976,
+          "z": -42.65626755302594
+        },
+        "flightHeight": 4.699279422033976,
+        "bodyOrigin": {
+          "x": 45.90280229006,
+          "y": 4.699279422033976,
+          "z": -40.49377268856
+        }
+      },
+      "screenshot": null
+    }
+  ],
+  "errors": [],
+  "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b",
+  "browserClosed": true,
+  "rawReports": [
+    "/tmp/nebeljagd-projectile-near-fixed/report.json",
+    "/tmp/nebeljagd-projectile-fixed-ice/report.json"
+  ],
+  "harnessCorrection": "The initial Tripo-wall assertion expected the low first wall to stop a higher projectile. Measured collider height proves overflight is correct; reused the actual shot and validated the taller-wall impact. All seven shots used the same final build.",
+  "limits": "Chromium/SwiftShader, current authored map, real E/F input; inspect only repositions player and camera.",
+  "validation": {
+    "nodeTests": 379,
+    "assets": "passed",
+    "map": "passed",
+    "build": "passed"
+  },
+  "build": {
+    "buildId": "6856882b5f3f",
+    "builtAt": "2026-11-01T18:04:05.613Z",
+    "sourceBaseCommit": "e6789b60ed15c93c00991eaea7893c139f0033d8",
+    "localBuild": true,
+    "files": {
+      "index.html": {
+        "bytes": 23209,
+        "sha256": "3d130d09180c379ca85b8f499d75207db92446f6dec52c26258c31b74573b2dd"
+      },
+      "teacher.html": {
+        "bytes": 20910,
+        "sha256": "0ebdbbd85903b30ac756ae37772f0a5bd301f1041bc9bb372172fa919d0dc14f"
+      },
+      "lobby.html": {
+        "bytes": 1602,
+        "sha256": "f7ec3ff549f0d1efe9f952b1ad263a8d1d30e0e152beb594ab6ac2d2b679ca4a"
+      },
+      "nebeljagd.html": {
+        "bytes": 81320419,
+        "sha256": "7fcd8864b4221974fbb0672f7d9514bd1899bbcde938bf49325872d0c28c5d6d"
+      },
+      "map-editor.html": {
+        "bytes": 60508389,
+        "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df"
+      },
+      "avatar-preview.html": {
+        "bytes": 14841476,
+        "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
+      },
+      "worldmap.json": {
+        "bytes": 15761,
+        "sha256": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+      },
+      "worldmap.svg": {
+        "bytes": 33266,
+        "sha256": "0848f0c10b78c26afe162e5aa9f4cb5bc377e0295a178f8eaf367263ef5dccbf"
+      },
+      "worldmap.schema.json": {
+        "bytes": 40055,
+        "sha256": "9ce30b4f1b369ac65cc5c59092ff4f7e4c27b335ab576e37a9d349bcafef4e45"
+      },
+      "nebeljagd-welt-und-editor.zip": {
+        "bytes": 92268971,
+        "sha256": "8d758c6776a7c577047f97986d9ecbfac135a45a8dc6688c9e25e43f07830a02"
+      }
+    }
+  },
+  "deployment": {
+    "commit": "31c920e44ab9a043bea66153271b8065978eb7f2",
+    "runId": "41335020377",
+    "runUrl": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41335020377",
+    "commitMatches": true,
+    "status": "success",
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=31c920e",
+    "directPagesAccess": "blocked by environment network policy; browser checks used byte-identical local files",
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    }
+  }
+}

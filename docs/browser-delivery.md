@@ -1,8 +1,34 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Aktueller Editor mit Zauberhaltung und geradem Flug
+## Aktueller Editor mit korrigierten Projektiltreffern
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=0598781).
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=31c920e).
+Feuer- und Eisstäbe richten ihre echte Kristallspitze beim Abschuss auf
+Trefferhöhe aus. Die Schüsse fliegen weiter geradeaus und treffen wieder
+normale Gegner, Zäune und ausreichend hohe Mauern. Die niedrige Tripo-Mauer
+(1,17 m) bleibt unter der Flugbahn; dahinter liegende höhere Deckung stoppt den Schuss.
+Zauberhaltung, Levelanzeige und Aufstiegseffekte bleiben erhalten.
+Alten Spiel-Tab schließen und über **Spielen** neu öffnen.
+
+Quelle `e6789b6`; Build `6856882b5f3f`; Auslieferung `ca84165`.
+Vorschaucommit `31c920e44ab9a043bea66153271b8065978eb7f2` ändert ausschließlich
+vier Dateien unter `preview/`. Karte, Originalmodelle, Inbox-Dateien und Portal
+sind erhalten. Die statische Vorschau enthält weiterhin keinen Klassenserver.
+
+379 Node-Tests, Asset-/Kartenprüfung und Build bestanden. Sieben echte
+Browserschüsse prüfen beide Stäbe gegen Gegner aus 4 m und 2,2 m sowie gegen
+einen nahen Zaun; die zusätzliche Höhenprüfung bestätigt den Treffer auf der
+höheren Mauer hinter der niedrigen Tripo-Mauer. Echte Einschlagbilder zeigen
+die Stabausrichtung und Schadenszahlen. Details: [Projektiltreffer](projectile-collision.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41335020377)
+hat genau den Vorschaucommit `31c920e` erfolgreich bereitgestellt. Der
+Browserlauf verwendete bytegleiche lokale Dateien, da direkte Aufrufe der
+Pages-Domain durch die Netzwerkpolicy dieser Umgebung gesperrt sind.
+
+## Vorherige Ausgabe mit Zauberhaltung und geradem Flug
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=0598781).
 Die freie Hand nimmt beim Zaubern eine angewinkelte Gegenhaltung ein. Im Stand
 stehen die Füße leicht breiter und versetzt; beim Laufen bleibt die Schrittbewegung
 frei. Projektile fliegen ab der Kristallspitze geradeaus auf konstanter Höhe.
