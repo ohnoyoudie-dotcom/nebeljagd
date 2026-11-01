@@ -401,6 +401,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   let cooldown = 0, attackAge = -1, attackDuration = 0;
   let shotReleased = false, bowDraw = 0, swordSweep = 0;
   let attackPhase = 'idle', shotCount = 0, impactCount = 0, lastImpact = null, particleCursor = 0;
+  let lastSpellLaunch = null;
   const pickupRadius = 1.85;
   const autoPickupRadius = 1.1;
   const ease = (a, b, value) => {
@@ -484,6 +485,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     slash.visible = false;
     if (!equippedType || rolling) { character?.setCombatState?.(null); return; }
     combatPose.weapon = equippedType; combatPose.phase = attackPhase;
+    combatPose.leftHand = leftHand;
     if (equippedType === 'bow') {
       bowDraw = attackAge < 0 ? 0 : attackAge < .23 ? ease(0, .23, attackAge) : 1 - ease(.23, .36, attackAge);
       leftHand.set(.06, 1.34, .40);
@@ -522,7 +524,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       bowDraw = swordSweep = 0;
       const pulse = attackAge >= 0 ? Math.sin(Math.min(1, attackAge / .45) * Math.PI) : 0;
       rightHand.set(-.26, 1.22 + pulse * .14, .38 + pulse * .16);
-      leftHand.set(.27, 1.3, .32 + pulse * .2);
+      // Keep the free arm in its authored idle/run animation. Only the staff
+      // arm reaches forward; a second IK target reads as a two-fisted punch.
+      combatPose.leftHand = null;
       combatPose.chestTwist = -.08 + pulse * .16;
       character?.setCombatState?.(combatPose);
       if (character?.getGripPosition) character.getGripPosition('right', hand);
@@ -600,7 +604,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const staffTip = new THREE.Vector3();
   const spells = Array.from({ length: 10 }, () => {
     const visual = spellEffects.createProjectile();
-    return { visual, group: visual.group, life: 0, vx: 0, vz: 0, mode: 'inactive', payload: null };
+    return { visual, group: visual.group, life: 0, vx: 0, vz: 0, mode: 'inactive', payload: null,
+      flightAge: 0, launchHeight: 0, flightHeight: 0, pendingDelta: null };
   });
   function getStaffTip(result) {
     const staff = equippedType === 'fireStaff' ? heldFireStaff : heldIceStaff;
@@ -611,16 +616,20 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function releaseSpell(position) {
     const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
     getStaffTip(staffTip); launchCenter.copy(staffTip);
-    // A fixed chest-height flight plane makes the aim readable on uneven ground.
-    // The brief release arc connects the actual staff tip to this flight plane.
-    launchCenter.y = position.y + 1.4;
     const angle = characterGroup.rotation.y;
     spell.mode = 'flying'; spell.life = 1.35; spell.direction = angle;
+    spell.flightAge = 0; spell.launchHeight = launchCenter.y; spell.flightHeight = position.y + 1.4;
+    // Start at the physical crystal, including its height. Join the established
+    // aiming plane continuously during flight instead of teleporting down to it.
+    spell.pendingDelta = Math.max(0, attackAge - .25);
     spell.vx = Math.sin(angle) * 18; spell.vz = Math.cos(angle) * 18;
     spell.payload = { ...equippedItem, sourceId: ownerId };
     spellEffects.launch(spell.visual, spell.payload.type, launchCenter, angle);
-    spellEffects.fire(spell.payload.type, staffTip, angle, launchCenter);
-    launchOrigin.set(position.x, launchCenter.y, position.z);
+    spellEffects.fire(spell.payload.type, staffTip, angle);
+    const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
+    lastSpellLaunch = { type: spell.payload.type, direction: angle, tip: point(staffTip),
+      position: point(spell.group.position), flightHeight: spell.flightHeight };
+    launchOrigin.set(position.x, spell.flightHeight, position.z);
     const immediate = firstHit(launchOrigin, launchCenter, .13);
     if (immediate?.target) hitTarget(spell, immediate);
     else if (immediate) spellImpact(spell, immediate);
@@ -636,14 +645,21 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function updateSpells(delta, time) {
     for (const spell of spells) {
       if (spell.life <= 0) continue;
-      spell.life -= delta;
-      if (spell.life <= 0) { spellEffects.end(spell.visual); spell.mode = 'inactive'; continue; }
-      tipBefore.copy(spell.group.position);
-      tipAfter.copy(tipBefore); tipAfter.x += spell.vx * delta; tipAfter.z += spell.vz * delta;
-      const collision = firstHit(tipBefore, tipAfter, .13);
-      spellEffects.advance(spell.visual, tipBefore, collision?.point ?? tipAfter, delta, time);
-      if (collision?.target) hitTarget(spell, collision);
-      else if (collision) spellImpact(spell, collision);
+      let remaining = spell.pendingDelta ?? delta;
+      spell.pendingDelta = null;
+      while (remaining > 1e-8 && spell.life > 0) {
+        // Sweep the real curved path even when a caller supplies a large frame.
+        const step = spell.flightAge < .14 ? Math.min(remaining, 1 / 60) : remaining;
+        remaining -= step; spell.life -= step; spell.flightAge += step;
+        if (spell.life <= 0) { spellEffects.end(spell.visual); spell.mode = 'inactive'; break; }
+        tipBefore.copy(spell.group.position);
+        tipAfter.copy(tipBefore); tipAfter.x += spell.vx * step; tipAfter.z += spell.vz * step;
+        tipAfter.y = THREE.MathUtils.lerp(spell.launchHeight, spell.flightHeight, ease(0, .14, spell.flightAge));
+        const collision = firstHit(tipBefore, tipAfter, .13);
+        spellEffects.advance(spell.visual, tipBefore, collision?.point ?? tipAfter, step, time - remaining);
+        if (collision?.target) hitTarget(spell, collision);
+        else if (collision) spellImpact(spell, collision);
+      }
     }
   }
 
@@ -753,7 +769,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
 
   function reset() {
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
-    shotReleased = false; shotCount = impactCount = 0; lastImpact = null;
+    shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     heldBow.visible = heldSword.visible = heldFireStaff.visible = heldIceStaff.visible = slash.visible = nockedArrow.visible = false;
     slashMaterial.opacity = 0; character?.setCombatState?.(null);
     for (let i = items.length - 1; i >= 0; i--) {
@@ -806,13 +822,16 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get telemetry() {
       bladeTip.set(0, heldSword.userData.weaponTipY, 0).applyQuaternion(heldSword.quaternion).multiplyScalar(heldSword.scale.y).add(heldSword.position);
       const held = heldByType[equippedType];
+      const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
+      const actualHand = side => character?.getHandPosition
+        ? point(character.getHandPosition(side, new THREE.Vector3())) : null;
+      const hands = { left: actualHand('left'), right: actualHand('right') };
       let heldGrip = null;
       if (equippedType?.endsWith('Staff')) {
         const wrist = new THREE.Vector3(), palm = new THREE.Vector3();
         if (character?.getHandPosition) character.getHandPosition('right', wrist); else wrist.copy(rightHand);
         if (character?.getGripPosition) character.getGripPosition('right', palm); else palm.copy(wrist);
         const position = held.position.clone(); position.y -= held.userData.gripOffsetY;
-        const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
         heldGrip = { side: 'right', source: characterGroup.userData.characterAsset?.gripSockets?.right?.source
           ?? (character?.getGripPosition ? 'palm' : 'wrist'), position: point(position), wrist: point(wrist),
           palm: point(palm), error: position.distanceTo(palm), visible: held.visible };
@@ -821,7 +840,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       held?.traverse(part => { if (part.isMesh) meshCount++; });
       return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        effects: spellEffects.telemetry, heldGrip,
+        effects: spellEffects.telemetry, heldGrip, hands, lastSpellLaunch,
+        staffTip: equippedType?.endsWith('Staff') ? point(getStaffTip(new THREE.Vector3())) : null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
           visible: spell.group.visible, position: { x: spell.group.position.x, y: spell.group.position.y, z: spell.group.position.z } })),
         heldModel: held ? { type: equippedType, variant: held.userData.variant, model: held.userData.model,

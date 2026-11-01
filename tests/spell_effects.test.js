@@ -35,7 +35,7 @@ function setup({ type = 'fireStaff', targetZ = null, wallZ = null } = {}) {
 
 test('fire and ice target hits emit their own visible impact without applying damage twice', () => {
   for (const type of ['fireStaff', 'iceStaff']) {
-    const { actor, target, weapons, step, until } = setup({ type, targetZ: 4 });
+    const { actor, target, weapons, step, until } = setup({ type, targetZ: 6 });
     weapons.attack(actor.position, 0);
     until(() => weapons.telemetry.damageHits === 1, `${type} reaches the target`);
     const state = weapons.telemetry, expected = weaponStats(type, 'rare');
@@ -68,7 +68,11 @@ test('a wall between the body and staff muzzle produces one surface impact and b
   assert.equal(state.spellsActive, 0, 'the release sweep catches the near wall immediately');
   assert.equal(state.effects.emitted.fireStaff.impacts, 1);
   assert.ok(Math.abs(state.effects.latestImpact.point.z - (.5 - .13)) < 1e-7);
-  assert.equal(state.effects.latestImpact.point.y, 1.4);
+  const launch = state.lastSpellLaunch;
+  const fraction = state.effects.latestImpact.point.z / launch.position.z;
+  const expectedY = launch.flightHeight + (launch.position.y - launch.flightHeight) * fraction;
+  assert.ok(Math.abs(state.effects.latestImpact.point.y - expectedY) < 1e-7,
+    'the near wall is hit on the actual body-to-crystal segment');
   for (let i = 0; i < 80; i++) step();
   assert.equal(target.health, 500);
   assert.equal(weapons.telemetry.effects.emitted.fireStaff.impacts, 1);
