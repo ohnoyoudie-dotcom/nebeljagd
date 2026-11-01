@@ -854,6 +854,45 @@
       ],
       "rotation": 0,
       "scale": 1
+    },
+    {
+      "id": "object-sword-mvxue2sl-1",
+      "name": "Schwert",
+      "kind": "sword",
+      "variant": "kit-tripo-sword",
+      "position": [
+        34.8,
+        -42.6
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-fireStaff-mvxueb0c-2",
+      "name": "Feuerstab",
+      "kind": "fireStaff",
+      "variant": "kit-tripo-lava-staff",
+      "position": [
+        39.8,
+        -44.7
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-iceStaff-mvxuedo9-3",
+      "name": "Eisstab",
+      "kind": "iceStaff",
+      "variant": "kit-tripo-crystal-staff",
+      "position": [
+        45.6,
+        -45.9
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
     }
   ],
   "landscape": {

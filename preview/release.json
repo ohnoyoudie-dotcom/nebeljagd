@@ -1,41 +1,47 @@
 {
   "name": "Nebeljagd – stabile Entwicklungsvorschau",
+  "type": "static-game-editor-preview",
   "sourceBranch": "work",
-  "sourceCommit": "06cdee7df19de82ca450c2b9a7e9919862ca7845",
-  "deliveryCommit": "28bd19a4ba09caacd9f27c0656af4c7d49ab23f4",
-  "publishedAt": "2026-11-01T12:28:50.888202+00:00",
+  "sourceCommit": "d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec",
+  "deliveryCommit": "d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec",
+  "buildId": "03d805c5e9d5",
+  "builtAt": "2026-11-01T13:22:47.700Z",
+  "preparedAt": "2026-11-01T13:28:58.331232+00:00",
+  "targetBranch": "main",
+  "targetDirectory": "preview",
+  "loginAvailable": false,
   "files": {
     "map-editor.html": {
-      "bytes": 60507867,
-      "sha256": "e05640ff6f32d0f876f42661910a96a1f9cd20598d5bfbb3e2515689638d5c61"
+      "bytes": 60508389,
+      "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df"
     },
     "nebeljagd.html": {
-      "bytes": 81277422,
-      "sha256": "75d61cfdc2a859b9e55627708bd00294efa3e259f4386e6e2f8ffaff5aa4e2cf"
-    },
-    "index.html": {
-      "bytes": 81277422,
-      "sha256": "75d61cfdc2a859b9e55627708bd00294efa3e259f4386e6e2f8ffaff5aa4e2cf"
+      "bytes": 81285757,
+      "sha256": "9db77ff253010a17dac55e735546ea99c241d92874601a63f59a40c43fc7a980"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 14961,
-      "sha256": "22423fe59d88b300db1644c89c5d51f33b797ee574ab296405e265e88ccaca48"
+      "bytes": 15761,
+      "sha256": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
     },
     "worldmap.svg": {
-      "bytes": 31707,
-      "sha256": "a14ff0a31fe5001f6525914ce5a9e2e1dca42517ad4d95ba0e36ce5e4dc7bf67"
+      "bytes": 33266,
+      "sha256": "0848f0c10b78c26afe162e5aa9f4cb5bc377e0295a178f8eaf367263ef5dccbf"
     },
     "worldmap.schema.json": {
       "bytes": 40055,
       "sha256": "9ce30b4f1b369ac65cc5c59092ff4f7e4c27b335ab576e37a9d349bcafef4e45"
     },
+    "index.html": {
+      "bytes": 81285757,
+      "sha256": "9db77ff253010a17dac55e735546ea99c241d92874601a63f59a40c43fc7a980"
+    },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 92237557,
-      "sha256": "e3e5b6f49452408e5e3f4fe0eba8faae3339ab4eba078d9b7da5577cfd8b6e2a"
+      "bytes": 92622557,
+      "sha256": "67d1294c0fb8478b49bdc1b81f7f6319329942441b5b8470552d8297ad761782"
     }
   }
 }
