@@ -113,6 +113,15 @@
     "island": {
       "$ref": "#/$defs/island"
     },
+    "waterAreas": {
+      "description": "Optionale polygonale Binnengewässer: echte Löcher im Inselboden, unabhängig von Flüssen und Wegen.",
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/island"
+      }
+    },
     "regions": {
       "type": "array",
       "minItems": 1,
