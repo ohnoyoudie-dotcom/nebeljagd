@@ -132,7 +132,7 @@ function updateRetiredSceneryBanner() {
   retiredSceneryBanner.hidden = !result.totalRemoved;
   $('retired-scenery-summary').textContent = `${result.totalRemoved} ältere Platzierungen im Entwurf · Details`;
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
-    : `Bereinigung: ${result.removedObjects.length} alte Objektplatzierungen (Nicht-Tripo oder kleines Schloss) und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch platzierte Beute und Grasobjekte. Aktuelle Tripo-Modelle, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
+    : `Bereinigung: ${result.removedObjects.length} alte Objektplatzierungen (Nicht-Tripo oder kleines Schloss) und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
 }
 
 function initialView() {
@@ -1256,7 +1256,10 @@ function playtestWorld() {
   let stored = false;
   try { localStorage.setItem(PLAYTEST_KEY, JSON.stringify(snapshot)); stored = true; } catch { /* Popup handshake also works without storage. */ }
   if (!['http:', 'https:', 'file:'].includes(location.protocol)) return toast('JSON speichern und im Spiel laden, oder den Editor als HTML-Datei im Browser öffnen.', true);
-  const url = new URL(location.protocol === 'file:' ? './nebeljagd.html?mapSource=editor' : './index.html?mapSource=editor', location.href);
+  const gamePath = import.meta.env?.DEV ? './game.html' : './nebeljagd.html';
+  const url = new URL(`${gamePath}?mapSource=editor`, location.href);
+  const version = new URLSearchParams(location.search).get('v');
+  if (version) url.searchParams.set('v', version);
   const popup = window.open(url.href, '_blank');
   if (!popup) return toast('Der Browser hat das neue Fenster blockiert. Pop-ups für diesen Editor erlauben oder JSON im Spiel laden.', true);
   playtestWindows.set(popup, {map: snapshot, origin: location.origin});

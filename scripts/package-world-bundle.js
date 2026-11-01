@@ -4,12 +4,15 @@ import { resolve } from 'node:path';
 
 /** A small deterministic ZIP, using only Node's built-in modules. */
 export async function packageWorldBundle(directory = resolve('dist')) {
-  const names = ['nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
+  const names = ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
   const entries = await Promise.all(names.map(async name => ({ name, bytes: await readFile(resolve(directory, name)) })));
   entries.push({ name: 'Anleitung.txt', bytes: Buffer.from(`NEBELJAGD – SPIELWELT UND EDITOR
 
 1. Dieses ZIP vollständig in einen Ordner entpacken.
-2. nebeljagd.html im Browser öffnen: die große Insel erkunden.
+2. index.html öffnet den gemeinsamen Einstieg. Der Klassenbetrieb mit Login
+   und Zugangscodes benötigt den Nebeljagd-Server; siehe docs/classroom.md
+   im Repository. Eine HTML-Datei allein stellt keinen gemeinsamen Server bereit.
+   nebeljagd.html lässt sich weiterhin direkt als Einzelspiel öffnen.
 3. map-editor.html im Browser öffnen: Weltobjekte anlegen und verändern.
 4. Im Editor „In 3D testen“ öffnet deinen aktuellen Entwurf im Spiel.
    Beide HTML-Dateien müssen dafür im selben Ordner liegen.

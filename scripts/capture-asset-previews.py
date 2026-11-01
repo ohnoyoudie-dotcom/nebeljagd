@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5190').rstrip('/')
 OUT = ROOT / 'assets/catalog'
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--only-prefix', help='Capture only variant IDs with this prefix and preserve every other thumbnail exactly.')
+parser.add_argument('--only-prefix', nargs='+', help='Capture only variant IDs with any of these prefixes and preserve every other thumbnail exactly.')
 args = parser.parse_args()
 manifest = json.loads((OUT / 'preview-manifest.json').read_text()) if args.only_prefix else {}
 errors = []
@@ -35,7 +35,7 @@ with sync_playwright() as playwright:
     previews = json.loads((OUT / 'previews.json').read_text()) if args.only_prefix else {}
     entries = manifest.get('variants', [])
     for variant in variants:
-        if args.only_prefix and not variant['variant'].startswith(args.only_prefix):
+        if args.only_prefix and not variant['variant'].startswith(tuple(args.only_prefix)):
             continue
         key = f"{variant['kind']}:{variant['variant']}"
         print('Capture', key, flush=True)

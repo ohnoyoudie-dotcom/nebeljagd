@@ -82,7 +82,8 @@ def run(base: str, report_path: Path) -> None:
         assert expected_counts['chest'] > 0, 'Local build has no chests.'
         assert expected_counts['fireStaff'] and expected_counts['iceStaff'], 'Local build lacks starter magic staves.'
         paths = [
-            ('', 'nebeljagd.html'),
+            ('', 'index.html'),
+            ('nebeljagd.html', 'nebeljagd.html'),
             ('map-editor.html', 'map-editor.html'),
             ('nebeljagd-welt-und-editor.zip', 'nebeljagd-welt-und-editor.zip'),
         ]
@@ -104,7 +105,7 @@ def run(base: str, report_path: Path) -> None:
                     record['zipIntegrity'] = archive.testzip()
                     record['zipFiles'] = archive.namelist()
                     assert record['zipIntegrity'] is None, 'ZIP CRC check failed.'
-                    expected_names = {'nebeljagd.html', 'map-editor.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json', 'Anleitung.txt'}
+                    expected_names = {'index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json', 'Anleitung.txt'}
                     assert set(archive.namelist()) == expected_names
                     for name in expected_names - {'Anleitung.txt'}:
                         assert archive.read(name) == (ROOT / 'dist' / name).read_bytes(), f'ZIP contains outdated {name}.'
@@ -119,7 +120,7 @@ def run(base: str, report_path: Path) -> None:
             context = browser.new_context(viewport={'width': 1280, 'height': 800}, ignore_https_errors=True)
             game = context.new_page()
             monitor(game)
-            response = game.goto(base + '?inspect=1', wait_until='domcontentloaded', timeout=60000)
+            response = game.goto(base + 'nebeljagd.html?inspect=1', wait_until='domcontentloaded', timeout=60000)
             assert response.status == 200
             snapshot = game_ready(game)
             assert snapshot['objects'] == expected_total, snapshot
@@ -221,7 +222,7 @@ def run(base: str, report_path: Path) -> None:
             assert snapshot['source'] == 'editor', snapshot
             assert snapshot['objects'] == expected_total + 2, snapshot
             assert snapshot['chests'] == expected_counts['chest'] + 1, snapshot
-            assert popup.url == base + 'index.html?mapSource=editor', popup.url
+            assert popup.url == base + 'nebeljagd.html?mapSource=editor', popup.url
             received_objects = popup.evaluate('window.nebeljagdTestState().world.objects')
             assert received_objects == edited_map['objects'], 'The hosted game did not receive the exact edited object document.'
             assert popup.evaluate('window.nebeljagdTestState().world.mapId') == edited_map['id']

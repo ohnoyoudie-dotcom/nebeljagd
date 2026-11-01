@@ -1,0 +1,177 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "Editor places three distinct models and rarities without changing the source map",
+      "evidence": [
+        {
+          "id": "object-sword-mvxv4xi7-1",
+          "name": "Schwert",
+          "kind": "sword",
+          "variant": "kit-tripo-sword",
+          "position": [
+            36,
+            -54
+          ],
+          "rotation": 0.5235987755982988,
+          "scale": 1.2,
+          "rarity": "rare"
+        },
+        {
+          "id": "object-fireStaff-mvxv4zz1-2",
+          "name": "Feuerstab",
+          "kind": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "position": [
+            44,
+            -54
+          ],
+          "rotation": 1.0471975511965976,
+          "scale": 1.2,
+          "rarity": "uncommon"
+        },
+        {
+          "id": "object-iceStaff-mvxv51yf-3",
+          "name": "Eisstab",
+          "kind": "iceStaff",
+          "variant": "kit-tripo-crystal-staff",
+          "position": [
+            52,
+            -54
+          ],
+          "rotation": 1.5707963267948966,
+          "scale": 1.2,
+          "rarity": "legendary"
+        }
+      ]
+    },
+    {
+      "name": "Spielen hands the exact editor draft and cache version to the sibling standalone game",
+      "evidence": {
+        "navigation": "http://127.0.0.1:39883/preview/nebeljagd.html?mapSource=editor&v=swap-check",
+        "version": "swap-check"
+      }
+    },
+    {
+      "name": "First pickup equips the authored sword with its ID, rarity and scale",
+      "evidence": null
+    },
+    {
+      "name": "E equips the lava staff and returns the original sword visibly to the pickup location",
+      "evidence": {
+        "id": "object-sword-mvxv4xi7-1",
+        "type": "sword",
+        "variant": "kit-tripo-sword",
+        "model": "tripo",
+        "rarity": "rare",
+        "x": 44,
+        "z": -54,
+        "collected": false,
+        "visible": true
+      }
+    },
+    {
+      "name": "Repeated E swaps keep exactly one held weapon and preserve all original pickup IDs",
+      "evidence": [
+        {
+          "id": "object-fireStaff-mvxv4zz1-2",
+          "type": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "model": "tripo",
+          "rarity": "uncommon",
+          "x": 44,
+          "z": -54,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-sword-mvxv4xi7-1",
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rarity": "rare",
+          "x": 44,
+          "z": -54,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-fireStaff-mvxv4zz1-2",
+          "type": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "model": "tripo",
+          "rarity": "uncommon",
+          "x": 44,
+          "z": -54,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-sword-mvxv4xi7-1",
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rarity": "rare",
+          "x": 44,
+          "z": -54,
+          "collected": false,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "name": "The third pickup leaves both earlier weapons in the world with their original models and rarities",
+      "evidence": null
+    },
+    {
+      "name": "Restart returns every authored weapon to its original placement with no duplicate drops",
+      "evidence": null
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "/workspace/nebeljagd/test-results/weapon-swap/editor-swap-fixture.png",
+    "/workspace/nebeljagd/test-results/weapon-swap/sword-returned-to-ground.png",
+    "/workspace/nebeljagd/test-results/weapon-swap/both-earlier-weapons-on-ground.png"
+  ],
+  "documents": [
+    {
+      "name": "map-editor.html",
+      "bytes": 60508389,
+      "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df",
+      "matchesDeliveredFile": true
+    },
+    {
+      "name": "nebeljagd.html",
+      "bytes": 81285757,
+      "sha256": "9db77ff253010a17dac55e735546ea99c241d92874601a63f59a40c43fc7a980",
+      "matchesDeliveredFile": true
+    }
+  ],
+  "limits": "Standalone editor/game in Chromium with software WebGL over local HTTP. QA adds inspect and low-quality flags to the real Spielen navigation. No physical-device performance or public-host HTTP claim.",
+  "url": "http://127.0.0.1:39883/preview",
+  "buildId": "03d805c5e9d5",
+  "stage": "Restart restores the exact authored placements",
+  "editorPlayNavigation": "http://127.0.0.1:39883/preview/nebeljagd.html?mapSource=editor&v=swap-check",
+  "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b",
+  "unitTests": {
+    "passed": 337,
+    "failed": 0
+  },
+  "assetVerification": "passed",
+  "mapCheck": "passed",
+  "publication": {
+    "status": "deployed",
+    "commit": "a786ff0cdb5ae8df8b1014d1b788e585df669740",
+    "sourceCommit": "d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec",
+    "buildId": "03d805c5e9d5",
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0",
+    "actionsRun": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41311535345",
+    "actionsStatus": "completed",
+    "actionsConclusion": "success",
+    "exactCommitVerified": true,
+    "remoteReleaseMatches": true,
+    "scope": "Only existing static preview editor and game; no classroom portal",
+    "verificationLimit": "Direct Pages HTTP is blocked by environment network policy. The exact published commit, remote release manifest and successful Pages deployment were verified through GitHub; browser checks used identical files locally."
+  }
+}

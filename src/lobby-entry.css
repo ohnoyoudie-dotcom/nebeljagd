@@ -1,0 +1,4 @@
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #142b23; color: #eee5cc; font: 18px/1.6 system-ui, sans-serif; }
+main { max-width: 32rem; padding: 2rem; }
+h1 { font-family: Georgia, serif; font-weight: 400; }
+a { color: #c7dba7; }

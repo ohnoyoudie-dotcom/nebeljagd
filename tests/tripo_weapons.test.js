@@ -86,6 +86,13 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
     if (index) {
       assert.equal(weapons.tryAutoPickup(actor.position), null, 'auto-pickup never replaces an equipped weapon');
       assert.equal(weapons.interact(actor.position).variant, variant);
+      const previous = weapons.items.find(item => item.id === placements[index - 1].id);
+      assert.equal(previous.collected, false, 'the previous imported weapon becomes a ground pickup again');
+      assert.equal(previous.group.visible, true);
+      assert.equal(previous.variant, placements[index - 1].variant);
+      assert.equal(previous.model, 'tripo');
+      assert.deepEqual(previous.group.position.toArray(), [index * 4, 0, 0]);
+      assert.equal(previous.group.rotation.y, .65); assert.equal(previous.group.scale.x, 1.2);
     }
     assert.equal(weapons.equippedItem.variant, variant); assert.equal(weapons.equippedItem.model, 'tripo');
     assert.equal(weapons.equippedItem.damage, weaponStats(kind, 'rare').damage);
@@ -105,8 +112,42 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
   assert.equal(weapons.equippedItem, null); assert.equal(weapons.telemetry.heldModel, null);
   assert.equal(weapons.items.length, 3);
   assert.ok(weapons.items.every(item => !item.collected && item.group.visible));
+  assert.deepEqual(weapons.items.map(item => [item.x, item.z]), placements.map(item => item.position));
   actor.position.set(0, 0, 0);
   assert.equal(weapons.tryAutoPickup(actor.position).variant, 'kit-tripo-sword');
+});
+
+test('both imported staffs follow the palm socket through motion and cast from their actual moved tip', () => {
+  for (const [variant, type] of variants.filter(([, type]) => type.endsWith('Staff'))) {
+    const wrist = new THREE.Vector3(-.26, 1.22, .38);
+    const palm = new THREE.Vector3(-.24, 1.215, .46);
+    const character = { setCombatState() {},
+      getHandPosition: (_side, target) => target.copy(wrist),
+      getGripPosition: (side, target) => { assert.equal(side, 'right'); return target.copy(palm); } };
+    const { scene, actor, weapons } = setup([placement(type, variant)], {}, character);
+    weapons.interact(actor.position);
+    actor.scale.setScalar(1.2); actor.rotation.y = .7; actor.position.set(4, 1, -3);
+    const held = actor.children.find(group => group.userData.weaponType === type);
+    for (let frame = 0; frame < 8; frame++) {
+      palm.set(-.24 + frame * .002, 1.215 + Math.sin(frame) * .02, .46 + frame * .004);
+      weapons.update(.04, frame * .04, actor.position);
+      near(held.position, palm, 'staff follows the current palm, not the old wrist anchor');
+      near(held.children[0].getWorldPosition(new THREE.Vector3()), actor.localToWorld(palm.clone()),
+        'the imported grip origin remains attached after actor translation, rotation and scale');
+      assert.ok(held.position.distanceTo(wrist) > .06);
+      assert.equal(weapons.telemetry.heldGrip.error, 0);
+    }
+    weapons.attack(actor.position, actor.rotation.y);
+    for (let frame = 0; frame < 3; frame++) weapons.update(.1, .4 + frame * .1, actor.position);
+    const flash = weapons.telemetry.effects.bursts.find(burst => burst.kind === 'muzzle');
+    assert.ok(flash, 'the moved staff still releases a visible cast effect');
+    const tip = held.localToWorld(new THREE.Vector3(0, held.userData.weaponTipY, 0));
+    scene.worldToLocal(tip);
+    near(new THREE.Vector3(flash.position.x, flash.position.y, flash.position.z), tip,
+      'muzzle effect follows the corrected physical staff tip');
+    assert.equal(weapons.telemetry.shotsFired, 1);
+    weapons.dispose();
+  }
 });
 
 test('variant replacement and reset dispose only instance resources, preserving templates and other pickups', () => {

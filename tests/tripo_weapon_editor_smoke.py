@@ -192,8 +192,8 @@ try:
         game.wait_for_load_state('domcontentloaded')
         game.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
         expect(game.locator('#errorScreen')).to_be_hidden()
-        assert game.url.startswith(URL + '/index.html?mapSource=editor'), game.url
-        record_document('index.html', 'index.html')
+        assert game.url.startswith(URL + '/nebeljagd.html?mapSource=editor'), game.url
+        record_document('nebeljagd.html', 'nebeljagd.html')
         initial = game_state(game)
         assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
         assert len(initial['weaponDrops']) == 3
@@ -206,7 +206,7 @@ try:
         # The unchanged first launch above proves the user-facing handoff. Load
         # its stored draft again with the existing explicit inspection mode for
         # deterministic player positioning during the gameplay assertions.
-        game.goto(URL + '/index.html?mapSource=editor&inspect=1&quality=low', wait_until='domcontentloaded')
+        game.goto(URL + '/nebeljagd.html?mapSource=editor&inspect=1&quality=low', wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         assert game_state(game)['world']['objects'] == edited['objects']
         game.locator('#startBtn').click()

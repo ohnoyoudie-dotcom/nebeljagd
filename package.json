@@ -5,14 +5,22 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "node scripts/build-worldmap.js --validate && node scripts/build-browser.js && node scripts/build-standalone.js",
+    "build": "node scripts/build-worldmap.js --validate && node scripts/build-browser.js && node scripts/build-standalone.js && node scripts/sync-world-build.js",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test tests/*.test.js",
     "verify:assets": "node scripts/verify-assets.js",
     "map:export": "node scripts/build-worldmap.js",
-    "map:check": "node scripts/build-worldmap.js --check"
+    "map:check": "node scripts/build-worldmap.js --check",
+    "school:setup": "node scripts/setup-classroom.js",
+    "school": "node server/classroom.js"
   },
-  "engines": { "node": ">=22.12.0" },
-  "dependencies": { "three": "0.186.1" },
-  "devDependencies": { "vite": "8.3.5" }
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "vite": "8.3.5"
+  }
 }

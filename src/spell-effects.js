@@ -1,0 +1,420 @@
+import * as THREE from 'three';
+import { createElementMaterial, setElementMaterial } from './spell-effect-materials.js';
+
+const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
+const ELEMENTS = {
+  fireStaff: { core: '#fff3bf', glow: '#ff681c', spark: '#ffb52d', edge: '#ff360d' },
+  iceStaff: { core: '#edffff', glow: '#45bfff', spark: '#8ceeff', edge: '#358de5' },
+};
+const finite = value => Number.isFinite(value) ? value : 0;
+const valid = point => point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
+const typeOf = type => type === 'iceStaff' ? 'iceStaff' : 'fireStaff';
+
+/** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
+export function createSpellEffects(scene, { isVisible = null } = {}) {
+  const roots = [], geometries = new Set(), materials = new Set(), projectiles = [];
+  const clock = { value: 0 };
+  const ownGeometry = geometry => (geometries.add(geometry), geometry);
+  const ownMaterial = material => (materials.add(material), material);
+  const addRoot = group => { roots.push(group); scene.add(group); return group; };
+  const canSee = point => valid(point) && (!isVisible || isVisible(point));
+  const additive = (color, opacity = 1) => ownMaterial(new THREE.MeshBasicMaterial({
+    color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true,
+  }));
+  const solid = color => ownMaterial(new THREE.MeshBasicMaterial({ color, depthTest: true }));
+  const elementMaterial = (kind, options) => ownMaterial(createElementMaterial(kind, clock, options));
+  const octahedron = ownGeometry(new THREE.OctahedronGeometry(1, 0));
+  const sphere = ownGeometry(new THREE.IcosahedronGeometry(1, 1));
+  const planeGeometry = ownGeometry(new THREE.PlaneGeometry(1, 1));
+  const plumeGeometry = ownGeometry(new THREE.PlaneGeometry(1, 1).rotateX(Math.PI / 2));
+  const connectorGeometry = ownGeometry(new THREE.CylinderGeometry(.65, 1, 1, 5));
+  const textureSize = 48, pixels = new Uint8Array(textureSize * textureSize * 4);
+  for (let y = 0; y < textureSize; y++) for (let x = 0; x < textureSize; x++) {
+    const radius = Math.hypot((x + .5) / textureSize * 2 - 1, (y + .5) / textureSize * 2 - 1);
+    const index = (y * textureSize + x) * 4;
+    pixels[index] = pixels[index + 1] = pixels[index + 2] = 255;
+    pixels[index + 3] = Math.round(Math.max(0, 1 - radius) ** 2.5 * 255);
+  }
+  const glowTexture = new THREE.DataTexture(pixels, textureSize, textureSize);
+  glowTexture.needsUpdate = true;
+  glowTexture.magFilter = glowTexture.minFilter = THREE.LinearFilter;
+  function glow(color, opacity = 1) {
+    return new THREE.Sprite(ownMaterial(new THREE.SpriteMaterial({ map: glowTexture, color,
+      transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true })));
+  }
+  function mesh(parent, geometry, material, x = 0, y = 0, z = 0) {
+    const part = new THREE.Mesh(geometry, material);
+    part.position.set(x, y, z); parent.add(part); return part;
+  }
+  const fireCore = solid('#ffd18d'), fireTip = additive('#ff9f37', .65), iceCore = solid('#a6e4ff');
+  const iceTip = additive('#75dcfa', .65);
+  const fireBody = elementMaterial('body', { opacity: .90 });
+  const iceBody = elementMaterial('body', { type: 'iceStaff', opacity: .42 });
+  const crystalGeometry = ownGeometry(new THREE.BufferGeometry());
+  const crystalPositions = [];
+  for (let i = 0; i < 6; i++) {
+    const a = i * Math.PI / 3, b = (i + 1) * Math.PI / 3;
+    crystalPositions.push(0, 0, .62, Math.cos(a) * .20, Math.sin(a) * .20, -.08,
+      Math.cos(b) * .20, Math.sin(b) * .20, -.08,
+      0, 0, -.29, Math.cos(b) * .20, Math.sin(b) * .20, -.08,
+      Math.cos(a) * .20, Math.sin(a) * .20, -.08);
+  }
+  crystalGeometry.setAttribute('position', new THREE.Float32BufferAttribute(crystalPositions, 3));
+  crystalGeometry.computeVertexNormals();
+  const crystalColors = new Float32Array(crystalGeometry.attributes.position.count * 3);
+  const scratchColor = new THREE.Color();
+  for (let i = 0; i < crystalGeometry.attributes.position.count; i++) {
+    scratchColor.set(['#a2edff', '#3aabd6', '#d2f8ff', '#207aa9'][Math.floor(i / 3) % 4]);
+    scratchColor.toArray(crystalColors, i * 3);
+  }
+  crystalGeometry.setAttribute('color', new THREE.BufferAttribute(crystalColors, 3));
+  const crystalMaterial = ownMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .19,
+    metalness: .12, emissive: '#145a7b', emissiveIntensity: .20, transparent: true, opacity: .87,
+    depthWrite: false, flatShading: true }));
+
+  function makeTrail() {
+    const count = HISTORY * 8, positions = new Float32Array(count * 3);
+    const uvs = new Float32Array(count * 2), fades = new Float32Array(count), indices = [];
+    for (let i = 0; i < HISTORY * 2; i++) {
+      const offset = i * 4; indices.push(offset, offset + 1, offset + 2, offset + 1, offset + 3, offset + 2);
+    }
+    const geometry = ownGeometry(new THREE.BufferGeometry());
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2).setUsage(THREE.DynamicDrawUsage));
+    geometry.setAttribute('aFade', new THREE.BufferAttribute(fades, 1).setUsage(THREE.DynamicDrawUsage));
+    geometry.setIndex(indices); geometry.setDrawRange(0, 0);
+    const trail = addRoot(new THREE.Mesh(geometry, elementMaterial('trail', { opacity: .84 })));
+    trail.name = 'Strömende Elementarfahne'; trail.frustumCulled = false; trail.visible = false;
+    return { trail, trailGeometry: geometry, trailPositions: positions, trailUvs: uvs, trailFades: fades,
+      history: new Float32Array(HISTORY * 3), births: new Float64Array(HISTORY), historyCount: 0,
+      sampleDistance: 0, sparkDistance: 0, headBirth: 0, trailRemaining: 0, visibleTrailSegments: 0 };
+  }
+
+  function createProjectile() {
+    if (disposed) throw new Error('Disposed spell effects cannot create projectiles.');
+    const group = addRoot(new THREE.Group()); group.name = 'Zauberprojektil'; group.visible = false;
+    const fire = new THREE.Group(), ice = new THREE.Group(); group.add(fire, ice);
+    fire.name = 'Glutkern und turbulente Flammenzungen'; ice.name = 'Facettenkristall mit Frostnebel';
+    const hotCore = mesh(fire, sphere, fireCore, 0, 0, .07); hotCore.scale.set(.065, .065, .15);
+    for (let i = 0; i < 2; i++) {
+      const tongue = mesh(fire, plumeGeometry, fireBody, 0, 0, -.40);
+      tongue.scale.set(.92, 1, 1.65); tongue.rotation.z = i * Math.PI / 2;
+      const mist = mesh(ice, plumeGeometry, iceBody, 0, 0, -.44);
+      mist.scale.set(.72, 1, 1.45); mist.rotation.z = i * Math.PI / 2;
+    }
+    mesh(ice, crystalGeometry, crystalMaterial);
+    mesh(ice, octahedron, iceCore, 0, 0, .10).scale.set(.042, .042, .39);
+    const iceFins = [];
+    for (let i = 0; i < 3; i++) {
+      const angle = i * Math.PI * 2 / 3;
+      const part = mesh(ice, octahedron, iceTip, Math.cos(angle) * .19, Math.sin(angle) * .19, -.28);
+      part.scale.set(.045, .045, .26); iceFins.push(part);
+    }
+    const glints = Array.from({ length: 2 }, (_, i) => {
+      const part = glow('#c9f4ff', .45); part.scale.setScalar(.27);
+      part.position.set(i ? -.13 : .14, i ? -.10 : .08, .12 + i * .12); ice.add(part); return part;
+    });
+    const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
+    const visual = { group, fire, ice, hotCore, iceFins, glints, halo, active: false,
+      type: 'fireStaff', direction: 0, ...makeTrail() };
+    projectiles.push(visual); return visual;
+  }
+
+  const particleMesh = addRoot(new THREE.InstancedMesh(octahedron, additive('#ffffff', .68), PARTICLES));
+  particleMesh.name = 'Glutfunken und Frostsplitter'; particleMesh.frustumCulled = false;
+  particleMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  const particles = Array.from({ length: PARTICLES }, () => ({ life: 0, duration: 1,
+    x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, size: 0, type: 'fireStaff', seed: 0, rendered: false }));
+  const transform = new THREE.Object3D(), directionVector = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+  const normalVector = new THREE.Vector3(), forward = new THREE.Vector3(0, 0, 1);
+  const pointA = new THREE.Vector3(), pointB = new THREE.Vector3();
+  let particleCursor = 0, burstCursor = 0, visibleParticles = 0, disposed = false;
+  const emitted = { fireStaff: { launches: 0, impacts: 0 }, iceStaff: { launches: 0, impacts: 0 } };
+  let latestImpact = null;
+  function particle(type, x, y, z, vx, vy, vz, size, duration) {
+    const entry = particles[particleCursor % PARTICLES];
+    Object.assign(entry, { type, x, y, z, vx, vy, vz, size, duration, life: duration, seed: particleCursor++ });
+  }
+
+  function remember(visual, x, y, z, birth) {
+    visual.history.copyWithin(3, 0, (HISTORY - 1) * 3);
+    visual.births.copyWithin(1, 0, HISTORY - 1);
+    visual.history[0] = x; visual.history[1] = y; visual.history[2] = z; visual.births[0] = birth;
+    visual.historyCount = Math.min(HISTORY, visual.historyCount + 1);
+  }
+  function updateTrail(visual, delta) {
+    if (!visual.active) visual.trailRemaining = Math.max(0, visual.trailRemaining - delta);
+    visual.visibleTrailSegments = 0;
+    if ((!visual.active && !visual.trailRemaining) || !visual.historyCount) {
+      visual.trail.visible = false; return;
+    }
+    const positions = visual.trailPositions, fades = visual.trailFades, uvs = visual.trailUvs;
+    const residual = visual.active ? 1 : visual.trailRemaining / TRAIL_RELEASE;
+    let ax = visual.group.position.x, ay = visual.group.position.y, az = visual.group.position.z, birthA = visual.headBirth;
+    for (let segment = 0; segment < visual.historyCount; segment++) {
+      const at = segment * 3, bx = visual.history[at], by = visual.history[at + 1], bz = visual.history[at + 2];
+      const birthB = visual.births[segment], dx = bx - ax, dz = bz - az, horizontal = Math.hypot(dx, dz);
+      const ageA = THREE.MathUtils.clamp((clock.value - birthA) / TRAIL_AGE, 0, 1);
+      const ageB = THREE.MathUtils.clamp((clock.value - birthB) / TRAIL_AGE, 0, 1);
+      pointA.set(ax, ay, az); pointB.set(bx, by, bz);
+      let visible = ageA < 1 && ageB < 1 && Math.hypot(dx, by - ay, dz) > .0001 && canSee(pointA) && canSee(pointB);
+      if (visible) { pointA.add(pointB).multiplyScalar(.5); visible = canSee(pointA); }
+      if (visible) visual.visibleTrailSegments++;
+      const radius = visual.type === 'fireStaff' ? .25 : .22;
+      const taperA = 1 - segment / visual.historyCount, taperB = 1 - (segment + 1) / visual.historyCount;
+      const widthA = radius * (.06 + (1 - ageA) * taperA * .94), widthB = radius * (.06 + (1 - ageB) * taperB * .94);
+      const nx = horizontal > .00001 ? -dz / horizontal : 1, nz = horizontal > .00001 ? dx / horizontal : 0;
+      for (let strip = 0; strip < 2; strip++) for (let vertex = 0; vertex < 4; vertex++) {
+        const older = vertex >= 2, sign = vertex % 2 ? 1 : -1;
+        const width = (older ? widthB : widthA) * sign, index = segment * 8 + strip * 4 + vertex;
+        positions[index * 3] = (older ? bx : ax) + (strip ? 0 : nx * width);
+        positions[index * 3 + 1] = (older ? by : ay) + (strip ? width * .80 : 0);
+        positions[index * 3 + 2] = (older ? bz : az) + (strip ? 0 : nz * width);
+        uvs[index * 2] = vertex % 2; uvs[index * 2 + 1] = 1 - (older ? ageB : ageA);
+        fades[index] = visible ? (1 - (older ? ageB : ageA)) ** 1.35 * Math.sqrt(older ? taperB : taperA) * residual : 0;
+      }
+      ax = bx; ay = by; az = bz; birthA = birthB;
+    }
+    visual.trailGeometry.setDrawRange(0, visual.historyCount * 12);
+    for (const attribute of Object.values(visual.trailGeometry.attributes)) attribute.needsUpdate = true;
+    visual.trail.visible = visual.visibleTrailSegments > 0;
+  }
+
+  const bursts = Array.from({ length: BURSTS }, () => {
+    const group = addRoot(new THREE.Group()); group.name = 'Zauberimpuls'; group.visible = false;
+    const halo = glow('#ffffff'); group.add(halo);
+    const ring = mesh(group, planeGeometry, elementMaterial('shock', { opacity: .75 }));
+    const cloud = mesh(group, planeGeometry, elementMaterial('cloud', { opacity: .35, billboard: true }));
+    const rays = mesh(group, planeGeometry, elementMaterial('rays', { opacity: .65 }));
+    const connectorMaterial = additive('#ffffff', .45);
+    const connectors = Array.from({ length: 4 }, () => {
+      const part = mesh(group, connectorGeometry, connectorMaterial); part.visible = false; return part;
+    });
+    return { group, halo, ring, cloud, rays, connectors, connectorMaterial, connectorCount: 0,
+      life: 0, duration: 1, type: 'fireStaff', kind: 'impact', size: 1, x: 0, y: 0, z: 0 };
+  });
+  function burst(type, point, direction, kind, normal) {
+    const entry = bursts[burstCursor++ % BURSTS], palette = ELEMENTS[type];
+    entry.life = entry.duration = kind === 'muzzle' ? .30 : .64;
+    Object.assign(entry, { type, kind, size: kind === 'muzzle' ? .52 : 1.05,
+      x: point.x, y: point.y, z: point.z, connectorCount: 0 });
+    entry.group.position.set(0, 0, 0); entry.group.visible = true;
+    entry.halo.position.copy(point); entry.ring.position.copy(point); entry.cloud.position.copy(point); entry.rays.position.copy(point);
+    entry.halo.material.color.set(palette.glow);
+    for (const part of [entry.ring, entry.cloud, entry.rays]) setElementMaterial(part.material, type);
+    normalVector.set(finite(normal?.x), finite(normal?.y), finite(normal?.z));
+    if (normalVector.lengthSq() < .0001) normalVector.set(-Math.sin(direction), 0, -Math.cos(direction));
+    normalVector.normalize(); entry.ring.quaternion.setFromUnitVectors(forward, normalVector);
+    entry.rays.quaternion.copy(entry.ring.quaternion);
+    entry.ring.position.addScaledVector(normalVector, .025); entry.rays.position.addScaledVector(normalVector, .03);
+    for (const part of entry.connectors) part.visible = false;
+    return entry;
+  }
+
+  const charge = addRoot(new THREE.Group()); charge.name = 'Zauber am Stabkopf'; charge.visible = false;
+  const chargeHalo = glow('#ffffff', .32); charge.add(chargeHalo);
+  const chargeCore = mesh(charge, octahedron, additive('#ffffff'));
+  const chargeRing = mesh(charge, planeGeometry, elementMaterial('charge', { opacity: .70, billboard: true }));
+  const chargeChips = Array.from({ length: 6 }, () => mesh(charge, octahedron, iceTip));
+  let chargeActive = false, chargeType = 'fireStaff', chargeProgress = 0, chargeDirection = 0;
+
+  function launch(visual, type, position, direction = 0) {
+    if (disposed || !valid(position)) return end(visual);
+    type = typeOf(type); direction = finite(direction);
+    Object.assign(visual, { type, direction, active: true, historyCount: 0, sampleDistance: 0,
+      sparkDistance: 0, headBirth: clock.value, trailRemaining: 0, visibleTrailSegments: 0 });
+    visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
+    visual.group.scale.setScalar(1); visual.fire.visible = type === 'fireStaff'; visual.ice.visible = type === 'iceStaff';
+    visual.halo.material.color.set(ELEMENTS[type].glow); visual.group.visible = canSee(position);
+    setElementMaterial(visual.trail.material, type); visual.trail.visible = false;
+    remember(visual, position.x, position.y, position.z, clock.value);
+    emitted[type].launches++;
+  }
+  function end(visual) {
+    if (visual.active) visual.trailRemaining = visual.historyCount > 1 ? TRAIL_RELEASE : 0;
+    visual.active = false; visual.group.visible = false;
+  }
+  function advance(visual, from, to, delta, time) {
+    if (disposed || !visual.active || !valid(from) || !valid(to)) return;
+    delta = Math.max(0, Math.min(.25, finite(delta))); if (!delta) return;
+    visual.group.position.copy(to); visual.group.visible = canSee(to);
+    visual.headBirth = clock.value + delta;
+    const distance = Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z);
+    if (distance < .00001) return;
+    const historyTotal = visual.sampleDistance + distance, sampleCount = Math.floor(historyTotal / SAMPLE_DISTANCE);
+    for (let i = Math.max(0, sampleCount - HISTORY); i < sampleCount; i++) {
+      const t = THREE.MathUtils.clamp((SAMPLE_DISTANCE - visual.sampleDistance + i * SAMPLE_DISTANCE) / distance, 0, 1);
+      remember(visual, THREE.MathUtils.lerp(from.x, to.x, t), THREE.MathUtils.lerp(from.y, to.y, t),
+        THREE.MathUtils.lerp(from.z, to.z, t), clock.value + delta * t);
+    }
+    visual.sampleDistance = historyTotal % SAMPLE_DISTANCE;
+    const total = visual.sparkDistance + distance, spacing = visual.type === 'fireStaff' ? .62 : .80;
+    const count = Math.min(8, Math.floor(total / spacing)); visual.sparkDistance = total % spacing;
+    for (let i = 0; i < count; i++) {
+      const t = (i + .5) / count, angle = (particleCursor + i) * 2.39996;
+      const x = THREE.MathUtils.lerp(from.x, to.x, t), y = THREE.MathUtils.lerp(from.y, to.y, t), z = THREE.MathUtils.lerp(from.z, to.z, t);
+      pointA.set(x, y, z); if (!canSee(pointA)) continue;
+      particle(visual.type, x, y, z, Math.sin(angle) * .55, .12 + Math.cos(angle) * .42,
+        Math.cos(angle) * .55, visual.type === 'fireStaff' ? .042 : .055, .31 + (i % 3) * .045);
+    }
+  }
+  function channel(type, position, direction = 0, progress = 0) {
+    chargeActive = !disposed && type !== null && valid(position);
+    if (!chargeActive) { charge.visible = false; return; }
+    chargeType = typeOf(type); chargeProgress = THREE.MathUtils.clamp(finite(progress), 0, 1);
+    chargeDirection = finite(direction); charge.position.copy(position);
+    chargeHalo.material.color.set(ELEMENTS[chargeType].glow);
+    chargeCore.material.color.set(ELEMENTS[chargeType].core);
+    setElementMaterial(chargeRing.material, chargeType);
+    charge.visible = canSee(position);
+  }
+  function fire(type, origin, direction = 0, launchPoint = origin) {
+    if (disposed || !valid(origin)) return;
+    type = typeOf(type); direction = finite(direction);
+    const entry = burst(type, origin, direction, 'muzzle');
+    if (valid(launchPoint) && pointA.copy(origin).distanceToSquared(launchPoint) > .01) {
+      entry.connectorCount = entry.connectors.length;
+      entry.connectorMaterial.color.set(ELEMENTS[type].spark);
+      for (let i = 0; i < entry.connectorCount; i++) {
+        const start = i / entry.connectorCount, finish = (i + 1) / entry.connectorCount;
+        pointA.copy(origin).lerp(launchPoint, start); pointA.y += Math.sin(start * Math.PI) * .16;
+        pointB.copy(origin).lerp(launchPoint, finish); pointB.y += Math.sin(finish * Math.PI) * .16;
+        const part = entry.connectors[i]; directionVector.subVectors(pointB, pointA);
+        part.position.copy(pointA).add(pointB).multiplyScalar(.5);
+        part.scale.set(.035, directionVector.length(), .035);
+        part.quaternion.setFromUnitVectors(up, directionVector.normalize());
+      }
+    }
+    for (let i = 0; i < 8; i++) {
+      const angle = i * 2.39996;
+      particle(type, origin.x, origin.y, origin.z, Math.sin(direction) * .7 + Math.sin(angle) * .9,
+        Math.cos(angle) * .8, Math.cos(direction) * .7 + Math.cos(angle) * .9, .055, .24 + i % 3 * .04);
+    }
+  }
+  function impact(type, point, normal = null, direction = 0) {
+    if (disposed || !valid(point)) return;
+    type = typeOf(type); direction = finite(direction);
+    burst(type, point, direction, 'impact', normal); emitted[type].impacts++;
+    latestImpact = { type, point: { x: point.x, y: point.y, z: point.z } };
+    for (let i = 0; i < 22; i++) {
+      const angle = i * 2.39996, spread = 1.2 + i % 4 * .35;
+      particle(type, point.x, point.y, point.z, Math.sin(angle) * spread + finite(normal?.x) * .8,
+        .6 + i % 5 * .24, Math.cos(angle) * spread + finite(normal?.z) * .8,
+        type === 'fireStaff' ? .07 + i % 3 * .02 : .08 + i % 3 * .025, .38 + i % 4 * .075);
+    }
+  }
+
+  function update(delta, time) {
+    if (disposed) return;
+    delta = Math.max(0, Math.min(.25, finite(delta))); clock.value += delta; time = clock.value;
+    visibleParticles = 0; let particlesChanged = false;
+    for (let index = 0; index < PARTICLES; index++) {
+      const entry = particles[index];
+      if (entry.life <= 0 && !entry.rendered) continue;
+      if (entry.life > 0) {
+        entry.life = Math.max(0, entry.life - delta);
+        entry.x += entry.vx * delta; entry.y += entry.vy * delta; entry.z += entry.vz * delta;
+        entry.vy += (entry.type === 'fireStaff' ? .4 : -2.8) * delta;
+      }
+      const visible = entry.life > 0 && canSee(entry), fade = Math.max(0, entry.life / entry.duration);
+      if (visible || entry.rendered) {
+        transform.position.set(entry.x, entry.y, entry.z);
+        transform.rotation.set(entry.seed + time * 3, entry.seed + time * 2, entry.seed);
+        const size = visible ? entry.size * Math.sqrt(fade) : 0;
+        transform.scale.set(size, size * (entry.type === 'iceStaff' ? 2.7 : 1.5), size * (entry.type === 'iceStaff' ? .5 : 1));
+        transform.updateMatrix(); particleMesh.setMatrixAt(index, transform.matrix);
+        scratchColor.set(ELEMENTS[entry.type].spark).multiplyScalar(fade);
+        particleMesh.setColorAt(index, scratchColor); particlesChanged = true;
+      }
+      entry.rendered = visible; if (visible) visibleParticles++;
+    }
+    if (particlesChanged) { particleMesh.instanceMatrix.needsUpdate = true; particleMesh.instanceColor.needsUpdate = true; }
+    particleMesh.visible = visibleParticles > 0;
+    for (const entry of bursts) {
+      entry.life = Math.max(0, entry.life - delta); entry.group.visible = entry.life > 0;
+      if (!entry.life) continue;
+      const age = entry.duration - entry.life, t = age / entry.duration, visible = canSee(entry);
+      entry.halo.visible = entry.ring.visible = visible;
+      entry.cloud.visible = visible && entry.kind === 'impact';
+      entry.rays.visible = visible && entry.type === 'iceStaff' && entry.kind === 'impact' && t < .65;
+      entry.halo.scale.setScalar(entry.size * (.9 + t * 2.0));
+      entry.halo.material.opacity = (1 - t) ** 1.8 * .42;
+      entry.ring.scale.setScalar(entry.size * (.7 + t * 3.0));
+      entry.ring.material.uniforms.uOpacity.value = (1 - t) ** 1.2 * .75;
+      entry.cloud.scale.setScalar(entry.size * (1.0 + t * 2.6));
+      entry.cloud.position.y = entry.y + t * (entry.type === 'fireStaff' ? .35 : .10);
+      entry.cloud.material.uniforms.uOpacity.value = Math.sin(t * Math.PI) * (entry.type === 'fireStaff' ? .42 : .52);
+      entry.rays.scale.setScalar(entry.size * (.8 + t * 2.5));
+      entry.rays.material.uniforms.uOpacity.value = Math.max(0, 1 - t / .65) * .68;
+      entry.connectorMaterial.opacity = Math.max(0, 1 - age / .16) * .45;
+      entry.connectors.forEach((part, index) => { part.visible = index < entry.connectorCount && age < .16 && canSee(part.position); });
+    }
+    charge.visible = chargeActive && canSee(charge.position);
+    if (chargeActive) {
+      const radius = .18 + (1 - chargeProgress) * .30;
+      charge.rotation.set(0, chargeDirection, 0);
+      chargeHalo.scale.setScalar(.55 + chargeProgress * .5);
+      chargeCore.scale.setScalar(.045 + chargeProgress * .065);
+      chargeCore.rotation.set(time * 3, time * 4, time * 2);
+      chargeRing.scale.setScalar(radius * 2.8); chargeRing.rotation.set(0, 0, time * 2);
+      chargeChips.forEach((part, index) => {
+        const angle = time * 8 + index * Math.PI / 3;
+        part.material = chargeType === 'fireStaff' ? fireTip : iceTip;
+        part.position.set(Math.sin(angle) * radius, Math.cos(angle) * radius, Math.sin(angle * 2) * .08);
+        part.scale.set(.035, chargeType === 'iceStaff' ? .09 : .045, .035);
+        part.rotation.set(0, angle, angle);
+      });
+    }
+    for (const visual of projectiles) {
+      visual.group.visible = visual.active && canSee(visual.group.position);
+      if (visual.active) {
+        const pulse = 1 + Math.sin(time * 17) * .035;
+        visual.fire.scale.set(pulse, pulse, 1); visual.fire.rotation.z = Math.sin(time * 6) * .10;
+        visual.hotCore.scale.set(.065 * pulse, .065 * pulse, .15);
+        visual.ice.rotation.z = time * 1.5;
+        visual.halo.scale.setScalar((visual.type === 'fireStaff' ? 1.10 : 1.0) * pulse);
+        visual.glints.forEach((part, index) => { part.material.opacity = .25 + Math.max(0, Math.sin(time * 4 + index * 2.1)) ** 6 * .45; });
+      }
+      updateTrail(visual, delta);
+    }
+  }
+  function reset() {
+    for (const visual of projectiles) {
+      end(visual); visual.historyCount = 0; visual.trailRemaining = 0; visual.visibleTrailSegments = 0;
+      visual.trail.visible = false; visual.trailGeometry.setDrawRange(0, 0);
+    }
+    for (const entry of particles) { entry.life = 0; entry.rendered = true; }
+    for (const entry of bursts) { entry.life = 0; entry.group.visible = false; }
+    chargeActive = false; charge.visible = false; particleMesh.visible = false; visibleParticles = 0;
+    particleCursor = burstCursor = 0; latestImpact = null; clock.value = 0;
+    for (const counters of Object.values(emitted)) counters.launches = counters.impacts = 0;
+  }
+  function dispose() {
+    if (disposed) return;
+    reset(); disposed = true;
+    for (const root of roots) {
+      if (root.isInstancedMesh) root.dispose();
+      root.removeFromParent();
+    }
+    for (const geometry of geometries) geometry.dispose();
+    for (const material of materials) material.dispose();
+    glowTexture.dispose();
+  }
+  reset();
+  return { createProjectile, launch, advance, end, channel, fire, impact, update, reset, dispose,
+    get telemetry() {
+      return { activeProjectiles: projectiles.filter(v => v.active).length,
+        visibleProjectiles: projectiles.filter(v => v.active && v.group.visible).length,
+        activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
+        activeBursts: bursts.filter(b => b.life > 0).length, channelActive: chargeActive, channelVisible: charge.visible,
+        emitted: { fireStaff: { ...emitted.fireStaff }, iceStaff: { ...emitted.iceStaff } },
+        latestImpact: latestImpact ? { type: latestImpact.type, point: { ...latestImpact.point } } : null,
+        bursts: bursts.filter(b => b.life > 0).map(b => ({ kind: b.kind, type: b.type,
+          visible: b.halo.visible || b.ring.visible || b.cloud.visible || b.rays.visible || b.connectors.some(p => p.visible), position: { x: b.x, y: b.y, z: b.z } })),
+        activeTrails: projectiles.filter(v => v.historyCount > 1 && (v.active || v.trailRemaining > 0)).length,
+        visibleTrailSegments: projectiles.reduce((sum, visual) => sum + visual.visibleTrailSegments, 0),
+        presentation: 'flowing-elements-v2',
+        capacity: { particles: PARTICLES, bursts: BURSTS, historySamplesPerProjectile: HISTORY } };
+    },
+  };
+}

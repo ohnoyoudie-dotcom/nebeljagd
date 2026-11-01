@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import './style.css';
+import './lobby.css';
+import { createLobbyMap } from './lobby-map.js';
+import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
 import { createGeneratedWorld } from './generated-world.js';
 import defaultMap from '../worldmap.json';
 import { zoneAt as mapZoneAt, getWorldmapStats } from './map/model.js';
@@ -19,13 +22,18 @@ import { createPracticeActors } from './practice-actors.js';
 import { createSnowFootprints } from './snow-footprints.js';
 import { createDamageFeedback } from './damage-feedback.js';
 import { createProgressionState, awardDefeat } from './progression.js';
-import { ROLL_SPEED, ROLL_DURATION, ROLL_COOLDOWN,
+import { MAX_HEALTH, START_HEALTH, ROLL_SPEED, ROLL_DURATION, ROLL_COOLDOWN,
   healedHealth } from './rules.js';
 
+const lobbyMode = document.body.dataset.mode === 'lobby' || new URLSearchParams(location.search).get('mode') === 'lobby';
+// Resolve access before creating the renderer, world or character.
+const lobbySession = lobbyMode ? await requireLobbySession() : null;
+if (lobbyMode) { document.body.dataset.mode = 'lobby'; document.title = 'Nebeljagd · Übungswiese'; }
+const startingHealth = lobbyMode ? MAX_HEALTH : START_HEALTH;
 const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
 const requestedQuality = new URLSearchParams(location.search).get('quality');
 const state = {
-  phase: 'ready', ...createProgressionState(), lastDefeat: null, elapsed: 0,
+  phase: 'ready', ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0,
   gold: 0, inDanger: false, moving: false, distance: 0, snowWeight: 0,
   rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
   quality: requestedQuality === 'low' || (requestedQuality !== 'high' && coarsePointer) ? 'low' : 'high',
@@ -37,11 +45,14 @@ let inputPointer = null;
 const frameSamples = [];
 
 const ui = createUI({
+  practiceSession: lobbySession,
+  onLeave: lobbyMode ? () => { if (ready) setPhase('paused'); void leaveLobby(lobbySession); } : undefined,
   onMapImport: async file => {
+    if (lobbyMode) return;
     try { ui.toast(await importRuntimeWorldmap(file), 'success'); }
     catch (error) { ui.toast(`Karte nicht geladen: ${error.message}`, 'danger'); }
   },
-  onStart: () => { if (ready) { setPhase('playing'); ui.toast('Willkommen auf der großen Nebelinsel. Erkunde die Landschaften und bleib vor dem Nebel.'); } },
+  onStart: () => { if (ready) { setPhase('playing'); ui.toast(lobbyMode ? 'Willkommen auf der Übungswiese! Heb eine Waffe auf und probiere sie an den Übungsgegnern aus.' : 'Willkommen auf der großen Nebelinsel. Erkunde die Landschaften und bleib vor dem Nebel.'); } },
   onPause: () => { if (state.phase === 'playing') setPhase('paused'); },
   onResume: () => { if (state.phase === 'paused') setPhase('playing'); },
   onRestart: () => { if (ready) reset(); },
@@ -89,10 +100,10 @@ sun.shadow.radius = 3;
 sun.shadow.blurSamples = 24;
 scene.add(sun, sun.target);
 
-ui.setLoading?.('Die Insel wird aus der Karte erzeugt …');
+ui.setLoading?.(lobbyMode ? 'Die Übungswiese wird vorbereitet …' : 'Die Insel wird aus der Karte erzeugt …');
 let documentSource, world;
 try {
-  documentSource = await loadRuntimeWorldmap(defaultMap);
+  documentSource = lobbyMode ? { map: createLobbyMap(), source: 'lobby' } : await loadRuntimeWorldmap(defaultMap);
   world = await createGeneratedWorld(scene, { quality: state.quality, map: documentSource.map });
 } catch (error) {
   ui.showError(`Die Welt konnte nicht erzeugt werden: ${error.message}`);
@@ -101,6 +112,8 @@ try {
 ui.setWorldmap?.(world.map);
 const worldStats = getWorldmapStats(world.map);
 function zoneAt(elapsed) {
+  if (lobbyMode) return { center: [...world.map.zone.center], radius: world.map.zone.initialRadius,
+    phase: 'practice', shrinking: false, countdown: 0, progress: 0, phaseRemainingSeconds: 0 };
   const value = mapZoneAt(world.map, elapsed);
   const phase = world.map.zone.phases.find(item => item.id === value.phase);
   const countdown = value.shrinking ? value.phaseRemainingSeconds : Math.max(0, value.phaseRemainingSeconds - (phase?.shrinkSeconds ?? 0));
@@ -161,7 +174,7 @@ const grassInteractors = [];
 const footprintSources = [];
 let playerGrassStrength = 0, playerGrassDirX = 0, playerGrassDirZ = 1;
 vision.register();
-const zone = createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius });
+const zone = lobbyMode ? null : createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius });
 const inactivePlayer = new THREE.Vector3(1000, 0, 1000);
 const moveDirection = new THREE.Vector3();
 const lastPosition = new THREE.Vector3();
@@ -186,7 +199,7 @@ function setPhase(phase) {
 }
 
 function reset() {
-  Object.assign(state, { ...createProgressionState(), lastDefeat: null, elapsed: 0, gold: 0, inDanger: false,
+  Object.assign(state, { ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0, gold: 0, inDanger: false,
     distance: 0, moving: false, actualSpeed: 0, snowWeight: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
@@ -199,7 +212,7 @@ function reset() {
   playerGrassStrength = 0; playerGrassDirX = Math.sin(state.direction); playerGrassDirZ = Math.cos(state.direction);
   lastConcealment = false; lastShelter = null; currentZone = zoneAt(0);
   setPhase('playing');
-  ui.toast('Ein neuer Streifzug beginnt.');
+  ui.toast(lobbyMode ? 'Die Übungswiese ist zurückgesetzt. Alle Gegenstände sind wieder da.' : 'Ein neuer Streifzug beginnt.');
 }
 
 function setQuality(quality) {
@@ -286,11 +299,11 @@ function simulate(dt) {
   if (state.moving) state.direction = Math.atan2(player.x - lastPosition.x, player.z - lastPosition.z);
   currentZone = zoneAt(state.elapsed);
   const wasInDanger = state.inDanger;
-  state.inDanger = Math.hypot(player.x - currentZone.center[0], player.z - currentZone.center[1]) > currentZone.radius;
+  state.inDanger = !lobbyMode && Math.hypot(player.x - currentZone.center[0], player.z - currentZone.center[1]) > currentZone.radius;
   if (state.inDanger && !wasInDanger) ui.toast('Der Nebel zehrt an deiner Kraft. Zurück in den Kreis!', 'danger');
   if (!state.inDanger && wasInDanger) ui.toast('Du bist wieder in Sicherheit.', 'success');
   const previousHealth = state.health;
-  state.health = Math.max(0, state.health - (state.inDanger ? world.map.zone.damagePerSecond * dt : 0));
+  state.health = lobbyMode ? state.maxHealth : Math.max(0, state.health - (state.inDanger ? world.map.zone.damagePerSecond * dt : 0));
   if (state.health < previousHealth) damageFeedback.addHit({ targetId: 'player', damage: previousHealth - state.health, type: 'zone' },
     { id: 'player', position: player, local: true });
   if (state.health === 0) setPhase('dead');
@@ -378,6 +391,7 @@ document.querySelector('#game').addEventListener('webglcontextlost', (event) => 
 });
 
 window.nebeljagdTestState = () => ({
+  mode: lobbyMode ? 'lobby' : 'game',
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -410,7 +424,7 @@ window.nebeljagdTestState = () => ({
     roofVisible: roof.visible, interiorVisible: interior.visible, frontFacadeVisible: frontFacade.visible, frontFacadeParts: frontFacade.children.length })),
   zone: { ...currentZone, inDanger: state.inDanger },
   pickups: pickups.items.map(({ id, type, x, z, collected, group }) => ({ id, type, x, z, collected, visible: group.visible })),
-  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom },
+  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom, zoom: camera.zoom },
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
     frameMs: frameSamples.length ? frameSamples.reduce((sum, ms) => sum + ms, 0) / frameSamples.length : null },
@@ -421,6 +435,10 @@ window.nebeljagdTestState = () => ({
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
 if (new URLSearchParams(location.search).has('inspect')) {
+  window.nebeljagdInspectCamera = ({ zoom = 1 } = {}) => {
+    camera.zoom = THREE.MathUtils.clamp(Number.isFinite(zoom) ? zoom : 1, 1, 4);
+    camera.updateProjectionMatrix();
+  };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
@@ -445,6 +463,19 @@ setQuality(state.quality);
 ready = true;
 ui.setPhase('ready');
 ui.setLoading?.('');
+if (lobbyMode) {
+  let stopWatching = null;
+  const startWatching = () => {
+    stopWatching?.();
+    stopWatching = watchLobbySession({ onInvalid: () => {
+      ready = false; setPhase('paused');
+      ui.showError('Dein Zugang zur Übungswiese ist beendet. Du kehrst zur Startseite zurück.');
+    } });
+  };
+  startWatching();
+  window.addEventListener('pagehide', () => { stopWatching?.(); stopWatching = null; });
+  window.addEventListener('pageshow', event => { if (event.persisted) startWatching(); });
+}
 let previousTime = null, accumulator = 0, time = 0, uiTimer = 0;
 function frame(now) {
   // The first RAF timestamp may precede synchronous world/asset construction.
@@ -465,7 +496,7 @@ function frame(now) {
     lastShelter = state.shelter;
   }
   if (state.hiddenInGrass !== lastConcealment) {
-    ui.toast(state.hiddenInGrass ? 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.' : 'Du verlässt das dichte Gras.');
+    ui.toast(state.hiddenInGrass ? (lobbyMode ? 'Im hohen Gras verborgen.' : 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.') : 'Du verlässt das dichte Gras.');
     lastConcealment = state.hiddenInGrass;
   }
   character.setConcealed(state.hiddenInGrass);
@@ -511,7 +542,7 @@ function frame(now) {
   }
   pickups.update(playDelta, time, state.phase === 'playing' ? player : inactivePlayer,
     { health: state.health, maxHealth: state.maxHealth, onCollect, viewerPosition: player });
-  zone.update(time, currentZone.radius, state.inDanger, player);
+  zone?.update(time, currentZone.radius, state.inDanger, player);
   cameraTarget.set(player.x * visualScale, player.y * visualScale, (player.z - 1.5) * visualScale);
   cameraFocus.lerp(cameraTarget, 1 - Math.exp(-dt * 4));
   camera.position.copy(cameraFocus).add(cameraOffset); camera.lookAt(cameraFocus);

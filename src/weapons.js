@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { WEAPON_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
+import { createSpellEffects } from './spell-effects.js';
 
 export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-sword': 'sword',
@@ -237,6 +238,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     group.add(halo); scene.add(group);
     const item = { ...definition, ...stats, id: definition.id ?? `drop-weapon-${++dropSerial}`,
       type, variant, model: visual.userData.model, x, z, phase: items.length * 1.7, groundY, group, floating, visual, ring,
+      initialPlacement: { x, z, groundY },
       ringMaterial, glow, glowingMaterials, collected: false, dynamic: !initial, popAge: pop ? 0 : 1,
       origin: definition.origin ?? [x, z] };
     if (pop) { ring.visible = halo.visible = false; group.position.set(item.origin[0], heightAt?.(...item.origin) ?? groundY, item.origin[1]); }
@@ -395,7 +397,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const up = new THREE.Vector3(0, 1, 0);
   const leftHand = new THREE.Vector3(), rightHand = new THREE.Vector3();
   const combatPose = { weapon: null, phase: 'idle', leftHand, rightHand, chestTwist: 0 };
-  let equippedType = null, equippedItem = null;
+  let equippedType = null, equippedItem = null, equippedPickup = null;
   let cooldown = 0, attackAge = -1, attackDuration = 0;
   let shotReleased = false, bowDraw = 0, swordSweep = 0;
   let attackPhase = 'idle', shotCount = 0, impactCount = 0, lastImpact = null, particleCursor = 0;
@@ -423,16 +425,31 @@ export function createWeapons(scene, characterGroup, world, character = null,
     return result;
   }
 
+  function returnToGround(item, { x, z, groundY }) {
+    Object.assign(item, { x, z, groundY, position: [x, z], origin: [x, z], popAge: 1, collected: false });
+    item.group.position.set(x, groundY, z);
+    item.group.visible = true;
+    item.floating.position.set(0, .75, 0);
+    item.floating.rotation.set(0, 0, 0);
+    item.ring.visible = item.halo.visible = true;
+  }
+
   function equip(item, automatic = false) {
     if (!item) return null;
     const held = selectHeldVisual(item.type, item.variant);
+    // Exchange the existing pickups. The new pickup's position has already
+    // passed visibility, height and reach checks, so the old weapon stays
+    // reachable instead of disappearing or returning to its original map spot.
+    if (equippedPickup) returnToGround(equippedPickup, item);
     item.collected = true; item.group.visible = false;
+    equippedPickup = item;
     equippedType = item.type;
     equippedItem = { ...weaponStats(item.type, item.rarity), id: item.id, variant: item.variant, model: item.model,
       rotation: item.rotation ?? 0, scale: item.scale ?? 1 };
     applyTier(held, equippedItem.rarity);
     slashMaterial.color.set(equippedItem.color);
     cooldown = 0; attackAge = -1; attackPhase = 'idle';
+    spellEffects.channel(null);
     applyHeldPose();
     return { type: item.type, ...equippedItem, automatic, message: `${equippedItem.name} aufgenommen · ${equippedItem.damage} Schaden · F zum Angreifen.` };
   }
@@ -508,7 +525,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       leftHand.set(.27, 1.3, .32 + pulse * .2);
       combatPose.chestTwist = -.08 + pulse * .16;
       character?.setCombatState?.(combatPose);
-      if (character?.getHandPosition) character.getHandPosition('right', hand); else hand.copy(rightHand);
+      if (character?.getGripPosition) character.getGripPosition('right', hand);
+      else if (character?.getHandPosition) character.getHandPosition('right', hand);
+      else hand.copy(rightHand);
       const staff = equippedType === 'fireStaff' ? heldFireStaff : heldIceStaff;
       staff.position.copy(hand); staff.position.y += staff.userData.gripOffsetY;
       staff.rotation.set(.28 + pulse * .5, 0, -.06);
@@ -573,37 +592,34 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
   function hitTarget(projectile, collision) {
     lastDamage = combat.hit(collision.target, projectile.payload); damageHits++;
-    projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false;
+    if (projectile.visual) spellImpact(projectile, collision);
+    else { projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false; }
   }
 
-  const spellGeometry = new THREE.IcosahedronGeometry(.14, 1);
-  const spellHaloGeometry = new THREE.SphereGeometry(.24, 8, 6);
-  const spellTailGeometry = new THREE.ConeGeometry(.16, .85, 7);
+  const spellEffects = createSpellEffects(scene, { isVisible });
+  const staffTip = new THREE.Vector3();
   const spells = Array.from({ length: 10 }, () => {
-    const group = new THREE.Group(); group.name = 'Elementargeschoss';
-    const core = new THREE.Mesh(spellGeometry, new THREE.MeshBasicMaterial({ color: '#ffd78b' }));
-    const aura = new THREE.Mesh(spellHaloGeometry, new THREE.MeshBasicMaterial({ color: '#ff741e', transparent: true, opacity: .3, depthWrite: false, blending: THREE.AdditiveBlending }));
-    const tail = new THREE.Mesh(spellTailGeometry, aura.material);
-    tail.rotation.x = Math.PI / 2; tail.position.z = -.43;
-    group.add(core, aura, tail); group.visible = false; scene.add(group);
-    return { group, core, aura, tail, life: 0, vx: 0, vz: 0, mode: 'inactive', payload: null };
+    const visual = spellEffects.createProjectile();
+    return { visual, group: visual.group, life: 0, vx: 0, vz: 0, mode: 'inactive', payload: null };
   });
-  function releaseSpell(position) {
-    const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
+  function getStaffTip(result) {
     const staff = equippedType === 'fireStaff' ? heldFireStaff : heldIceStaff;
     characterGroup.updateWorldMatrix(true, true); scene.updateWorldMatrix(true, false);
-    launchCenter.set(0, staff.userData.weaponTipY, 0); staff.localToWorld(launchCenter); scene.worldToLocal(launchCenter);
+    result.set(0, staff.userData.weaponTipY, 0); staff.localToWorld(result); scene.worldToLocal(result);
+    return result;
+  }
+  function releaseSpell(position) {
+    const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
+    getStaffTip(staffTip); launchCenter.copy(staffTip);
     // A fixed chest-height flight plane makes the aim readable on uneven ground.
+    // The brief release arc connects the actual staff tip to this flight plane.
     launchCenter.y = position.y + 1.4;
     const angle = characterGroup.rotation.y;
     spell.mode = 'flying'; spell.life = 1.35; spell.direction = angle;
     spell.vx = Math.sin(angle) * 18; spell.vz = Math.cos(angle) * 18;
     spell.payload = { ...equippedItem, sourceId: ownerId };
-    spell.group.position.copy(launchCenter); spell.group.rotation.set(0, angle, 0);
-    spell.group.scale.setScalar(1); spell.group.visible = true; spell.tail.visible = true;
-    spell.core.material.color.set(equippedType === 'fireStaff' ? '#ffe3a5' : '#e6fbff');
-    spell.aura.material.color.set(equippedType === 'fireStaff' ? '#ff6b20' : '#51cfff');
-    spell.aura.material.opacity = .3;
+    spellEffects.launch(spell.visual, spell.payload.type, launchCenter, angle);
+    spellEffects.fire(spell.payload.type, staffTip, angle, launchCenter);
     launchOrigin.set(position.x, launchCenter.y, position.z);
     const immediate = firstHit(launchOrigin, launchCenter, .13);
     if (immediate?.target) hitTarget(spell, immediate);
@@ -611,8 +627,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     shotCount++;
   }
   function spellImpact(spell, collision) {
-    spell.group.position.copy(collision.point); spell.mode = 'burst'; spell.life = .18;
-    spell.tail.visible = false;
+    spell.group.position.copy(collision.point); spell.mode = 'inactive'; spell.life = 0;
+    spellEffects.end(spell.visual);
+    spellEffects.impact(spell.payload.type, collision.point, collision.normal, spell.direction);
     impactCount++;
     lastImpact = { type: collision.type ?? 'terrain', point: { ...collision.point } };
   }
@@ -620,20 +637,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
     for (const spell of spells) {
       if (spell.life <= 0) continue;
       spell.life -= delta;
-      if (spell.life <= 0) { spell.group.visible = false; spell.mode = 'inactive'; continue; }
-      if (spell.mode === 'flying') {
-        tipBefore.copy(spell.group.position);
-        tipAfter.copy(tipBefore); tipAfter.x += spell.vx * delta; tipAfter.z += spell.vz * delta;
-        const collision = firstHit(tipBefore, tipAfter, .13);
-        if (collision?.target) hitTarget(spell, collision);
-        else if (collision) spellImpact(spell, collision);
-        else spell.group.position.copy(tipAfter);
-        spell.core.rotation.set(time * 5, time * 7, time * 3);
-      } else {
-        spell.group.scale.setScalar(1 + (1 - spell.life / .18) * 3);
-        spell.aura.material.opacity = .3 * spell.life / .18;
-      }
-      spell.group.visible = spell.life > 0 && (!isVisible || isVisible(spell.group.position));
+      if (spell.life <= 0) { spellEffects.end(spell.visual); spell.mode = 'inactive'; continue; }
+      tipBefore.copy(spell.group.position);
+      tipAfter.copy(tipBefore); tipAfter.x += spell.vx * delta; tipAfter.z += spell.vz * delta;
+      const collision = firstHit(tipBefore, tipAfter, .13);
+      spellEffects.advance(spell.visual, tipBefore, collision?.point ?? tipAfter, delta, time);
+      if (collision?.target) hitTarget(spell, collision);
+      else if (collision) spellImpact(spell, collision);
     }
   }
 
@@ -673,6 +683,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
     }
     applyHeldPose();
+    if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
+      spellEffects.channel(equippedType, getStaffTip(staffTip), characterGroup.rotation.y, attackAge / .25);
+    } else spellEffects.channel(null);
     if (equippedType === 'bow' && attackAge >= .23 && !shotReleased) {
       shotReleased = true; releaseArrow(position);
     }
@@ -724,6 +737,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     if (isVisible) for (const arrow of arrows) arrow.group.visible = arrow.life > 0 && isVisible(arrow.group.position);
     updateSpells(delta, time);
+    spellEffects.update(delta, time);
     let particlesChanged = false;
     impactParticles.forEach((particle, index) => {
       if (particle.life <= 0) return;
@@ -738,7 +752,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function reset() {
-    equippedType = null; equippedItem = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
+    equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = null;
     heldBow.visible = heldSword.visible = heldFireStaff.visible = heldIceStaff.visible = slash.visible = nockedArrow.visible = false;
     slashMaterial.opacity = 0; character?.setCombatState?.(null);
@@ -749,9 +763,10 @@ export function createWeapons(scene, characterGroup, world, character = null,
         disposeWeaponVisual(item.visual);
         item.ringMaterial.dispose(); item.halo.material.dispose();
       }
-      else { item.collected = false; item.group.visible = true; }
+      else returnToGround(item, item.initialPlacement);
     }
-    for (const spell of spells) { spell.life = 0; spell.group.visible = false; }
+    for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
+    spellEffects.reset();
     damageHits = 0; lastDamage = null;
     for (const arrow of arrows) { arrow.life = 0; arrow.mode = 'inactive'; arrow.group.visible = false; }
     impactParticles.forEach((particle, index) => {
@@ -766,8 +781,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (disposed) return;
     disposed = true;
     reset();
+    spellEffects.dispose();
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
-      ...arrows.map(arrow => arrow.group), ...spells.map(spell => spell.group), slash, impactMesh];
+      ...arrows.map(arrow => arrow.group), slash, impactMesh];
     const geometries = new Set([ringGeometry, haloGeometry]), materials = new Set(baseMaterials);
     for (const root of roots) {
       root.traverse(part => {
@@ -790,10 +806,24 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get telemetry() {
       bladeTip.set(0, heldSword.userData.weaponTipY, 0).applyQuaternion(heldSword.quaternion).multiplyScalar(heldSword.scale.y).add(heldSword.position);
       const held = heldByType[equippedType];
+      let heldGrip = null;
+      if (equippedType?.endsWith('Staff')) {
+        const wrist = new THREE.Vector3(), palm = new THREE.Vector3();
+        if (character?.getHandPosition) character.getHandPosition('right', wrist); else wrist.copy(rightHand);
+        if (character?.getGripPosition) character.getGripPosition('right', palm); else palm.copy(wrist);
+        const position = held.position.clone(); position.y -= held.userData.gripOffsetY;
+        const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
+        heldGrip = { side: 'right', source: characterGroup.userData.characterAsset?.gripSockets?.right?.source
+          ?? (character?.getGripPosition ? 'palm' : 'wrist'), position: point(position), wrist: point(wrist),
+          palm: point(palm), error: position.distanceTo(palm), visible: held.visible };
+      }
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
       return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
+        effects: spellEffects.telemetry, heldGrip,
+        spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
+          visible: spell.group.visible, position: { x: spell.group.position.x, y: spell.group.position.y, z: spell.group.position.z } })),
         heldModel: held ? { type: equippedType, variant: held.userData.variant, model: held.userData.model,
           visible: held.visible, meshCount } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,

@@ -1,8 +1,91 @@
-# Öffentliche Browser- und Download-Adressen
+# Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Drei Tripo-Waffen · 1. November 2026
+## Aktueller Editor mit korrigierter Griffposition
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb).
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4).
+Feuer- und Eisstab sitzen nun in der rechten Handfläche. Der Griffpunkt folgt
+der Hand beim Laufen, Drehen und Zaubern. Alten Spiel-Tab schließen und im
+aktuellen Editor **Spielen** öffnen. Details: [Griffposition](weapon-grip.md).
+
+Quellstand: `cac1b929232ef28d41bb6cb076336e258475b9cd`; Build `70f667e08ed9`.
+Veröffentlichungscommit: `9332ab4e51fa121b9934e12bfa628ab8910cc296`, ausschließlich
+vier Dateien unter `preview/` auf `main`; alle neun Paketdateien verifiziert.
+351 Node-Tests und acht Browserprüfungen bestanden. 14 Spielaufnahmen geprüft;
+keine Browser-, Shader-, WebGL- oder HTTP-Fehler. Die Modelle und Nutzerkarte
+sind unverändert erhalten.
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41323013688)
+hat genau diesen Commit erfolgreich bereitgestellt. Die unveränderliche
+Versionsdatei bestätigt Quellstand und Build. Der Browsercheck verwendete lokal
+identische Dateien, weil die Pages-Domain durch die Netzwerkpolicy dieser
+Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit verfeinerten Zaubereffekten
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=8cc85dd). Feuer besitzt weich bewegte orangefarbene
+Flammen und einen zusammenhängenden Schweif. Eis zeigt beleuchtete
+Kristallflächen, Glanzpunkte und eine feine Frostfahne. Einschläge klingen in
+mehreren Schichten aus. Alte Spiel-Tabs schließen, **Spielen** öffnen und mit
+**F** zaubern. Die gespeicherte Nutzerkarte bleibt unverändert.
+
+Quellstand: `71ec3f72db356167cc320452a886d3c251569389`; Build `325de0c67035`.
+Veröffentlichungscommit: `8cc85dd8e2f9856a10a944242f4d2d165213b7ad`, ausschließlich
+`preview/` auf `main`. Alle 347 Node-Tests und fünf Browserprüfungen bestanden;
+zwölf Spielaufnahmen im Vergleich mit der ersten Fassung geprüft.
+Keine Browser-, Shader-, WebGL- oder HTTP-Fehler.
+Details: [Verfeinerte Zaubereffekte](spell-effects-v2.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41315205697) hat genau diesen Commit erfolgreich bereitgestellt.
+Die veröffentlichte Versionsdatei bestätigt den geprüften Build. Browserprüfungen
+verwendeten lokal identische Dateien, da direkte Pages-HTTP-Aufrufe durch die
+Netzwerkpolicy dieser Umgebung gesperrt sind. Der Klassenserver wurde durch
+diese statische Vorschau nicht veröffentlicht.
+
+## Erste Ausgabe mit Feuer- und Eiseffekten
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7). Feuer und Eis besitzen eigene Lade- und
+Abschusseffekte, sichtbar unterschiedliche Projektile und Schweife sowie
+Trefferimpulse. Im Editor **Spielen** öffnen, einen Stab aufnehmen und **F** drücken.
+Alte Spiel-Tabs schließen und neu über den aktualisierten Editor öffnen.
+Die Nutzerkarte einschließlich ihrer drei Waffen bleibt unverändert.
+
+Quellstand auf `work`: `058f350b00814ea3dc38156ae0ffbbf1c7fdee94`; Build `e2b9356f0be1`.
+Veröffentlichungscommit: `90b28a782679a9ef0d201d0f4f9e8f6cf5779287`, ausschließlich
+`preview/` auf `main`. 344 Node-Tests und fünf Browserprüfungen bestanden;
+zehn Screenshots geprüft, keine Browser-, Shader- oder HTTP-Fehler.
+Details: [Zaubereffekte](spell-effects.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41313067996) hat genau diesen Commit erfolgreich bereitgestellt.
+Das veröffentlichte Release-Protokoll stimmt mit dem getesteten Paket überein.
+Die Browserprüfungen liefen mit identischen Dateien lokal, da direkte
+Pages-HTTP-Aufrufe durch die Netzwerkpolicy der Umgebung gesperrt sind.
+Der Klassenserver wurde durch diese statische Vorschau nicht veröffentlicht.
+
+## Vorherige Ausgabe mit korrigiertem Waffenwechsel
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0). Beim Wechsel mit **E** liegt die bisherige
+Waffe an der Fundstelle der neuen und lässt sich wieder aufnehmen. Ihre ID,
+ihr Modell und ihre Seltenheit bleiben erhalten. Die drei vom Nutzer gesetzten
+Waffen sind unverändert in der Ausgangskarte enthalten. Bereits geöffnete
+Spiel-Tabs schließen und über **Spielen** neu öffnen.
+
+Veröffentlichungscommit: `a786ff0cdb5ae8df8b1014d1b788e585df669740`, ausschließlich
+`preview/` auf `main`; Quellstand auf `work`: `d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec`.
+Build: `03d805c5e9d5`. 337 Node-Tests, sieben Browserprüfungen, Asset- und
+Kartenprüfung bestanden. Der echte Übergang von `/preview/map-editor.html`
+zu `/preview/nebeljagd.html` übernimmt auch den Versionsparameter des Editorlinks.
+Details und Prüfbericht: [Waffenwechsel](weapon-swap.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41311535345) hat genau diesen Commit erfolgreich bereitgestellt.
+Das veröffentlichte Release-Protokoll stimmt mit dem geprüften Paket überein.
+Der direkte Pages-HTTP-Aufruf ist durch die Netzwerkpolicy dieser Umgebung
+gesperrt; die Browserprüfungen verwendeten lokal dieselben Dateien.
+Diese statische Ausgabe enthält weiterhin den eigenständigen Editor und das
+Spiel; der Klassenserver wurde damit noch nicht veröffentlicht.
+
+## Vorherige Ausgabe mit drei Tripo-Waffen
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb).
 Unter **Objekte → Einzeln** sind **Schwert**, **Feuerstab (Lavastab)** und
 **Eisstab (Kristallstab)** mit echten Tripo-Modellvorschauen auswählbar.
 Die Modelle erscheinen auch als Beute und in der Hand der Spielfigur.
@@ -22,9 +105,92 @@ GitHub Pages hat diesen exakten Commit erfolgreich bereitgestellt:
 Der direkte Pages-HTTPS-Aufruf ist in dieser Umgebung durch die Netzwerkpolicy
 gesperrt; der Bereitstellungsstatus wurde über die GitHub-Actions-Webseite bestätigt.
 
+
+Diese öffentliche Spiel- und Editor-Ausgabe enthält noch keine Schüler- oder
+Lehrkraft-Anmeldung. Der neue Klassenstart und die Hosting-Vorbereitung unten
+wurden damit noch nicht veröffentlicht.
+
+## Neuer Klassenstart und Hosting-Vorbereitung
+
+Die neue Startseite führt Schüler mit Zugangscode auf die Übungswiese und
+Lehrkräfte zur Codeverwaltung und zum aktuellen Editor. Dafür läuft der
+Node-Schulserver mit `welt/` als Browserverzeichnis. Einrichtung und lokaler
+Doppelklick-Start stehen in [classroom.md](classroom.md). Eine feste HTTPS-Adresse
+ist mit der [Hosting-Vorbereitung](hosting.md) und `render.yaml` vorbereitet;
+ein Hosting-Dienst wurde noch nicht angelegt.
+
+GitHub Pages und das Öffnen einer lokalen HTML-Datei führen den Anmeldeserver
+nicht aus. Ohne Server erklärt die Startseite den Offline-Modus und bietet
+den eigenständigen Editor an; Spiel und Editor lassen sich weiterhin direkt
+öffnen. Das ZIP `nebeljagd-welt-und-editor.zip` ist ein Offline-Paket und richtet
+keinen Schulserver ein.
+
+## Aktuellen Browserstand bauen
+
+`npm run build` erzeugt den vollständigen Browserstand in `dist/` und
+synchronisiert ihn automatisch nach `welt/`:
+
+- `welt/index.html`: Startseite mit Schüler- und Lehrkraftzugang.
+- `welt/teacher.html`: Lehrkraftbereich mit Codeverwaltung und Editor-Link.
+- `welt/lobby.html`: Einstieg in die Übungswiese nach Anmeldung.
+- `welt/map-editor.html`: aktueller eigenständiger Editor.
+- `welt/nebeljagd.html`: eigenständiges Spiel, auch für Editor-Spieltests.
+- `welt/nebeljagd-welt-und-editor.zip`: Browserdateien, Kartendaten und Anleitung.
+
+`welt/index.html` ist in diesem neuen Stand die Startseite. Sie darf beim
+Veröffentlichen nicht durch eine Kopie des Spiels ersetzt werden. **In 3D testen**
+öffnet aus dem gebauten Editor `nebeljagd.html?mapSource=editor` und übergibt den
+Entwurf. In Vite wird stattdessen `game.html?mapSource=editor` verwendet.
+
+`welt/release.json` enthält die Build-Kennung sowie Größen und SHA-256-Werte
+aller erzeugten Dateien. Der Lehrkraftbereich verlinkt den Editor dieses
+Serverstands und zeigt dessen Erstellungszeit. Der Schulserver liefert die
+HTML-Dateien ohne Browsercache aus.
+
+## Aktualisieren und bereitstellen
+
+Die URLs bleiben bei Aktualisierungen desselben Serververzeichnisses gleich.
+Nach Quellcodeänderungen Tests und `npm run build` ausführen, dann die erzeugten
+Dateien prüfen. Ein lokaler Build aktualisiert `welt/` in der Arbeitskopie;
+er überträgt die Dateien nicht automatisch auf andere Rechner oder ins Internet.
+
+Der Workflow `work-build-check.yml` prüft und übernimmt den vollständigen Build
+in das Repository auf `work`. Dieser Schritt allein veröffentlicht keinen
+Schulserver. Historische Gras-Patch-Workflows erzeugen Prüfartefakte und
+überschreiben keine aktuellen `welt/`-Dateien mehr. Nach eingerichteter
+GitHub-Anbindung kann der Hosting-Dienst die Quellen auf `work` neu bauen;
+Einrichtung, Speicher und Aktualisierungsverhalten stehen in [hosting.md](hosting.md).
+
+Eine Veröffentlichung auf `main` oder einem öffentlichen Server ist ein eigener
+Bereitstellungsschritt. Den vollständigen aktuellen Stand übertragen und
+`index.html` als Startseite erhalten; den Editor-Spiel-Übergang und beim
+Schulserver beide Anmeldewege auf der tatsächlichen Adresse prüfen. Eine
+statische Pages-Veröffentlichung kann weiterhin Spiel und Editor anbieten,
+führt aber die Klassen-Anmeldung nicht aus.
+
+Browseränderungen im Editor müssen weiterhin als JSON gespeichert und für einen
+neuen Projektstand als `worldmap.json` übernommen werden. Sie ändern die
+veröffentlichte Ausgangskarte nicht automatisch.
+
+## Bestehende öffentliche Vorschau
+
+Die veröffentlichte Ausgabe liegt unter einem stabilen GitHub-Pages-Pfad auf
+`main`. Dessen `preview/`-Dateien sind von den neuen Klassenserver-Dateien in
+`welt/` auf dem Entwicklungsbranch getrennt:
+
+- [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
+- [Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/)
+- [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4)
+
+Der veröffentlichte Ordner `preview/` enthält den eigenständigen Build und
+Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
+`work`. Der [ZIP-Download aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+enthält jeweils den dort eingecheckten Browserstand; lokale Änderungen sind
+vor einer Übernahme auf diesen Branch darin noch nicht enthalten.
+
 ## Bereinigte Vier-Biome-Karte · vorherige Ausgabe vom 1. November 2026
 
-Die aktuelle Ausgabe liegt im öffentlichen Vorschauordner:
+Diese vorherige Ausgabe wurde im öffentlichen Vorschauordner bereitgestellt:
 [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250).
 Veröffentlicht wurde ausschließlich `preview/` auf `main` mit Commit
 `df3b250b686ac244a14e1a03b23cd7ef5714f1c2`. Die Dateien entsprechen exakt dem
@@ -47,64 +213,24 @@ Dateien lokal. Alte lokale Entwürfe werden nur nach ausdrücklich gewähltem
 **Wiederherstellen** geladen. Der Versionsparameter im Link umgeht einen
 zwischengespeicherten älteren Editor.
 
-## Separate Browser-Vorschau für die aktuelle Entwicklung
 
-Die aktuelle Entwicklung ist unter einem eigenen, stabilen GitHub-Pages-Pfad
-erreichbar; die bestehende Hauptseite und `welt/` bleiben erhalten:
+## Ältere Veröffentlichung unter welt/
 
-- Spiel: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html
-- Kurzlink: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/
-- Editor: https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html
+Die folgenden GitHub-Pages-Adressen verwenden weiterhin `main` und wurden durch
+die neue Klassenportal-Vorbereitung nicht aktualisiert:
 
-Der veröffentlichte Ordner `preview/` enthält nur den eigenständigen Build und
-Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
-`work`. Neue öffentliche Entwicklungsbuilds aktualisieren ausschließlich diese Vorschau-Dateien.
-
-## Aktuelle Entwicklung: Landschaftswerkzeuge auf `work`
-
-Die neue Landschaftserweiterung wird ausdrücklich **nur auf `work`** gesichert.
-`main` enthält dafür ausschließlich die zusätzlich veröffentlichte
-`preview/`-Ausgabe; die bestehende Spielseite, `welt/` und die Quelldateien
-bleiben unverändert. Der geprüfte Entwicklungsbuild steht im Verzeichnis
-`welt/` auf `work`; sein [ZIP-Download](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
-enthält Spiel, Editor und Kartendaten für die Offline-Nutzung.
-
-## Bestehende Veröffentlichung
-
-Die Dateianhänge dieses Chats ließen sich beim Nutzer nicht herunterladen.
-Der geprüfte Browser-Build liegt deshalb zusätzlich auf dem bereits bestehenden
-GitHub-Pages-Server des Projekts:
-
-- Spiel: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/
-- Editor: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html
-- Komplettpaket: https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip
+- [Älterer Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/)
+- [Älterer Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html)
+- [Älteres Offline-Paket](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip)
 
 Der erste veröffentlichte Stand wurde mit Commit `c79e642` auf `main` unter
-`welt/` ergänzt. Commit `63d2a73` aktualisiert diese Dateien um taktische Sicht,
-Truhen, Gold, Seltenheiten und Elementarwaffen. GitHub Pages verwendet weiterhin `main` und den Repository-Stamm;
-das ältere Spiel auf der Hauptebene bleibt erreichbar. Die Projektquellen
-dieser Cloud-Arbeitskopie und die erzeugten Dateien in `dist/` sind davon
-getrennt. `welt/` im veröffentlichten Repository ist ein erzeugter Build.
+`welt/` ergänzt. Commit `63d2a73` aktualisierte diese Dateien um taktische Sicht,
+Truhen, Gold, Seltenheiten und Elementarwaffen. GitHub Pages verwendet `main`
+und den Repository-Stamm. In diesen älteren Ausgaben war `index.html` eine
+Spielkopie; diese damalige Zuordnung gilt nicht für das neue Klassenportal.
 
-`welt/index.html` ist identisch mit der eigenständigen Spielversion. Dadurch
-führt „In 3D testen“ aus dem daneben liegenden Editor zur passenden neuen
-Spielversion und übernimmt deren Entwurf. Das ZIP enthält dieselben HTML-Dateien
-für die Offline-Nutzung. `welt/release.json` hält Größen und SHA-256-Werte fest.
-
-## Künftige Aktualisierungen
-
-Die URLs bleiben bei Aktualisierungen desselben Verzeichnisses gleich.
-Ein lokaler Build veröffentlicht noch nichts: nach `npm run build` müssen die
-neuen Dateien bewusst nur in `preview/` auf dem Pages-Quellbranch übernommen
-werden. Dazu eine separate Arbeitskopie vom aktuellen `origin/main` verwenden,
-damit die laufenden Quellcodeänderungen dieser Arbeitskopie erhalten bleiben.
-
-Zu übernehmen sind `dist/nebeljagd.html` als `preview/nebeljagd.html` und
-`preview/index.html`, `dist/map-editor.html`, JSON, SVG und JSON-Schema. Die
-Prüfsummen in `preview/release.json` aktualisieren. Nach dem Push auf die
-Bereitstellung warten und die HTTPS-Dateien sowie den Editor-zu-Spiel-Übergang
-prüfen. Der Nutzer muss Änderungen im Browser-Editor weiterhin als JSON
-speichern; sie verändern die veröffentlichte Ausgangskarte nicht automatisch.
+Die nachfolgenden Angaben dokumentieren frühere Veröffentlichungen und gelten
+nicht als Prüfung des neuen Klassenportals:
 
 Commit `4b5812a` aktualisiert denselben Pfad um den Graspinsel, 24 Modellvorschauen,
 helleren Sichtnebel, Bewegungsübergänge, automatische erste Waffenaufnahme,
@@ -126,7 +252,7 @@ Vor Veröffentlichung wurden die zwischenzeitlich auf `main` ergänzten Ordner
 `Blender/` und `Welt und Editor/` per Fast-forward übernommen. Die Aktualisierung
 ändert ausschließlich die erzeugten Dateien unter `welt/`.
 
-Der aktuelle Schattenbuild speichert Sichtentfernungen mit Half-Float-Präzision
+Ein späterer Schattenbuild speichert Sichtentfernungen mit Half-Float-Präzision
 und nutzt einen dichteren 17-Punkt-Gaußfilter. Das reduziert sichtbare
 Entfernungsstufen an langen Hindernisschatten. Der 50-Prozent-Schwarzwert bleibt
 erhalten. Der Build wurde mit 127 Node-Tests und einem lokalen WebGL-Browserlauf

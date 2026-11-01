@@ -1,0 +1,33 @@
+{
+  "status": "local-validation-passed",
+  "provider": "Render",
+  "deployed": false,
+  "costsBooked": false,
+  "sourceMergeIncludes": "519b336037b50be1fe745666bd0c219e3b289e87",
+  "buildId": "f5650b7d9558",
+  "tests": {
+    "passed": 334,
+    "failed": 0,
+    "command": "node --test --test-isolation=none tests/*.test.js"
+  },
+  "hostingChecks": [
+    "Initial hosting password is configured without a terminal and never replaces an existing credential",
+    "Missing required teacher configuration and incomplete browser builds stop startup",
+    "Concurrent initialization publishes one complete credential file",
+    "Simulated HTTPS proxy Origin/Host accepts login and issues Secure cookies; HTTP Origin is rejected",
+    "Existing classroom codes persist across restarts; browser sessions require login again"
+  ],
+  "templateChecks": "YAML parsed locally; stable service/disk fields cross-checked with official Render examples; not validated by a live Render account",
+  "buildMeasurement": {
+    "seconds": 34.12,
+    "maxChildRssMiB": 1393.3,
+    "environment": "managed cloud, Node 24.19.0",
+    "note": "Measured local maximum child-process RSS, not a Render performance guarantee"
+  },
+  "remaining": "Live provider validation, account/tariff confirmation, provisioning and testing the actual HTTPS address.",
+  "browserChecks": {
+    "passed": 9,
+    "errors": 0,
+    "buildId": "f5650b7d9558"
+  }
+}

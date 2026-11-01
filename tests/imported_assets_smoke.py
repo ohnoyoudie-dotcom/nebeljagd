@@ -45,7 +45,7 @@ def monitor(page):
     page.on('console', lambda message: errors.append(message.text) if message.type == 'error' else None)
 
 
-def start(page, path=''):
+def start(page, path='game.html'):
     monitor(page)
     page.goto(f'{URL}/{path}?inspect=1&quality=low', wait_until='domcontentloaded')
     page.wait_for_function('window.nebeljagdTestState && window.nebeljagdInspect && window.nebeljagdTestState().rendering.calls > 0')

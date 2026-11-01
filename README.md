@@ -1,5 +1,26 @@
 # Nebeljagd · Die Nebelinsel
 
+Der gemeinsame Einstieg liegt unter [`welt/index.html`](welt/index.html):
+Schüler betreten mit dem automatisch erzeugten Lehrkraft-Code eine grüne
+Übungswiese. Lehrkräfte öffnen nach der Anmeldung direkt den aktuellen Editor
+und verwalten die Zugänge. Einrichtung und Serverbetrieb:
+[Klassenstart](docs/classroom.md). `npm run build` aktualisiert alle Browserdateien
+in `welt/` automatisch, einschließlich des Editors.
+
+Eine feste Internetadresse für die Klasse ist mit der vorbereiteten
+[Render-Einrichtung](docs/hosting.md) möglich. Die Vorlage liegt in
+[`render.yaml`](render.yaml); ein Hosting-Dienst wurde noch nicht angelegt.
+
+Die neuen Waffenmodelle (Fantasieschwert, Kristallstab und Lavakristallstab)
+sind im Editor platzierbar und werden im Spiel mit angepasstem Griff gehalten.
+Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons-integration.md).
+Beim Wechsel mit **E** liegt die bisherige Waffe wieder an der Fundstelle
+der neuen und kann erneut aufgenommen werden: [Waffenwechsel](docs/weapon-swap.md).
+Feuer und Eis besitzen eigene Lade-, Abschuss-, Flug- und Treffereffekte:
+[Zaubereffekte mit fließenden Schweifen und verfeinerten Materialien](docs/spell-effects-v2.md).
+Beide Stäbe sitzen an einem mitbewegten Griffpunkt in der Handfläche:
+[Griffkorrektur](docs/weapon-grip.md).
+
 **Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
 getrennte Landflächen; zwei begehbare Brücken überspannen die freie Lücke.
@@ -14,9 +35,11 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
 Die aktuelle Browser-Vorschau ist unter
-[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb)
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=9332ab4)
 und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
-Auf `main` enthält dafür nur `preview/` den aktuellen Entwicklungsbuild.
+Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
+Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht
+veröffentlicht; sie benötigt den oben beschriebenen Schulserver.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
@@ -88,7 +111,9 @@ npm ci
 npm run dev
 ```
 
-Die Serveradresse öffnet das Spiel; `/map-editor.html` öffnet den Editor. Für
+Die Serveradresse öffnet die Startseite; `/game.html` öffnet das Spiel und
+`/map-editor.html` den Editor. Für den Klassenbetrieb einmalig
+`npm run school:setup` ausführen und `npm run school` starten. Für
 ein iPad im selben Netzwerk die Netzwerkadresse des Entwicklungsrechners
 verwenden. Der Entwicklungsserver bindet bereits an alle Netzwerkschnittstellen.
 
@@ -96,8 +121,9 @@ verwenden. Der Entwicklungsserver bindet bereits an alle Netzwerkschnittstellen.
 npm test              # Spielregeln, Kollisionen, Karten, Weltgeometrie und Loot
 npm run verify:assets # Importdateien, GLB-Budgets und erhaltene Versionen
 npm run map:check     # Kartendaten und Übereinstimmung der SVG prüfen
-npm run build         # Produktionsdateien in dist/
+npm run build         # Produktionsdateien in dist/ und aktueller Stand in welt/
 npm run preview       # Fertigen Build lokal prüfen
+npm run school        # Startseite mit echtem Klassen-Zugang auf Port 5200
 ```
 
 Die Landschaftsdaten sind eine optionale, separat versionierte Erweiterung
@@ -108,22 +134,25 @@ Frühere Browserentwürfe und JSON-Importe bleiben erhalten;
 **Alte Gebäude entfernen** bereinigt sie gezielt und lässt sich mit **Zurück**
 rückgängig machen.
 
-Ein Produktionsserver muss nur `dist/` ausliefern. Relative Pfade unterstützen
-Hosting unter einem Unterverzeichnis. Der Build erzeugt außerdem zwei
-Einzeldateien mit eingebettetem JavaScript, CSS und allen benötigten Modellen:
+Für Einzelspieler und Editor genügt eine statische Auslieferung der erzeugten
+Dateien. Der Klassen-Zugang benötigt den Node-Server; `npm run school` liefert
+die Dateien aus `welt/` aus und verwaltet Lehrkraft-Anmeldung und Zugangscodes.
+Der Build erzeugt Einzeldateien mit eingebettetem JavaScript, CSS und allen
+benötigten Modellen:
 
+- **`dist/index.html`**: Startseite für Schüler und Lehrkräfte.
 - **`dist/nebeljagd.html`**: Spiel direkt im Browser öffnen.
 - **`dist/map-editor.html`**: Editor direkt im Browser öffnen.
 
-**`dist/nebeljagd-welt-und-editor.zip`** bündelt beide HTML-Dateien, Kartendaten,
-SVG, Schema und eine kurze Anleitung. Das ZIP entpacken und die Dateien im
+**`dist/nebeljagd-welt-und-editor.zip`** bündelt Startseite, Spiel, Editor,
+Avatar-Vorschau, Kartendaten, SVG, Schema und eine kurze Anleitung. Das ZIP entpacken und die Dateien im
 gemeinsamen Ordner lassen.
 
 Für „Spielen“ bei lokal geöffneten Dateien beide HTML-Dateien in denselben
 Ordner legen. Alternativ im Editor JSON speichern und im Spiel über **„Eigene
 Karte laden“** öffnen. Normales Spielen und Bearbeiten benötigen keine externen
 Grafikdienste, Zugangsdaten oder heruntergeladenen Schriftarten. Die Quelldateien
-`index.html` und `map-editor.html` benötigen hingegen Vite oder den Build.
+`index.html`, `game.html` und `map-editor.html` benötigen hingegen Vite oder den Build.
 
 Browseränderungen werden lokal gespeichert und überschreiben keine Projektdatei.
 Für einen dauerhaften Projektstand die exportierte Datei als `worldmap.json`

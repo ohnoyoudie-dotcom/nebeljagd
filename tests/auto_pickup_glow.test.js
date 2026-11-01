@@ -31,6 +31,83 @@ test('unarmed pickup only happens at walking reach; equipped weapons require a d
   assert.equal(weapons.tryAutoPickup(actor.position), null);
 });
 
+test('manual swaps return the previous weapon at the new pickup without loss or duplication', () => {
+  const placements = [
+    { id: 'bow', kind: 'bow', rarity: 'legendary', position: [-5, 1], rotation: .7, scale: 1.4 },
+    { id: 'sword', kind: 'sword', rarity: 'rare', position: [8, 2] },
+  ];
+  const original = JSON.stringify(placements);
+  const heightAt = (x, z) => 2 + x * .02 + z * .01;
+  const { actor, weapons } = setup(placements, { world: { heightAt } });
+  const [bow, sword] = weapons.items;
+  actor.position.set(-5, heightAt(-5, 1), 1);
+  weapons.tryAutoPickup(actor.position);
+  actor.position.set(7.4, heightAt(7.4, 2), 2);
+  assert.equal(weapons.interact(actor.position).id, 'sword');
+  assert.equal(bow.collected, false, 'the previous weapon must return to the ground');
+  assert.equal(bow.group.visible, true);
+  assert.deepEqual(bow.group.position.toArray(), [8, heightAt(8, 2), 2]);
+  assert.equal(bow.group.rotation.y, .7); assert.equal(bow.group.scale.x, 1.4);
+  assert.equal(bow.rarity, 'legendary');
+  weapons.update(.016, 0, actor.position);
+  assert.equal(bow.group.visible, true, 'the next animation frame must keep the drop visible');
+  assert.equal(bow.ring.visible, true); assert.equal(bow.halo.visible, true);
+  assert.equal(weapons.tryAutoPickup(actor.position), null, 'a deliberate swap must not bounce back automatically');
+  for (let i = 0; i < 20; i++) {
+    assert.equal(weapons.interact(actor.position).id, i % 2 ? 'sword' : 'bow');
+    assert.deepEqual(weapons.items, [bow, sword], 'reuse the actual pickups instead of adding copies');
+    assert.equal(weapons.items.filter(item => item.collected).length, 1);
+    assert.equal(weapons.items.filter(item => item.group.visible).length, 1);
+  }
+  assert.equal(JSON.stringify(placements), original, 'runtime swaps do not rewrite the editor map');
+  weapons.dispose();
+});
+
+test('reset restores authored positions after swaps and removes carried or dropped chest loot', () => {
+  const { actor, weapons } = setup([
+    { id: 'bow', kind: 'bow', position: [-4, 0] },
+    { id: 'sword', kind: 'sword', position: [4, 0] },
+  ]);
+  actor.position.x = -4; weapons.tryAutoPickup(actor.position);
+  actor.position.x = 4; weapons.interact(actor.position);
+  assert.equal(weapons.items[0].x, 4, 'the first weapon moved to the swap site');
+  const chestLoot = weapons.addDrop({ id: 'chest-weapon', type: 'iceStaff', rarity: 'rare', position: [12, 0] }, { pop: false });
+  actor.position.x = 12;
+  assert.equal(weapons.interact(actor.position).id, 'chest-weapon');
+  assert.equal(weapons.items[1].x, 12);
+  // Swap the dynamically created weapon out again before restarting.
+  weapons.interact(actor.position);
+  assert.equal(chestLoot.collected, false); assert.equal(chestLoot.group.visible, true);
+  weapons.reset(); weapons.reset();
+  assert.equal(weapons.equippedItem, null);
+  assert.equal(chestLoot.group.parent, null);
+  assert.deepEqual(weapons.items.map(item => [item.id, item.x, item.z, item.collected]), [
+    ['bow', -4, 0, false], ['sword', 4, 0, false],
+  ]);
+  assert.deepEqual(weapons.items.map(item => item.group.position.toArray()), [[-4, 0, 0], [4, 0, 0]]);
+  actor.position.x = -4;
+  assert.equal(weapons.tryAutoPickup(actor.position).id, 'bow');
+  assert.equal(weapons.items.length, 2);
+  weapons.dispose();
+});
+
+test('an unreachable second weapon cannot discard the currently held one', () => {
+  let blocked = false;
+  const { actor, weapons } = setup([
+    { id: 'bow', kind: 'bow', position: [0, 0] },
+    { id: 'sword', kind: 'sword', position: [4, 0] },
+  ], { world: { traceProjectile: () => blocked ? { type: 'wall' } : null } });
+  weapons.tryAutoPickup(actor.position);
+  actor.position.x = 3;
+  blocked = true;
+  assert.equal(weapons.interact(actor.position), null);
+  assert.equal(weapons.equippedItem.id, 'bow');
+  assert.equal(weapons.items[0].collected, true);
+  assert.equal(weapons.items[0].group.visible, false);
+  assert.equal(weapons.items[1].collected, false);
+  weapons.dispose();
+});
+
 test('ready/pause, rolls, fog, walls and raised floors never pull loot into the hand', () => {
   let visible = true, blocked = false;
   const { actor, weapons } = setup(undefined, { isVisible: () => visible,

@@ -1,0 +1,1053 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "The real editor creates both Tripo staves and preserves every user placement",
+      "evidence": [
+        {
+          "id": "object-fireStaff-mvxvpkpo-1",
+          "name": "Feuerstab",
+          "kind": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "position": [
+            36,
+            -54
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "rare"
+        },
+        {
+          "id": "object-iceStaff-mvxvpmb8-2",
+          "name": "Eisstab",
+          "kind": "iceStaff",
+          "variant": "kit-tripo-crystal-staff",
+          "position": [
+            44,
+            -54
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "rare"
+        }
+      ]
+    },
+    {
+      "name": "Spielen transfers the real draft and matching version to the generated game",
+      "evidence": "http://127.0.0.1:42857/preview/nebeljagd.html?mapSource=editor&v=spell-check"
+    },
+    {
+      "name": "Fire charge, muzzle flash, moving projectile/trail and wall impact render and expire",
+      "evidence": {
+        "charge": {
+          "mode": "charge",
+          "combat": {
+            "attackPhase": "channel",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 0,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "fireStaff",
+              "label": "Feuerstab",
+              "damage": 26,
+              "cooldown": 0.8,
+              "range": 23,
+              "effect": "burn",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Feuerstab · Selten",
+              "burn": {
+                "duration": 3,
+                "damagePerSecond": 6.4
+              },
+              "slow": null,
+              "id": "object-fireStaff-mvxvpkpo-1",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 0,
+              "visibleParticles": 0,
+              "activeBursts": 0,
+              "channelActive": true,
+              "channelVisible": true,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [],
+            "heldModel": {
+              "type": "fireStaff",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 36,
+            "y": 2.9928885486225627,
+            "z": -54
+          }
+        },
+        "launch": {
+          "mode": "launch",
+          "combat": {
+            "attackPhase": "release",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 1,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "fireStaff",
+              "label": "Feuerstab",
+              "damage": 26,
+              "cooldown": 0.8,
+              "range": 23,
+              "effect": "burn",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Feuerstab · Selten",
+              "burn": {
+                "duration": 3,
+                "damagePerSecond": 6.4
+              },
+              "slow": null,
+              "id": "object-fireStaff-mvxvpkpo-1",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 1,
+            "effects": {
+              "activeProjectiles": 1,
+              "visibleProjectiles": 1,
+              "activeParticles": 16,
+              "visibleParticles": 16,
+              "activeBursts": 1,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [
+                {
+                  "kind": "muzzle",
+                  "type": "fireStaff",
+                  "visible": true,
+                  "position": {
+                    "x": 36.207167656963286,
+                    "y": 5.835292138186631,
+                    "z": -55.6385378513723
+                  }
+                }
+              ],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [
+              {
+                "type": "fireStaff",
+                "mode": "flying",
+                "visible": true,
+                "position": {
+                  "x": 36.207167656963286,
+                  "y": 4.392888548622563,
+                  "z": -57.438537851372296
+                }
+              }
+            ],
+            "heldModel": {
+              "type": "fireStaff",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 36,
+            "y": 2.9928885486225627,
+            "z": -54
+          }
+        },
+        "flight": {
+          "mode": "flight",
+          "combat": {
+            "attackPhase": "recover",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 1,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "fireStaff",
+              "label": "Feuerstab",
+              "damage": 26,
+              "cooldown": 0.8,
+              "range": 23,
+              "effect": "burn",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Feuerstab · Selten",
+              "burn": {
+                "duration": 3,
+                "damagePerSecond": 6.4
+              },
+              "slow": null,
+              "id": "object-fireStaff-mvxvpkpo-1",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 1,
+            "effects": {
+              "activeProjectiles": 1,
+              "visibleProjectiles": 1,
+              "activeParticles": 25,
+              "visibleParticles": 25,
+              "activeBursts": 1,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [
+                {
+                  "kind": "muzzle",
+                  "type": "fireStaff",
+                  "visible": true,
+                  "position": {
+                    "x": 36.207167656963286,
+                    "y": 5.835292138186631,
+                    "z": -55.6385378513723
+                  }
+                }
+              ],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [
+              {
+                "type": "fireStaff",
+                "mode": "flying",
+                "visible": true,
+                "position": {
+                  "x": 36.207167656963286,
+                  "y": 4.392888548622563,
+                  "z": -59.23853785137229
+                }
+              }
+            ],
+            "heldModel": {
+              "type": "fireStaff",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 36,
+            "y": 2.9928885486225627,
+            "z": -54
+          }
+        },
+        "impact": {
+          "mode": "impact",
+          "combat": {
+            "attackPhase": "recover",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 1,
+            "impacts": 1,
+            "lastImpact": {
+              "type": "wall",
+              "point": {
+                "x": 36.207167656963286,
+                "z": -61.48476818578066,
+                "y": 4.392888548622563
+              }
+            },
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "fireStaff",
+              "label": "Feuerstab",
+              "damage": 26,
+              "cooldown": 0.8,
+              "range": 23,
+              "effect": "burn",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Feuerstab · Selten",
+              "burn": {
+                "duration": 3,
+                "damagePerSecond": 6.4
+              },
+              "slow": null,
+              "id": "object-fireStaff-mvxvpkpo-1",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 45,
+              "visibleParticles": 45,
+              "activeBursts": 1,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 1
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": {
+                "type": "fireStaff",
+                "point": {
+                  "x": 36.207167656963286,
+                  "y": 4.392888548622563,
+                  "z": -61.48476818578066
+                }
+              },
+              "bursts": [
+                {
+                  "kind": "impact",
+                  "type": "fireStaff",
+                  "visible": true,
+                  "position": {
+                    "x": 36.207167656963286,
+                    "y": 4.392888548622563,
+                    "z": -61.48476818578066
+                  }
+                }
+              ],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [],
+            "heldModel": {
+              "type": "fireStaff",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 36,
+            "y": 2.9928885486225627,
+            "z": -54
+          }
+        }
+      }
+    },
+    {
+      "name": "Ice charge, muzzle flash, moving projectile/trail and wall impact render and expire",
+      "evidence": {
+        "charge": {
+          "mode": "charge",
+          "combat": {
+            "attackPhase": "channel",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 1,
+            "impacts": 1,
+            "lastImpact": {
+              "type": "wall",
+              "point": {
+                "x": 36.207167656963286,
+                "z": -61.48476818578066,
+                "y": 4.392888548622563
+              }
+            },
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "iceStaff",
+              "label": "Eisstab",
+              "damage": 30,
+              "cooldown": 0.85,
+              "range": 23,
+              "effect": "slow",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Eisstab · Selten",
+              "burn": null,
+              "slow": {
+                "duration": 2.5,
+                "multiplier": 0.5
+              },
+              "id": "object-iceStaff-mvxvpmb8-2",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 0,
+              "visibleParticles": 0,
+              "activeBursts": 0,
+              "channelActive": true,
+              "channelVisible": true,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 1
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": {
+                "type": "fireStaff",
+                "point": {
+                  "x": 36.207167656963286,
+                  "y": 4.392888548622563,
+                  "z": -61.48476818578066
+                }
+              },
+              "bursts": [],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [],
+            "heldModel": {
+              "type": "iceStaff",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 44,
+            "y": 3.0554764158639114,
+            "z": -54
+          }
+        },
+        "launch": {
+          "mode": "launch",
+          "combat": {
+            "attackPhase": "release",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 2,
+            "impacts": 1,
+            "lastImpact": {
+              "type": "wall",
+              "point": {
+                "x": 36.207167656963286,
+                "z": -61.48476818578066,
+                "y": 4.392888548622563
+              }
+            },
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "iceStaff",
+              "label": "Eisstab",
+              "damage": 30,
+              "cooldown": 0.85,
+              "range": 23,
+              "effect": "slow",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Eisstab · Selten",
+              "burn": null,
+              "slow": {
+                "duration": 2.5,
+                "multiplier": 0.5
+              },
+              "id": "object-iceStaff-mvxvpmb8-2",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 1,
+            "effects": {
+              "activeProjectiles": 1,
+              "visibleProjectiles": 1,
+              "activeParticles": 16,
+              "visibleParticles": 16,
+              "activeBursts": 1,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 1
+                },
+                "iceStaff": {
+                  "launches": 1,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": {
+                "type": "fireStaff",
+                "point": {
+                  "x": 36.207167656963286,
+                  "y": 4.392888548622563,
+                  "z": -61.48476818578066
+                }
+              },
+              "bursts": [
+                {
+                  "kind": "muzzle",
+                  "type": "iceStaff",
+                  "visible": true,
+                  "position": {
+                    "x": 44.20773162946514,
+                    "y": 5.8907787760781,
+                    "z": -55.63239684502958
+                  }
+                }
+              ],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [
+              {
+                "type": "iceStaff",
+                "mode": "flying",
+                "visible": true,
+                "position": {
+                  "x": 44.20773162946514,
+                  "y": 4.455476415863911,
+                  "z": -57.43239684502958
+                }
+              }
+            ],
+            "heldModel": {
+              "type": "iceStaff",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 44,
+            "y": 3.0554764158639114,
+            "z": -54
+          }
+        },
+        "flight": {
+          "mode": "flight",
+          "combat": {
+            "attackPhase": "recover",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 2,
+            "impacts": 1,
+            "lastImpact": {
+              "type": "wall",
+              "point": {
+                "x": 36.207167656963286,
+                "z": -61.48476818578066,
+                "y": 4.392888548622563
+              }
+            },
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "iceStaff",
+              "label": "Eisstab",
+              "damage": 30,
+              "cooldown": 0.85,
+              "range": 23,
+              "effect": "slow",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Eisstab · Selten",
+              "burn": null,
+              "slow": {
+                "duration": 2.5,
+                "multiplier": 0.5
+              },
+              "id": "object-iceStaff-mvxvpmb8-2",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 1,
+            "effects": {
+              "activeProjectiles": 1,
+              "visibleProjectiles": 1,
+              "activeParticles": 25,
+              "visibleParticles": 25,
+              "activeBursts": 1,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 1
+                },
+                "iceStaff": {
+                  "launches": 1,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": {
+                "type": "fireStaff",
+                "point": {
+                  "x": 36.207167656963286,
+                  "y": 4.392888548622563,
+                  "z": -61.48476818578066
+                }
+              },
+              "bursts": [
+                {
+                  "kind": "muzzle",
+                  "type": "iceStaff",
+                  "visible": true,
+                  "position": {
+                    "x": 44.20773162946514,
+                    "y": 5.8907787760781,
+                    "z": -55.63239684502958
+                  }
+                }
+              ],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [
+              {
+                "type": "iceStaff",
+                "mode": "flying",
+                "visible": true,
+                "position": {
+                  "x": 44.20773162946514,
+                  "y": 4.455476415863911,
+                  "z": -59.23239684502958
+                }
+              }
+            ],
+            "heldModel": {
+              "type": "iceStaff",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 44,
+            "y": 3.0554764158639114,
+            "z": -54
+          }
+        },
+        "impact": {
+          "mode": "impact",
+          "combat": {
+            "attackPhase": "recover",
+            "bowDraw": 0,
+            "swordSweep": 0,
+            "shotsFired": 2,
+            "impacts": 2,
+            "lastImpact": {
+              "type": "wall",
+              "point": {
+                "x": 44.20773162946514,
+                "z": -61.48476818578066,
+                "y": 4.455476415863911
+              }
+            },
+            "damageHits": 0,
+            "lastDamage": null,
+            "equippedItem": {
+              "type": "iceStaff",
+              "label": "Eisstab",
+              "damage": 30,
+              "cooldown": 0.85,
+              "range": 23,
+              "effect": "slow",
+              "rarity": "rare",
+              "rarityLabel": "Selten",
+              "color": "#5aa5ff",
+              "name": "Eisstab · Selten",
+              "burn": null,
+              "slow": {
+                "duration": 2.5,
+                "multiplier": 0.5
+              },
+              "id": "object-iceStaff-mvxvpmb8-2",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 45,
+              "visibleParticles": 45,
+              "activeBursts": 1,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 1,
+                  "impacts": 1
+                },
+                "iceStaff": {
+                  "launches": 1,
+                  "impacts": 1
+                }
+              },
+              "latestImpact": {
+                "type": "iceStaff",
+                "point": {
+                  "x": 44.20773162946514,
+                  "y": 4.455476415863911,
+                  "z": -61.48476818578066
+                }
+              },
+              "bursts": [
+                {
+                  "kind": "impact",
+                  "type": "iceStaff",
+                  "visible": true,
+                  "position": {
+                    "x": 44.20773162946514,
+                    "y": 4.455476415863911,
+                    "z": -61.48476818578066
+                  }
+                }
+              ],
+              "capacity": {
+                "particles": 160,
+                "bursts": 12
+              }
+            },
+            "spells": [],
+            "heldModel": {
+              "type": "iceStaff",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.22,
+                "y": 1.2,
+                "z": 0.42
+              },
+              "swordTip": {
+                "x": -0.22,
+                "y": 2.4429999999999996,
+                "z": 0.42
+              }
+            }
+          },
+          "position": {
+            "x": 44,
+            "y": 3.0554764158639114,
+            "z": -54
+          }
+        }
+      }
+    },
+    {
+      "name": "Restart clears live effects and preserves the authored editor draft",
+      "evidence": {
+        "activeProjectiles": 0,
+        "visibleProjectiles": 0,
+        "activeParticles": 0,
+        "visibleParticles": 0,
+        "activeBursts": 0,
+        "channelActive": false,
+        "channelVisible": false,
+        "emitted": {
+          "fireStaff": {
+            "launches": 0,
+            "impacts": 0
+          },
+          "iceStaff": {
+            "launches": 0,
+            "impacts": 0
+          }
+        },
+        "latestImpact": null,
+        "bursts": [],
+        "capacity": {
+          "particles": 160,
+          "bursts": 12
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "/workspace/nebeljagd/test-results/spell-effects/editor-spell-fixture.png",
+    "/workspace/nebeljagd/test-results/spell-effects/fire-charge.png",
+    "/workspace/nebeljagd/test-results/spell-effects/fire-launch.png",
+    "/workspace/nebeljagd/test-results/spell-effects/fire-flight.png",
+    "/workspace/nebeljagd/test-results/spell-effects/fire-impact.png",
+    "/workspace/nebeljagd/test-results/spell-effects/ice-charge.png",
+    "/workspace/nebeljagd/test-results/spell-effects/ice-launch.png",
+    "/workspace/nebeljagd/test-results/spell-effects/ice-flight.png",
+    "/workspace/nebeljagd/test-results/spell-effects/ice-impact.png",
+    "/workspace/nebeljagd/test-results/spell-effects/active-effects-before-reset.png"
+  ],
+  "documents": [
+    {
+      "name": "map-editor.html",
+      "bytes": 60508389,
+      "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df",
+      "matchesDeliveredFileAndRelease": true
+    },
+    {
+      "name": "nebeljagd.html",
+      "bytes": 81294917,
+      "sha256": "dd1f79c9052ffa815509cfe19d6fe272751bf37397a4200ffa987f9ece920617",
+      "matchesDeliveredFileAndRelease": true
+    }
+  ],
+  "limits": "Chromium software WebGL with the actual standalone editor/game files. QA adds inspect and low-quality query switches and positions the actor; F launches spells and the normal Pause button freezes screenshots. No public-host or physical-device performance claim.",
+  "url": "http://127.0.0.1:42857/preview",
+  "buildId": "e2b9356f0be1",
+  "stage": "Restart while spell effects are active",
+  "editorPlayNavigation": "http://127.0.0.1:42857/preview/nebeljagd.html?mapSource=editor&v=spell-check",
+  "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b",
+  "unitTests": {
+    "passed": 344,
+    "failed": 0
+  },
+  "publication": {
+    "status": "deployed",
+    "commit": "90b28a782679a9ef0d201d0f4f9e8f6cf5779287",
+    "sourceCommit": "058f350b00814ea3dc38156ae0ffbbf1c7fdee94",
+    "buildId": "e2b9356f0be1",
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7",
+    "actionsRun": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41313067996",
+    "actionsStatus": "completed",
+    "actionsConclusion": "success",
+    "exactCommitVerified": true,
+    "remoteReleaseMatches": true,
+    "scope": "Only existing static preview editor and game; no classroom portal",
+    "verificationLimit": "Direct Pages HTTP is blocked by environment network policy. Exact commit, remote release manifest and successful deployment verified through GitHub; browser checks used identical files locally."
+  }
+}

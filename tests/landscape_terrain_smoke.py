@@ -17,7 +17,7 @@ with sync_playwright() as p:
  page=b.new_page(viewport={'width':1200,'height':800});page.set_default_timeout(120000)
  page.on('pageerror',lambda e:report['errors'].append(str(e)))
  page.on('console',lambda msg:report['errors'].append(msg.text) if msg.type=='error' else None)
- page.goto(url+'/?quality=low&inspect=1',wait_until='domcontentloaded')
+ page.goto(url+'/game.html?quality=low&inspect=1',wait_until='domcontentloaded')
  page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
  old=page.evaluate('nebeljagdTestState().world.stats')
  assert old['terrainPaint']['stamps']==0

@@ -4,7 +4,7 @@ on:
     branches: ['feature/rei-grass-ground']
     paths: ['tools/upgrade_meadow_v2.py', 'tools/test_meadow_v2.py', 'tools/grass-ground/**', '.github/workflows/meadow-v2-check.yml']
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: meadow-v2-${{ github.ref }}
   cancel-in-progress: true
@@ -59,17 +59,8 @@ jobs:
           node --check grass-build/nebeljagd.html.mjs
       - name: Test editor, grass, collisions, opening chests and vision
         run: python tools/test_meadow_v2.py
-      - name: Publish verified files on development branch only
-        run: |
-          test "$GITHUB_REF" = refs/heads/feature/rei-grass-ground
-          cp grass-build/map-editor.html welt/map-editor.html
-          cp grass-build/nebeljagd.html welt/nebeljagd.html
-          cp grass-build/nebeljagd.html welt/index.html
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tools/grass-ground tools/test_meadow_v2.py welt/map-editor.html welt/nebeljagd.html welt/index.html
-          git diff --cached --quiet || git commit -m 'fix: dense animated meadow, solid crates and actors, soft charcoal vision'
-          git push origin HEAD:feature/rei-grass-ground
+      # Historical patch experiments remain downloadable artifacts only.
+      # The current portal/editor are built together by work-build-check.yml.
       - uses: actions/upload-artifact@v4
         if: always()
         with:
