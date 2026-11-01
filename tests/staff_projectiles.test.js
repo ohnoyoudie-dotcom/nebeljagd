@@ -61,7 +61,8 @@ test('both imported staffs release exactly from their transformed model tip at t
     close(state.lastSpellLaunch.position, expected, 'the launch event is at that same physical point');
     close(state.spells[0].position, expected, 'a frame ending exactly at release cannot advance the new projectile');
     assert.equal(state.lastSpellLaunch.flightHeight, state.lastSpellLaunch.position.y);
-    assert.ok(expected.y > actor.position.y + 1.9, 'the shot remains above chest height in this pose');
+    assert.ok(Math.abs(expected.y - actor.position.y - 1.4) < 1e-6,
+      'the physical crystal aims at body-relative firing height despite actor and scene transforms');
     step(0);
     close(weapons.telemetry.spells[0].position, expected, 'the pending release interval is not replayed during pause');
     instance.dispose();
@@ -95,6 +96,19 @@ test('both staffs fly straight at crystal height for their full lifetime in ever
     'crossing release by 30 ms advances 30 ms, not the whole 80 ms frame');
   assert.equal(position.y, origin.y);
   crossed.dispose();
+
+  for (const type of Object.keys(variants)) {
+    const coarse = fixture({ type, y: 2.3 });
+    coarse.weapons.attack(coarse.actor.position, 0); coarse.step(.24); coarse.step(.25);
+    const state = coarse.weapons.telemetry, launch = state.lastSpellLaunch;
+    assert.equal(state.shotsFired, 1);
+    assert.ok(Math.abs(launch.position.y - 3.7) < 1e-6,
+      'a frame skipping the peak casting pose still releases the physically aimed crystal');
+    assert.ok(Math.abs(Math.hypot(state.spells[0].position.x - launch.position.x,
+      state.spells[0].position.z - launch.position.z) - 18 * .24) < 1e-6);
+    assert.equal(state.spells[0].position.y, launch.position.y);
+    coarse.dispose();
+  }
 });
 
 test('large-frame sweeps respect the real heights of obstacles and targets', () => {
@@ -123,12 +137,12 @@ test('large-frame sweeps respect the real heights of obstacles and targets', () 
     const targets = fixture({ type });
     targets.weapons.attack(targets.actor.position, 0); targets.step(.25);
     const start = targets.weapons.telemetry.lastSpellLaunch.position;
-    const low = targets.combat.addTarget({ id: 'ordinary-height-target',
-      position: { x: start.x, y: 0, z: start.z + 1.5 }, height: 2.3, maxHealth: 500 });
-    const tall = targets.combat.addTarget({ id: 'tall-practice-post',
-      position: { x: start.x, y: 0, z: start.z + 3.5 }, height: 3.4, maxHealth: 500 });
+    const low = targets.combat.addTarget({ id: 'below-firing-plane-target',
+      position: { x: start.x, y: 0, z: start.z + 1.5 }, height: .7, maxHealth: 500 });
+    const tall = targets.combat.addTarget({ id: 'ordinary-height-opponent',
+      position: { x: start.x, y: 0, z: start.z + 3.5 }, height: 2.25, maxHealth: 500 });
     assert.ok(start.y > low.height + .13 && start.y < tall.height,
-      'the fixture genuinely puts the ordinary-height target below the shot');
+      'only the low target lies below the actual firing plane');
     targets.step(.25);
     const hit = targets.weapons.telemetry;
     assert.equal(low.health, 500, 'a target below the actual flight ray is not silently made taller');
@@ -155,7 +169,9 @@ test('switching staffs and resetting cannot carry an old launch height or releas
   assert.equal(weapons.telemetry.spellsActive, 0);
   assert.equal(weapons.telemetry.effects.activeTrails, 0);
   actor.position.set(0, 0, 0); actor.scale.setScalar(.8);
-  weapons.interact(actor.position); weapons.attack(actor.position, 0); step(.25);
+  weapons.interact(actor.position);
+  actor.position.y = 2.5;
+  weapons.attack(actor.position, 0); step(.25);
   const state = weapons.telemetry;
   assert.equal(state.shotsFired, 1);
   assert.equal(state.spellsActive, 1);
@@ -163,7 +179,9 @@ test('switching staffs and resetting cannot carry an old launch height or releas
   assert.equal(state.lastSpellLaunch.type, 'fireStaff');
   assert.equal(state.lastSpellLaunch.flightHeight, state.lastSpellLaunch.position.y);
   assert.ok(Math.abs(state.lastSpellLaunch.flightHeight - oldHeight) > .5,
-    'the newly scaled actor has a meaningfully different crystal height');
+    'the elevated actor has a new firing height after reset');
+  assert.ok(Math.abs(state.lastSpellLaunch.flightHeight - 3.9) < 1e-6,
+    'firing height follows the new ground level even when the actor is rescaled');
   step(.16);
   assert.equal(weapons.telemetry.spells[0].position.y, state.lastSpellLaunch.flightHeight);
   instance.dispose();

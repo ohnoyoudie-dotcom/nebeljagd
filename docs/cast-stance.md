@@ -12,9 +12,11 @@ Projektile entstehen an der tatsächlichen Kristallspitze und fliegen ab dort
 während ihrer gesamten Lebenszeit geradeaus auf unveränderter Starthöhe.
 Die vorherige Angleichung an eine niedrigere Flugfläche ist entfernt.
 Die horizontale Geschwindigkeit, der genaue Freigabezeitpunkt, die Effekte und
-die kontinuierliche Kollisionsprüfung bleiben erhalten. Treffer verwenden die
-tatsächliche Flughöhe: niedrige Ziele können unter dem Schuss liegen; ihre
-Trefferflächen werden dafür nicht künstlich vergrößert.
+die kontinuierliche Kollisionsprüfung bleiben erhalten. Zum Abschuss richtet sich der Stab in der Hand so aus, dass seine tatsächliche
+Kristallspitze auf Trefferhöhe (1,4 m über dem Spielerboden) liegt. Dadurch
+trifft der gerade Schuss normale Gegner, Zäune und Mauern. Eine Prüfung vom
+Spieler bis zur Stabspitze verhindert, dass nahe Deckung übersprungen wird.
+Die Trefferflächen behalten ihre tatsächliche Größe und Höhe.
 
 Build: `89423bdc7ca0`; verwendbare Ausgabe in `welt/`.
 `src/character-combat-pose.js` enthält die reversible Haltung über der bestehenden

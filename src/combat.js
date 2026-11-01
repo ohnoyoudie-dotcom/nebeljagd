@@ -84,24 +84,42 @@ export function createCombat({ onHit, onDefeat } = {}) {
 
   function traceSegment(start, end, radius = 0, excludeId) {
     const dx = end.x - start.x, dz = end.z - start.z, distanceSquared = dx * dx + dz * dz;
+    const startY = start.y ?? 0, dy = (end.y ?? 0) - startY;
+    const projectileRadius = Math.max(0, finite(radius, 0));
+    const epsilon = 1e-9;
     let nearest = null;
     for (const target of targets.values()) {
       if (!target.alive || target.id === excludeId || target.targetable === false) continue;
       const tx = start.x - target.position.x, tz = start.z - target.position.z;
-      const reach = target.radius + radius;
+      const reach = target.radius + projectileRadius;
       const c = tx * tx + tz * tz - reach * reach;
-      let t = 0;
-      if (c > 0) {
-        if (distanceSquared < 1e-12) continue;
+      let radialEntry = -Infinity, radialExit = Infinity;
+      if (distanceSquared < 1e-12) {
+        if (c > epsilon) continue;
+      } else {
         const b = tx * dx + tz * dz;
         const discriminant = b * b - distanceSquared * c;
-        if (discriminant < 0) continue;
-        t = (-b - Math.sqrt(discriminant)) / distanceSquared;
-        if (t < 0 || t > 1) continue;
+        if (discriminant < -epsilon) continue;
+        const root = Math.sqrt(Math.max(0, discriminant));
+        radialEntry = (-b - root) / distanceSquared;
+        radialExit = (-b + root) / distanceSquared;
       }
-      const y = (start.y ?? 0) + ((end.y ?? 0) - (start.y ?? 0)) * t;
-      // Targets are upright capsules in plan view. Prevent hits through hills/floors.
-      if (y < (target.position.y ?? 0) - radius || y > (target.position.y ?? 0) + (target.height ?? 2.3) + radius) continue;
+      // Intersect the full horizontal and vertical intervals. A descending
+      // spell may enter above the head and reach the body later in this same
+      // segment; testing height only at horizontal entry would miss that hit.
+      const minY = (target.position.y ?? 0) - projectileRadius;
+      const maxY = (target.position.y ?? 0) + (target.height ?? 2.3) + projectileRadius;
+      let verticalEntry = -Infinity, verticalExit = Infinity;
+      if (Math.abs(dy) < epsilon) {
+        if (startY < minY - epsilon || startY > maxY + epsilon) continue;
+      } else {
+        const a = (minY - startY) / dy, b = (maxY - startY) / dy;
+        verticalEntry = Math.min(a, b); verticalExit = Math.max(a, b);
+      }
+      const t = Math.max(0, radialEntry, verticalEntry);
+      const exit = Math.min(1, radialExit, verticalExit);
+      if (t > exit + epsilon) continue;
+      const y = startY + dy * t;
       if (!nearest || t < nearest.t) nearest = { target, t,
         point: { x: start.x + dx * t, y, z: start.z + dz * t } };
     }

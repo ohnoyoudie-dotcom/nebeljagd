@@ -98,6 +98,43 @@ test('swept projectile collision does not skip a thin target at high speed', () 
   assert.equal(combat.traceSegment({ x: 0, y: 20, z: 0 }, { x: 0, y: 20, z: 15 }, .05, 'owner'), null, 'high projectile misses low targets');
 });
 
+test('descending projectiles hit a target after entering its horizontal footprint above the head', () => {
+  const combat = createCombat();
+  const target = combat.addTarget({ id: 'enemy', position: { x: 0, y: 0, z: 1.2 }, radius: .52, height: 2.25 });
+  const hit = combat.traceSegment({ x: 0, y: 3, z: 0 }, { x: 0, y: 1, z: 2 }, .13);
+  assert.equal(hit?.target, target);
+  assert.ok(Math.abs(hit.t - .31) < 1e-10);
+  assert.ok(Math.abs(hit.point.y - 2.38) < 1e-10, 'first contact is the expanded top surface');
+  assert.ok(Math.abs(hit.point.z - .62) < 1e-10);
+});
+
+test('vertical entry is detected when a projectile starts inside the horizontal footprint, including a vertical-only segment', () => {
+  const combat = createCombat();
+  const target = combat.addTarget({ id: 'enemy', position: { x: 4, y: 1, z: 2 }, radius: .52, height: 2 });
+  for (const endX of [4, 4.2]) {
+    const hit = combat.traceSegment({ x: 4, y: 4, z: 2 }, { x: endX, y: 2, z: 2 }, .1);
+    assert.equal(hit?.target, target);
+    assert.ok(Math.abs(hit.t - .45) < 1e-10);
+    assert.ok(Math.abs(hit.point.y - 3.1) < 1e-10);
+  }
+  const rising = combat.traceSegment({ x: 4, y: 0, z: 2 }, { x: 4, y: 2, z: 2 }, .1);
+  assert.equal(rising?.target, target);
+  assert.ok(Math.abs(rising.point.y - .9) < 1e-10, 'an ascending segment first touches the bottom');
+});
+
+test('fast descending sweeps choose the earliest actual 3D contact, not horizontal entry order', () => {
+  const combat = createCombat();
+  combat.addTarget({ id: 'low', position: { x: 0, y: 0, z: 2 }, radius: 1.6, height: 1 });
+  const tall = combat.addTarget({ id: 'tall', position: { x: 0, y: 0, z: 2.5 }, radius: .25, height: 3 });
+  const hit = combat.traceSegment({ x: 0, y: 4, z: 0 }, { x: 0, y: 0, z: 4 }, .1);
+  assert.equal(hit?.target, tall, 'the low target overlaps first horizontally but is reached later vertically');
+  assert.ok(Math.abs(hit.t - .5375) < 1e-10);
+  const high = combat.traceSegment({ x: 0, y: 8, z: 0 }, { x: 0, y: 4, z: 8 }, .1);
+  assert.equal(high, null, 'a projectile staying above both bodies still misses');
+  assert.equal(combat.traceSegment({ x: 0, y: 4, z: 0 }, { x: 0, y: 3.6, z: 1 }, .1), null,
+    'a finite segment ending before the 3D contact cannot hit');
+});
+
 test('concealed loot cannot be picked up; chest drops land once and disappear on reset', () => {
   let visible = false;
   const instance = setup('bow', 'common', { visible: () => visible });

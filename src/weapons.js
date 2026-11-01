@@ -537,7 +537,17 @@ export function createWeapons(scene, characterGroup, world, character = null,
       else hand.copy(rightHand);
       const staff = equippedType === 'fireStaff' ? heldFireStaff : heldIceStaff;
       staff.position.copy(hand); staff.position.y += staff.userData.gripOffsetY;
-      staff.rotation.set(.28 + pulse * .5, 0, -.06);
+      // Aim the physical crystal at chest height before release. A horizontal
+      // shot from an upright staff otherwise travels above ordinary opponents
+      // and walls. The hand stays on its grip and the projectile stays straight.
+      const cant = -.06;
+      const tipLength = staff.userData.weaponTipY * staff.scale.y * Math.cos(cant);
+      const localAimHeight = 1.4 / Math.max(.001, characterGroup.scale.y);
+      const aimedPitch = Math.acos(THREE.MathUtils.clamp((localAimHeight - staff.position.y) / tipLength, -1, 1));
+      // A slow frame can skip the peak pose; still use the firing pose for its
+      // first release, then blend back with the existing recovery animation.
+      const aimWeight = attackAge >= .16 && !shotReleased ? 1 : castWeight;
+      staff.rotation.set(THREE.MathUtils.lerp(.28 + pulse * .5, aimedPitch, aimWeight), 0, cant);
     }
   }
 
