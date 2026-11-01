@@ -1,8 +1,8 @@
 """Check braced casts, standing feet and straight flight from the staff tip.
 
 Run after npm run build: python3 tests/staff_cast_smoke.py.
-Four side-view F attacks cover both Tripo staves; another cast checks the free
-arm while walking. Ten screenshots cover the two side views and standing/gait. The
+Four side-view F attacks cover both Tripo staves; two more compare the standing
+cast with walking. Ten screenshots cover the two side views and standing/gait. The
 shared grip-smoke helpers only serve files, inspect state, and take screenshots;
 this script runs its own bounded editor/game journey and never rewrites a map.
 """
@@ -176,12 +176,29 @@ def exercise_stance_and_gait(page):
     support.position(page, CAST_POSITION, 0)
     page.evaluate('nebeljagdInspectCamera({zoom:4})')
     wait_settled(page)
-    page.wait_for_function('nebeljagdTestState().combat.rigPose.stanceWeight>=.95')
-    page.locator('#pauseBtn').click()
+    idle = support.state(page)['combat']['rigPose']
+    assert idle['stanceWeight'] == 0, 'The wider stance should only blend in during a standing cast'
+    page.evaluate('''()=>{
+      window.__standingCapture=null;
+      const observe=()=>{
+        const s=nebeljagdTestState();
+        if(s.phase==='playing'&&s.combat.rigPose.stanceWeight>=.95) {
+          window.__standingCapture=structuredClone(s.combat.rigPose);
+          document.querySelector('#pauseBtn').click();return;
+        }
+        requestAnimationFrame(observe);
+      };
+      requestAnimationFrame(observe);
+    }''')
+    page.keyboard.press('f')
+    page.wait_for_function('window.__standingCapture&&nebeljagdTestState().phase==="paused"')
     standing = support.state(page)
     standing_measurement = check_stance(standing['combat']['rigPose'])
+    idle_width = abs(idle['feet']['left']['x'] - idle['feet']['right']['x'])
+    assert standing_measurement['width'] - idle_width >= .07, 'Standing casts should visibly widen the idle stance'
     support.capture(page, 'feet-standing-front-close')
     page.keyboard.press('Escape')
+    wait_settled(page)
     page.evaluate('''()=>{
       window.__gaitSamples=[];window.__gaitCapture=null;window.__gaitStart=null;window.__gaitObserve=true;
       const observe=()=>{
@@ -220,10 +237,11 @@ def exercise_stance_and_gait(page):
     assert max(stride) - min(stride) > .12, 'The feet must move through the natural gait, not remain fixed in the standing stance'
     page.keyboard.press('Escape')
     wait_settled(page)
-    page.wait_for_function('nebeljagdTestState().combat.rigPose.stanceWeight>=.95&&!nebeljagdTestState().moving')
-    restored = check_stance(support.state(page)['combat']['rigPose'])
-    evidence = {'standing': standing_measurement, 'walkingCast': moving, 'gaitSamples': samples,
-                'signedStrideRange': [min(stride), max(stride)], 'restoredStanding': restored}
+    page.wait_for_function('nebeljagdTestState().combat.rigPose.stanceWeight===0&&!nebeljagdTestState().moving')
+    restored = support.state(page)['combat']['rigPose']
+    assert restored['castWeight'] == 0, 'Recovering must restore the authored idle pose'
+    evidence = {'idleBefore': idle, 'standing': standing_measurement, 'walkingCast': moving, 'gaitSamples': samples,
+                'signedStrideRange': [min(stride), max(stride)], 'idleAfter': restored}
     REPORT['gait'] = evidence
     support.passed('Standing feet are wider and staggered; casting while walking preserves the natural gait', evidence)
 
