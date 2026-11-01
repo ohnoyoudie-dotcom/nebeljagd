@@ -191,7 +191,6 @@ export function validateWorldmap(map) {
   const collections = [['regions', 100], ['paths', 300], ['rivers', 100], ['places', 500], ['spawnAreas', 200]];
   for (const [key, limit] of collections) if (!Array.isArray(map[key]) || map[key].length > limit) error(`${key} muss eine Liste mit höchstens ${limit} Einträgen sein.`);
   if (Array.isArray(map.regions) && map.regions.length < 1) error('Die Karte benötigt mindestens eine Region.');
-  if (Array.isArray(map.spawnAreas) && map.spawnAreas.length < 1) error('Die Karte benötigt mindestens einen Startbereich.');
   for (const region of Array.isArray(map.regions) ? map.regions.slice(0, 100) : []) {
     if (!common(region, 'Region')) continue;
     const valid = points(region, `Region ${region.id}`, true);
@@ -230,7 +229,9 @@ export function validateWorldmap(map) {
       if (!isLandPoint(map, spawn.position) || touchesWater) error(`Startbereich ${spawn.name} liegt teilweise außerhalb der Insel oder in einer Wasserfläche.`);
     }
   }
-  if (object(game) && Number.isInteger(game.targetPlayers) && capacity < game.targetPlayers) error(`Startbereiche bieten ${capacity} Plätze für ${game.targetPlayers} Zielspieler.`);
+  // A geography-only draft may leave multiplayer starts unplanned. Once
+  // start areas are authored, their total capacity must cover the target.
+  if (spawns.length && object(game) && Number.isInteger(game.targetPlayers) && capacity < game.targetPlayers) error(`Startbereiche bieten ${capacity} Plätze für ${game.targetPlayers} Zielspieler.`);
   for (let i = 0; i < spawns.length; i++) for (let j = i + 1; j < spawns.length; j++) {
     const a = spawns[i], b = spawns[j];
     if (object(a) && object(b) && coordinate(a.position) && coordinate(b.position) && finite(a.radius) && finite(b.radius) && Math.hypot(a.position[0] - b.position[0], a.position[1] - b.position[1]) < a.radius + b.radius) warnings.push(`Startbereiche ${a.name} und ${b.name} überlappen sich.`);

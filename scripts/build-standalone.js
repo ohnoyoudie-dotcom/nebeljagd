@@ -27,7 +27,7 @@ for (const file of ['worldmap.json', 'worldmap.schema.json']) {
   await copyFile(resolve(file), resolve(root, file));
 }
 const map = JSON.parse(await readFile(resolve('worldmap.json'), 'utf8'));
-await writeFile(resolve(root, 'worldmap.svg'), renderWorldmapSvg(map, { showSpawns: true, showZone: false, showLabels: true }));
+await writeFile(resolve(root, 'worldmap.svg'), renderWorldmapSvg(map, { showSpawns: false, showZone: false, showLabels: false }));
 console.log('Standalone browser files: dist/nebeljagd.html and dist/map-editor.html');
 console.log('Character review: dist/avatar-preview.html');
 console.log('Editable map data: dist/worldmap.json, dist/worldmap.svg, dist/worldmap.schema.json');

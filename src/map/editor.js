@@ -56,7 +56,7 @@ let mapFileHandle = null;
 let persistedMapFileHandle = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
 const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
-const layers = { showLabels: true, showSpawns: true, showGrid: false, showZone: false, showObjects: true };
+const layers = { showLabels: false, showSpawns: false, showGrid: false, showZone: false, showObjects: true };
 
 function compactCleanupBanner(banner, prefix) {
   banner.classList.add('cleanup-banner');

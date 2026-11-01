@@ -8,6 +8,7 @@ import { getMoundDefinition } from '../src/overgrown-mounds.js';
 
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const schema = JSON.parse(readFileSync(new URL('../worldmap.schema.json', import.meta.url), 'utf8'));
+const historicalSpawns = JSON.parse(readFileSync(new URL('./fixtures/reference-channel-worldmap.json', import.meta.url), 'utf8')).spawnAreas;
 // Legacy fixtures remain useful for recovery/imports even though these objects
 // are no longer offered for new placements. Their historical clearance is
 // checked against original seeded objects, independently of later user edits.
@@ -42,12 +43,12 @@ test('retired mound fixtures preserve their original route and loot clearance', 
       assert.ok(lineDistance(item.position, line) > line.width / 2 + radius + .8, `${item.id}: blocked ${line.id}`);
     }
     assert.ok(distance(item.position, map.gameplay.spawnPosition) > radius + 8, `${item.id}: initial clearing`);
-    for (const start of map.spawnAreas) assert.ok(distance(item.position, start.position) > start.radius + radius + .8, `${item.id}: blocked ${start.id}`);
+    for (const start of historicalSpawns) assert.ok(distance(item.position, start.position) > start.radius + radius + .8, `${item.id}: blocked ${start.id}`);
     for (const other of map.objects.filter(object => object.id.startsWith('obj-'))) if (other.id !== item.id) {
       assert.ok(distance(item.position, other.position) > radius + coverRadius(other) + .8, `${item.id}: intersects ${other.id}`);
     }
   }
-  assert.equal(map.spawnAreas.reduce((sum, area) => sum + area.capacity, 0), 50);
+  assert.equal(historicalSpawns.reduce((sum, area) => sum + area.capacity, 0), 50);
 });
 
 test('mound variants, transforms and stable IDs survive JSON and vector export', () => {

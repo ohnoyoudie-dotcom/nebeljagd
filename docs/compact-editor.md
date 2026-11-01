@@ -9,7 +9,9 @@ Das übrige Wegenetz bleibt für den späteren Ausbau frei.
 Die Landfläche beträgt rund 1,02 km². Taverne, vier bestehende
 Mauer-/Zaunstrecken, gemalte Landschaft und Spielstart bleiben erhalten.
 Die neue Geometrie wird von Editor, 3D-Spiel und Minikarte gemeinsam verwendet.
-Aktuelle Karte und Prüfung: [Vier Biome und offene Brücken](open-gap-layout.md).
+Die Ausgangskarte enthält keine provisorischen Orts-/Häusersymbole oder
+Spawn-Zonen; Regionsbeschriftungen sind anfangs ausgeblendet.
+Aktuelle Karte und Prüfung: [Bereinigte Karte im Editor](clean-map.md).
 
 ## Ein Werkzeug auf einmal
 

@@ -6,20 +6,28 @@ import { renderWorldmapSvg } from '../src/map/render.js';
 
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
 const copy = () => structuredClone(base);
+const withFeatures = () => ({ ...copy(),
+  places: [
+    { id: 'test-west-place', name: 'Westlicher Testort', kind: 'village', position: [-340, -50] },
+    { id: 'test-north-place', name: 'Nördlicher Testort', kind: 'landmark', position: [230, -430] },
+  ],
+  spawnAreas: [{ id: 'test-start', name: 'Teststart', position: [0, 95], radius: 44, capacity: 50 }],
+});
 
-test('world-map data is valid, readable, has four regions and fifty distributed spawn slots', () => {
+test('world-map data is valid and readable with four regions and no provisional map markers or start zones', () => {
   assert.deepEqual(validateWorldmap(base), { valid: true, errors: [], warnings: [] });
   assert.deepEqual(JSON.parse(JSON.stringify(base)), base);
   const stats = getWorldmapStats(base);
   assert.equal(stats.regionCount, 4);
   assert.equal(stats.targetPlayers, 50);
-  assert.equal(stats.spawnAreaCount, 10);
-  assert.equal(stats.spawnCapacity, 50);
+  assert.equal(stats.spawnAreaCount, 0);
+  assert.equal(stats.spawnCapacity, 0);
   assert.equal(stats.matchDurationSeconds, 1200);
   assert.ok(stats.landAreaM2 > 1e6 && stats.landAreaM2 < 1.3e6);
   assert.ok(stats.widthM > 1000 && stats.heightM > 1300);
   assert.ok(stats.walkAcrossSeconds > 220 && stats.walkAcrossSeconds < 260);
-  for (const name of ['Mooswinkel', 'Mondhain', 'Wildheide']) assert.ok(base.places.some(place => place.name === name));
+  assert.deepEqual(base.places, [], 'the base map has no provisional place or house symbols');
+  assert.deepEqual(base.spawnAreas, [], 'the base map has no provisional start zones');
 });
 
 test('x/z coordinates map directly into Three and polygon boundaries count as land', () => {
@@ -68,13 +76,13 @@ test('invalid and nonfinite geometry, duplicate ids and unsafe style attributes 
     m => { m.bounds.maxX = m.bounds.minX; },
     m => { m.paths = [{ id: 'invalid-path', name: 'Ungültiger Weg', kind: 'main', width: 0, points: [[0, 0], [10, 10]] }]; },
     m => { m.spawnAreas[0].capacity = .5; },
-    m => { m.spawnAreas = []; },
+    m => { m.spawnAreas = {}; },
     m => { m.zone.phases[0].radius = 900; },
     m => { m.zone.phases[0].shrinkSeconds = 0; },
     m => { m.zone.phases[0].holdSeconds = -1; },
     m => { m.coordinateSystem.north = '+z'; },
   ]) {
-    const map = copy(); alter(map);
+    const map = withFeatures(); alter(map);
     const validation = validateWorldmap(map);
     assert.equal(validation.valid, false, JSON.stringify(map));
     assert.ok(validation.errors.length > 0);
@@ -84,22 +92,23 @@ test('invalid and nonfinite geometry, duplicate ids and unsafe style attributes 
 });
 
 test('spawn discs must fit land; changes to the coast flag affected places; region overhang is allowed', () => {
-  const offshore = copy(); offshore.places[0].position = [-590, -700];
+  const offshore = withFeatures(); offshore.places[0].position = [-590, -700];
   assert.ok(validateWorldmap(offshore).errors.some(error => /außerhalb der Insel/.test(error)));
-  const coast = copy(); coast.spawnAreas[0].position = [-455, -500]; coast.spawnAreas[0].radius = 100;
+  const coast = withFeatures(); coast.spawnAreas[0].position = [-455, -500]; coast.spawnAreas[0].radius = 100;
   assert.ok(validateWorldmap(coast).errors.some(error => /teilweise außerhalb/.test(error)));
   const overhang = copy();
   overhang.regions[0].points[0] = [-599, -719];
   assert.equal(validateWorldmap(overhang).valid, true);
-  const fewer = copy(); fewer.spawnAreas[0].capacity = 4;
+  const fewer = withFeatures(); fewer.spawnAreas[0].capacity = 49;
   assert.ok(validateWorldmap(fewer).errors.some(error => /49 Plätze für 50/.test(error)));
 });
 
 test('SVG exports named editable layers and geometry without external images or scripts', () => {
-  const svg = renderWorldmapSvg(base);
+  const map = withFeatures();
+  const svg = renderWorldmapSvg(map);
   assert.match(svg, /viewBox="-600 -720 1200 1440"/);
   for (const layer of ['sea', 'island', 'regions', 'rivers', 'paths', 'places', 'spawn-areas', 'zone', 'labels', 'frame']) assert.ok(svg.includes(`id="${layer}"`));
-  for (const collection of ['regions', 'paths', 'rivers', 'places', 'spawnAreas']) for (const feature of base[collection]) assert.ok(svg.includes(`data-feature-id="${feature.id}"`));
+  for (const collection of ['regions', 'paths', 'rivers', 'places', 'spawnAreas']) for (const feature of map[collection]) assert.ok(svg.includes(`data-feature-id="${feature.id}"`));
   assert.ok(svg.includes('clip-path="url(#world-island-clip)"'));
   assert.ok(!/<script|<foreignObject|\bonload=|<image/i.test(svg));
   const links = [...svg.matchAll(/href="([^"]+)"/g)].map(match => match[1]);
@@ -123,7 +132,7 @@ test('SVG exports named editable layers and geometry without external images or 
 });
 
 test('names in imported JSON remain literal text in SVG, never markup', () => {
-  const map = copy();
+  const map = withFeatures();
   map.name = '<svg onload="alert(1)">& map';
   map.places[0].name = '</text><script>alert(1)</script>';
   const svg = renderWorldmapSvg(map);

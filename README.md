@@ -4,8 +4,10 @@
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
 getrennte Landflächen; zwei begehbare Brücken überspannen die freie Lücke.
 Die bisherigen Flusskanäle sind vollständig entfernt. Das übrige Wegenetz
-bleibt für den späteren Ausbau frei.
-Vorschau und Prüfung: [`docs/open-gap-layout.md`](docs/open-gap-layout.md).
+bleibt für den späteren Ausbau frei. Die Ausgangskarte zeigt keine
+Regionsbeschriftungen, provisorischen Orts-/Häusersymbole oder Spawn-Zonen.
+Die platzierten Objekte bleiben erhalten.
+Vorschau und Prüfung: [`docs/clean-map.md`](docs/clean-map.md).
 Der Editor zeigt pro Hauptbereich
 nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
@@ -37,7 +39,7 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,02 km²**
-Land mit vier Landschaften, zwei getrennten Landflächen, zwei Brücken und Ortsmarkern. Der
+Land mit vier Landschaften, zwei getrennten Landflächen und zwei Brücken. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor
 platzieren; das kleine Tripo-Schloss ist aus der aktiven Auswahl entfernt.
@@ -51,8 +53,8 @@ Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 Die aktuelle Projektkarte enthält ein Tripo-Wirtshaus und vier gezeichnete
 Mauer-/Zaunstrecken. Die beiden Brücken führen direkt über die freie Lücke
 zwischen den Landflächen. Es gibt keine eingezeichneten Flüsse.
-Zehn Startbereiche bieten Platz
-für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
+Die provisorischen Startbereiche und Ortsmarker sind entfernt; der normale
+Spielstart bleibt erhalten. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
 Multiplayer, Teams und Schreinfragen sind noch nicht aktiv.
 
