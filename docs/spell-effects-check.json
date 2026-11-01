@@ -1037,7 +1037,17 @@
     "failed": 0
   },
   "publication": {
-    "status": "prepared",
-    "scope": "Only existing static preview editor and game; no classroom portal"
+    "status": "deployed",
+    "commit": "90b28a782679a9ef0d201d0f4f9e8f6cf5779287",
+    "sourceCommit": "058f350b00814ea3dc38156ae0ffbbf1c7fdee94",
+    "buildId": "e2b9356f0be1",
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7",
+    "actionsRun": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41313067996",
+    "actionsStatus": "completed",
+    "actionsConclusion": "success",
+    "exactCommitVerified": true,
+    "remoteReleaseMatches": true,
+    "scope": "Only existing static preview editor and game; no classroom portal",
+    "verificationLimit": "Direct Pages HTTP is blocked by environment network policy. Exact commit, remote release manifest and successful deployment verified through GitHub; browser checks used identical files locally."
   }
 }

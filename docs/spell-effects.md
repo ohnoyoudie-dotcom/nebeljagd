@@ -40,3 +40,11 @@ bestanden. Die zehn Browserbilder zeigen den Editor, jeweils Laden, Abschuss,
 Flug und Einschlag beider Stäbe sowie den Neustart während eines aktiven Effekts.
 Keine Browser-, Shader- oder HTTP-Fehler.
 Prüfbericht: [spell-effects-check.json](spell-effects-check.json).
+
+Veröffentlicht: [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=90b28a7).
+Alte Spiel-Tabs schließen und über **Spielen** neu öffnen.
+Commit `90b28a782679a9ef0d201d0f4f9e8f6cf5779287` aktualisiert ausschließlich `preview/` auf `main`.
+[GitHub-Pages-Bereitstellung](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41313067996) erfolgreich; Quellstand `058f350b00814ea3dc38156ae0ffbbf1c7fdee94`.
+Das veröffentlichte Release-Protokoll stimmt mit dem geprüften Paket überein.
+Direkter Pages-HTTP-Zugriff ist in dieser Umgebung durch die Netzwerkpolicy
+gesperrt; der Browsercheck lief mit identischen Dateien lokal.
