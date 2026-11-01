@@ -25,7 +25,7 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
     assert.equal(isObjectAvailable(definition.kind), false);
     for (const variant of definition.variants) assert.equal(isObjectAvailable(definition.kind, variant.id), false);
   }
-  for (const kind of ['heart', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'grass', 'bush', 'rock', 'wagon', 'barrel', 'well']) {
+  for (const kind of ['heart', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'grass', 'bush', 'rock', 'wagon', 'barrel', 'well']) {
     assert.ok(AUTHORING_OBJECT_CATALOG.some(item => item.kind === kind), kind);
     assert.equal(isObjectAvailable(kind), true, kind);
   }
@@ -42,8 +42,9 @@ test('individual placement offers exactly the admitted Tripo models and valid de
   const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02',
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
-    'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff'];
-  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'sword', 'fireStaff', 'iceStaff']);
+    'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
+    'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff'];
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {
     assert.equal(isObjectPlaceable(definition.kind), true);
@@ -60,6 +61,11 @@ test('individual placement offers exactly the admitted Tripo models and valid de
   assert.equal(getObjectDefinition('rock').defaultVariant, 'granite');
   assert.equal(makeWorldObject('chest', [0, 0]).variant, 'wood');
   assert.equal(isObjectAvailable('sword', 'steel'), true, 'gameplay definitions are retained');
+  assert.equal(PLACEMENT_OBJECT_CATALOG.find(definition => definition.kind === 'bow').defaultVariant, 'kit-tripo-ornate-bow');
+  assert.equal(getObjectDefinition('bow').defaultVariant, 'wood', 'existing maps and chest bow drops retain their old default');
+  assert.equal(makeWorldObject('bow', [0, 0]).variant, 'wood');
+  assert.equal(isObjectAvailable('bow', 'wood'), true);
+  assert.equal(isObjectPlaceable('bow', 'wood'), false, 'the old bow stays compatible without replacing the newly admitted model');
 });
 
 test('mixed saved presets filter retired scenery without mutating their document or losing allowed scatter', () => {

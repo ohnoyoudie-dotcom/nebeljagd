@@ -53,6 +53,11 @@ jobs:
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
+      - name: Verify uploaded weapon models, pickup, swaps and attacks
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+          NEBELJAGD_QA_OUT: test-results/tripo-weapons
+        run: python tests/tripo_weapon_editor_smoke.py
       - name: Publish verified build to welt
         id: save-work
         env:
@@ -115,6 +120,7 @@ jobs:
             test-results/avatar-preview
             test-results/classroom
             test-results/online-editor
+            test-results/tripo-weapons
             assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

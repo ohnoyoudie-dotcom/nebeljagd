@@ -12,6 +12,54 @@ function setup(placements = [{ id: 'bow', kind: 'bow', rarity: 'common', positio
   return { scene, actor, weapons: createWeapons(scene, actor, world, null, { placements, ...options }) };
 }
 
+const PROCEDURAL_WEAPON_TYPES = ['bow', 'sword', 'fireStaff', 'iceStaff'];
+const IMPORTED_WEAPONS = [
+  { kind: 'poisonStaff', variant: 'kit-tripo-poison-staff' },
+  { kind: 'moonStaff', variant: 'kit-tripo-moon-staff' },
+  { kind: 'bow', variant: 'kit-tripo-ornate-bow' },
+];
+
+function pbrPalette(material) {
+  return { color: material.color.clone(), emissive: material.emissive.clone(),
+    emissiveIntensity: material.emissiveIntensity, roughness: material.roughness,
+    metalness: material.metalness, opacity: material.opacity, transparent: material.transparent,
+    map: material.map, normalMap: material.normalMap, roughnessMap: material.roughnessMap,
+    metalnessMap: material.metalnessMap, emissiveMap: material.emissiveMap };
+}
+
+function assertPbrPalette(material, expected, label) {
+  assert.ok(material.color.equals(expected.color), `${label}: original base color`);
+  assert.ok(material.emissive.equals(expected.emissive), `${label}: original emissive color`);
+  for (const property of ['emissiveIntensity', 'roughness', 'metalness', 'opacity', 'transparent',
+    'map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap']) {
+    assert.equal(material[property], expected[property], `${label}: original ${property}`);
+  }
+}
+
+// No model processing or GLB loading is needed to check material ownership.
+// Two meshes share one textured PBR material, as they may in an imported model.
+function importedPrototypes() {
+  const tripoPrototypes = {}, palettes = new Map(), materials = new Map();
+  for (const { variant } of IMPORTED_WEAPONS) {
+    const group = new THREE.Group(); group.name = variant;
+    const texture = new THREE.Texture();
+    const material = new THREE.MeshStandardMaterial({ color: '#784b2c', emissive: '#331c0a',
+      emissiveIntensity: .15, roughness: .63, metalness: .42, map: texture, normalMap: texture,
+      roughnessMap: texture, metalnessMap: texture, emissiveMap: texture });
+    const geometry = new THREE.BoxGeometry(.12, 1.7, .08);
+    group.add(new THREE.Mesh(geometry, material), new THREE.Mesh(geometry, material));
+    tripoPrototypes[variant] = group;
+    palettes.set(variant, pbrPalette(material)); materials.set(variant, material);
+  }
+  return { tripoPrototypes, palettes, materials };
+}
+
+function importedMeshes(root) {
+  const meshes = [];
+  root.traverse(part => { if (part.isMesh && part.userData.tripoWeapon) meshes.push(part); });
+  return meshes;
+}
+
 test('unarmed pickup only happens at walking reach; equipped weapons require a deliberate swap', () => {
   const { actor, weapons } = setup([
     { id: 'bow', kind: 'bow', rarity: 'common', position: [0, 0] },
@@ -140,12 +188,14 @@ test('chest weapons finish their flight before automatic pickup; paused time doe
   assert.equal(weapons.equipped, null); assert.equal(weapons.items.length, 0);
 });
 
-test('every weapon uses the same rarity hue on its actual body, accents and fading halo', () => {
+test('procedural weapon bodies and every pickup accent and fading halo follow the selected rarity', () => {
   const placements = [];
   for (const kind of WEAPON_TYPES) for (const rarity of Object.keys(RARITIES)) {
     placements.push({ id: `${kind}-${rarity}`, kind, rarity, position: [placements.length * 3, 0] });
   }
-  const { actor, weapons } = setup(placements);
+  const { tripoPrototypes, palettes, materials } = importedPrototypes();
+  const { actor, weapons } = setup(placements, { tripoPrototypes });
+  const proceduralTypesChecked = new Set();
   weapons.update(.1, 1, actor.position);
   for (const item of weapons.items) {
     const color = new THREE.Color(RARITIES[item.rarity].color);
@@ -156,16 +206,81 @@ test('every weapon uses the same rarity hue on its actual body, accents and fadi
     assert.equal(alpha.itemSize, 4);
     assert.ok(alpha.getW(0) > .8);
     assert.equal(alpha.getW(alpha.count - 1), 0, 'halo has no hard outer disc');
-    let body = 0, accents = 0;
-    item.visual.traverse(part => {
-      if (!part.isMesh || part.userData.elementCore) return;
-      assert.ok(part.material.emissive.equals(color), `${item.id} actual model emission`);
-      assert.ok(part.material.emissiveIntensity > .1);
-      part.userData.tierAccent ? accents++ : body++;
-    });
-    assert.ok(body > 0 && accents > 0, `${item.id} glows beyond its selection ring`);
+    if (PROCEDURAL_WEAPON_TYPES.includes(item.type)) {
+      proceduralTypesChecked.add(item.type);
+      assert.equal(item.model, 'procedural');
+      let body = 0, accents = 0;
+      item.visual.traverse(part => {
+        if (!part.isMesh || part.userData.elementCore) return;
+        assert.ok(part.material.emissive.equals(color), `${item.id} actual model emission`);
+        assert.ok(part.material.emissiveIntensity > .1);
+        part.userData.tierAccent ? accents++ : body++;
+      });
+      assert.ok(body > 0 && accents > 0, `${item.id} glows beyond its selection ring`);
+    } else {
+      assert.equal(item.model, 'tripo', `${item.id} uses its real imported default`);
+      const meshes = importedMeshes(item.visual);
+      assert.equal(meshes.length, 2, `${item.id} keeps both source meshes`);
+      for (const mesh of meshes) {
+        assert.notEqual(mesh.material, materials.get(item.variant));
+        assertPbrPalette(mesh.material, palettes.get(item.variant), item.id);
+      }
+      assert.equal(item.glowingMaterials.length, 0, `${item.id} never pulses or repaints its imported PBR material`);
+    }
     assert.equal(item.visual.userData.rarityColor, RARITIES[item.rarity].color);
     assert.equal(item.glow.halo, rarityVisual(item.rarity).halo);
+  }
+  assert.deepEqual([...proceduralTypesChecked].sort(), [...PROCEDURAL_WEAPON_TYPES].sort());
+  for (const [variant, material] of materials) assertPbrPalette(material, palettes.get(variant), `${variant} prototype`);
+  weapons.dispose();
+});
+
+test('new imported staffs and ornate bow preserve textured PBR across rarity pulses and independent pickup and held instances', () => {
+  for (const { kind, variant } of IMPORTED_WEAPONS) {
+    const { tripoPrototypes, palettes, materials } = importedPrototypes();
+    const palette = palettes.get(variant), prototypeMaterial = materials.get(variant);
+    const { actor, weapons } = setup([
+      { id: `${variant}-rare`, kind, variant, rarity: 'rare', position: [0, 0] },
+      { id: `${variant}-legendary`, kind, variant, rarity: 'legendary', position: [5, 0] },
+    ], { tripoPrototypes });
+    const [rare, legendary] = weapons.items;
+    const rareMeshes = importedMeshes(rare.visual), legendaryMeshes = importedMeshes(legendary.visual);
+    const rareMaterial = rareMeshes[0].material, legendaryMaterial = legendaryMeshes[0].material;
+    assert.equal(rareMeshes[1].material, rareMaterial, `${variant}: shared within one model`);
+    assert.equal(legendaryMeshes[1].material, legendaryMaterial);
+    assert.notEqual(rareMaterial, legendaryMaterial, `${variant}: separate pickup instances`);
+    assert.notEqual(rareMaterial, prototypeMaterial);
+    assert.notEqual(legendaryMaterial, prototypeMaterial);
+    for (let frame = 0; frame < 6; frame++) {
+      const time = frame * .37;
+      weapons.update(.1, time, actor.position);
+      for (const item of [rare, legendary]) {
+        assertPbrPalette(importedMeshes(item.visual)[0].material, palette, item.id);
+        const glow = rarityVisual(item.rarity), color = new THREE.Color(glow.color);
+        assert.ok(item.ringMaterial.color.equals(color), `${item.id}: rarity ring`);
+        assert.ok(item.halo.material.color.equals(color), `${item.id}: rarity halo`);
+        const wave = Math.sin(time * 2.2 + item.phase);
+        assert.ok(Math.abs(item.halo.material.opacity - glow.halo * (.9 + wave * .1)) < 1e-12);
+        assert.equal(item.visual.userData.rarityColor, glow.color);
+      }
+      assertPbrPalette(prototypeMaterial, palette, `${variant}: immutable prototype`);
+    }
+    assert.equal(weapons.interact(actor.position).variant, variant);
+    const held = actor.children.find(group => group.userData.variant === variant && group.visible);
+    assert.ok(held, `${variant}: selected held model`);
+    const heldMeshes = importedMeshes(held), heldMaterial = heldMeshes[0].material;
+    assert.equal(heldMeshes[1].material, heldMaterial);
+    for (const other of [rareMaterial, legendaryMaterial, prototypeMaterial]) assert.notEqual(heldMaterial, other);
+    assertPbrPalette(heldMaterial, palette, `${variant}: held original PBR`);
+    heldMaterial.color.set('#010203'); heldMaterial.opacity = .2;
+    heldMaterial.emissive.set('#040506'); heldMaterial.emissiveIntensity = 3;
+    for (const [name, material] of [['ground rare', rareMaterial], ['ground legendary', legendaryMaterial], ['prototype', prototypeMaterial]]) {
+      assertPbrPalette(material, palette, `${variant}: ${name} unaffected by held material changes`);
+    }
+    rareMaterial.color.set('#fedcba'); rareMaterial.emissiveIntensity = 7;
+    assertPbrPalette(legendaryMaterial, palette, `${variant}: second pickup unaffected by first`);
+    assertPbrPalette(prototypeMaterial, palette, `${variant}: source unaffected by first pickup`);
+    weapons.dispose();
   }
 });
 

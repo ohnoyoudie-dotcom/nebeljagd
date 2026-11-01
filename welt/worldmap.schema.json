@@ -521,6 +521,8 @@
             "sword",
             "fireStaff",
             "iceStaff",
+            "poisonStaff",
+            "moonStaff",
             "wall",
             "fence",
             "crate",
@@ -856,7 +858,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "wood"
+                  "wood",
+                  "kit-tripo-ornate-bow"
                 ]
               }
             }
@@ -956,6 +959,48 @@
         },
         {
           "if": {
+            "properties": {
+              "kind": {
+                "const": "poisonStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-poison-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "moonStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-moon-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
             "required": [
               "rarity"
             ]
@@ -967,7 +1012,9 @@
                   "bow",
                   "sword",
                   "fireStaff",
-                  "iceStaff"
+                  "iceStaff",
+                  "poisonStaff",
+                  "moonStaff"
                 ]
               }
             }

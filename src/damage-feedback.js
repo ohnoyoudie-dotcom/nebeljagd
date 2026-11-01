@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
 const GLYPHS = '0123456789.-';
-const COLORS = { burn: '#ffc179', zone: '#ddceff', fireStaff: '#ffd19c', iceStaff: '#bbf0ff', bow: '#fff5d3', sword: '#ffe3a6' };
+const COLORS = { burn: '#ffc179', poison: '#b7e883', zone: '#ddceff', fireStaff: '#ffd19c', iceStaff: '#bbf0ff',
+  poisonStaff: '#b7e883', moonStaff: '#e5d4ff', bow: '#fff5d3', sword: '#ffe3a6' };
 const copyPosition = value => ({ x: value.x, y: value.y ?? 0, z: value.z });
 const finiteDamage = amount => Number.isFinite(amount) && amount > 0;
 
@@ -29,7 +30,7 @@ export function createDamageFeedbackState({ capacity = 32, isVisible = () => tru
   function addHit(result, target) {
     if (!target?.position || !finiteDamage(result?.damage) || !canSee(target)) return false;
     const type = result.type ?? 'direct';
-    if (type === 'burn' || type === 'zone') {
+    if (type === 'burn' || type === 'poison' || type === 'zone') {
       const key = `${target.id}:${type}`;
       if (!pending.has(key)) {
         if (pending.size >= capacity) pending.delete(pending.keys().next().value);

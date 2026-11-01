@@ -1,0 +1,189 @@
+{
+  "id": "moon-staff",
+  "label": "Mondstab \u00b7 Tripo",
+  "source": {
+    "path": "assets/inbox/Moon staff 3d model.glb",
+    "bytes": 69029528,
+    "sha256": "208c0124ee05518b8bf7f8b46f300ed203135b01a0b091ee3e0a6099c1c68ca1",
+    "triangles": 1949367,
+    "vertices": 994270,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-extra-weapons/runtime/moon-staff.glb",
+    "bytes": 1323228,
+    "sha256": "43c0633b9af2ec69255b50e6fba40246b5d0f01272dab7653a2a7cb8e04ab991",
+    "triangles": 12000,
+    "vertices": 8060,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.14992520213127136,
+        -0.1922607719898224,
+        0.0
+      ],
+      [
+        0.14992520213127136,
+        0.1922607719898224,
+        0.980072021484375
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.08119580894708633,
+      0.1999969482421875,
+      0.10166934132575989
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.13475580513477325,
+      0.9289178252220154,
+      -0.3448949158191681
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9820687174797058,
+      0.17559613287448883,
+      -0.06860813498497009,
+      0.0
+    ],
+    "uniformScale": 1.623341719919637,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.25111955404281616,
+        -0.3524198532104492,
+        -0.07385074347257614
+      ],
+      [
+        0.23464444279670715,
+        1.3475801944732666,
+        0.12879310548305511
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -0.251026451587677,
+        -0.35241323709487915,
+        -0.07398073375225067
+      ],
+      [
+        0.23468033969402313,
+        1.3476234674453735,
+        0.12875086069107056
+      ]
+    ],
+    "tipPoint": [
+      0.03721245005726814,
+      1.3476234674453735,
+      0.014595909044146538
+    ],
+    "dimensions": [
+      0.48570679128170013,
+      1.7000367045402527,
+      0.20273159444332123
+    ]
+  },
+  "cleanup": {
+    "weldDistanceMetres": 6.8e-05,
+    "before": {
+      "vertices": 994270,
+      "faces": 1949367
+    },
+    "after": {
+      "vertices": 974603,
+      "faces": 1949200
+    }
+  },
+  "textures": [
+    {
+      "name": "fantasy_staff_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "fantasy_staff_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        768,
+        768
+      ],
+      "format": "PNG"
+    },
+    {
+      "name": "fantasy_staff_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 12000,
+    "textureLimit": 1024,
+    "normalMapLimit": 768,
+    "fileLimitBytes": 1572864
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "textureBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialChannels": true,
+    "preservedEmbeddedImageCount": true
+  }
+}

@@ -3,6 +3,8 @@ import * as THREE from 'three';
 const COLORS = {
   fireStaff: ['#a61908', '#f15a0d', '#ffd16b'],
   iceStaff: ['#14578d', '#36b9e0', '#c2f4ff'],
+  poisonStaff: ['#153c21', '#47ae45', '#c6ef83'],
+  moonStaff: ['#44316c', '#aa8bdb', '#f1e8ff'],
 };
 const MODES = { body: 0, trail: 1, shock: 2, cloud: 3, rays: 4, charge: 5 };
 
@@ -12,7 +14,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
     name: `Element ${kind}`, transparent: true, depthWrite: false, depthTest: true,
     side: THREE.DoubleSide, blending: THREE.NormalBlending, toneMapped: false,
     defines: { ...(kind === 'trail' ? { ELEMENT_TRAIL: 1 } : {}), ...(billboard ? { ELEMENT_BILLBOARD: 1 } : {}) },
-    uniforms: { uTime: clock, uOpacity: { value: opacity }, uIce: { value: 0 },
+    uniforms: { uTime: clock, uOpacity: { value: opacity }, uIce: { value: 0 }, uCloudTint: { value: 0 },
       uMode: { value: MODES[kind] }, uDark: { value: new THREE.Color() },
       uMid: { value: new THREE.Color() }, uLight: { value: new THREE.Color() } },
     vertexShader: `
@@ -37,7 +39,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
         #endif
       }`,
     fragmentShader: `
-      uniform float uTime, uOpacity, uIce, uMode;
+      uniform float uTime, uOpacity, uIce, uCloudTint, uMode;
       uniform vec3 uDark, uMid, uLight;
       varying vec2 vUv;
       varying float vFade;
@@ -83,7 +85,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
             color = mix(uMid, uLight, .30 + cloud * .25);
           } else if (uMode < 3.5) {
             alpha = exp(-radius * radius * 3.8) * (1.0 - smoothstep(.55, 1.0, radius)) * (.4 + cloud * .6);
-            color = mix(vec3(.075, .050, .042), mix(uMid, uLight, cloud * .5), uIce);
+            color = mix(vec3(.075, .050, .042), mix(uMid, uLight, cloud * .5), uCloudTint);
           } else if (uMode < 4.5) {
             float branch = pow(abs(sin(angle * 5.0 + cloud * .7)), 28.0);
             alpha = branch * smoothstep(.12, .32, radius) * (1.0 - smoothstep(.5, .96, radius));
@@ -107,7 +109,8 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
 
 export function setElementMaterial(material, type) {
   const colors = COLORS[type] ?? COLORS.fireStaff;
-  material.uniforms.uIce.value = type === 'iceStaff' ? 1 : 0;
+  material.uniforms.uIce.value = type === 'iceStaff' || type === 'moonStaff' ? 1 : 0;
+  material.uniforms.uCloudTint.value = type === 'fireStaff' ? 0 : 1;
   material.uniforms.uDark.value.set(colors[0]); material.uniforms.uMid.value.set(colors[1]);
   material.uniforms.uLight.value.set(colors[2]);
 }

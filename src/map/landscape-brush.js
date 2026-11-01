@@ -3,6 +3,7 @@ import { getObjectDefinition, getObjectFootprintRadius, makeWorldObject, isObjec
 import { BIOME_PRESETS, VEGETATION_TYPES, TERRAIN_TYPES, LANDSCAPE_LIMITS, getLandscape, vegetationSettings, terrainSettings } from './landscape.js';
 import { getMoundDefinition } from '../overgrown-mounds.js';
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
+import { WEAPON_TYPES } from '../loot-tiers.js';
 
 /** Landscape gestures create ordinary saved records, never hidden runtime props.
  * Callers append the returned arrays and commit the whole gesture once. */
@@ -122,7 +123,7 @@ export function createLandscapePlacementGuard(map) {
       if (kind === 'flower' && item.kind === 'flower' && d < (radius + collisionRadius(item)) * .55) return 'spacing';
       if (kind === 'bush' && item.kind === 'bush' && d < radius + collisionRadius(item)) return 'spacing';
       // Loot and chests should remain reachable and readable.
-      if (large(kind) && ['chest', 'heart', 'bow', 'sword', 'fireStaff', 'iceStaff'].includes(item.kind) && d < radius + 1.5) return 'loot';
+      if (large(kind) && (['chest', 'heart'].includes(item.kind) || WEAPON_TYPES.includes(item.kind)) && d < radius + 1.5) return 'loot';
     }
     return null;
   }

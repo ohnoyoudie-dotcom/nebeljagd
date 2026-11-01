@@ -95,7 +95,7 @@ console.log(JSON.stringify({ importedSources: sourceRecord.originals.length, ver
 
 // User-supplied Tripo uploads stay untouched. Prepared packages carry a closed
 // file roster so browser builds cannot silently use a different derivative.
-for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons']) {
+for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons', 'tripo-extra-weapons']) {
   const root = `assets/imported/${name}/`;
   const manifest = JSON.parse(await readFile(root + 'runtime-manifest.json', 'utf8'));
   const sources = manifest.sources ?? [manifest.source];
@@ -121,11 +121,14 @@ for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle'
 // Weapon uploads contain nearly two million triangles each. Validate the
 // actual prepared GLBs, rather than trusting their inspection reports, before
 // embedding them in the offline browser build.
-let weaponBytes = 0;
-for (const [name, length] of [['sword', 1.25], ['lava-staff', 1.7], ['crystal-staff', 1.7]]) {
-  const path = `assets/imported/tripo-weapons/runtime/${name}.glb`;
+const weaponBytes = { 'tripo-weapons': 0, 'tripo-extra-weapons': 0 };
+for (const [packageName, name, length] of [
+  ['tripo-weapons', 'sword', 1.25], ['tripo-weapons', 'lava-staff', 1.7], ['tripo-weapons', 'crystal-staff', 1.7],
+  ['tripo-extra-weapons', 'poison-staff', 1.7], ['tripo-extra-weapons', 'moon-staff', 1.7], ['tripo-extra-weapons', 'ornate-bow', 1.35],
+]) {
+  const path = `assets/imported/${packageName}/runtime/${name}.glb`;
   const bytes = await readFile(path);
-  weaponBytes += bytes.length;
+  weaponBytes[packageName] += bytes.length;
   assert.equal(bytes.toString('ascii', 0, 4), 'glTF', path);
   assert.equal(bytes.readUInt32LE(4), 2, path);
   assert.equal(bytes.readUInt32LE(8), bytes.length, path);
@@ -153,4 +156,5 @@ for (const [name, length] of [['sword', 1.25], ['lava-staff', 1.7], ['crystal-st
   assert.ok(Math.abs(top - bottom - length) <= .06, `${name}: metric length`);
   console.log(JSON.stringify({ status: 'passed', weapon: name, bytes: bytes.length, triangles, length: top - bottom }));
 }
-assert.ok(weaponBytes <= 4 * 1024 * 1024, 'Combined weapon browser payload must stay within 4 MiB');
+assert.ok(weaponBytes['tripo-weapons'] <= 4 * 1024 * 1024, 'Original weapon browser payload must stay within 4 MiB');
+assert.ok(weaponBytes['tripo-extra-weapons'] <= 4.5 * 1024 * 1024, 'Additional weapon browser payload must stay within 4.5 MiB');

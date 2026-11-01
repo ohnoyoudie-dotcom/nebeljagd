@@ -6,7 +6,7 @@ import { getWorldmapStats, landBoundaryRings } from './map/model.js';
 function describeWeapon(item) {
   const type = item.type || item.kind;
   if (!WEAPON_TYPES.includes(type)) return { name: 'Leer', rarity: '', rarityLabel: '', color: '#bdc7af', damage: 0 };
-  const stats = weaponStats(type, item.rarity);
+  const stats = weaponStats(type, item.rarity, item.variant);
   return { ...stats, ...item, name: item.label || (item.name && item.name !== stats.name ? item.name : stats.label) };
 }
 
@@ -17,6 +17,8 @@ const icon = (name, className = '') => {
     chest: '<path d="M3 11h18v10H3ZM3 11V8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v3M8 3v8m8-8v8"/><path d="M10 10h4v5h-4z"/>',
     fireStaff: '<path d="m5 22 9-14m-5 7 4 2M13 11c-5-2-2-6 1-8 0 3 5 3 4 6a3 3 0 0 1-5 2Z"/>',
     iceStaff: '<path d="m5 22 9-14M14 1v12M8 4l12 6M8 10l12-6M11 2l3 2 3-2m-6 10 3-2 3 2"/>',
+    poisonStaff: '<path d="m5 22 9-13m-5 6 4 2M14 2c-1 3-5 5-5 8a5 5 0 0 0 10 0c0-3-4-5-5-8Z"/><path d="M12 10h.01M16 10h.01m-4 3 2 1 2-1"/>',
+    moonStaff: '<path d="m5 22 9-13m-5 6 4 2M18 2a6 6 0 1 0 4 9 6 6 0 0 1-4-9Z"/><path d="m8 3 .5 1.5L10 5l-1.5.5L8 7l-.5-1.5L6 5l1.5-.5Z"/>',
     heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
     fog: '<path d="M4 7h9m3 0h4M2 12h20M5 17h6m3 0h5"/><path d="m10 3 2-2 2 2"/>',
     arrow: '<path d="M4 12h15m-6-6 6 6-6 6"/>',
@@ -478,13 +480,18 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     if (weaponKey !== lastWeaponType) {
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
-      weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${weaponType === 'fireStaff' ? ' · Verbrennung' : weaponType === 'iceStaff' ? ' · Verlangsamung' : ''}` : 'Erste Waffe automatisch';
+      const effectDetail = { fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
+        poisonStaff: ' · Vergiftung', moonStaff: ' · Mondzauber' }[weaponType] || '';
+      weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
       weaponIcon.innerHTML = icon(weaponType || 'shield');
       weaponStatus.setAttribute('aria-label', weaponType ? `${weapon.name}, ${weapon.rarityLabel}, ${weapon.damage} Schaden` : 'Keine Waffe ausgerüstet');
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
-      attackButton.setAttribute('aria-label', weaponType === 'bow' ? 'Mit dem Bogen schießen' : weaponType === 'sword' ? 'Mit dem Schwert angreifen' : weaponType === 'fireStaff' ? 'Feuerzauber wirken' : weaponType === 'iceStaff' ? 'Eiszauber wirken' : 'Angriff: keine Waffe ausgerüstet');
+      const attackLabel = { bow: 'Mit dem Bogen schießen', sword: 'Mit dem Schwert angreifen',
+        fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
+        poisonStaff: 'Giftzauber wirken', moonStaff: 'Mondzauber wirken' }[weaponType];
+      attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
       lastWeaponType = weaponKey;
     }
     const attackCooldown = Math.max(0, state.attackCooldown ?? 0);

@@ -1,4 +1,4 @@
-"""Exercise the three Tripo weapons through the delivered editor and game.
+"""Exercise all six Tripo weapons through the delivered editor and game.
 
 NEBELJAGD_URL=http://127.0.0.1:5208 python tests/tripo_weapon_editor_smoke.py
 The URL may include /preview. Run after building the standalone files. Only the
@@ -28,7 +28,12 @@ WEAPONS = [
     ('sword', 'kit-tripo-sword', 'rare', [36, -54]),
     ('fireStaff', 'kit-tripo-lava-staff', 'uncommon', [44, -54]),
     ('iceStaff', 'kit-tripo-crystal-staff', 'legendary', [52, -54]),
+    ('poisonStaff', 'kit-tripo-poison-staff', 'rare', [60, -54]),
+    ('moonStaff', 'kit-tripo-moon-staff', 'common', [68, -54]),
+    ('bow', 'kit-tripo-ornate-bow', 'uncommon', [76, -54]),
 ]
+WEAPON_KINDS = {entry[0] for entry in WEAPONS}
+EXPECTED_DROPS = sum(obj['kind'] in WEAPON_KINDS for obj in BASE['objects']) + len(WEAPONS)
 REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [],
           'unexpectedRequests': [], 'screenshots': [], 'documents': [],
           'limits': 'Actual standalone HTML in Chromium/SwiftShader over local HTTP; no physical-device performance or public-host HTTP claim.'}
@@ -116,6 +121,8 @@ def assert_equipped(page, obj):
     assert held['type'] == obj['kind'] and held['variant'] == obj['variant'], held
     assert held['model'] == 'tripo' and held['meshCount'] > 0 and held['visible'], held
     expect(page.locator('#weaponStatus')).to_have_attribute('data-rarity', obj['rarity'])
+    if obj['variant'] == 'kit-tripo-ornate-bow':
+        expect(page.locator('#weaponName')).to_have_text('Verzierter Bogen')
     assert next(d for d in current['weaponDrops'] if d['id'] == obj['id'])['collected']
     return {'item': item, 'held': held}
 
@@ -181,10 +188,10 @@ try:
             assert obj['kind'] == kind and obj['variant'] == variant and obj['rarity'] == rarity
             objects.append(obj)
         edited = editor_state(editor)['map']
-        assert edited['objects'][:-3] == BASE['objects']
+        assert edited['objects'][:-len(WEAPONS)] == BASE['objects']
         assert {k: v for k, v in edited.items() if k != 'objects'} == {k: v for k, v in BASE.items() if k != 'objects'}
-        capture(editor, 'editor-three-weapons')
-        passed('Three new Tripo weapons can be added without changing the existing map or objects', objects)
+        capture(editor, 'editor-six-weapons')
+        passed('All six Tripo weapon models can be placed without changing the authored map or existing objects', objects)
 
         with editor.expect_popup() as popup:
             editor.locator('#playtest-world').click()
@@ -196,12 +203,12 @@ try:
         record_document('nebeljagd.html', 'nebeljagd.html')
         initial = game_state(game)
         assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
-        assert len(initial['weaponDrops']) == 3
+        assert len(initial['weaponDrops']) == EXPECTED_DROPS
         for obj in objects:
             drop = next(d for d in initial['weaponDrops'] if d['id'] == obj['id'])
             assert drop['model'] == 'tripo' and drop['variant'] == obj['variant'], drop
             assert drop['rarity'] == obj['rarity'] and not drop['collected'], drop
-        passed('The real Spielen action transfers exact objects to the sibling game and loads all three GLB drops',
+        passed('The real Spielen action transfers exact objects to the sibling game and loads the requested GLB drops',
                {'url': game.url, 'drops': initial['weaponDrops'], 'character': initial['character']})
         # The unchanged first launch above proves the user-facing handoff. Load
         # its stored draft again with the existing explicit inspection mode for
@@ -211,7 +218,7 @@ try:
         assert game_state(game)['world']['objects'] == edited['objects']
         game.locator('#startBtn').click()
         inspect(game, 44, -49)
-        capture(game, 'three-ground-models')
+        capture(game, 'six-ground-models')
 
         first = objects[0]
         inspect(game, *first['position'])
@@ -227,9 +234,10 @@ try:
             capture(game, 'held-' + obj['kind'])
             passed('Manual swap preserves the Tripo variant and held model: ' + obj['kind'], equipped)
 
-        for obj, target, distance in zip(objects, ['practice-2', 'practice-3', 'practice-1'], [1.3, 3, 3]):
+        targets = ['practice-2', 'practice-3', 'practice-1', 'practice-3', 'practice-1', 'practice-2']
+        for obj, target, distance in zip(objects, targets, [1.3, 3, 3, 3, 3, 3]):
             restored = reset(game)
-            assert len(restored['weaponDrops']) == 3
+            assert len(restored['weaponDrops']) == EXPECTED_DROPS
             assert all(d['model'] == 'tripo' for d in restored['weaponDrops'])
             inspect(game, *obj['position'])
             equipped = assert_equipped(game, obj)
@@ -247,6 +255,20 @@ try:
                 slowed = next(a for a in game_state(game)['practiceActors'] if a['id'] == target)
                 assert slowed['slowRemaining'] > 0 and slowed['speedMultiplier'] == .5, slowed
                 evidence['continuedSlow'] = slowed
+            if obj['kind'] == 'poisonStaff':
+                assert actor['poisonRemaining'] > 0, actor
+                wait_sim(game, .7)
+                poisoned = next(a for a in game_state(game)['practiceActors'] if a['id'] == target)
+                assert poisoned['health'] < actor['health'] - 1, poisoned
+                evidence['continuedPoison'] = poisoned
+            if obj['kind'] == 'moonStaff':
+                assert not actor['burnRemaining'] and not actor['poisonRemaining'] and not actor['slowRemaining'], actor
+            if obj['kind'] == 'bow':
+                assert equipped['held']['stringVertices'] > 0, equipped
+            if obj['kind'] in {'poisonStaff', 'moonStaff', 'bow'}:
+                grip = after['combat']['heldGrip']
+                assert grip and grip['error'] < .025, grip
+                evidence['grip'] = grip
             passed('Restart retains the GLB and normal attacks work: ' + obj['kind'], evidence)
 
         assert not REPORT['errors'], REPORT['errors']
