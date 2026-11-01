@@ -306,5 +306,11 @@ finally:
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
             summary.write('### Uploaded weapon browser check\n\n```json\n' +
                           json.dumps(diagnostic, ensure_ascii=False, indent=2) + '\n```\n')
+        if REPORT['status'] == 'failed':
+            # Public repository annotations remain readable where raw logs and
+            # job summaries require a web login. Preserve the actual failure.
+            message = json.dumps(diagnostic, ensure_ascii=False)
+            message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+            print('::error title=Uploaded weapon browser check::' + message, flush=True)
     print(json.dumps({'status': REPORT['status'], 'checks': len(REPORT['checks']),
                      'errors': REPORT['errors'], 'failure': REPORT.get('failure')}, ensure_ascii=False), flush=True)
