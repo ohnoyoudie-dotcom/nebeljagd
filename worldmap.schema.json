@@ -113,6 +113,15 @@
     "island": {
       "$ref": "#/$defs/island"
     },
+    "islets": {
+      "description": "Optionale getrennte Landflächen neben der Hauptinsel. Zwischen den Polygonen liegt kein Gelände; Brücken können die Lücke überspannen.",
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/island"
+      }
+    },
     "waterAreas": {
       "description": "Optionale polygonale Binnengewässer: echte Löcher im Inselboden, unabhängig von Flüssen und Wegen.",
       "type": "array",

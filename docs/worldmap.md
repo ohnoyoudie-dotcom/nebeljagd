@@ -125,7 +125,8 @@ SVG-`x/y` entspricht JSON-`x/z`. IDs bleiben bei Umbenennungen erhalten.
 | Datenfeld | Verwendung |
 | --- | --- |
 | `bounds` | Zeichenfläche und zulässiger Koordinatenrahmen |
-| `island.points` | Einfacher Küstenumriss als Polygon |
+| `island.points` | Küstenumriss der Hauptlandfläche als einfaches Polygon |
+| `islets` | Optionale weitere Landflächen mit `id`, `name` und `points`; zwischen ihnen bleibt echter freier Raum |
 | `waterAreas` | Optionale Gewässerpolygone mit `id`, `name` und `points`; tatsächliche Löcher im Inselboden |
 | `regions` | Biome-Polygone, Farben und Beschriftungspositionen |
 | `paths` | Linienzüge mit Breite und Art `main`, `trail` oder `bridge` |
@@ -136,11 +137,15 @@ SVG-`x/y` entspricht JSON-`x/z`. IDs bleiben bei Umbenennungen erhalten.
 | `zone` | Zentrum, Anfangsradius, Phasen und Nebelschaden |
 | `gameplay` | Zielspielerzahl, Laufgeschwindigkeit und `spawnPosition` |
 
-Gewässerflächen müssen vollständig innerhalb der Küste liegen und dürfen
-sich weder berühren noch überlappen. Küste und Gewässerufer begrenzen zusammen
-die begehbare Fläche. Der aktuelle Kartenstand enthält eine Lagune und leere
-`paths`-/`rivers`-Listen. Die beiden Landzugänge und ihre Prüfungen beschreibt
-[Zwei Landzugänge](two-access-island.md).
+Landflächen dürfen sich weder berühren noch überlappen. Gewässerflächen müssen
+vollständig innerhalb einer einzelnen Landfläche liegen und dürfen sich
+ebenfalls weder berühren noch überlappen. Küsten und Gewässerufer begrenzen das
+tatsächliche Gelände; Brückendecks können zusätzlich die freie Lücke zwischen
+Landflächen überqueren. Der aktuelle Kartenstand enthält Hauptland und ein
+Ostland unter `islets`, zwei Brücken unter `paths` sowie leere `rivers`- und
+`waterAreas`-Listen. Genau vier Biome bilden die Landschaften:
+`snow`, `forest`, `dunes` und `marsh`. Beschreibung und Vorschau:
+[Vier Biome und offene Brücken](open-gap-layout.md).
 
 Beispiel eines Weltobjekts:
 

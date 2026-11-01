@@ -73,6 +73,10 @@ test('castle facades, partitions and furniture stop movement and low projectiles
 
 test('terrain supports the full castle footprint after rotation and scaling', () => {
   const map = JSON.parse(read('worldmap.json'));
+  // Foundation tests use dry terrain independently of the authored coastline.
+  const { minX, minZ, maxX, maxZ } = map.bounds;
+  map.island = { ...map.island, points: [[minX, minZ], [maxX, minZ], [maxX, maxZ], [minX, maxZ]] };
+  map.islets = []; map.waterAreas = []; map.paths = []; map.rivers = [];
   for (const rotation of [0, Math.PI / 4, Math.PI / 2]) {
     const scale = 1.25, c = Math.cos(rotation), s = Math.sin(rotation);
     map.objects = [{ id: 'castle-ground-check', kind: 'house', variant: castle.variant,

@@ -5,7 +5,8 @@ export const MAX_WORLD_OBJECTS = 12000;
 export const GRASS_BRUSH_MIN_RADIUS = 1;
 export const GRASS_BRUSH_MAX_RADIUS = 16;
 
-/** Accept a legacy outer ring or a full map; full maps also protect inner shores. */
+/** Accept a legacy outer ring or a full map; full maps also protect inner shores
+ * and river channels. Scenery must leave bridges and their water approaches clear. */
 export function canPaintGrass(point, islandOrMap, radius) {
   if (!Array.isArray(point) || !point.every(Number.isFinite)) return false;
   const legacy = Array.isArray(islandOrMap);
@@ -13,6 +14,14 @@ export function canPaintGrass(point, islandOrMap, radius) {
   const rings = legacy ? [islandOrMap] : landBoundaryRings(islandOrMap);
   for (const ring of rings) for (let i = 0; i < ring.length; i++) {
     if (distanceToSegment(point, ring[i], ring[(i + 1) % ring.length]) < radius) return false;
+  }
+  if (!legacy) for (const river of islandOrMap.rivers ?? []) for (let i = 1; i < river.points.length; i++) {
+    if (distanceToSegment(point, river.points[i - 1], river.points[i]) < river.width / 2 + radius) return false;
+  }
+  if (!legacy) for (const bridge of (islandOrMap.paths ?? []).filter(path => path.kind === 'bridge')) {
+    for (let i = 1; i < bridge.points.length; i++) {
+      if (distanceToSegment(point, bridge.points[i - 1], bridge.points[i]) < bridge.width / 2 + radius) return false;
+    }
   }
   return true;
 }

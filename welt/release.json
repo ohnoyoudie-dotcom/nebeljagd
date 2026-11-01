@@ -1,38 +1,38 @@
 {
   "branch": "work",
-  "sourceCommit": "cc8aa5a9b37cc59e03173908a4cae2de65a465fc",
+  "sourceCommit": "f8939fcdab40fafef685a3d894212ad5afc6dbbd",
   "files": {
     "map-editor.html": {
-      "bytes": 60485414,
-      "sha256": "c62485d9c3753c4c751352dd7a893b49ab83c80b1caa303b86b04a193f60840f"
+      "bytes": 60490568,
+      "sha256": "50369e11d8d725acf5bbf50cc8a4593a8d989f55480211e6bb2ea4aef7df2ea5"
     },
     "nebeljagd.html": {
-      "bytes": 75903607,
-      "sha256": "72ec8187cebcfdd6a1eaf054fed910e2341604196fcdddd1e7db5e272ff2c620"
+      "bytes": 75907149,
+      "sha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245"
     },
     "index.html": {
-      "bytes": 75903607,
-      "sha256": "72ec8187cebcfdd6a1eaf054fed910e2341604196fcdddd1e7db5e272ff2c620"
+      "bytes": 75907149,
+      "sha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 21722,
-      "sha256": "fce0d00185a3a4020751c9c5e56d1e02d20522c67c85682f4c1e21bb8a2cffa7"
+      "bytes": 19060,
+      "sha256": "83e3462239ba8607b23953aa71dbb710c0c5ec71d5f7f8296bac52ff12295bfc"
     },
     "worldmap.svg": {
-      "bytes": 44911,
-      "sha256": "252e3455eae8006cb3486647acc51d9a9f9ea8faad1ff898d99de56df001e2f2"
+      "bytes": 43919,
+      "sha256": "b6bafc0086e0b4aa0e7fa8dd8d11c9daa87277db811484975fddb9e136b22546"
     },
     "worldmap.schema.json": {
-      "bytes": 39619,
-      "sha256": "21573b74d0d7223d2c6c32b8116122fbc7166dad4a50ab6bb797d1aba61c0b68"
+      "bytes": 39931,
+      "sha256": "899033eba3774929dafe305f3576f897f167240ec0eba9bc3b36771d16533158"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 88347754,
-      "sha256": "49086094caac1e300f4f9719071b65c533aea6c1b513b7944ad9c51edc1cb224"
+      "bytes": 88349945,
+      "sha256": "701d8e4e224b620951d1b71e209c9d980909000447cafb002f95fe70f2d0a055"
     }
   }
 }

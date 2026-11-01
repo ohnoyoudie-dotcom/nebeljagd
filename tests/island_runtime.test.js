@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createWorldSpatialModel, triangulateWorldLand } from '../src/generated-spatial.js';
-import { pointInPolygon, polygonArea } from '../src/map/model.js';
+import { pointInPolygon, polygonArea, outerLandRings, waterBoundaryRings } from '../src/map/model.js';
 
 const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
@@ -13,7 +13,7 @@ const triangles = triangulateWorldLand(map);
 test('runtime island triangulation follows the concave coastline without filling bays or losing land', () => {
   assert.ok(triangles.length > 0);
   const area = triangles.reduce((sum, triangle) => sum + polygonArea(triangle), 0);
-  const landArea = polygonArea(map.island.points) - (map.waterAreas ?? []).reduce((sum, area) => sum + polygonArea(area.points), 0);
+  const landArea = outerLandRings(map).reduce((sum, ring) => sum + polygonArea(ring), 0) - waterBoundaryRings(map).reduce((sum, ring) => sum + polygonArea(ring), 0);
   assert.ok(Math.abs(area - landArea) < 1e-6);
   for (const triangle of triangles) {
     assert.ok(polygonArea(triangle) > 1e-8, 'no degenerate source triangles');
@@ -50,7 +50,7 @@ test('the current island has explicit biome coverage and finite runtime ground/c
     }
   }
   assert.ok(samples > 1000);
-  assert.deepEqual([...seen].sort(), map.regions.map(region => region.biome).sort());
+  assert.deepEqual([...seen].sort(), [...new Set(map.regions.map(region => region.biome))].sort());
   const spawn = map.gameplay.spawnPosition;
   assert.ok(spatial.isLand(...spawn) && !spatial.isWater(...spawn, .42), 'normal game start stays on dry land');
   for (const area of map.spawnAreas) {

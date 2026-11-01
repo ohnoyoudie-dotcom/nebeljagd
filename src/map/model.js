@@ -45,18 +45,54 @@ export function pointInPolygon(point, points) {
   return inside;
 }
 
-/** Every coastline, with the exterior first. Optional inland water polygons
- * are holes, not rivers, and older documents need no extra collection. */
-export function landBoundaryRings(map) {
-  return [map?.island?.points ?? [], ...(Array.isArray(map?.waterAreas) ? map.waterAreas : [])
-    .filter(area => Array.isArray(area?.points) && area.points.length >= 3 && area.points.every(coordinate))
-    .map(area => area.points)];
+const polygonRings = areas => areas
+  .filter(area => Array.isArray(area?.points) && area.points.length >= 3 && area.points.every(coordinate))
+  .map(area => area.points);
+
+/** Separate terrain components. Optional islets do not invent land between them. */
+export function outerLandRings(map) {
+  return polygonRings([map?.island, ...(Array.isArray(map?.islets) ? map.islets : [])]);
 }
 
-/** Exterior shoreline is land; inland-water edges belong to the water. */
+/** Interior water holes remain separate from exterior shorelines. */
+export function waterBoundaryRings(map) {
+  return polygonRings(Array.isArray(map?.waterAreas) ? map.waterAreas : []);
+}
+
+/** Every shoreline: all terrain exteriors, followed by all interior-water rings. */
+export function landBoundaryRings(map) {
+  return [...outerLandRings(map), ...waterBoundaryRings(map)];
+}
+
+/** Terrain only: exterior shores are land, interior water and inter-island gaps are not. */
 export function isLandPoint(map, point) {
-  return pointInPolygon(point, map?.island?.points)
-    && !landBoundaryRings(map).slice(1).some(ring => pointInPolygon(point, ring));
+  return outerLandRings(map).some(ring => pointInPolygon(point, ring))
+    && !waterBoundaryRings(map).some(ring => pointInPolygon(point, ring));
+}
+
+/** Authoring guard only: preserve legacy imports while preventing newly flooded
+ * or moved starts. Bridge decks are kept clear of new starting areas too. */
+export function validateStartRiverEdit(candidate, previous) {
+  const errors = [];
+  const riversChanged = JSON.stringify(candidate.rivers ?? []) !== JSON.stringify(previous.rivers ?? []);
+  const overlapsRiver = (map, position, radius = 0) => coordinate(position) && finite(radius)
+    && (Array.isArray(map.rivers) ? map.rivers : []).some(river => finite(river?.width) && river.width > 0
+      && Array.isArray(river.points) && river.points.some((point, i, points) => i > 0
+        && coordinate(point) && coordinate(points[i - 1])
+        && distanceToSegment(position, points[i - 1], point) <= river.width / 2 + radius));
+  const start = candidate.gameplay?.spawnPosition, oldStart = previous.gameplay?.spawnPosition;
+  if (overlapsRiver(candidate, start) && (JSON.stringify(start) !== JSON.stringify(oldStart)
+    || riversChanged && !overlapsRiver(previous, oldStart))) errors.push('Der Spielstart muss außerhalb von Flüssen und Wasserkanälen liegen.');
+  const originals = new Map((previous.spawnAreas ?? []).map(spawn => [spawn.id, spawn]));
+  for (const spawn of candidate.spawnAreas ?? []) {
+    const original = originals.get(spawn.id);
+    const moved = !original || ['position', 'radius'].some(key => JSON.stringify(spawn[key]) !== JSON.stringify(original[key]));
+    if (overlapsRiver(candidate, spawn.position, spawn.radius) && (moved
+      || riversChanged && !overlapsRiver(previous, original?.position, original?.radius))) {
+      errors.push(`Startbereich ${spawn.name} überlappt einen Fluss oder Wasserkanal.`);
+    }
+  }
+  return errors;
 }
 
 function intersects(a, b, c, d) {
@@ -123,14 +159,27 @@ export function validateWorldmap(map) {
   const game = map.gameplay;
   if (!object(game) || !Number.isInteger(game.targetPlayers) || game.targetPlayers < 1 || game.targetPlayers > 1000 || !finite(game.walkSpeedMetersPerSecond) || game.walkSpeedMetersPerSecond <= 0 || game.walkSpeedMetersPerSecond > 100) error('gameplay benötigt 1–1000 Zielspieler und eine positive Laufgeschwindigkeit bis 100 m/s.');
   const islandValid = common(map.island, 'Insel') && points(map.island, 'Insel', true);
+  if (map.islets !== undefined && (!Array.isArray(map.islets) || map.islets.length > 50)) error('islets muss eine Liste mit höchstens 50 zusätzlichen Landflächen sein.');
+  const landAreas = islandValid ? [map.island] : [];
+  for (const area of Array.isArray(map.islets) ? map.islets.slice(0, 50) : []) {
+    const before = errors.length;
+    if (!common(area, 'Landfläche')) continue;
+    if (!points(area, `Landfläche ${area.id}`, true) || errors.length !== before) continue;
+    for (const other of landAreas) {
+      if (ringsIntersect(area.points, other.points) || pointInPolygon(area.points[0], other.points) || pointInPolygon(other.points[0], area.points)) {
+        error(`Landflächen ${area.name} und ${other.name} dürfen sich nicht überlappen, berühren oder ineinander liegen.`);
+      }
+    }
+    landAreas.push(area);
+  }
   if (map.waterAreas !== undefined && (!Array.isArray(map.waterAreas) || map.waterAreas.length > 50)) error('waterAreas muss eine Liste mit höchstens 50 Wasserflächen sein.');
   const waterAreas = [];
   for (const area of Array.isArray(map.waterAreas) ? map.waterAreas.slice(0, 50) : []) {
     const before = errors.length;
     if (!common(area, 'Wasserfläche')) continue;
     if (!points(area, `Wasserfläche ${area.id}`, true) || errors.length !== before) continue;
-    if (islandValid && (!area.points.every(point => pointInPolygon(point, map.island.points))
-      || ringsIntersect(area.points, map.island.points))) error(`Wasserfläche ${area.name} muss vollständig innerhalb der Insel liegen und Abstand zur Außenküste halten.`);
+    if (islandValid && !landAreas.some(land => area.points.every(point => pointInPolygon(point, land.points))
+      && !ringsIntersect(area.points, land.points))) error(`Wasserfläche ${area.name} muss vollständig innerhalb einer Landfläche liegen und Abstand zur Außenküste halten.`);
     for (const other of waterAreas) {
       if (ringsIntersect(area.points, other.points) || pointInPolygon(area.points[0], other.points) || pointInPolygon(other.points[0], area.points)) {
         error(`Wasserflächen ${area.name} und ${other.name} dürfen sich nicht überlappen, berühren oder ineinander liegen.`);
@@ -173,9 +222,10 @@ export function validateWorldmap(map) {
     else capacity += spawn.capacity;
     if (positionValid && islandValid) {
       const rings = landBoundaryRings(map).map(openRing);
+      const exteriorCount = outerLandRings(map).length;
       const touchesWater = radiusValid && rings.some((ring, boundary) => ring.some((a, i) => {
         const distance = distanceToSegment(spawn.position, a, ring[(i + 1) % ring.length]);
-        return boundary === 0 ? distance < spawn.radius : distance <= spawn.radius + 1e-7;
+        return boundary < exteriorCount ? distance < spawn.radius : distance <= spawn.radius + 1e-7;
       }));
       if (!isLandPoint(map, spawn.position) || touchesWater) error(`Startbereich ${spawn.name} liegt teilweise außerhalb der Insel oder in einer Wasserfläche.`);
     }
@@ -217,7 +267,7 @@ export function validateWorldmap(map) {
       if (!finite(phase.radius) || phase.radius <= 0 || phase.radius >= previousRadius) error(`${phase.id}: Der Radius muss positiv und kleiner als in der vorigen Phase sein.`);
       previousRadius = phase.radius;
     }
-    if (centerValid && islandValid && finite(zone.initialRadius) && map.island.points.some(point => Math.hypot(point[0] - zone.center[0], point[1] - zone.center[1]) > zone.initialRadius)) warnings.push('Teile der Insel liegen bereits am Anfang im Nebel.');
+    if (centerValid && islandValid && finite(zone.initialRadius) && outerLandRings(map).some(ring => ring.some(point => Math.hypot(point[0] - zone.center[0], point[1] - zone.center[1]) > zone.initialRadius))) warnings.push('Teile der Insel liegen bereits am Anfang im Nebel.');
   }
   errors.push(...validateLandscape(map, { ids, checkPoint }));
   errors.push(...validateBarriers(map, { ids, checkPoint, islandValid,
@@ -226,9 +276,11 @@ export function validateWorldmap(map) {
 }
 
 export function getWorldmapStats(map) {
-  const xs = map.island.points.map(point => point[0]), zs = map.island.points.map(point => point[1]);
+  const exteriors = outerLandRings(map), exteriorPoints = exteriors.flat();
+  const xs = exteriorPoints.map(point => point[0]), zs = exteriorPoints.map(point => point[1]);
   const widthM = Math.max(...xs) - Math.min(...xs), heightM = Math.max(...zs) - Math.min(...zs);
-  const landAreaM2 = polygonArea(map.island.points) - landBoundaryRings(map).slice(1).reduce((sum, ring) => sum + polygonArea(ring), 0);
+  const landAreaM2 = exteriors.reduce((sum, ring) => sum + polygonArea(ring), 0)
+    - waterBoundaryRings(map).reduce((sum, ring) => sum + polygonArea(ring), 0);
   return {
     landAreaM2, widthM, heightM,
     walkAcrossSeconds: Math.max(widthM, heightM) / map.gameplay.walkSpeedMetersPerSecond,

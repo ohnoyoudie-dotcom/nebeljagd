@@ -218,6 +218,15 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     ctx.beginPath();
     for (const ring of landBoundaryRings(worldmap)) traceMapLine(ctx, ring, true, false);
   }
+  function drawMapPath(ctx, path, local, scale) {
+    traceMapLine(ctx, path.points);
+    const bridge = path.kind === 'bridge';
+    ctx.strokeStyle = bridge ? '#453d2a' : '#45614866';
+    ctx.lineWidth = Math.max(bridge ? 2.8 : 1.8, path.width * scale + (local ? 2 : .7)); ctx.stroke();
+    ctx.strokeStyle = bridge ? '#f1d8a5' : '#e0ce9e';
+    ctx.lineWidth = Math.max(bridge ? 1.7 : .85, path.width * scale);
+    ctx.setLineDash(path.kind === 'trail' ? (local ? [3, 2.5] : [1.5, 2.5]) : []); ctx.stroke(); ctx.setLineDash([]);
+  }
   function mapSymbol(ctx, kind, x, y, size = 6, color = '#f0ddad') {
     ctx.save(); ctx.translate(x, y); ctx.lineJoin = 'round'; ctx.lineWidth = 1.4;
     ctx.fillStyle = color; ctx.strokeStyle = '#244138';
@@ -270,15 +279,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       ctx.strokeStyle = '#315961'; ctx.lineWidth = Math.max(2, river.width * scale + 1.5); ctx.stroke();
       ctx.strokeStyle = '#8bc5ce'; ctx.lineWidth = Math.max(1.2, river.width * scale); ctx.stroke();
     }
-    for (const path of worldmap.paths || []) {
-      traceMapLine(ctx, path.points);
-      const bridge = path.kind === 'bridge';
-      ctx.strokeStyle = bridge ? '#453d2a' : '#45614866';
-      ctx.lineWidth = Math.max(bridge ? 2.8 : 1.8, path.width * scale + (local ? 2 : .7)); ctx.stroke();
-      ctx.strokeStyle = bridge ? '#f1d8a5' : '#e0ce9e';
-      ctx.lineWidth = Math.max(bridge ? 1.7 : .85, path.width * scale);
-      ctx.setLineDash(path.kind === 'trail' ? (local ? [3, 2.5] : [1.5, 2.5]) : []); ctx.stroke(); ctx.setLineDash([]);
-    }
+    for (const path of worldmap.paths || []) if (path.kind !== 'bridge') drawMapPath(ctx, path, local, scale);
     if (local) for (const object of landmarkObjects) {
       const [px, py] = mapProjection.point(...object.position);
       const footprint = object.kind === 'house' ? getEnvironmentKitDefinition('house', object.variant)?.footprint : null;
@@ -298,6 +299,10 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     }
     ctx.restore();
     traceMapLand(ctx); ctx.strokeStyle = '#e8dfb8b3'; ctx.lineWidth = local ? 1.4 : .8; ctx.stroke();
+    // Decks cross the open water between independent land polygons. Draw them
+    // above the coast after releasing the land clip in both minimap modes.
+    ctx.lineCap = ctx.lineJoin = 'round';
+    for (const path of worldmap.paths || []) if (path.kind === 'bridge') drawMapPath(ctx, path, local, scale);
     for (const place of worldmap.places || []) {
       const [px, py] = mapProjection.point(...place.position);
       if (px < 12 || py < 13 || px > size - 12 || py > size - 13) continue;

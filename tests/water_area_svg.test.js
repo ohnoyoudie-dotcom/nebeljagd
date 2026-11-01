@@ -13,7 +13,7 @@ function fixture() {
   map.paths = []; map.rivers = []; map.objects = []; map.barriers = []; map.places = [];
   map.spawnAreas = [{ id: 'start', name: 'Start', position: [-60, -60], radius: 8, capacity: 50 }];
   map.gameplay.spawnPosition = [-60, -60]; map.zone.center = [-60, -60];
-  delete map.landscape; delete map.waterAreas;
+  delete map.landscape; delete map.waterAreas; delete map.islets;
   return map;
 }
 
