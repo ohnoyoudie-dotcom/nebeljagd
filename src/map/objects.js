@@ -21,8 +21,8 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'grass', label: 'Grasfläche', defaultVariant: 'tall', defaultScale: 1, footprintRadius: 3, defaultRadius: 3.5,
     variants: [{ id: 'tall', label: 'Hohes Versteckgras' }, { id: 'short', label: 'Niedriges Gras' }, { id: 'kit-tall', label: 'Hohes Gras · GLB' }] },
   { kind: 'rock', label: 'Felsen', defaultVariant: 'granite', defaultScale: 1, footprintRadius: 1.35,
-    variants: [{ id: 'granite', label: 'Granit' }, { id: 'basalt', label: 'Dunkler Basalt' },
-      { id: 'kit-cluster', label: 'Felsgruppe · GLB' }, { id: 'kit-single', label: 'Einzelfelsen · GLB' },
+    variants: [{ id: 'granite', label: 'Granit', retired: true }, { id: 'basalt', label: 'Dunkler Basalt', retired: true },
+      { id: 'kit-cluster', label: 'Felsgruppe · GLB', retired: true }, { id: 'kit-single', label: 'Einzelfelsen · GLB', retired: true },
       { id: 'kit-tripo-01', label: 'Flacher Felsen · Tripo', footprintRadius: 1.32 },
       { id: 'kit-tripo-02', label: 'Findling · Tripo', footprintRadius: 1.45 },
       { id: 'kit-tripo-03', label: 'Hohe Felsgruppe · Tripo', footprintRadius: 1.76 }] },
@@ -78,6 +78,30 @@ export const OBJECT_CATALOG = Object.freeze([
 /** Only fresh placement is restricted; legacy definitions still validate and
  * render saved maps until the user deliberately applies the cleanup action. */
 export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(definition => !definition.retired));
+
+/** Only approved Tripo models belong in the individual object palette.
+ * Runtime loot, grass painting and barrier drawing keep their own catalogues. */
+const placementAssetIds = new Set([
+  'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
+  'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
+  'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
+  'chest:kit-tripo-chest',
+]);
+export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.flatMap(definition => {
+  const variants = definition.variants.filter(variant => !variant.retired && placementAssetIds.has(variant.assetId));
+  if (!variants.length) return [];
+  return [Object.freeze({ ...definition,
+    label: definition.kind === 'chest' ? 'Schatztruhe' : definition.label,
+    defaultVariant: variants.some(variant => variant.id === definition.defaultVariant)
+      ? definition.defaultVariant : variants[0].id,
+    variants: Object.freeze(variants),
+  })];
+}));
+const placementDefinitions = new Map(PLACEMENT_OBJECT_CATALOG.map(definition => [definition.kind, definition]));
+export function isObjectPlaceable(kind, variant) {
+  const definition = placementDefinitions.get(kind);
+  return !!definition && (variant === undefined || definition.variants.some(entry => entry.id === variant));
+}
 
 const definitions = new Map(OBJECT_CATALOG.map(item => [item.kind, item]));
 let objectCounter = 0;

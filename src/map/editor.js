@@ -6,7 +6,7 @@ import { makeBarrier, barrierLength } from './barriers.js';
 import { createBarrierPanel } from './barrier-panel.js';
 import { barrierHeightHint, isHeightAdjustable } from './barrier-height.js';
 import { simplifyBarrierPoints, nearestBarrier, barrierEraseHits } from './barrier-drawing.js';
-import { AUTHORING_OBJECT_CATALOG, isObjectAvailable, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
+import { OBJECT_CATALOG, PLACEMENT_OBJECT_CATALOG, isObjectPlaceable, getObjectDefinition, getObjectFootprintRadius, makeWorldObject, normalizeWorldmap } from './objects.js';
 import { canPaintGrass } from './grass-brush.js';
 import { createLandscapePanel } from './landscape-panel.js';
 import { getLandscape, ensureLandscape } from './landscape.js';
@@ -14,7 +14,7 @@ import { eraseLandscapeAt } from './landscape-brush.js';
 import { createObjectEraserStroke, objectEraserTargets } from './object-eraser.js';
 import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
-import { removeRetiredScenery } from './retired-scenery.js';
+import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -101,30 +101,26 @@ if (!retiredSceneryBanner) {
   const label = document.createElement('span'); label.id = 'retired-scenery-note';
   const button = document.createElement('button');
   button.id = 'remove-retired-scenery'; button.className = 'button small';
-  button.textContent = 'Alte Objekte und Zäune entfernen';
+  button.textContent = 'Auf Tripo-Objekte bereinigen';
   retiredSceneryBanner.append(label, button);
   retiredBuildingsBanner.after(retiredSceneryBanner);
 }
 $('remove-retired-scenery').addEventListener('click', () => {
   if (pointer) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
-  const result = removeRetiredScenery(map);
-  if (!result.totalChanged) return;
+  const result = removeNonTripoObjects(map);
+  if (!result.totalRemoved) return;
   selection = null;
-  const preservedMeadows = result.convertedGrass.length
-    ? ` ${result.convertedGrass.length} Blumenwiesen als Gras erhalten.` : '';
   commit(candidate => {
-    const cleaned = removeRetiredScenery(candidate).map;
+    const cleaned = removeNonTripoObjects(candidate).map;
     candidate.objects = cleaned.objects;
     if (cleaned.barriers !== undefined) candidate.barriers = cleaned.barriers;
-  }, `${result.totalRemoved} alte Objekte und Zaunstrecken entfernt.${preservedMeadows} Beute und andere Änderungen bleiben erhalten; „Zurück“ stellt den Entwurf wieder her.`);
+  }, `${result.totalRemoved} alte Platzierungen entfernt. Aktuelle Mauer- und Zaunstrecken bleiben erhalten; „Zurück“ stellt den Entwurf wieder her.`);
 });
 function updateRetiredSceneryBanner() {
-  const result = removeRetiredScenery(map);
-  retiredSceneryBanner.hidden = !result.totalChanged;
-  const preservedMeadows = result.convertedGrass.length
-    ? ` ${result.convertedGrass.length} Blumenwiesen werden als Gras erhalten.` : '';
+  const result = removeNonTripoObjects(map);
+  retiredSceneryBanner.hidden = !result.totalRemoved;
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
-    : `Dieser Entwurf enthält ${result.removedObjects.length} ausgemusterte Objekte und ${result.removedBarriers.length} alte GLB-Zaunstrecken.${preservedMeadows} Beute, neue Modelle und übrige Kartendaten bleiben erhalten.`;
+    : `Bereinigung: ${result.removedObjects.length} alte Objektplatzierungen (Nicht-Tripo oder kleines Schloss) und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch platzierte Beute und Grasobjekte. Aktuelle Tripo-Modelle, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
 }
 
 function initialView() {
@@ -457,7 +453,7 @@ function renderProperties() {
   if (selection.type === 'spawn') { $('feature-radius').value = feature.radius; $('feature-capacity').value = feature.capacity; }
   $('object-properties').hidden = selection.type !== 'object';
   $('duplicate-object').hidden = selection.type !== 'object';
-  $('duplicate-object').disabled = selection.type === 'object' && !isObjectAvailable(feature.kind, feature.variant);
+  $('duplicate-object').disabled = selection.type === 'object' && !isObjectPlaceable(feature.kind, feature.variant);
   if (selection.type === 'object') {
     fillVariants($('object-variant'), feature.kind, feature.variant);
     renderAssetPreview('object', feature.kind, feature.variant);
@@ -1095,14 +1091,20 @@ function setMode(next) {
 }
 
 function fillVariants(select, kind, value = null) {
-  const definition = getObjectDefinition(kind);
+  const definition = PLACEMENT_OBJECT_CATALOG.find(item => item.kind === kind);
   select.replaceChildren();
-  for (const variant of definition.variants) {
-    if ((definition.retired || variant.retired) && variant.id !== value) continue;
+  for (const variant of definition?.variants ?? []) {
     const option = document.createElement('option'); option.value = variant.id; option.textContent = variant.label;
     select.append(option);
   }
-  select.value = value ?? definition.defaultVariant;
+  // Keep imported placements editable without offering retired models anew.
+  if (value !== null && !isObjectPlaceable(kind, value)) {
+    const variant = getObjectDefinition(kind).variants.find(item => item.id === value);
+    const option = document.createElement('option'); option.value = value;
+    option.textContent = `${variant?.label ?? value} · alte Platzierung`;
+    option.disabled = true; select.append(option);
+  }
+  select.value = value ?? definition?.defaultVariant ?? '';
 }
 function renderAssetPreview(prefix, kind, variant) {
   const asset = getVariantAsset(kind, variant);
@@ -1130,8 +1132,8 @@ function preparePalette() {
     option.textContent = `${rarity.label} · ×${rarity.multiplier}`; select.append(option);
   }
   $('palette-rarity').value = 'common';
-  for (const definition of AUTHORING_OBJECT_CATALOG) {
-    for (const select of [$('palette-kind'), $('object-kind-filter')]) {
+  for (const [select, catalog] of [[$('palette-kind'), PLACEMENT_OBJECT_CATALOG], [$('object-kind-filter'), OBJECT_CATALOG]]) {
+    for (const definition of catalog) {
       const option = document.createElement('option'); option.value = definition.kind; option.textContent = definition.label;
       select.append(option);
     }
@@ -1144,7 +1146,7 @@ function addObjectAt(point) {
   const position = snapped(point);
   if (!pointInPolygon(position, map.island.points)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
   const kind = $('palette-kind').value;
-  if (!isObjectAvailable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
+  if (!isObjectPlaceable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   const added = makeWorldObject(kind, position, {variant: $('palette-variant').value, rarity: $('palette-rarity').value});
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
     layers.showObjects = true; $('layer-objects').checked = true;
@@ -1168,7 +1170,7 @@ function focusSelection() {
 function duplicateObject() {
   const original = selectedFeature();
   if (selection?.type !== 'object' || !original) return;
-  if (!isObjectAvailable(original.kind, original.variant)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
+  if (!isObjectPlaceable(original.kind, original.variant)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   let point = [original.position[0] + 5, original.position[1] + 5];
   if (!pointInPolygon(point, map.island.points)) point = original.position;
   const added = makeWorldObject(original.kind, point, {...original, id: undefined, name: `${original.name} · Kopie`.slice(0,120)});

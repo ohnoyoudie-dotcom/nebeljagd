@@ -1,5 +1,9 @@
 # Kleines Schloss im Editor und Spiel
 
+> Das kleine Schloss ist inzwischen aus Auswahl und Projektkarte entfernt.
+> Diese Seite dokumentiert nur die frühere Integration; Quelldateien bleiben
+> für ältere Karten lesbar. Siehe [aktuelle Auswahl](tripo-object-cleanup.md).
+
 Die bereits im Repository vorhandene Datei **assets/inbox/castle interior 3d model.glb**
 ist als **Haus → Kleines Schloss · Tripo** eingebunden. Es ist das kleinere
 Schloss mit einem großen Saal und vier Seitenräumen, nicht der spätere

@@ -84,15 +84,15 @@ test('paint respects coastline, water, roads and rotated obstacle footprints wit
   for (const item of brush.objects) assert.equal(guard.reason(item.position, item.radius, 'grass'), null);
 });
 
-test('natural shrub scatter uses saved GLB variants, variable rotation/scale, clear footprints and immutable placements', () => {
+test('natural rock scatter uses saved Tripo variants, variable rotation/scale, clear footprints and immutable placements', () => {
   const map = fixture(), before = JSON.stringify(map);
   const options = { radius: 35, seed: 718, scatter: { density: 1, minDistance: 4, scaleMin: .8, scaleMax: 1.3,
-    clustering: .9, randomRotation: true, entries: [{ kind: 'bush', variant: 'rei-bush', weight: 1 }] } };
+    clustering: .9, randomRotation: true, entries: [{ kind: 'rock', variant: 'kit-tripo-01', weight: 1 }] } };
   const stroke = createScatterStroke(map, options);
   stroke.sample([-90, -100]);
   assert.ok(stroke.objects.length > 15);
   assert.equal(JSON.stringify(map), before);
-  assert.ok(stroke.objects.some(o => o.variant === 'rei-bush'));
+  assert.ok(stroke.objects.every(o => o.kind === 'rock' && o.variant === 'kit-tripo-01'));
   assert.ok(new Set(stroke.objects.map(o => o.rotation)).size > 10);
   assert.ok(new Set(stroke.objects.map(o => o.scale)).size > 10);
   for (let i = 0; i < stroke.objects.length; i++) for (let j = i + 1; j < stroke.objects.length; j++) {
@@ -173,10 +173,10 @@ test('existing kit walls, fences, crates and compact houses guard their actual r
   assert.throws(() => createScatterStroke(map, { radius: 35, seed: 17,
     scatter: { density: .8, entries: [{ kind: 'tree', variant: 'kit-oak-autumn', weight: 1 }] } }),
   /aktuell verfügbare/, 'saved tree-only scatter cannot revive a retired model');
-  const glbGrass = createScatterStroke(fixture(), { radius: 12, seed: 11, scatter: { density: .5, entries: [{ kind: 'grass', variant: 'kit-tall', weight: 1 }] } });
-  glbGrass.sample([-90, -100]);
-  assert.ok(glbGrass.objects.length > 0);
-  assert.ok(glbGrass.objects.every(item => item.variant === 'kit-tall'), 'explicit imported grass variant is retained');
+  const tripoRocks = createScatterStroke(fixture(), { radius: 12, seed: 11, scatter: { density: .5, entries: [{ kind: 'rock', variant: 'kit-tripo-02', weight: 1 }] } });
+  tripoRocks.sample([-90, -100]);
+  assert.ok(tripoRocks.objects.length > 0);
+  assert.ok(tripoRocks.objects.every(item => item.kind === 'rock' && item.variant === 'kit-tripo-02'), 'explicit imported Tripo rock variant is retained');
 });
 
 test('shared kit normalization preserves the existing model sizes and recentered collider geometry without browser imports', () => {

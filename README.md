@@ -17,16 +17,13 @@ Das neue Tripo-Wirtshaus ist unter **Objekte → Haus →
 Wirtshaus · Tripo (neu)** auswählbar. Es enthält eine Modellvorschau, offene
 Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
-Die bisherigen Häuser wurden von der Ausgangskarte entfernt. Neue Platzierungen
-verwenden das Tripo-Wirtshaus; alte Entwürfe lassen sich gezielt bereinigen.
-Holzwagen, Holzfass, Steinbrunnen und die Schatztruhe ergänzen den
-Tripo-Katalog. Bedienung und aktueller Prüfstand:
-[`docs/tripo-props-integration.md`](docs/tripo-props-integration.md).
-Bäume, Felsen (einschließlich der bisherigen Tripo-Felsen), Erhöhungen und
-Blumen wurden aus der damaligen Karte und der Auswahl entfernt. Spätere
-Benutzerplatzierungen bleiben erhalten; ältere Entwürfe lassen sich gezielt
-und rückgängig machbar bereinigen.
-Details: [`docs/scenery-cleanup.md`](docs/scenery-cleanup.md).
+Die Objektauswahl enthält ausschließlich freigegebene Tripo-Modelle:
+Wirtshaus, **Wohnhaus 2**, drei Felsenvarianten, Holzwagen, Holzfass,
+Steinbrunnen und Schatztruhe. Das kleine Schloss und die alten Einzelobjekte
+sind entfernt. Mauern und Zäune werden weiterhin über ihr Zeichenwerkzeug
+gezogen; Gras hat einen eigenen Pinsel. Ältere lokale Karten lassen sich mit
+**Auf Tripo-Objekte bereinigen** samt Rückgängig-Funktion aufräumen.
+Bedienung und Prüfstand: [`docs/tripo-object-cleanup.md`](docs/tripo-object-cleanup.md).
 
 Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
 Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
@@ -36,21 +33,17 @@ Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große In
 wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
-Teil der Welt. Begehbare Tripo-Wirtshäuser und das kleine Tripo-Schloss lassen
-sich im Editor platzieren. Das Schloss steht unter **Objekte → Haus →
-Kleines Schloss · Tripo** bereit; Details in
-[docs/tripo-castle-integration.md](docs/tripo-castle-integration.md).
+Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor
+platzieren; das kleine Tripo-Schloss ist aus der aktiven Auswahl entfernt.
 
-Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Häuser,
-Grasflächen, Sträucher, Ruinen, Schreine und Gegenstände
+Der [Karteneditor](map-editor.html) bearbeitet dieselben Daten. Tripo-Objekte
 lassen sich anlegen, verschieben, drehen, skalieren, duplizieren und löschen.
 **„Spielen“** öffnet den aktuellen Entwurf im Spiel. Varianten zeigen echte
 Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
-Die aktuelle Karte enthält 961 gespeicherte Weltobjekte, einschließlich der
-acht später selbst platzierten Modelle. Alle ursprünglichen 66 Sammel- und
-Beuteobjekte bleiben erhalten; eine zusätzliche Tripo-Truhe ist dazugekommen.
+Die aktuelle Projektkarte enthält ein Tripo-Wirtshaus und vier gezeichnete
+Mauer-/Zaunstrecken. Landschaft und Wege wurden bei dieser Bereinigung erhalten.
 Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;

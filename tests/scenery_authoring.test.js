@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { AUTHORING_OBJECT_CATALOG, OBJECT_CATALOG, isObjectAvailable } from '../src/map/objects.js';
+import { AUTHORING_OBJECT_CATALOG, OBJECT_CATALOG, PLACEMENT_OBJECT_CATALOG,
+  getObjectDefinition, isObjectAvailable, isObjectPlaceable, makeWorldObject } from '../src/map/objects.js';
 import { createScatterStroke, createVegetationStroke, createBiomeStroke } from '../src/map/landscape-brush.js';
 import { BIOME_PRESETS } from '../src/map/landscape.js';
 
-const retired = ['tree', 'rock', 'mound', 'flower', 'ruin', 'shrine', 'crate'];
+const retired = ['tree', 'mound', 'flower', 'ruin', 'shrine', 'crate'];
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 function fixture() {
   const map = structuredClone(base);
@@ -24,7 +25,7 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
     assert.equal(isObjectAvailable(definition.kind), false);
     for (const variant of definition.variants) assert.equal(isObjectAvailable(definition.kind, variant.id), false);
   }
-  for (const kind of ['heart', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'grass', 'bush', 'wagon', 'barrel', 'well']) {
+  for (const kind of ['heart', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'grass', 'bush', 'rock', 'wagon', 'barrel', 'well']) {
     assert.ok(AUTHORING_OBJECT_CATALOG.some(item => item.kind === kind), kind);
     assert.equal(isObjectAvailable(kind), true, kind);
   }
@@ -33,6 +34,31 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
   assert.equal(isObjectAvailable('house', 'kit-tripo-castle'), false);
   assert.equal(isObjectAvailable('fence', 'kit-wood'), false);
   assert.equal(isObjectAvailable('fence', 'kit-cross-wood'), true);
+  for (const variant of ['granite', 'basalt', 'kit-cluster', 'kit-single']) assert.equal(isObjectAvailable('rock', variant), false);
+  for (const variant of ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']) assert.equal(isObjectAvailable('rock', variant), true);
+});
+
+test('individual placement offers exactly the admitted Tripo models and valid defaults without changing legacy or loot definitions', () => {
+  const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02',
+    'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
+    'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest'];
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest']);
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
+  for (const definition of PLACEMENT_OBJECT_CATALOG) {
+    assert.equal(isObjectPlaceable(definition.kind), true);
+    assert.equal(isObjectPlaceable(definition.kind, definition.defaultVariant), true);
+  }
+  for (const definition of OBJECT_CATALOG) for (const variant of definition.variants) {
+    assert.equal(isObjectPlaceable(definition.kind, variant.id), expected.includes(variant.assetId), variant.assetId);
+  }
+  assert.equal(isObjectPlaceable('missing'), false);
+  assert.equal(isObjectPlaceable('house', 'missing'), false);
+  assert.equal(PLACEMENT_OBJECT_CATALOG.find(definition => definition.kind === 'chest').defaultVariant, 'kit-tripo-chest');
+  assert.equal(PLACEMENT_OBJECT_CATALOG.find(definition => definition.kind === 'rock').defaultVariant, 'kit-tripo-01');
+  assert.equal(getObjectDefinition('chest').defaultVariant, 'wood', 'legacy and loot defaults are independent of the palette');
+  assert.equal(getObjectDefinition('rock').defaultVariant, 'granite');
+  assert.equal(makeWorldObject('chest', [0, 0]).variant, 'wood');
+  assert.equal(isObjectAvailable('sword', 'steel'), true, 'gameplay definitions are retained');
 });
 
 test('mixed saved presets filter retired scenery without mutating their document or losing allowed scatter', () => {
@@ -40,6 +66,7 @@ test('mixed saved presets filter retired scenery without mutating their document
   const scatter = { density: 1, minDistance: 2, entries: [
     { kind: 'tree', variant: 'oak', weight: 10 },
     { kind: 'rock', variant: 'kit-tripo-03', weight: 10 },
+    { kind: 'rock', variant: 'granite', weight: 10 },
     { kind: 'mound', variant: 'ridge', weight: 10 },
     { kind: 'flower', variant: 'rei-white', weight: 10 },
     { kind: 'bush', variant: 'rei-bush', weight: 1 },
@@ -49,10 +76,10 @@ test('mixed saved presets filter retired scenery without mutating their document
   const stroke = createScatterStroke(map, { radius: 18, seed: 5, scatter });
   stroke.sample([-60, -60]);
   assert.ok(stroke.objects.length > 2);
-  assert.ok(stroke.objects.every(item => ['bush', 'grass'].includes(item.kind)));
+  assert.ok(stroke.objects.every(item => item.kind === 'rock' && item.variant === 'kit-tripo-03'));
   assert.deepEqual(scatter, before);
   assert.deepEqual(map.objects, []);
-  for (const entry of before.entries.slice(0, 4)) {
+  for (const entry of before.entries.filter(entry => entry.variant !== 'kit-tripo-03')) {
     assert.throws(() => createScatterStroke(map, { scatter: { entries: [entry] } }), /aktuell verfügbare/);
   }
 });

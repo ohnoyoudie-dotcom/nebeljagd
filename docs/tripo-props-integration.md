@@ -1,10 +1,10 @@
 # Tripo-Gegenstände und neue Gebäudebasis
 
-**Aktueller Stand:** Die drei Tripo-Felsen sind zusammen mit den übrigen
-Felsen, Bäumen, Erhöhungen und Blumen vorübergehend aus der Editor-Auswahl
-entfernt. Die folgende Beschreibung dokumentiert ihre ursprüngliche
-Integration. Die Modelle und Importkompatibilität bleiben erhalten;
-siehe [Kartenbereinigung](scenery-cleanup.md).
+**Aktueller Stand:** Die drei Tripo-Felsen sind wieder verfügbar. Die
+Objektauswahl enthält nur freigegebene Tripo-Modelle, einschließlich Schatztruhe;
+die alte Holztruhe ist entfernt. Diese Seite dokumentiert die ursprüngliche
+Integration, einschließlich damaliger Objektzahlen. Die aktuelle Auswahl und
+Kartenbereinigung stehen unter [Tripo-Objektauswahl](tripo-object-cleanup.md).
 
 Die Ausgangskarte ist für die neue Gebäudereihe freigeräumt: 26 bisherige Häuser
 und 30 zugehörige oder bereits verwaiste Vorratstruhen wurden entfernt. Die

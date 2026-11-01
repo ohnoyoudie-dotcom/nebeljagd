@@ -1,0 +1,199 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5206",
+  "standalone": true,
+  "checks": [
+    {
+      "name": "Objects offers only Tripo props, exactly two houses, three Tripo rocks and the Tripo treasure chest",
+      "evidence": {
+        "kinds": [
+          {
+            "value": "house",
+            "label": "Haus"
+          },
+          {
+            "value": "rock",
+            "label": "Felsen"
+          },
+          {
+            "value": "wagon",
+            "label": "Holzwagen"
+          },
+          {
+            "value": "barrel",
+            "label": "Holzfass"
+          },
+          {
+            "value": "well",
+            "label": "Brunnen"
+          },
+          {
+            "value": "chest",
+            "label": "Schatztruhe"
+          }
+        ],
+        "variants": {
+          "house": [
+            {
+              "value": "kit-tripo-tavern",
+              "label": "Wirtshaus · Tripo (neu)"
+            },
+            {
+              "value": "kit-tripo-house-02",
+              "label": "Wohnhaus 2 · Tripo"
+            }
+          ],
+          "rock": [
+            {
+              "value": "kit-tripo-01",
+              "label": "Flacher Felsen · Tripo"
+            },
+            {
+              "value": "kit-tripo-02",
+              "label": "Findling · Tripo"
+            },
+            {
+              "value": "kit-tripo-03",
+              "label": "Hohe Felsgruppe · Tripo"
+            }
+          ],
+          "wagon": [
+            {
+              "value": "kit-tripo-wagon",
+              "label": "Holzwagen · Tripo"
+            }
+          ],
+          "barrel": [
+            {
+              "value": "kit-tripo-barrel",
+              "label": "Holzfass · Tripo"
+            }
+          ],
+          "well": [
+            {
+              "value": "kit-tripo-well",
+              "label": "Steinbrunnen · Tripo"
+            }
+          ],
+          "chest": [
+            {
+              "value": "kit-tripo-chest",
+              "label": "Schatztruhe · Tripo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Legacy castle, loot, grass, shrubs and old barriers import unchanged; no-op editing keeps the old wood chest variant",
+      "evidence": null
+    },
+    {
+      "name": "Explicit cleanup removes non-Tripo object placements and the retired castle/fence, preserves Tripo props and supported drawn routes, and has complete Undo/Redo",
+      "evidence": {
+        "retainedObjects": [
+          "qa-retained-rock",
+          "qa-retained-chest"
+        ],
+        "retainedRoutes": [
+          "qa-existing-wall",
+          "qa-existing-fence"
+        ]
+      }
+    },
+    {
+      "name": "Normal placement and duplication use the Tripo chest; both houses and all three Tripo rock variants can be placed",
+      "evidence": null
+    },
+    {
+      "name": "Dedicated line tool still draws a 2 m Tripo wall with a passage and a 2 m wood fence, including the actual model preview",
+      "evidence": {
+        "styles": [
+          {
+            "value": "wall",
+            "label": "Steinmauer"
+          },
+          {
+            "value": "wall-cut-stone",
+            "label": "Steinmauer · Pfeiler & Abdeckung"
+          },
+          {
+            "value": "wall-tripo",
+            "label": "Steinmauer · Verwittert (Tripo)"
+          },
+          {
+            "value": "fence-cross-wood",
+            "label": "Holzzaun · Kreuzstreben"
+          }
+        ],
+        "wall": {
+          "id": "barrier-wall-mvxlb8pt-1",
+          "name": "Steinmauer · Verwittert (Tripo)",
+          "kind": "wall",
+          "variant": "kit-tripo-wall",
+          "points": [
+            [
+              -70,
+              -65
+            ],
+            [
+              70,
+              -65
+            ]
+          ],
+          "scale": 1,
+          "height": 2,
+          "gaps": [
+            {
+              "at": 70,
+              "width": 3
+            }
+          ]
+        },
+        "fence": {
+          "id": "barrier-fence-mvxlb9wz-2",
+          "name": "Holzzaun · Kreuzstreben",
+          "kind": "fence",
+          "variant": "kit-cross-wood",
+          "points": [
+            [
+              -70,
+              -25
+            ],
+            [
+              70,
+              -25
+            ]
+          ],
+          "scale": 1,
+          "height": 2,
+          "gaps": []
+        }
+      }
+    },
+    {
+      "name": "High grass still paints through its dedicated brush and the entire stroke has one-step Undo/Redo",
+      "evidence": {
+        "patches": 6
+      }
+    },
+    {
+      "name": "JSON export/reimport preserves every existing object, newly placed Tripo object, painted grass and barrier height/passage",
+      "evidence": null
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/tripo-palette.png",
+    "docs/tripo-palette-barrier-preview.png"
+  ],
+  "limits": "Real Chromium/SwiftShader editor interactions over local HTTP; no new game runtime or physical-device performance claim.",
+  "delivery": {
+    "file": "welt/map-editor.html",
+    "bytes": 60473514,
+    "sha256": "dbbac00b611f20db172a7d9ac88eded8185ce9e97fb225d2611832e90b236875",
+    "unexpectedResourceRequests": []
+  },
+  "sourceMapUnchanged": "5e11d1bff84d08c2f3db0de65f90693537e8e85fb541123e9b830731e15dc371",
+  "screenshotNotes": "The editor screenshot intentionally shows the imported legacy fixture after lossless JSON roundtrip. It is not the delivered default map. Cleanup and complete Undo/Redo were exercised earlier in the same journey; the supported wood fence preview uses the actual model."
+}

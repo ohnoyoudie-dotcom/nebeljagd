@@ -181,17 +181,14 @@ try:
         assert state(editor)['map'] == BASE
         editor.locator('#editor-tab-objects').click()
         kinds = editor.locator('#palette-kind option').evaluate_all('(xs)=>xs.map(x=>x.value)')
-        assert not set(['ruin', 'shrine', 'crate']).intersection(kinds), kinds
-        for kind in ['house', 'fence', 'wall', 'chest', 'wagon', 'barrel']: assert kind in kinds
+        assert set(kinds) == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well'}, kinds
         editor.locator('#palette-kind').select_option('house')
         variants = editor.locator('#palette-variant option').evaluate_all('(xs)=>xs.map(x=>x.value)')
         assert VARIANT in variants and 'kit-tripo-tavern' in variants
         assert 'kit-tripo-castle' not in variants, variants
-        editor.locator('#palette-kind').select_option('fence')
-        assert editor.locator('#palette-variant option').evaluate_all('(xs)=>xs.map(x=>x.value)') == ['kit-cross-wood']
         styles = editor.locator('#barrier-kind option').evaluate_all('(xs)=>xs.map(x=>x.value)')
         assert 'fence' not in styles and 'fence-cross-wood' in styles, styles
-        passed('New houses and existing Tripo props remain available; castle, shrine, ruins, old GLB fence and crate are retired from authoring and current map')
+        passed('New houses and Tripo props remain available in Objects; legacy props are absent and the supported fence stays available through its line tool')
 
         legacy = copy.deepcopy(FIXTURE)
         legacy['objects'] = [

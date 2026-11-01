@@ -1,5 +1,9 @@
 # Freie Kartenbasis für neue Modelle
 
+> Historischer Bereinigungsschritt. Die aktuelle Regel entfernt auch alte
+> Beuteobjekte und das kleine Schloss; Tripo-Felsen sind wieder verfügbar.
+> Siehe [aktuelle Tripo-Bereinigung](tripo-object-cleanup.md).
+
 Auf Wunsch sind die Objektarten **Bäume, Felsen, bewachsene Erhöhungen und
 Blumen** aus der Ausgangskarte und den Werkzeugen für neue Platzierungen
 entfernt. Dies umfasst auch die drei zuletzt importierten Tripo-Felsen.

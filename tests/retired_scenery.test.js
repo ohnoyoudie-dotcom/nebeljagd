@@ -12,9 +12,10 @@ test('scenery cleanup removes all retired variants while preserving every loot k
   const keep = [obj('heart', 'healing'), obj('chest', 'wood'), obj('chest', 'kit-tripo-chest'),
     obj('bow', 'wood'), obj('sword', 'steel'), obj('fireStaff', 'ember'), obj('iceStaff', 'frost'),
     obj('house', 'kit-tripo-tavern'), obj('wagon', 'kit-tripo-wagon'), obj('barrel', 'kit-tripo-barrel'),
-    obj('well', 'kit-tripo-well'), obj('grass', 'tall'), obj('bush', 'rei-bush')];
+    obj('well', 'kit-tripo-well'), obj('grass', 'tall'), obj('bush', 'rei-bush'),
+    obj('rock', 'kit-tripo-01'), obj('rock', 'kit-tripo-02'), obj('rock', 'kit-tripo-03')];
   const removed = [obj('tree', 'oak'), obj('tree', 'rei-tree01'), obj('rock', 'granite'),
-    obj('rock', 'kit-tripo-01'), obj('rock', 'kit-tripo-02'), obj('rock', 'kit-tripo-03'),
+    obj('rock', 'basalt'), obj('rock', 'kit-cluster'), obj('rock', 'kit-single'),
     obj('mound', 'ridge'), obj('mound', 'knoll'), obj('flower', 'rei-red')];
   const map = { name: 'Mein Entwurf', objects: [...keep, ...removed],
     paths: [{ id: 'my-path', points: [[0, 0], [3, 2]] }], landscape: { version: 1, wind: { strength: .7 } } };
@@ -60,7 +61,7 @@ test('retired scenery is absent from the authoring palette while authored maps a
   assert.deepEqual(normalizeWorldmap(map), map, 'loading the map never silently removes later user placements');
   const clean = { ...map, objects: [obj('grass', 'tall'), obj('chest', 'kit-tripo-chest'), obj('house', 'kit-tripo-tavern')] };
   assert.equal(removeRetiredScenery(clean).totalChanged, 0);
-  const legacy = { ...map, objects: [obj('tree', 'oak'), obj('rock', 'kit-tripo-03'), obj('flower', 'rei-white'), obj('mound', 'ridge')] };
+  const legacy = { ...map, objects: [obj('tree', 'oak'), obj('rock', 'granite'), obj('flower', 'rei-white'), obj('mound', 'ridge')] };
   assert.deepEqual(validateWorldmap(legacy).errors, []);
   assert.deepEqual(normalizeWorldmap(legacy), legacy, 'import is preserved until explicit cleanup');
   assert.deepEqual(removeRetiredScenery(legacy).removedObjects, legacy.objects);

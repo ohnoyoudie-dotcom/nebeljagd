@@ -1,5 +1,5 @@
 import { pointInPolygon, distanceToSegment } from './model.js';
-import { getObjectDefinition, makeWorldObject, isObjectAvailable } from './objects.js';
+import { getObjectDefinition, makeWorldObject, isObjectPlaceable } from './objects.js';
 import { BIOME_PRESETS, VEGETATION_TYPES, TERRAIN_TYPES, LANDSCAPE_LIMITS, getLandscape, vegetationSettings, terrainSettings } from './landscape.js';
 import { getMoundDefinition } from '../overgrown-mounds.js';
 import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
@@ -229,13 +229,12 @@ export function createTerrainStroke(map, options = {}) {
 
 function scatterOptions(options = {}) {
   const defaults = { density: .4, minDistance: 4, scaleMin: .8, scaleMax: 1.3, clustering: .65, randomRotation: true,
-    entries: [{ kind: 'tree', variant: 'rei-tree01', weight: .3 }, { kind: 'bush', variant: 'rei-bush', weight: .2 },
-      { kind: 'grass', variant: 'short', weight: .3 }, { kind: 'rock', variant: 'granite', weight: .1 }, { kind: 'flower', variant: 'rei-white', weight: .1 }] };
+    entries: [{ kind: 'rock', variant: 'kit-tripo-01', weight: 1 }] };
   const result = { ...defaults, ...options.scatter };
   for (const [key, min, max] of [['density', 0, 1], ['minDistance', .5, 30], ['scaleMin', .25, 3], ['scaleMax', .25, 3], ['clustering', 0, 1]]) result[key] = number(result[key], defaults[key], min, max, key);
   if (result.scaleMin > result.scaleMax) throw new Error('Die kleinste Objektgröße darf die größte nicht überschreiten.');
   result.entries = result.entries.filter(entry => ['tree', 'bush', 'grass', 'rock', 'flower'].includes(entry.kind)
-    && isObjectAvailable(entry.kind, entry.variant) && Number.isFinite(entry.weight) && entry.weight > 0);
+    && isObjectPlaceable(entry.kind, entry.variant) && Number.isFinite(entry.weight) && entry.weight > 0);
   if (!result.entries.length) throw new Error('Die Verteilung benötigt mindestens eine aktuell verfügbare Vegetations- oder Landschaftsvariante.');
   return result;
 }
