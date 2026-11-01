@@ -8,6 +8,7 @@ the existing inspect hook; placement, pickup, swapping, attacks and reset use UI
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import math
 import os
@@ -166,12 +167,16 @@ def attack_target(page, identifier, distance):
 try:
     REPORT['budgetBefore'] = browser_budget()
     with sync_playwright() as p:
-        # Exercise the full Chromium browser, including its real popup handling.
-        # Playwright's separate headless-shell binary crashes on this two-tab
-        # standalone handoff in CI; local full Chromium passes the same checks.
-        browser = p.chromium.launch(channel='chromium', executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or shutil.which('chromium'), headless=True,
+        # CI uses the browser from its pinned Playwright installation. A moving
+        # runner-image Chromium must not silently override that tested toolchain.
+        executable = os.environ.get('CHROMIUM_EXECUTABLE')
+        if not executable and os.environ.get('NEBELJAGD_BUNDLED_CHROMIUM') != '1':
+            executable = shutil.which('chromium')
+        browser = p.chromium.launch(channel='chromium', executable_path=executable, headless=True,
             args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
-        REPORT['browser'] = {'channel': 'chromium', 'version': browser.version}
+        REPORT['browser'] = {'channel': 'chromium', 'version': browser.version,
+                             'playwright': importlib.metadata.version('playwright'),
+                             'executable': executable or p.chromium.executable_path}
         context = browser.new_context(viewport={'width': 1280, 'height': 900}, accept_downloads=True)
         context.on('page', monitor)
         context.add_init_script('''
