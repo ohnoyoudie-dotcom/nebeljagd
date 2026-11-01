@@ -1,8 +1,32 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Aktueller Editor mit goldener Levelplakette
+## Aktueller Editor mit Zauberhaltung und geradem Flug
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=191fa0a).
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=0598781).
+Die freie Hand nimmt beim Zaubern eine angewinkelte Gegenhaltung ein. Im Stand
+stehen die Füße leicht breiter und versetzt; beim Laufen bleibt die Schrittbewegung
+frei. Projektile fliegen ab der Kristallspitze geradeaus auf konstanter Höhe.
+Die goldene Levelanzeige und Aufstiegseffekte des neuesten Projektstands bleiben
+erhalten. Alten Spiel-Tab schließen und über **Spielen** neu starten.
+Details: [Zauberhaltung und Flugbahn](cast-stance.md).
+
+Quellstand: `1bf711863fa52036dbcef6cfaea7d860107c0aa7`; Build `89423bdc7ca0`.
+Veröffentlichungscommit: `059878144b4bbe8c75fd8b161f8e78d6f91bc61f`, ausschließlich vier Dateien unter
+`preview/` auf `main`; alle neun Paketdateien verifiziert.
+372 Node-Tests und 8 Browserprüfungen bestanden; 10 Spielaufnahmen
+geprüft, keine Browser-, Shader-, WebGL- oder HTTP-Fehler. Die Nutzerkarte und
+Originalmodelle sind unverändert. Zwischenzeitliche Änderungen auf `work`,
+einschließlich Levelanzeige und Bogen-Original in der Inbox, wurden erhalten.
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41333301027)
+hat genau diesen Commit erfolgreich bereitgestellt. Die unveränderliche
+Versionsdatei stimmt mit dem geprüften Paket überein. Der Browsercheck verwendete
+lokal identische Dateien, da die Pages-Domain durch die Netzwerkpolicy dieser
+Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit goldener Levelplakette
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=191fa0a).
 Über **Spielen** öffnet sich die aktualisierte Spielversion. Die Levelzahl steht
 in einer goldenen Plakette; beim Aufstieg erscheinen kurz „Level aufgestiegen“,
 das neue Level und „+25 Leben“ sowie ein Ring mit Funken an der Figur.
