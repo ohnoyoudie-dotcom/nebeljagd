@@ -14,6 +14,8 @@ Eine feste Internetadresse für die Klasse ist mit der vorbereiteten
 Die neuen Waffenmodelle (Fantasieschwert, Kristallstab und Lavakristallstab)
 sind im Editor platzierbar und werden im Spiel mit angepasstem Griff gehalten.
 Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons-integration.md).
+Beim Wechsel mit **E** liegt die bisherige Waffe wieder an der Fundstelle
+der neuen und kann erneut aufgenommen werden: [Waffenwechsel](docs/weapon-swap.md).
 
 **Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
@@ -29,7 +31,7 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
 Die aktuelle Browser-Vorschau ist unter
-[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb)
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0)
 und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
 Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
 Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht

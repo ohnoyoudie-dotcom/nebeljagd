@@ -161,7 +161,17 @@
   "assetVerification": "passed",
   "mapCheck": "passed",
   "publication": {
-    "status": "prepared",
-    "scope": "Only existing static preview editor and game; no classroom portal"
+    "status": "deployed",
+    "commit": "a786ff0cdb5ae8df8b1014d1b788e585df669740",
+    "sourceCommit": "d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec",
+    "buildId": "03d805c5e9d5",
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0",
+    "actionsRun": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41311535345",
+    "actionsStatus": "completed",
+    "actionsConclusion": "success",
+    "exactCommitVerified": true,
+    "remoteReleaseMatches": true,
+    "scope": "Only existing static preview editor and game; no classroom portal",
+    "verificationLimit": "Direct Pages HTTP is blocked by environment network policy. The exact published commit, remote release manifest and successful Pages deployment were verified through GitHub; browser checks used identical files locally."
   }
 }

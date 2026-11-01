@@ -25,3 +25,8 @@ Build: `03d805c5e9d5`. Die drei vom Nutzer auf `work` (`040d2f7`)
 gespeicherten Waffenplatzierungen sind unverändert in der Ausgangskarte enthalten.
 Der Neustart prüft auch deren ursprüngliche Positionen.
 Prüfbericht: [weapon-swap-check.json](weapon-swap-check.json).
+
+Veröffentlicht unter [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0), ausschließlich `preview/` auf `main`.
+Commit: `a786ff0cdb5ae8df8b1014d1b788e585df669740`; [GitHub-Pages-Bereitstellung](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41311535345) erfolgreich.
+Die veröffentlichten Dateien entsprechen dem geprüften Build; der direkte
+Pages-HTTP-Aufruf ist in dieser Umgebung durch die Netzwerkpolicy gesperrt.

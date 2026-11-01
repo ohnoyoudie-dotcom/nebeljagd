@@ -1,8 +1,31 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Bereits veröffentlichter Editor mit drei Tripo-Waffen
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb).
+## Aktueller Editor mit korrigiertem Waffenwechsel
+
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0). Beim Wechsel mit **E** liegt die bisherige
+Waffe an der Fundstelle der neuen und lässt sich wieder aufnehmen. Ihre ID,
+ihr Modell und ihre Seltenheit bleiben erhalten. Die drei vom Nutzer gesetzten
+Waffen sind unverändert in der Ausgangskarte enthalten. Bereits geöffnete
+Spiel-Tabs schließen und über **Spielen** neu öffnen.
+
+Veröffentlichungscommit: `a786ff0cdb5ae8df8b1014d1b788e585df669740`, ausschließlich
+`preview/` auf `main`; Quellstand auf `work`: `d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec`.
+Build: `03d805c5e9d5`. 337 Node-Tests, sieben Browserprüfungen, Asset- und
+Kartenprüfung bestanden. Der echte Übergang von `/preview/map-editor.html`
+zu `/preview/nebeljagd.html` übernimmt auch den Versionsparameter des Editorlinks.
+Details und Prüfbericht: [Waffenwechsel](weapon-swap.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41311535345) hat genau diesen Commit erfolgreich bereitgestellt.
+Das veröffentlichte Release-Protokoll stimmt mit dem geprüften Paket überein.
+Der direkte Pages-HTTP-Aufruf ist durch die Netzwerkpolicy dieser Umgebung
+gesperrt; die Browserprüfungen verwendeten lokal dieselben Dateien.
+Diese statische Ausgabe enthält weiterhin den eigenständigen Editor und das
+Spiel; der Klassenserver wurde damit noch nicht veröffentlicht.
+
+## Vorherige Ausgabe mit drei Tripo-Waffen
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb).
 Unter **Objekte → Einzeln** sind **Schwert**, **Feuerstab (Lavastab)** und
 **Eisstab (Kristallstab)** mit echten Tripo-Modellvorschauen auswählbar.
 Die Modelle erscheinen auch als Beute und in der Hand der Spielfigur.
@@ -97,7 +120,7 @@ Die veröffentlichte Ausgabe liegt unter einem stabilen GitHub-Pages-Pfad auf
 
 - [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
 - [Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/)
-- [Editor mit drei Tripo-Waffen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb)
+- [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=a786ff0)
 
 Der veröffentlichte Ordner `preview/` enthält den eigenständigen Build und
 Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
