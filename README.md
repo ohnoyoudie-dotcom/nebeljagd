@@ -166,6 +166,11 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
 - Lebensbalken stehen über den Figuren; Treffer lassen sie kurz aufleuchten
   und zeigen aufsteigende Schadenszahlen. Die Lebenswerte ändern sich sofort.
   Verdeckte Gegner verraten sich auch nicht durch ihren Balken oder Schadenszahlen. Wolkenschatten ziehen über Gelände und Gebäude.
+- Jeder besiegte Gegner erhöht das Spielerlevel um eins und die aktuellen
+  sowie maximalen Lebenspunkte um 25. Das Level steht links neben dem
+  Lebensbalken. Dessen Breite bleibt gleich; jeder Abschnitt entspricht
+  25 Lebenspunkten. Ein Rundenneustart setzt Level und Lebenspunkte zurück.
+  Regeln und Prüfung: [`docs/level-progression.md`](docs/level-progression.md).
 
 Die größere Minikarte schaltet zwischen Umgebung und gesamter Insel um.
 Die vorhandene Figur blendet Stand und Gang weicher und dreht sich fließender.

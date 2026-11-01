@@ -25,6 +25,6 @@ export function healthAfterDamage(health, dt, inDanger) {
   return Math.max(0, health - (inDanger ? ZONE.damage * Math.max(0, dt) : 0));
 }
 
-export function healedHealth(health, amount) {
-  return Math.min(MAX_HEALTH, Math.max(0, health + amount));
+export function healedHealth(health, amount, maxHealth = MAX_HEALTH) {
+  return Math.min(maxHealth, Math.max(0, health + amount));
 }

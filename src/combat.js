@@ -1,5 +1,5 @@
 /** Renderer-independent combat. Health/status belong to entities, not visuals. */
-export function createCombat({ onHit } = {}) {
+export function createCombat({ onHit, onDefeat } = {}) {
   const targets = new Map();
   const finite = (value, fallback) => Number.isFinite(value) ? value : fallback;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -11,7 +11,7 @@ export function createCombat({ onHit } = {}) {
     const target = {
       ...definition, radius: Math.max(.05, finite(definition.radius, .45)), maxHealth,
       health: clamp(finite(definition.health, maxHealth), 0, maxHealth),
-      burnRemaining: 0, burnDamagePerSecond: 0, slowRemaining: 0, slowFactor: 1,
+      burnRemaining: 0, burnDamagePerSecond: 0, burnSourceId: undefined, slowRemaining: 0, slowFactor: 1,
       hitFlash: 0,
       get alive() { return this.health > 0; },
       get speedMultiplier() { return this.slowRemaining > 0 ? this.slowFactor : 1; },
@@ -28,8 +28,17 @@ export function createCombat({ onHit } = {}) {
     target.health = Math.max(0, target.health - Math.max(0, finite(payload.damage, 0)));
     target.hitFlash = .16;
     if (payload.burn && target.alive) {
-      target.burnRemaining = Math.max(target.burnRemaining, Math.max(0, finite(payload.burn.duration, 0)));
-      target.burnDamagePerSecond = Math.max(target.burnDamagePerSecond, Math.max(0, finite(payload.burn.damagePerSecond, 0)));
+      const duration = Math.max(0, finite(payload.burn.duration, 0));
+      const damagePerSecond = Math.max(0, finite(payload.burn.damagePerSecond, 0));
+      if (duration > 0 && damagePerSecond > 0) {
+        // A stronger burn owns its ongoing damage; an equal-strength refresh
+        // belongs to the latest caster. A weaker refresh cannot steal credit.
+        if (!target.burnRemaining || damagePerSecond >= target.burnDamagePerSecond) {
+          target.burnSourceId = payload.sourceId;
+        }
+        target.burnRemaining = Math.max(target.burnRemaining, duration);
+        target.burnDamagePerSecond = Math.max(target.burnDamagePerSecond, damagePerSecond);
+      }
     }
     if (payload.slow && target.alive) {
       target.slowRemaining = Math.max(target.slowRemaining, Math.max(0, finite(payload.slow.duration, 0)));
@@ -37,7 +46,14 @@ export function createCombat({ onHit } = {}) {
     }
     const result = { targetId: target.id, damage: before - target.health, health: target.health,
       killed: !target.alive, sourceId: payload.sourceId, type: payload.type ?? 'direct' };
+    if (result.killed) {
+      target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = 0;
+      target.burnSourceId = undefined;
+      target.slowFactor = 1;
+    }
     onHit?.(result, target);
+    // hit() rejects already-dead targets, so one life can emit only one defeat.
+    if (result.killed) onDefeat?.(result, target);
     return result;
   }
 
@@ -46,11 +62,12 @@ export function createCombat({ onHit } = {}) {
     for (const target of targets.values()) {
       target.hitFlash = Math.max(0, target.hitFlash - delta);
       if (target.alive && target.burnRemaining > 0) {
-        hit(target, { damage: Math.min(delta, target.burnRemaining) * target.burnDamagePerSecond, type: 'burn' });
+        hit(target, { damage: Math.min(delta, target.burnRemaining) * target.burnDamagePerSecond,
+          sourceId: target.burnSourceId, type: 'burn' });
       }
       target.burnRemaining = Math.max(0, target.burnRemaining - delta);
       target.slowRemaining = Math.max(0, target.slowRemaining - delta);
-      if (!target.burnRemaining) target.burnDamagePerSecond = 0;
+      if (!target.burnRemaining) { target.burnDamagePerSecond = 0; target.burnSourceId = undefined; }
       if (!target.slowRemaining) target.slowFactor = 1;
       if (!target.alive) { target.burnRemaining = target.slowRemaining = 0; target.slowFactor = 1; }
     }
@@ -60,6 +77,7 @@ export function createCombat({ onHit } = {}) {
     for (const target of targets.values()) {
       target.health = target.initialHealth;
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = target.hitFlash = 0;
+      target.burnSourceId = undefined;
       target.slowFactor = 1;
     }
   }
