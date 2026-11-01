@@ -33,8 +33,14 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 55);
-  assert.equal(ASSET_CATALOG.length, 55);
+  const newWeapons = ['bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff'];
+  const variants = OBJECT_CATALOG.flatMap(def => def.variants);
+  assert.equal(variants.length, 55 + newWeapons.length, 'the prior variants remain alongside the three new models');
+  assert.equal(ASSET_CATALOG.length, 55 + newWeapons.length);
+  for (const id of newWeapons) {
+    assert.ok(variants.some(variant => variant.assetId === id), `${id} retains its own object variant`);
+    assert.ok(ASSET_CATALOG.some(asset => asset.id === id), `${id} has matching asset metadata`);
+  }
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {

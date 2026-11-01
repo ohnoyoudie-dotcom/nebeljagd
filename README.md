@@ -11,9 +11,12 @@ Eine feste Internetadresse für die Klasse ist mit der vorbereiteten
 [Render-Einrichtung](docs/hosting.md) möglich. Die Vorlage liegt in
 [`render.yaml`](render.yaml); ein Hosting-Dienst wurde noch nicht angelegt.
 
-Die neuen Waffenmodelle (Fantasieschwert, Kristallstab und Lavakristallstab)
+Die Waffenmodelle (Fantasieschwert, Kristallstab, Lavakristallstab,
+Giftstab, Mondstab und verzierter Bogen)
 sind im Editor platzierbar und werden im Spiel mit angepasstem Griff gehalten.
 Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons-integration.md).
+Die drei zusätzlichen Inbox-Modelle samt Gift-, Mond- und Bogenangriffen:
+[Giftstab, Mondstab und verzierter Bogen](docs/extra-tripo-weapons.md).
 Beim Wechsel mit **E** liegt die bisherige Waffe wieder an der Fundstelle
 der neuen und kann erneut aufgenommen werden: [Waffenwechsel](docs/weapon-swap.md).
 Feuer und Eis besitzen eigene Lade-, Abschuss-, Flug- und Treffereffekte:
@@ -59,8 +62,9 @@ Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
 Die Objektauswahl enthält ausschließlich freigegebene Tripo-Modelle:
 Wirtshaus, **Wohnhaus 2**, drei Felsenvarianten, Holzwagen, Holzfass,
-Steinbrunnen, Schatztruhe und die drei neuen Waffen: **Schwert, Feuerstab
-(Lavastab) und Eisstab (Kristallstab)**. Die Waffen stehen unter **Objekte →
+Steinbrunnen, Schatztruhe und sechs Waffen: **Schwert, Feuerstab
+(Lavastab), Eisstab (Kristallstab), Giftstab, Mondstab und verzierter Bogen**.
+Die Waffen stehen unter **Objekte →
 Einzeln** bei der jeweiligen Objektart; ihr Modell trägt den Zusatz **Tripo**.
 Seltenheit wählen, **Auf Karte setzen** aktivieren und auf die Karte klicken.
 Import und Spielverhalten: [`docs/tripo-weapons-integration.md`](docs/tripo-weapons-integration.md).

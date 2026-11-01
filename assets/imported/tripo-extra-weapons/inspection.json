@@ -1,0 +1,602 @@
+{
+  "assets": [
+    {
+      "id": "poison-staff",
+      "label": "Giftstab · Tripo",
+      "source": {
+        "path": "assets/inbox/Poison staff 3d model.glb",
+        "bytes": 69561624,
+        "sha256": "54bf2419f40955b396c86f27385e2df648997f56696c04a28feb2fcbbc944326",
+        "triangles": 1936200,
+        "vertices": 995195,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-extra-weapons/runtime/poison-staff.glb",
+        "bytes": 1369084,
+        "sha256": "cfc2fb3ff8ccc8c8899adfb2f4ad49467351e655542dc81c124201101e148204",
+        "triangles": 11999,
+        "vertices": 8629,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "normalization": {
+        "sourceBoundsBlender": [
+          [
+            -0.13887786865234375,
+            -0.09760665893554688,
+            0.0
+          ],
+          [
+            0.13887786865234375,
+            0.09760665893554688,
+            0.9793701171875
+          ]
+        ],
+        "sourceGripPointGltf": [
+          -0.06655120104551315,
+          0.1999969482421875,
+          4.581362009048462e-05
+        ],
+        "sourceLongitudinalAxisGltf": [
+          0.2109629511833191,
+          0.9774940013885498,
+          0.00026242429157719016
+        ],
+        "normalizingRotationQuaternionBlenderWxyz": [
+          0.9943575859069824,
+          -0.0001319567090831697,
+          -0.10608002543449402,
+          0.0
+        ],
+        "uniformScale": 1.710757672363247,
+        "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+        "gripPoint": [
+          0,
+          0,
+          0
+        ],
+        "nominalLengthMetres": 1.7,
+        "normalizedSourceBoundsGltf": [
+          [
+            -0.2955068349838257,
+            -0.3493441939353943,
+            -0.16731896996498108
+          ],
+          [
+            0.14868366718292236,
+            1.3506557941436768,
+            0.16664370894432068
+          ]
+        ],
+        "gltfBounds": [
+          [
+            -0.2954077124595642,
+            -0.3489536941051483,
+            -0.16742296516895294
+          ],
+          [
+            0.1497163027524948,
+            1.35103178024292,
+            0.16671235859394073
+          ]
+        ],
+        "tipPoint": [
+          -0.06220034882426262,
+          1.35103178024292,
+          0.0035221856087446213
+        ],
+        "dimensions": [
+          0.445124015212059,
+          1.6999854743480682,
+          0.3341353237628937
+        ]
+      },
+      "cleanup": {
+        "weldDistanceMetres": 6.8e-05,
+        "before": {
+          "vertices": 995195,
+          "faces": 1936200
+        },
+        "after": {
+          "vertices": 968057,
+          "faces": 1936169
+        }
+      },
+      "textures": [
+        {
+          "name": "fantasy_staff_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "fantasy_staff_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            768,
+            768
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "fantasy_staff_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "normalMapLimit": 768,
+        "fileLimitBytes": 1572864
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "textureBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialChannels": true,
+        "preservedEmbeddedImageCount": true
+      }
+    },
+    {
+      "id": "moon-staff",
+      "label": "Mondstab · Tripo",
+      "source": {
+        "path": "assets/inbox/Moon staff 3d model.glb",
+        "bytes": 69029528,
+        "sha256": "208c0124ee05518b8bf7f8b46f300ed203135b01a0b091ee3e0a6099c1c68ca1",
+        "triangles": 1949367,
+        "vertices": 994270,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-extra-weapons/runtime/moon-staff.glb",
+        "bytes": 1323228,
+        "sha256": "43c0633b9af2ec69255b50e6fba40246b5d0f01272dab7653a2a7cb8e04ab991",
+        "triangles": 12000,
+        "vertices": 8060,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "normalization": {
+        "sourceBoundsBlender": [
+          [
+            -0.14992520213127136,
+            -0.1922607719898224,
+            0.0
+          ],
+          [
+            0.14992520213127136,
+            0.1922607719898224,
+            0.980072021484375
+          ]
+        ],
+        "sourceGripPointGltf": [
+          -0.08119580894708633,
+          0.1999969482421875,
+          0.10166934132575989
+        ],
+        "sourceLongitudinalAxisGltf": [
+          0.13475580513477325,
+          0.9289178252220154,
+          -0.3448949158191681
+        ],
+        "normalizingRotationQuaternionBlenderWxyz": [
+          0.9820687174797058,
+          0.17559613287448883,
+          -0.06860813498497009,
+          0.0
+        ],
+        "uniformScale": 1.623341719919637,
+        "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+        "gripPoint": [
+          0,
+          0,
+          0
+        ],
+        "nominalLengthMetres": 1.7,
+        "normalizedSourceBoundsGltf": [
+          [
+            -0.25111955404281616,
+            -0.3524198532104492,
+            -0.07385074347257614
+          ],
+          [
+            0.23464444279670715,
+            1.3475801944732666,
+            0.12879310548305511
+          ]
+        ],
+        "gltfBounds": [
+          [
+            -0.251026451587677,
+            -0.35241323709487915,
+            -0.07398073375225067
+          ],
+          [
+            0.23468033969402313,
+            1.3476234674453735,
+            0.12875086069107056
+          ]
+        ],
+        "tipPoint": [
+          0.03721245005726814,
+          1.3476234674453735,
+          0.014595909044146538
+        ],
+        "dimensions": [
+          0.48570679128170013,
+          1.7000367045402527,
+          0.20273159444332123
+        ]
+      },
+      "cleanup": {
+        "weldDistanceMetres": 6.8e-05,
+        "before": {
+          "vertices": 994270,
+          "faces": 1949367
+        },
+        "after": {
+          "vertices": 974603,
+          "faces": 1949200
+        }
+      },
+      "textures": [
+        {
+          "name": "fantasy_staff_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "fantasy_staff_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            768,
+            768
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "fantasy_staff_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "normalMapLimit": 768,
+        "fileLimitBytes": 1572864
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "textureBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialChannels": true,
+        "preservedEmbeddedImageCount": true
+      }
+    },
+    {
+      "id": "ornate-bow",
+      "label": "Verzierter Bogen · Tripo",
+      "source": {
+        "path": "assets/inbox/ornate bow 3d model.glb",
+        "bytes": 67113544,
+        "sha256": "61848a77f3b07e88abf42b405f258afa52dc07abf3d73863651d74b17ac0f864",
+        "triangles": 1918430,
+        "vertices": 980756,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb",
+        "bytes": 1245276,
+        "sha256": "54b0ceebb3a5c36a71c5d7f39ec41aa30ec95ccd3de4e5d6588dcb13db5b7bde",
+        "triangles": 11996,
+        "vertices": 8519,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "normalization": {
+        "sourceBoundsBlender": [
+          [
+            -0.089141845703125,
+            -0.059736259281635284,
+            0.0
+          ],
+          [
+            0.089141845703125,
+            0.059736259281635284,
+            0.9786376953125
+          ]
+        ],
+        "sourceGripPointGltf": [
+          -0.029708851128816605,
+          0.48931884765625,
+          0.0010700225830078125
+        ],
+        "sourceLongitudinalAxisGltf": [
+          0,
+          1,
+          0
+        ],
+        "normalizingRotationQuaternionBlenderWxyz": [
+          1,
+          0,
+          0,
+          0
+        ],
+        "uniformScale": 1.3794686291630287,
+        "normalizationMode": "source-axis-preserving-bow-grip",
+        "axes": "glTF +Y lower-to-upper limb; +X from grip toward original string; source front+Z preserved",
+        "gripPoint": [
+          0,
+          0,
+          0
+        ],
+        "nominalLengthMetres": 1.35,
+        "stringMidpoint": [
+          0.15378941358347645,
+          0.0,
+          -0.00031509166259308834
+        ],
+        "bowRig": {
+          "stringLower": [
+            0.15378941358347645,
+            -0.6555928027940627,
+            -0.00031509166259308834
+          ],
+          "stringUpper": [
+            0.15378941358347645,
+            0.6526038418360983,
+            -0.00031509166259308834
+          ],
+          "stringRadiusMetres": 0.014759327573372985,
+          "drawDistanceMetres": 0.28,
+          "drawAxis": "+X",
+          "stringRemainsInOriginalMesh": true,
+          "evidence": "Measured pinned source free-string component; output vertex mask is validated separately. GPU animation review pending.",
+          "staticVertexValidation": {
+            "selectedVertices": 2409,
+            "interiorVertices": 2169,
+            "passed": true,
+            "scope": "Static exported GLB positions only; held animation/GPU still pending."
+          }
+        },
+        "stringRemainsInOriginalMesh": true,
+        "normalizedSourceBoundsGltf": [
+          [
+            -0.0819859504699707,
+            -0.675000011920929,
+            -0.08388035744428635
+          ],
+          [
+            0.16395080089569092,
+            0.675000011920929,
+            0.08092823624610901
+          ]
+        ],
+        "gltfBounds": [
+          [
+            -0.08203355222940445,
+            -0.6749061942100525,
+            -0.0838485062122345
+          ],
+          [
+            0.16401560604572296,
+            0.6752323508262634,
+            0.08101020753383636
+          ]
+        ],
+        "tipPoint": [
+          0.11786464601755142,
+          0.6752323508262634,
+          0.038830678910017014
+        ],
+        "dimensions": [
+          0.2460491582751274,
+          1.350138545036316,
+          0.16485871374607086
+        ]
+      },
+      "cleanup": {
+        "weldDistanceMetres": 5.4000000000000005e-05,
+        "before": {
+          "vertices": 980756,
+          "faces": 1918430
+        },
+        "after": {
+          "vertices": 959024,
+          "faces": 1918100
+        }
+      },
+      "textures": [
+        {
+          "name": "ornate_bow_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "ornate_bow_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            768,
+            768
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "ornate_bow_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            1024,
+            1024
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 12000,
+        "textureLimit": 1024,
+        "normalMapLimit": 768,
+        "fileLimitBytes": 1572864
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "textureBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialChannels": true,
+        "preservedEmbeddedImageCount": true,
+        "bowStringRigHasVertices": true
+      }
+    }
+  ]
+}

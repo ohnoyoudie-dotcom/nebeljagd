@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "buildId": "28a7a974f812",
   "builtAt": "2026-11-01T19:41:22.301Z",
   "sourceCommit": "5f422d64df603bbe0af73dc8634d530bcd1fc348",
@@ -33,6 +34,42 @@
     "avatar-preview.html": {
       "bytes": 14841745,
       "sha256": "40e3996cc9b6396af530d5e7e1c290930070a0abe4402dec72ff759fd3594b05"
+=======
+  "buildId": "eb20c07afb99",
+  "builtAt": "2026-11-01T20:13:01.415Z",
+  "sourceCommit": null,
+  "mapSha256": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b",
+  "sourceBaseCommit": null,
+  "localBuild": true,
+  "files": {
+    "index.html": {
+      "bytes": 23440,
+      "sha256": "ebf33ee02284336b8509986fc15ffaa8ac633a1805e799d29f987382841dd33e"
+    },
+    "teacher.html": {
+      "bytes": 21141,
+      "sha256": "e636f628a786f8fbbe154a9990fa89b008beaa1f4155edd19d9cf101a6510299"
+    },
+    "lobby.html": {
+      "bytes": 1833,
+      "sha256": "9774e09ca59bd58b7b82c210c6e2ba93dcf99e68ac31c3c443442fcfb53413d6"
+    },
+    "nebeljagd.html": {
+      "bytes": 86588869,
+      "sha256": "903caeabd3b9d4d5de0b0fb39c2d67d28d0a8876dfa2cfa309621bd88bec543d"
+    },
+    "map-editor.html": {
+      "bytes": 60536125,
+      "sha256": "dcde07c4b9f406562c0407cb787935494f5940e4307a3f1c27285eb750a8184d"
+    },
+    "editor.html": {
+      "bytes": 7632,
+      "sha256": "95fba5c5c8bb86fe38e2f9b6b0d18d49b32f1fa9a816f38eb20dbbeebbbb56d2"
+    },
+    "avatar-preview.html": {
+      "bytes": 14841707,
+      "sha256": "6f0c35e327a822d0c7affc22fb339edfbdf4283f80a40f1416916d8d784820b1"
+>>>>>>> 1b0247b0e9fd896992d853ee68c28277a8f67782
     },
     "worldmap.json": {
       "bytes": 15761,
@@ -43,12 +80,17 @@
       "sha256": "0848f0c10b78c26afe162e5aa9f4cb5bc377e0295a178f8eaf367263ef5dccbf"
     },
     "worldmap.schema.json": {
-      "bytes": 40055,
-      "sha256": "9ce30b4f1b369ac65cc5c59092ff4f7e4c27b335ab576e37a9d349bcafef4e45"
+      "bytes": 41087,
+      "sha256": "9fe4d594775e6bf9cb2948dd77a764ac9c075822126aaea707273c7da45ce919"
     },
     "nebeljagd-welt-und-editor.zip": {
+<<<<<<< HEAD
       "bytes": 92275530,
       "sha256": "8315adb2e497f98252a2bec7314368f4806d8522130484498c6adce3c2eab18e"
+=======
+      "bytes": 96043718,
+      "sha256": "f768894813b9a86cd2b168302f315c6a53db485516f7e8ece65dfd40325b90cc"
+>>>>>>> 1b0247b0e9fd896992d853ee68c28277a8f67782
     }
   }
 }

@@ -1,0 +1,177 @@
+{
+  "package": "nebeljagd-tripo-extra-weapons",
+  "version": 1,
+  "kind": "source-preserving-local-test-package",
+  "canonicalGameDevPackage": false,
+  "pipeline": "Established project Blender fallback; game-dev CLI unavailable.",
+  "provider": {
+    "name": "Tripo original user uploads",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "originalPrompt": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-extra-weapons.py -- --execute",
+    "tool": "Blender 4.3.2",
+    "scriptSha256": "39d6f4de29ba8e54e46e67c36893b92396bab1c16b4cef7d648e30933e029be4",
+    "reusedScriptSha256": "d7015743865da8bb30ffd06b862aea1b10cea60179a4c536cb67a0df5fc4810d"
+  },
+  "assets": [
+    {
+      "id": "poison-staff",
+      "source": {
+        "path": "assets/inbox/Poison staff 3d model.glb",
+        "bytes": 69561624,
+        "sha256": "54bf2419f40955b396c86f27385e2df648997f56696c04a28feb2fcbbc944326",
+        "triangles": 1936200,
+        "vertices": 995195,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-extra-weapons/runtime/poison-staff.glb",
+        "bytes": 1369084,
+        "sha256": "cfc2fb3ff8ccc8c8899adfb2f4ad49467351e655542dc81c124201101e148204",
+        "triangles": 11999,
+        "vertices": 8629,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "moon-staff",
+      "source": {
+        "path": "assets/inbox/Moon staff 3d model.glb",
+        "bytes": 69029528,
+        "sha256": "208c0124ee05518b8bf7f8b46f300ed203135b01a0b091ee3e0a6099c1c68ca1",
+        "triangles": 1949367,
+        "vertices": 994270,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-extra-weapons/runtime/moon-staff.glb",
+        "bytes": 1323228,
+        "sha256": "43c0633b9af2ec69255b50e6fba40246b5d0f01272dab7653a2a7cb8e04ab991",
+        "triangles": 12000,
+        "vertices": 8060,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "ornate-bow",
+      "source": {
+        "path": "assets/inbox/ornate bow 3d model.glb",
+        "bytes": 67113544,
+        "sha256": "61848a77f3b07e88abf42b405f258afa52dc07abf3d73863651d74b17ac0f864",
+        "triangles": 1918430,
+        "vertices": 980756,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb",
+        "bytes": 1245276,
+        "sha256": "54b0ceebb3a5c36a71c5d7f39ec41aa30ec95ccd3de4e5d6588dcb13db5b7bde",
+        "triangles": 11996,
+        "vertices": 8519,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ],
+        "materialChannels": [
+          {
+            "baseColorTexture": true,
+            "metallicRoughnessTexture": true,
+            "normalTexture": true
+          }
+        ]
+      }
+    }
+  ],
+  "licenseStatus": "User-provided project files; no new license accepted and no commercial receipt inferred.",
+  "evidenceBoundary": "Static output inspection and Blender PBR previews only. GPU/gameplay and human review remain pending."
+}

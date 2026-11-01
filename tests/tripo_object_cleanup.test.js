@@ -19,7 +19,10 @@ test('explicit cleanup removes every disallowed placement and preserves current 
   assert.deepEqual(map, before, 'input stays intact for Undo');
   assert.deepEqual(normalizeWorldmap(map), before, 'import never silently discards old objects');
   assert.deepEqual(result.map.objects, objects.filter(object => isObjectPlaceable(object.kind, object.variant)));
-  assert.equal(result.map.objects.length, 12);
+  assert.equal(result.map.objects.length, 15);
+  for (const variant of ['kit-tripo-ornate-bow', 'kit-tripo-poison-staff', 'kit-tripo-moon-staff']) {
+    assert.ok(result.map.objects.some(object => object.variant === variant), variant);
+  }
   assert.deepEqual(result.map.barriers, barriers.filter(barrier => barrier.variant !== 'kit-wood'));
   assert.equal(result.map.barriers.length, 4);
   const { objects: ignoredObjects, barriers: ignoredBarriers, ...rest } = result.map;

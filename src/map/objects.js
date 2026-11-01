@@ -45,13 +45,17 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'chest', label: 'Holztruhe', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .85,
     variants: [{ id: 'wood', label: 'Holztruhe mit Gold und Beute' }, { id: 'kit-tripo-chest', label: 'Schatztruhe · Tripo' }] },
   { kind: 'bow', label: 'Bogen', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'wood', label: 'Holzbogen' }] },
+    variants: [{ id: 'wood', label: 'Holzbogen' }, { id: 'kit-tripo-ornate-bow', label: 'Verzierter Bogen · Tripo' }] },
   { kind: 'sword', label: 'Schwert', defaultVariant: 'steel', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'steel', label: 'Stahlschwert' }, { id: 'kit-tripo-sword', label: 'Schwert · Tripo' }] },
   { kind: 'fireStaff', label: 'Feuerstab', defaultVariant: 'ember', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'ember', label: 'Glutstab · Verbrennung' }, { id: 'kit-tripo-lava-staff', label: 'Feuerstab (Lavastab) · Tripo' }] },
   { kind: 'iceStaff', label: 'Eisstab', defaultVariant: 'frost', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'frost', label: 'Froststab · Verlangsamung' }, { id: 'kit-tripo-crystal-staff', label: 'Eisstab (Kristallstab) · Tripo' }] },
+  { kind: 'poisonStaff', label: 'Giftstab', defaultVariant: 'kit-tripo-poison-staff', defaultScale: 1, footprintRadius: .65,
+    variants: [{ id: 'kit-tripo-poison-staff', label: 'Giftstab · Tripo' }] },
+  { kind: 'moonStaff', label: 'Mondstab', defaultVariant: 'kit-tripo-moon-staff', defaultScale: 1, footprintRadius: .65,
+    variants: [{ id: 'kit-tripo-moon-staff', label: 'Mondstab · Tripo' }] },
   // Dimensions follow the already committed environment-kit collision hints.
   // Model placement stays explicit; adding a catalogue item never adds scenery.
   { kind: 'wall', label: 'Mauer', defaultVariant: 'kit-stone', defaultScale: 1,
@@ -87,6 +91,7 @@ const placementAssetIds = new Set([
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
   'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
+  'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff',
 ]);
 export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.flatMap(definition => {
   const variants = definition.variants.filter(variant => !variant.retired && placementAssetIds.has(variant.assetId));

@@ -3,21 +3,31 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import swordUrl from '../assets/imported/tripo-weapons/runtime/sword.glb?url&inline';
 import lavaStaffUrl from '../assets/imported/tripo-weapons/runtime/lava-staff.glb?url&inline';
 import crystalStaffUrl from '../assets/imported/tripo-weapons/runtime/crystal-staff.glb?url&inline';
-import { TRIPO_WEAPON_VARIANTS } from './weapons.js';
+import poisonStaffUrl from '../assets/imported/tripo-extra-weapons/runtime/poison-staff.glb?url&inline';
+import moonStaffUrl from '../assets/imported/tripo-extra-weapons/runtime/moon-staff.glb?url&inline';
+import ornateBowUrl from '../assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb?url&inline';
+import ornateBowInspection from '../assets/imported/tripo-extra-weapons/inspections/ornate-bow.json' with { type: 'json' };
+import poisonStaffInspection from '../assets/imported/tripo-extra-weapons/inspections/poison-staff.json' with { type: 'json' };
+import moonStaffInspection from '../assets/imported/tripo-extra-weapons/inspections/moon-staff.json' with { type: 'json' };
+import { TRIPO_WEAPON_VARIANTS, DEFAULT_WEAPON_VARIANTS } from './weapons.js';
 
 const SOURCES = {
   'kit-tripo-sword': { url: swordUrl, name: 'Schwert · Tripo' },
   'kit-tripo-lava-staff': { url: lavaStaffUrl, name: 'Lavastab · Tripo' },
   'kit-tripo-crystal-staff': { url: crystalStaffUrl, name: 'Kristallstab · Tripo' },
+  'kit-tripo-poison-staff': { url: poisonStaffUrl, name: 'Giftstab · Tripo', tip: poisonStaffInspection.normalization.tipPoint },
+  'kit-tripo-moon-staff': { url: moonStaffUrl, name: 'Mondstab · Tripo', tip: moonStaffInspection.normalization.tipPoint },
+  'kit-tripo-ornate-bow': { url: ornateBowUrl, name: 'Verzierter Bogen · Tripo' },
 };
 
 /** Prepared assets point up (+Y), with the visible grip at the origin. These
  * immutable prototypes own geometry/textures; createWeapons clones materials
  * per pickup/held visual. Inline URLs also work in the offline single-file game. */
 export async function loadTripoWeapons(placements = []) {
-  const variants = [...new Set(placements
+  const kitDefaults = Object.values(DEFAULT_WEAPON_VARIANTS).filter(variant => TRIPO_WEAPON_VARIANTS[variant]);
+  const variants = [...new Set([...kitDefaults, ...placements
     .filter(object => TRIPO_WEAPON_VARIANTS[object.variant] === (object.kind ?? object.type))
-    .map(object => object.variant))];
+    .map(object => object.variant)])];
   const prototypes = {};
   const results = await Promise.allSettled(variants.map(async variant => {
     const { scene } = await new GLTFLoader().loadAsync(SOURCES[variant].url);
@@ -27,6 +37,14 @@ export async function loadTripoWeapons(placements = []) {
       throw new Error(`Die Tripo-Waffe ${variant} enthält keinen gültigen Griffursprung.`);
     }
     scene.name = SOURCES[variant].name;
+    if (SOURCES[variant].tip) scene.userData.weaponTipPoint = [...SOURCES[variant].tip];
+    if (variant === 'kit-tripo-ornate-bow') {
+      const rig = ornateBowInspection.normalization.bowRig;
+      if (!rig || !Array.isArray(rig.stringLower) || !Array.isArray(rig.stringUpper)) {
+        throw new Error('Der verzierte Bogen benötigt seine gemessenen Sehnenanker.');
+      }
+      scene.userData.bowRig = JSON.parse(JSON.stringify(rig));
+    }
     scene.traverse(part => {
       if (!part.isMesh) return;
       part.castShadow = true;

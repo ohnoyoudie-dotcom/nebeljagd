@@ -1,0 +1,144 @@
+{
+  "name": "nebeljagd-tripo-extra-weapons",
+  "version": 1,
+  "kind": "source-preserving-local-test-package",
+  "canonicalGameDevPackage": false,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1015,
+      "sha256": "2d20db05aa2ac4b20ed87b68a65e6a99d39eb02158afe914f3c05aeef2fc6bd4"
+    },
+    {
+      "path": "execution-receipt.json",
+      "bytes": 990,
+      "sha256": "a62618522027309ab7636df61e79ef5db9daeb16265320e140f10fa17c1048a2"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 15386,
+      "sha256": "ab2d9900ed38a0a495276b036e0e7dccaffb6bcc0653ac461301cdd544d6e465"
+    },
+    {
+      "path": "inspections/moon-staff.json",
+      "bytes": 4016,
+      "sha256": "6f7c2935677da40d643f0370cd4c7e475362c78e69c7526d599acc4ca7ae9cba"
+    },
+    {
+      "path": "inspections/ornate-bow.json",
+      "bytes": 4940,
+      "sha256": "4ad08f2e4492566bcb0dcd3ad373dd86d40df4664e6e11738f45c05496ddb407"
+    },
+    {
+      "path": "inspections/poison-staff.json",
+      "bytes": 4022,
+      "sha256": "7b1c5f3d5ce8e4247507ab089036e4bf018933048b1c39efc3476faa4b7bc13d"
+    },
+    {
+      "path": "previews/comparison.png",
+      "bytes": 373761,
+      "sha256": "3a143bccc9844ec9d38bd4ec6dfc02029aba911424765e5a73572aa494259cf4"
+    },
+    {
+      "path": "previews/moon-staff-runtime.png",
+      "bytes": 284524,
+      "sha256": "72fb7e5677bc6b5e29fa7d4c314cda3dc37d957305fad219c6b0720b3d5af623"
+    },
+    {
+      "path": "previews/moon-staff-source.png",
+      "bytes": 286733,
+      "sha256": "0d5b02d3d594c15d6b48d74929d4cd72388a615773d0e976c5bbf9246b195cc9"
+    },
+    {
+      "path": "previews/moon-staff.webp",
+      "bytes": 4778,
+      "sha256": "6f9f6b0f11f9c5405c9e9b8b04e77bbb151eef133ebe6eff5eb9666f50c74bd3"
+    },
+    {
+      "path": "previews/ornate-bow-runtime.png",
+      "bytes": 283044,
+      "sha256": "ef20c7dd83e92f344503427ad4ce3eff95b47d0261723498a694b0d65552a399"
+    },
+    {
+      "path": "previews/ornate-bow-source.png",
+      "bytes": 284251,
+      "sha256": "7ab7fa505817559a28268d56e108e90e126ca22e892a204078e96a3d92c18d02"
+    },
+    {
+      "path": "previews/ornate-bow.webp",
+      "bytes": 5510,
+      "sha256": "e5f97e85c77b521ed899bc625c0c2e0f419ff54b4a424ac86a4d9fe5f8ec759e"
+    },
+    {
+      "path": "previews/poison-staff-runtime.png",
+      "bytes": 298827,
+      "sha256": "82b18072219add3e2ce223ce4b3e8c3b0c063c0fec78f47cb51e3b6df68b3e79"
+    },
+    {
+      "path": "previews/poison-staff-source.png",
+      "bytes": 300736,
+      "sha256": "27bee817c4decd089ea70ec70759ba7106104d08c00c3a1456dedbc9e30c3b9a"
+    },
+    {
+      "path": "previews/poison-staff.webp",
+      "bytes": 4908,
+      "sha256": "03a43ca5a9626e072f1beb0e11a8ffa9e859efa672a2f22ba6b7b4dca05e5507"
+    },
+    {
+      "path": "previews/review.html",
+      "bytes": 487,
+      "sha256": "34e1490e1550862ae1c2ee498175bf46d5a93bd95c7cd9c4a5c1428183b7105c"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 5149,
+      "sha256": "ab8aa127de0026ed7aa7ba18e0bd00bbac6f9c0c8bfe60746b41d85c79002ae7"
+    },
+    {
+      "path": "runtime/moon-staff.glb",
+      "bytes": 1323228,
+      "sha256": "43c0633b9af2ec69255b50e6fba40246b5d0f01272dab7653a2a7cb8e04ab991"
+    },
+    {
+      "path": "runtime/ornate-bow.glb",
+      "bytes": 1245276,
+      "sha256": "54b0ceebb3a5c36a71c5d7f39ec41aa30ec95ccd3de4e5d6588dcb13db5b7bde"
+    },
+    {
+      "path": "runtime/poison-staff.glb",
+      "bytes": 1369084,
+      "sha256": "cfc2fb3ff8ccc8c8899adfb2f4ad49467351e655542dc81c124201101e148204"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/Poison staff 3d model.glb",
+      "sha256": "54bf2419f40955b396c86f27385e2df648997f56696c04a28feb2fcbbc944326",
+      "bytes": 69561624,
+      "triangles": 1936200
+    },
+    {
+      "path": "assets/inbox/Moon staff 3d model.glb",
+      "sha256": "208c0124ee05518b8bf7f8b46f300ed203135b01a0b091ee3e0a6099c1c68ca1",
+      "bytes": 69029528,
+      "triangles": 1949367
+    },
+    {
+      "path": "assets/inbox/ornate bow 3d model.glb",
+      "sha256": "61848a77f3b07e88abf42b405f258afa52dc07abf3d73863651d74b17ac0f864",
+      "bytes": 67113544,
+      "triangles": 1918430
+    }
+  ],
+  "validation": {
+    "sourcesUnchanged": true,
+    "existingWeaponAssetsUnchanged": true,
+    "allStaticPoliciesPassed": true
+  },
+  "pending": [
+    "Editor/game admission and GPU import",
+    "Equipment/grip alignment",
+    "Gameplay policy",
+    "Human visual approval"
+  ]
+}

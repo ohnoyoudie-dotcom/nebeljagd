@@ -110,7 +110,7 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
   }
   weapons.reset();
   assert.equal(weapons.equippedItem, null); assert.equal(weapons.telemetry.heldModel, null);
-  assert.equal(weapons.items.length, 3);
+  assert.equal(weapons.items.length, variants.length);
   assert.ok(weapons.items.every(item => !item.collected && item.group.visible));
   assert.deepEqual(weapons.items.map(item => [item.x, item.z]), placements.map(item => item.position));
   actor.position.set(0, 0, 0);

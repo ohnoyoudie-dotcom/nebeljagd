@@ -103,6 +103,12 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein texturierter Lavastab als Feuerwaffe mit Brandschaden. Die Seltenheit ist frei wählbar.', 'tripo-weapons'),
   tripo('iceStaff', 'kit-tripo-crystal-staff', 'Eisstab (Kristallstab) · Tripo', 'crystal-staff', 'crystal staff 3d model',
     'Dein texturierter Kristallstab als Eiswaffe, die getroffene Ziele verlangsamt. Die Seltenheit ist frei wählbar.', 'tripo-weapons'),
+  tripo('bow', 'kit-tripo-ornate-bow', 'Verzierter Bogen · Tripo', 'ornate-bow', 'ornate bow 3d model',
+    'Dein aufbereiteter, texturierter Bogen. Als aufhebbare Fernkampfwaffe mit wählbarer Seltenheit platzieren und im Spiel benutzen.', 'tripo-extra-weapons'),
+  tripo('poisonStaff', 'kit-tripo-poison-staff', 'Giftstab · Tripo', 'poison-staff', 'Poison staff 3d model',
+    'Dein aufbereiteter Giftstab. Giftgeschosse verursachen Schaden über Zeit; die Seltenheit ist frei wählbar.', 'tripo-extra-weapons'),
+  tripo('moonStaff', 'kit-tripo-moon-staff', 'Mondstab · Tripo', 'moon-staff', 'Moon staff 3d model',
+    'Dein aufbereiteter Mondstab. Verschießt Mondmagie mit direktem Schaden; die Seltenheit ist frei wählbar.', 'tripo-extra-weapons'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
 const byId = new Map(ASSET_CATALOG.map(asset => [asset.id, asset]));
