@@ -1,0 +1,1455 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5207",
+  "standalone": true,
+  "checks": [
+    {
+      "name": "The editor opens the actual redesigned island and preserves the authored Tripo house and barrier routes",
+      "evidence": {
+        "coastVertices": 84,
+        "regions": 7,
+        "objects": [
+          "object-house-mvviwx0g-2"
+        ],
+        "barriers": [
+          "barrier-wall-mvwkdprc-1",
+          "barrier-wall-mvwkdudz-2",
+          "barrier-wall-mvwkdy5m-3",
+          "barrier-fence-mvwke5jq-5"
+        ]
+      }
+    },
+    {
+      "name": "All primary paint, grass, ground, object, wall/fence and scatter actions fit without left-side scrolling at 1280×800 and 1024×768",
+      "evidence": [
+        {
+          "width": 1280,
+          "height": 800,
+          "tools": [
+            {
+              "group": "paint",
+              "tool": "biomes",
+              "scrollTop": 0,
+              "height": 717,
+              "scrollHeight": 717,
+              "controls": [
+                {
+                  "id": "biome-radius",
+                  "visible": true,
+                  "top": 449.1875,
+                  "bottom": 481.1875,
+                  "fits": true
+                },
+                {
+                  "id": "landscape-biome-brush",
+                  "visible": true,
+                  "top": 493.1875,
+                  "bottom": 537.1875,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "paint",
+              "tool": "vegetation",
+              "scrollTop": 0,
+              "height": 717,
+              "scrollHeight": 717,
+              "controls": [
+                {
+                  "id": "brush-radius",
+                  "visible": true,
+                  "top": 359.1875,
+                  "bottom": 391.1875,
+                  "fits": true
+                },
+                {
+                  "id": "grass-brush",
+                  "visible": true,
+                  "top": 273,
+                  "bottom": 317,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "paint",
+              "tool": "terrain",
+              "scrollTop": 0,
+              "height": 717,
+              "scrollHeight": 717,
+              "controls": [
+                {
+                  "id": "terrain-type",
+                  "visible": true,
+                  "top": 273.1875,
+                  "bottom": 317.1875,
+                  "fits": true
+                },
+                {
+                  "id": "landscape-terrain-brush",
+                  "visible": true,
+                  "top": 327.1875,
+                  "bottom": 371.1875,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "objects",
+              "tool": "place",
+              "scrollTop": 0,
+              "height": 717,
+              "scrollHeight": 717,
+              "controls": [
+                {
+                  "id": "palette-kind",
+                  "visible": true,
+                  "top": 293.1875,
+                  "bottom": 337.1875,
+                  "fits": true
+                },
+                {
+                  "id": "palette-variant",
+                  "visible": true,
+                  "top": 370.375,
+                  "bottom": 414.375,
+                  "fits": true
+                },
+                {
+                  "id": "place-object",
+                  "visible": true,
+                  "top": 532.375,
+                  "bottom": 576.375,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "objects",
+              "tool": "barriers",
+              "scrollTop": 0,
+              "height": 717,
+              "scrollHeight": 735,
+              "controls": [
+                {
+                  "id": "barrier-kind",
+                  "visible": true,
+                  "top": 313.1875,
+                  "bottom": 355.1875,
+                  "fits": true
+                },
+                {
+                  "id": "barrier-height",
+                  "visible": true,
+                  "top": 381.984375,
+                  "bottom": 425.984375,
+                  "fits": true
+                },
+                {
+                  "id": "barrier-draw",
+                  "visible": true,
+                  "top": 530.171875,
+                  "bottom": 574.171875,
+                  "fits": true
+                },
+                {
+                  "id": "barrier-gap",
+                  "visible": true,
+                  "top": 582.171875,
+                  "bottom": 637.953125,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "objects",
+              "tool": "scatter",
+              "scrollTop": 0,
+              "height": 717,
+              "scrollHeight": 717,
+              "controls": [
+                {
+                  "id": "scatter-variant-rock",
+                  "visible": true,
+                  "top": 335.484375,
+                  "bottom": 379.484375,
+                  "fits": true
+                },
+                {
+                  "id": "landscape-scatter-brush",
+                  "visible": true,
+                  "top": 395.484375,
+                  "bottom": 439.484375,
+                  "fits": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "tools": [
+            {
+              "group": "paint",
+              "tool": "biomes",
+              "scrollTop": 0,
+              "height": 686,
+              "scrollHeight": 686,
+              "controls": [
+                {
+                  "id": "biome-radius",
+                  "visible": true,
+                  "top": 466.1875,
+                  "bottom": 498.1875,
+                  "fits": true
+                },
+                {
+                  "id": "landscape-biome-brush",
+                  "visible": true,
+                  "top": 510.1875,
+                  "bottom": 554.1875,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "paint",
+              "tool": "vegetation",
+              "scrollTop": 0,
+              "height": 686,
+              "scrollHeight": 686,
+              "controls": [
+                {
+                  "id": "brush-radius",
+                  "visible": true,
+                  "top": 358.1875,
+                  "bottom": 390.1875,
+                  "fits": true
+                },
+                {
+                  "id": "grass-brush",
+                  "visible": true,
+                  "top": 272,
+                  "bottom": 316,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "paint",
+              "tool": "terrain",
+              "scrollTop": 0,
+              "height": 686,
+              "scrollHeight": 686,
+              "controls": [
+                {
+                  "id": "terrain-type",
+                  "visible": true,
+                  "top": 272.1875,
+                  "bottom": 316.1875,
+                  "fits": true
+                },
+                {
+                  "id": "landscape-terrain-brush",
+                  "visible": true,
+                  "top": 326.1875,
+                  "bottom": 370.1875,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "objects",
+              "tool": "place",
+              "scrollTop": 0,
+              "height": 686,
+              "scrollHeight": 686,
+              "controls": [
+                {
+                  "id": "palette-kind",
+                  "visible": true,
+                  "top": 292.1875,
+                  "bottom": 336.1875,
+                  "fits": true
+                },
+                {
+                  "id": "palette-variant",
+                  "visible": true,
+                  "top": 369.375,
+                  "bottom": 413.375,
+                  "fits": true
+                },
+                {
+                  "id": "place-object",
+                  "visible": true,
+                  "top": 531.375,
+                  "bottom": 575.375,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "objects",
+              "tool": "barriers",
+              "scrollTop": 0,
+              "height": 686,
+              "scrollHeight": 735,
+              "controls": [
+                {
+                  "id": "barrier-kind",
+                  "visible": true,
+                  "top": 312.1875,
+                  "bottom": 354.1875,
+                  "fits": true
+                },
+                {
+                  "id": "barrier-height",
+                  "visible": true,
+                  "top": 380.984375,
+                  "bottom": 424.984375,
+                  "fits": true
+                },
+                {
+                  "id": "barrier-draw",
+                  "visible": true,
+                  "top": 529.171875,
+                  "bottom": 573.171875,
+                  "fits": true
+                },
+                {
+                  "id": "barrier-gap",
+                  "visible": true,
+                  "top": 581.171875,
+                  "bottom": 636.953125,
+                  "fits": true
+                }
+              ]
+            },
+            {
+              "group": "objects",
+              "tool": "scatter",
+              "scrollTop": 0,
+              "height": 686,
+              "scrollHeight": 686,
+              "controls": [
+                {
+                  "id": "scatter-variant-rock",
+                  "visible": true,
+                  "top": 349.875,
+                  "bottom": 393.875,
+                  "fits": true
+                },
+                {
+                  "id": "landscape-scatter-brush",
+                  "visible": true,
+                  "top": 409.875,
+                  "bottom": 453.875,
+                  "fits": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Landscape, ground-only painting and surface erasing retain their distinct effects and whole-stroke Undo/Redo",
+      "evidence": null
+    },
+    {
+      "name": "Dedicated high-grass painting and grass-only erasing still work with reversible strokes",
+      "evidence": null
+    },
+    {
+      "name": "Subtool/task changes stop hidden brushes; a Tripo house can be placed and its inspector opened and closed",
+      "evidence": null
+    },
+    {
+      "name": "The compact wall/fence tool draws both model types, preserves wall height and creates a passage",
+      "evidence": {
+        "wall": {
+          "id": "barrier-wall-mvxm499p-1",
+          "name": "Steinmauer · Verwittert (Tripo)",
+          "kind": "wall",
+          "variant": "kit-tripo-wall",
+          "points": [
+            [
+              -80,
+              95
+            ],
+            [
+              80,
+              95
+            ]
+          ],
+          "scale": 1,
+          "height": 2,
+          "gaps": [
+            {
+              "at": 80,
+              "width": 3
+            }
+          ]
+        },
+        "fence": {
+          "id": "barrier-fence-mvxm49vw-2",
+          "name": "Holzzaun · Kreuzstreben",
+          "kind": "fence",
+          "variant": "kit-cross-wood",
+          "points": [
+            [
+              -80,
+              120
+            ],
+            [
+              80,
+              120
+            ]
+          ],
+          "scale": 1,
+          "height": 1.5,
+          "gaps": []
+        }
+      }
+    },
+    {
+      "name": "JSON save/load preserves all painted surfaces, grass, Tripo objects and drawn routes exactly",
+      "evidence": null
+    },
+    {
+      "name": "Exported standalone HTML reopens the exact map and rebuilds every compact tool panel without losing or duplicating original controls",
+      "evidence": {
+        "bytes": 60544004,
+        "sha256": "4d9f8bf101392c8a072ad064e0f73a930a00f56885ea6777c371da5c88ea3bbc"
+      }
+    },
+    {
+      "name": "The 390 px layout keeps tool selection and controls usable without horizontal page overflow",
+      "evidence": null
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/compact-editor-island-overview.png",
+    "docs/compact-editor-walls-1280.png",
+    "docs/compact-editor-layout-1280.png",
+    "docs/compact-editor-layout-1024.png",
+    "docs/compact-editor-layout-390.png",
+    "docs/compact-editor-mobile-paint.png"
+  ],
+  "limits": "Real Chromium with SwiftShader over local HTTP; mobile layout uses viewport emulation, not a physical device performance test.",
+  "baseline": {
+    "url": "http://127.0.0.1:5207/map-editor.html",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "sha256": "dbbac00b611f20db172a7d9ac88eded8185ce9e97fb225d2611832e90b236875",
+    "panes": {
+      "paint": {
+        "top": 83,
+        "bottom": 800,
+        "clientHeight": 717,
+        "scrollHeight": 861,
+        "scrollTop": 0,
+        "overflow": 144,
+        "controls": [
+          {
+            "id": "editor-tab-paint",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-objects",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-erase",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-more",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 339,
+            "bottom": 391,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 339,
+            "bottom": 391,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 399,
+            "bottom": 451,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 399,
+            "bottom": 451,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 459,
+            "bottom": 511,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 459,
+            "bottom": 511,
+            "inViewport": true
+          },
+          {
+            "id": "biome-radius",
+            "top": 552.1875,
+            "bottom": 584.1875,
+            "inViewport": true
+          },
+          {
+            "id": "landscape-biome-brush",
+            "top": 596.1875,
+            "bottom": 640.1875,
+            "inViewport": true
+          },
+          {
+            "id": "biome-preset",
+            "top": 807.765625,
+            "bottom": 851.765625,
+            "inViewport": false
+          },
+          {
+            "id": "biome-softness",
+            "top": 886.5625,
+            "bottom": 918.5625,
+            "inViewport": false
+          },
+          {
+            "id": "biome-strength",
+            "top": 953.359375,
+            "bottom": 985.359375,
+            "inViewport": false
+          },
+          {
+            "id": "biome-settings",
+            "top": 997.359375,
+            "bottom": 1053.140625,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-preset-name",
+            "top": 1084.9375,
+            "bottom": 1128.9375,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-preset-save",
+            "top": 1138.9375,
+            "bottom": 1182.9375,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-preset-select",
+            "top": 1214.734375,
+            "bottom": 1258.734375,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-preset-load",
+            "top": 1268.734375,
+            "bottom": 1312.734375,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-preset-delete",
+            "top": 1268.734375,
+            "bottom": 1312.734375,
+            "inViewport": false
+          },
+          {
+            "id": "grass-brush",
+            "top": 898.96875,
+            "bottom": 942.96875,
+            "inViewport": false
+          },
+          {
+            "id": "brush-radius",
+            "top": 985.15625,
+            "bottom": 1017.15625,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-type",
+            "top": 1260.328125,
+            "bottom": 1304.328125,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-height",
+            "top": 1339.125,
+            "bottom": 1371.125,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-height-variation",
+            "top": 1405.921875,
+            "bottom": 1437.921875,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-density",
+            "top": 1472.71875,
+            "bottom": 1504.71875,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-edge",
+            "top": 1539.515625,
+            "bottom": 1571.515625,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-ground",
+            "top": 1581.515625,
+            "bottom": 1600.515625,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-ground-blend",
+            "top": 1635.3125,
+            "bottom": 1667.3125,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-color",
+            "top": 1699.109375,
+            "bottom": 1733.109375,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-brightness",
+            "top": 1767.90625,
+            "bottom": 1799.90625,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-saturation",
+            "top": 1834.703125,
+            "bottom": 1866.703125,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-color-variation",
+            "top": 1901.5,
+            "bottom": 1933.5,
+            "inViewport": false
+          },
+          {
+            "id": "vegetation-strength",
+            "top": 1968.296875,
+            "bottom": 2000.296875,
+            "inViewport": false
+          },
+          {
+            "id": "terrain-type",
+            "top": 970.15625,
+            "bottom": 1014.15625,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-terrain-brush",
+            "top": 1024.15625,
+            "bottom": 1068.15625,
+            "inViewport": false
+          },
+          {
+            "id": "terrain-radius",
+            "top": 1105.34375,
+            "bottom": 1137.34375,
+            "inViewport": false
+          },
+          {
+            "id": "terrain-strength",
+            "top": 1174.53125,
+            "bottom": 1206.53125,
+            "inViewport": false
+          },
+          {
+            "id": "terrain-hardness",
+            "top": 1243.71875,
+            "bottom": 1275.71875,
+            "inViewport": false
+          },
+          {
+            "id": "terrain-color",
+            "top": 1312.90625,
+            "bottom": 1346.90625,
+            "inViewport": false
+          },
+          {
+            "id": "terrain-variation",
+            "top": 1384.09375,
+            "bottom": 1416.09375,
+            "inViewport": false
+          }
+        ]
+      },
+      "objects": {
+        "top": 83,
+        "bottom": 800,
+        "clientHeight": 717,
+        "scrollHeight": 1646,
+        "scrollTop": 0,
+        "overflow": 929,
+        "controls": [
+          {
+            "id": "editor-tab-paint",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-objects",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-erase",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-more",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-kind",
+            "top": 350.578125,
+            "bottom": 392.578125,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-height",
+            "top": 421.375,
+            "bottom": 465.375,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-shape",
+            "top": 591.546875,
+            "bottom": 633.546875,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-draw",
+            "top": 647.546875,
+            "bottom": 691.546875,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-gap",
+            "top": 699.546875,
+            "bottom": 755.328125,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-erase",
+            "top": 699.546875,
+            "bottom": 755.328125,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-snap",
+            "top": 775.828125,
+            "bottom": 794.828125,
+            "inViewport": true
+          },
+          {
+            "id": "barrier-gap-width",
+            "top": 832.125,
+            "bottom": 876.125,
+            "inViewport": false
+          },
+          {
+            "id": "palette-kind",
+            "top": 1074.5,
+            "bottom": 1118.5,
+            "inViewport": false
+          },
+          {
+            "id": "palette-variant",
+            "top": 1150.6875,
+            "bottom": 1194.6875,
+            "inViewport": false
+          },
+          {
+            "id": "place-object",
+            "top": 1479.234375,
+            "bottom": 1523.234375,
+            "inViewport": false
+          },
+          {
+            "id": "add-object-center",
+            "top": 1531.234375,
+            "bottom": 1575.234375,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-rock",
+            "top": 1870.390625,
+            "bottom": 1889.390625,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-variant-rock",
+            "top": 1901.890625,
+            "bottom": 1945.890625,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-scatter-brush",
+            "top": 1961.890625,
+            "bottom": 2005.890625,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-radius",
+            "top": 2043.078125,
+            "bottom": 2075.078125,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-density",
+            "top": 2112.265625,
+            "bottom": 2144.265625,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-strength",
+            "top": 2181.453125,
+            "bottom": 2213.453125,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-distance",
+            "top": 2250.640625,
+            "bottom": 2282.640625,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-min",
+            "top": 2319.828125,
+            "bottom": 2351.828125,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-max",
+            "top": 2389.015625,
+            "bottom": 2421.015625,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-clustering",
+            "top": 2458.203125,
+            "bottom": 2490.203125,
+            "inViewport": false
+          },
+          {
+            "id": "scatter-rotation",
+            "top": 2502.453125,
+            "bottom": 2521.453125,
+            "inViewport": false
+          }
+        ]
+      },
+      "erase": {
+        "top": 83,
+        "bottom": 800,
+        "clientHeight": 717,
+        "scrollHeight": 717,
+        "scrollTop": 0,
+        "overflow": 0,
+        "controls": [
+          {
+            "id": "editor-tab-paint",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-objects",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-erase",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-more",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "erase-target",
+            "top": 292.1875,
+            "bottom": 336.1875,
+            "inViewport": true
+          },
+          {
+            "id": "surface-eraser-radius",
+            "top": 373.375,
+            "bottom": 405.375,
+            "inViewport": true
+          },
+          {
+            "id": "landscape-terrain-erase",
+            "top": 417.375,
+            "bottom": 461.375,
+            "inViewport": true
+          }
+        ]
+      },
+      "more": {
+        "top": 83,
+        "bottom": 800,
+        "clientHeight": 717,
+        "scrollHeight": 717,
+        "scrollTop": 0,
+        "overflow": 0,
+        "controls": [
+          {
+            "id": "editor-tab-paint",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-objects",
+            "top": 97,
+            "bottom": 147,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-erase",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "editor-tab-more",
+            "top": 155,
+            "bottom": 205,
+            "inViewport": true
+          },
+          {
+            "id": "add-place",
+            "top": 342.1875,
+            "bottom": 386.1875,
+            "inViewport": true
+          },
+          {
+            "id": "add-region",
+            "top": 342.1875,
+            "bottom": 386.1875,
+            "inViewport": true
+          },
+          {
+            "id": "add-path",
+            "top": 393.1875,
+            "bottom": 437.1875,
+            "inViewport": true
+          },
+          {
+            "id": "add-river",
+            "top": 393.1875,
+            "bottom": 437.1875,
+            "inViewport": true
+          },
+          {
+            "id": "feature-filter",
+            "top": 493.1875,
+            "bottom": 537.1875,
+            "inViewport": true
+          },
+          {
+            "id": "feature-search",
+            "top": 544.1875,
+            "bottom": 588.1875,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 597.1875,
+            "bottom": 641.1875,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 641.1875,
+            "bottom": 685.1875,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 685.1875,
+            "bottom": 729.1875,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 729.1875,
+            "bottom": 773.1875,
+            "inViewport": true
+          },
+          {
+            "id": "",
+            "top": 773.1875,
+            "bottom": 817.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 817.1875,
+            "bottom": 861.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 861.1875,
+            "bottom": 905.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 905.1875,
+            "bottom": 949.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 949.1875,
+            "bottom": 993.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 993.1875,
+            "bottom": 1037.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1037.1875,
+            "bottom": 1081.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1081.1875,
+            "bottom": 1125.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1125.1875,
+            "bottom": 1169.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1169.1875,
+            "bottom": 1213.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1213.1875,
+            "bottom": 1257.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1257.1875,
+            "bottom": 1301.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1301.1875,
+            "bottom": 1345.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1345.1875,
+            "bottom": 1389.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1389.1875,
+            "bottom": 1433.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1433.1875,
+            "bottom": 1477.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1477.1875,
+            "bottom": 1521.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1521.1875,
+            "bottom": 1565.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1565.1875,
+            "bottom": 1609.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1609.1875,
+            "bottom": 1653.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1653.1875,
+            "bottom": 1697.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1697.1875,
+            "bottom": 1741.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1741.1875,
+            "bottom": 1785.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1785.1875,
+            "bottom": 1829.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1829.1875,
+            "bottom": 1873.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1873.1875,
+            "bottom": 1917.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1917.1875,
+            "bottom": 1961.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 1961.1875,
+            "bottom": 2005.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2005.1875,
+            "bottom": 2049.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2049.1875,
+            "bottom": 2093.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2093.1875,
+            "bottom": 2137.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2137.1875,
+            "bottom": 2181.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2181.1875,
+            "bottom": 2225.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2225.1875,
+            "bottom": 2269.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2269.1875,
+            "bottom": 2313.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2313.1875,
+            "bottom": 2357.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2357.1875,
+            "bottom": 2401.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2401.1875,
+            "bottom": 2445.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2445.1875,
+            "bottom": 2489.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2489.1875,
+            "bottom": 2533.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2533.1875,
+            "bottom": 2577.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2577.1875,
+            "bottom": 2621.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2621.1875,
+            "bottom": 2665.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2665.1875,
+            "bottom": 2709.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2709.1875,
+            "bottom": 2753.1875,
+            "inViewport": false
+          },
+          {
+            "id": "",
+            "top": 2753.1875,
+            "bottom": 2797.1875,
+            "inViewport": false
+          },
+          {
+            "id": "list-more",
+            "top": 857.1875,
+            "bottom": 899.1875,
+            "inViewport": false
+          },
+          {
+            "id": "wind-enabled",
+            "top": 371.25,
+            "bottom": 390.25,
+            "inViewport": true
+          },
+          {
+            "id": "wind-strength",
+            "top": 427.6875,
+            "bottom": 459.6875,
+            "inViewport": true
+          },
+          {
+            "id": "wind-speed",
+            "top": 496.875,
+            "bottom": 528.875,
+            "inViewport": true
+          },
+          {
+            "id": "wind-direction",
+            "top": 700.25,
+            "bottom": 732.25,
+            "inViewport": true
+          },
+          {
+            "id": "wind-gusts",
+            "top": 744.5,
+            "bottom": 763.5,
+            "inViewport": true
+          },
+          {
+            "id": "wind-gust-strength",
+            "top": 800.9375,
+            "bottom": 832.9375,
+            "inViewport": false
+          },
+          {
+            "id": "wind-gust-frequency",
+            "top": 870.125,
+            "bottom": 902.125,
+            "inViewport": false
+          },
+          {
+            "id": "wind-turbulence",
+            "top": 939.3125,
+            "bottom": 971.3125,
+            "inViewport": false
+          },
+          {
+            "id": "wind-apply",
+            "top": 983.3125,
+            "bottom": 1027.3125,
+            "inViewport": false
+          },
+          {
+            "id": "landscape-wind-zone",
+            "top": 1084.90625,
+            "bottom": 1128.90625,
+            "inViewport": false
+          },
+          {
+            "id": "wind-zone-radius",
+            "top": 1166.09375,
+            "bottom": 1198.09375,
+            "inViewport": false
+          },
+          {
+            "id": "wind-zone-strength",
+            "top": 1235.28125,
+            "bottom": 1267.28125,
+            "inViewport": false
+          },
+          {
+            "id": "wind-zone-falloff",
+            "top": 1304.46875,
+            "bottom": 1336.46875,
+            "inViewport": false
+          },
+          {
+            "id": "wind-zone-direction",
+            "top": 1373.65625,
+            "bottom": 1405.65625,
+            "inViewport": false
+          },
+          {
+            "id": "layer-objects",
+            "top": 456.5,
+            "bottom": 475.5,
+            "inViewport": true
+          },
+          {
+            "id": "layer-labels",
+            "top": 500.5,
+            "bottom": 519.5,
+            "inViewport": true
+          },
+          {
+            "id": "layer-spawns",
+            "top": 544.5,
+            "bottom": 563.5,
+            "inViewport": true
+          },
+          {
+            "id": "layer-grid",
+            "top": 588.5,
+            "bottom": 607.5,
+            "inViewport": true
+          },
+          {
+            "id": "snap-grid",
+            "top": 632.5,
+            "bottom": 651.5,
+            "inViewport": true
+          },
+          {
+            "id": "export-svg",
+            "top": 723,
+            "bottom": 767,
+            "inViewport": true
+          },
+          {
+            "id": "export-editor",
+            "top": 770,
+            "bottom": 812,
+            "inViewport": false
+          },
+          {
+            "id": "reset-map",
+            "top": 815,
+            "bottom": 857,
+            "inViewport": false
+          }
+        ]
+      }
+    }
+  },
+  "delivery": {
+    "file": "welt/map-editor.html",
+    "bytes": 60483891,
+    "sha256": "65903f72226f3dfcdd45d427b5c85fd429e04add81c82d04cbecd0a46546a0e1",
+    "unexpectedResourceRequests": []
+  },
+  "sourceMapUnchanged": "af10d351a991fba4604b76137f8f412205f5cf02d49f02d5cab8bac0ff2d57e5",
+  "visualReview": "Desktop views show one clear tool panel with the primary actions accessible without scrolling; the actual new island has prominent eastern/northern bays and uneven peninsulas. Mobile tool controls remain accessible in their bounded scroll area above the map, with no horizontal page overflow."
+}

@@ -89,6 +89,10 @@ def open_control(page, identifier):
     pane = control.locator('xpath=ancestor::section[contains(@class,"editor-pane")]')
     if pane.count():
         page.locator('#editor-tab-' + pane.get_attribute('id').removeprefix('editor-pane-')).click()
+    panel = control.locator('xpath=ancestor::*[@data-editor-tool-panel]')
+    if panel.count():
+        group = pane.get_attribute('id').removeprefix('editor-pane-')
+        page.locator('#editor-tool-' + group + '-' + panel.first.get_attribute('data-editor-tool-panel')).click()
     for detail in control.locator('xpath=ancestor::details').all():
         if detail.get_attribute('open') is None:
             detail.locator(':scope > summary').click()
@@ -116,6 +120,7 @@ def options(page, selector):
 
 def place(page, kind, variant=None, position=None):
     page.locator('#editor-tab-objects').click()
+    page.locator('#editor-tool-objects-place').click()
     page.locator('#palette-kind').select_option(kind)
     if variant: page.locator('#palette-variant').select_option(variant)
     before = len(state(page)['map']['objects'])
@@ -173,7 +178,7 @@ try:
         passed('Legacy castle, loot, grass, shrubs and old barriers import unchanged; no-op editing keeps the old wood chest variant')
 
         expect(page.locator('#retired-scenery-banner')).to_be_visible()
-        page.locator('#remove-retired-scenery').click()
+        open_control(page, 'remove-retired-scenery').click()
         cleaned = copy.deepcopy(legacy)
         cleaned['objects'] = legacy['objects'][-2:]
         cleaned['barriers'] = legacy['barriers'][:2]
@@ -202,10 +207,10 @@ try:
         page.locator('#editor-tab-objects').click()
         styles = options(page, '#barrier-kind')
         assert {x['value'] for x in styles} == {'wall', 'wall-cut-stone', 'wall-tripo', 'fence-cross-wood'}, styles
-        page.locator('#barrier-kind').select_option('wall-tripo')
+        open_control(page, 'barrier-kind').select_option('wall-tripo')
         page.locator('#barrier-height').fill('2')
         expect(page.locator('#barrier-height-hint')).to_contain_text('Sicht')
-        page.locator('#barrier-shape').select_option('straight')
+        open_control(page, 'barrier-shape').select_option('straight')
         page.locator('#barrier-draw').click(); drag(page, [-70, -65], [70, -65])
         wall = state(page)['map']['barriers'][-1]
         assert wall['variant'] == 'kit-tripo-wall' and wall['height'] == 2
@@ -249,7 +254,7 @@ try:
         passed('JSON export/reimport preserves every existing object, newly placed Tripo object, painted grass and barrier height/passage')
 
         page.locator('#editor-tab-objects').click()
-        page.locator('#palette-kind').select_option('house')
+        open_control(page, 'palette-kind').select_option('house')
         page.locator('#palette-variant').select_option('kit-tripo-house-02')
         page.locator('#palette-kind').scroll_into_view_if_needed()
         screenshot = OUT / 'editor.png'; page.screenshot(path=str(screenshot))

@@ -1,10 +1,11 @@
 # Nebeljagd · Die Nebelinsel
 
-**Entwicklungsstand auf `work`:** Der Editor ist in **Malen, Objekte,
-Radieren und Mehr** gegliedert. Landschaftskarten starten direkt den Pinsel;
-der Flächenradierer entfernt Boden und Bewuchs gemeinsam. Feineinstellungen
-sind aufklappbar, Rückgängig bleibt erreichbar. Anleitung:
-[`docs/simple-editor.md`](docs/simple-editor.md).
+**Entwicklungsstand auf `work`:** Die Insel hat jetzt markante Buchten,
+Halbinseln und organischere Regionsgrenzen. Der Editor zeigt pro Hauptbereich
+nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
+**Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
+und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
+[`docs/compact-editor.md`](docs/compact-editor.md).
 Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
@@ -30,7 +31,7 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 [`docs/art-style.md`](docs/art-style.md).
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
-wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,125 km²**
+wird jetzt direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,09 km²**
 Land mit sieben Landschaften, Wegen, zwei Flüssen, Brücken und Dörfern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor

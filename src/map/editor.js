@@ -58,6 +58,14 @@ const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
 const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
 const layers = { showLabels: true, showSpawns: true, showGrid: false, showZone: false, showObjects: true };
 
+function compactCleanupBanner(banner, prefix) {
+  banner.classList.add('cleanup-banner');
+  if ($(`${prefix}-summary`)) return;
+  const details = document.createElement('details');
+  const summary = document.createElement('summary'); summary.id = `${prefix}-summary`;
+  details.append(summary, $(`${prefix}-note`)); banner.prepend(details);
+}
+
 // Deliberately separate from draft restoration: loading a previous draft or
 // imported map must not silently discard the user's house placements.
 let retiredBuildingsBanner = $('retired-buildings-banner');
@@ -74,6 +82,7 @@ if (!retiredBuildingsBanner) {
   retiredBuildingsBanner.append(label, button);
   $('restore-banner').after(retiredBuildingsBanner);
 }
+compactCleanupBanner(retiredBuildingsBanner, 'retired-buildings');
 $('remove-retired-buildings').addEventListener('click', () => {
   if (pointer) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   const result = removeRetiredBuildings(map);
@@ -86,6 +95,7 @@ $('remove-retired-buildings').addEventListener('click', () => {
 function updateRetiredBuildingsBanner() {
   const result = removeRetiredBuildings(map);
   retiredBuildingsBanner.hidden = !result.totalRemoved;
+  $('retired-buildings-summary').textContent = `${result.removedBuildings.length} alte Gebäude im Entwurf · Details`;
   $('retired-buildings-note').textContent = result.totalRemoved
     ? `Dieser Entwurf enthält ${result.removedBuildings.length} alte Gebäude und ${result.removedDependents.length} zugehörige Vorratstruhen. Das Tripo-Wirtshaus und andere Änderungen bleiben erhalten.`
     : '';
@@ -105,6 +115,7 @@ if (!retiredSceneryBanner) {
   retiredSceneryBanner.append(label, button);
   retiredBuildingsBanner.after(retiredSceneryBanner);
 }
+compactCleanupBanner(retiredSceneryBanner, 'retired-scenery');
 $('remove-retired-scenery').addEventListener('click', () => {
   if (pointer) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   const result = removeNonTripoObjects(map);
@@ -119,6 +130,7 @@ $('remove-retired-scenery').addEventListener('click', () => {
 function updateRetiredSceneryBanner() {
   const result = removeNonTripoObjects(map);
   retiredSceneryBanner.hidden = !result.totalRemoved;
+  $('retired-scenery-summary').textContent = `${result.totalRemoved} ältere Platzierungen im Entwurf · Details`;
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
     : `Bereinigung: ${result.removedObjects.length} alte Objektplatzierungen (Nicht-Tripo oder kleines Schloss) und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch platzierte Beute und Grasobjekte. Aktuelle Tripo-Modelle, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
 }
@@ -1202,7 +1214,7 @@ landscapePanel = createLandscapePanel({ getMap: () => map, getMode: () => mode, 
   refreshCursor: () => updatePlacementPreview(),
 });
 barrierPanel = createBarrierPanel({ getMap: () => map, getMode: () => mode, setMode, commit, selectedFeature, cancelPointer,
-  showObjectsPane: () => landscapePanel.showPane('objects'),
+  showObjectsPane: () => landscapePanel.showPane('objects', 'barriers'),
 });
 $('palette-kind').addEventListener('change', () => { fillVariants($('palette-variant'), $('palette-kind').value); updatePaletteRarity(); renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
 $('palette-variant').addEventListener('change', () => { renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });

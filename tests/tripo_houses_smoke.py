@@ -89,6 +89,23 @@ def import_map(page, value):
     page.wait_for_function('v=>JSON.stringify(nebeljagdMapTestState().map)===JSON.stringify(v)', arg=value)
 
 
+
+def open_control(page, identifier):
+    control = page.locator('#' + identifier)
+    pane = control.locator('xpath=ancestor::section[contains(@class,"editor-pane")]')
+    if pane.count():
+        group = pane.get_attribute('id').removeprefix('editor-pane-')
+        page.locator('#editor-tab-' + group).click()
+        panel = control.locator('xpath=ancestor::*[@data-editor-tool-panel]')
+        if panel.count():
+            page.locator('#editor-tool-' + group + '-' + panel.first.get_attribute('data-editor-tool-panel')).click()
+    for details in control.locator('xpath=ancestor::details').all():
+        if details.get_attribute('open') is None:
+            details.locator(':scope > summary').click()
+    control.scroll_into_view_if_needed()
+    return control
+
+
 def object_(identifier, kind, variant, point, **extra):
     return {'id': identifier, 'name': identifier, 'kind': kind, 'variant': variant,
             'position': point, 'rotation': 0, 'scale': 1, **extra}
@@ -182,7 +199,7 @@ try:
         editor.locator('#editor-tab-objects').click()
         kinds = editor.locator('#palette-kind option').evaluate_all('(xs)=>xs.map(x=>x.value)')
         assert set(kinds) == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well'}, kinds
-        editor.locator('#palette-kind').select_option('house')
+        open_control(editor, 'palette-kind').select_option('house')
         variants = editor.locator('#palette-variant option').evaluate_all('(xs)=>xs.map(x=>x.value)')
         assert VARIANT in variants and 'kit-tripo-tavern' in variants
         assert 'kit-tripo-castle' not in variants, variants
@@ -210,8 +227,8 @@ try:
         import_map(editor, legacy)
         expect(editor.locator('#retired-buildings-banner')).to_be_visible()
         expect(editor.locator('#retired-scenery-banner')).to_be_visible()
-        editor.locator('#remove-retired-buildings').click()
-        editor.locator('#remove-retired-scenery').click()
+        open_control(editor, 'remove-retired-buildings').click()
+        open_control(editor, 'remove-retired-scenery').click()
         cleaned = state(editor)['map']
         assert cleaned['objects'] == legacy['objects'][6:]
         assert cleaned['barriers'] == legacy['barriers'][1:]
@@ -222,7 +239,7 @@ try:
         passed('Legacy cleanup removes exact retired objects and fence routes, preserves new props/height data, and is fully undoable')
 
         import_map(editor, FIXTURE)
-        editor.locator('#palette-kind').select_option('house')
+        open_control(editor, 'palette-kind').select_option('house')
         editor.locator('#palette-variant').select_option(VARIANT)
         expect(editor.locator('#palette-preview-image svg image')).to_be_visible()
         preview = editor.evaluate('''async()=>{

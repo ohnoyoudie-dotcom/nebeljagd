@@ -1,5 +1,9 @@
 # Nebeljagd: Weltkarte und Objekteditor
 
+> Die aktuelle Bedienung und Inselform stehen unter
+> [Kompakter Editor und neue Inselform](compact-editor.md).
+> Die folgenden Abschnitte dokumentieren teilweise frühere Entwicklungsstände.
+
 `worldmap.json` ist die gemeinsame Datenquelle für den Karteneditor und die
 spielbare 3D-Insel. Küste, Regionen, Wege, Flüsse, Orte und alle platzierten
 Weltobjekte bleiben editierbar. Der Generator baut aus diesen Daten die große

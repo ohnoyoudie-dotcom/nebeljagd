@@ -38,7 +38,8 @@ export function createLandscapePanel(api) {
   sidebar.append(editTools);
   for (const element of sidebar.querySelectorAll('[data-landscape-generated], .landscape-section, .editor-pane')) element.remove();
 
-  const panes = {}, sections = {};
+  const panes = {}, sections = {}, toolPanels = {}, toolNavs = {};
+  const activeTools = { paint: 'biomes', objects: 'place', more: 'shape' };
   let activePane = 'paint';
   const nav = document.createElement('nav');
   nav.className = 'editor-action-nav'; nav.dataset.landscapeGenerated = 'true';
@@ -101,8 +102,10 @@ export function createLandscapePanel(api) {
     objectEraser.hidden = surface; $('surface-erase-controls').hidden = !surface;
     api.setMode(surface ? 'terrainErase' : 'erase');
   }
-  function showPane(key) {
+  function showPane(key, tool = null) {
     activePane = key;
+    if (tool && toolPanels[key]?.[tool]) activeTools[key] = tool;
+    syncToolPanels();
     for (const [name, pane] of Object.entries(panes)) pane.hidden = name !== key;
     for (const tab of nav.querySelectorAll('button')) {
       const selected = tab.dataset.editorAction === key;
@@ -111,6 +114,42 @@ export function createLandscapePanel(api) {
     // Switching tasks must never leave an invisible paint tool active.
     if (key === 'erase') activateEraser(); else api.setMode('select');
     sidebar.scrollTop = 0;
+  }
+  function syncToolPanels() {
+    for (const [group, panels] of Object.entries(toolPanels)) {
+      for (const [key, panel] of Object.entries(panels)) panel.hidden = key !== activeTools[group];
+      for (const tab of toolNavs[group].querySelectorAll('button')) {
+        const selected = tab.dataset.editorTool === activeTools[group];
+        tab.setAttribute('aria-selected', String(selected)); tab.tabIndex = selected ? 0 : -1;
+      }
+    }
+  }
+  function addToolChoices(group, entries) {
+    const tabs = document.createElement('nav'); tabs.className = 'editor-tool-nav';
+    tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', 'Werkzeug auswählen');
+    toolPanels[group] = {}; toolNavs[group] = tabs;
+    for (const [key, label, panel] of entries) {
+      const button = document.createElement('button'); button.type = 'button';
+      button.id = `editor-tool-${group}-${key}`; button.dataset.editorTool = key; button.dataset.toolGroup = group;
+      button.textContent = label; button.setAttribute('role', 'tab');
+      if (!panel.id) panel.id = `editor-tool-panel-${group}-${key}`;
+      panel.dataset.editorToolPanel = key; panel.classList.add('editor-tool-panel');
+      panel.setAttribute('role', 'tabpanel'); panel.setAttribute('aria-labelledby', button.id);
+      button.setAttribute('aria-controls', panel.id);
+      if (panel.tagName === 'DETAILS') { panel.open = true; panel.classList.add('tool-panel-details'); }
+      button.addEventListener('click', () => showPane(group, key));
+      tabs.append(button); toolPanels[group][key] = panel;
+    }
+    tabs.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const buttons = [...tabs.querySelectorAll('button')], current = buttons.indexOf(document.activeElement);
+      const index = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1
+        : (current + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[index].click(); buttons[index].focus();
+    });
+    panes[group].prepend(tabs);
+    syncToolPanels();
   }
   nav.addEventListener('keydown', event => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
@@ -132,16 +171,35 @@ export function createLandscapePanel(api) {
   }
   const vegetation = mount('vegetation', `<details class="biome-advanced"><summary>Gras fein einstellen</summary>${vegetationFields('vegetation')}${range('vegetation-strength', 'Pinselstärke', 0, 100, 100)}</details>`);
   $('vegetation-type').value = 'tall';
-  mount('terrain', `${selector('terrain-type', 'Bodenart', TERRAIN_TYPES)}${button('landscape-terrain-brush', 'Boden malen')}${range('terrain-radius', 'Pinselradius', .5, 80, 8, .5, ' m')}${range('terrain-strength', 'Pinselstärke', 0, 100, 80)}${range('terrain-hardness', 'Randhärte', 0, 100, 30)}<label for="terrain-color">Bodenfarbe</label><input id="terrain-color" type="color" value="#4e854b">${range('terrain-variation', 'Farbvariation', 0, 100, 18)}<p class="small-note">Ändert nur die Bodenfarbe. Für Boden und Bewuchs zusammen nutze die Landschaftskarten oben. Mit „Radieren“ kannst du beides wieder entfernen.</p>`);
+  mount('terrain', `${selector('terrain-type', 'Bodenart', TERRAIN_TYPES)}${button('landscape-terrain-brush', 'Boden malen')}${range('terrain-radius', 'Pinselradius', .5, 80, 8, .5, ' m')}<details class="tool-fine-settings"><summary>Farbe & Übergang</summary>${range('terrain-strength', 'Pinselstärke', 0, 100, 80)}${range('terrain-hardness', 'Randhärte', 0, 100, 30)}<label for="terrain-color">Bodenfarbe</label><input id="terrain-color" type="color" value="#4e854b">${range('terrain-variation', 'Farbvariation', 0, 100, 18)}</details><p class="small-note">Ändert nur die Bodenfarbe. Für Boden und Bewuchs zusammen nutze die Landschaftskarten oben. Mit „Radieren“ kannst du beides wieder entfernen.</p>`);
   const scatterKinds = PLACEMENT_OBJECT_CATALOG.filter(item => ['tree', 'bush', 'grass', 'rock', 'flower'].includes(item.kind));
-  mount('objects', `<h3>Natürlich verteilen</h3><p class="small-note">Modelle auswählen und über die Karte ziehen. Wege, Gewässer, Gebäude, Startbereiche und bestehende Hindernisse werden berücksichtigt.</p>${scatterKinds.map(item => `<div class="scatter-model"><label class="landscape-check"><input type="checkbox" id="scatter-${item.kind}"${item.kind === 'rock' ? ' checked' : ''}>${item.label}</label><select id="scatter-variant-${item.kind}" aria-label="${item.label}: Modell">${options(item.variants)}</select></div>`).join('')}${button('landscape-scatter-brush', 'Objekte verteilen')}${range('scatter-radius', 'Pinselradius', .5, 20, 12, .5, ' m')}${range('scatter-density', 'Objektdichte', 0, 100, 35)}${range('scatter-strength', 'Pinselstärke', 0, 100, 100)}${range('scatter-distance', 'Mindestabstand', .5, 30, 3, .5, ' m')}${range('scatter-min', 'Kleinste Größe', 25, 300, 80)}${range('scatter-max', 'Größte Größe', 25, 300, 125)}${range('scatter-clustering', 'Gruppenbildung', 0, 100, 65)}${check('scatter-rotation', 'Zufällige Drehung', true)}`);
-  mount('wind', `${check('wind-enabled', 'Wind aktivieren', true)}${range('wind-strength', 'Windstärke', 0, 100, 35)}${range('wind-speed', 'Windgeschwindigkeit', 0, 5, 1, .05, '×')}<label for="wind-direction">Windrichtung</label><div class="wind-compass" id="wind-compass" tabindex="0" role="slider" aria-label="Windrichtung" aria-valuemin="0" aria-valuemax="360" aria-valuenow="37"><span class="wind-north">N</span><span id="wind-arrow" aria-hidden="true">↑</span></div>${range('wind-direction', 'Richtung', 0, 360, 37, 1, '°')}${check('wind-gusts', 'Windböen', true)}${range('wind-gust-strength', 'Böenstärke', 0, 100, 35)}${range('wind-gust-frequency', 'Böenhäufigkeit', 0, 2, .18, .01, ' /s')}${range('wind-turbulence', 'Turbulenz', 0, 100, 20)}<button type="button" class="button" id="wind-apply">Wind übernehmen</button><h3>Lokale Windzone</h3>${button('landscape-wind-zone', 'Windzone auf Karte setzen')}${range('wind-zone-radius', 'Zonenradius', .5, 250, 20, .5, ' m')}${range('wind-zone-strength', 'Lokale Windstärke', 0, 100, 10)}${range('wind-zone-falloff', 'Weicher Übergang', 0, 100, 50)}${range('wind-zone-direction', 'Lokale Richtung', 0, 360, 37, 1, '°')}<p class="small-note">0 % Stärke ergibt einen windgeschützten Bereich. Zonen in der Kartenliste oder am Kreisrand auswählen, verschieben und rechts bearbeiten.</p>`);
+  mount('objects', `<h3>Felsen verteilen</h3><p class="small-note">Über die Karte ziehen, um eine Gruppe zu setzen.</p>${scatterKinds.map(item => `<div class="scatter-model"><label class="landscape-check"><input type="checkbox" id="scatter-${item.kind}"${item.kind === 'rock' ? ' checked' : ''}>${item.label}</label><select id="scatter-variant-${item.kind}" aria-label="${item.label}: Modell">${options(item.variants)}</select></div>`).join('')}${button('landscape-scatter-brush', 'Objekte verteilen')}${range('scatter-radius', 'Pinselradius', .5, 20, 12, .5, ' m')}${range('scatter-density', 'Objektdichte', 0, 100, 35)}<details class="tool-fine-settings"><summary>Abstände & Größen</summary>${range('scatter-strength', 'Pinselstärke', 0, 100, 100)}${range('scatter-distance', 'Mindestabstand', .5, 30, 3, .5, ' m')}${range('scatter-min', 'Kleinste Größe', 25, 300, 80)}${range('scatter-max', 'Größte Größe', 25, 300, 125)}${range('scatter-clustering', 'Gruppenbildung', 0, 100, 65)}${check('scatter-rotation', 'Zufällige Drehung', true)}</details>`);
+  mount('wind', `${check('wind-enabled', 'Wind aktivieren', true)}${range('wind-strength', 'Windstärke', 0, 100, 35)}${range('wind-speed', 'Windgeschwindigkeit', 0, 5, 1, .05, '×')}<label for="wind-direction">Windrichtung</label><div class="wind-compass" id="wind-compass" tabindex="0" role="slider" aria-label="Windrichtung" aria-valuemin="0" aria-valuemax="360" aria-valuenow="37"><span class="wind-north">N</span><span id="wind-arrow" aria-hidden="true">↑</span></div>${range('wind-direction', 'Richtung', 0, 360, 37, 1, '°')}<details class="tool-fine-settings"><summary>Windböen & Bewegung</summary>${check('wind-gusts', 'Windböen', true)}${range('wind-gust-strength', 'Böenstärke', 0, 100, 35)}${range('wind-gust-frequency', 'Böenhäufigkeit', 0, 2, .18, .01, ' /s')}${range('wind-turbulence', 'Turbulenz', 0, 100, 20)}</details><button type="button" class="button" id="wind-apply">Wind übernehmen</button><details class="tool-fine-settings"><summary>Lokale Windzone setzen</summary>${button('landscape-wind-zone', 'Windzone auf Karte setzen')}${range('wind-zone-radius', 'Zonenradius', .5, 250, 20, .5, ' m')}${range('wind-zone-strength', 'Lokale Windstärke', 0, 100, 10)}${range('wind-zone-falloff', 'Weicher Übergang', 0, 100, 50)}${range('wind-zone-direction', 'Lokale Richtung', 0, 360, 37, 1, '°')}<p class="small-note">0 % Stärke ergibt einen windgeschützten Bereich. Zonen in der Kartenliste oder am Kreisrand auswählen, verschieben und rechts bearbeiten.</p></details>`);
   const biomeQuickButtons = [...PRIMARY_BIOME_IDS, 'desert'].map(id => {
     const preset = biomePreset(id);
     return `<button type="button" class="biome-choice" data-biome-choice="${id}" aria-pressed="false"><span class="biome-choice-swatch" style="--biome-color:${preset.terrain.color}"></span><strong>${preset.label}</strong></button>`;
   }).join('');
-  mount('biomes', `<div class="biome-intro"><strong>Wähle eine Landschaft. Male auf der Insel.</strong><span>Mit der Maus oder dem Finger ziehen.</span></div><div class="biome-choice-grid">${biomeQuickButtons}</div>${range('biome-radius', 'Pinselgröße', 2, 80, 22, 1, ' m')}${button('landscape-biome-brush', 'Mit Wiese malen')}<p class="small-note">Boden und Bewuchs passen zusammen. Unter „Radieren“ machst du gemalte Flächen wieder frei.</p><details class="biome-advanced"><summary>Fein einstellen und weitere Landschaften</summary>${selector('biome-preset', 'Landschaft', BIOME_PRESETS)}${range('biome-softness', 'Weicher Rand', 0, 100, 65)}${range('biome-strength', 'Deckkraft', 10, 100, 100)}<button type="button" class="button small" id="biome-settings">Farben und Gras als Vorlage übernehmen</button><label for="landscape-preset-name">Name deiner Vorlage</label><input id="landscape-preset-name" maxlength="120" placeholder="Zum Beispiel Abendwiese"><button type="button" class="button" id="landscape-preset-save">Vorlage speichern</button><label for="landscape-preset-select">Deine Vorlagen</label><select id="landscape-preset-select"></select><div class="property-pair"><button type="button" id="landscape-preset-load" class="button small">Laden</button><button type="button" id="landscape-preset-delete" class="button small">Entfernen</button></div></details>`);
-  mount('map', `<h3>Lebendige Vorschau</h3><div id="landscape-preview" class="landscape-preview"></div><p id="landscape-preview-status" class="small-note">Vegetation und Wind werden mit denselben Regeln wie im Spiel dargestellt.</p><p id="landscape-status" class="small-note" role="status">Ziehen: malen · Leertaste: verschieben · Esc: abbrechen</p>`);
+  mount('biomes', `<p class="tool-intro">Landschaft wählen und auf der Karte malen.</p><div class="biome-choice-grid">${biomeQuickButtons}</div>${range('biome-radius', 'Pinselgröße', 2, 80, 22, 1, ' m')}${button('landscape-biome-brush', 'Mit Wiese malen')}<p class="small-note">Boden und Bewuchs passen zusammen. Unter „Radieren“ machst du gemalte Flächen wieder frei.</p><details class="biome-advanced"><summary>Farben & eigene Vorlagen</summary>${selector('biome-preset', 'Landschaft', BIOME_PRESETS)}${range('biome-softness', 'Weicher Rand', 0, 100, 65)}${range('biome-strength', 'Deckkraft', 10, 100, 100)}<button type="button" class="button small" id="biome-settings">Farben und Gras als Vorlage übernehmen</button><label for="landscape-preset-name">Name deiner Vorlage</label><input id="landscape-preset-name" maxlength="120" placeholder="Zum Beispiel Abendwiese"><button type="button" class="button" id="landscape-preset-save">Vorlage speichern</button><label for="landscape-preset-select">Deine Vorlagen</label><select id="landscape-preset-select"></select><div class="property-pair"><button type="button" id="landscape-preset-load" class="button small">Laden</button><button type="button" id="landscape-preset-delete" class="button small">Entfernen</button></div></details>`);
+  mount('map', `<details class="tool-fine-settings"><summary>Grasvorschau</summary><div id="landscape-preview" class="landscape-preview"></div><p id="landscape-preview-status" class="small-note">Vegetation und Wind werden mit denselben Regeln wie im Spiel dargestellt.</p><p id="landscape-status" class="small-note" role="status">Ziehen: malen · Leertaste: verschieben · Esc: abbrechen</p></details>`);
+
+  const overview = document.querySelector('.overview');
+  const overviewDetails = document.createElement('details'); overviewDetails.className = 'tool-fine-settings island-facts';
+  overviewDetails.dataset.landscapeGenerated = 'true';
+  overviewDetails.innerHTML = '<summary>Inselinformationen</summary>';
+  overview.before(overviewDetails); overviewDetails.append(overview);
+
+  const barrierSlot = document.createElement('div'); barrierSlot.id = 'editor-tool-panel-objects-barriers';
+  panes.objects.append(barrierSlot);
+  addToolChoices('paint', [
+    ['biomes', 'Landschaft', sections.biomes], ['vegetation', 'Gras', sections.vegetation], ['terrain', 'Bodenfarbe', sections.terrain],
+  ]);
+  addToolChoices('objects', [
+    ['place', 'Einzeln', document.querySelector('.object-palette')], ['barriers', 'Mauern & Zäune', barrierSlot],
+    ['scatter', 'Verteilen', sections.objects],
+  ]);
+  addToolChoices('more', [
+    ['shape', 'Karteninhalt', mapTools], ['wind', 'Wind', sections.wind], ['map', 'Ansicht & Datei', sections.map],
+  ]);
 
   const inspector = document.createElement('div'); inspector.id = 'landscape-feature-properties'; inspector.hidden = true;
   inspector.innerHTML = `<div id="vegetation-object-properties" hidden><h3>Vegetation dieser Fläche</h3>${vegetationFields('object-vegetation')}</div><div id="terrain-object-properties" hidden>${selector('object-terrain-type', 'Bodenart', TERRAIN_TYPES)}${range('object-terrain-radius', 'Flächenradius', .5, 80, 8, .5, ' m')}${range('object-terrain-hardness', 'Randhärte', 0, 100, 30)}${range('object-terrain-strength', 'Deckkraft', 0, 100, 80)}<label for="object-terrain-color">Bodenfarbe</label><input id="object-terrain-color" type="color">${range('object-terrain-variation', 'Farbvariation', 0, 100, 18)}</div><div id="wind-object-properties" hidden>${range('object-wind-radius', 'Zonenradius', .5, 250, 20, .5, ' m')}${range('object-wind-strength', 'Lokale Windstärke', 0, 100, 10)}${range('object-wind-falloff', 'Weicher Übergang', 0, 100, 50)}${range('object-wind-direction', 'Windrichtung', 0, 360, 37, 1, '°')}</div>`;
@@ -265,6 +323,6 @@ export function createLandscapePanel(api) {
   return {sync,refresh,showPane,renderSelected,applySelected,createStroke,createZone,radius,readVegetation,
     setSelectedVariant: variant => {writeVegetation(VEGETATION_TYPES.find(type=>type.id===(variant==='kit-tall'?'tall':variant))?.settings ?? VEGETATION_TYPES[0].settings,'object-vegetation'); refresh();},
     color:mode=>mode==='terrain'||mode==='terrainErase'?$('terrain-color').value:mode==='windzone'?'#91bed2':mode==='biome'?(currentBiome().terrain?.color ?? '#78a866'):readVegetation().color,
-    state:()=>({activePane,eraseTarget:$('erase-target').value,vegetation:readVegetation(),terrain:readTerrain(),scatter:readScatter(),wind:readWind(),biome:$('biome-preset').value,biomeSoftness:pct('biome-softness'),preview:preview.stats}),
+    state:()=>({activePane,activeTools:{...activeTools},eraseTarget:$('erase-target').value,vegetation:readVegetation(),terrain:readTerrain(),scatter:readScatter(),wind:readWind(),biome:$('biome-preset').value,biomeSoftness:pct('biome-softness'),preview:preview.stats}),
     status:message=>{$('landscape-status').textContent=message;if(api.getMode()==='terrainErase')$('surface-erase-status').textContent=message;},dispose:()=>preview.dispose()};
 }

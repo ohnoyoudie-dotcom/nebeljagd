@@ -1,5 +1,9 @@
 # Einfacher Karteneditor
 
+> Die aktuelle Bedienung und Inselform stehen unter
+> [Kompakter Editor und neue Inselform](compact-editor.md).
+> Die folgenden Abschnitte dokumentieren teilweise frühere Entwicklungsstände.
+
 Der Editor hat vier Hauptbereiche:
 
 - **Malen:** Eine Landschaft wie Wiese oder Schnee antippen und auf der Insel

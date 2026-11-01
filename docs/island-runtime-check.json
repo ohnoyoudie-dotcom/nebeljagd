@@ -1,0 +1,173 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5207",
+  "standalone": true,
+  "sourceSha256": "af10d351a991fba4604b76137f8f412205f5cf02d49f02d5cab8bac0ff2d57e5",
+  "checks": [
+    {
+      "name": "The game renders the new default island and retained roofless tavern",
+      "evidence": {
+        "source": "project",
+        "terrainTriangles": 338232,
+        "terrainChunks": 326,
+        "houses": [
+          {
+            "id": "object-house-mvviwx0g-2",
+            "name": "Haus",
+            "x": 2.7,
+            "y": 1.022757536533447,
+            "z": -70.5,
+            "halfWidth": 11.01,
+            "halfDepth": 8.89,
+            "rotation": 0,
+            "scale": 1,
+            "floorHeight": 0.42,
+            "roofVisible": false,
+            "interiorVisible": true,
+            "frontFacadeVisible": true,
+            "frontFacadeParts": 0
+          }
+        ],
+        "rendering": {
+          "calls": 169,
+          "triangles": 497084,
+          "geometries": 51,
+          "textures": 19,
+          "frameMs": 1599.9499999999998
+        }
+      }
+    },
+    {
+      "name": "Normal start and keyboard walking remain usable on dry generated terrain",
+      "evidence": {
+        "from": {
+          "x": 30,
+          "y": 1.2502669578636536,
+          "z": -42
+        },
+        "to": {
+          "x": 30,
+          "y": 1.2900332236862113,
+          "z": -37.14666666666665
+        },
+        "distance": 4.853333333333353,
+        "groundHeight": 1.2900332236862113
+      }
+    },
+    {
+      "name": "The island minimap displays the new coastline and the current player position",
+      "evidence": {
+        "mode": "island",
+        "canvasPixels": 512,
+        "displayWidth": 200,
+        "spanMeters": 1440,
+        "center": {
+          "x": 0,
+          "z": 0
+        },
+        "player": {
+          "x": 132.83333333333334,
+          "y": 122.01525925925927,
+          "direction": 0
+        },
+        "markers": []
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/island-runtime.png"
+  ],
+  "limits": "Chromium/SwiftShader game loading, read-only telemetry, normal keyboard movement and island minimap; no physical-device performance claim.",
+  "delivery": {
+    "file": "welt/nebeljagd.html",
+    "bytes": 75904700,
+    "sha256": "cfcecf113d1aaaf8d15ccbfb4718a83937e57dafd10eae7b0f5e3d25f92cf9bf",
+    "unexpectedRequests": []
+  },
+  "geography": {
+    "coastVertices": 84,
+    "landAreaM2": 1087287.5,
+    "bays": [
+      {
+        "point": [
+          265,
+          -350
+        ],
+        "land": false
+      },
+      {
+        "point": [
+          450,
+          -5
+        ],
+        "land": false
+      },
+      {
+        "point": [
+          355,
+          350
+        ],
+        "land": false
+      },
+      {
+        "point": [
+          -245,
+          505
+        ],
+        "land": false
+      }
+    ],
+    "connections": [
+      {
+        "point": [
+          -90,
+          -625
+        ],
+        "land": true,
+        "river": false
+      },
+      {
+        "point": [
+          150,
+          -430
+        ],
+        "land": true,
+        "river": false
+      },
+      {
+        "point": [
+          300,
+          0
+        ],
+        "land": true,
+        "river": false
+      },
+      {
+        "point": [
+          240,
+          275
+        ],
+        "land": true,
+        "river": false
+      },
+      {
+        "point": [
+          -495,
+          85
+        ],
+        "land": true,
+        "river": false
+      }
+    ]
+  },
+  "nodeChecks": [
+    "Runtime Three triangulation matches sampled concave coastline and exact land area",
+    "12 m land raster has explicit region coverage and finite terrain/color samples; all start positions dry"
+  ],
+  "preservation": {
+    "comparedAgainst": "4352f6a",
+    "result": "objects, barriers, landscape, gameplay and zone unchanged; one tavern and four authored barrier routes retained",
+    "method": "One-time manual data comparison; no Git history dependency in tests"
+  }
+}

@@ -12,19 +12,19 @@ export function createBarrierPanel(api) {
   $('barrier-tools')?.remove(); $('barrier-properties')?.remove();
   const section = document.createElement('section');
   section.id = 'barrier-tools'; section.className = 'tool-section barrier-tools';
-  section.innerHTML = `<div class="section-heading"><h2>Mauern & Zäune ziehen</h2><span class="count-badge">NEU</span></div>
-    <p class="small-note">Wähle eine Mauer- oder Zaunoptik und ziehe eine Strecke. Die Bauteile setzen sich von selbst zusammen.</p>
+  section.innerHTML = `<div class="section-heading"><h2>Mauern & Zäune ziehen</h2></div>
+    <p class="small-note">Optik wählen und eine Strecke ziehen.</p>
     <label for="barrier-kind">Was möchtest du bauen?</label><select id="barrier-kind">${options}</select>
     <label for="barrier-height">Höhe · Meter</label><input id="barrier-height" type="number" min="0.25" max="8" step="any" placeholder="Modellhöhe">
-    <p id="barrier-height-hint" class="small-note" role="status"></p><p class="small-note">Unter 2 m kannst du darüber schauen. Ab 2 m schützt die Mauer vor Blicken. Leer = ursprüngliche Modellhöhe.</p>
+    <p id="barrier-height-hint" class="small-note" role="status"></p>
     <label for="barrier-shape">Linienführung</label><select id="barrier-shape"><option value="straight">Gerade ziehen</option><option value="freehand">Freihand mit Ecken</option></select>
     <button type="button" id="barrier-draw" class="button primary" aria-pressed="false">Strecke ziehen</button>
     <div class="barrier-actions"><button type="button" id="barrier-gap" class="button small" aria-pressed="false">Durchgang setzen</button><button type="button" id="barrier-erase" class="button small" aria-pressed="false">Strecken radieren</button></div>
-    <label class="landscape-check"><input type="checkbox" id="barrier-snap" checked> Auf ganze Meter einrasten</label>
-    <label for="barrier-gap-width">Durchgangsbreite · Meter</label><input id="barrier-gap-width" type="number" min="1.5" max="12" step="0.5" value="3">
+    <details class="tool-fine-settings"><summary>Einrasten & Durchgangsbreite</summary><label class="landscape-check"><input type="checkbox" id="barrier-snap" checked> Auf ganze Meter einrasten</label>
+    <label for="barrier-gap-width">Durchgangsbreite · Meter</label><input id="barrier-gap-width" type="number" min="1.5" max="12" step="0.5" value="3"></details>
     <p class="small-note" id="barrier-status" role="status">Loslassen: speichern · Esc: abbrechen · Auswählen: Form ändern</p>
     <details id="barrier-preview-section"><summary>3D-Vorschau</summary><div id="barrier-preview" class="barrier-preview"></div><p id="barrier-preview-status" class="small-note" role="status">Zeigt die gewählte Strecke oder ein Beispiel.</p></details>`;
-  $('editor-pane-objects').prepend(section);
+  ($('editor-tool-panel-objects-barriers') ?? $('editor-pane-objects')).append(section);
   const inspector = document.createElement('div'); inspector.id = 'barrier-properties'; inspector.hidden = true;
   inspector.innerHTML = `<label for="barrier-object-kind">Optik dieser Strecke</label><select id="barrier-object-kind">${options}</select>
     <label for="barrier-object-scale">Größe · Faktor</label><input id="barrier-object-scale" type="number" min="0.25" max="3" step="0.05" value="1">
