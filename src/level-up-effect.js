@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-const DURATION = 1.45;
-const PARTICLES = 18;
+const DURATION = 1.6;
+const PARTICLES = 36;
 
 /** One reusable celebration for the local player; it never changes combat state. */
 export function createLevelUpEffect(scene) {
@@ -11,25 +11,50 @@ export function createLevelUpEffect(scene) {
   scene.add(root);
   const material = (color, opacity) => {
     const value = new THREE.MeshBasicMaterial({ color, opacity, transparent: true,
-      depthWrite: false, toneMapped: false, side: THREE.DoubleSide });
+      depthWrite: false, depthTest: false, toneMapped: false, side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending });
     value.userData.ignoreVision = true;
     value.userData.ignoreFogOfWar = true;
     return value;
   };
-  const ringMaterial = material('#ffd477', .75);
+  const ringMaterial = material('#ffd477', .9);
+  const echoMaterial = material('#ffeaa0', .7);
   const sparkMaterial = material('#fff1b0', .9);
-  const ring = new THREE.Mesh(new THREE.RingGeometry(.91, 1, 64), ringMaterial);
-  ring.rotation.x = -Math.PI / 2; ring.position.y = .08;
-  root.add(ring);
+  const ringGeometry = new THREE.RingGeometry(.86, 1, 64);
+  const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+  const echo = new THREE.Mesh(ringGeometry, echoMaterial);
+  for (const [index, part] of [ring, echo].entries()) {
+    part.rotation.x = -Math.PI / 2; part.position.y = .12 + index * .04;
+    part.renderOrder = 2000 + index; root.add(part);
+  }
+  const beamMaterial = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, depthTest: false, toneMapped: false,
+    side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+    uniforms: { opacity: { value: 0 }, color: { value: new THREE.Color('#ffdc80') } },
+    vertexShader: `varying vec2 vUv;
+      void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform float opacity; uniform vec3 color; varying vec2 vUv;
+      void main() {
+        float fade = smoothstep(0.0, .08, vUv.y) * pow(1.0 - vUv.y, 1.8);
+        gl_FragColor = vec4(color, opacity * fade);
+        #include <colorspace_fragment>
+      }`,
+  });
+  beamMaterial.userData.ignoreVision = beamMaterial.userData.ignoreFogOfWar = true;
+  const beamGeometry = new THREE.CylinderGeometry(1, .68, 1, 32, 1, true);
+  beamGeometry.translate(0, .5, 0);
+  const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+  beam.renderOrder = 2002; root.add(beam);
   const sparks = new THREE.InstancedMesh(new THREE.OctahedronGeometry(1, 0), sparkMaterial, PARTICLES);
   sparks.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  sparks.frustumCulled = false;
+  sparks.frustumCulled = false; sparks.renderOrder = 2003;
   root.add(sparks);
   const transform = new THREE.Object3D();
   let age = 0, active = false, reducedMotion = false, level = 1, emitted = 0, disposed = false;
 
   function reset() {
     active = false; age = 0; root.visible = false; sparks.count = 0;
+    beamMaterial.uniforms.opacity.value = 0;
   }
 
   function update(dt, position) {
@@ -41,18 +66,24 @@ export function createLevelUpEffect(scene) {
     const progress = age / duration;
     const fade = Math.min(1, (1 - progress) * 2.4);
     root.visible = true;
-    ring.scale.setScalar(reducedMotion ? 1.15 : 1.05 + 1.15 * (1 - (1 - progress) ** 2));
-    ringMaterial.opacity = (reducedMotion ? .42 : .72) * fade;
+    ring.scale.setScalar(reducedMotion ? 1.35 : .9 + 2.15 * (1 - (1 - progress) ** 2));
+    ringMaterial.opacity = (reducedMotion ? .55 : .9) * fade;
+    echo.visible = !reducedMotion && progress >= .12;
+    const echoProgress = Math.max(0, (progress - .12) / .88);
+    echo.scale.setScalar(.7 + 1.8 * (1 - (1 - echoProgress) ** 2));
+    echoMaterial.opacity = .72 * fade;
+    beam.scale.set(reducedMotion ? 1 : 1 + progress * .35, reducedMotion ? 2.6 : 2.8 + progress, reducedMotion ? 1 : 1 + progress * .35);
+    beamMaterial.uniforms.opacity.value = (reducedMotion ? .16 : .38) * fade;
     sparks.count = reducedMotion ? 0 : PARTICLES;
     sparkMaterial.opacity = .9 * fade;
     for (let index = 0; index < sparks.count; index++) {
-      const angle = index * Math.PI * 2 / PARTICLES + progress * .4;
-      const radius = .72 + (index % 3) * .13 + progress * .32;
+      const angle = index * Math.PI * 2 / PARTICLES + progress * .65;
+      const radius = .6 + (index % 3) * .19 + progress * (index % 2 ? .75 : 1.35);
       transform.position.set(Math.cos(angle) * radius,
-        .25 + (index % 4) * .15 + progress * (1.2 + (index % 3) * .35), Math.sin(angle) * radius);
+        .3 + (index % 4) * .18 + progress * (1.8 + (index % 3) * .55), Math.sin(angle) * radius);
       transform.rotation.set(progress * 2 + index, angle, progress + index);
-      const size = (.035 + (index % 3) * .012) * (1 - progress * .7);
-      transform.scale.set(size, size * 2, size);
+      const size = (.065 + (index % 3) * .02) * (1 - progress * .6);
+      transform.scale.set(size, size * 2.4, size);
       transform.updateMatrix(); sparks.setMatrixAt(index, transform.matrix);
     }
     sparks.instanceMatrix.needsUpdate = true;
@@ -68,11 +99,12 @@ export function createLevelUpEffect(scene) {
     update,
     reset() { reset(); emitted = 0; level = 1; },
     inspect: () => ({ active, level, emitted, particleCount: active ? sparks.count : 0,
+      ringCount: active ? (echo.visible ? 2 : 1) : 0, beamVisible: active && beamMaterial.uniforms.opacity.value > 0,
       reducedMotion, remaining: active ? (reducedMotion ? .9 : DURATION) - age : 0 }),
     dispose() {
       reset(); disposed = true; scene.remove(root);
-      ring.geometry.dispose(); sparks.geometry.dispose();
-      ringMaterial.dispose(); sparkMaterial.dispose();
+      ringGeometry.dispose(); beamGeometry.dispose(); sparks.geometry.dispose();
+      ringMaterial.dispose(); echoMaterial.dispose(); beamMaterial.dispose(); sparkMaterial.dispose();
     },
   };
 }

@@ -88,7 +88,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     </div>
 
     <div class="danger-warning playing-only" id="dangerWarning" role="status">${icon('fog')}<span>Du bist im Nebel. Zurück in die sichere Zone!</span></div>
-    <div id="levelUpNotice" class="level-up-notice" role="status" aria-live="polite" aria-atomic="true" hidden><span class="level-up-eyebrow">LEVEL AUFGESTIEGEN</span><strong id="levelUpTitle"></strong><span id="levelUpHealth" class="level-up-health"></span></div>
+    <div id="levelUpAnnouncement" class="level-up-announcement" role="status" aria-live="polite" aria-atomic="true"></div>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <section class="intro-screen" id="startScreen" aria-labelledby="introTitle">
@@ -158,9 +158,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   const map = $('minimap');
   const mapContext = map.getContext('2d');
   const toastElement = $('toast');
-  const levelUpNotice = $('levelUpNotice');
-  const levelUpTitle = $('levelUpTitle');
-  const levelUpHealth = $('levelUpHealth');
+  const levelUpAnnouncement = $('levelUpAnnouncement');
   const dashButton = $('dashBtn');
   const attackButton = $('attackBtn');
   const interactButton = $('pickupBtn');
@@ -530,9 +528,10 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   function clearLevelUp() {
     clearTimeout(levelUpTimeout);
     levelUpTimeout = undefined;
-    levelUpNotice.hidden = true;
-    levelUpNotice.classList.remove('visible');
+    levelUpAnnouncement.textContent = '';
     playerLevel.classList.remove('is-leveling');
+    delete playerLevel.dataset.levelUp;
+    delete playerLevel.dataset.healthGain;
   }
 
   function showLevelUp({ level, healthGain = 25 } = {}) {
@@ -540,17 +539,14 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     clearLevelUp();
     const shownLevel = Math.floor(level);
     const gainedHealth = Number.isFinite(healthGain) ? Math.max(0, healthGain) : 25;
-    levelUpTitle.textContent = `Level ${shownLevel}`;
-    levelUpHealth.textContent = `+${gainedHealth} Leben`;
-    levelUpNotice.dataset.level = String(shownLevel);
-    levelUpNotice.dataset.healthGain = String(gainedHealth);
-    levelUpNotice.hidden = false;
+    levelUpAnnouncement.textContent = `Level ${shownLevel}. +${gainedHealth} Lebenspunkte.`;
+    playerLevel.dataset.levelUp = String(shownLevel);
+    playerLevel.dataset.healthGain = String(gainedHealth);
     // Restart the short celebration even when two opponents fall together.
     // This read happens only on a level-up, never in the render loop.
-    void levelUpNotice.offsetWidth;
-    levelUpNotice.classList.add('visible');
+    void playerLevel.offsetWidth;
     playerLevel.classList.add('is-leveling');
-    levelUpTimeout = setTimeout(clearLevelUp, 2200);
+    levelUpTimeout = setTimeout(clearLevelUp, 1600);
     return true;
   }
 

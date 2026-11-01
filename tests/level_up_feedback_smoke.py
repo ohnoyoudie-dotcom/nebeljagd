@@ -4,6 +4,7 @@ Run after building with NEBELJAGD_URL pointing at standalone files. Only an
 imported fixture changes; no production map or progression values are patched.
 """
 from copy import deepcopy
+import base64
 import hashlib
 import json
 import math
@@ -17,7 +18,7 @@ from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 URL=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:5232').rstrip('/')
 RELEASE=Path(os.environ.get('NEBELJAGD_RELEASE_DIR',ROOT/'welt'))
-OUT=Path(os.environ.get('NEBELJAGD_QA_OUT','/tmp/nebeljagd-level-up-feedback-qa'))
+OUT=Path(os.environ.get('NEBELJAGD_QA_OUT','/tmp/nebeljagd-level-up-direct-feedback-qa'))
 OUT.mkdir(parents=True,exist_ok=True)
 BASE=json.loads((ROOT/'worldmap.json').read_text())
 MAP_HASH=hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()
@@ -98,11 +99,14 @@ try:
             page.wait_for_function('nebeljagdTestState().phase==="playing"')
             initial=state(page)
             assert initial['level']==1 and initial['effect']['emitted']==0 and not initial['effect']['active']
+            initial_bar=next(b for b in initial['bars'] if b['id']=='player')
+            assert initial_bar['levelPulse']['remaining']==0 and not initial_bar['levelPulse']['active']
+            assert initial_bar['levelPulse']['scale']==1 and initial_bar['levelPulse']['glow']==0
             initial_ui=page.evaluate('''()=>{const b=document.querySelector('#healthBar'),l=document.querySelector('#playerLevel'),s=getComputedStyle(l);return{
               width:b.getBoundingClientRect().width,left:b.getBoundingClientRect().left,labelRight:l.getBoundingClientRect().right,
               background:s.backgroundImage,border:s.borderTopColor,color:s.color,fontWeight:s.fontWeight,
-              noticeHidden:document.querySelector('#levelUpNotice').hidden}}''')
-            assert initial_ui['noticeHidden'] and initial_ui['labelRight']<=initial_ui['left']
+              noticeAbsent:document.querySelector('#levelUpNotice')===null}}''')
+            assert initial_ui['noticeAbsent'] and initial_ui['labelRight']<=initial_ui['left']
             assert 'gradient(' in initial_ui['background'] and int(initial_ui['fontWeight'])>=700,initial_ui
             passed('Gold badge starts at level 1 and no celebration runs before a victory',{'ui':initial_ui,'effect':initial['effect']})
             page.evaluate('nebeljagdInspect({x:-4,z:-4})')
@@ -114,51 +118,64 @@ try:
                 attack(page)
                 assert state(page)['effect']['emitted']==0 and state(page)['level']==1
                 print(f'Progress: nonlethal hit {index+1}/{hits}',flush=True)
-            # Observe the real DOM event before the final blow. Software WebGL
-            # can stall a frame past a short CSS opacity window; the separate
-            # HUD test verifies that animation. No timer or UI style is changed.
-            page.evaluate('''()=>{const n=document.querySelector('#levelUpNotice');
-              window.__levelFeedbackObserver=new MutationObserver(()=>{
-              const s=nebeljagdTestState();
-              if(s.level!==2||!s.levelUpEffect.active||n.hidden||window.__levelFeedbackVisible)return;
-              const b=document.querySelector('#healthBar'),l=document.querySelector('#playerLevel');
-              window.__levelFeedbackVisible={level:s.level,health:s.health,maxHealth:s.maxHealth,effect:s.levelUpEffect,
-                bar:s.healthBars.find(x=>x.id==='player'),width:b.getBoundingClientRect().width,
-                left:b.getBoundingClientRect().left,labelRight:l.getBoundingClientRect().right,label:l.textContent,
-                banner:{title:document.querySelector('#levelUpTitle').textContent,health:document.querySelector('#levelUpHealth').textContent,
-                  level:n.dataset.level,gain:n.dataset.healthGain,role:n.getAttribute('role'),live:n.getAttribute('aria-live')},
-                badgePulses:l.classList.contains('is-leveling')};
-              window.__levelFeedbackObserver.disconnect();});
-              window.__levelFeedbackObserver.observe(n,{attributes:true,attributeFilter:['hidden','class']});}''')
+            # Observe the real number pulse and capture the actual renderer
+            # while its level effect is active. No CSS opacity or timers change.
+            page.evaluate('''()=>{const l=document.querySelector('#playerLevel');
+              window.__levelHudPulse=null;window.__levelFeedbackVisible=null;window.__levelFeedbackFrame=null;
+              const observer=new MutationObserver(()=>{
+                if(!l.classList.contains('is-leveling'))return;
+                window.__levelHudPulse={label:l.textContent,pulsing:true};observer.disconnect();
+              });observer.observe(l,{attributes:true,childList:true,subtree:true});
+              const capture=()=>{const s=nebeljagdTestState();
+                if(s.level!==2||!s.levelUpEffect.active||s.levelUpEffect.remaining>1.25){requestAnimationFrame(capture);return;}
+                const b=document.querySelector('#healthBar');
+                window.__levelFeedbackVisible={level:s.level,health:s.health,maxHealth:s.maxHealth,effect:s.levelUpEffect,
+                  bar:s.healthBars.find(x=>x.id==='player'),width:b.getBoundingClientRect().width,
+                  left:b.getBoundingClientRect().left,labelRight:l.getBoundingClientRect().right,label:l.textContent,
+                  noticeAbsent:document.querySelector('#levelUpNotice')===null};
+                window.__levelFeedbackFrame=nebeljagdCaptureFrame();
+              };requestAnimationFrame(capture);
+            }''')
             attack(page)
             print('Progress: final blow landed; capture actual effect',flush=True)
-            page.wait_for_function('Boolean(window.__levelFeedbackVisible)',polling=25,timeout=20000)
+            page.wait_for_function('Boolean(window.__levelFeedbackFrame)&&Boolean(window.__levelHudPulse)',polling=25,timeout=20000)
             shot=OUT/'actual-kill-gold-level-up.png'
-            page.screenshot(path=str(shot));REPORT['screenshots'].append(str(shot))
+            shot.write_bytes(base64.b64decode(page.evaluate('window.__levelFeedbackFrame').split(',',1)[1]));REPORT['screenshots'].append(str(shot))
             visible=page.evaluate('window.__levelFeedbackVisible')
             assert (visible['level'],visible['health'],visible['maxHealth'])==(2,97,125),visible
             assert abs(visible['width']-initial_ui['width'])<.01 and visible['labelRight']<=visible['left']
             assert visible['label']=='2' and visible['bar']['level']==2 and abs(visible['bar']['barWidth']-1.805)<.0001
-            assert visible['banner']=={'title':'Level 2','health':'+25 Leben','level':'2','gain':'25','role':'status','live':'polite'}
-            assert visible['badgePulses']
+            assert visible['noticeAbsent']
+            visible['hudPulse']=page.evaluate('window.__levelHudPulse')
+            assert visible['hudPulse']=={'label':'2','pulsing':True}
             assert visible['effect']['active'] and visible['effect']['emitted']==1 and visible['effect']['level']==2
-            assert visible['effect']['particleCount']==18 and visible['effect']['reducedMotion'] is False
-            passed('A real victory triggers Level 2 / +25 Leben, a pulsing badge and one golden particle burst without widening health bars',visible)
-            page.wait_for_function('!nebeljagdTestState().levelUpEffect.active&&document.querySelector("#levelUpNotice").hidden')
+            assert visible['effect']['particleCount']==36 and visible['effect']['reducedMotion'] is False
+            assert visible['effect']['ringCount']==2 and visible['effect']['beamVisible']
+            assert 1.0<=visible['effect']['remaining']<=1.25,visible['effect']
+            assert visible['bar']['levelPulse']['active'] and visible['bar']['levelPulse']['remaining']>0
+            assert visible['bar']['levelPulse']['scale']>1 and visible['bar']['levelPulse']['glow']>0
+            assert visible['bar']['levelBounds']['right']<-0.95
+            passed('A real victory adds 25 HP and celebrates on the figure and level number without a text popup or wider health bars',visible)
+            page.wait_for_function('!nebeljagdTestState().levelUpEffect.active&&!document.querySelector("#playerLevel").classList.contains("is-leveling")')
             ended=state(page)
             assert ended['effect']['emitted']==1 and ended['effect']['particleCount']==0 and ended['effect']['remaining']==0
+            assert ended['effect']['ringCount']==0 and not ended['effect']['beamVisible']
+            ended_bar=next(b for b in ended['bars'] if b['id']=='player')
+            assert not ended_bar['levelPulse']['active'] and ended_bar['levelPulse']['remaining']==0
+            assert ended_bar['levelPulse']['scale']==1 and ended_bar['levelPulse']['glow']==0
             assert not page.locator('#playerLevel').evaluate('e=>e.classList.contains("is-leveling")')
-            page.wait_for_function('nebeljagdTestState().attackCooldown===0')
-            page.keyboard.press('f');wait_sim(page,.7)
-            assert state(page)['effect']['emitted']==1 and state(page)['level']==2
-            assert page.locator('#levelUpNotice').get_attribute('hidden') is not None
-            passed('The effect and banner expire, and an already defeated opponent does not trigger another celebration',ended['effect'])
+            assert ended['level']==2 and page.locator('#levelUpNotice').count()==0
+            passed('The figure effect and number pulse expire after a single victory',ended['effect'])
             page.keyboard.press('Escape');page.locator('#restartBtn').click()
             page.wait_for_function('nebeljagdTestState().phase==="playing"')
             restarted=state(page)
             assert (restarted['level'],restarted['health'],restarted['maxHealth'])==(1,72,100)
             assert restarted['effect']['emitted']==0 and not restarted['effect']['active'] and restarted['effect']['particleCount']==0
-            assert page.locator('#levelUpNotice').get_attribute('hidden') is not None
+            assert restarted['effect']['ringCount']==0 and not restarted['effect']['beamVisible']
+            restarted_bar=next(b for b in restarted['bars'] if b['id']=='player')
+            assert not restarted_bar['levelPulse']['active'] and restarted_bar['levelPulse']['scale']==1
+            assert restarted_bar['levelPulse']['remaining']==0 and restarted_bar['levelPulse']['glow']==0
+            assert page.locator('#levelUpNotice').count()==0
             passed('Restart clears the celebration and restores the initial level and health',restarted['effect'])
             assert not REPORT['errors'],REPORT['errors']
             assert not REPORT['unexpectedRequests'],REPORT['unexpectedRequests']

@@ -19,12 +19,13 @@ schmaler. Die Anzeige für aktuelle und maximale Lebenspunkte sowie die
 zugänglichen Beschriftungen folgen dem tatsächlichen Wert.
 
 Die Levelzahl sitzt in einer goldenen Plakette mit abgesetztem Rand. Beim
-Aufstieg leuchtet sie kurz auf; ein Hinweis zeigt das neue Level und
-„+25 Leben“. Ein goldener Ring und wenige aufsteigende Funken markieren den
-Aufstieg direkt an der Figur. Der Hinweis verschwindet nach 2,2 Sekunden,
-der Effekt nach etwa 1,45 Sekunden. Bei reduzierten Animationen bleibt ein
-kurzer ruhiger Ring ohne aufsteigende Partikel. Pause und Neustart räumen
-Hinweis und Effekt auf.
+Aufstieg vergrößert sich das Abzeichen über der Figur kurz und leuchtet auf;
+auch die Zahl in der Lebensanzeige pulst. Zwei goldene Wellen, ein weicher
+Lichtschein und deutlich sichtbare aufsteigende Funken markieren den Spieler.
+Ein Textfenster erscheint nicht. Die Rückmeldung klingt nach etwa 1,6 Sekunden
+ab. Bei reduzierten Animationen bleiben ein ruhiger Lichtschein und eine
+Aufhellung der Zahl ohne Vergrößerung oder aufsteigende Partikel. Pause und
+Neustart räumen die Rückmeldung auf.
 
 Der tödliche Treffer zählt für seinen Verursacher. Das gilt auch für einen
 Gegner, der durch nachwirkenden Brandschaden stirbt. Ein bereits besiegtes Ziel
