@@ -52,6 +52,20 @@ def monitor(page):
             if message.type == 'error' else None)
 
 
+def browser_budget():
+    """Safe runner diagnostics; no process arguments, environment or secrets."""
+    result = {}
+    for name in ('memory.max', 'memory.current', 'memory.events'):
+        path = Path('/sys/fs/cgroup') / name
+        if path.is_file():
+            result[name] = path.read_text().strip()
+    path = Path('/proc/meminfo')
+    if path.is_file():
+        result['hostMemory'] = [line for line in path.read_text().splitlines()
+                                if line.startswith(('MemTotal:', 'MemAvailable:'))]
+    return result
+
+
 def record_document(path, local_name):
     # The standalone HTML exceeds Chromium's response-body inspector cache.
     # Hash the HTTP response as a stream and compare it with the delivered file.
@@ -150,9 +164,14 @@ def attack_target(page, identifier, distance):
 
 
 try:
+    REPORT['budgetBefore'] = browser_budget()
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or shutil.which('chromium'), headless=True,
+        # Exercise the full Chromium browser, including its real popup handling.
+        # Playwright's separate headless-shell binary crashes on this two-tab
+        # standalone handoff in CI; local full Chromium passes the same checks.
+        browser = p.chromium.launch(channel='chromium', executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or shutil.which('chromium'), headless=True,
             args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+        REPORT['browser'] = {'channel': 'chromium', 'version': browser.version}
         context = browser.new_context(viewport={'width': 1280, 'height': 900}, accept_downloads=True)
         context.on('page', monitor)
         context.add_init_script('''
@@ -199,6 +218,10 @@ try:
         passed('All six Tripo weapon models can be placed without changing the authored map or existing objects', objects)
 
         REPORT['stage'] = 'open Spielen popup and verify exact map/model handoff'
+        REPORT['editorHeap'] = editor.evaluate('''() => performance.memory ? {
+            used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize,
+            limit:performance.memory.jsHeapSizeLimit} : null''')
+        REPORT['budgetBeforePopup'] = browser_budget()
         with editor.expect_popup() as popup:
             editor.locator('#playtest-world').click()
         game = popup.value
@@ -298,10 +321,12 @@ except BaseException as error:
         pass
     raise
 finally:
+    REPORT['budgetAfter'] = browser_budget()
     (OUT / 'report.json').write_text(json.dumps(REPORT, ensure_ascii=False, indent=2) + '\n')
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         diagnostic = {key: REPORT.get(key) for key in
-                      ('status', 'stage', 'exceptionType', 'failure', 'traceback', 'errors', 'unexpectedRequests')}
+                      ('status', 'stage', 'exceptionType', 'failure', 'traceback', 'errors', 'unexpectedRequests',
+                       'browser', 'editorHeap', 'budgetBefore', 'budgetBeforePopup', 'budgetAfter')}
         diagnostic['passedChecks'] = [check['name'] for check in REPORT['checks']]
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
             summary.write('### Uploaded weapon browser check\n\n```json\n' +
