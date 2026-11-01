@@ -825,5 +825,35 @@
       }
     ],
     "sourceMapUnchanged": "22423fe59d88b300db1644c89c5d51f33b797ee574ab296405e265e88ccaca48"
+  },
+  "existingRuntimeRegressionChecks": {
+    "meadowVision": {
+      "passed": true,
+      "errors": [],
+      "fixture": {
+        "name": "CI · Meadow, snow and legacy vegetation",
+        "legacyGrassPatches": 800,
+        "sourceMap": "Nebelinsel · Vier Biome und zwei freie Brücken"
+      }
+    },
+    "avatar": {
+      "status": "passed",
+      "checks": [
+        "The actual game imports the new humanoid and idle clip with its normal camera",
+        "Real WASD movement blends into the new run and returns to idle",
+        "Space plays the tucked GLB roll once without a second runtime spin; pause freezes it",
+        "The replacement rig still holds and fires the existing bow",
+        "A sudden right turn followed by roll locks the body to the actual roll direction"
+      ],
+      "errors": [],
+      "fixture": {
+        "name": "CI · Avatar with bow pickup",
+        "sourceMap": "Nebelinsel · Vier Biome und zwei freie Brücken",
+        "bowPosition": [
+          34,
+          -39
+        ]
+      }
+    }
   }
 }

@@ -10,10 +10,14 @@ import base64
 import math
 import os
 import shutil
+from copy import deepcopy
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE_MAP = json.loads((ROOT/'worldmap.json').read_text())
+ARTIFACT_ROOT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT/'docs'))
+ARTIFACT_ROOT.mkdir(parents=True, exist_ok=True)
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
 PAGE_URL = URL if URL.endswith('.html') else URL + '/nebeljagd.html'
 REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [], 'screenshots': [],
@@ -39,7 +43,7 @@ def passed(name, evidence):
 
 
 def capture(page, name, canvas_only=False):
-    path = ROOT / f'docs/avatar-check-{name}.png'
+    path = ARTIFACT_ROOT / f'avatar-check-{name}.png'
     if canvas_only:
         # Pause overlay deliberately covers the avatar; capture the unchanged
         # WebGL scene through the existing read-only inspect hook instead.
@@ -47,7 +51,7 @@ def capture(page, name, canvas_only=False):
         path.write_bytes(base64.b64decode(pixels))
     else:
         page.screenshot(path=str(path))
-    REPORT['screenshots'].append(str(path.relative_to(ROOT)))
+    REPORT['screenshots'].append(str(path.relative_to(ROOT) if path.is_relative_to(ROOT) else path))
 
 
 try:
@@ -62,6 +66,19 @@ try:
         page.on('console', lambda message: REPORT['errors'].append(message.text) if message.type == 'error' else None)
         page.goto(PAGE_URL+'?inspect=1&quality=low', wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
+        # The user's clean base map deliberately contains no starter loot.
+        # Import one explicit bow through the normal map-loading control so
+        # rig/grip/firing checks do not depend on historical map placements.
+        fixture=deepcopy(SOURCE_MAP)
+        fixture['name']='CI · Avatar with bow pickup'
+        fixture['objects'].append({'id':'ci-avatar-bow','name':'CI bow',
+            'kind':'bow','variant':'wood','rarity':'common','position':[34,-39],
+            'rotation':0,'scale':1})
+        with page.expect_navigation(wait_until='domcontentloaded'):
+            page.locator('#worldMapFile').set_input_files({'name':'avatar-bow-fixture.json',
+                'mimeType':'application/json','buffer':json.dumps(fixture).encode()})
+        page.wait_for_function('name=>window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0&&nebeljagdTestState().world.mapName===name&&nebeljagdTestState().world.source==="import"',arg=fixture['name'])
+        REPORT['fixture']={'name':fixture['name'],'sourceMap':SOURCE_MAP['name'],'bowPosition':[34,-39]}
         page.locator('#startBtn').click()
         page.evaluate('nebeljagdInspect({x:30,z:-42,health:100,direction:0})')
         wait_sim(page, .15)
@@ -143,11 +160,12 @@ try:
         passed('A sudden right turn followed by roll locks the body to the actual roll direction', turned_roll)
         assert not REPORT['errors'], REPORT['errors']
         browser.close()
+    assert json.loads((ROOT/'worldmap.json').read_text())==SOURCE_MAP,'The fixture must never change the project map'
     REPORT['status'] = 'passed'
 except BaseException as error:
     REPORT['status'] = 'failed'
     REPORT['failure'] = str(error)
     raise
 finally:
-    (ROOT/'docs/avatar-check-gameplay.json').write_text(json.dumps(REPORT, ensure_ascii=False, indent=2)+'\n')
+    (ARTIFACT_ROOT/'avatar-check-gameplay.json').write_text(json.dumps(REPORT, ensure_ascii=False, indent=2)+'\n')
     print(json.dumps({'status': REPORT['status'], 'checks': len(REPORT['checks']), 'errors': REPORT['errors']}), flush=True)

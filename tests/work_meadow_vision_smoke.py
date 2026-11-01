@@ -3,12 +3,48 @@ import json
 import base64
 import os
 import shutil
+from copy import deepcopy
 from playwright.sync_api import sync_playwright
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'work-smoke'
 OUT.mkdir(exist_ok=True)
 report={'passed':False}
+URL=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:4174').rstrip('/')
+SOURCE=json.loads((ROOT/'worldmap.json').read_text())
+
+
+def runtime_fixture():
+    """Explicit legacy scenery coverage, independent of the user's base map.
+
+    Keep the current coasts, buildings and routes. Only this imported test
+    document changes forest/sand regions into meadow/heath and adds editable
+    grass patches. Use the existing disjoint regions: overlapping polygons
+    would blend biome weights rather than supply an isolated rendering sample.
+    The grass distribution exercises both rendered and suppressed blades.
+    """
+    fixture=deepcopy(SOURCE)
+    fixture['name']='CI · Meadow, snow and legacy vegetation'
+    for region in fixture['regions']:
+        if region['biome']=='forest': region.update(biome='meadow',color='#a3b674')
+        elif region['biome']=='dunes': region.update(biome='heath',color='#b7a65b')
+    for biome,center in [('meadow',[30,-42]),('snow',[-285,-400]),
+                         ('heath',[365,-205]),('marsh',[-260,330])]:
+        for column in range(20):
+            for row in range(10):
+                fixture['objects'].append({'id':f'ci-grass-{biome}-{column}-{row}',
+                    'name':'CI legacy grass','kind':'grass',
+                    'variant':'short' if (column+row)%2 else 'tall',
+                    'position':[center[0]+(column-9.5)*6,center[1]+(row-4.5)*6],
+                    'rotation':0,'scale':1,'radius':1.5})
+    return fixture
+
+
+def import_fixture(page, fixture):
+    with page.expect_navigation(wait_until='domcontentloaded',timeout=120000):
+        page.locator('#worldMapFile').set_input_files({'name':'meadow-vision-fixture.json',
+            'mimeType':'application/json','buffer':json.dumps(fixture).encode()})
+    page.wait_for_function('name=>window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0&&nebeljagdTestState().world.mapName===name&&nebeljagdTestState().world.source==="import"',arg=fixture['name'],timeout=120000)
 
 
 def move_to_biome(page, x, z, biome):
@@ -29,8 +65,12 @@ with sync_playwright() as p:
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.on('console',lambda m:errors.append(m.text) if m.type=='error' and 'favicon' not in m.text else None)
-    page.goto('http://127.0.0.1:4174/nebeljagd.html?inspect=1&quality=low',wait_until='domcontentloaded',timeout=120000)
+    page.goto(URL+'/nebeljagd.html?inspect=1&quality=low',wait_until='domcontentloaded',timeout=120000)
     page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0',timeout=120000)
+    fixture=runtime_fixture()
+    (OUT/'meadow-vision-fixture.json').write_text(json.dumps(fixture,indent=2)+'\n')
+    import_fixture(page,fixture)
+    print('PASS explicit meadow/heath and 800-patch legacy vegetation fixture imported',flush=True)
     page.locator('#startBtn').click(force=True)
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.visibleInstances>2500',timeout=120000)
     page.wait_for_function('nebeljagdTestState().world.stats.meadowGround?.pendingChunks===0',timeout=120000)
@@ -87,6 +127,7 @@ with sync_playwright() as p:
     assert state['shadows']['normalBias']<=.015
     data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-meadow-vision.png').write_bytes(base64.b64decode(data.split(',',1)[1]))
+    print('PASS meadow, legacy vegetation, interaction, vision and shadows',flush=True)
 
     move_to_biome(page, -285, -400, 'snow')
     page.wait_for_function("nebeljagdTestState().world.stats.meadowGround?.visibleDetailInstances>5",timeout=120000)
@@ -148,8 +189,9 @@ with sync_playwright() as p:
     elapsed_now=page.evaluate("nebeljagdTestState().elapsed")
     page.evaluate("(t)=>nebeljagdInspect({x:-285,z:-400,elapsed:t+10.5})",elapsed_now)
     page.wait_for_function("nebeljagdTestState().snowFootprints.count===0",timeout=10000)
+    print('PASS snow surface, sparse winter grass, avatar clipping and footprints',flush=True)
 
-    move_to_biome(page, 300, -310, 'heath')
+    move_to_biome(page, 365, -205, 'heath')
     heath_state=page.evaluate('''()=>{const s=nebeljagdTestState();return {
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     heath_data=page.evaluate('nebeljagdCaptureFrame()')
@@ -160,6 +202,7 @@ with sync_playwright() as p:
       biome:s.world.biome, meadow:s.world.stats.meadowGround, position:s.position};}''')
     marsh_data=page.evaluate('nebeljagdCaptureFrame()')
     (OUT/'work-marsh-grass.png').write_bytes(base64.b64decode(marsh_data.split(',',1)[1]))
+    page.close()
 
     editor=browser.new_page(viewport={'width':1440,'height':900})
     editor.add_init_script("""
@@ -181,18 +224,21 @@ with sync_playwright() as p:
     editor_errors=[]
     editor.on('pageerror',lambda e:editor_errors.append(str(e)))
     editor.on('console',lambda m:editor_errors.append(m.text) if m.type=='error' and 'favicon' not in m.text else None)
-    editor.goto('http://127.0.0.1:4174/map-editor.html',wait_until='domcontentloaded',timeout=120000)
+    editor.goto(URL+'/map-editor.html',wait_until='domcontentloaded',timeout=120000)
     editor.wait_for_selector('[data-biome-choice="meadow"]',timeout=120000)
+    assert editor.locator('#editor-tab-paint').get_attribute('aria-selected')=='true'
+    assert editor.locator('#editor-tool-paint-biomes').get_attribute('aria-selected')=='true'
+    assert editor.locator('#editor-pane-paint [data-editor-tool-panel]:visible').count()==1
+    editor.locator('#landscape-section-biomes .biome-advanced > summary').click()
     editor.wait_for_selector('#biome-softness',timeout=120000)
     assert editor.locator('[data-biome-choice]').count()>=5
     assert editor.locator('#biome-softness').input_value()=='65'
     assert editor.locator('#landscape-section-biomes').evaluate('(e)=>e.open') is True
-    assert editor.locator('details.landscape-section[open]').count()==1
     editor.locator('[data-biome-choice="snow"]').click()
     assert editor.locator('#biome-preset').input_value()=='snow'
     assert editor.locator('[data-biome-choice="snow"]').get_attribute('aria-pressed')=='true'
-    assert 'Boden und Gras' in editor.locator('.biome-intro').inner_text()
-    assert 'worldmap.json speichern' in editor.locator('#export-json').inner_text()
+    assert 'Boden und Bewuchs' in editor.locator('#landscape-section-biomes .small-note').inner_text()
+    assert 'Speichern' in editor.locator('#export-json').inner_text()
     editor.locator('#export-json').click()
     editor.wait_for_function("window.__mapSaveWrites.length===1",timeout=10000)
     editor.locator('#export-json').click()
@@ -205,10 +251,12 @@ with sync_playwright() as p:
     assert file_save['state']['directSupported'] is True
     assert file_save['state']['connectedFile']=='worldmap.json'
     assert 'Gespeichert' in file_save['status']
-    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'state':state,
+    report={'passed':not errors and not editor_errors,'errors':errors+editor_errors,'url':URL,
+      'fixture':{'name':fixture['name'],'legacyGrassPatches':800,'sourceMap':SOURCE['name']},'state':state,
       'snowState':snow_state,'snowTracks':track_state,'heathState':heath_state,'marshState':marsh_state,
       'editor':{'biomeChoices':editor.locator('[data-biome-choice]').count(),'fileSave':file_save}}
     browser.close()
+assert json.loads((ROOT/'worldmap.json').read_text())==SOURCE,'The fixture must never change the project map'
 (OUT/'report.json').write_text(json.dumps(report,indent=2))
 if not report['passed']:
     raise SystemExit(report)
