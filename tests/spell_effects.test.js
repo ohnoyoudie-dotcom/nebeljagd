@@ -11,7 +11,7 @@ function setup({ type = 'fireStaff', targetZ = null, wallZ = null } = {}) {
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
   const combat = createCombat();
   const target = targetZ === null ? null : combat.addTarget({
-    id: 'target', position: { x: 0, y: 0, z: targetZ }, radius: .65, maxHealth: 500,
+    id: 'tall-practice-target', position: { x: 0, y: 0, z: targetZ }, height: 3.4, radius: .65, maxHealth: 500,
   });
   const collision = createCollisionIndex([], wallZ === null ? [] : [{
     minX: -20, maxX: 20, minZ: wallZ, maxZ: wallZ + .1, minY: 0, maxY: 4, type: 'wall',
@@ -45,7 +45,8 @@ test('fire and ice target hits emit their own visible impact without applying da
     assert.equal(state.effects.emitted[type].launches, 1);
     assert.equal(state.effects.emitted[type].impacts, 1);
     assert.equal(state.effects.latestImpact.type, type);
-    assert.equal(state.effects.latestImpact.point.y, 1.4, 'VFX retain the established combat plane');
+    assert.equal(state.effects.latestImpact.point.y, state.lastSpellLaunch.position.y,
+      'the tall target is hit at the original crystal height');
     assert.ok(state.effects.bursts.some(burst => burst.kind === 'impact' && burst.type === type && burst.visible));
     assert.equal(state.spellsActive, 0, 'the damaging projectile ends while its independent impact remains');
     assert.ok(state.effects.activeParticles > 0);
@@ -69,8 +70,8 @@ test('a wall between the body and staff muzzle produces one surface impact and b
   assert.equal(state.effects.emitted.fireStaff.impacts, 1);
   assert.ok(Math.abs(state.effects.latestImpact.point.z - (.5 - .13)) < 1e-7);
   const launch = state.lastSpellLaunch;
-  const fraction = state.effects.latestImpact.point.z / launch.position.z;
-  const expectedY = launch.flightHeight + (launch.position.y - launch.flightHeight) * fraction;
+  const fraction = (state.effects.latestImpact.point.z - launch.bodyOrigin.z) / (launch.position.z - launch.bodyOrigin.z);
+  const expectedY = launch.bodyOrigin.y + (launch.position.y - launch.bodyOrigin.y) * fraction;
   assert.ok(Math.abs(state.effects.latestImpact.point.y - expectedY) < 1e-7,
     'the near wall is hit on the actual body-to-crystal segment');
   for (let i = 0; i < 80; i++) step();

@@ -3,13 +3,15 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createWeapons } from '../src/weapons.js';
 import { createCollisionIndex } from '../src/collision.js';
+import { createCombat } from '../src/combat.js';
+import { weaponStats } from '../src/loot-tiers.js';
 
 const variants = { fireStaff: 'kit-tripo-lava-staff', iceStaff: 'kit-tripo-crystal-staff' };
 const vector = point => new THREE.Vector3(point.x, point.y, point.z);
 const close = (actual, expected, message) => assert.ok(vector(actual).distanceTo(expected) < 1e-6, message);
 
 function fixture({ type = 'fireStaff', scale = 1.2, yaw = 0, x = 0, y = 0, z = 0 } = {}) {
-  const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
+  const scene = new THREE.Scene(), actor = new THREE.Group(), combat = createCombat(); scene.add(actor);
   actor.position.set(x, y, z); actor.scale.setScalar(scale); actor.rotation.y = yaw;
   const prototypes = Object.fromEntries(Object.entries(variants).map(([kind, variant]) => {
     const group = new THREE.Group();
@@ -26,12 +28,12 @@ function fixture({ type = 'fireStaff', scale = 1.2, yaw = 0, x = 0, y = 0, z = 0
       return collision?.traceSegment(start, end, radius) ?? null;
     } };
   const other = type === 'fireStaff' ? 'iceStaff' : 'fireStaff';
-  const weapons = createWeapons(scene, actor, world, null, { tripoPrototypes: prototypes, placements: [
+  const weapons = createWeapons(scene, actor, world, null, { combat, tripoPrototypes: prototypes, placements: [
     { id: 'first', kind: type, variant: variants[type], position: [x, z] },
     { id: 'second', kind: other, variant: variants[other], position: [x + 3, z] },
   ] });
   assert.equal(weapons.interact(actor.position).type, type);
-  return { scene, actor, weapons, traces,
+  return { scene, actor, combat, weapons, traces,
     step(dt) { time += dt; weapons.update(dt, time, actor.position); },
     setColliders(boxes) { collision = createCollisionIndex([], boxes); return collision; },
     dispose() {
@@ -58,71 +60,92 @@ test('both imported staffs release exactly from their transformed model tip at t
     close(state.staffTip, expected, 'the inspector reports the actual visible crystal tip');
     close(state.lastSpellLaunch.position, expected, 'the launch event is at that same physical point');
     close(state.spells[0].position, expected, 'a frame ending exactly at release cannot advance the new projectile');
-    assert.ok(expected.y > state.lastSpellLaunch.flightHeight + .5);
+    assert.equal(state.lastSpellLaunch.flightHeight, state.lastSpellLaunch.position.y);
+    assert.ok(expected.y > actor.position.y + 1.9, 'the shot remains above chest height in this pose');
     step(0);
     close(weapons.telemetry.spells[0].position, expected, 'the pending release interval is not replayed during pause');
     instance.dispose();
   }
 });
 
-test('staff projectiles descend continuously to the aiming plane and only use elapsed time after release', () => {
-  const instance = fixture({ yaw: .47 });
-  const { actor, weapons, step } = instance;
-  weapons.attack(actor.position, actor.rotation.y); step(.25);
-  const launch = weapons.telemetry.lastSpellLaunch;
-  let previous = vector(launch.position);
-  for (let frame = 1; frame <= 16; frame++) {
-    step(.01);
-    const current = vector(weapons.telemetry.spells[0].position);
-    assert.ok(current.y <= previous.y + 1e-7 && current.y >= launch.flightHeight - 1e-7);
-    assert.ok(previous.y - current.y < (launch.position.y - launch.flightHeight) * .15,
-      'individual small frames cannot teleport the projectile to chest height');
-    if (frame < 14) assert.ok(current.y > launch.flightHeight);
-    assert.ok(Math.abs(Math.hypot(current.x - previous.x, current.z - previous.z) - .18) < 1e-6,
-      'the existing horizontal speed is unchanged');
-    previous = current;
+test('both staffs fly straight at crystal height for their full lifetime in every facing direction', () => {
+  for (const type of Object.keys(variants)) for (const yaw of [0, .47, Math.PI / 2, -1.2]) {
+    const instance = fixture({ type, yaw });
+    const { actor, weapons, step } = instance;
+    weapons.attack(actor.position, actor.rotation.y); step(.25);
+    const launch = weapons.telemetry.lastSpellLaunch;
+    for (let frame = 1; frame <= 65; frame++) {
+      step(.02);
+      const current = weapons.telemetry.spells[0].position;
+      assert.equal(current.y, launch.position.y, 'height stays fixed, including after the former transition time');
+      const elapsed = frame * .02;
+      const expected = new THREE.Vector3(launch.position.x + Math.sin(yaw) * 18 * elapsed,
+        launch.position.y, launch.position.z + Math.cos(yaw) * 18 * elapsed);
+      close(current, expected, 'every point lies on the same horizontal ray at the existing speed');
+    }
+    step(.06);
+    assert.equal(weapons.telemetry.spellsActive, 0, 'the original projectile lifetime is retained');
+    instance.dispose();
   }
-  assert.ok(Math.abs(previous.y - launch.flightHeight) < 1e-7);
-  instance.dispose();
 
   const crossed = fixture();
   crossed.weapons.attack(crossed.actor.position, 0); crossed.step(.2); crossed.step(.08);
   const state = crossed.weapons.telemetry, origin = state.lastSpellLaunch.position, position = state.spells[0].position;
   assert.ok(Math.abs(Math.hypot(position.x - origin.x, position.z - origin.z) - 18 * .03) < 1e-7,
     'crossing release by 30 ms advances 30 ms, not the whole 80 ms frame');
-  assert.ok(position.y < origin.y && position.y > state.lastSpellLaunch.flightHeight);
+  assert.equal(position.y, origin.y);
   crossed.dispose();
 });
 
-test('a large frame sweeps the curved launch path into a thin low obstacle that a straight chord misses', () => {
-  const instance = fixture();
-  const { actor, weapons, step, traces } = instance;
-  weapons.attack(actor.position, 0); step(.25);
-  const launch = weapons.telemetry.lastSpellLaunch, tip = vector(launch.position);
-  const height = tip.y - launch.flightHeight;
-  const collision = instance.setColliders([{
-    minX: tip.x - .4, maxX: tip.x + .4, minZ: tip.z + 1.44, maxZ: tip.z + 1.48,
-    minY: launch.flightHeight + height * .34, maxY: launch.flightHeight + height * .48,
-    type: 'low-barrier',
-  }]);
-  const end = new THREE.Vector3(tip.x, launch.flightHeight, tip.z + 18 * .25);
-  assert.equal(collision.traceSegment(tip, end, .13), null, 'the old straight-frame shortcut would miss this obstacle');
-  traces.length = 0; step(.25);
-  const state = weapons.telemetry;
-  assert.ok(traces.length > 1, 'the descending path is checked between its endpoints');
-  assert.equal(state.spellsActive, 0);
-  assert.equal(state.lastImpact.type, 'low-barrier');
-  assert.equal(state.effects.emitted.fireStaff.impacts, 1);
-  assert.ok(state.lastImpact.point.z < tip.z + 1.44);
-  for (let i = 0; i < 50; i++) step(.02);
-  assert.equal(weapons.telemetry.effects.emitted.fireStaff.impacts, 1);
-  instance.dispose();
+test('large-frame sweeps respect the real heights of obstacles and targets', () => {
+  for (const type of Object.keys(variants)) {
+    const instance = fixture({ type });
+    const { actor, weapons, step } = instance;
+    weapons.attack(actor.position, 0); step(.25);
+    const tip = vector(weapons.telemetry.lastSpellLaunch.position);
+    const box = (distance, minY, maxY, kind) => ({ minX: tip.x - .4, maxX: tip.x + .4,
+      minZ: tip.z + distance, maxZ: tip.z + distance + .04, minY, maxY, type: kind });
+    instance.setColliders([
+      box(1.2, 0, tip.y - .3, 'low-barrier'),
+      box(2.0, tip.y + .3, tip.y + 1, 'overhead-barrier'),
+      box(3.0, tip.y - .2, tip.y + .2, 'crystal-height-barrier'),
+    ]);
+    step(.25);
+    const state = weapons.telemetry;
+    assert.equal(state.spellsActive, 0);
+    assert.equal(state.lastImpact.type, 'crystal-height-barrier');
+    assert.equal(state.lastImpact.point.y, tip.y);
+    assert.ok(Math.abs(state.lastImpact.point.z - (tip.z + 3 - .13)) < 1e-7);
+    for (let i = 0; i < 50; i++) step(.02);
+    assert.equal(weapons.telemetry.effects.emitted[type].impacts, 1);
+    instance.dispose();
+
+    const targets = fixture({ type });
+    targets.weapons.attack(targets.actor.position, 0); targets.step(.25);
+    const start = targets.weapons.telemetry.lastSpellLaunch.position;
+    const low = targets.combat.addTarget({ id: 'ordinary-height-target',
+      position: { x: start.x, y: 0, z: start.z + 1.5 }, height: 2.3, maxHealth: 500 });
+    const tall = targets.combat.addTarget({ id: 'tall-practice-post',
+      position: { x: start.x, y: 0, z: start.z + 3.5 }, height: 3.4, maxHealth: 500 });
+    assert.ok(start.y > low.height + .13 && start.y < tall.height,
+      'the fixture genuinely puts the ordinary-height target below the shot');
+    targets.step(.25);
+    const hit = targets.weapons.telemetry;
+    assert.equal(low.health, 500, 'a target below the actual flight ray is not silently made taller');
+    assert.equal(tall.health, 500 - weaponStats(type).damage);
+    assert.equal(hit.damageHits, 1);
+    assert.equal(hit.effects.latestImpact.point.y, start.y);
+    assert.equal(type === 'fireStaff' ? tall.burnRemaining : tall.slowRemaining,
+      type === 'fireStaff' ? weaponStats(type).burn.duration : weaponStats(type).slow.duration);
+    targets.dispose();
+  }
 });
 
 test('switching staffs and resetting cannot carry an old launch height or release interval into a reused projectile', () => {
   const instance = fixture();
   const { actor, weapons, step } = instance;
   weapons.attack(actor.position, 0); step(.25); step(.03);
+  const oldHeight = weapons.telemetry.lastSpellLaunch.position.y;
   actor.position.x = 3;
   assert.equal(weapons.interact(actor.position).type, 'iceStaff');
   weapons.attack(actor.position, 0); step(.25);
@@ -138,8 +161,10 @@ test('switching staffs and resetting cannot carry an old launch height or releas
   assert.equal(state.spellsActive, 1);
   close(state.spells[0].position, vector(state.staffTip), 'a reused slot starts at the newly scaled actor tip');
   assert.equal(state.lastSpellLaunch.type, 'fireStaff');
-  assert.equal(state.lastSpellLaunch.flightHeight, 1.4);
+  assert.equal(state.lastSpellLaunch.flightHeight, state.lastSpellLaunch.position.y);
+  assert.ok(Math.abs(state.lastSpellLaunch.flightHeight - oldHeight) > .5,
+    'the newly scaled actor has a meaningfully different crystal height');
   step(.16);
-  assert.ok(Math.abs(weapons.telemetry.spells[0].position.y - 1.4) < 1e-7);
+  assert.equal(weapons.telemetry.spells[0].position.y, state.lastSpellLaunch.flightHeight);
   instance.dispose();
 });
