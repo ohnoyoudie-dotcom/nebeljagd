@@ -153,8 +153,10 @@ const combat = createCombat({ onHit: (result, target) => {
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, snap: true });
   updateUI();
   ui.showLevelUp({ level: state.level, healthGain: advancement.healthGained });
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  healthBars.pulseLevel('player', { reducedMotion });
   levelUpEffect.trigger({ position: player, level: state.level,
-    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches });
+    reducedMotion });
 } });
 for (const object of world.destructibles ?? []) {
   const target = combat.addTarget({ id: object.id, name: object.name, position: object.position, radius: object.radius,
@@ -195,7 +197,7 @@ function clearInput() {
 
 function setPhase(phase) {
   state.phase = phase;
-  if (phase !== 'playing') levelUpEffect.reset();
+  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); }
   clearInput();
   state.moving = false;
   ui.setPhase(phase);

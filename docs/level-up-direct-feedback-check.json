@@ -1,0 +1,134 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5232",
+  "checks": [
+    {
+      "name": "Gold badge starts at level 1 and no celebration runs before a victory",
+      "evidence": {
+        "ui": {
+          "width": 154,
+          "left": 143,
+          "labelRight": 137,
+          "background": "linear-gradient(155deg, rgb(255, 240, 176) 0%, rgb(233, 189, 101) 38%, rgb(185, 120, 45) 100%)",
+          "border": "rgb(255, 229, 160)",
+          "color": "rgb(44, 32, 13)",
+          "fontWeight": "800",
+          "noticeAbsent": true
+        },
+        "effect": {
+          "active": false,
+          "level": 1,
+          "emitted": 0,
+          "particleCount": 0,
+          "ringCount": 0,
+          "beamVisible": false,
+          "reducedMotion": false,
+          "remaining": 0
+        }
+      }
+    },
+    {
+      "name": "A real victory adds 25 HP and celebrates on the figure and level number without a text popup or wider health bars",
+      "evidence": {
+        "level": 2,
+        "health": 97,
+        "maxHealth": 125,
+        "effect": {
+          "active": true,
+          "level": 2,
+          "emitted": 1,
+          "particleCount": 36,
+          "ringCount": 2,
+          "beamVisible": true,
+          "reducedMotion": false,
+          "remaining": 1.1834000000000016
+        },
+        "bar": {
+          "id": "player",
+          "health": 97,
+          "maxHealth": 125,
+          "level": 2,
+          "levelLabel": "2",
+          "local": true,
+          "visible": true,
+          "displayedRatio": 0.776,
+          "flash": 0,
+          "healthPerSegment": 25,
+          "segmentCount": 5,
+          "barWidth": 1.805,
+          "barBounds": {
+            "left": -0.95,
+            "right": 0.95
+          },
+          "levelBounds": {
+            "left": -1.691097857128839,
+            "right": -1.03
+          },
+          "levelPulse": {
+            "active": true,
+            "remaining": 1.1834000000000011,
+            "scale": 1.5024951298382703,
+            "glow": 1,
+            "reducedMotion": false
+          }
+        },
+        "width": 154,
+        "left": 143,
+        "labelRight": 137,
+        "label": "2",
+        "noticeAbsent": true,
+        "hudPulse": {
+          "label": "2",
+          "pulsing": true
+        }
+      }
+    },
+    {
+      "name": "The figure effect and number pulse expire after a single victory",
+      "evidence": {
+        "active": false,
+        "level": 2,
+        "emitted": 1,
+        "particleCount": 0,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 0
+      }
+    },
+    {
+      "name": "Restart clears the celebration and restores the initial level and health",
+      "evidence": {
+        "active": false,
+        "level": 1,
+        "emitted": 0,
+        "particleCount": 0,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 0
+      }
+    }
+  ],
+  "errors": [],
+  "unexpectedRequests": [],
+  "screenshots": [
+    "level-up-direct-feedback-game.png"
+  ],
+  "limits": "Real keyboard kill in an imported test island, Chromium/SwiftShader; no physical-device performance claim.",
+  "delivery": {
+    "file": "/workspace/nebeljagd/welt/nebeljagd.html",
+    "bytes": 81323223,
+    "sha256": "5e0def4cff5eae79a4ec877a14dba5eebd7f376799ba8545ada0d9ed75751a77"
+  },
+  "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b",
+  "build": "78320efa6823",
+  "sourceCommit": "189190d3de97744570d6ee31779be8d1721c699d",
+  "nodeTests": {
+    "passed": 409,
+    "failed": 0
+  },
+  "assetValidation": "passed",
+  "mapValidation": "passed",
+  "review": "Actual renderer frame visually reviewed: two gold rings, bright particles, larger glowing level 2 badge; no text popup."
+}

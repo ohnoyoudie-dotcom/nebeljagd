@@ -9,9 +9,18 @@ const GLYPH_WIDTH = .24;
 const LEVEL_PADDING = .20;
 const LEVEL_HEIGHT = .48;
 const GLYPHS = '0123456789.kMBTP';
-const LEVEL_RESERVE = LEVEL_GAP + LEVEL_PADDING + GLYPH_WIDTH * 4 + .04;
+const LEVEL_PULSE_DURATION = 1.6;
+const LEVEL_PULSE_SCALE = 1.55;
+const LEVEL_GLOW_MARGIN = .18;
+const LEVEL_RESERVE = LEVEL_GAP + (LEVEL_PADDING + GLYPH_WIDTH * 4) * LEVEL_PULSE_SCALE + LEVEL_GLOW_MARGIN;
 const validLevel = value => Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
 const capacityOf = value => Number.isFinite(value) ? Math.max(1, value) : 100;
+const smoothstep = value => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
+
+function clearPulse(bar) {
+  bar.levelPulseRemaining = 0; bar.levelPulseScale = 1; bar.levelPulseGlow = 0;
+  bar.levelPulseReducedMotion = false;
+}
 
 function levelText(level) {
   if (level < 10000) return String(level);
@@ -51,7 +60,7 @@ function makeLevelAtlas() {
 export function createHealthBars(scene, { capacity = 128 } = {}) {
   // Reserve space only to the left: the original bar keeps its width, centre
   // and height regardless of its maximum health or the number of level digits.
-  const geometry = new THREE.PlaneGeometry(BAR_WIDTH + LEVEL_RESERVE, LEVEL_HEIGHT + .04);
+  const geometry = new THREE.PlaneGeometry(BAR_WIDTH + LEVEL_RESERVE, LEVEL_HEIGHT * LEVEL_PULSE_SCALE + LEVEL_GLOW_MARGIN * 2);
   geometry.translate(-LEVEL_RESERVE / 2, 0, 0);
   const healthRatios = new Float32Array(capacity);
   const displayedRatios = new Float32Array(capacity);
@@ -60,6 +69,8 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
   const healthUnits = new Float32Array(capacity);
   const levelGlyphs = new Float32Array(capacity * 4);
   const levelLengths = new Float32Array(capacity);
+  const levelPulses = new Float32Array(capacity * 2);
+  for (let slot = 0; slot < capacity; slot++) levelPulses[slot * 2] = 1;
   const healthAttribute = new THREE.InstancedBufferAttribute(healthRatios, 1).setUsage(THREE.DynamicDrawUsage);
   const colorAttribute = new THREE.InstancedBufferAttribute(colors, 3).setUsage(THREE.DynamicDrawUsage);
   const displayAttribute = new THREE.InstancedBufferAttribute(displayedRatios, 1).setUsage(THREE.DynamicDrawUsage);
@@ -67,6 +78,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
   const unitsAttribute = new THREE.InstancedBufferAttribute(healthUnits, 1).setUsage(THREE.DynamicDrawUsage);
   const glyphAttribute = new THREE.InstancedBufferAttribute(levelGlyphs, 4).setUsage(THREE.DynamicDrawUsage);
   const lengthAttribute = new THREE.InstancedBufferAttribute(levelLengths, 1).setUsage(THREE.DynamicDrawUsage);
+  const pulseAttribute = new THREE.InstancedBufferAttribute(levelPulses, 2).setUsage(THREE.DynamicDrawUsage);
   geometry.setAttribute('healthRatio', healthAttribute);
   geometry.setAttribute('healthDisplayRatio', displayAttribute);
   geometry.setAttribute('healthFlash', flashAttribute);
@@ -74,6 +86,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
   geometry.setAttribute('healthUnits', unitsAttribute);
   geometry.setAttribute('levelGlyphs', glyphAttribute);
   geometry.setAttribute('levelLength', lengthAttribute);
+  geometry.setAttribute('levelPulse', pulseAttribute);
   const levelAtlas = makeLevelAtlas();
   const material = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, depthTest: false, toneMapped: false,
@@ -86,6 +99,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       attribute float healthUnits;
       attribute vec4 levelGlyphs;
       attribute float levelLength;
+      attribute vec2 levelPulse;
       varying vec2 vPosition;
       varying float vHealth;
       varying float vDisplayedHealth;
@@ -94,10 +108,12 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       varying float vUnits;
       varying vec4 vGlyphs;
       varying float vLength;
+      varying vec2 vLevelPulse;
       void main() {
         vPosition = position.xy; vHealth = healthRatio; vDisplayedHealth = healthDisplayRatio;
         vFlash = healthFlash; vColor = healthColor;
         vUnits = healthUnits; vGlyphs = levelGlyphs; vLength = levelLength;
+        vLevelPulse = levelPulse;
         gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
       }
     `,
@@ -111,26 +127,41 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       varying float vUnits;
       varying vec4 vGlyphs;
       varying float vLength;
+      varying vec2 vLevelPulse;
       void main() {
         vec2 barUv = vec2(vPosition.x / ${BAR_WIDTH} + .5, vPosition.y / ${BAR_HEIGHT} + .5);
         if (barUv.x < 0.0) {
           float badgeRight = -${BAR_WIDTH / 2 + LEVEL_GAP};
           float badgeWidth = ${LEVEL_PADDING} + vLength * ${GLYPH_WIDTH};
-          vec2 badge = abs(vec2(vPosition.x - badgeRight + badgeWidth * .5, vPosition.y));
+          float badgeScale = max(1.0, vLevelPulse.x);
+          // Scale around the fixed right edge, so even four digits grow away
+          // from the health bar. The bar itself never participates in the pop.
+          vec2 badgePosition = vec2((vPosition.x - badgeRight) / badgeScale + badgeRight, vPosition.y / badgeScale);
+          vec2 badge = abs(vec2(badgePosition.x - badgeRight + badgeWidth * .5, badgePosition.y));
           vec2 halfSize = vec2(badgeWidth * .5, ${LEVEL_HEIGHT / 2});
           // Clipped corners and two inset metal rims read as a small rank
           // medallion. Its extra space extends left, never into the health bar.
           float edge = max(max(badge.x - halfSize.x, badge.y - halfSize.y),
             (badge.x + badge.y - halfSize.x - halfSize.y + .075) * .7071);
-          if (edge > 0.0) discard;
-          float light = clamp(vPosition.y / ${LEVEL_HEIGHT} + .5, 0.0, 1.0);
+          if (edge > 0.0) {
+            float outside = edge * badgeScale;
+            if (vLevelPulse.y <= 0.0 || outside > ${LEVEL_GLOW_MARGIN}) discard;
+            // Stop the halo in the gap rather than tinting or covering the bar.
+            float rightFade = 1.0 - smoothstep(badgeRight + .018, badgeRight + ${LEVEL_GAP - .006}, vPosition.x);
+            float glow = exp(-outside * 16.0) * vLevelPulse.y * rightFade;
+            glow *= 1.0 - smoothstep(${LEVEL_GLOW_MARGIN * .65}, ${LEVEL_GLOW_MARGIN}, outside);
+            gl_FragColor = vec4(1.0, .58, .10, glow * .64);
+          } else {
+          float light = clamp(badgePosition.y / ${LEVEL_HEIGHT} + .5, 0.0, 1.0);
           vec3 gold = mix(vec3(.55, .25, .055), vec3(1.0, .77, .32), light);
+          gold = mix(gold, vec3(1.0, .95, .62), vLevelPulse.y * .65);
           vec3 badgeColor = mix(vec3(.055, .032, .012), vec3(.16, .10, .028), light);
           if (edge > -.024) badgeColor = gold;
           else if (edge > -.043) badgeColor = vec3(.045, .025, .008);
           else if (edge > -.055) badgeColor = gold * .66;
-          float textX = (vPosition.x - badgeRight + badgeWidth - ${LEVEL_PADDING / 2}) / ${GLYPH_WIDTH};
-          float textY = vPosition.y / .44 + .5;
+          badgeColor += vec3(.22, .11, .014) * vLevelPulse.y;
+          float textX = (badgePosition.x - badgeRight + badgeWidth - ${LEVEL_PADDING / 2}) / ${GLYPH_WIDTH};
+          float textY = badgePosition.y / .44 + .5;
           if (textX >= 0.0 && textX < vLength && textY > 0.0 && textY < 1.0) {
             float slot = floor(textX);
             float glyph = slot < .5 ? vGlyphs.x : slot < 1.5 ? vGlyphs.y : slot < 2.5 ? vGlyphs.z : vGlyphs.w;
@@ -138,9 +169,12 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
             float shadow = texture2D(levelAtlas, glyphUv + vec2(-.022 / ${GLYPHS.length}.0, .035)).a;
             float ink = texture2D(levelAtlas, glyphUv).a;
             badgeColor = mix(badgeColor, vec3(.012, .007, .002), shadow * .9);
-            badgeColor = mix(badgeColor, mix(vec3(1.0, .69, .24), vec3(1.0, .96, .72), light), ink);
+            vec3 inkColor = mix(vec3(1.0, .69, .24), vec3(1.0, .96, .72), light);
+            inkColor = mix(inkColor, vec3(1.0, 1.0, .90), vLevelPulse.y * .65);
+            badgeColor = mix(badgeColor, inkColor, ink);
           }
           gl_FragColor = vec4(badgeColor, .98);
+          }
         } else {
         if (barUv.x > 1.0 || barUv.y < 0.0 || barUv.y > 1.0) discard;
         vec3 color = mix(vec3(.035, .05, .065), vec3(.95, .85, .62), vFlash * .8);
@@ -188,6 +222,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
     const normalizedLevel = validLevel(level);
     const bar = { id, position, health, maxHealth, level: normalizedLevel, levelLabel: levelText(normalizedLevel), local, height, color: barColor, visible, concealed, rendered: false,
       displayedRatio: Math.max(0, Math.min(1, health / Math.max(1, maxHealth))), flash: 0, flashStrength: 0, flashCooldown: 0 };
+    clearPulse(bar);
     bars.set(id, bar); mesh.count = bars.size;
     return bar;
   }
@@ -214,7 +249,24 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       bar.displayedRatio = Math.max(0, Math.min(1, bar.health / Math.max(1, bar.maxHealth)));
       bar.flash = bar.flashCooldown = 0;
     }
+    if (changes.snap || bar.health <= 0 || (!bar.local && (!bar.visible || bar.concealed))) clearPulse(bar);
     return true;
+  }
+
+  function pulseLevel(id, { reducedMotion = false } = {}) {
+    const bar = bars.get(id);
+    if (!bar || bar.health <= 0 || (!bar.local && (!bar.visible || bar.concealed))) return false;
+    // Repeated level-ups restart the same lightweight instance effect.
+    bar.levelPulseRemaining = LEVEL_PULSE_DURATION;
+    bar.levelPulseReducedMotion = Boolean(reducedMotion);
+    bar.levelPulseScale = 1; bar.levelPulseGlow = 1;
+    return true;
+  }
+
+  function clearLevelPulses() {
+    for (const bar of bars.values()) clearPulse(bar);
+    for (let slot = 0; slot < capacity; slot++) { levelPulses[slot * 2] = 1; levelPulses[slot * 2 + 1] = 0; }
+    pulseAttribute.needsUpdate = true;
   }
 
   function update(camera, { isVisible = () => true, dt = 1 / 60 } = {}) {
@@ -229,6 +281,20 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       bar.flashCooldown = Math.max(0, bar.flashCooldown - delta);
       // A hidden actor must not reveal an old hit after stepping back into sight.
       if (!bar.rendered) { bar.displayedRatio = ratio; bar.flash = 0; }
+      if (!bar.rendered || bar.health <= 0) clearPulse(bar);
+      else if (bar.levelPulseRemaining > 0) {
+        bar.levelPulseRemaining = Math.max(0, bar.levelPulseRemaining - delta);
+        if (!bar.levelPulseRemaining) clearPulse(bar);
+        else if (bar.levelPulseReducedMotion) {
+          // Accessibility mode is a steady highlight with no movement/pulsing.
+          bar.levelPulseScale = 1; bar.levelPulseGlow = 1;
+        } else {
+          const progress = 1 - bar.levelPulseRemaining / LEVEL_PULSE_DURATION;
+          const pop = progress < .15 ? 1 - Math.pow(1 - progress / .15, 3) : 1 - smoothstep((progress - .15) / .61);
+          bar.levelPulseScale = 1 + (LEVEL_PULSE_SCALE - 1) * pop;
+          bar.levelPulseGlow = 1 - smoothstep((progress - .70) / .30);
+        }
+      }
       dummy.position.copy(bar.position); dummy.position.y += bar.height;
       dummy.quaternion.copy(camera.quaternion);
       dummy.scale.setScalar(bar.rendered ? 1 : 0);
@@ -238,6 +304,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
       flashes[slot] = bar.flashStrength * bar.flash / .18;
       healthUnits[slot] = capacityOf(bar.maxHealth) / HEALTH_PER_SEGMENT;
       levelLengths[slot] = bar.levelLabel.length;
+      levelPulses[slot * 2] = bar.levelPulseScale; levelPulses[slot * 2 + 1] = bar.levelPulseGlow;
       for (let glyph = 0; glyph < 4; glyph++) levelGlyphs[slot * 4 + glyph] = Math.max(0, GLYPHS.indexOf(bar.levelLabel[glyph]));
       color.set(ratio < .3 ? '#f27169' : bar.color).toArray(colors, slot * 3);
       slot++;
@@ -245,20 +312,23 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
     mesh.count = slot;
     mesh.instanceMatrix.needsUpdate = true;
     healthAttribute.needsUpdate = displayAttribute.needsUpdate = flashAttribute.needsUpdate = true;
-    unitsAttribute.needsUpdate = glyphAttribute.needsUpdate = lengthAttribute.needsUpdate = true;
+    unitsAttribute.needsUpdate = glyphAttribute.needsUpdate = lengthAttribute.needsUpdate = pulseAttribute.needsUpdate = true;
     colorAttribute.needsUpdate = true;
   }
 
   return {
-    add, set, update,
+    add, set, update, pulseLevel, clearLevelPulses,
     remove(id) { const result = bars.delete(id); mesh.count = bars.size; return result; },
-    inspect() { return [...bars.values()].map(({ id, health, maxHealth, level, levelLabel, local, rendered, displayedRatio, flash }) => ({
+    inspect() { return [...bars.values()].map(({ id, health, maxHealth, level, levelLabel, local, rendered, displayedRatio, flash,
+      levelPulseRemaining, levelPulseScale, levelPulseGlow, levelPulseReducedMotion }) => ({
       id, health, maxHealth, level, levelLabel, local, visible: rendered, displayedRatio, flash,
       healthPerSegment: HEALTH_PER_SEGMENT, segmentCount: Math.ceil(capacityOf(maxHealth) / HEALTH_PER_SEGMENT),
       barWidth: BAR_WIDTH * (1 - BAR_INSET * 2), barBounds: { left: -BAR_WIDTH / 2, right: BAR_WIDTH / 2 },
-      levelBounds: { left: -BAR_WIDTH / 2 - LEVEL_GAP - LEVEL_PADDING - GLYPH_WIDTH * levelLabel.length, right: -BAR_WIDTH / 2 - LEVEL_GAP },
+      levelBounds: { left: -BAR_WIDTH / 2 - LEVEL_GAP - (LEVEL_PADDING + GLYPH_WIDTH * levelLabel.length) * levelPulseScale, right: -BAR_WIDTH / 2 - LEVEL_GAP },
+      levelPulse: { active: levelPulseRemaining > 0, remaining: levelPulseRemaining, scale: levelPulseScale,
+        glow: levelPulseGlow, reducedMotion: levelPulseReducedMotion },
     })); },
-    reset() { for (const bar of bars.values()) { bar.displayedRatio = Math.max(0, Math.min(1, bar.health / Math.max(1, bar.maxHealth))); bar.flash = bar.flashCooldown = 0; } },
+    reset() { for (const bar of bars.values()) { bar.displayedRatio = Math.max(0, Math.min(1, bar.health / Math.max(1, bar.maxHealth))); bar.flash = bar.flashCooldown = 0; } clearLevelPulses(); },
     dispose() { scene.remove(mesh); geometry.dispose(); material.dispose(); levelAtlas.dispose(); bars.clear(); },
   };
 }
