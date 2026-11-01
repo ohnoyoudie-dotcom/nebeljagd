@@ -4,6 +4,7 @@ import playerModelUrl from '../assets/characters/nebeljagd_player_base_v1.glb?ur
 import { createLocomotionController } from './locomotion.js';
 import { createAvatarAnimator } from './avatar-animation.js';
 import { preparePlayerGeometry } from './player-model.js';
+import { createHandGripSocket } from './hand-grip.js';
 
 const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
 
@@ -141,6 +142,12 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
       findBone(['HandR', 'RightHand', 'mixamorigRightHand']),
     ],
   };
+  const gripSockets = Object.fromEntries(['left', 'right'].map(side => {
+    const label = side === 'left' ? 'Left' : 'Right';
+    const finger = findBone([`mixamorig${label}HandMiddle1`, `${label}HandMiddle1`,
+      `mixamorig${label}HandIndex1`, `${label}HandIndex1`]);
+    return [side, createHandGripSocket(armBones[side][2], finger)];
+  }));
   // Two-bone aiming keeps the held objects in the actual hands instead of
   // floating beside the running rig. Targets use the character's local space.
   const shoulder = new THREE.Vector3(), handTarget = new THREE.Vector3();
@@ -215,6 +222,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     sourceHeight: sourceSize.y, normalizedScale,
     geometryPreparation,
     handBones: Object.fromEntries(Object.entries(armBones).map(([side, chain]) => [side, chain.map(bone => bone?.name || null)])),
+    gripSockets: Object.fromEntries(Object.entries(gripSockets).map(([side, socket]) => [side, { source: socket.source }])),
     materials: [...materials.keys()].map(material => ({ name: material.name,
       baseColorTexture: Boolean(material.map), normalTexture: Boolean(material.normalMap),
       roughnessTexture: Boolean(material.roughnessMap), metalnessTexture: Boolean(material.metalnessMap) })),
@@ -303,6 +311,9 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
       group.userData.locomotion = locomotion.update(0, { direction: group.rotation.y, currentYaw: group.rotation.y });
     },
     setCombatState,
+    getGripPosition(side, target = new THREE.Vector3()) {
+      return (gripSockets[side] ?? gripSockets.right).getPosition(group, target);
+    },
     getHandPosition(side, target = new THREE.Vector3()) {
       const hand = armBones[side]?.[2];
       group.updateWorldMatrix(true, true);

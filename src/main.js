@@ -413,7 +413,7 @@ window.nebeljagdTestState = () => ({
     roofVisible: roof.visible, interiorVisible: interior.visible, frontFacadeVisible: frontFacade.visible, frontFacadeParts: frontFacade.children.length })),
   zone: { ...currentZone, inDanger: state.inDanger },
   pickups: pickups.items.map(({ id, type, x, z, collected, group }) => ({ id, type, x, z, collected, visible: group.visible })),
-  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom },
+  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom, zoom: camera.zoom },
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
     frameMs: frameSamples.length ? frameSamples.reduce((sum, ms) => sum + ms, 0) / frameSamples.length : null },
@@ -424,6 +424,10 @@ window.nebeljagdTestState = () => ({
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
 if (new URLSearchParams(location.search).has('inspect')) {
+  window.nebeljagdInspectCamera = ({ zoom = 1 } = {}) => {
+    camera.zoom = THREE.MathUtils.clamp(Number.isFinite(zoom) ? zoom : 1, 1, 4);
+    camera.updateProjectionMatrix();
+  };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,

@@ -525,7 +525,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       leftHand.set(.27, 1.3, .32 + pulse * .2);
       combatPose.chestTwist = -.08 + pulse * .16;
       character?.setCombatState?.(combatPose);
-      if (character?.getHandPosition) character.getHandPosition('right', hand); else hand.copy(rightHand);
+      if (character?.getGripPosition) character.getGripPosition('right', hand);
+      else if (character?.getHandPosition) character.getHandPosition('right', hand);
+      else hand.copy(rightHand);
       const staff = equippedType === 'fireStaff' ? heldFireStaff : heldIceStaff;
       staff.position.copy(hand); staff.position.y += staff.userData.gripOffsetY;
       staff.rotation.set(.28 + pulse * .5, 0, -.06);
@@ -804,11 +806,22 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get telemetry() {
       bladeTip.set(0, heldSword.userData.weaponTipY, 0).applyQuaternion(heldSword.quaternion).multiplyScalar(heldSword.scale.y).add(heldSword.position);
       const held = heldByType[equippedType];
+      let heldGrip = null;
+      if (equippedType?.endsWith('Staff')) {
+        const wrist = new THREE.Vector3(), palm = new THREE.Vector3();
+        if (character?.getHandPosition) character.getHandPosition('right', wrist); else wrist.copy(rightHand);
+        if (character?.getGripPosition) character.getGripPosition('right', palm); else palm.copy(wrist);
+        const position = held.position.clone(); position.y -= held.userData.gripOffsetY;
+        const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
+        heldGrip = { side: 'right', source: characterGroup.userData.characterAsset?.gripSockets?.right?.source
+          ?? (character?.getGripPosition ? 'palm' : 'wrist'), position: point(position), wrist: point(wrist),
+          palm: point(palm), error: position.distanceTo(palm), visible: held.visible };
+      }
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
       return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        effects: spellEffects.telemetry,
+        effects: spellEffects.telemetry, heldGrip,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
           visible: spell.group.visible, position: { x: spell.group.position.x, y: spell.group.position.y, z: spell.group.position.z } })),
         heldModel: held ? { type: equippedType, variant: held.userData.variant, model: held.userData.model,
