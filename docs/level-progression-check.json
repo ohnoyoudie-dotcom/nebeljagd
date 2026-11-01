@@ -1363,5 +1363,172 @@
       "buildId": "ad5a6521cf3a"
     },
     "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+  },
+  "previewHandoff": {
+    "status": "passed",
+    "url": "http://127.0.0.1:5233/preview",
+    "version": "ad5a6521cf3a",
+    "errors": [],
+    "unexpectedRequests": [],
+    "documents": [
+      {
+        "name": "map-editor.html",
+        "bytes": 60508389,
+        "sha256": "71f438b62d91bb747a5f4240217266d942bcd1a24e7610c71b0d7f80cb57f8df",
+        "matches": "welt/map-editor.html"
+      },
+      {
+        "name": "nebeljagd.html",
+        "bytes": 81312361,
+        "sha256": "540c56113d5972f70e8f33d33e7ce26d3872fa6b74fdf413d4ddc783c85fdcd5",
+        "matches": "welt/nebeljagd.html"
+      }
+    ],
+    "popupUrl": "http://127.0.0.1:5233/preview/nebeljagd.html?mapSource=editor&v=ad5a6521cf3a",
+    "state": {
+      "phase": "playing",
+      "level": 1,
+      "health": 72,
+      "maxHealth": 100,
+      "defeats": 0,
+      "source": "editor",
+      "objects": [
+        {
+          "id": "object-house-mvviwx0g-2",
+          "name": "Haus",
+          "kind": "house",
+          "variant": "kit-tripo-tavern",
+          "position": [
+            2.7,
+            -70.5
+          ],
+          "rotation": 0,
+          "scale": 1
+        },
+        {
+          "id": "object-sword-mvxue2sl-1",
+          "name": "Schwert",
+          "kind": "sword",
+          "variant": "kit-tripo-sword",
+          "position": [
+            34.8,
+            -42.6
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "common"
+        },
+        {
+          "id": "object-fireStaff-mvxueb0c-2",
+          "name": "Feuerstab",
+          "kind": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "position": [
+            39.8,
+            -44.7
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "common"
+        },
+        {
+          "id": "object-iceStaff-mvxuedo9-3",
+          "name": "Eisstab",
+          "kind": "iceStaff",
+          "variant": "kit-tripo-crystal-staff",
+          "position": [
+            45.6,
+            -45.9
+          ],
+          "rotation": 0,
+          "scale": 1,
+          "rarity": "common"
+        }
+      ],
+      "mapId": "nebeljagd-world-v1",
+      "weaponDrops": [
+        {
+          "id": "object-sword-mvxue2sl-1",
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rarity": "common",
+          "x": 34.8,
+          "z": -42.6,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-fireStaff-mvxueb0c-2",
+          "type": "fireStaff",
+          "variant": "kit-tripo-lava-staff",
+          "model": "tripo",
+          "rarity": "common",
+          "x": 39.8,
+          "z": -44.7,
+          "collected": false,
+          "visible": true
+        },
+        {
+          "id": "object-iceStaff-mvxuedo9-3",
+          "type": "iceStaff",
+          "variant": "kit-tripo-crystal-staff",
+          "model": "tripo",
+          "rarity": "common",
+          "x": 45.6,
+          "z": -45.9,
+          "collected": false,
+          "visible": true
+        }
+      ],
+      "rendering": {
+        "calls": 177,
+        "triangles": 937120,
+        "geometries": 50,
+        "textures": 25,
+        "frameMs": 3672.0833333333335
+      },
+      "localBar": {
+        "id": "player",
+        "health": 72,
+        "maxHealth": 100,
+        "level": 1,
+        "levelLabel": "1",
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.72,
+        "flash": 0,
+        "healthPerSegment": 25,
+        "segmentCount": 4,
+        "barWidth": 1.805,
+        "barBounds": {
+          "left": -0.95,
+          "right": 0.95
+        },
+        "levelBounds": {
+          "left": -1.38,
+          "right": -1.03
+        }
+      },
+      "hud": {
+        "level": "1",
+        "segments": 4,
+        "max": 100,
+        "current": 72
+      }
+    },
+    "sourceMapUnchanged": "da923febdf6cf273533bcbca4490c27da8be942fae50f7660fccc653417a5a8b"
+  },
+  "deployment": {
+    "runId": "41328827556",
+    "url": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41328827556",
+    "verifiedCommit": "d214571b3d85bfa6cfe2af32f9895ba23ceeed63",
+    "commitMatches": true,
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    },
+    "publicEditor": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571",
+    "directPagesAccess": "blocked by environment network policy; browser checks used byte-identical local preview files"
   }
 }

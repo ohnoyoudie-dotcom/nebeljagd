@@ -56,5 +56,11 @@ Brandkills bis Level 4, Heilung über 100 und Rundenneustart. Es gab keine
 Browser-/Shaderfehler oder zusätzlichen Ressourcenanfragen. Die tatsächliche
 Darstellung auf Level 3 wurde visuell geprüft.
 
+Der zusätzliche Test `tests/lobby_level_smoke.py` prüft fünf Abläufe mit einem
+temporären Klassenserver und echter Lehrkraft-/Schüleranmeldung: Levelaufstieg
+auf 125/125, fortlaufend volle Übungslebenspunkte und Rücksetzen auf 100/100.
+Auch diese Prüfung bestand ohne Browserfehler. Die temporären Zugangsdaten
+werden nicht gespeichert oder in den Prüfbericht übernommen.
+
 [Prüfbericht](level-progression-check.json) ·
 [Spielaufnahme mit Level 3 und sechs Abschnitten](level-progression-game.png)

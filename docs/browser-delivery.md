@@ -1,8 +1,36 @@
 # Browser-Einstieg, Veröffentlichung und erzeugte Dateien
 
-## Aktueller Editor mit einhändiger Zauberanimation
+## Aktueller Editor mit Levelaufstiegen
 
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=476f9d0).
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=d214571).
+Über **Spielen** wird dieselbe Karte in der aktualisierten Spielversion geöffnet.
+Jeder besiegte Gegner erhöht das Level um eins und die aktuellen/maximalen
+Lebenspunkte um 25. Die Levelzahl steht links am Balken; seine Breite bleibt gleich und die
+25-LP-Abschnitte werden feiner. Die Übungswiese verwendet ebenfalls das neue
+Maximum und beginnt nach Zurücksetzen wieder bei Level 1 mit 100/100 LP.
+
+Quellstand: `9447a30b73fd3c9b34b2efd7c0fcd8493e61bacf`; Build `ad5a6521cf3a`;
+Auslieferung auf `work`: `d516eface8c9b4cc994d377ba99b81d62dbab35e`.
+Veröffentlichungscommit: `d214571b3d85bfa6cfe2af32f9895ba23ceeed63`, ausschließlich
+vier Dateien im bestehenden statischen `preview/`. Der Portal-Einstieg unter
+`welt/index.html` und Dateien außerhalb der Vorschau bleiben erhalten.
+Die Vorschau bietet weiterhin keine Klassenanmeldung; der echte Klassenserver
+wurde für die Prüfung nur temporär lokal gestartet.
+
+369 Node-Tests, Asset- und Kartenprüfung, sieben Spielabläufe, fünf echte
+Klassenserver-/Übungsabläufe und die normale Editor-zu-Spiel-Übergabe bestanden.
+Alle Browserprüfungen verwendeten die tatsächlichen erzeugten Dateien.
+Keine Browser-/Shaderfehler; die Nutzerkarte einschließlich ihrer drei Waffen
+ist unverändert. Details: [Levelsystem](level-progression.md).
+
+[GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41328827556)
+hat genau den Veröffentlichungscommit `d214571` erfolgreich bereitgestellt.
+Die Browserprüfungen verwendeten lokal bytegleiche Dateien, da die Pages-Domain
+durch die Netzwerkpolicy dieser Umgebung gesperrt ist.
+
+## Vorherige Ausgabe mit einhändiger Zauberanimation
+
+[Damals verwendeter Editorlink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=476f9d0).
 Beim Zaubern führt nur der Stabarm die Vorwärtsbewegung aus; die freie Hand
 behält ihre natürliche Stand-/Laufbewegung. Das Projektil beginnt direkt an
 der Kristallspitze und geht von dort kontinuierlich in die bisherige Flugbahn
