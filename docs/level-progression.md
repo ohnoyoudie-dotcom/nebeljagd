@@ -30,6 +30,11 @@ zum neuen Maximum. Bei einem Rundenneustart gelten wieder Level 1, maximal
 100 und die bisherigen 72 Startlebenspunkte. Fortschritt wird für die laufende
 Runde gespeichert.
 
+Die Übungswiese beginnt weiterhin mit vollen 100 Lebenspunkten. Auch dort
+erhöhen besiegte Übungsgegner Level und Maximum; der Übungsmodus hält die
+aktuellen Lebenspunkte am jeweiligen Maximum. Zurücksetzen beginnt wieder
+bei Level 1 und 100/100 Lebenspunkten.
+
 ## Umsetzung
 
 `src/combat.js` meldet jeden Übergang von lebendig zu besiegt genau einmal und

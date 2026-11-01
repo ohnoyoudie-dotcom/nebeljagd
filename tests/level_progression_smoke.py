@@ -187,9 +187,11 @@ try:
             inspect(page, -4, -4)
             page.wait_for_function('nebeljagdTestState().equippedWeapon==="sword"')
             assert state(page)['equippedItem']['model'] == 'tripo'
-            for i in range(3):
+            sword_damage = state(page)['equippedItem']['damage']
+            first_hits = math.ceil(actor(page, 'practice-1')['health'] / sword_damage)
+            for i in range(first_hits):
                 hit = attack_target(page, 'practice-1')
-                if i < 2:
+                if i < first_hits - 1:
                     assert hit['level'] == 1 and hit['defeats'] == 0, hit
             first = health_ui(page, 2, 125, 97, width)
             assert not actor(page, 'practice-1')['alive']
@@ -203,7 +205,7 @@ try:
             assert state(page)['level'] == 2 and state(page)['defeats'] == 1
             passed('Attacking an already defeated opponent cannot grant a second level')
 
-            for _ in range(3):
+            for _ in range(math.ceil(actor(page, 'practice-2')['health'] / sword_damage)):
                 attack_target(page, 'practice-2')
             second = health_ui(page, 3, 150, 122, width)
             assert state(page)['defeats'] == 2 and not actor(page, 'practice-2')['alive']
@@ -220,15 +222,21 @@ try:
             assert not next(p for p in state(page)['pickups'] if p['id'] == 'qa-heart-3')['collected']
             passed('Hearts heal above 100 to the increased maximum and remain unconsumed at full health', healed)
 
-            for _ in range(2):
+            before_burn_setup = actor(page, 'practice-3')['health']
+            setup_hits = math.floor((before_burn_setup - 1) / sword_damage)
+            for _ in range(setup_hits):
                 attack_target(page, 'practice-3')
-            assert abs(actor(page, 'practice-3')['health'] - 24) < .001
+            remaining = before_burn_setup - setup_hits * sword_damage
+            assert abs(actor(page, 'practice-3')['health'] - remaining) < .001
             inspect(page, -10, -4)
             page.keyboard.press('e')
             page.wait_for_function('nebeljagdTestState().equippedWeapon==="fireStaff"')
+            staff = state(page)['equippedItem']
+            assert staff['damage'] < remaining < staff['damage'] + staff['burn']['damagePerSecond'] * staff['burn']['duration'], \
+                'The test setup must leave a living target that the subsequent burn can finish'
             burning = attack_target(page, 'practice-3', 3)
             target = next(a for a in burning['practiceActors'] if a['id'] == 'practice-3')
-            assert target['alive'] and 0 < target['health'] <= 8 and target['burnRemaining'] > 0, target
+            assert target['alive'] and 0 < target['health'] <= remaining - staff['damage'] + .001 and target['burnRemaining'] > 0, target
             assert burning['level'] == 3
             page.wait_for_function('nebeljagdTestState().level===4')
             burnt = health_ui(page, 4, 175, 175, width)
@@ -257,7 +265,7 @@ try:
             raise
         finally:
             browser.close()
-    assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == MAP_HASH
+    assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == MAP_HASH, 'The project map changed during the browser test'
     REPORT['sourceMapUnchanged'] = MAP_HASH
     REPORT['status'] = 'passed'
 except BaseException as error:
