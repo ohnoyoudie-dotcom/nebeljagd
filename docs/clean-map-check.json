@@ -1,0 +1,58 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "name": "Fresh editor opens exact clean map: four biomes, two bridges, no region labels, place icons or start circles; current objects and barriers remain",
+      "evidence": {
+        "regions": 4,
+        "bridges": 2,
+        "objects": 1,
+        "barriers": 4
+      }
+    },
+    {
+      "name": "Labels start disabled and can still be toggled for editing; start-circle layer starts disabled",
+      "evidence": null
+    },
+    {
+      "name": "JSON round-trip preserves exact clean map and SVG export contains no labels, placeholders or spawn circles",
+      "evidence": null
+    },
+    {
+      "name": "Bundled map SVG matches the clean editor layout",
+      "evidence": "Exact SVG decoded as an image in a fixed-size page; four biomes, two bridges, no labels/place icons/spawn circles."
+    }
+  ],
+  "errors": [],
+  "unexpectedRequests": [],
+  "files": {
+    "map-editor.html": {
+      "sha256": "a23014d683fc8ee72fd7ed1b409f678acdb2541aeeaf4bf64f5d054649f44df2",
+      "bytes": 60488486
+    },
+    "worldmap.json": {
+      "sha256": "22423fe59d88b300db1644c89c5d51f33b797ee574ab296405e265e88ccaca48",
+      "bytes": 14961
+    },
+    "worldmap.svg": {
+      "sha256": "a14ff0a31fe5001f6525914ce5a9e2e1dca42517ad4d95ba0e36ce5e4dc7bf67",
+      "bytes": 31707
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/clean-map-editor.png",
+      "sha256": "e7980eb7bb1cc4d40880b97ad73e38ad4c961f06ded573313d04a238b27b9a82",
+      "source": "map-editor.html",
+      "sourceSha256": "a23014d683fc8ee72fd7ed1b409f678acdb2541aeeaf4bf64f5d054649f44df2"
+    },
+    {
+      "path": "docs/clean-map-layout.png",
+      "sha256": "f3efff451dbc2c011c72d527fb5beb1b295e1f4572399a196d23c71678421dc6",
+      "source": "worldmap.svg",
+      "sourceSha256": "a14ff0a31fe5001f6525914ce5a9e2e1dca42517ad4d95ba0e36ce5e4dc7bf67"
+    }
+  ],
+  "limits": "Focused Chromium editor check; unchanged runtime bridge geometry was not traversed again.",
+  "captureNote": "Chromium direct SVG full-page screenshot timed out; exact unchanged SVG rendered through a fixed-size image wrapper for the final layout capture."
+}

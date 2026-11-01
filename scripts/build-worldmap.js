@@ -8,7 +8,7 @@ const result = validateWorldmap(map);
 if (!result.valid) {
   throw new Error(`Invalid worldmap.json:\n${result.errors.join('\n')}`);
 }
-const svg = renderWorldmapSvg(map, { showSpawns: true, showZone: false, showLabels: true });
+const svg = renderWorldmapSvg(map, { showSpawns: false, showZone: false, showLabels: false });
 if (process.argv.includes('--check')) {
   const saved = await readFile(resolve('worldmap.svg'), 'utf8');
   if (saved !== svg) throw new Error('worldmap.svg differs from worldmap.json. Run npm run map:export to regenerate.');

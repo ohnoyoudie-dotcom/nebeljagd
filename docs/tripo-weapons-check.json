@@ -1,154 +1,871 @@
 {
   "status": "passed",
-  "url": "http://127.0.0.1:5191",
-  "checks": [
-    {
-      "name": "Editor preview, placement, transform, rarity and undo/redo",
-      "evidence": {
-        "kind": "sword",
-        "variant": "kit-tripo-sword"
-      }
-    },
-    {
-      "name": "Editor preview, placement, transform, rarity and undo/redo",
-      "evidence": {
-        "kind": "iceStaff",
-        "variant": "kit-tripo-ice-staff"
-      }
-    },
-    {
-      "name": "Editor preview, placement, transform, rarity and undo/redo",
-      "evidence": {
-        "kind": "fireStaff",
-        "variant": "kit-tripo-fire-staff"
-      }
-    },
-    {
-      "name": "Actual exported JSON reimports with all weapon variants and transforms intact",
-      "evidence": null
-    },
-    {
-      "name": "Editor Spielen transfers the actual custom-weapon document to the rendered game",
-      "evidence": null
-    },
-    {
-      "name": "Pickup preserves model; hand grip and attack animate together",
-      "evidence": {
-        "kind": "sword",
-        "variant": "kit-tripo-sword",
-        "gripError": 0.0,
-        "phases": [
-          "follow-through",
-          "idle",
-          "strike",
-          "windup"
-        ],
-        "tipMovement": 2.304894804968385,
-        "spellOrigin": null
-      }
-    },
-    {
-      "name": "Pickup preserves model; hand grip and attack animate together",
-      "evidence": {
-        "kind": "iceStaff",
-        "variant": "kit-tripo-ice-staff",
-        "gripError": 0.0,
-        "phases": [
-          "channel",
-          "idle",
-          "recover",
-          "release"
-        ],
-        "tipMovement": 0.9038543130357668,
-        "spellOrigin": {
-          "x": 34.835346394710484,
-          "y": 4.859560176957926,
-          "z": -39.86681302210668
+  "nodeTests": 311,
+  "assetVerification": "passed",
+  "mapCheck": "passed",
+  "productionBuild": "passed",
+  "editor": {
+    "checks": [
+      {
+        "name": "Objects offers the admitted Tripo props, two houses, three rocks, treasure chest and all three uploaded weapons",
+        "evidence": {
+          "kinds": [
+            {
+              "value": "house",
+              "label": "Haus"
+            },
+            {
+              "value": "rock",
+              "label": "Felsen"
+            },
+            {
+              "value": "wagon",
+              "label": "Holzwagen"
+            },
+            {
+              "value": "barrel",
+              "label": "Holzfass"
+            },
+            {
+              "value": "well",
+              "label": "Brunnen"
+            },
+            {
+              "value": "chest",
+              "label": "Schatztruhe"
+            },
+            {
+              "value": "sword",
+              "label": "Schwert"
+            },
+            {
+              "value": "fireStaff",
+              "label": "Feuerstab"
+            },
+            {
+              "value": "iceStaff",
+              "label": "Eisstab"
+            }
+          ],
+          "variants": {
+            "house": [
+              {
+                "value": "kit-tripo-tavern",
+                "label": "Wirtshaus · Tripo (neu)"
+              },
+              {
+                "value": "kit-tripo-house-02",
+                "label": "Wohnhaus 2 · Tripo"
+              }
+            ],
+            "rock": [
+              {
+                "value": "kit-tripo-01",
+                "label": "Flacher Felsen · Tripo"
+              },
+              {
+                "value": "kit-tripo-02",
+                "label": "Findling · Tripo"
+              },
+              {
+                "value": "kit-tripo-03",
+                "label": "Hohe Felsgruppe · Tripo"
+              }
+            ],
+            "wagon": [
+              {
+                "value": "kit-tripo-wagon",
+                "label": "Holzwagen · Tripo"
+              }
+            ],
+            "barrel": [
+              {
+                "value": "kit-tripo-barrel",
+                "label": "Holzfass · Tripo"
+              }
+            ],
+            "well": [
+              {
+                "value": "kit-tripo-well",
+                "label": "Steinbrunnen · Tripo"
+              }
+            ],
+            "chest": [
+              {
+                "value": "kit-tripo-chest",
+                "label": "Schatztruhe · Tripo"
+              }
+            ],
+            "sword": [
+              {
+                "value": "kit-tripo-sword",
+                "label": "Schwert · Tripo"
+              }
+            ],
+            "fireStaff": [
+              {
+                "value": "kit-tripo-lava-staff",
+                "label": "Feuerstab (Lavastab) · Tripo"
+              }
+            ],
+            "iceStaff": [
+              {
+                "value": "kit-tripo-crystal-staff",
+                "label": "Eisstab (Kristallstab) · Tripo"
+              }
+            ]
+          }
         }
-      }
-    },
-    {
-      "name": "Pickup preserves model; hand grip and attack animate together",
-      "evidence": {
-        "kind": "fireStaff",
-        "variant": "kit-tripo-fire-staff",
-        "gripError": 0.0,
-        "phases": [
-          "channel",
-          "idle",
-          "recover",
-          "release"
-        ],
-        "tipMovement": 0.9162152906535115,
-        "spellOrigin": {
-          "x": 39.56454797703539,
-          "y": 4.934253059429589,
-          "z": -39.85192366226741
+      },
+      {
+        "name": "Legacy castle, loot, grass, shrubs and old barriers import unchanged; no-op editing keeps the old wood chest variant",
+        "evidence": null
+      },
+      {
+        "name": "Explicit cleanup removes non-Tripo object placements and the retired castle/fence, preserves Tripo props and supported drawn routes, and has complete Undo/Redo",
+        "evidence": {
+          "retainedObjects": [
+            "qa-retained-rock",
+            "qa-retained-chest",
+            "qa-retained-sword",
+            "qa-retained-fireStaff",
+            "qa-retained-iceStaff"
+          ],
+          "retainedRoutes": [
+            "qa-existing-wall",
+            "qa-existing-fence"
+          ]
         }
+      },
+      {
+        "name": "Normal placement and duplication use the Tripo chest; both houses and all three Tripo rock variants can be placed",
+        "evidence": null
+      },
+      {
+        "name": "All three Tripo weapons have real previews, place with selected rarity, rotate/scale, support rarity editing/Undo and duplicate without losing the model",
+        "evidence": {
+          "weapons": [
+            {
+              "id": "object-sword-mvxstnz1-8",
+              "name": "Schwert",
+              "kind": "sword",
+              "variant": "kit-tripo-sword",
+              "position": [
+                -65,
+                -25
+              ],
+              "rotation": 0.6108652381980153,
+              "scale": 1.1,
+              "rarity": "rare"
+            },
+            {
+              "id": "object-fireStaff-mvxstod8-9",
+              "name": "Feuerstab",
+              "kind": "fireStaff",
+              "variant": "kit-tripo-lava-staff",
+              "position": [
+                -43,
+                -25
+              ],
+              "rotation": 0.8726646259971648,
+              "scale": 1.3,
+              "rarity": "legendary"
+            },
+            {
+              "id": "object-iceStaff-mvxstot0-a",
+              "name": "Eisstab",
+              "kind": "iceStaff",
+              "variant": "kit-tripo-crystal-staff",
+              "position": [
+                -21,
+                -25
+              ],
+              "rotation": 1.1344640137963142,
+              "scale": 1.5,
+              "rarity": "uncommon"
+            }
+          ],
+          "duplicate": {
+            "id": "object-iceStaff-mvxstp8q-b",
+            "name": "Eisstab · Kopie",
+            "kind": "iceStaff",
+            "variant": "kit-tripo-crystal-staff",
+            "position": [
+              -16,
+              -20
+            ],
+            "rotation": 1.1344640137963142,
+            "scale": 1.5,
+            "rarity": "uncommon"
+          }
+        }
+      },
+      {
+        "name": "Dedicated line tool still draws a 2 m Tripo wall with a passage and a 2 m wood fence, including the actual model preview",
+        "evidence": {
+          "styles": [
+            {
+              "value": "wall",
+              "label": "Steinmauer"
+            },
+            {
+              "value": "wall-cut-stone",
+              "label": "Steinmauer · Pfeiler & Abdeckung"
+            },
+            {
+              "value": "wall-tripo",
+              "label": "Steinmauer · Verwittert (Tripo)"
+            },
+            {
+              "value": "fence-cross-wood",
+              "label": "Holzzaun · Kreuzstreben"
+            }
+          ],
+          "wall": {
+            "id": "barrier-wall-mvxstqgz-1",
+            "name": "Steinmauer · Verwittert (Tripo)",
+            "kind": "wall",
+            "variant": "kit-tripo-wall",
+            "points": [
+              [
+                -70,
+                -65
+              ],
+              [
+                70,
+                -65
+              ]
+            ],
+            "scale": 1,
+            "height": 2,
+            "gaps": [
+              {
+                "at": 70,
+                "width": 3
+              }
+            ]
+          },
+          "fence": {
+            "id": "barrier-fence-mvxstri2-2",
+            "name": "Holzzaun · Kreuzstreben",
+            "kind": "fence",
+            "variant": "kit-cross-wood",
+            "points": [
+              [
+                -70,
+                -25
+              ],
+              [
+                70,
+                -25
+              ]
+            ],
+            "scale": 1,
+            "height": 2,
+            "gaps": []
+          }
+        }
+      },
+      {
+        "name": "High grass still paints through its dedicated brush and the entire stroke has one-step Undo/Redo",
+        "evidence": {
+          "patches": 6
+        }
+      },
+      {
+        "name": "JSON export/reimport preserves every existing object, newly placed Tripo object, painted grass and barrier height/passage",
+        "evidence": null
       }
+    ],
+    "errors": [],
+    "delivery": {
+      "file": "welt/map-editor.html",
+      "bytes": 60507867,
+      "sha256": "e05640ff6f32d0f876f42661910a96a1f9cd20598d5bfbb3e2515689638d5c61",
+      "unexpectedResourceRequests": []
     }
-  ],
-  "errors": [],
+  },
+  "game": {
+    "checks": [
+      {
+        "name": "Three new Tripo weapons can be added without changing the existing map or objects",
+        "evidence": [
+          {
+            "id": "object-sword-mvxsv2y9-1",
+            "name": "Schwert",
+            "kind": "sword",
+            "variant": "kit-tripo-sword",
+            "position": [
+              36,
+              -54
+            ],
+            "rotation": 0.5235987755982988,
+            "scale": 1.2,
+            "rarity": "rare"
+          },
+          {
+            "id": "object-fireStaff-mvxsv43u-2",
+            "name": "Feuerstab",
+            "kind": "fireStaff",
+            "variant": "kit-tripo-lava-staff",
+            "position": [
+              44,
+              -54
+            ],
+            "rotation": 1.0471975511965976,
+            "scale": 1.2,
+            "rarity": "uncommon"
+          },
+          {
+            "id": "object-iceStaff-mvxsv4yu-3",
+            "name": "Eisstab",
+            "kind": "iceStaff",
+            "variant": "kit-tripo-crystal-staff",
+            "position": [
+              52,
+              -54
+            ],
+            "rotation": 1.5707963267948966,
+            "scale": 1.2,
+            "rarity": "legendary"
+          }
+        ]
+      },
+      {
+        "name": "The real Spielen action transfers exact objects to the sibling game and loads all three GLB drops",
+        "evidence": {
+          "url": "http://127.0.0.1:5225/index.html?mapSource=editor",
+          "drops": [
+            {
+              "id": "object-sword-mvxsv2y9-1",
+              "type": "sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "rarity": "rare",
+              "x": 36,
+              "z": -54,
+              "collected": false,
+              "visible": true
+            },
+            {
+              "id": "object-fireStaff-mvxsv43u-2",
+              "type": "fireStaff",
+              "variant": "kit-tripo-lava-staff",
+              "model": "tripo",
+              "rarity": "uncommon",
+              "x": 44,
+              "z": -54,
+              "collected": false,
+              "visible": true
+            },
+            {
+              "id": "object-iceStaff-mvxsv4yu-3",
+              "type": "iceStaff",
+              "variant": "kit-tripo-crystal-staff",
+              "model": "tripo",
+              "rarity": "legendary",
+              "x": 52,
+              "z": -54,
+              "collected": false,
+              "visible": true
+            }
+          ],
+          "character": {
+            "name": "Nebeljäger Tripo",
+            "source": "assets/characters/nebeljagd_player_base_v1.glb",
+            "format": "GLB",
+            "skinned": true,
+            "joints": 66,
+            "clips": [
+              "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+              "standing_relax",
+              "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "defeat_03"
+            ],
+            "normalizedHeight": 1.82,
+            "sourceHeight": 0.98500635508701,
+            "normalizedScale": 1.8477038149050637,
+            "geometryPreparation": {
+              "version": "tripo-neutral-finger-v1",
+              "repairedVertices": 4,
+              "repairs": [
+                {
+                  "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                  "vertices": [
+                    5828,
+                    5829,
+                    5830,
+                    5831
+                  ],
+                  "replacedBone": "neutral_bone",
+                  "influences": [
+                    {
+                      "bone": "mixamorigRightHandIndex1",
+                      "weight": 0.5563358767413223
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle1",
+                      "weight": 0.4116030543172535
+                    },
+                    {
+                      "bone": "mixamorigRightHandIndex2",
+                      "weight": 0.02015267200548744
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle2",
+                      "weight": 0.011908396935936705
+                    }
+                  ]
+                }
+              ]
+            },
+            "handBones": {
+              "left": [
+                "mixamorigLeftArm",
+                "mixamorigLeftForeArm",
+                "mixamorigLeftHand"
+              ],
+              "right": [
+                "mixamorigRightArm",
+                "mixamorigRightForeArm",
+                "mixamorigRightHand"
+              ]
+            },
+            "materials": [
+              {
+                "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "baseColorTexture": true,
+                "normalTexture": true,
+                "roughnessTexture": true,
+                "metalnessTexture": true
+              }
+            ],
+            "meshes": 1,
+            "triangles": 20161,
+            "activeAnimation": "standing_relax",
+            "mappedAnimations": {
+              "idle": "standing_relax",
+              "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+            },
+            "animationPreparation": {
+              "rootAligned": true,
+              "runSourceWindow": [
+                1.7083333333333333,
+                2.4166666666666665
+              ],
+              "groundedSamples": 131,
+              "maxGroundCorrection": 0.18472989118046884,
+              "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+            },
+            "rollProgress": 0,
+            "rollClipTime": 0,
+            "rollDuration": 0.72,
+            "rollWeight": 0,
+            "presentationRotation": [
+              0,
+              0,
+              0
+            ],
+            "modelScale": [
+              1.8477038149050637,
+              1.8477038149050637,
+              1.8477038149050637
+            ],
+            "opacity": 1,
+            "locomotion": {
+              "speed": 0,
+              "walkWeight": 0,
+              "playbackSpeed": 0.42,
+              "yaw": 3.1274033960811374,
+              "turnRate": 0.7165074820048523,
+              "forwardLean": 0,
+              "sideLean": 0
+            },
+            "snowWeight": 0,
+            "snowSinkMeters": 0,
+            "snowClipStrength": 0,
+            "snowClipHeight": -10000
+          }
+        }
+      },
+      {
+        "name": "The first Tripo sword auto-equips with its real held model and chosen rarity",
+        "evidence": {
+          "item": {
+            "type": "sword",
+            "label": "Eisenschwert",
+            "damage": 43,
+            "cooldown": 0.58,
+            "range": 2.35,
+            "effect": null,
+            "rarity": "rare",
+            "rarityLabel": "Selten",
+            "color": "#5aa5ff",
+            "name": "Eisenschwert · Selten",
+            "burn": null,
+            "slow": null,
+            "id": "object-sword-mvxsv2y9-1",
+            "variant": "kit-tripo-sword",
+            "model": "tripo",
+            "rotation": 0.5235987755982988,
+            "scale": 1.2
+          },
+          "held": {
+            "type": "sword",
+            "variant": "kit-tripo-sword",
+            "model": "tripo",
+            "visible": true,
+            "meshCount": 1
+          }
+        }
+      },
+      {
+        "name": "Manual swap preserves the Tripo variant and held model: fireStaff",
+        "evidence": {
+          "item": {
+            "type": "fireStaff",
+            "label": "Feuerstab",
+            "damage": 20,
+            "cooldown": 0.8,
+            "range": 23,
+            "effect": "burn",
+            "rarity": "uncommon",
+            "rarityLabel": "Ungewöhnlich",
+            "color": "#66d780",
+            "name": "Feuerstab · Ungewöhnlich",
+            "burn": {
+              "duration": 3,
+              "damagePerSecond": 5
+            },
+            "slow": null,
+            "id": "object-fireStaff-mvxsv43u-2",
+            "variant": "kit-tripo-lava-staff",
+            "model": "tripo",
+            "rotation": 1.0471975511965976,
+            "scale": 1.2
+          },
+          "held": {
+            "type": "fireStaff",
+            "variant": "kit-tripo-lava-staff",
+            "model": "tripo",
+            "visible": true,
+            "meshCount": 1
+          }
+        }
+      },
+      {
+        "name": "Manual swap preserves the Tripo variant and held model: iceStaff",
+        "evidence": {
+          "item": {
+            "type": "iceStaff",
+            "label": "Eisstab",
+            "damage": 41,
+            "cooldown": 0.85,
+            "range": 23,
+            "effect": "slow",
+            "rarity": "legendary",
+            "rarityLabel": "Legendär",
+            "color": "#ffad44",
+            "name": "Eisstab · Legendär",
+            "burn": null,
+            "slow": {
+              "duration": 2.5,
+              "multiplier": 0.5
+            },
+            "id": "object-iceStaff-mvxsv4yu-3",
+            "variant": "kit-tripo-crystal-staff",
+            "model": "tripo",
+            "rotation": 1.5707963267948966,
+            "scale": 1.2
+          },
+          "held": {
+            "type": "iceStaff",
+            "variant": "kit-tripo-crystal-staff",
+            "model": "tripo",
+            "visible": true,
+            "meshCount": 1
+          }
+        }
+      },
+      {
+        "name": "Restart retains the GLB and normal attacks work: sword",
+        "evidence": {
+          "held": {
+            "type": "sword",
+            "variant": "kit-tripo-sword",
+            "model": "tripo",
+            "visible": true,
+            "meshCount": 1
+          },
+          "hit": {
+            "targetId": "practice-2",
+            "damage": 43,
+            "health": 97,
+            "killed": false,
+            "sourceId": "player",
+            "type": "sword"
+          },
+          "target": {
+            "id": "practice-2",
+            "name": "Übungsgegner 2",
+            "practice": true,
+            "position": {
+              "x": 35,
+              "y": 3.3928674136360475,
+              "z": -28.795889999999982
+            },
+            "health": 97,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 0,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 1.2041100000000178
+          }
+        }
+      },
+      {
+        "name": "Restart retains the GLB and normal attacks work: fireStaff",
+        "evidence": {
+          "held": {
+            "type": "fireStaff",
+            "variant": "kit-tripo-lava-staff",
+            "model": "tripo",
+            "visible": true,
+            "meshCount": 1
+          },
+          "hit": {
+            "targetId": "practice-3",
+            "damage": 20,
+            "health": 120,
+            "killed": false,
+            "sourceId": "player",
+            "type": "fireStaff"
+          },
+          "target": {
+            "id": "practice-3",
+            "name": "Übungsgegner 3",
+            "practice": true,
+            "position": {
+              "x": 43.10500000000001,
+              "y": 3.31634972291936,
+              "z": -38
+            },
+            "health": 119.00000000000006,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 2.8000000000000007,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 1.105000000000011
+          },
+          "continuedBurn": {
+            "id": "practice-3",
+            "name": "Übungsgegner 3",
+            "practice": true,
+            "position": {
+              "x": 43.02000000000001,
+              "y": 3.3157271346311377,
+              "z": -38
+            },
+            "health": 115.00000000000028,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 2.0000000000000036,
+            "slowRemaining": 0,
+            "speedMultiplier": 1,
+            "baseSpeed": 0.85,
+            "travelled": 1.700000000000017
+          }
+        }
+      },
+      {
+        "name": "Restart retains the GLB and normal attacks work: iceStaff",
+        "evidence": {
+          "held": {
+            "type": "iceStaff",
+            "variant": "kit-tripo-crystal-staff",
+            "model": "tripo",
+            "visible": true,
+            "meshCount": 1
+          },
+          "hit": {
+            "targetId": "practice-1",
+            "damage": 41,
+            "health": 99,
+            "killed": false,
+            "sourceId": "player",
+            "type": "iceStaff"
+          },
+          "target": {
+            "id": "practice-1",
+            "name": "Übungsgegner 1",
+            "practice": true,
+            "position": {
+              "x": 26.02000000000001,
+              "y": 3.2511270462875546,
+              "z": -33
+            },
+            "health": 99,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 0,
+            "slowRemaining": 2.3000000000000007,
+            "speedMultiplier": 0.5,
+            "baseSpeed": 0.85,
+            "travelled": 1.0200000000000102
+          },
+          "continuedSlow": {
+            "id": "practice-1",
+            "name": "Übungsgegner 1",
+            "practice": true,
+            "position": {
+              "x": 26.317500000000013,
+              "y": 3.25387367096831,
+              "z": -33
+            },
+            "health": 99,
+            "maxHealth": 140,
+            "alive": true,
+            "visible": true,
+            "burnRemaining": 0,
+            "slowRemaining": 1.6000000000000032,
+            "speedMultiplier": 0.5,
+            "baseSpeed": 0.85,
+            "travelled": 1.3175000000000132
+          }
+        }
+      }
+    ],
+    "errors": [],
+    "unexpectedRequests": [],
+    "documents": [
+      {
+        "url": "http://127.0.0.1:5225/map-editor.html",
+        "sha256": "e05640ff6f32d0f876f42661910a96a1f9cd20598d5bfbb3e2515689638d5c61",
+        "bytes": 60507867,
+        "matchesDeliveredFile": "welt/map-editor.html"
+      },
+      {
+        "url": "http://127.0.0.1:5225/index.html",
+        "sha256": "75d61cfdc2a859b9e55627708bd00294efa3e259f4386e6e2f8ffaff5aa4e2cf",
+        "bytes": 81277422,
+        "matchesDeliveredFile": "welt/index.html"
+      }
+    ]
+  },
+  "sourceMapSha256": "22423fe59d88b300db1644c89c5d51f33b797ee574ab296405e265e88ccaca48",
+  "visualReview": "Source/runtime comparisons and all three actual held-model screenshots inspected; silhouette, original colors and avatar grip/scale retained.",
   "screenshots": [
-    "test-results/tripo-weapons/editor-three-models.png",
-    "test-results/tripo-weapons/held-sword.png",
-    "test-results/tripo-weapons/held-iceStaff.png",
-    "test-results/tripo-weapons/held-fireStaff.png"
+    "docs/tripo-weapons-editor.png",
+    "docs/tripo-weapons-game.png"
   ],
-  "stage": "Equip and attack with kit-tripo-fire-staff",
-  "delivery": {
-    "directory": "welt",
-    "files": {
-      "map-editor.html": {
-        "bytes": 60502112,
-        "sha256": "50961946effaf397ed02a998adfa585a359ba8ce426ae576b1d6b9aebda61590"
+  "limits": "Actual standalone HTML in Chromium/SwiftShader over local HTTP; no physical-device performance or public-host HTTP claim.",
+  "previewHandoff": {
+    "status": "passed",
+    "base": "http://127.0.0.1:5226/preview",
+    "errors": [],
+    "unexpectedRequests": [],
+    "documents": [
+      {
+        "path": "map-editor.html",
+        "sha256": "e05640ff6f32d0f876f42661910a96a1f9cd20598d5bfbb3e2515689638d5c61",
+        "bytes": 60507867,
+        "matchesWelt": true
       },
-      "nebeljagd.html": {
-        "bytes": 83343602,
-        "sha256": "68850fcaa920548a03e4401f381abdee049ed97bfb8c055521205b8823b8bde8"
+      {
+        "path": "index.html",
+        "sha256": "75d61cfdc2a859b9e55627708bd00294efa3e259f4386e6e2f8ffaff5aa4e2cf",
+        "bytes": 81277422,
+        "matchesWelt": true
+      }
+    ],
+    "popupURL": "http://127.0.0.1:5226/preview/index.html?mapSource=editor",
+    "objectsTransferredExactly": true,
+    "drops": [
+      {
+        "id": "object-sword-mvxt10zv-1",
+        "type": "sword",
+        "variant": "kit-tripo-sword",
+        "model": "tripo",
+        "rarity": "common",
+        "x": 0,
+        "z": 0,
+        "collected": false,
+        "visible": true
       },
-      "index.html": {
-        "bytes": 83343602,
-        "sha256": "68850fcaa920548a03e4401f381abdee049ed97bfb8c055521205b8823b8bde8"
+      {
+        "id": "object-fireStaff-mvxt11fh-2",
+        "type": "fireStaff",
+        "variant": "kit-tripo-lava-staff",
+        "model": "tripo",
+        "rarity": "common",
+        "x": 0,
+        "z": 0,
+        "collected": false,
+        "visible": true
       },
-      "avatar-preview.html": {
-        "bytes": 14841476,
-        "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
-      },
-      "worldmap.json": {
-        "bytes": 19060,
-        "sha256": "83e3462239ba8607b23953aa71dbb710c0c5ec71d5f7f8296bac52ff12295bfc"
-      },
-      "worldmap.svg": {
-        "bytes": 43919,
-        "sha256": "b6bafc0086e0b4aa0e7fa8dd8d11c9daa87277db811484975fddb9e136b22546"
-      },
-      "worldmap.schema.json": {
-        "bytes": 40051,
-        "sha256": "88684a4b190235ecd27efaf0ccb16ebd6db102a5cd47a1b7b82e01145f43850d"
-      },
-      "nebeljagd-welt-und-editor.zip": {
-        "bytes": 93775054,
-        "sha256": "89d64055bb3759f1b7736ba87ffeaea6199ba3d29aff3dd83628b0455f730a79"
+      {
+        "id": "object-iceStaff-mvxt11qo-3",
+        "type": "iceStaff",
+        "variant": "kit-tripo-crystal-staff",
+        "model": "tripo",
+        "rarity": "common",
+        "x": 0,
+        "z": 0,
+        "collected": false,
+        "visible": true
+      }
+    ],
+    "sourceMapUnchanged": "22423fe59d88b300db1644c89c5d51f33b797ee574ab296405e265e88ccaca48"
+  },
+  "existingRuntimeRegressionChecks": {
+    "meadowVision": {
+      "passed": true,
+      "errors": [],
+      "fixture": {
+        "name": "CI · Meadow, snow and legacy vegetation",
+        "legacyGrassPatches": 800,
+        "sourceMap": "Nebelinsel · Vier Biome und zwei freie Brücken"
+      }
+    },
+    "avatar": {
+      "status": "passed",
+      "checks": [
+        "The actual game imports the new humanoid and idle clip with its normal camera",
+        "Real WASD movement blends into the new run and returns to idle",
+        "Space plays the tucked GLB roll once without a second runtime spin; pause freezes it",
+        "The replacement rig still holds and fires the existing bow",
+        "A sudden right turn followed by roll locks the body to the actual roll direction"
+      ],
+      "errors": [],
+      "fixture": {
+        "name": "CI · Avatar with bow pickup",
+        "sourceMap": "Nebelinsel · Vier Biome und zwei freie Brücken",
+        "bowPosition": [
+          34,
+          -39
+        ]
       }
     }
   },
-  "unitTests": {
-    "command": "node --test --test-isolation=none tests/*.test.js",
-    "passed": 314,
-    "failed": 0,
-    "skipped": 0
-  },
-  "assetVerification": {
-    "command": "npm run verify:assets",
-    "status": "passed",
-    "newPackage": "tripo-weapons",
-    "originalsPreserved": 3,
-    "verifiedFiles": 15
-  },
-  "build": {
-    "command": "npm run build",
-    "status": "passed"
-  },
-  "limits": "Chromium with software WebGL over local HTTP; finger pose uses the existing character animation. No physical-device performance or GitHub publication claim."
+  "publication": {
+    "runId": "41306820635",
+    "url": "https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41306820635",
+    "publishCommit": "2dc0dfbda768eee80a81dca1c189b63287e721f8",
+    "commitConfirmed": true,
+    "state": {
+      "status": "WORKFLOW_RUN_STATUS_COMPLETED",
+      "conclusion": "WORKFLOW_RUN_CONCLUSION_SUCCESS"
+    },
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb",
+    "verificationBoundary": "Pages success and exact commit verified through allowed github.com Actions metadata; byte-identical editor/game tested locally under /preview. Direct Pages HTTPS is blocked by the managed network policy."
+  }
 }

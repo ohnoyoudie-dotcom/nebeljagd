@@ -1,17 +1,17 @@
 {
   "status": "passed",
-  "buildId": "e7ebb0b04b9f",
-  "builtAt": "2026-11-01T12:12:50.930Z",
+  "buildId": "f5650b7d9558",
+  "builtAt": "2026-11-01T12:51:21.418Z",
+  "integratedWorkCommit": "519b336037b50be1fe745666bd0c219e3b289e87",
   "unitTests": {
-    "passed": 326,
+    "passed": 334,
     "failed": 0,
-    "command": "node --test --test-isolation=none tests/*.test.js",
-    "followup": "Final server guard: 4 HTTP tests; final cache lifecycle: 8 lobby tests, all passed."
+    "command": "node --test --test-isolation=none tests/*.test.js"
   },
   "assetVerification": "passed",
   "delivery": {
     "synchronizedFiles": 10,
-    "checks": "welt bytes and SHA-256 match dist and release metadata; ZIP contents match generated browser files"
+    "checks": "welt bytes/SHA-256 match dist and release metadata; ZIP content matches; authored map byte-identical to latest work input"
   },
   "browser": {
     "checks": [
@@ -30,7 +30,7 @@
       {
         "name": "Teacher link opens the current uncached built editor with sword and two staff models",
         "evidence": {
-          "buildId": "e7ebb0b04b9f"
+          "buildId": "f5650b7d9558"
         }
       },
       {
@@ -63,7 +63,7 @@
       {
         "name": "Restored page keeps checking access; closing the room revokes the pupil and the old code",
         "evidence": {
-          "revokedAfterSeconds": 22.06
+          "revokedAfterSeconds": 19.27
         }
       },
       {
@@ -80,7 +80,7 @@
       "test-results/classroom/latest-editor-uploaded-weapon.png",
       "test-results/classroom/practice-meadow-equipped-staff.png"
     ],
-    "renderer": "Chromium with SwiftShader software WebGL"
+    "renderer": "Chromium SwiftShader"
   },
-  "deployment": "Local generated files verified; not pushed or publicly deployed. No production teacher password configured."
+  "deployment": "Hosting service is not provisioned. No production teacher password configured."
 }

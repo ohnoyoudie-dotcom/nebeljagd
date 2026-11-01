@@ -10,8 +10,7 @@ Terminalbefehle werden auf ihren Geräten dafür nicht benötigt.
 1. [Render öffnen](https://dashboard.render.com/) und ein Konto anlegen,
    beispielsweise mit deinem GitHub-Konto. Render Zugriff auf das Repository
    `ohnoyoudie-dotcom/nebeljagd` geben.
-2. Sobald die vorbereiteten Dateien vollständig auf `work` übernommen sind,
-   **New → Blueprint** wählen, dieses Repository und den Branch **work**
+2. **New → Blueprint** wählen, dieses Repository und den Branch **work**
    auswählen. Render liest die Datei `render.yaml`.
 3. Bei **NEBELJAGD_INITIAL_TEACHER_PASSWORD** dein gewünschtes Lehrkraft-Passwort
    mit mindestens 12 Zeichen eingeben. Dieses Passwort gehört ausschließlich
@@ -32,7 +31,7 @@ Veröffentlichung; die tatsächliche Render-Anmeldung muss danach geprüft werde
 ## Was die Vorlage erledigt
 
 - Eine einzelne Node-Instanz in Frankfurt startet den Anmeldeserver.
-- Render baut Spiel, Startseite und Editor aus demselben Quellstand. Der
+- Render prüft die Tests und Assets und baut Spiel, Startseite und Editor aus demselben Quellstand. Der
   Lehrerbereich führt immer zum Editor dieses bereitgestellten Stands.
 - Passwort-Hash und Zugangscodes liegen unter `/var/data/nebeljagd` auf dem
   dauerhaften Speicher. Dieser Ordner wird nicht bei jedem Build ersetzt.
@@ -57,12 +56,12 @@ mehreren Schulgeräten und der tatsächlichen Internetverbindung prüfen.
 
 ## Stand und Vorbereitung der Veröffentlichung
 
-Diese Dateien liegen zunächst in der Cloud-Arbeitskopie. Der entfernte Branch
-`work` enthält inzwischen zusätzliche Karten- und Waffenänderungen. Vor dem
-Hosting müssen die neue Anmeldung, Lobby und Hosting-Dateien mit diesem Stand
-zusammengeführt, geprüft und auf `work` veröffentlicht werden. Dabei die neueren
-Kartenänderungen erhalten und `main` nicht ersetzen. Die bloße Auswahl des
-derzeitigen entfernten `work`-Standes veröffentlicht noch nicht dieses Portal.
+Dieser Quellstand verbindet die neue Anmeldung, Lobby und Hosting-Dateien mit
+den Karten- und Waffenänderungen aus `work` bis Commit `519b336`. Die bereinigte
+Karte und die dort bereits geprüften Waffenmodelle sind erhalten. Als
+Bereitstellungsquelle ist `work` vorgesehen; die vorhandene GitHub-Pages-Ausgabe
+auf `main` wird dadurch nicht ersetzt. Der eigentliche Hosting-Dienst und seine
+Internetadresse müssen weiterhin bei Render angelegt werden.
 
 Für die technische Übergabe: Ein frischer Klon von `work` muss `npm ci`,
 `npm test`, `npm run verify:assets` und `npm run build` erfolgreich ausführen.
@@ -80,3 +79,5 @@ bereits eingerichtete Freigabe durch CI.
 Die technischen Vorlagefelder wurden mit öffentlichen Render-Beispielen
 abgeglichen: [Node-Dienst](https://github.com/render-examples/express-hello-world/blob/main/render.yaml)
 und [dauerhafter Speicher](https://github.com/render-examples/strapi-sqlite/blob/main/render.yaml).
+
+Prüfbericht der Vorbereitung: [hosting-check.json](hosting-check.json).

@@ -1,5 +1,10 @@
 # Vier Biome und Brücken über freie Lücken
 
+Dieser Bericht dokumentiert den Stand vor der anschließenden Bereinigung der
+Kartensymbole, Regionsbeschriftungen und Spawn-Zonen. Die aktuelle Ausgangskarte
+steht unter [Bereinigte Karte im Editor](clean-map.md); Geometrie und Brücken
+dieses Berichts bleiben unverändert.
+
 Die Karte enthält genau vier Regionen und vier Laufzeit-Biome:
 
 | Region | Biom | Lage | Ungefährer Landanteil |

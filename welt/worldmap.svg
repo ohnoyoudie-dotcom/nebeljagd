@@ -95,35 +95,8 @@
     </g>
   </g>
   <g id="spawn-areas" data-layer="spawn-areas" inkscape:groupmode="layer" inkscape:label="Startbereiche">
-    <g id="feature-spawn-frost-west" data-feature-type="spawn" data-feature-id="frost-west"><title>Frost · West · 5 Startplätze</title><circle cx="-375" cy="-375" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-375" y="-370" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-frost-ost" data-feature-type="spawn" data-feature-id="frost-ost"><title>Frost · Ost · 5 Startplätze</title><circle cx="-90" cy="-625" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-90" y="-620" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-heide-nord" data-feature-type="spawn" data-feature-id="heide-nord"><title>Wald · Nord · 5 Startplätze</title><circle cx="240" cy="-475" r="40" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="240" y="-470" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-heide-ost" data-feature-type="spawn" data-feature-id="heide-ost"><title>Sand · Ost · 5 Startplätze</title><circle cx="410" cy="-275" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="410" y="-270" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-wald-west" data-feature-type="spawn" data-feature-id="wald-west"><title>Wald · West · 5 Startplätze</title><circle cx="-410" cy="90" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-410" y="95" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-auen-mitte" data-feature-type="spawn" data-feature-id="auen-mitte"><title>Wald · Mitte · 5 Startplätze</title><circle cx="0" cy="95" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="0" y="100" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-moor-west" data-feature-type="spawn" data-feature-id="moor-west"><title>Moor · West · 5 Startplätze</title><circle cx="-400" cy="390" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-400" y="395" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-moor-ost" data-feature-type="spawn" data-feature-id="moor-ost"><title>Moor · Ost · 5 Startplätze</title><circle cx="-245" cy="380" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-245" y="385" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-asche-ost" data-feature-type="spawn" data-feature-id="asche-ost"><title>Sand · Südost · 5 Startplätze</title><circle cx="390" cy="255" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="390" y="260" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-duene-sued" data-feature-type="spawn" data-feature-id="duene-sued"><title>Sand · Süd · 5 Startplätze</title><circle cx="205" cy="585" r="40" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="205" y="590" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
   </g>
   <g id="places" data-layer="places" inkscape:groupmode="layer" inkscape:label="Wichtige Orte">
-    <g id="feature-place-eiswacht" data-feature-type="place" data-feature-id="eiswacht" transform="translate(-290 -480)"><title>Eiswacht</title><path d="M-13,-12 -5,-12 -5,-7 5,-7 5,-12 13,-12 13,12 -13,12Z M-4,12 -4,3 4,3 4,12" fill="#f3e4bd" stroke="#534e40" stroke-width="2.5" stroke-linejoin="round"/></g>
-    <g id="feature-place-frostschrein" data-feature-type="place" data-feature-id="frostschrein" transform="translate(-250 -390)"><title>Frostschrein</title><path d="M0,-15 11,0 0,15 -11,0Z" fill="#e8e0b5" stroke="#53675c" stroke-width="2.5"/><path d="M0,-6 4,0 0,6 -4,0Z" fill="#7c69a6"/></g>
-    <g id="feature-place-mondhain" data-feature-type="place" data-feature-id="mondhain" transform="translate(230 -430)"><title>Mondhain</title><path d="M-12,0 -5,-7 2,0 2,11 -12,11Z M2,-5 9,-12 16,-5 16,6 2,6Z M-5,-12 0,-17 5,-12 5,-4 -5,-4Z" fill="#f3e4bd" stroke="#324c42" stroke-width="2"/></g>
-    <g id="feature-place-goldruinen" data-feature-type="place" data-feature-id="goldruinen" transform="translate(335 -190)"><title>Goldruinen</title><path d="M-13,-12 -5,-12 -5,-7 5,-7 5,-12 13,-12 13,12 -13,12Z M-4,12 -4,3 4,3 4,12" fill="#f3e4bd" stroke="#534e40" stroke-width="2.5" stroke-linejoin="round"/></g>
-    <g id="feature-place-heideschrein" data-feature-type="place" data-feature-id="heideschrein" transform="translate(335 -120)"><title>Heideschrein</title><path d="M0,-15 11,0 0,15 -11,0Z" fill="#e8e0b5" stroke="#53675c" stroke-width="2.5"/><path d="M0,-6 4,0 0,6 -4,0Z" fill="#7c69a6"/></g>
-    <g id="feature-place-mooswinkel" data-feature-type="place" data-feature-id="mooswinkel" transform="translate(-340 -50)"><title>Mooswinkel</title><path d="M-12,0 -5,-7 2,0 2,11 -12,11Z M2,-5 9,-12 16,-5 16,6 2,6Z M-5,-12 0,-17 5,-12 5,-4 -5,-4Z" fill="#f3e4bd" stroke="#324c42" stroke-width="2"/></g>
-    <g id="feature-place-auenwacht" data-feature-type="place" data-feature-id="auenwacht" transform="translate(30 -60)"><title>Auenwacht</title><path d="M-12,0 -5,-7 2,0 2,11 -12,11Z M2,-5 9,-12 16,-5 16,6 2,6Z M-5,-12 0,-17 5,-12 5,-4 -5,-4Z" fill="#f3e4bd" stroke="#324c42" stroke-width="2"/></g>
-    <g id="feature-place-wildheide" data-feature-type="place" data-feature-id="wildheide" transform="translate(-80 160)"><title>Wildheide</title><path d="M-12,0 -5,-7 2,0 2,11 -12,11Z M2,-5 9,-12 16,-5 16,6 2,6Z M-5,-12 0,-17 5,-12 5,-4 -5,-4Z" fill="#f3e4bd" stroke="#324c42" stroke-width="2"/></g>
-    <g id="feature-place-osthafen" data-feature-type="place" data-feature-id="osthafen" transform="translate(440 -110)"><title>Osthafen</title><circle r="14" fill="#f3e4bd" stroke="#325861" stroke-width="2"/><path d="M0,-7V9 M-9,2Q-9,11 0,11Q9,11 9,2 M-5,-2H5" fill="none" stroke="#325861" stroke-width="2"/><circle cy="-9" r="3" fill="none" stroke="#325861" stroke-width="2"/></g>
-    <g id="feature-place-versunkener-hof" data-feature-type="place" data-feature-id="versunkener-hof" transform="translate(-390 235)"><title>Versunkener Hof</title><path d="M-13,-12 -5,-12 -5,-7 5,-7 5,-12 13,-12 13,12 -13,12Z M-4,12 -4,3 4,3 4,12" fill="#f3e4bd" stroke="#534e40" stroke-width="2.5" stroke-linejoin="round"/></g>
-    <g id="feature-place-moorlicht" data-feature-type="place" data-feature-id="moorlicht" transform="translate(-320 350)"><title>Moorlicht</title><path d="M-12,0 -5,-7 2,0 2,11 -12,11Z M2,-5 9,-12 16,-5 16,6 2,6Z M-5,-12 0,-17 5,-12 5,-4 -5,-4Z" fill="#f3e4bd" stroke="#324c42" stroke-width="2"/></g>
-    <g id="feature-place-moorschrein" data-feature-type="place" data-feature-id="moorschrein" transform="translate(-180 370)"><title>Moorschrein</title><path d="M0,-15 11,0 0,15 -11,0Z" fill="#e8e0b5" stroke="#53675c" stroke-width="2.5"/><path d="M0,-6 4,0 0,6 -4,0Z" fill="#7c69a6"/></g>
-    <g id="feature-place-aschenfeste" data-feature-type="place" data-feature-id="aschenfeste" transform="translate(470 175)"><title>Aschenfeste</title><path d="M-13,-12 -5,-12 -5,-7 5,-7 5,-12 13,-12 13,12 -13,12Z M-4,12 -4,3 4,3 4,12" fill="#f3e4bd" stroke="#534e40" stroke-width="2.5" stroke-linejoin="round"/></g>
-    <g id="feature-place-glutschrein" data-feature-type="place" data-feature-id="glutschrein" transform="translate(445 255)"><title>Glutschrein</title><path d="M0,-15 11,0 0,15 -11,0Z" fill="#e8e0b5" stroke="#53675c" stroke-width="2.5"/><path d="M0,-6 4,0 0,6 -4,0Z" fill="#7c69a6"/></g>
-    <g id="feature-place-sonnentempel" data-feature-type="place" data-feature-id="sonnentempel" transform="translate(170 500)"><title>Sonnentempel</title><path d="M-13,-12 -5,-12 -5,-7 5,-7 5,-12 13,-12 13,12 -13,12Z M-4,12 -4,3 4,3 4,12" fill="#f3e4bd" stroke="#534e40" stroke-width="2.5" stroke-linejoin="round"/></g>
-    <g id="feature-place-suedhafen" data-feature-type="place" data-feature-id="suedhafen" transform="translate(395 460)"><title>Südhafen</title><circle r="14" fill="#f3e4bd" stroke="#325861" stroke-width="2"/><path d="M0,-7V9 M-9,2Q-9,11 0,11Q9,11 9,2 M-5,-2H5" fill="none" stroke="#325861" stroke-width="2"/><circle cy="-9" r="3" fill="none" stroke="#325861" stroke-width="2"/></g>
-    <g id="feature-place-wanderstein" data-feature-type="place" data-feature-id="wanderstein" transform="translate(40 530)"><title>Wanderstein</title><path d="M-8,11 -4,-9 2,-15 9,11Z" fill="#f3e4bd" stroke="#575746" stroke-width="2"/><path d="M1,-8 3,5" stroke="#9b9175" stroke-width="2"/></g>
   </g>
   <g id="wind-zones" data-layer="wind-zones" inkscape:groupmode="layer" inkscape:label="Lokale Windzonen">
   </g>
@@ -140,27 +113,6 @@
   <g id="zone" data-layer="zone" inkscape:groupmode="layer" inkscape:label="Nebelzone" pointer-events="none">
   </g>
   <g id="labels" data-layer="labels" inkscape:groupmode="layer" inkscape:label="Beschriftungen" pointer-events="none" font-family="Georgia, serif" text-anchor="middle">
-    <text x="-320" y="-540" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Frostkamm</text>
-    <text x="-100" y="-180" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Grünwald</text>
-    <text x="-235" y="330" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Nebelmoor</text>
-    <text x="65" y="590" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Sandlande</text>
-    <text x="-290" y="-450" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Eiswacht</text>
-    <text x="-250" y="-360" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Frostschrein</text>
-    <text x="230" y="-400" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Mondhain</text>
-    <text x="335" y="-160" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Goldruinen</text>
-    <text x="335" y="-90" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Heideschrein</text>
-    <text x="-340" y="-20" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Mooswinkel</text>
-    <text x="30" y="-30" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Auenwacht</text>
-    <text x="-80" y="190" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Wildheide</text>
-    <text x="440" y="-80" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Osthafen</text>
-    <text x="-390" y="265" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Versunkener Hof</text>
-    <text x="-320" y="380" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Moorlicht</text>
-    <text x="-180" y="400" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Moorschrein</text>
-    <text x="470" y="205" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Aschenfeste</text>
-    <text x="445" y="285" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Glutschrein</text>
-    <text x="170" y="530" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Sonnentempel</text>
-    <text x="395" y="490" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Südhafen</text>
-    <text x="40" y="560" font-size="14" fill="#1d3935" stroke="#e5e2bb" stroke-width="3.5" paint-order="stroke">Wanderstein</text>
   </g>
   <g id="frame" data-layer="frame" inkscape:groupmode="layer" inkscape:label="Rahmen und Maßstab" pointer-events="none" font-family="system-ui, sans-serif" fill="#dfd8ba">
     <rect x="-586" y="-706" width="1172" height="1412" rx="8" fill="none" stroke="#c9c09b" stroke-opacity=".4" stroke-width="1.5"/>
@@ -168,6 +120,6 @@
     <text x="-564" y="-648" font-size="12" letter-spacing="1.5">SCHEMATISCH · EDITIERBAR</text>
     <g transform="translate(540 -645)"><path d="M0,-30 11,9 0,1 -11,9Z" fill="#d9dbbd"/><path d="M0,-30V20" stroke="#6f9ba0" stroke-width="2"/><text y="-41" text-anchor="middle" font-size="15">N</text></g>
     <g transform="translate(-560 656)"><path d="M0,-6V0H200V-6 M100,0V-6" stroke="#dfd8ba" stroke-width="2" fill="none"/><text y="18" font-size="12">0</text><text x="100" y="18" font-size="12" text-anchor="middle">100</text><text x="200" y="18" font-size="12" text-anchor="end">200 m</text></g>
-    <text x="565" y="660" font-size="13" text-anchor="end">1,02 km² Land · Planungsmaßstab</text><text x="565" y="681" font-size="12" text-anchor="end">50 Spieler · 10 Startbereiche · 20 min Nebelplan</text>
+    <text x="565" y="660" font-size="13" text-anchor="end">1,02 km² Land · Planungsmaßstab</text><text x="565" y="681" font-size="12" text-anchor="end">50 Spieler · 0 Startbereiche · 20 min Nebelplan</text>
   </g>
 </svg>

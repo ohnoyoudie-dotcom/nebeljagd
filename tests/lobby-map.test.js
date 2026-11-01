@@ -22,7 +22,7 @@ test('practice meadow offers all imported weapons and ample approved props witho
   assert.ok(map.objects.length >= 35);
   const positions = new Set(map.objects.map(object => object.position.join(',')));
   assert.equal(positions.size, map.objects.length);
-  for (const [kind, variant] of [['sword', 'kit-tripo-sword'], ['iceStaff', 'kit-tripo-ice-staff'], ['fireStaff', 'kit-tripo-fire-staff']]) {
+  for (const [kind, variant] of [['sword', 'kit-tripo-sword'], ['iceStaff', 'kit-tripo-crystal-staff'], ['fireStaff', 'kit-tripo-lava-staff']]) {
     assert.ok(map.objects.some(object => object.kind === kind && object.variant === variant
       && Math.hypot(object.position[0] - spawn[0], object.position[1] - spawn[1]) <= 6));
   }

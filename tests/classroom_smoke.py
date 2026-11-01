@@ -25,8 +25,8 @@ from playwright.sync_api import expect, sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'test-results/classroom'
 REPORT = {'status': 'running', 'checks': [], 'errors': [], 'screenshots': []}
-WEAPONS = [('sword', 'kit-tripo-sword'), ('iceStaff', 'kit-tripo-ice-staff'),
-           ('fireStaff', 'kit-tripo-fire-staff')]
+WEAPONS = [('sword', 'kit-tripo-sword'), ('iceStaff', 'kit-tripo-crystal-staff'),
+           ('fireStaff', 'kit-tripo-lava-staff')]
 
 
 def stage(name):
@@ -200,10 +200,10 @@ def run(url, password):
         finally:
             pupil.keyboard.up('w')
         pupil.keyboard.press('e')
-        pupil.wait_for_function('nebeljagdTestState().equippedItem?.variant === "kit-tripo-ice-staff"', timeout=15000)
+        pupil.wait_for_function('nebeljagdTestState().equippedItem?.variant === "kit-tripo-crystal-staff"', timeout=15000)
         wait_sim(pupil, .15)
-        held = pupil.evaluate('nebeljagdTestState().combat.heldWeapon')
-        assert held['imported'] and held['variant'] == 'kit-tripo-ice-staff'
+        held = pupil.evaluate('nebeljagdTestState().combat.heldModel')
+        assert held['model'] == 'tripo' and held['visible'] and held['variant'] == 'kit-tripo-crystal-staff'
         shots = pupil.evaluate('nebeljagdTestState().combat.shotsFired')
         pupil.keyboard.press('f')
         try:

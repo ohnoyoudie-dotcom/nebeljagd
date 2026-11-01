@@ -42,7 +42,7 @@ test('individual placement offers exactly the admitted Tripo models and valid de
   const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02',
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
-    'sword:kit-tripo-sword', 'fireStaff:kit-tripo-fire-staff', 'iceStaff:kit-tripo-ice-staff'];
+    'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff'];
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'sword', 'fireStaff', 'iceStaff']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {

@@ -133,7 +133,7 @@ SVG-`x/y` entspricht JSON-`x/z`. IDs bleiben bei Umbenennungen erhalten.
 | `rivers` | Wasserlinienzüge mit Breite |
 | `places` | Benannte Ortsmarkierungen: Dorf, Ruine, Schrein, Landmarke oder Hafen |
 | `objects` | Tatsächlich platzierte Modelle, Pflanzenflächen und Gegenstände |
-| `spawnAreas` | Geplante Startbereiche mit Mittelpunkt, Radius und Kapazität |
+| `spawnAreas` | Geplante Startbereiche mit Mittelpunkt, Radius und Kapazität; darf leer sein |
 | `zone` | Zentrum, Anfangsradius, Phasen und Nebelschaden |
 | `gameplay` | Zielspielerzahl, Laufgeschwindigkeit und `spawnPosition` |
 
@@ -198,10 +198,13 @@ Platzierungen bleiben erhalten.
 ## Größe, Nebel und Prüfungen
 
 Die Zeichenfläche umfasst 1.200 × 1.440 Meter; die Küste misst etwa
-1.070 × 1.340 Meter und umschließt rund 1,125 km² Land. Bei 5,6 m/s dauert die
-längste gerade Querung etwa vier Minuten. Zehn Startbereiche mit jeweils fünf
-Plätzen sind für den späteren Multiplayer vorgesehen. Der aktuelle Spielstart
-liegt bei `[30, -42]` nahe Auenwacht.
+1.120 × 1.385 Meter und umschließt rund 1,016 km² Land. Bei 5,6 m/s dauert die
+längste gerade Querung etwa vier Minuten. Die aktuelle Ausgangskarte enthält
+keine provisorischen Ortsmarker oder Spawn-Zonen: `places` und `spawnAreas`
+sind leer. Der normale Spielstart bleibt bei `[30, -42]` nahe dem Wirtshaus.
+Wer später Startbereiche anlegt, muss damit weiterhin genügend Plätze für
+`gameplay.targetPlayers` vorsehen. Eine leere Liste bedeutet, dass diese
+Multiplayer-Planung noch offen ist.
 
 Editorvorschau und Spiel verwenden denselben 20-Minuten-Nebelplan: zuerst drei
 Minuten ohne Schrumpfen, dann fünf Phasen von 800 auf 20 Meter Radius.

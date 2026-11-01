@@ -3,10 +3,7 @@ import * as THREE from 'three';
 import { OBJECT_CATALOG, makeWorldObject } from '../../src/map/objects.js';
 import { createWorldObjectRenderer } from '../../src/world-object-renderer.js';
 import { createWeapons } from '../../src/weapons.js';
-import { loadWeaponModels } from '../../src/weapon-models.js';
-import swordUrl from '../imported/tripo-weapons/runtime/sword.glb?url&inline';
-import fireStaffUrl from '../imported/tripo-weapons/runtime/fire-staff.glb?url&inline';
-import iceStaffUrl from '../imported/tripo-weapons/runtime/ice-staff.glb?url&inline';
+import { loadTripoWeapons } from '../../src/tripo-weapons.js';
 import { createChests } from '../../src/chests.js';
 import { loadTripoChest } from '../../src/tripo-chest.js';
 import { createPickups } from '../../src/pickups.js';
@@ -17,33 +14,13 @@ const definitions=OBJECT_CATALOG.flatMap(item=>item.variants.map(variant=>({kind
 const objects=definitions.map((item,index)=>makeWorldObject(item.kind,[index*80,0],{id:`preview-${item.kind}-${item.variant}`,variant:item.variant,name:item.label,rarity:'common'}));
 const root=new THREE.Group();scene.add(root);const scenery=await createWorldObjectRenderer(root,{map:{objects},heightAt:()=>0,groundHeightAt:()=>0,quality:'high'});
 const actor=new THREE.Group();root.add(actor);const world={heightAt:()=>0,bounds:5000,traceProjectile:()=>null};
-const weaponModels=await loadWeaponModels(objects,{
- 'kit-tripo-sword':swordUrl,'kit-tripo-fire-staff':fireStaffUrl,'kit-tripo-ice-staff':iceStaffUrl,
-});
-const weapons=createWeapons(root,actor,world,null,{placements:objects,heightAt:()=>0,weaponModels});
+const weapons=createWeapons(root,actor,world,null,{placements:objects,heightAt:()=>0,tripoPrototypes:await loadTripoWeapons(objects)});
 const chests=createChests(root,{placements:objects,heightAt:()=>0,tripoPrototype:await loadTripoChest(objects)});const pickups=createPickups(root,{placements:objects,heightAt:()=>0});
 const plane=new THREE.Mesh(new THREE.CircleGeometry(1,64),new THREE.MeshStandardMaterial({color:'#aebba3',roughness:1}));plane.rotation.x=-Math.PI/2;plane.position.y=-.025;root.add(plane);
 const camera=new THREE.OrthographicCamera(-8,8,6,-6,.01,500);const focus=new THREE.Vector3();let time=5;
 window.previewVariants=definitions;
 window.captureVariant=(kind,variant)=>{
  const index=definitions.findIndex(item=>item.kind===kind&&item.variant===variant);if(index<0)throw Error('Unknown variant');
- // Show the imported weapon itself upright, without the ground-loot halo.
- // Including that wide halo in the bounds makes a thin blade unreadably small.
- if(weaponModels.has(kind,variant)){
-  const model=weaponModels.create(kind,variant);scene.add(model);root.visible=false;
-  try{
-   model.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(model);
-   const size=bounds.getSize(new THREE.Vector3()),span=Math.max(size.y*1.15,size.x*1.1,size.z*1.1);
-   bounds.getCenter(focus);window.lastPreviewBounds={min:bounds.min.toArray(),max:bounds.max.toArray(),span};
-   camera.left=-span*2/3;camera.right=span*2/3;camera.top=span/2;camera.bottom=-span/2;camera.updateProjectionMatrix();
-   camera.position.copy(focus).add(new THREE.Vector3(span*.35,span*.12,span*1.5));camera.lookAt(focus);
-   renderer.render(scene,camera);return renderer.domElement.toDataURL('image/webp',.88);
-  }finally{
-   root.visible=true;scene.remove(model);const geometries=new Set(),materials=new Set();
-   model.traverse(part=>{if(part.geometry)geometries.add(part.geometry);for(const material of(Array.isArray(part.material)?part.material:[part.material]))if(material)materials.add(material);});
-   for(const geometry of geometries)geometry.dispose();for(const material of materials)material.dispose();
-  }
- }
  const x=index*80;const spans={tree:10,house:23,flower:4.6,grass:9,rock:4.3,bush:3.3,ruin:16,mound:17,wall:4.7,fence:4.7,crate:2.1,wagon:4.3,barrel:2.1,well:3.8,shrine:4.8,heart:2.7,chest:3,bow:2.5,sword:2.5,fireStaff:3,iceStaff:3};
  const kitFraming={'kit-pine-high':[6.7,1.8],'kit-pine-young':[5,1.25],'kit-oak-green':[7.2,1.8],'kit-oak-autumn':[7.2,1.8],'kit-timber':[7,.9],'kit-tall':[8,.8],'kit-cluster':[3.5,.35],'kit-single':[3.2,.35],'kit-arch':[5.5,.8],'kit-stone':[4.7,.5],'kit-wood':[kind==='crate'?2.1:4.7,kind==='crate'?.3:.55]};
  const framing=kitFraming[variant];let span=framing?.[0]??spans[kind];

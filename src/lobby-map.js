@@ -11,14 +11,14 @@ export function createLobbyMap() {
 
   // The three imported models are within a few steps of the starting point.
   add('sword', 'kit-tripo-sword', [-4, -17]);
-  add('iceStaff', 'kit-tripo-ice-staff', [0, -18]);
-  add('fireStaff', 'kit-tripo-fire-staff', [4, -17]);
+  add('iceStaff', 'kit-tripo-crystal-staff', [0, -18]);
+  add('fireStaff', 'kit-tripo-lava-staff', [4, -17]);
   add('bow', 'wood', [8, -17]);
   for (const [index, rarity] of ['uncommon', 'rare', 'legendary'].entries()) {
     const x = -15 + index * 15;
     add('sword', 'kit-tripo-sword', [x - 3, -29], { rarity });
-    add('iceStaff', 'kit-tripo-ice-staff', [x, -29], { rarity });
-    add('fireStaff', 'kit-tripo-fire-staff', [x + 3, -29], { rarity });
+    add('iceStaff', 'kit-tripo-crystal-staff', [x, -29], { rarity });
+    add('fireStaff', 'kit-tripo-lava-staff', [x + 3, -29], { rarity });
   }
   for (const position of [[-12, -8], [-16, 5], [18, 8], [5, 20], [30, -20], [30, 22]]) {
     add('chest', 'kit-tripo-chest', position);

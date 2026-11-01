@@ -1,0 +1,189 @@
+{
+  "id": "crystal-staff",
+  "label": "Tripo-Kristallstab",
+  "source": {
+    "path": "assets/inbox/crystal staff 3d model.glb",
+    "bytes": 70914608,
+    "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5",
+    "triangles": 1968184,
+    "vertices": 1003559,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-weapons/runtime/crystal-staff.glb",
+    "bytes": 1404412,
+    "sha256": "1de5b51e25827cb47d9854b5ee2b2c5f290c58d8edc33faa8de8580254028bed",
+    "triangles": 12000,
+    "vertices": 7889,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.11077880859375,
+        -0.3203430473804474,
+        0.0
+      ],
+      [
+        0.11077880859375,
+        0.3203430473804474,
+        0.9818115234375
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.034199316054582596,
+      0.1999969482421875,
+      0.173801451921463
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.057251300662755966,
+      0.842677891254425,
+      -0.535365641117096
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9598640203475952,
+      0.2788757383823395,
+      -0.029822608456015587,
+      0.0
+    ],
+    "uniformScale": 1.4537962476249295,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.1677287071943283,
+        -0.3538163900375366,
+        -0.12452074885368347
+      ],
+      [
+        0.15600746870040894,
+        1.3461836576461792,
+        0.16899818181991577
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -0.1678019016981125,
+        -0.35384517908096313,
+        -0.12456578761339188
+      ],
+      [
+        0.15609733760356903,
+        1.3466986417770386,
+        0.1692465841770172
+      ]
+    ],
+    "tipPoint": [
+      0.022067788988351822,
+      1.3466986417770386,
+      0.0062968251295387745
+    ],
+    "dimensions": [
+      0.3238992393016815,
+      1.7005438208580017,
+      0.2938123717904091
+    ]
+  },
+  "cleanup": {
+    "weldDistanceMetres": 6.8e-05,
+    "before": {
+      "vertices": 1003559,
+      "faces": 1968184
+    },
+    "after": {
+      "vertices": 984058,
+      "faces": 1968122
+    }
+  },
+  "textures": [
+    {
+      "name": "crystal_staff_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "crystal_staff_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        768,
+        768
+      ],
+      "format": "PNG"
+    },
+    {
+      "name": "crystal_staff_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        1024,
+        1024
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 12000,
+    "textureLimit": 1024,
+    "normalMapLimit": 768,
+    "fileLimitBytes": 1572864
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "textureBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialChannels": true,
+    "preservedEmbeddedImageCount": true
+  }
+}

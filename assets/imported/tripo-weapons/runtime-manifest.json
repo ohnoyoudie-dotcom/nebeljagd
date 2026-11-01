@@ -5,78 +5,93 @@
   "files": [
     {
       "path": "README.md",
-      "bytes": 1275,
-      "sha256": "89e3c11d79fb1ad3d7df6b4502c1ac76c5c4200bb4bdfeafaf1c9ed2de4b9407"
+      "bytes": 2559,
+      "sha256": "11acf568989e17a8c77e922146d345e92faded9553d05e9532cf7fe208b669b6"
     },
     {
       "path": "inspection.json",
-      "bytes": 11518,
-      "sha256": "61319b5b5dc62fa1bea6661f62f9b1ff2d9e7d2f5e073b9d1a32e2da3caf4909"
+      "bytes": 14311,
+      "sha256": "11cf34c53c511c66c51189677a4f0f4922bb1f72369147090ec963e590391423"
     },
     {
-      "path": "inspections/fire-staff.json",
-      "bytes": 3244,
-      "sha256": "b3feb8138f6d239e3cb191f560b36ed054908edb7444f2be7c8e657d13cc99a6"
+      "path": "inspections/crystal-staff.json",
+      "bytes": 4008,
+      "sha256": "dbdd5af111301059af3fdbe076e83a8e4c828138c08903c55052e8da6a1067e0"
     },
     {
-      "path": "inspections/ice-staff.json",
-      "bytes": 3206,
-      "sha256": "50b7a6a64fe692e36a015046e5cf1630c08417e1d6dd15b3962826e3cae59458"
+      "path": "inspections/lava-staff.json",
+      "bytes": 4025,
+      "sha256": "5d4521d998f47798e6e9cc0a54bd8b6049a0debab09b5e1c1597a2f14c177565"
     },
     {
       "path": "inspections/sword.json",
-      "bytes": 3184,
-      "sha256": "d71c45a7f95905a5679e1aaecaa07094f09b1dc685c5ccf2a618d28092578150"
+      "bytes": 3986,
+      "sha256": "40e4ceb9e12deed7341e11c4bc97e22532da6b69513700ace6972a1c92bbb2c8"
     },
     {
-      "path": "previews/fire-staff-runtime.png",
-      "bytes": 436549,
-      "sha256": "ec9f40087864395ef863bb31dd6edc1677004022169936a3dfe0ce16e0d4e55b"
+      "path": "previews/comparison.png",
+      "bytes": 399616,
+      "sha256": "346348f9f9c8f8d8c2aa05e9bee6d277dd17e9c310312cfb8c2718e79a917d74"
     },
     {
-      "path": "previews/fire-staff-source.png",
-      "bytes": 437846,
-      "sha256": "b3df7b55c8474d2343aa08eafbbb503a2f9bac9470d6ca512f591d81f87a8648"
+      "path": "previews/crystal-staff-runtime.png",
+      "bytes": 287198,
+      "sha256": "d951fd60fc286a54823d08addb223ad6bd6e01655731ff501e5404b86c29641d"
     },
     {
-      "path": "previews/ice-staff-runtime.png",
-      "bytes": 433367,
-      "sha256": "7f97858bf4ba83b71543d722b4a7397bee88a3a6c2d77426c09c2a9ccef5ac8b"
+      "path": "previews/crystal-staff-source.png",
+      "bytes": 288340,
+      "sha256": "03081d56990ab48321c5522364f4621b5f4e07d9786113c160827bf49c34dd32"
     },
     {
-      "path": "previews/ice-staff-source.png",
-      "bytes": 434622,
-      "sha256": "d30021b7f48c564a22bddbc3183a2e13a0c71e7a2cba6ad45343a617ef288c41"
+      "path": "previews/lava-staff-runtime.png",
+      "bytes": 288750,
+      "sha256": "89b57bf4d95587b572485a75a7bfa804e4dd30a8955bcb00b9fd5bd2e0f14244"
+    },
+    {
+      "path": "previews/lava-staff-source.png",
+      "bytes": 290256,
+      "sha256": "6c923dde76b7fd424d64f5e30e4f14d3cb01d67dedf8b5a2046021f30d64fe21"
+    },
+    {
+      "path": "previews/review.html",
+      "bytes": 739,
+      "sha256": "7311d9cb31035086a8e076f9b04cbb2178af2fbfbe5217da4b17519c6beb6a63"
     },
     {
       "path": "previews/sword-runtime.png",
-      "bytes": 430353,
-      "sha256": "ecb9730168269726d1b882daef140a9553d3f8c8c73d2922f4810ec90288f31c"
+      "bytes": 286202,
+      "sha256": "8cfd75309925dba785642753b834bdf331a947ad62a4e7091f732206fe790916"
     },
     {
       "path": "previews/sword-source.png",
-      "bytes": 431754,
-      "sha256": "8dc5d02ed6d3f6d85ce87640cc9c53c4093e3d51c65a82cb8a77779a7ada48bf"
+      "bytes": 287874,
+      "sha256": "96b7350e6eef3ed1eca87060326e62f03b2fd191c88de4c8c474527ce5248994"
     },
     {
       "path": "provenance.json",
-      "bytes": 4022,
-      "sha256": "aeb565e7751bddf38a7bd2d003f8a2bbb76160e0369c91629d97193ac1001cfb"
+      "bytes": 5232,
+      "sha256": "de3600cbb7606c3925b83850f43910004eb6c37404a072405346fb2e285b798c"
     },
     {
-      "path": "runtime/fire-staff.glb",
-      "bytes": 1750720,
-      "sha256": "4ab1094bbb4db8b88925639ab33e6d9a70057658d31e3674dfc4aa29dde18120"
+      "path": "reviews/visual-comparison.json",
+      "bytes": 1738,
+      "sha256": "dd1b26cd48155dac15547bff302b9e4819b2ca9dfff76af4c7f382f6357c6393"
     },
     {
-      "path": "runtime/ice-staff.glb",
-      "bytes": 1976080,
-      "sha256": "59d44deed07f503f5602e75409441c6d1214a8fad3d689732cbf4ee2fbf701f0"
+      "path": "runtime/crystal-staff.glb",
+      "bytes": 1404412,
+      "sha256": "1de5b51e25827cb47d9854b5ee2b2c5f290c58d8edc33faa8de8580254028bed"
+    },
+    {
+      "path": "runtime/lava-staff.glb",
+      "bytes": 1263104,
+      "sha256": "57b7556f312ea4d08ef36714b9a94cc1a66f86bb651860102f05e5d74602316b"
     },
     {
       "path": "runtime/sword.glb",
-      "bytes": 1847248,
-      "sha256": "d528da9a5968ecefa481ec86742a857cc486375887572a2f166fd2d699318686"
+      "bytes": 1358244,
+      "sha256": "1377bb78ab9379b72ccbb428bf9e39af9e66ae931a2331300fbb6fdeebbf0371"
     }
   ],
   "sources": [
@@ -85,21 +100,22 @@
       "sha256": "b14bb4cdd209f5c362b02413930cede50a26b77481cc8201aac2e18d214d9e92"
     },
     {
-      "path": "assets/inbox/crystal staff 3d model.glb",
-      "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5"
-    },
-    {
       "path": "assets/inbox/lava crystal staff 3d model.glb",
       "sha256": "24f8a073d42a13fa6c1cd0ecaf9e2142a5e6ac5faaa0e5c83d4ea2382bf64087"
+    },
+    {
+      "path": "assets/inbox/crystal staff 3d model.glb",
+      "sha256": "8dc6ac2fc083245f4f27ec4775d5c00607383236e34dca9f3910cb2a9021eda5"
     }
   ],
   "validation": {
     "sourceUnchanged": true,
-    "allStaticPoliciesPassed": true
+    "allStaticPoliciesPassed": true,
+    "totalRuntimeBudgetPassed": true
   },
   "licenseStatus": "User-provided project assets; separate commercial provider receipt not supplied.",
   "pending": [
-    "Game/editor runtime rendering and animation checks",
+    "Editor/game GPU import and held-weapon alignment review",
     "User artistic approval"
   ]
 }

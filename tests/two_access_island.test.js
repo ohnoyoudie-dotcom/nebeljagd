@@ -22,7 +22,7 @@ function routeAt(point) {
   return index >= 0 ? { gate: 1 << index } : null;
 }
 
-test('the four-biome map has two actual land masses, no rivers or water overlays and fully dry start areas', () => {
+test('the four-biome map has two actual land masses, no planning markers and a dry game start', () => {
   assert.equal(map.paths.length, 2);
   assert.ok(map.paths.every(path => path.kind === 'bridge'));
   assert.deepEqual(map.rivers, []);
@@ -31,13 +31,10 @@ test('the four-biome map has two actual land masses, no rivers or water overlays
   assert.equal(map.islets[0].id, 'ostinsel');
   assert.equal(outerLandRings(map).length, 2);
   assert.deepEqual(validateWorldmap(map), { valid: true, errors: [], warnings: [] });
-  for (const spawn of map.spawnAreas) {
-    assert.ok(isLandPoint(map, spawn.position), spawn.id);
-    for (const [a, b] of boundarySegments) assert.ok(distanceToSegment(spawn.position, a, b) >= spawn.radius,
-      `${spawn.id}: vollständiger Startkreis hält Küstenabstand`);
-  }
-  assert.equal(map.spawnAreas.reduce((sum, spawn) => sum + spawn.capacity, 0), 50);
+  assert.deepEqual(map.spawnAreas, []);
+  assert.deepEqual(map.places, []);
   assert.ok(isLandPoint(map, map.gameplay.spawnPosition));
+  assert.equal(spatial.isWater(...map.gameplay.spawnPosition, .42), false);
 });
 
 test('the two bridges span genuine terrain gaps, carry their full usable width and meet dry land at both ends', () => {
@@ -130,7 +127,7 @@ test('the eastern territory is reachable through either bridge and fully disconn
   const start = map.gameplay.spawnPosition, east = [360, 120];
   const all = flood(0, start);
   assert.equal(all.count, land.reduce((sum, value) => sum + value, 0), 'gesamte begehbare Insel verbunden');
-  for (const target of [...map.places, ...map.spawnAreas]) assert.ok(all.visited[indexAt(target.position)], target.id);
+  for (const target of map.objects) assert.ok(all.visited[indexAt(target.position)], target.id);
   for (const mask of [1, 2]) assert.ok(flood(mask, start).visited[indexAt(east)], `verbleibende Brücke bei Maske ${mask}`);
   const mainland = flood(3, start), territory = flood(3, east);
   assert.equal(mainland.visited[indexAt(east)], 0, 'keine dritte Verbindung neben den Brücken');

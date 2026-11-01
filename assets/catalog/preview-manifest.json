@@ -1,5 +1,5 @@
 {
-  "method": "256x192 WebGL renders of the actual current runtime object models; editor thumbnails only.",
+  "method": "256x192 renders of actual model assets for editor thumbnails; WebGL captures unless a per-entry rendering method is specified.",
   "source": "assets/catalog/preview.html",
   "generator": "scripts/capture-asset-previews.py",
   "variants": [
@@ -760,64 +760,73 @@
     {
       "kind": "sword",
       "variant": "kit-tripo-sword",
-      "label": "Fantasieschwert · Tripo",
+      "label": "Schwert · Tripo",
       "file": "assets/catalog/sword-kit-tripo-sword.webp",
-      "bytes": 2242,
-      "sha256": "db2f6bd062e17d13bb2a35253ac736c9b7c795056d5df32421fc79df53235214",
-      "renderedBounds": {
+      "bytes": 4304,
+      "sha256": "daafb1d4636c27c8e9d637a68ff4f64ca0e608310644b6f5bae3524b8a8aa6d3",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-weapons/previews/sword-runtime.png",
+      "model": "assets/imported/tripo-weapons/runtime/sword.glb",
+      "generator": "scripts/prepare-tripo-weapons.py; Pillow thumbnail composition",
+      "modelBounds": {
         "min": [
-          -0.2038407325744629,
-          -0.17360703647136688,
-          -0.07324112951755524
+          -0.18963833153247833,
+          -0.18743896484375,
+          -0.0733741968870163
         ],
         "max": [
-          0.19016097486019135,
-          1.0769343376159668,
-          0.07713590562343597
-        ],
-        "span": 1.4381225802004336
+          0.20399929583072662,
+          1.062619686126709,
+          0.07675936073064804
+        ]
       }
     },
     {
       "kind": "fireStaff",
-      "variant": "kit-tripo-fire-staff",
-      "label": "Lavakristallstab · Tripo",
-      "file": "assets/catalog/fireStaff-kit-tripo-fire-staff.webp",
-      "bytes": 2568,
-      "sha256": "f8f6c720d62e6dbc554bfe626eed8c2ba9a38f5a56532e26f9d41a2531738c9d",
-      "renderedBounds": {
+      "variant": "kit-tripo-lava-staff",
+      "label": "Feuerstab (Lavastab) · Tripo",
+      "file": "assets/catalog/fireStaff-kit-tripo-lava-staff.webp",
+      "bytes": 4722,
+      "sha256": "c638347a82049afc8dc54e1b109294eff488d1ca7616f1bff0f45a145db29fa5",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-weapons/previews/lava-staff-runtime.png",
+      "model": "assets/imported/tripo-weapons/runtime/lava-staff.glb",
+      "generator": "scripts/prepare-tripo-weapons.py; Pillow thumbnail composition",
+      "modelBounds": {
         "min": [
-          -0.33741632103919983,
-          -0.21160955727100372,
-          -0.08638935536146164
+          -0.2516428828239441,
+          -0.34475424885749817,
+          -0.17084641754627228
         ],
         "max": [
-          0.08088669925928116,
-          1.2882965803146362,
-          0.3536638617515564
-        ],
-        "span": 1.724892058223486
+          0.15849320590496063,
+          1.3545362949371338,
+          0.2442202866077423
+        ]
       }
     },
     {
       "kind": "iceStaff",
-      "variant": "kit-tripo-ice-staff",
-      "label": "Kristallstab · Tripo",
-      "file": "assets/catalog/iceStaff-kit-tripo-ice-staff.webp",
-      "bytes": 2452,
-      "sha256": "84f040217fe603d00dcc44a3edc44e19420938761b4d04e83976ccd85772a7c9",
-      "renderedBounds": {
+      "variant": "kit-tripo-crystal-staff",
+      "label": "Eisstab (Kristallstab) · Tripo",
+      "file": "assets/catalog/iceStaff-kit-tripo-crystal-staff.webp",
+      "bytes": 4636,
+      "sha256": "ea35a53ac4ae7e0faa592fa26edb999715d4cb4d7ced86740ba78612c537d3e9",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-weapons/previews/crystal-staff-runtime.png",
+      "model": "assets/imported/tripo-weapons/runtime/crystal-staff.glb",
+      "generator": "scripts/prepare-tripo-weapons.py; Pillow thumbnail composition",
+      "modelBounds": {
         "min": [
-          -0.13708840310573578,
-          -0.21698611974716187,
-          -0.0802445262670517
+          -0.1678019016981125,
+          -0.35384517908096313,
+          -0.12456578761339188
         ],
         "max": [
-          0.15265844762325287,
-          1.283676266670227,
-          0.33423587679862976
-        ],
-        "span": 1.725761744379997
+          0.15609733760356903,
+          1.3466986417770386,
+          0.1692465841770172
+        ]
       }
     }
   ],

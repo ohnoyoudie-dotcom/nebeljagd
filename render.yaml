@@ -10,7 +10,7 @@ services:
     region: frankfurt
     plan: starter
     numInstances: 1
-    buildCommand: npm ci --include=dev && npm run build
+    buildCommand: npm ci --include=dev && npm test && npm run verify:assets && npm run build
     startCommand: npm run school
     healthCheckPath: /api/session
     autoDeploy: true

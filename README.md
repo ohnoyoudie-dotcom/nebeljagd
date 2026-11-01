@@ -13,20 +13,27 @@ Eine feste Internetadresse für die Klasse ist mit der vorbereiteten
 
 Die neuen Waffenmodelle (Fantasieschwert, Kristallstab und Lavakristallstab)
 sind im Editor platzierbar und werden im Spiel mit angepasstem Griff gehalten.
-Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons.md).
+Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons-integration.md).
 
 **Entwicklungsstand auf `work`:** Die Karte enthält genau vier Biome:
 **Schnee, Grün/Wald, Wüste/Sand und Sumpf**. Hauptinsel und Ostland sind echte,
 getrennte Landflächen; zwei begehbare Brücken überspannen die freie Lücke.
 Die bisherigen Flusskanäle sind vollständig entfernt. Das übrige Wegenetz
-bleibt für den späteren Ausbau frei.
-Vorschau und Prüfung: [`docs/open-gap-layout.md`](docs/open-gap-layout.md).
+bleibt für den späteren Ausbau frei. Die Ausgangskarte zeigt keine
+Regionsbeschriftungen, provisorischen Orts-/Häusersymbole oder Spawn-Zonen.
+Die platzierten Objekte bleiben erhalten.
+Vorschau und Prüfung: [`docs/clean-map.md`](docs/clean-map.md).
 Der Editor zeigt pro Hauptbereich
 nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
-Die bestehende Veröffentlichung auf `main` bleibt auf dem vorherigen Stand.
+Die aktuelle Browser-Vorschau ist unter
+[Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=2dc0dfb)
+und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
+Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
+Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht
+veröffentlicht; sie benötigt den oben beschriebenen Schulserver.
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
@@ -40,7 +47,12 @@ Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
 Die Objektauswahl enthält ausschließlich freigegebene Tripo-Modelle:
 Wirtshaus, **Wohnhaus 2**, drei Felsenvarianten, Holzwagen, Holzfass,
-Steinbrunnen und Schatztruhe. Das kleine Schloss und die alten Einzelobjekte
+Steinbrunnen, Schatztruhe und die drei neuen Waffen: **Schwert, Feuerstab
+(Lavastab) und Eisstab (Kristallstab)**. Die Waffen stehen unter **Objekte →
+Einzeln** bei der jeweiligen Objektart; ihr Modell trägt den Zusatz **Tripo**.
+Seltenheit wählen, **Auf Karte setzen** aktivieren und auf die Karte klicken.
+Import und Spielverhalten: [`docs/tripo-weapons-integration.md`](docs/tripo-weapons-integration.md).
+Das kleine Schloss und die alten Einzelobjekte
 sind entfernt. Mauern und Zäune werden weiterhin über ihr Zeichenwerkzeug
 gezogen; Gras hat einen eigenen Pinsel. Ältere lokale Karten lassen sich mit
 **Auf Tripo-Objekte bereinigen** samt Rückgängig-Funktion aufräumen.
@@ -52,7 +64,7 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,02 km²**
-Land mit vier Landschaften, zwei getrennten Landflächen, zwei Brücken und Ortsmarkern. Der
+Land mit vier Landschaften, zwei getrennten Landflächen und zwei Brücken. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor
 platzieren; das kleine Tripo-Schloss ist aus der aktiven Auswahl entfernt.
@@ -66,8 +78,8 @@ Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 Die aktuelle Projektkarte enthält ein Tripo-Wirtshaus und vier gezeichnete
 Mauer-/Zaunstrecken. Die beiden Brücken führen direkt über die freie Lücke
 zwischen den Landflächen. Es gibt keine eingezeichneten Flüsse.
-Zehn Startbereiche bieten Platz
-für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
+Die provisorischen Startbereiche und Ortsmarker sind entfernt; der normale
+Spielstart bleibt erhalten. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
 Multiplayer, Teams und Schreinfragen sind noch nicht aktiv.
 
@@ -78,7 +90,7 @@ Gras und Gelände nach der Bildreferenz: [`docs/grass-restoration.md`](docs/gras
 und [`docs/reference-terrain.md`](docs/reference-terrain.md).
 Vorgemerkte Pakete: [`docs/next-packages.md`](docs/next-packages.md).
 
-Öffentliche Version auf `main` (ohne die neuen Landschaftswerkzeuge):
+Ältere Veröffentlichung unter `welt/` (ohne die neuen Landschaftswerkzeuge):
 [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/) ·
 [Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html) ·
 [ZIP herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip).
@@ -126,8 +138,8 @@ benötigten Modellen:
 - **`dist/nebeljagd.html`**: Spiel direkt im Browser öffnen.
 - **`dist/map-editor.html`**: Editor direkt im Browser öffnen.
 
-**`dist/nebeljagd-welt-und-editor.zip`** bündelt beide HTML-Dateien, Kartendaten,
-SVG, Schema und eine kurze Anleitung. Das ZIP entpacken und die Dateien im
+**`dist/nebeljagd-welt-und-editor.zip`** bündelt Startseite, Spiel, Editor,
+Avatar-Vorschau, Kartendaten, SVG, Schema und eine kurze Anleitung. Das ZIP entpacken und die Dateien im
 gemeinsamen Ordner lassen.
 
 Für „Spielen“ bei lokal geöffneten Dateien beide HTML-Dateien in denselben

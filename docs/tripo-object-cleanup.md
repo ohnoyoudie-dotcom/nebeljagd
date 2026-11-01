@@ -3,7 +3,7 @@
 Unter **Objekte** stehen zwölf Varianten in neun Kategorien bereit:
 Wirtshaus und Wohnhaus 2, drei Tripo-Felsen, Holzwagen, Holzfass,
 Steinbrunnen, Schatztruhe sowie die neuen Modelle für Schwert, Feuer- und
-Eisstab. Die [Waffenmodelle](tripo-weapons.md) bleiben auch bei der Bereinigung
+Eisstab. Die [Waffenmodelle](tripo-weapons-integration.md) bleiben auch bei der Bereinigung
 erhalten. Die Truhe startet direkt mit dem Tripo-Modell.
 Das kleine Schloss, Herz, alte Holztruhe, Bogen und die bisherigen Waffenmodelle
 und die übrigen alten Modelle werden nicht mehr als neue Einzelobjekte angeboten.
