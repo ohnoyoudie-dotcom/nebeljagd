@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="-600 -720 1200 1440" role="img" aria-labelledby="worldmap-title worldmap-description">
-  <title id="worldmap-title">Nebelinsel · Die sieben Landschaften</title>
-  <desc id="worldmap-description">Editierbare schematische Fantasy-Insel: 7 grobe Regionen, Wege, Flüsse und wichtige Orte. Nord ist oben. Ein Koordinatenschritt entspricht einem geplanten Meter. Editierbare Grundlage der generierten 3D-Insel für etwa 50 Spieler. Küste, Regionen, Wege und alle platzierten Weltobjekte sind als Daten gespeichert und dürfen verändert werden.</desc>
+  <title id="worldmap-title">Nebelinsel · Buchten und Halbinseln</title>
+  <desc id="worldmap-description">Editierbare schematische Fantasy-Insel: 7 grobe Regionen, Wege, Flüsse und wichtige Orte. Nord ist oben. Ein Koordinatenschritt entspricht einem geplanten Meter. Sieben miteinander verbundene Landschaften auf einer asymmetrischen Insel: Frostkap, Hafenbucht, westlicher Waldarm, Moorbucht und südöstliche Sonnenhalbinsel. Breite Landverbindungen und mehrere Wege halten die Regionen erreichbar. Die Kartenbasis enthält nur die vorhandenen freigegebenen Tripo-Platzierungen.</desc>
   <defs>
     <clipPath id="world-island-clip"><use href="#feature-island-nebelinsel"/></clipPath>
     <linearGradient id="world-sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#142a3c"/><stop offset="1" stop-color="#0c1c2e"/></linearGradient>
@@ -57,114 +57,117 @@
     <use href="#feature-island-nebelinsel" fill="none" stroke="#4d9baf" stroke-width="13" opacity=".4" stroke-linejoin="round"/>
   </g>
   <g id="island" data-layer="island" inkscape:groupmode="layer" inkscape:label="Inselumriss" fill="#c9c59b" stroke="#e2d6aa" stroke-width="6" stroke-linejoin="round">
-    <polygon id="feature-island-nebelinsel" data-feature-type="island" data-feature-id="nebelinsel" points="-380,-640 -300,-665 -220,-625 -170,-570 -80,-585 5,-610 35,-660 95,-670 140,-620 120,-550 210,-520 300,-580 360,-560 370,-490 330,-430 425,-390 470,-315 485,-220 530,-155 500,-55 530,40 485,115 505,190 465,250 470,340 525,410 490,465 410,480 380,535 330,550 345,625 285,670 210,645 155,660 100,610 55,650 -15,665 -70,610 -120,565 -220,565 -280,525 -350,550 -425,515 -420,430 -490,370 -495,290 -540,225 -505,140 -520,55 -480,-10 -515,-80 -485,-150 -520,-225 -475,-310 -500,-380 -445,-440 -455,-515 -400,-550"><title>Nebelinsel</title></polygon>
+    <polygon id="feature-island-nebelinsel" data-feature-type="island" data-feature-id="nebelinsel" points="-460,-560 -425,-630 -355,-650 -260,-560 -205,-545 -175,-600 -185,-650 -80,-705 -20,-680 15,-625 -50,-530 -35,-480 30,-465 205,-565 270,-550 300,-505 375,-510 415,-465 395,-405 335,-385 225,-405 185,-365 195,-310 245,-280 355,-330 415,-320 485,-350 535,-315 555,-245 520,-190 550,-145 485,-55 445,-90 405,-70 395,30 440,50 490,35 535,75 550,140 475,225 460,295 415,335 285,260 255,300 270,355 325,400 435,380 495,405 530,455 505,515 440,535 415,590 235,680 175,655 115,680 55,660 20,600 -40,580 -100,605 -170,590 -205,540 -190,490 -220,450 -265,460 -350,540 -410,525 -445,480 -430,425 -520,345 -450,195 -475,160 -535,150 -565,100 -550,30 -470,-15 -445,-65 -460,-110 -555,-195 -545,-260 -435,-375 -460,-420 -510,-435 -535,-485 -505,-540"><title>Nebelinsel</title></polygon>
   </g>
   <g id="regions" data-layer="regions" inkscape:groupmode="layer" inkscape:label="Regionen" clip-path="url(#world-island-clip)">
     <g id="feature-region-frostkamm" data-feature-type="region" data-feature-id="frostkamm"><title>Frostkamm</title>
-      <polygon points="-590,-710 70,-710 100,-440 0,-350 -90,-300 -230,-60 -590,-80" fill="#b4c9d1" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="-590,-710 70,-710 100,-440 0,-350 -90,-300 -230,-60 -590,-80" fill="url(#world-pattern-mountain)" pointer-events="none"/>
+      <polygon points="-590,-710 70,-710 63,-649 96,-582 75,-511 100,-440 82,-406 42,-400 29,-362 0,-350 -20,-328 -50,-330 -66,-304 -90,-300 -113,-227 -173,-181 -187,-106 -230,-60 -328,-48 -417,-82 -512,-62 -590,-80" fill="#b4c9d1" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="-590,-710 70,-710 63,-649 96,-582 75,-511 100,-440 82,-406 42,-400 29,-362 0,-350 -20,-328 -50,-330 -66,-304 -90,-300 -113,-227 -173,-181 -187,-106 -230,-60 -328,-48 -417,-82 -512,-62 -590,-80" fill="url(#world-pattern-mountain)" pointer-events="none"/>
     </g>
     <g id="feature-region-goldheide" data-feature-type="region" data-feature-id="goldheide"><title>Goldheide</title>
-      <polygon points="70,-710 590,-710 590,-20 240,-30 100,-250 0,-350 100,-440" fill="#c7b45e" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="70,-710 590,-710 590,-20 240,-30 100,-250 0,-350 100,-440" fill="url(#world-pattern-heath)" pointer-events="none"/>
+      <polygon points="70,-710 590,-710 590,-20 495,-6 408,-37 317,-14 240,-30 188,-80 177,-151 119,-194 100,-250 64,-268 55,-309 14,-320 0,-350 29,-362 42,-400 82,-406 100,-440 75,-511 96,-582 63,-649" fill="#c7b45e" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="70,-710 590,-710 590,-20 495,-6 408,-37 317,-14 240,-30 188,-80 177,-151 119,-194 100,-250 64,-268 55,-309 14,-320 0,-350 29,-362 42,-400 82,-406 100,-440 75,-511 96,-582 63,-649" fill="url(#world-pattern-heath)" pointer-events="none"/>
     </g>
     <g id="feature-region-herzauen" data-feature-type="region" data-feature-id="herzauen"><title>Herzauen</title>
-      <polygon points="-90,-300 0,-350 100,-250 240,-30 170,160 80,340 -100,360 -270,160 -230,-60" fill="#80a66a" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="-90,-300 0,-350 100,-250 240,-30 170,160 80,340 -100,360 -270,160 -230,-60" fill="url(#world-pattern-meadow)" pointer-events="none"/>
+      <polygon points="-90,-300 -66,-304 -50,-330 -20,-328 0,-350 14,-320 55,-309 64,-268 100,-250 119,-194 177,-151 188,-80 240,-30 237,27 192,65 199,123 170,160 161,216 112,248 112,307 80,340 33,362 -15,338 -59,370 -100,360 -159,317 -179,248 -243,213 -270,160 -247,114 -263,52 -224,2 -230,-60 -187,-106 -173,-181 -113,-227" fill="#80a66a" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="-90,-300 -66,-304 -50,-330 -20,-328 0,-350 14,-320 55,-309 64,-268 100,-250 119,-194 177,-151 188,-80 240,-30 237,27 192,65 199,123 170,160 161,216 112,248 112,307 80,340 33,362 -15,338 -59,370 -100,360 -159,317 -179,248 -243,213 -270,160 -247,114 -263,52 -224,2 -230,-60 -187,-106 -173,-181 -113,-227" fill="url(#world-pattern-meadow)" pointer-events="none"/>
     </g>
     <g id="feature-region-dunkelhain" data-feature-type="region" data-feature-id="dunkelhain"><title>Dunkelhain</title>
-      <polygon points="-590,-80 -230,-60 -270,160 -100,360 -260,360 -590,260" fill="#4c8065" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="-590,-80 -230,-60 -270,160 -100,360 -260,360 -590,260" fill="url(#world-pattern-forest)" pointer-events="none"/>
+      <polygon points="-590,-80 -512,-62 -417,-82 -328,-48 -230,-60 -224,2 -263,52 -247,114 -270,160 -243,213 -179,248 -159,317 -100,360 -143,375 -183,349 -225,372 -260,360 -354,349 -428,297 -521,295 -590,260" fill="#4c8065" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="-590,-80 -512,-62 -417,-82 -328,-48 -230,-60 -224,2 -263,52 -247,114 -270,160 -243,213 -179,248 -159,317 -100,360 -143,375 -183,349 -225,372 -260,360 -354,349 -428,297 -521,295 -590,260" fill="url(#world-pattern-forest)" pointer-events="none"/>
     </g>
     <g id="feature-region-nebelmoor" data-feature-type="region" data-feature-id="nebelmoor"><title>Nebelmoor</title>
-      <polygon points="-590,260 -260,360 -100,360 -60,440 -120,710 -590,710" fill="#509d95" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="-590,260 -260,360 -100,360 -60,440 -120,710 -590,710" fill="url(#world-pattern-marsh)" pointer-events="none"/>
+      <polygon points="-590,260 -521,295 -428,297 -354,349 -260,360 -225,372 -183,349 -143,375 -100,360 -60,440 -60,517 -103,578 -93,654 -120,710 -590,710" fill="#509d95" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="-590,260 -521,295 -428,297 -354,349 -260,360 -225,372 -183,349 -143,375 -100,360 -60,440 -60,517 -103,578 -93,654 -120,710 -590,710" fill="url(#world-pattern-marsh)" pointer-events="none"/>
     </g>
     <g id="feature-region-aschenhoehen" data-feature-type="region" data-feature-id="aschenhoehen"><title>Aschenhöhen</title>
-      <polygon points="240,-30 590,-20 590,420 310,400 80,340 170,160" fill="#88776e" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="240,-30 590,-20 590,420 310,400 80,340 170,160" fill="url(#world-pattern-ash)" pointer-events="none"/>
+      <polygon points="240,-30 317,-14 408,-37 495,-6 590,-20 590,420 513,432 445,398 371,418 310,400 244,400 193,357 127,367 80,340 112,307 112,248 161,216 170,160 199,123 192,65 237,27" fill="#88776e" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="240,-30 317,-14 408,-37 495,-6 590,-20 590,420 513,432 445,398 371,418 310,400 244,400 193,357 127,367 80,340 112,307 112,248 161,216 170,160 199,123 192,65 237,27" fill="url(#world-pattern-ash)" pointer-events="none"/>
     </g>
     <g id="feature-region-sonnenduene" data-feature-type="region" data-feature-id="sonnenduene"><title>Sonnendünen</title>
-      <polygon points="-100,360 80,340 310,400 590,420 590,710 -120,710 -60,440" fill="#d6b97e" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
-      <polygon points="-100,360 80,340 310,400 590,420 590,710 -120,710 -60,440" fill="url(#world-pattern-dune)" pointer-events="none"/>
+      <polygon points="-100,360 -59,370 -15,338 33,362 80,340 127,367 193,357 244,400 310,400 371,418 445,398 513,432 590,420 590,710 -120,710 -93,654 -103,578 -60,517 -60,440" fill="#d6b97e" stroke="#38564c" stroke-width="2" stroke-opacity=".4"/>
+      <polygon points="-100,360 -59,370 -15,338 33,362 80,340 127,367 193,357 244,400 310,400 371,418 445,398 513,432 590,420 590,710 -120,710 -93,654 -103,578 -60,517 -60,440" fill="url(#world-pattern-dune)" pointer-events="none"/>
     </g>
   </g>
   <metadata id="landscape-settings">{&quot;version&quot;:1,&quot;terrain&quot;:[],&quot;wind&quot;:{&quot;enabled&quot;:true,&quot;strength&quot;:0.35,&quot;speed&quot;:1,&quot;direction&quot;:0.65,&quot;gusts&quot;:true,&quot;gustStrength&quot;:0.35,&quot;gustFrequency&quot;:0.18,&quot;turbulence&quot;:0.2},&quot;windZones&quot;:[],&quot;biomes&quot;:[],&quot;presets&quot;:[]}</metadata>
   <g id="terrain-paint" data-layer="terrain-paint" inkscape:groupmode="layer" inkscape:label="Gemalter Boden" clip-path="url(#world-island-clip)">
   </g>
   <g id="rivers" data-layer="rivers" inkscape:groupmode="layer" inkscape:label="Flüsse" clip-path="url(#world-island-clip)" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <g id="feature-river-silberlauf" data-feature-type="river" data-feature-id="silberlauf"><title>Silberlauf</title><polyline points="-60,-500 -125,-360 -60,-215 -70,-80 -140,75 -65,220 -100,360 -180,470 -220,550" stroke="#315f6a" stroke-width="18"/><polyline points="-60,-500 -125,-360 -60,-215 -70,-80 -140,75 -65,220 -100,360 -180,470 -220,550" stroke="#72b0ba" stroke-width="14"/><polyline points="-60,-500 -125,-360 -60,-215 -70,-80 -140,75 -65,220 -100,360 -180,470 -220,550" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>
-    <g id="feature-river-goldbach" data-feature-type="river" data-feature-id="goldbach"><title>Goldbach</title><polyline points="180,-330 100,-250 140,-140 80,-30 70,130 90,250 220,370 270,545" stroke="#315f6a" stroke-width="14"/><polyline points="180,-330 100,-250 140,-140 80,-30 70,130 90,250 220,370 270,545" stroke="#72b0ba" stroke-width="10"/><polyline points="180,-330 100,-250 140,-140 80,-30 70,130 90,250 220,370 270,545" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>
+    <g id="feature-river-silberlauf" data-feature-type="river" data-feature-id="silberlauf"><title>Silberlauf</title><polyline points="-105,-515 -125,-360 -60,-215 -70,-80 -140,75 -65,220 -100,360 -180,470 -220,550" stroke="#315f6a" stroke-width="18"/><polyline points="-105,-515 -125,-360 -60,-215 -70,-80 -140,75 -65,220 -100,360 -180,470 -220,550" stroke="#72b0ba" stroke-width="14"/><polyline points="-105,-515 -125,-360 -60,-215 -70,-80 -140,75 -65,220 -100,360 -180,470 -220,550" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>
+    <g id="feature-river-goldbach" data-feature-type="river" data-feature-id="goldbach"><title>Goldbach</title><polyline points="180,-330 100,-250 140,-140 80,-30 70,130 90,250 220,370 270,545 295,610 305,665 310,700" stroke="#315f6a" stroke-width="14"/><polyline points="180,-330 100,-250 140,-140 80,-30 70,130 90,250 220,370 270,545 295,610 305,665 310,700" stroke="#72b0ba" stroke-width="10"/><polyline points="180,-330 100,-250 140,-140 80,-30 70,130 90,250 220,370 270,545 295,610 305,665 310,700" stroke="#9dcbd0" stroke-width="1.5" opacity=".6" pointer-events="none"/></g>
   </g>
   <g id="paths" data-layer="paths" inkscape:groupmode="layer" inkscape:label="Wege und Brücken" clip-path="url(#world-island-clip)" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <g id="feature-path-nordweg" data-feature-type="path" data-feature-id="nordweg"><title>Nordweg</title>
-      <polyline points="30,-60 20,-210 -70,-285 -150,-360 -290,-480" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 20,-210 -70,-285 -150,-360 -290,-480" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="30,-60 34,-118 28,-165 20,-210 -18,-234 -46,-259 -70,-285 -96,-318 -123,-340 -150,-360 -210,-398 -252,-439 -290,-480" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 34,-118 28,-165 20,-210 -18,-234 -46,-259 -70,-285 -96,-318 -123,-340 -150,-360 -210,-398 -252,-439 -290,-480" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-mondweg" data-feature-type="path" data-feature-id="mondweg"><title>Mondweg</title>
-      <polyline points="20,-210 130,-305 230,-430" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="20,-210 130,-305 230,-430" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="20,-210 67,-240 100,-273 130,-305 161,-358 196,-396 230,-430" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="20,-210 67,-240 100,-273 130,-305 161,-358 196,-396 230,-430" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-goldweg" data-feature-type="path" data-feature-id="goldweg"><title>Goldweg</title>
-      <polyline points="30,-60 170,-165 335,-190 440,-110" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 170,-165 335,-190 440,-110" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="30,-60 89,-92 132,-128 170,-165 231,-184 285,-188 335,-190 371,-154 406,-130 440,-110" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 89,-92 132,-128 170,-165 231,-184 285,-188 335,-190 371,-154 406,-130 440,-110" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-westweg" data-feature-type="path" data-feature-id="westweg"><title>Westweg</title>
-      <polyline points="30,-60 -120,-10 -220,-45 -340,-50" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 -120,-10 -220,-45 -340,-50" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="30,-60 -30,-49 -77,-30 -120,-10 -160,-18 -191,-31 -220,-45 -265,-53 -304,-53 -340,-50" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 -30,-49 -77,-30 -120,-10 -160,-18 -191,-31 -220,-45 -265,-53 -304,-53 -340,-50" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-auenweg" data-feature-type="path" data-feature-id="auenweg"><title>Auenweg</title>
-      <polyline points="30,-60 0,65 -80,160" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 0,65 -80,160" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="30,-60 12,-14 5,26 0,65 -25,106 -53,134 -80,160" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="30,-60 12,-14 5,26 0,65 -25,106 -53,134 -80,160" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-moorweg" data-feature-type="path" data-feature-id="moorweg"><title>Moorweg</title>
-      <polyline points="-80,160 -230,250 -320,350 -180,450" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="-80,160 -230,250 -320,350 -180,450" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="-80,160 -142,186 -188,218 -230,250 -259,293 -289,323 -320,350 -272,396 -226,425 -180,450" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="-80,160 -142,186 -188,218 -230,250 -259,293 -289,323 -320,350 -272,396 -226,425 -180,450" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-uferpfad" data-feature-type="path" data-feature-id="uferpfad"><title>Uferpfad</title>
-      <polyline points="-340,-50 -385,80 -390,235 -320,350" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="-340,-50 -385,80 -390,235 -320,350" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
+      <polyline points="-340,-50 -350,2 -367,43 -385,80 -395,139 -394,188 -390,235 -357,275 -337,313 -320,350" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="-340,-50 -350,2 -367,43 -385,80 -395,139 -394,188 -390,235 -357,275 -337,313 -320,350" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
     </g>
     <g id="feature-path-aschenweg" data-feature-type="path" data-feature-id="aschenweg"><title>Aschenweg</title>
-      <polyline points="-80,160 80,225 245,320 360,205" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="-80,160 80,225 245,320 360,205" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="-80,160 -55,189 -30,208 -5,225 58,231 108,247 155,265 184,269 208,268 230,265 250,215 315,190 360,205" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="-80,160 -55,189 -30,208 -5,225 58,231 108,247 155,265 184,269 208,268 230,265 250,215 315,190 360,205" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-sonnenweg" data-feature-type="path" data-feature-id="sonnenweg"><title>Sonnenweg</title>
-      <polyline points="80,225 130,375 170,500 40,530" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="80,225 130,375 170,500 40,530" stroke="#d8cda3" stroke-width="8"/>
+      <polyline points="-5,225 2,271 15,307 30,340 54,371 68,401 80,430 110,462 140,482 170,500 122,519 80,526 40,530" stroke="#6b7351" stroke-opacity=".38" stroke-width="11"/><polyline points="-5,225 2,271 15,307 30,340 54,371 68,401 80,430 110,462 140,482 170,500 122,519 80,526 40,530" stroke="#d8cda3" stroke-width="8"/>
     </g>
     <g id="feature-path-hafenpfad" data-feature-type="path" data-feature-id="hafenpfad"><title>Hafenpfad</title>
-      <polyline points="170,500 290,450 395,460" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="170,500 290,450 395,460" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
+      <polyline points="170,500 218,488 256,469 290,450 330,448 364,453 395,460" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="170,500 218,488 256,469 290,450 330,448 364,453 395,460" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
     </g>
     <g id="feature-path-suedbogen" data-feature-type="path" data-feature-id="suedbogen"><title>Südbogen</title>
-      <polyline points="-180,450 -40,470 40,530" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="-180,450 -40,470 40,530" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
+      <polyline points="-180,450 -128,465 -83,469 -40,470 -6,488 18,509 40,530" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="-180,450 -128,465 -83,469 -40,470 -6,488 18,509 40,530" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
     </g>
     <g id="feature-path-goldbogen" data-feature-type="path" data-feature-id="goldbogen"><title>Goldbogen</title>
-      <polyline points="335,-190 355,-20 360,205" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="335,-190 355,-20 360,205" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
+      <polyline points="335,-190 333,-124 343,-70 355,-20 369,65 366,137 360,205" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="335,-190 333,-124 343,-70 355,-20 369,65 366,137 360,205" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
+    </g>
+    <g id="feature-path-glutpfad" data-feature-type="path" data-feature-id="glutpfad"><title>Glutpfad</title>
+      <polyline points="230,265 245,320" stroke="#6b7351" stroke-opacity=".38" stroke-width="8" stroke-dasharray="4 8"/><polyline points="230,265 245,320" stroke="#c7c79e" stroke-width="5" stroke-dasharray="4 8"/>
     </g>
     <g id="feature-path-bruecke-01" data-feature-type="path" data-feature-id="bruecke-01"><title>Nordweg · Silberlauf</title>
-      <polyline points="-88.54,-302.38 -125.22,-336.77" stroke="#594e3b" stroke-width="17"/><polyline points="-88.54,-302.38 -125.22,-336.77" stroke="#d4bc8d" stroke-width="12" stroke-dasharray="3 3"/>
+      <polyline points="-88.03,-311.51 -136.02,-350.61" stroke="#594e3b" stroke-width="19"/><polyline points="-88.03,-311.51 -136.02,-350.61" stroke="#d4bc8d" stroke-width="14" stroke-dasharray="3 3"/>
     </g>
     <g id="feature-path-bruecke-02" data-feature-type="path" data-feature-id="bruecke-02"><title>Goldweg · Goldbach</title>
-      <polyline points="129.51,-134.63 149.07,-149.3" stroke="#594e3b" stroke-width="17"/><polyline points="129.51,-134.63 149.07,-149.3" stroke="#d4bc8d" stroke-width="12" stroke-dasharray="3 3"/>
+      <polyline points="106.95,-103.61 163.26,-158.43" stroke="#594e3b" stroke-width="19"/><polyline points="106.95,-103.61 163.26,-158.43" stroke="#d4bc8d" stroke-width="14" stroke-dasharray="3 3"/>
     </g>
     <g id="feature-path-bruecke-03" data-feature-type="path" data-feature-id="bruecke-03"><title>Westweg · Silberlauf</title>
-      <polyline points="-82.67,-22.44 -114.04,-11.99" stroke="#594e3b" stroke-width="17"/><polyline points="-82.67,-22.44 -114.04,-11.99" stroke="#d4bc8d" stroke-width="12" stroke-dasharray="3 3"/>
+      <polyline points="-76.85,-30.07 -116.59,-11.58" stroke="#594e3b" stroke-width="19"/><polyline points="-76.85,-30.07 -116.59,-11.58" stroke="#d4bc8d" stroke-width="14" stroke-dasharray="3 3"/>
     </g>
     <g id="feature-path-bruecke-04" data-feature-type="path" data-feature-id="bruecke-04"><title>Moorweg · Silberlauf</title>
-      <polyline points="-80.22,160.13 -104.25,174.55" stroke="#594e3b" stroke-width="17"/><polyline points="-80.22,160.13 -104.25,174.55" stroke="#d4bc8d" stroke-width="12" stroke-dasharray="3 3"/>
+      <polyline points="-79.3,159.71 -107.05,171.34" stroke="#594e3b" stroke-width="19"/><polyline points="-79.3,159.71 -107.05,171.34" stroke="#d4bc8d" stroke-width="14" stroke-dasharray="3 3"/>
     </g>
     <g id="feature-path-bruecke-05" data-feature-type="path" data-feature-id="bruecke-05"><title>Aschenweg · Goldbach</title>
-      <polyline points="74.78,221.99 98.13,235.44" stroke="#594e3b" stroke-width="17"/><polyline points="74.78,221.99 98.13,235.44" stroke="#d4bc8d" stroke-width="12" stroke-dasharray="3 3"/>
+      <polyline points="74.77,236.37 102.14,245.13" stroke="#594e3b" stroke-width="19"/><polyline points="74.77,236.37 102.14,245.13" stroke="#d4bc8d" stroke-width="14" stroke-dasharray="3 3"/>
     </g>
     <g id="feature-path-bruecke-06" data-feature-type="path" data-feature-id="bruecke-06"><title>Hafenpfad · Goldbach</title>
-      <polyline points="236.76,472.18 258.98,462.92" stroke="#594e3b" stroke-width="14"/><polyline points="236.76,472.18 258.98,462.92" stroke="#d4bc8d" stroke-width="9" stroke-dasharray="3 3"/>
+      <polyline points="237.45,478.27 261.05,466.48" stroke="#594e3b" stroke-width="16"/><polyline points="237.45,478.27 261.05,466.48" stroke="#d4bc8d" stroke-width="11" stroke-dasharray="3 3"/>
     </g>
     <g id="feature-path-bruecke-07" data-feature-type="path" data-feature-id="bruecke-07"><title>Südbogen · Silberlauf</title>
-      <polyline points="-181.59,449.77 -152.05,453.99" stroke="#594e3b" stroke-width="14"/><polyline points="-181.59,449.77 -152.05,453.99" stroke="#d4bc8d" stroke-width="9" stroke-dasharray="3 3"/>
+      <polyline points="-183.19,449.08 -152.77,457.86" stroke="#594e3b" stroke-width="16"/><polyline points="-183.19,449.08 -152.77,457.86" stroke="#d4bc8d" stroke-width="11" stroke-dasharray="3 3"/>
     </g>
   </g>
   <g id="spawn-areas" data-layer="spawn-areas" inkscape:groupmode="layer" inkscape:label="Startbereiche">
     <g id="feature-spawn-frost-west" data-feature-type="spawn" data-feature-id="frost-west"><title>Frost · West · 5 Startplätze</title><circle cx="-375" cy="-375" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-375" y="-370" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-frost-ost" data-feature-type="spawn" data-feature-id="frost-ost"><title>Frost · Ost · 5 Startplätze</title><circle cx="-60" cy="-465" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-60" y="-460" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-heide-nord" data-feature-type="spawn" data-feature-id="heide-nord"><title>Heide · Nord · 5 Startplätze</title><circle cx="270" cy="-490" r="40" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="270" y="-485" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
+    <g id="feature-spawn-frost-ost" data-feature-type="spawn" data-feature-id="frost-ost"><title>Frost · Ost · 5 Startplätze</title><circle cx="-90" cy="-625" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-90" y="-620" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
+    <g id="feature-spawn-heide-nord" data-feature-type="spawn" data-feature-id="heide-nord"><title>Heide · Nord · 5 Startplätze</title><circle cx="240" cy="-475" r="40" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="240" y="-470" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
     <g id="feature-spawn-heide-ost" data-feature-type="spawn" data-feature-id="heide-ost"><title>Heide · Ost · 5 Startplätze</title><circle cx="410" cy="-275" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="410" y="-270" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
     <g id="feature-spawn-wald-west" data-feature-type="spawn" data-feature-id="wald-west"><title>Wald · West · 5 Startplätze</title><circle cx="-410" cy="90" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-410" y="95" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-auen-mitte" data-feature-type="spawn" data-feature-id="auen-mitte"><title>Auen · Mitte · 5 Startplätze</title><circle cx="-105" cy="40" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-105" y="45" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
+    <g id="feature-spawn-auen-mitte" data-feature-type="spawn" data-feature-id="auen-mitte"><title>Auen · Mitte · 5 Startplätze</title><circle cx="0" cy="95" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="0" y="100" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
     <g id="feature-spawn-moor-west" data-feature-type="spawn" data-feature-id="moor-west"><title>Moor · West · 5 Startplätze</title><circle cx="-400" cy="390" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-400" y="395" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-moor-ost" data-feature-type="spawn" data-feature-id="moor-ost"><title>Moor · Ost · 5 Startplätze</title><circle cx="-205" cy="430" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-205" y="435" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
-    <g id="feature-spawn-asche-ost" data-feature-type="spawn" data-feature-id="asche-ost"><title>Asche · Ost · 5 Startplätze</title><circle cx="395" cy="295" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="395" y="300" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
+    <g id="feature-spawn-moor-ost" data-feature-type="spawn" data-feature-id="moor-ost"><title>Moor · Ost · 5 Startplätze</title><circle cx="-245" cy="380" r="42" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="-245" y="385" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
+    <g id="feature-spawn-asche-ost" data-feature-type="spawn" data-feature-id="asche-ost"><title>Asche · Ost · 5 Startplätze</title><circle cx="390" cy="255" r="44" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="390" y="260" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
     <g id="feature-spawn-duene-sued" data-feature-type="spawn" data-feature-id="duene-sued"><title>Düne · Süd · 5 Startplätze</title><circle cx="205" cy="585" r="40" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="205" y="590" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">5</text></g>
   </g>
   <g id="places" data-layer="places" inkscape:groupmode="layer" inkscape:label="Wichtige Orte">
@@ -202,8 +205,8 @@
   </g>
   <g id="labels" data-layer="labels" inkscape:groupmode="layer" inkscape:label="Beschriftungen" pointer-events="none" font-family="Georgia, serif" text-anchor="middle">
     <text x="-285" y="-400" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Frostkamm</text>
-    <text x="300" y="-310" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Goldheide</text>
-    <text x="-10" y="-105" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Herzauen</text>
+    <text x="375" y="-235" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Goldheide</text>
+    <text x="5" y="65" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Herzauen</text>
     <text x="-385" y="70" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Dunkelhain</text>
     <text x="-310" y="425" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Nebelmoor</text>
     <text x="360" y="130" font-size="27" font-weight="700" fill="#163b36" stroke="#dce2bf" stroke-opacity=".65" stroke-width="3" paint-order="stroke" letter-spacing="1.4">Aschenhöhen</text>
@@ -232,6 +235,6 @@
     <text x="-564" y="-648" font-size="12" letter-spacing="1.5">SCHEMATISCH · EDITIERBAR</text>
     <g transform="translate(540 -645)"><path d="M0,-30 11,9 0,1 -11,9Z" fill="#d9dbbd"/><path d="M0,-30V20" stroke="#6f9ba0" stroke-width="2"/><text y="-41" text-anchor="middle" font-size="15">N</text></g>
     <g transform="translate(-560 656)"><path d="M0,-6V0H200V-6 M100,0V-6" stroke="#dfd8ba" stroke-width="2" fill="none"/><text y="18" font-size="12">0</text><text x="100" y="18" font-size="12" text-anchor="middle">100</text><text x="200" y="18" font-size="12" text-anchor="end">200 m</text></g>
-    <text x="565" y="660" font-size="13" text-anchor="end">1,12 km² Land · Planungsmaßstab</text><text x="565" y="681" font-size="12" text-anchor="end">50 Spieler · 10 Startbereiche · 20 min Nebelplan</text>
+    <text x="565" y="660" font-size="13" text-anchor="end">1,09 km² Land · Planungsmaßstab</text><text x="565" y="681" font-size="12" text-anchor="end">50 Spieler · 10 Startbereiche · 20 min Nebelplan</text>
   </g>
 </svg>
