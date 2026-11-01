@@ -1,0 +1,40 @@
+{
+  "totalTriangles": 835899,
+  "localTriangles": 295065,
+  "reports": [
+    {
+      "id": "nordbruecke",
+      "samples": 6375,
+      "penetrations": 405,
+      "minClearance": -0.4899248422633935,
+      "worst": {
+        "x": 211.75310035567924,
+        "z": -278.86604153214984,
+        "board": 84,
+        "across": 3.9733333333333336,
+        "terrain": 2.4033192061649475,
+        "deck": 1.913394363901554
+      },
+      "maxExitStepAcrossWidthFor10cm": 0.8509751779234029,
+      "maxCanalBed": -1.599901073749234,
+      "seaLevel": -0.9
+    },
+    {
+      "id": "suedbruecke",
+      "samples": 5400,
+      "penetrations": 136,
+      "minClearance": -0.23651154082285064,
+      "worst": {
+        "x": 258.1111717959515,
+        "z": 265.9202516714351,
+        "board": 71,
+        "across": 4.96,
+        "terrain": 1.4099250744170293,
+        "deck": 1.1734135335941787
+      },
+      "maxExitStepAcrossWidthFor10cm": 0.3632456436013485,
+      "maxCanalBed": -1.5999931360151334,
+      "seaLevel": -0.9
+    }
+  ]
+}

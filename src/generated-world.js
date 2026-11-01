@@ -9,7 +9,7 @@ import { createMeadowGround } from './meadow-ground.js';
 import { createSnowCover } from './snow-cover.js';
 import { emitTerrainTriangles } from './terrain-triangulation.js';
 
-import { createWorldSpatialModel, triangulateWorldLand } from './generated-spatial.js';
+import { createWorldSpatialModel, triangulateWorldLand, SEA_LEVEL } from './generated-spatial.js';
 export { createWorldSpatialModel } from './generated-spatial.js';
 
 const CHUNK = 64;
@@ -106,7 +106,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   sampleCache.clear(); chunks.clear();
   const sea = new THREE.Mesh(new THREE.PlaneGeometry((map.bounds.maxX - map.bounds.minX) * 3, (map.bounds.maxZ - map.bounds.minZ) * 3),
     new THREE.MeshStandardMaterial({ color: '#376e83', roughness: .49, metalness: .12 }));
-  sea.rotation.x = -Math.PI / 2; sea.position.set((map.bounds.minX + map.bounds.maxX) / 2, -.9, (map.bounds.minZ + map.bounds.maxZ) / 2); sea.name = 'Meer um die Nebelinsel'; root.add(sea);
+  sea.rotation.x = -Math.PI / 2; sea.position.set((map.bounds.minX + map.bounds.maxX) / 2, SEA_LEVEL, (map.bounds.minZ + map.bounds.maxZ) / 2); sea.name = 'Meer um die Nebelinsel'; root.add(sea);
   const shorePositions = [], shoreIndices = [];
   for (const ring of landBoundaryRings(map)) {
     const start = shorePositions.length / 3;
@@ -120,6 +120,9 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   root.add(new THREE.Mesh(shoreGeo, new THREE.MeshStandardMaterial({ color: '#b4aa7f', side: THREE.DoubleSide, roughness: .98 })));
   const waterMeshes = [];
   for (const river of map.rivers) {
+    // Inlets share the lagoon/ocean plane: no raised, differently coloured
+    // river ribbon is laid across their mouths.
+    if (spatial.rivers.segments.some(segment => segment.line.id === river.id && segment.line.seaChannel)) continue;
     const points = [];
     for (let i = 1; i < river.points.length; i++) {
       const a = river.points[i - 1], b = river.points[i], steps = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 4);
@@ -178,8 +181,30 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       const a = path.points[i - 1], b = path.points[i], dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz), count = Math.ceil(length / .8), rotation = Math.atan2(dx, dz);
       for (let board = 0; board < count; board++) {
         const t = (board + .5) / count, x = a[0] + dx * t, z = a[1] + dz * t;
-        transform.position.set(x, (spatial.bridgeAt(x, z)?.height ?? surfaceHeightAt(x, z)) - .07, z); transform.rotation.set(0, rotation, 0); transform.updateMatrix();
-        const plank = new THREE.BoxGeometry(path.width, .14, length / count - .025); plank.applyMatrix4(transform.matrix); pieces.push(plank);
+        const start = spatial.bridgeAt(a[0] + dx * board / count, a[1] + dz * board / count)?.height ?? surfaceHeightAt(x, z);
+        const end = spatial.bridgeAt(a[0] + dx * (board + 1) / count, a[1] + dz * (board + 1) / count)?.height ?? surfaceHeightAt(x, z);
+        const slope = -Math.atan2(end - start, length / count), span = Math.hypot(length / count, end - start);
+        transform.position.set(x, (start + end) / 2 - .07, z); transform.rotation.set(slope, rotation, 0, 'YXZ'); transform.updateMatrix();
+        const plank = new THREE.BoxGeometry(path.width, .14, span - .025); plank.applyMatrix4(transform.matrix); pieces.push(plank);
+        // The railing makes the collision edge readable while leaving both
+        // landings fully open. It follows the same sloped deck profile.
+        const channel = spatial.waterAt(x, z), overWater = channel && channel.distance < channel.line.width / 2 + .6;
+        for (const side of overWater ? [-1, 1] : []) {
+          transform.position.set(x + dz / length * (path.width / 2 - .08) * side, (start + end) / 2 + .85, z - dx / length * (path.width / 2 - .08) * side);
+          transform.updateMatrix();
+          const rail = new THREE.BoxGeometry(.16, .14, span + .015); rail.applyMatrix4(transform.matrix); pieces.push(rail);
+        }
+      }
+      const posts = Math.ceil(length / 3.2);
+      for (let post = 0; post <= posts; post++) {
+        const t = post / posts, x = a[0] + dx * t, z = a[1] + dz * t;
+        const height = spatial.bridgeAt(x, z)?.height ?? surfaceHeightAt(x, z);
+        const channel = spatial.waterAt(x, z), overWater = channel && channel.distance < channel.line.width / 2 + .6;
+        for (const side of overWater ? [-1, 1] : []) {
+          transform.position.set(x + dz / length * (path.width / 2 - .08) * side, height + .44, z - dx / length * (path.width / 2 - .08) * side);
+          transform.rotation.set(0, rotation, 0); transform.updateMatrix();
+          const pillar = new THREE.BoxGeometry(.22, .98, .22); pillar.applyMatrix4(transform.matrix); pieces.push(pillar);
+        }
       }
     }
     if (pieces.length) { const geometry = mergeGeometries(pieces); pieces.forEach(p => p.dispose()); const mesh = new THREE.Mesh(geometry, bridgeMaterial); mesh.name = `${path.name} · begehbare Holzbrücke`; mesh.castShadow = mesh.receiveShadow = true; root.add(mesh); bridgeMeshes.push({ mesh, x: path.points[0][0], z: path.points[0][1] }); }
@@ -206,14 +231,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   if (!spatial.isLand(spawn.x, spawn.z) || spatial.isWater(spawn.x, spawn.z)) { const candidate = map.spawnAreas.find(area => spatial.isLand(...area.position) && !spatial.isWater(...area.position)); spawn.x = candidate?.position[0] ?? map.zone.center[0]; spawn.z = candidate?.position[1] ?? map.zone.center[1]; }
   function resolveMovement(position, radius = .42) {
     objects.resolveMovement(position, radius);
-    spatial.resolveShoreMovement(position, radius);
-    const water = spatial.waterAt(position.x, position.z);
-    if (water && water.distance < water.line.width / 2 + radius && !spatial.bridgeAt(position.x, position.z, -radius * .1)) {
-      let dx = position.x - water.x, dz = position.z - water.z, length = Math.hypot(dx, dz);
-      if (length < .00001) { const l = Math.hypot(water.dx, water.dz) || 1; dx = water.dz / l; dz = -water.dx / l; length = 1; }
-      position.x = water.x + dx / length * (water.line.width / 2 + radius); position.z = water.z + dz / length * (water.line.width / 2 + radius);
-    }
-    return position;
+    return spatial.resolveWaterMovement(position, radius);
   }
   function update(dt, time, player, zoneRadius = map.zone.initialRadius) {
     timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(dt, time, player, zoneRadius); meadowGround.update(time, player); snowCover.update(time, player);

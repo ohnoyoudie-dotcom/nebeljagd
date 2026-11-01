@@ -138,9 +138,10 @@ SVG-`x/y` entspricht JSON-`x/z`. IDs bleiben bei Umbenennungen erhalten.
 
 Gewässerflächen müssen vollständig innerhalb der Küste liegen und dürfen
 sich weder berühren noch überlappen. Küste und Gewässerufer begrenzen zusammen
-die begehbare Fläche. Der aktuelle Kartenstand enthält eine Lagune und leere
-`paths`-/`rivers`-Listen. Die beiden Landzugänge und ihre Prüfungen beschreibt
-[Zwei Landzugänge](two-access-island.md).
+die begehbare Fläche. Der aktuelle Kartenstand enthält eine Lagune, zwei kurze
+Wasserkanäle unter `rivers` und zwei Brücken unter `paths`. Weitere Wege fehlen
+bewusst. Die Verteilung der Biome und die beiden Übergänge beschreibt
+[Layout nach Kartenreferenz](reference-layout.md).
 
 Beispiel eines Weltobjekts:
 

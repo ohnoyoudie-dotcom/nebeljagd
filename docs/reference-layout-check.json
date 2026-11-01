@@ -1,0 +1,2154 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5208",
+  "standalone": true,
+  "sourceSha256": "4f83e9f1078fde63756245f62bd97fc11dd69d23468c0a7d10e14fc28a10c73e",
+  "scope": "Targeted post-correction checks of both eastern bridge landings and the northern water-facing edge; full bridge traversals are prior-build evidence only.",
+  "editorVerification": {
+    "mode": "repeated_editor_only",
+    "htmlSha256": "16380343ecfabaa119769cf9380e92ba140d6f076ce131130400ea85e9402b05",
+    "checks": [
+      {
+        "name": "The exact source and editor show seven reshaped biomes, the organic lagoon, two channels and exactly two bridges",
+        "evidence": {
+          "waterArea": {
+            "id": "goldheide-lagune",
+            "name": "Goldheide-Meerenge",
+            "points": [
+              [
+                175,
+                -290
+              ],
+              [
+                210,
+                -255
+              ],
+              [
+                245,
+                -215
+              ],
+              [
+                262,
+                -148
+              ],
+              [
+                310,
+                -85
+              ],
+              [
+                302,
+                -25
+              ],
+              [
+                320,
+                50
+              ],
+              [
+                283,
+                112
+              ],
+              [
+                268,
+                185
+              ],
+              [
+                242,
+                235
+              ],
+              [
+                233,
+                282
+              ],
+              [
+                185,
+                265
+              ],
+              [
+                158,
+                215
+              ],
+              [
+                151,
+                155
+              ],
+              [
+                181,
+                90
+              ],
+              [
+                163,
+                35
+              ],
+              [
+                125,
+                -25
+              ],
+              [
+                142,
+                -95
+              ],
+              [
+                116,
+                -160
+              ],
+              [
+                110,
+                -220
+              ],
+              [
+                110,
+                -260
+              ]
+            ]
+          },
+          "bridges": [
+            {
+              "id": "nordbruecke",
+              "name": "Nordbrücke",
+              "kind": "bridge",
+              "width": 12,
+              "points": [
+                [
+                  161,
+                  -324
+                ],
+                [
+                  209,
+                  -276
+                ]
+              ]
+            },
+            {
+              "id": "suedbruecke",
+              "name": "Südbrücke",
+              "kind": "bridge",
+              "width": 10,
+              "points": [
+                [
+                  226,
+                  313
+                ],
+                [
+                  262,
+                  269
+                ]
+              ]
+            }
+          ],
+          "channels": [
+            {
+              "id": "nordpassage",
+              "name": "Nördlicher Meeresdurchlass",
+              "width": 24,
+              "points": [
+                [
+                  150,
+                  -265
+                ],
+                [
+                  220,
+                  -335
+                ]
+              ]
+            },
+            {
+              "id": "suedpassage",
+              "name": "Südlicher Meeresdurchlass",
+              "width": 18,
+              "points": [
+                [
+                  200,
+                  255
+                ],
+                [
+                  288,
+                  327
+                ]
+              ]
+            }
+          ],
+          "regions": [
+            {
+              "id": "frostkamm",
+              "biome": "snow",
+              "color": "#aabfc8"
+            },
+            {
+              "id": "goldheide",
+              "biome": "heath",
+              "color": "#b59b49"
+            },
+            {
+              "id": "herzauen",
+              "biome": "meadow",
+              "color": "#6f9858"
+            },
+            {
+              "id": "dunkelhain",
+              "biome": "forest",
+              "color": "#376f50"
+            },
+            {
+              "id": "nebelmoor",
+              "biome": "marsh",
+              "color": "#408f7e"
+            },
+            {
+              "id": "aschenhoehen",
+              "biome": "volcanic",
+              "color": "#87786b"
+            },
+            {
+              "id": "sonnenduene",
+              "biome": "dunes",
+              "color": "#bd9d69"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Water polygons are selectable and their vertices use the existing complete Undo/Redo history",
+        "evidence": null
+      },
+      {
+        "name": "Dragging an island vertex updates the visible shoreline immediately even when the island contains water holes",
+        "evidence": null
+      },
+      {
+        "name": "Ordinary object placement and the grass brush cannot create placements inside the lagoon",
+        "evidence": null
+      },
+      {
+        "name": "JSON save/open preserves water polygons exactly, while older documents without waterAreas remain readable",
+        "evidence": null
+      },
+      {
+        "name": "Exported standalone HTML reopens the exact lagoon geometry and retains the water-area controls",
+        "evidence": null
+      }
+    ]
+  },
+  "previousFullTraversal": {
+    "reportSha256": "01084c147e4a18dc33eeb92459c6a6819bd3b171c6400a863a4d35acced4b7fa",
+    "gameHtmlSha256": "78a1c4fae579056799479358f42d59917150f8a9252a4dbefbc3901c938ec284",
+    "note": "Earlier full crossings established the fixture routes; they were not repeated on this corrected build."
+  },
+  "delivery": {
+    "files": {
+      "map-editor.html": {
+        "bytes": 60488916,
+        "sha256": "16380343ecfabaa119769cf9380e92ba140d6f076ce131130400ea85e9402b05"
+      },
+      "nebeljagd.html": {
+        "bytes": 75906631,
+        "sha256": "78a677aff1e9b6dde0a281b353c17a631cf3d337b8383b959d8fdd49b597f0e6"
+      },
+      "worldmap.json": {
+        "bytes": 21558,
+        "sha256": "4f83e9f1078fde63756245f62bd97fc11dd69d23468c0a7d10e14fc28a10c73e"
+      }
+    },
+    "unexpectedRequests": []
+  },
+  "checks": [
+    {
+      "name": "north landing supports ordinary entry and off-center exit without water entry, teleport or abrupt height steps",
+      "evidence": {
+        "bridge": "nordbruecke",
+        "entry": [
+          {
+            "elapsed": 0,
+            "position": {
+              "x": 213,
+              "y": 1.8949308662294635,
+              "z": -272
+            },
+            "isWater": false,
+            "groundHeight": 1.8949308662294635,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.09999999999999999,
+            "position": {
+              "x": 212.60402020253548,
+              "y": 1.8906037361303833,
+              "z": -272.3959797974645
+            },
+            "isWater": false,
+            "groundHeight": 1.8906037361303833,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.11666666666666665,
+            "position": {
+              "x": 212.53802356962473,
+              "y": 1.8897705225346173,
+              "z": -272.4619764303753
+            },
+            "isWater": false,
+            "groundHeight": 1.8897705225346173,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.21666666666666665,
+            "position": {
+              "x": 212.1420437721602,
+              "y": 1.8849216493478005,
+              "z": -272.8579562278398
+            },
+            "isWater": false,
+            "groundHeight": 1.8849216493478005,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.31666666666666665,
+            "position": {
+              "x": 211.7460639746957,
+              "y": 1.881772374718421,
+              "z": -273.2539360253043
+            },
+            "isWater": false,
+            "groundHeight": 1.881772374718421,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.41666666666666663,
+            "position": {
+              "x": 211.35008417723117,
+              "y": 1.8798186793668097,
+              "z": -273.64991582276883
+            },
+            "isWater": false,
+            "groundHeight": 1.8798186793668097,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.5166666666666666,
+            "position": {
+              "x": 210.95410437976665,
+              "y": 1.8787523570628686,
+              "z": -274.04589562023335
+            },
+            "isWater": false,
+            "groundHeight": 1.8787523570628686,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.6166666666666669,
+            "position": {
+              "x": 210.55812458230213,
+              "y": 1.8782156094351796,
+              "z": -274.4418754176979
+            },
+            "isWater": false,
+            "groundHeight": 1.8782156094351796,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.7166666666666672,
+            "position": {
+              "x": 210.1621447848376,
+              "y": 1.878239808687867,
+              "z": -274.8378552151624
+            },
+            "isWater": false,
+            "groundHeight": 1.878239808687867,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.8166666666666675,
+            "position": {
+              "x": 209.7661649873731,
+              "y": 1.8782405175770842,
+              "z": -275.2338350126269
+            },
+            "isWater": false,
+            "groundHeight": 1.8782405175770842,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.9166666666666679,
+            "position": {
+              "x": 209.37018518990857,
+              "y": 1.8782405175770838,
+              "z": -275.62981481009143
+            },
+            "isWater": false,
+            "groundHeight": 1.8782405175770838,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.016666666666668,
+            "position": {
+              "x": 208.97420539244405,
+              "y": 1.9132439026697488,
+              "z": -276.02579460755595
+            },
+            "isWater": false,
+            "groundHeight": 1.8779200278588166,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.1166666666666676,
+            "position": {
+              "x": 208.57822559497953,
+              "y": 1.9141116978397996,
+              "z": -276.42177440502047
+            },
+            "isWater": false,
+            "groundHeight": 1.871708938487008,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.2166666666666672,
+            "position": {
+              "x": 208.182245797515,
+              "y": 1.9163880560523439,
+              "z": -276.817754202485
+            },
+            "isWater": false,
+            "groundHeight": 1.8597322849271007,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.3166666666666669,
+            "position": {
+              "x": 207.7862660000505,
+              "y": 1.919893848987382,
+              "z": -277.2137339999495
+            },
+            "isWater": false,
+            "groundHeight": 1.8460771215425984,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.4166666666666665,
+            "position": {
+              "x": 207.39028620258597,
+              "y": 1.9244499483249136,
+              "z": -277.60971379741403
+            },
+            "isWater": false,
+            "groundHeight": 1.8349753328582175,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.5166666666666662,
+            "position": {
+              "x": 206.99430640512145,
+              "y": 1.9298772257449388,
+              "z": -278.00569359487855
+            },
+            "isWater": false,
+            "groundHeight": 1.8317379549366422,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.6166666666666658,
+            "position": {
+              "x": 206.59832660765693,
+              "y": 1.9359965529274574,
+              "z": -278.40167339234307
+            },
+            "isWater": false,
+            "groundHeight": 1.8360192675782945,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.7166666666666655,
+            "position": {
+              "x": 206.2023468101924,
+              "y": 1.9426288015524698,
+              "z": -278.7976531898076
+            },
+            "isWater": false,
+            "groundHeight": 1.842693077768903,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.816666666666665,
+            "position": {
+              "x": 205.8063670127279,
+              "y": 1.949594843299975,
+              "z": -279.1936329872721
+            },
+            "isWater": false,
+            "groundHeight": 1.84961635384353,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.9166666666666647,
+            "position": {
+              "x": 205.41038721526337,
+              "y": 1.9567155498499735,
+              "z": -279.58961278473663
+            },
+            "isWater": false,
+            "groundHeight": 1.8567134667697494,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 2.0166666666666644,
+            "position": {
+              "x": 205.01440741779885,
+              "y": 1.9638117928824652,
+              "z": -279.98559258220115
+            },
+            "isWater": false,
+            "groundHeight": 1.8637692822784022,
+            "biome": "heath"
+          }
+        ],
+        "lateral": [
+          {
+            "elapsed": 2.833333333333328,
+            "position": {
+              "x": 205.01440741779885,
+              "y": 1.9638117928824652,
+              "z": -279.98559258220115
+            },
+            "isWater": false,
+            "groundHeight": 1.8637692822784022,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 2.933333333333328,
+            "position": {
+              "x": 205.41038721526337,
+              "y": 1.9638117928824652,
+              "z": -280.38157237966567
+            },
+            "isWater": false,
+            "groundHeight": 1.8637907149357547,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.0333333333333274,
+            "position": {
+              "x": 205.8063670127279,
+              "y": 1.9638117928824652,
+              "z": -280.7775521771302
+            },
+            "isWater": false,
+            "groundHeight": 1.86380493981695,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.0666666666666607,
+            "position": {
+              "x": 205.9383602785494,
+              "y": 1.9638117928824652,
+              "z": -280.9095454429517
+            },
+            "isWater": false,
+            "groundHeight": 1.8638057576346518,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.1666666666666603,
+            "position": {
+              "x": 206.33434007601392,
+              "y": 1.9638117928824652,
+              "z": -281.3055252404162
+            },
+            "isWater": false,
+            "groundHeight": 1.8637831027757337,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.26666666666666,
+            "position": {
+              "x": 206.73031987347844,
+              "y": 1.9638117928824652,
+              "z": -281.70150503788074
+            },
+            "isWater": false,
+            "groundHeight": 1.863773144665103,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.3666666666666596,
+            "position": {
+              "x": 207.12629967094296,
+              "y": 1.9638117928824652,
+              "z": -282.09748483534526
+            },
+            "isWater": false,
+            "groundHeight": 1.8637993759252542,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.3666666666666596,
+            "position": {
+              "x": 207.12629967094296,
+              "y": 1.9638117928824652,
+              "z": -282.09748483534526
+            },
+            "isWater": false,
+            "groundHeight": 1.8637993759252542,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.4666666666666592,
+            "position": {
+              "x": 207.52227946840748,
+              "y": 1.9638117928824652,
+              "z": -282.4934646328098
+            },
+            "isWater": false,
+            "groundHeight": 1.86376198541197,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.566666666666659,
+            "position": {
+              "x": 207.918259265872,
+              "y": 1.9638117928824652,
+              "z": -282.8894444302743
+            },
+            "isWater": false,
+            "groundHeight": 1.8637799699196052,
+            "biome": "heath"
+          }
+        ],
+        "exit": [
+          {
+            "elapsed": 3.566666666666659,
+            "position": {
+              "x": 207.918259265872,
+              "y": 1.9638117928824652,
+              "z": -282.8894444302743
+            },
+            "isWater": false,
+            "groundHeight": 1.8637799699196052,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.6666666666666585,
+            "position": {
+              "x": 208.31423906333652,
+              "y": 1.9567155498499735,
+              "z": -282.4934646328098
+            },
+            "isWater": false,
+            "groundHeight": 1.8567094665087076,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.766666666666658,
+            "position": {
+              "x": 208.71021886080104,
+              "y": 1.949594843299975,
+              "z": -282.09748483534526
+            },
+            "isWater": false,
+            "groundHeight": 1.8496347412803602,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.866666666666658,
+            "position": {
+              "x": 209.10619865826555,
+              "y": 1.9426288015524698,
+              "z": -281.70150503788074
+            },
+            "isWater": false,
+            "groundHeight": 1.842646994608213,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.9666666666666575,
+            "position": {
+              "x": 209.50217845573007,
+              "y": 1.9359965529274574,
+              "z": -281.3055252404162
+            },
+            "isWater": false,
+            "groundHeight": 1.83603586708205,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.0666666666666575,
+            "position": {
+              "x": 209.8981582531946,
+              "y": 1.9298772257449388,
+              "z": -280.9095454429517
+            },
+            "isWater": false,
+            "groundHeight": 1.8308859580036219,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.166666666666657,
+            "position": {
+              "x": 210.29413805065911,
+              "y": 1.9244499483249136,
+              "z": -280.5135656454872
+            },
+            "isWater": false,
+            "groundHeight": 1.8358924382138957,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.183333333333324,
+            "position": {
+              "x": 210.36013468356987,
+              "y": 1.9236252623870036,
+              "z": -280.4475690125764
+            },
+            "isWater": false,
+            "groundHeight": 1.8367495714268336,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.2833333333333234,
+            "position": {
+              "x": 210.7561144810344,
+              "y": 1.9192317746498877,
+              "z": -280.0515892151119
+            },
+            "isWater": false,
+            "groundHeight": 1.8479140809624084,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.383333333333323,
+            "position": {
+              "x": 211.1520942784989,
+              "y": 1.9159184480352653,
+              "z": -279.6556094176474
+            },
+            "isWater": false,
+            "groundHeight": 1.8614676217492065,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.483333333333323,
+            "position": {
+              "x": 211.54807407596343,
+              "y": 1.9138644108631364,
+              "z": -279.25962962018286
+            },
+            "isWater": false,
+            "groundHeight": 1.8721914148001393,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.583333333333322,
+            "position": {
+              "x": 211.94405387342795,
+              "y": 1.8761746409433262,
+              "z": -278.86364982271834
+            },
+            "isWater": false,
+            "groundHeight": 1.8761746409433262,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.683333333333322,
+            "position": {
+              "x": 212.34003367089247,
+              "y": 1.8782405175770838,
+              "z": -278.4676700252538
+            },
+            "isWater": false,
+            "groundHeight": 1.8782405175770838,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.783333333333322,
+            "position": {
+              "x": 212.736013468357,
+              "y": 1.8782405175770842,
+              "z": -278.0716902277893
+            },
+            "isWater": false,
+            "groundHeight": 1.8782405175770842,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.883333333333321,
+            "position": {
+              "x": 213.1319932658215,
+              "y": 1.8790146241361765,
+              "z": -277.6757104303248
+            },
+            "isWater": false,
+            "groundHeight": 1.8790146241361765,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.983333333333321,
+            "position": {
+              "x": 213.52797306328603,
+              "y": 1.88068401045274,
+              "z": -277.27973063286026
+            },
+            "isWater": false,
+            "groundHeight": 1.88068401045274,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.083333333333321,
+            "position": {
+              "x": 213.92395286075055,
+              "y": 1.9010747984215124,
+              "z": -276.88375083539574
+            },
+            "isWater": false,
+            "groundHeight": 1.9010747984215124,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.18333333333332,
+            "position": {
+              "x": 214.31993265821507,
+              "y": 1.9257308994998081,
+              "z": -276.4877710379312
+            },
+            "isWater": false,
+            "groundHeight": 1.9257308994998081,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.28333333333332,
+            "position": {
+              "x": 214.7159124556796,
+              "y": 1.9647923171712223,
+              "z": -276.0917912404667
+            },
+            "isWater": false,
+            "groundHeight": 1.9647923171712223,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.3833333333333195,
+            "position": {
+              "x": 215.1118922531441,
+              "y": 2.008208843620221,
+              "z": -275.6958114430022
+            },
+            "isWater": false,
+            "groundHeight": 2.008208843620221,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.483333333333319,
+            "position": {
+              "x": 215.50787205060863,
+              "y": 2.0584044856398136,
+              "z": -275.29983164553767
+            },
+            "isWater": false,
+            "groundHeight": 2.0584044856398136,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.583333333333319,
+            "position": {
+              "x": 215.90385184807315,
+              "y": 2.112507662055684,
+              "z": -274.90385184807315
+            },
+            "isWater": false,
+            "groundHeight": 2.112507662055684,
+            "biome": "heath"
+          }
+        ]
+      }
+    },
+    {
+      "name": "south landing supports ordinary entry and off-center exit without water entry, teleport or abrupt height steps",
+      "evidence": {
+        "bridge": "suedbruecke",
+        "entry": [
+          {
+            "elapsed": 0,
+            "position": {
+              "x": 267,
+              "y": 1.1030263608642632,
+              "z": 268
+            },
+            "isWater": false,
+            "groundHeight": 1.1030263608642632,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.09999999999999999,
+            "position": {
+              "x": 266.6040202025355,
+              "y": 1.119112759799946,
+              "z": 268.3959797974645
+            },
+            "isWater": false,
+            "groundHeight": 1.119112759799946,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.19999999999999998,
+            "position": {
+              "x": 266.20804040507096,
+              "y": 1.1309384679066028,
+              "z": 268.79195959492904
+            },
+            "isWater": false,
+            "groundHeight": 1.1309384679066028,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.3,
+            "position": {
+              "x": 265.81206060760644,
+              "y": 1.1361914455743434,
+              "z": 269.18793939239356
+            },
+            "isWater": false,
+            "groundHeight": 1.1361914455743434,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.39999999999999997,
+            "position": {
+              "x": 265.4160808101419,
+              "y": 1.1376138232897746,
+              "z": 269.5839191898581
+            },
+            "isWater": false,
+            "groundHeight": 1.1376138232897746,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.49999999999999994,
+            "position": {
+              "x": 265.0201010126774,
+              "y": 1.1376689000220295,
+              "z": 269.9798989873226
+            },
+            "isWater": false,
+            "groundHeight": 1.1376689000220295,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.6000000000000002,
+            "position": {
+              "x": 264.6241212152129,
+              "y": 1.137664474948462,
+              "z": 270.3758787847871
+            },
+            "isWater": false,
+            "groundHeight": 1.137664474948462,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.7000000000000005,
+            "position": {
+              "x": 264.22814141774836,
+              "y": 1.1375695381602717,
+              "z": 270.77185858225164
+            },
+            "isWater": false,
+            "groundHeight": 1.1375695381602717,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.8000000000000008,
+            "position": {
+              "x": 263.83216162028384,
+              "y": 1.1759439595421626,
+              "z": 271.16783837971616
+            },
+            "isWater": false,
+            "groundHeight": 1.1353887310608124,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.9000000000000011,
+            "position": {
+              "x": 263.4361818228193,
+              "y": 1.186247197627703,
+              "z": 271.5638181771807
+            },
+            "isWater": false,
+            "groundHeight": 1.132764656932693,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.0000000000000013,
+            "position": {
+              "x": 263.0402020253548,
+              "y": 1.202722347770605,
+              "z": 271.9597979746452
+            },
+            "isWater": false,
+            "groundHeight": 1.1311368044745733,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.100000000000001,
+            "position": {
+              "x": 262.6442222278903,
+              "y": 1.2244932370304442,
+              "z": 272.3557777721097
+            },
+            "isWater": false,
+            "groundHeight": 1.1376599848687627,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.2000000000000006,
+            "position": {
+              "x": 262.24824243042576,
+              "y": 1.2506836924667946,
+              "z": 272.75175756957424
+            },
+            "isWater": false,
+            "groundHeight": 1.1551403081261886,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.3000000000000003,
+            "position": {
+              "x": 261.85226263296124,
+              "y": 1.2804175411392311,
+              "z": 273.14773736703876
+            },
+            "isWater": false,
+            "groundHeight": 1.1808575765970541,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.4,
+            "position": {
+              "x": 261.4562828354967,
+              "y": 1.312818610107329,
+              "z": 273.5437171645033
+            },
+            "isWater": false,
+            "groundHeight": 1.2128432418190878,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.4999999999999996,
+            "position": {
+              "x": 261.0603030380322,
+              "y": 1.3470107264306623,
+              "z": 273.9396969619678
+            },
+            "isWater": false,
+            "groundHeight": 1.2471896620545246,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.5999999999999992,
+            "position": {
+              "x": 260.6643232405677,
+              "y": 1.3821177171688066,
+              "z": 274.3356767594323
+            },
+            "isWater": false,
+            "groundHeight": 1.2821291584318506,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.6999999999999988,
+            "position": {
+              "x": 260.26834344310316,
+              "y": 1.417263409381336,
+              "z": 274.73165655689684
+            },
+            "isWater": false,
+            "groundHeight": 1.31708598506105,
+            "biome": "heath"
+          }
+        ],
+        "lateral": [
+          {
+            "elapsed": 2.6166666666666623,
+            "position": {
+              "x": 260.26834344310316,
+              "y": 1.417263409381336,
+              "z": 274.73165655689684
+            },
+            "isWater": false,
+            "groundHeight": 1.31708598506105,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 2.716666666666662,
+            "position": {
+              "x": 259.87236364563864,
+              "y": 1.4137720695225382,
+              "z": 274.3356767594323
+            },
+            "isWater": false,
+            "groundHeight": 1.3136359520519054,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 2.8166666666666615,
+            "position": {
+              "x": 259.4763838481741,
+              "y": 1.4102732311220199,
+              "z": 273.9396969619678
+            },
+            "isWater": false,
+            "groundHeight": 1.3101859190427614,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 2.833333333333328,
+            "position": {
+              "x": 259.41038721526337,
+              "y": 1.4096894238851132,
+              "z": 273.87370032905704
+            },
+            "isWater": false,
+            "groundHeight": 1.3096109135412373,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 2.933333333333328,
+            "position": {
+              "x": 259.01440741779885,
+              "y": 1.4061829445711658,
+              "z": 273.4777205315925
+            },
+            "isWater": false,
+            "groundHeight": 1.306160880532093,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.0333333333333274,
+            "position": {
+              "x": 258.61842762033433,
+              "y": 1.4026708650902031,
+              "z": 273.081740734128
+            },
+            "isWater": false,
+            "groundHeight": 1.3026660535969217,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.133333333333327,
+            "position": {
+              "x": 258.2224478228698,
+              "y": 1.3991540616151643,
+              "z": 272.6857609366635
+            },
+            "isWater": false,
+            "groundHeight": 1.2991454429971951,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.2333333333333267,
+            "position": {
+              "x": 257.8264680254053,
+              "y": 1.395633410318991,
+              "z": 272.28978113919896
+            },
+            "isWater": false,
+            "groundHeight": 1.2956248323974686,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.3333333333333264,
+            "position": {
+              "x": 257.43048822794077,
+              "y": 1.3921097873746238,
+              "z": 271.89380134173445
+            },
+            "isWater": false,
+            "groundHeight": 1.2921042217977423,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.433333333333326,
+            "position": {
+              "x": 257.03450843047625,
+              "y": 1.3885840689550015,
+              "z": 271.4978215442699
+            },
+            "isWater": false,
+            "groundHeight": 1.2885836111980158,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.5333333333333257,
+            "position": {
+              "x": 256.63852863301173,
+              "y": 1.3850571312330668,
+              "z": 271.1018417468054
+            },
+            "isWater": false,
+            "groundHeight": 1.2850630005982893,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.5833333333333255,
+            "position": {
+              "x": 256.44053873427947,
+              "y": 1.3832934789377753,
+              "z": 270.90385184807315
+            },
+            "isWater": false,
+            "groundHeight": 1.2833026952984259,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.683333333333325,
+            "position": {
+              "x": 256.04455893681495,
+              "y": 1.379766355086633,
+              "z": 270.5078720506086
+            },
+            "isWater": false,
+            "groundHeight": 1.2797820846986996,
+            "biome": "heath"
+          }
+        ],
+        "exit": [
+          {
+            "elapsed": 3.683333333333325,
+            "position": {
+              "x": 256.04455893681495,
+              "y": 1.379766355086633,
+              "z": 270.5078720506086
+            },
+            "isWater": false,
+            "groundHeight": 1.2797820846986996,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.7833333333333248,
+            "position": {
+              "x": 256.44053873427947,
+              "y": 1.3446930972624411,
+              "z": 270.1118922531441
+            },
+            "isWater": false,
+            "groundHeight": 1.2448999007054953,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.8833333333333244,
+            "position": {
+              "x": 256.836518531744,
+              "y": 1.310593125382421,
+              "z": 269.7159124556796
+            },
+            "isWater": false,
+            "groundHeight": 1.210650764549284,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.8833333333333244,
+            "position": {
+              "x": 256.836518531744,
+              "y": 1.310593125382421,
+              "z": 269.7159124556796
+            },
+            "isWater": false,
+            "groundHeight": 1.210650764549284,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 3.983333333333324,
+            "position": {
+              "x": 257.2324983292085,
+              "y": 1.2783426123869983,
+              "z": 269.31993265821507
+            },
+            "isWater": false,
+            "groundHeight": 1.1787294917433235,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.083333333333324,
+            "position": {
+              "x": 257.62847812667303,
+              "y": 1.2488177312165991,
+              "z": 268.92395286075055
+            },
+            "isWater": false,
+            "groundHeight": 1.1536617502039312,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.183333333333324,
+            "position": {
+              "x": 258.02445792413755,
+              "y": 1.2228946548116473,
+              "z": 268.527973063286
+            },
+            "isWater": false,
+            "groundHeight": 1.1372251061758167,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.2833333333333234,
+            "position": {
+              "x": 258.42043772160207,
+              "y": 1.2014495561125684,
+              "z": 268.1319932658215
+            },
+            "isWater": false,
+            "groundHeight": 1.1309564635392721,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.383333333333323,
+            "position": {
+              "x": 258.8164175190666,
+              "y": 1.1853586080597884,
+              "z": 267.736013468357
+            },
+            "isWater": false,
+            "groundHeight": 1.1328938136036515,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.483333333333323,
+            "position": {
+              "x": 259.2123973165311,
+              "y": 1.1754979835937314,
+              "z": 267.34003367089247
+            },
+            "isWater": false,
+            "groundHeight": 1.1355909346799613,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.583333333333322,
+            "position": {
+              "x": 259.60837711399563,
+              "y": 1.1375758672794845,
+              "z": 266.94405387342795
+            },
+            "isWater": false,
+            "groundHeight": 1.1375758672794845,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.683333333333322,
+            "position": {
+              "x": 260.00435691146015,
+              "y": 1.1376689000220295,
+              "z": 266.5480740759634
+            },
+            "isWater": false,
+            "groundHeight": 1.1376689000220295,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.783333333333322,
+            "position": {
+              "x": 260.40033670892467,
+              "y": 1.1376689000220295,
+              "z": 266.1520942784989
+            },
+            "isWater": false,
+            "groundHeight": 1.1376689000220295,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.883333333333321,
+            "position": {
+              "x": 260.7963165063892,
+              "y": 1.137726543813699,
+              "z": 265.7561144810344
+            },
+            "isWater": false,
+            "groundHeight": 1.137726543813699,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 4.983333333333321,
+            "position": {
+              "x": 261.1922963038537,
+              "y": 1.1393739560781013,
+              "z": 265.36013468356987
+            },
+            "isWater": false,
+            "groundHeight": 1.1393739560781013,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.083333333333321,
+            "position": {
+              "x": 261.58827610131823,
+              "y": 1.143638739982642,
+              "z": 264.96415488610535
+            },
+            "isWater": false,
+            "groundHeight": 1.143638739982642,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.18333333333332,
+            "position": {
+              "x": 261.98425589878275,
+              "y": 1.1531940279735737,
+              "z": 264.5681750886408
+            },
+            "isWater": false,
+            "groundHeight": 1.1531940279735737,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.28333333333332,
+            "position": {
+              "x": 262.38023569624727,
+              "y": 1.1648016196776374,
+              "z": 264.1721952911763
+            },
+            "isWater": false,
+            "groundHeight": 1.1648016196776374,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.3833333333333195,
+            "position": {
+              "x": 262.7762154937118,
+              "y": 1.17757419980232,
+              "z": 263.7762154937118
+            },
+            "isWater": false,
+            "groundHeight": 1.17757419980232,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.483333333333319,
+            "position": {
+              "x": 263.1721952911763,
+              "y": 1.191003161275282,
+              "z": 263.38023569624727
+            },
+            "isWater": false,
+            "groundHeight": 1.191003161275282,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.483333333333319,
+            "position": {
+              "x": 263.1721952911763,
+              "y": 1.191003161275282,
+              "z": 263.38023569624727
+            },
+            "isWater": false,
+            "groundHeight": 1.191003161275282,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.583333333333319,
+            "position": {
+              "x": 263.5681750886408,
+              "y": 1.2051720404554258,
+              "z": 262.98425589878275
+            },
+            "isWater": false,
+            "groundHeight": 1.2051720404554258,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.6833333333333185,
+            "position": {
+              "x": 263.96415488610535,
+              "y": 1.218170472174494,
+              "z": 262.58827610131823
+            },
+            "isWater": false,
+            "groundHeight": 1.218170472174494,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 5.783333333333318,
+            "position": {
+              "x": 264.36013468356987,
+              "y": 1.2296925651334116,
+              "z": 262.1922963038537
+            },
+            "isWater": false,
+            "groundHeight": 1.2296925651334116,
+            "biome": "heath"
+          }
+        ]
+      }
+    },
+    {
+      "name": "The corrected runtime still blocks walking off the northern bridge into the channel",
+      "evidence": {
+        "approach": [
+          {
+            "elapsed": 0,
+            "position": {
+              "x": 196,
+              "y": 1.9982405175770839,
+              "z": -289
+            },
+            "isWater": false,
+            "groundHeight": 0.5359697602750091,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.09999999999999999,
+            "position": {
+              "x": 195.60402020253548,
+              "y": 1.9982405175770839,
+              "z": -289.3959797974645
+            },
+            "isWater": false,
+            "groundHeight": 0.07741040069633229,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.19999999999999998,
+            "position": {
+              "x": 195.20804040507096,
+              "y": 1.9982405175770839,
+              "z": -289.79195959492904
+            },
+            "isWater": false,
+            "groundHeight": -0.38412578728162977,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.3,
+            "position": {
+              "x": 194.81206060760644,
+              "y": 1.9982405175770839,
+              "z": -290.18793939239356
+            },
+            "isWater": false,
+            "groundHeight": -0.8320257846079409,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.36666666666666664,
+            "position": {
+              "x": 194.54807407596343,
+              "y": 1.9982405175770839,
+              "z": -290.4519259240366
+            },
+            "isWater": false,
+            "groundHeight": -1.0746238622022228,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.4666666666666666,
+            "position": {
+              "x": 194.1520942784989,
+              "y": 1.9982405175770839,
+              "z": -290.8479057215011
+            },
+            "isWater": false,
+            "groundHeight": -1.374271755385532,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.5666666666666668,
+            "position": {
+              "x": 193.7561144810344,
+              "y": 1.9982405175770839,
+              "z": -291.2438855189656
+            },
+            "isWater": false,
+            "groundHeight": -1.5624452386203842,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.6666666666666671,
+            "position": {
+              "x": 193.36013468356987,
+              "y": 1.9982405175770839,
+              "z": -291.63986531643013
+            },
+            "isWater": false,
+            "groundHeight": -1.5900521248347068,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.6833333333333338,
+            "position": {
+              "x": 193.29413805065911,
+              "y": 1.9982405175770839,
+              "z": -291.7058619493409
+            },
+            "isWater": false,
+            "groundHeight": -1.594233562887435,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.7833333333333341,
+            "position": {
+              "x": 192.8981582531946,
+              "y": 1.9982405175770839,
+              "z": -292.1018417468054
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.8833333333333344,
+            "position": {
+              "x": 192.50217845573007,
+              "y": 1.9982405175770839,
+              "z": -292.4978215442699
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 0.9833333333333347,
+            "position": {
+              "x": 192.10619865826555,
+              "y": 1.9982405175770839,
+              "z": -292.89380134173445
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.0833333333333344,
+            "position": {
+              "x": 191.71021886080104,
+              "y": 1.9982405175770839,
+              "z": -293.28978113919896
+            },
+            "isWater": false,
+            "groundHeight": -1.5999999999999999,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.183333333333334,
+            "position": {
+              "x": 191.31423906333652,
+              "y": 1.9982405175770839,
+              "z": -293.6857609366635
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.2833333333333337,
+            "position": {
+              "x": 190.918259265872,
+              "y": 1.9982405175770839,
+              "z": -294.081740734128
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.3833333333333333,
+            "position": {
+              "x": 190.52227946840748,
+              "y": 1.9982405175770839,
+              "z": -294.4777205315925
+            },
+            "isWater": false,
+            "groundHeight": -1.6000000000000003,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.483333333333333,
+            "position": {
+              "x": 190.12629967094296,
+              "y": 1.9982405175770839,
+              "z": -294.87370032905704
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.5833333333333326,
+            "position": {
+              "x": 189.73031987347844,
+              "y": 1.9982405175770839,
+              "z": -295.26968012652156
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.6833333333333322,
+            "position": {
+              "x": 189.33434007601392,
+              "y": 1.9982405175770839,
+              "z": -295.6656599239861
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.7833333333333319,
+            "position": {
+              "x": 188.9383602785494,
+              "y": 1.9982405175770839,
+              "z": -296.0616397214506
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "heath"
+          },
+          {
+            "elapsed": 1.8833333333333315,
+            "position": {
+              "x": 188.54238048108488,
+              "y": 1.9982405175770839,
+              "z": -296.4576195189151
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 1.9833333333333312,
+            "position": {
+              "x": 188.14640068362036,
+              "y": 1.9982405175770839,
+              "z": -296.85359931637964
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.083333333333331,
+            "position": {
+              "x": 187.75042088615584,
+              "y": 1.9982405175770839,
+              "z": -297.24957911384416
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.1833333333333305,
+            "position": {
+              "x": 187.35444108869132,
+              "y": 1.9982405175770839,
+              "z": -297.6455589113087
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.28333333333333,
+            "position": {
+              "x": 186.9584612912268,
+              "y": 1.9982405175770839,
+              "z": -298.0415387087732
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.3833333333333298,
+            "position": {
+              "x": 186.56248149376228,
+              "y": 1.9982405175770839,
+              "z": -298.4375185062377
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.4833333333333294,
+            "position": {
+              "x": 186.16650169629776,
+              "y": 1.9982405175770839,
+              "z": -298.83349830370224
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.583333333333329,
+            "position": {
+              "x": 185.77052189883324,
+              "y": 1.9982405175770839,
+              "z": -299.22947810116676
+            },
+            "isWater": false,
+            "groundHeight": -1.6000000000000003,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.6833333333333287,
+            "position": {
+              "x": 185.37454210136872,
+              "y": 1.9982405175770839,
+              "z": -299.6254578986313
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.7833333333333283,
+            "position": {
+              "x": 184.9785623039042,
+              "y": 1.9982405175770839,
+              "z": -300.0214376960958
+            },
+            "isWater": false,
+            "groundHeight": -1.5999999999999999,
+            "biome": "meadow"
+          }
+        ],
+        "side": [
+          {
+            "elapsed": 2.7833333333333283,
+            "position": {
+              "x": 184.9785623039042,
+              "y": 1.9982405175770839,
+              "z": -300.0214376960958
+            },
+            "isWater": false,
+            "groundHeight": -1.5999999999999999,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.883333333333328,
+            "position": {
+              "x": 185.37454210136872,
+              "y": 1.9982405175770839,
+              "z": -300.4174174935603
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 2.9833333333333276,
+            "position": {
+              "x": 185.77052189883324,
+              "y": 1.9982405175770839,
+              "z": -300.81339729102484
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.0833333333333273,
+            "position": {
+              "x": 186.16650169629776,
+              "y": 1.9982405175770839,
+              "z": -301.20937708848936
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.183333333333327,
+            "position": {
+              "x": 186.56248149376228,
+              "y": 1.9982405175770839,
+              "z": -301.6053568859539
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.2833333333333266,
+            "position": {
+              "x": 186.9584612912268,
+              "y": 1.9982405175770839,
+              "z": -302.0013366834184
+            },
+            "isWater": false,
+            "groundHeight": -1.6000000000000003,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.383333333333326,
+            "position": {
+              "x": 187.35444108869132,
+              "y": 1.9982405175770839,
+              "z": -302.3973164808829
+            },
+            "isWater": false,
+            "groundHeight": -1.5999999999999999,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.483333333333326,
+            "position": {
+              "x": 187.75042088615584,
+              "y": 1.9982405175770839,
+              "z": -302.79329627834744
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.5833333333333255,
+            "position": {
+              "x": 188.14640068362036,
+              "y": 1.9982405175770839,
+              "z": -303.18927607581196
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.683333333333325,
+            "position": {
+              "x": 188.54238048108488,
+              "y": 1.9982405175770839,
+              "z": -303.5852558732765
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.7833333333333248,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.8833333333333244,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 3.983333333333324,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.083333333333324,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.183333333333324,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.2833333333333234,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.383333333333323,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          }
+        ],
+        "continued": [
+          {
+            "elapsed": 4.383333333333323,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.483333333333323,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.583333333333322,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.683333333333322,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.783333333333322,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.883333333333321,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          },
+          {
+            "elapsed": 4.983333333333321,
+            "position": {
+              "x": 188.88179173605394,
+              "y": 1.9982405175770839,
+              "z": -303.9246671282455
+            },
+            "isWater": false,
+            "groundHeight": -1.6,
+            "biome": "meadow"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/reference-layout-editor.png",
+    "docs/reference-layout-north-bridge.png",
+    "docs/reference-layout-north-exit.png",
+    "docs/reference-layout-south-bridge.png",
+    "docs/reference-layout-south-exit.png",
+    "docs/reference-layout-north-water-edge.png"
+  ],
+  "limits": "Chromium software WebGL. Player state is read only; fixture starts use ordinary JSON imports and movement uses WASD. No device-performance claim.",
+  "checkedAt": "2026-11-01T10:21:37.840834+00:00",
+  "totalChecks": 9,
+  "newRuntimeChecks": 3,
+  "screenshotArtifacts": [
+    {
+      "path": "docs/reference-layout-editor.png",
+      "description": "Current editor and map overview",
+      "html": "map-editor.html",
+      "htmlSha256": "16380343ecfabaa119769cf9380e92ba140d6f076ce131130400ea85e9402b05",
+      "imageSha256": "c72b2d34f6d01139ab61c7ea0fab9ff4d4cefdcdb371035057584a2d3c5af1f0"
+    },
+    {
+      "path": "docs/reference-layout-north-bridge.png",
+      "description": "Corrected northern landing viewed from its deck",
+      "html": "nebeljagd.html",
+      "htmlSha256": "78a677aff1e9b6dde0a281b353c17a631cf3d337b8383b959d8fdd49b597f0e6",
+      "imageSha256": "f2be5ec74bb76a96891e609dbfb130859a9aded308408d90534254a3685def94"
+    },
+    {
+      "path": "docs/reference-layout-north-exit.png",
+      "description": "Northern landing after an off-center exit",
+      "html": "nebeljagd.html",
+      "htmlSha256": "78a677aff1e9b6dde0a281b353c17a631cf3d337b8383b959d8fdd49b597f0e6",
+      "imageSha256": "3695f1616e47b7a3e94ae09574e00a6a2bf972435972123247a531a0cbf56faa"
+    },
+    {
+      "path": "docs/reference-layout-south-bridge.png",
+      "description": "Corrected southern landing viewed from its deck",
+      "html": "nebeljagd.html",
+      "htmlSha256": "78a677aff1e9b6dde0a281b353c17a631cf3d337b8383b959d8fdd49b597f0e6",
+      "imageSha256": "aa848636ec7f228d35e5e7ff7ca984b728c7ce429ac596e84b2af1c97420460d"
+    },
+    {
+      "path": "docs/reference-layout-south-exit.png",
+      "description": "Southern landing after an off-center exit",
+      "html": "nebeljagd.html",
+      "htmlSha256": "78a677aff1e9b6dde0a281b353c17a631cf3d337b8383b959d8fdd49b597f0e6",
+      "imageSha256": "a968bce45494e636094a2f69a1e6a9d904b370d96399357b861b034c9f4c934d"
+    },
+    {
+      "path": "docs/reference-layout-north-water-edge.png",
+      "description": "Northern bridge water-facing edge blocks continued walking",
+      "html": "nebeljagd.html",
+      "htmlSha256": "78a677aff1e9b6dde0a281b353c17a631cf3d337b8383b959d8fdd49b597f0e6",
+      "imageSha256": "5112def6983b0c9956e025873245ed7c73b21444312ff89653d93e6c0ca3793e"
+    }
+  ],
+  "summary": {
+    "north": {
+      "maxVerticalStep": 0.05410317641587037,
+      "maxHorizontalStep": 0.5600000000000752
+    },
+    "south": {
+      "maxVerticalStep": 0.038374421381890844,
+      "maxHorizontalStep": 0.5600000000000752
+    },
+    "northWaterEdge": {
+      "maxVerticalStep": 0.0,
+      "maxHorizontalStep": 0.5600000000000752
+    }
+  }
+}

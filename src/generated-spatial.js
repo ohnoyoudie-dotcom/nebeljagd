@@ -6,6 +6,7 @@ import { getLandscape, biomeRuntimeId } from './map/landscape.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
 
 const CHUNK = 64;
+export const SEA_LEVEL = -.9;
 const clamp = THREE.MathUtils.clamp;
 const smooth = (a, b, value) => { const t = clamp((value - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
@@ -81,8 +82,15 @@ export function createWorldSpatialModel(map) {
       return padding > 0 && area.points.some((point, i, ring) => distanceToSegment([x, z], point, ring[(i + 1) % ring.length]) < padding);
     });
   }
-  const rivers = segmentIndex(map.rivers, 14);
-  const bridges = segmentIndex(map.paths.filter(path => path.kind === 'bridge'), 2);
+  // A short connection with both ends in the lagoon/sea is an inlet, not a
+  // raised inland river. Its bed opens onto the same existing sea surface.
+  const riverLines = map.rivers.map(line => ({ ...line,
+    seaChannel: line.points.length > 1 && [line.points[0], line.points.at(-1)].every(point => !isLand(...point)),
+  }));
+  const rivers = segmentIndex(riverLines, 14);
+  const bridges = segmentIndex(map.paths.filter(path => path.kind === 'bridge'), 3);
+  const bridgeTerrain = segmentIndex(map.paths.filter(path => path.kind === 'bridge'), 12);
+  const refinedWaterSegments = [...rivers.segments.filter(segment => segment.line.seaChannel), ...bridges.segments];
   const houseSites = (map.objects ?? []).filter(item => item.kind === 'house');
   const houseCells = new Map();
   const refinedHouseSites = [];
@@ -150,7 +158,7 @@ export function createWorldSpatialModel(map) {
   }
   const waterAt = (x, z) => {
     const hit = rivers.closest(x, z);
-    return hit ? { ...hit, height: rawLand(hit.x, hit.z) * .25 + .14 } : null;
+    return hit ? { ...hit, height: hit.line.seaChannel ? SEA_LEVEL : rawLand(hit.x, hit.z) * .25 + .14 } : null;
   };
   function baseGround(x, z) {
     let height = rawLand(x, z);
@@ -172,7 +180,7 @@ export function createWorldSpatialModel(map) {
       const key = `${x},${z}`; if (!houseCells.has(key)) houseCells.set(key, []); houseCells.get(key).push(record);
     }
   }
-  function groundAt(x, z) {
+  function unshapedGroundAt(x, z) {
     let height = baseGround(x, z);
     for (const house of houseCells.get(`${Math.floor(x / CHUNK)},${Math.floor(z / CHUNK)}`) ?? []) {
       const dx = x - house.position[0], dz = z - house.position[1];
@@ -183,16 +191,75 @@ export function createWorldSpatialModel(map) {
     return height;
   }
   function refineTerrainTriangle(a, b, c) {
-    if (!refinedHouseSites.length) return false;
     const edge2 = (p, q) => (p.x - q.x) ** 2 + (p.z - q.z) ** 2;
     const longest2 = Math.max(edge2(a, b), edge2(b, c), edge2(c, a));
     const minX = Math.min(a.x, b.x, c.x), maxX = Math.max(a.x, b.x, c.x);
     const minZ = Math.min(a.z, b.z, c.z), maxZ = Math.max(a.z, b.z, c.z);
+    // The narrow inlet must really be cut below sea level, including its
+    // mouths. Local refinement also gives the deck ramps accurate landings.
+    if (longest2 > 2.25 && refinedWaterSegments.some(segment => {
+      const margin = segment.line.width / 2 + 11;
+      return maxX >= Math.min(segment.a[0], segment.b[0]) - margin && minX <= Math.max(segment.a[0], segment.b[0]) + margin
+        && maxZ >= Math.min(segment.a[1], segment.b[1]) - margin && minZ <= Math.max(segment.a[1], segment.b[1]) + margin;
+    })) return true;
     // The normal island mesh can span an entire room with one triangle. Only
     // refine locally so every vertex beneath this floor lies on its plateau.
     return refinedHouseSites.some(house => longest2 > house.maxTriangleEdge ** 2
       && maxX >= house.position[0] - house.radius && minX <= house.position[0] + house.radius
       && maxZ >= house.position[1] - house.radius && minZ <= house.position[1] + house.radius);
+  }
+  const bridgeProfiles = new Map();
+  for (const line of map.paths.filter(path => path.kind === 'bridge')) {
+    let length = 0, deck = -Infinity;
+    const offsets = [0];
+    for (let i = 1; i < line.points.length; i++) {
+      const a = line.points[i - 1], b = line.points[i], span = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const count = Math.max(1, Math.ceil(span / 2));
+      for (let step = 0; step <= count; step++) {
+        const x = a[0] + (b[0] - a[0]) * step / count, z = a[1] + (b[1] - a[1]) * step / count;
+        deck = Math.max(deck, unshapedGroundAt(x, z) + .12, (waterAt(x, z)?.height ?? -Infinity) + .67);
+      }
+      length += span; offsets.push(length);
+    }
+    bridgeProfiles.set(line, { length, offsets, deck, ramp: Math.min(10, length / 4),
+      start: unshapedGroundAt(...line.points[0]) + .035, end: unshapedGroundAt(...line.points.at(-1)) + .035 });
+  }
+  function deckHeightAt(profile, distance) {
+    const along = clamp(distance, 0, profile.length);
+    if (along < profile.ramp) return THREE.MathUtils.lerp(profile.start, profile.deck, smooth(0, profile.ramp, along));
+    if (along > profile.length - profile.ramp) return THREE.MathUtils.lerp(profile.end, profile.deck, smooth(0, profile.ramp, profile.length - along));
+    return profile.deck;
+  }
+  function bridgeDeckHeight(segment, t) {
+    const profile = bridgeProfiles.get(segment.line);
+    const index = segment.line.points.indexOf(segment.a), span = Math.hypot(segment.b[0] - segment.a[0], segment.b[1] - segment.a[1]);
+    return deckHeightAt(profile, profile.offsets[index] + t * span);
+  }
+  function groundAt(x, z) {
+    let height = unshapedGroundAt(x, z);
+    for (const segment of bridgeTerrain.near(x, z)) {
+      const dx = segment.b[0] - segment.a[0], dz = segment.b[1] - segment.a[1], length = Math.hypot(dx, dz);
+      const alongSegment = ((x - segment.a[0]) * dx + (z - segment.a[1]) * dz) / length;
+      const across = Math.abs((x - segment.a[0]) * dz - (z - segment.a[1]) * dx) / length;
+      const profile = bridgeProfiles.get(segment.line), index = segment.line.points.indexOf(segment.a);
+      if (index > 0 && alongSegment < 0 || index < segment.line.points.length - 2 && alongSegment > length) continue;
+      const along = profile.offsets[index] + alongSegment;
+      const outside = Math.max(0, -along, along - profile.length);
+      // Flatten the entire landing width, including enough margin for the
+      // actual terrain triangles. Blend back into the bank beyond each end.
+      const influence = (1 - smooth(segment.line.width / 2 + 1.5, segment.line.width / 2 + 6.5, across))
+        * (1 - smooth(2, 10, outside));
+      if (influence <= 0) continue;
+      const fromEnd = Math.min(clamp(along, 0, profile.length), clamp(profile.length - along, 0, profile.length));
+      const clearance = .035 + .065 * smooth(0, 3, fromEnd), underside = deckHeightAt(profile, along) - clearance;
+      const water = waterAt(x, z);
+      const dryBank = water ? smooth(water.line.width / 2 + .3, water.line.width / 2 + 7, water.distance) : 1;
+      // Excavate high banks beneath the planks. Only raise dry approaches;
+      // the channel bed and its open sea connection must remain submerged.
+      const target = THREE.MathUtils.lerp(Math.min(height, underside), underside, dryBank);
+      height = THREE.MathUtils.lerp(height, target, influence);
+    }
+    return height;
   }
   function bridgeAt(x, z, padding = 0) {
     // River bridges do not turn a polygonal lagoon into traversable land.
@@ -203,8 +270,7 @@ export function createWorldSpatialModel(map) {
       if (along < 0 || along > 1) continue;
       const p = projection(x, z, segment.a, segment.b);
       if (p.distance <= segment.line.width / 2 + padding) {
-        const water = waterAt(x, z);
-        return { ...p, line: segment.line, height: (water?.height ?? baseGround(x, z)) + .67 };
+        return { ...p, line: segment.line, height: bridgeDeckHeight(segment, p.t) };
       }
     }
     return null;
@@ -247,11 +313,32 @@ export function createWorldSpatialModel(map) {
     }
     return position;
   }
+  function resolveWaterMovement(position, radius = .42) {
+    resolveShoreMovement(position, radius);
+    const water = waterAt(position.x, position.z);
+    if (!water || water.distance >= water.line.width / 2 + radius || bridgeAt(position.x, position.z, -radius - .06)) return position;
+    // A lateral step off a bridge meets its rail. Projecting it all the way to
+    // the riverbank would teleport the player several metres through water.
+    for (const segment of bridges.near(position.x, position.z)) {
+      const p = projection(position.x, position.z, segment.a, segment.b);
+      const halfWidth = segment.line.width / 2;
+      if (p.t <= 0 || p.t >= 1 || p.distance > halfWidth + radius + 1.2) continue;
+      const safe = Math.max(0, halfWidth - radius - .06), divisor = p.distance || 1;
+      position.x = p.x + (position.x - p.x) / divisor * Math.min(p.distance, safe);
+      position.z = p.z + (position.z - p.z) / divisor * Math.min(p.distance, safe);
+      return resolveShoreMovement(position, radius);
+    }
+    let dx = position.x - water.x, dz = position.z - water.z, length = Math.hypot(dx, dz);
+    if (length < .00001) { const l = Math.hypot(water.dx, water.dz) || 1; dx = water.dz / l; dz = -water.dx / l; length = 1; }
+    position.x = water.x + dx / length * (water.line.width / 2 + radius);
+    position.z = water.z + dz / length * (water.line.width / 2 + radius);
+    return resolveShoreMovement(position, radius);
+  }
   return { groundAt, refineTerrainTriangle, rawLand, regionAt, biomeAt, biomeWeightsAt, colorAt, baseColorAt, terrainPaint, waterAt, bridgeAt, coast, rivers,
-    isLand, resolveShoreMovement,
+    isLand, resolveShoreMovement, resolveWaterMovement,
     isWater: (x, z, padding = 0) => {
       if (inWaterArea(x, z, padding)) return true;
       const water = waterAt(x, z);
-      return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z));
+      return Boolean(water && water.distance < water.line.width / 2 + padding && !bridgeAt(x, z, -Math.max(0, padding)));
     } };
 }

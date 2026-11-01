@@ -59,6 +59,31 @@ export function isLandPoint(map, point) {
     && !landBoundaryRings(map).slice(1).some(ring => pointInPolygon(point, ring));
 }
 
+/** Authoring guard only: preserve legacy imports while preventing newly flooded
+ * or moved starts. Bridge decks are kept clear of new starting areas too. */
+export function validateStartRiverEdit(candidate, previous) {
+  const errors = [];
+  const riversChanged = JSON.stringify(candidate.rivers ?? []) !== JSON.stringify(previous.rivers ?? []);
+  const overlapsRiver = (map, position, radius = 0) => coordinate(position) && finite(radius)
+    && (Array.isArray(map.rivers) ? map.rivers : []).some(river => finite(river?.width) && river.width > 0
+      && Array.isArray(river.points) && river.points.some((point, i, points) => i > 0
+        && coordinate(point) && coordinate(points[i - 1])
+        && distanceToSegment(position, points[i - 1], point) <= river.width / 2 + radius));
+  const start = candidate.gameplay?.spawnPosition, oldStart = previous.gameplay?.spawnPosition;
+  if (overlapsRiver(candidate, start) && (JSON.stringify(start) !== JSON.stringify(oldStart)
+    || riversChanged && !overlapsRiver(previous, oldStart))) errors.push('Der Spielstart muss außerhalb von Flüssen und Wasserkanälen liegen.');
+  const originals = new Map((previous.spawnAreas ?? []).map(spawn => [spawn.id, spawn]));
+  for (const spawn of candidate.spawnAreas ?? []) {
+    const original = originals.get(spawn.id);
+    const moved = !original || ['position', 'radius'].some(key => JSON.stringify(spawn[key]) !== JSON.stringify(original[key]));
+    if (overlapsRiver(candidate, spawn.position, spawn.radius) && (moved
+      || riversChanged && !overlapsRiver(previous, original?.position, original?.radius))) {
+      errors.push(`Startbereich ${spawn.name} überlappt einen Fluss oder Wasserkanal.`);
+    }
+  }
+  return errors;
+}
+
 function intersects(a, b, c, d) {
   const p = cross(a, b, c), q = cross(a, b, d), r = cross(c, d, a), s = cross(c, d, b);
   const eps = 1e-7;

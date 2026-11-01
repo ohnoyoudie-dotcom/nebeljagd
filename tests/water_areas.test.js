@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getWorldmapStats, isLandPoint, landBoundaryRings, validateWorldmap } from '../src/map/model.js';
+import { getWorldmapStats, isLandPoint, landBoundaryRings, validateWorldmap, validateStartRiverEdit } from '../src/map/model.js';
 import { makeBarrier } from '../src/map/barriers.js';
 import { makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 
@@ -103,6 +103,47 @@ test('each explicit placement and whole start circle must avoid inland water', (
   const map = { ...fixture(), waterAreas: [area()] };
   map.spawnAreas[0].position = [4, 0];
   assert.equal(validateWorldmap(map).valid, true);
+});
+
+test('edited game starts and whole spawn circles stay clear of channels even at bridge crossings', () => {
+  const map = { ...fixture(), waterAreas: [area()],
+    rivers: [{ id: 'channel', name: 'Wasserkanal', width: 10, points: [[20, -10], [0, -60], [0, -120]] }],
+    paths: [{ id: 'crossing', name: 'Brücke', kind: 'bridge', width: 6, points: [[-15, -70], [15, -70]] }],
+  };
+  assert.equal(validateWorldmap(map).valid, true, 'a channel may connect the lagoon to the outside sea');
+  const before = structuredClone(map);
+  for (const point of [[0, -70], [4, -70], [5, -70]]) {
+    const candidate = structuredClone(map); candidate.gameplay.spawnPosition = point;
+    assert.ok(validateStartRiverEdit(candidate, map).some(error => /Spielstart.*Wasserkanälen/.test(error)));
+  }
+  for (const point of [[0, -70], [-8, -70], [-10, -70]]) {
+    const candidate = structuredClone(map); candidate.spawnAreas[0].position = point;
+    assert.ok(validateStartRiverEdit(candidate, map).some(error => /Startbereich.*Wasserkanal/.test(error)));
+  }
+  const dry = structuredClone(map); dry.spawnAreas[0].position = [-11, -70];
+  assert.deepEqual(validateStartRiverEdit(dry, map), [], 'the complete disc clears the channel bank');
+  assert.deepEqual(map, before, 'validation neither relocates starts nor changes old map geometry');
+});
+
+test('channel edits cannot flood dry starts while unchanged legacy starts remain readable and untouched', () => {
+  const dry = fixture(), flooded = structuredClone(dry);
+  flooded.rivers = [{ id: 'channel', name: 'Wasserkanal', width: 10, points: [[-50, -90], [-50, 90]] }];
+  assert.equal(validateStartRiverEdit(flooded, dry).length, 2, 'the edit would flood both player start and spawn circle');
+  const before = structuredClone(flooded);
+  assert.equal(validateWorldmap(flooded).valid, true, 'existing saved maps keep their previous import contract');
+  assert.deepEqual(normalizeWorldmap(flooded), before, 'loading does not relocate starts or rewrite rivers');
+  assert.deepEqual(validateStartRiverEdit(flooded, before), [], 'an unrelated edit does not reject an unchanged legacy start');
+  flooded.spawnAreas[0].radius += 1;
+  assert.equal(validateStartRiverEdit(flooded, before).length, 1, 'editing that legacy circle applies the current placement guard');
+  assert.deepEqual(before, normalizeWorldmap(before));
+});
+
+test('malformed river geometry still reports validation errors without throwing during spawn checks', () => {
+  for (const line of [null, { id: 'broken', name: 'Fehler', width: 12, points: [[0, 0], null] },
+    { id: 'broken', name: 'Fehler', width: Infinity, points: [[0, 0], [10, 10]] }]) {
+    const map = fixture(); map.rivers = [line];
+    assert.equal(validateWorldmap(map).valid, false);
+  }
 });
 
 test('barrier validation detects crossing or touching a water hole even with both endpoints on land', () => {

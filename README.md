@@ -1,10 +1,11 @@
 # Nebeljagd · Die Nebelinsel
 
-**Entwicklungsstand auf `work`:** Die Insel hat markante Buchten,
-Halbinseln und organischere Regionsgrenzen. Die neue Goldheide-Lagune trennt
-einen großen östlichen Bereich ab, der nur über zwei rund 28 Meter breite
-Landzugänge erreichbar ist. Wege, Flüsse und Brücken sind aus der Kartenbasis
-entfernt. Vorschau und Prüfung: [`docs/two-access-island.md`](docs/two-access-island.md).
+**Entwicklungsstand auf `work`:** Die Biome folgen der Kartenreferenz: ein
+kleineres Frostgebiet im Nordwesten, ein großer grüner Kern, Moor im Südwesten,
+trockenes Gelände im Süden und ein goldbrauner Osten. Ein organisch geformter
+Meeresarm trennt den östlichen Bereich ab; genau zwei begehbare Brücken verbinden
+ihn mit der Hauptinsel. Das übrige Wegenetz bleibt für den späteren Ausbau frei.
+Vorschau und Prüfung: [`docs/reference-layout.md`](docs/reference-layout.md).
 Der Editor zeigt pro Hauptbereich
 nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
@@ -36,7 +37,7 @@ Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 
 Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,02 km²**
-Land mit sieben Landschaften, einer Lagune und Ortsmarkern. Der
+Land mit sieben Landschaften, einem Meeresarm, zwei Brücken und Ortsmarkern. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
 Teil des Spiels. Begehbare Wirtshäuser und Wohnhaus 2 lassen sich im Editor
 platzieren; das kleine Tripo-Schloss ist aus der aktiven Auswahl entfernt.
@@ -48,8 +49,9 @@ Modellvorschauen; der **Graspinsel** malt bearbeitbare Versteckflächen. Der
 **Radiergummi** entfernt ganze Objekte oder gezielt Grasflächen mit einem Strich.
 
 Die aktuelle Projektkarte enthält ein Tripo-Wirtshaus und vier gezeichnete
-Mauer-/Zaunstrecken. Die Landschaft bleibt erhalten; Wege, Flüsse und Brücken
-werden später neu gestaltet.
+Mauer-/Zaunstrecken. Die beiden Brücken queren kurze Wasserkanäle, die den
+Meeresarm mit dem offenen Wasser verbinden. Weitere Wege und Flüsse werden
+später gestaltet.
 Zehn Startbereiche bieten Platz
 für die spätere Planung mit etwa 50 Spielern. Der aktuelle Spielstand ist ein
 **lokaler Erkundungs- und Kampfprototyp** mit drei beschrifteten Übungsgegnern;
@@ -132,8 +134,8 @@ JSON. `dist/worldmap.svg` wird bei jedem Build aus den aktuellen Daten erzeugt.
 - Die sichere Zone startet mit **800 Metern Radius**. Nach drei Minuten beginnt
   die erste Schrumpfphase. Fünf Phasen führen in insgesamt 20 Minuten auf
   20 Meter Radius. Der Nebel verursacht derzeit 11 Schadenspunkte pro Sekunde.
-- Die Lagune kann nur über den nördlichen oder südlichen Landzugang umgangen
-  werden; Laufen und Rollen enden am Ufer. Bäume, Felsen,
+- Der östliche Bereich ist über die nördliche oder südliche Brücke erreichbar.
+  Abseits der Brücken enden Laufen und Rollen am Wasser. Bäume, Felsen,
   bewachsene Erhöhungen, Hauswände, Wasser und Küste begrenzen die Bewegung. Pfeile prüfen ihre gesamte
   Flugstrecke gegen Hindernisse und prallen gedämpft ab.
 - Das neue Wirtshaus ist dauerhaft ohne Dach und enthält Gastraum und Küche.

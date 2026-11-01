@@ -2,7 +2,9 @@
 
 Dieser Bericht beschreibt die erste Überarbeitung der Küste. Anschließend
 wurde die Goldheide-Lagune mit zwei Landzugängen ergänzt und das Wegenetz samt
-Flüssen und Brücken entfernt. Aktueller Stand: [Zwei Landzugänge](two-access-island.md).
+Flüssen und Brücken entfernt. Die aktuelle Karte verteilt die Biome nach der
+Bildvorlage und ersetzt die zwei Landzugänge durch Brücken:
+[Layout nach Kartenreferenz](reference-layout.md).
 Die folgenden Zahlen und Prüfungen dokumentieren den damaligen Stand.
 
 Die Kartenbasis besitzt jetzt eine stärker gegliederte Küste: ein nördliches

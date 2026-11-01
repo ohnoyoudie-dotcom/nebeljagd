@@ -31,6 +31,22 @@ test('grass footprint accepts old ring callers and protects every shore with a f
   assert.deepEqual(map.objects, []);
 });
 
+test('river connections to a lagoon stay clear of scenery, including banks and bridge crossings', () => {
+  const map = fixture();
+  map.rivers = [{ id: 'channel', name: 'Kanal', width: 12, points: [[0, -10], [0, -110]] }];
+  map.paths = [{ id: 'bridge', name: 'Brücke', kind: 'bridge', width: 6, points: [[-15, -50], [15, -50]] }];
+  assert.equal(canPaintGrass([0, -50], map.island.points, 2), true, 'legacy outer-ring calls retain their original meaning');
+  assert.equal(canPaintGrass([0, -50], map, 2), false, 'bridge decks must stay free of grass and object footprints');
+  assert.equal(canPaintGrass([7, -50], map, 2), false, 'a dry centre does not permit overhanging the channel bank');
+  assert.equal(canPaintGrass([9, -50], map, 2), true);
+  assert.equal(canPaintGrass([0, -80], map, 2), false, 'open channel water blocks placements away from the bridge too');
+  const stroke = createGrassBrushStroke(map, { radius: 2 });
+  stroke.sample([-35, -50]); stroke.sample([35, -50]);
+  assert.ok(stroke.objects.length > 4);
+  for (const item of stroke.objects) assert.equal(canPaintGrass(item.position, map, item.radius), true);
+  assert.deepEqual(map.objects, [], 'the placement guard does not change authored objects');
+});
+
 test('vegetation and Tripo scatter cannot put any footprint into an inner water area', () => {
   const map = fixture(), guard = createLandscapePlacementGuard(map);
   assert.equal(guard.reason([0, 0], 1, 'rock'), 'coast');

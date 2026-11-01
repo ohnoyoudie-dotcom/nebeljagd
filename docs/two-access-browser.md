@@ -1,4 +1,6 @@
-# Browserprüfung der zwei Zugänge
+# Historische Browserprüfung der zwei Landzugänge
+
+Dieser Bericht dokumentiert den vorherigen Kartenstand mit zwei natürlichen Landhälsen. Die aktuelle Referenzkarte mit zwei Brücken wird im Bericht `reference-layout-check.json` und den Bildern `reference-layout-*.png` geprüft. Der folgende Nachweis und seine Prüfsummen bleiben als historischer Stand erhalten.
 
 Die endgültigen Standalone-Dateien aus `welt` bestehen alle neun Browserprüfungen. Der Bericht `two-access-check.json` enthält ihre SHA-256-Prüfsummen, die gemessenen Spielerpositionen und die verwendete Testadresse. Es gab keine JavaScript-Fehler und keine zusätzlichen externen Ressourcenanfragen.
 
@@ -10,7 +12,7 @@ Am Westufer stoppt fortgesetztes Laufen bei ungefähr `x=154.50`; die Wasserflä
 
 Der Test verwendet Chromium mit Software-WebGL. Er prüft Bedienung, Darstellung und Kollision, nicht die Leistung auf einem Endgerät. Die vollständige Zwei-Zugänge-Topologie wird unabhängig durch `tests/two_access_island.test.js` bewiesen; `tests/island_runtime.test.js` gleicht die Bodentriangulation mit den Wasserlöchern ab.
 
-Wiederholen:
+Der damalige Prüflauf verwendete folgenden Aufruf; das Skript prüft inzwischen die aktuelle Brückenkarte:
 
 ```sh
 python -m http.server 5208 --bind 127.0.0.1 --directory welt

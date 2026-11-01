@@ -1,4 +1,4 @@
-"""Real editor round-trips and ordinary keyboard travel around the two-access area.
+"""Current reference layout: editor round-trips and ordinary travel over both bridges.
 
 NEBELJAGD_URL=http://127.0.0.1:5195 python tests/two_access_smoke.py
 NEBELJAGD_URL=http://127.0.0.1:5208 NEBELJAGD_STANDALONE=1 python tests/two_access_smoke.py
@@ -18,11 +18,12 @@ from playwright.sync_api import expect, sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5195').rstrip('/')
 STANDALONE = os.environ.get('NEBELJAGD_STANDALONE') == '1'
-OUT = ROOT / 'test-results/two-access'
+EDITOR_ONLY = os.environ.get('NEBELJAGD_EDITOR_ONLY') == '1'
+OUT = ROOT / 'test-results/reference-layout'
 OUT.mkdir(parents=True, exist_ok=True)
 SOURCE = json.loads((ROOT / 'worldmap.json').read_text())
 SOURCE_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
-REPORT = {'status': 'running', 'url': URL, 'standalone': STANDALONE,
+REPORT = {'status': 'running', 'url': URL, 'standalone': STANDALONE, 'editorOnly': EDITOR_ONLY,
           'sourceSha256': SOURCE_HASH, 'checks': [], 'errors': [], 'screenshots': [],
           'limits': 'Chromium with software WebGL; imported fixture starts and ordinary movement. Topological isolation is independently covered by the map graph tests; no device-performance claim.'}
 if STANDALONE:
@@ -80,10 +81,6 @@ def import_editor(page, value):
     page.wait_for_function('v=>JSON.stringify(nebeljagdMapTestState().map)===JSON.stringify(v)', arg=value)
 
 
-def client(page, point):
-    return page.evaluate('p=>{const s=document.querySelector("#map-stage>svg");const q=new DOMPoint(...p).matrixTransform(s.getScreenCTM());return{x:q.x,y:q.y};}', point)
-
-
 def tap(page, point):
     page.locator('#map-viewport').scroll_into_view_if_needed()
     target = page.evaluate('p=>{const s=document.querySelector("#map-stage>svg");const q=new DOMPoint(...p).matrixTransform(s.getScreenCTM());return{x:q.x,y:q.y};}', point)
@@ -91,36 +88,46 @@ def tap(page, point):
 
 
 def capture(page, name):
+    previous_size = page.viewport_size
+    if previous_size != {'width': 1280, 'height': 800}:
+        page.set_viewport_size({'width': 1280, 'height': 800})
+        page.evaluate('() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))')
     path = OUT / (name + '.png'); page.screenshot(path=str(path))
     REPORT['screenshots'].append(str(path.relative_to(ROOT)))
+    if page.viewport_size != previous_size: page.set_viewport_size(previous_size)
 
 
-def wait_sim(page, seconds):
-    start = game_state(page)['elapsed']
-    page.wait_for_function('t=>nebeljagdTestState().elapsed>=t', arg=start + seconds)
-
-
-def hold(page, keys, seconds, roll=False):
-    before = game_state(page)
+def trace_walk(page, keys, seconds):
+    """Record render-frame observations while only ordinary keyboard input moves the player."""
     try:
         for key in keys: page.keyboard.down(key)
-        wait_sim(page, .15)
-        if roll:
-            roll_start = game_state(page)
-            page.keyboard.press('Space')
-        wait_sim(page, seconds)
+        trace = page.evaluate("""async duration => {
+          const samples=[]; const start=nebeljagdTestState().elapsed;
+          do {
+            const s=nebeljagdTestState();
+            if(s.phase!=='playing') throw new Error('Travel stopped in phase '+s.phase);
+            samples.push({elapsed:s.elapsed,position:s.position,isWater:s.world.isWater,
+                          groundHeight:s.world.groundHeight,biome:s.world.biome});
+            if(s.elapsed>=start+duration) break;
+            await new Promise(requestAnimationFrame);
+          } while(true);
+          return samples;
+        }""", seconds)
     finally:
         for key in keys: page.keyboard.up(key)
-    after = game_state(page)
-    if roll: after['rollStart'] = roll_start
-    assert not after['world']['isWater'], after
-    assert math.isfinite(after['position']['y'])
-    return before, after
+    assert len(trace) > 5, trace
+    assert all(not sample['isWater'] and math.isfinite(sample['position']['y']) for sample in trace)
+    steps = [(math.hypot(b['position']['x']-a['position']['x'], b['position']['z']-a['position']['z']),
+              abs(b['position']['y']-a['position']['y'])) for a,b in zip(trace,trace[1:])]
+    assert max(step[0] for step in steps) < .75, 'no teleport across the channel: ' + str(max(steps))
+    steepest = max(zip(trace,trace[1:]), key=lambda pair:abs(pair[1]['position']['y']-pair[0]['position']['y']))
+    assert max(step[1] for step in steps) < .6, 'no vertical step at the deck: ' + json.dumps(steepest)
+    return trace
 
 
 def load_game_start(page, point, label):
     value = copy.deepcopy(SOURCE)
-    value['name'] = 'Zwei Zugänge · ' + label
+    value['name'] = 'Zwei Brücken · ' + label
     value['gameplay']['spawnPosition'] = point
     with page.expect_navigation(wait_until='domcontentloaded'):
         page.locator('#worldMapFile').set_input_files({'name': 'two-access-' + label + '.json',
@@ -138,7 +145,9 @@ def load_game_start(page, point, label):
 
 
 try:
-    assert SOURCE['paths'] == [] and SOURCE['rivers'] == []
+    assert len(SOURCE['paths']) == 2 and all(path['kind'] == 'bridge' for path in SOURCE['paths'])
+    assert len(SOURCE['rivers']) == 2
+    assert {region['biome'] for region in SOURCE['regions']} == {'snow','meadow','forest','marsh','heath','dunes','volcanic'}
     assert len(SOURCE.get('waterAreas', [])) == 1
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path='/usr/bin/chromium', headless=True,
@@ -156,12 +165,14 @@ try:
         editor.goto(URL + '/map-editor.html', wait_until='domcontentloaded')
         editor.wait_for_function('window.nebeljagdMapTestState')
         assert editor_state(editor)['map'] == SOURCE
-        assert editor.locator('#map-stage [data-feature-type="path"],#map-stage [data-feature-type="river"]').count() == 0
+        assert editor.locator('#map-stage [data-feature-type="path"]').count() == 2
+        assert editor.locator('#map-stage [data-feature-type="river"]').count() == 2
         water = SOURCE['waterAreas'][0]
         expect(editor.locator(f'#map-stage [data-feature-type="waterArea"][data-feature-id="{water["id"]}"]')).to_be_visible()
         capture(editor, 'island-overview')
-        passed('The source and editor show the lagoon with two land necks and no saved paths, rivers or bridges',
-               {'waterArea': water, 'objects': SOURCE['objects'], 'barriers': SOURCE.get('barriers', [])})
+        passed('The exact source and editor show seven reshaped biomes, the organic lagoon, two channels and exactly two bridges',
+               {'waterArea': water, 'bridges': SOURCE['paths'], 'channels': SOURCE['rivers'],
+                'regions': [{'id': region['id'], 'biome': region['biome'], 'color': region['color']} for region in SOURCE['regions']]})
 
         action(editor, 'more', 'shape')
         editor.locator('#feature-filter').select_option('waterArea')
@@ -231,46 +242,50 @@ try:
             reopened.close()
             passed('Exported standalone HTML reopens the exact lagoon geometry and retains the water-area controls')
 
-        game = context.new_page(); monitor(game)
-        game.goto(URL + ('/nebeljagd.html' if STANDALONE else '/index.html') + '?quality=low', wait_until='domcontentloaded')
-        game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
-        expect(game.locator('#startBtn')).to_be_enabled()
-        assert game_state(game)['world']['mapName'] == SOURCE['name']
-        for label, point, keys, seconds, gate in [
-            ('Nordzugang', [180, -305], ['s', 'd'], 3, [185, -300]),
-            ('Suedzugang', [239, 296], ['w', 'd'], 3, [244, 291]),
-        ]:
-            load_game_start(game, point, label)
-            before, after = hold(game, keys, seconds)
-            position = after['position']
-            if label == 'Nordzugang':
-                assert position['x'] > gate[0]+3 and position['z'] > gate[1]+3, after
-            else:
-                assert position['x'] > gate[0]+3 and position['z'] < gate[1]-3, after
-            assert math.hypot(position['x']-point[0], position['z']-point[1]) > 12
-            passed(label + ' is crossed on foot using ordinary keyboard controls on the actual imported map',
-                   {'from': before['position'], 'to': position, 'elapsed': after['elapsed']-before['elapsed']})
-
-        load_game_start(game, [151, 0], 'Uferkollision')
-        before, at_bank = hold(game, ['d'], 1)
-        assert at_bank['position']['x'] > 150 and at_bank['position']['x'] < 155, at_bank
-        _, blocked = hold(game, ['d'], .4)
-        assert abs(blocked['position']['x']-at_bank['position']['x']) < .3, blocked
-        # Step back, then face east with real movement before rolling into
-        # the shore. Sliding along an oblique bank is legitimate movement.
-        hold(game, ['a'], .45)
-        _, rolled = hold(game, ['d'], .8, roll=True)
-        assert rolled['rollCooldown'] > 0, rolled
-        assert rolled['position']['x'] < 155, rolled
-        assert abs(rolled['rollStart']['direction'] - math.pi/2) < .1, rolled
-        assert rolled['position']['x'] > rolled['rollStart']['position']['x'] + .5, rolled
-        game.locator('#mapMode-island').click()
-        game.wait_for_function("nebeljagdTestState().minimap.mode==='island'")
-        capture(game, 'lagoon-bank-and-minimap')
-        passed('The lagoon bank blocks continued walking and a forward roll; the runtime and island minimap show water rather than terrain',
-               {'walkStart': before['position'], 'bank': at_bank['position'], 'blocked': blocked['position'],
-                'rollStart': rolled['rollStart']['position'], 'rollDirection': rolled['rollStart']['direction'],
-                'afterRoll': rolled['position'], 'rollCooldown': rolled['rollCooldown'], 'minimapMode': 'island'})
+        if not EDITOR_ONLY:
+            game = context.new_page(); monitor(game)
+            # Keep software rendering bounded during travel; captures use the
+            # same full desktop size as the editor for visual review.
+            game.set_viewport_size({'width': 960, 'height': 600})
+            game.goto(URL + ('/nebeljagd.html' if STANDALONE else '/index.html') + '?quality=low', wait_until='domcontentloaded')
+            game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
+            expect(game.locator('#startBtn')).to_be_enabled()
+            assert game_state(game)['world']['mapName'] == SOURCE['name']
+            # The southern approach is centered on x+z=535: a 45-degree key
+            # direction stays inside its 36/-44 deck axis through both end ramps.
+            for label, point, keys, first_seconds, second_seconds, end_point in [
+                ('Suedbruecke', [220, 315], ['w', 'd'], 6.0, 6.0, [262, 269]),
+                ('Nordbruecke', [158, -327], ['s', 'd'], 6.8, 6.3, [209, -276]),
+            ]:
+                load_game_start(game, point, label)
+                first = trace_walk(game, keys, first_seconds)
+                game.locator('#mapMode-island').click()
+                game.wait_for_function("nebeljagdTestState().minimap.mode==='island'")
+                capture(game, 'bridge-' + label)
+                if label == 'Nordbruecke':
+                    # Ordinary sideways movement at the middle of the bridge must
+                    # stop at its water-facing edge, never jump to the far bank.
+                    side = trace_walk(game, ['w', 'd'], 1.5)
+                    continued = trace_walk(game, ['w', 'd'], .5)
+                    a, b = side[-1]['position'], continued[-1]['position']
+                    assert math.hypot(a['x']-b['x'], a['z']-b['z']) < .3, (a,b)
+                    displacement = math.hypot(a['x']-side[0]['position']['x'], a['z']-side[0]['position']['z'])
+                    assert 2 < displacement < 6.5, displacement
+                    passed('Normal movement toward the side of the northern bridge stops at the water-facing rail without teleporting',
+                           {'approach': side, 'continued': continued})
+                    trace_walk(game, ['s', 'a'], .8)
+                second = trace_walk(game, keys, second_seconds)
+                position = second[-1]['position']
+                assert first[0]['biome'] == ('meadow' if label == 'Nordbruecke' else 'dunes'), first[0]
+                assert second[-1]['biome'] == 'heath', second[-1]
+                if label == 'Nordbruecke':
+                    assert position['x'] > end_point[0] and position['z'] > end_point[1], position
+                else:
+                    assert position['x'] > end_point[0] and position['z'] < end_point[1]+5, position
+                assert math.hypot(position['x']-point[0], position['z']-point[1]) > 55
+                capture(game, 'bridge-' + label + '-exit')
+                passed(label + ' is crossed completely using ordinary WASD controls with continuous entry, deck and exit heights',
+                       {'from': first[0]['position'], 'to': position, 'entryAndDeck': first, 'deckAndExit': second})
         assert not REPORT['errors'], REPORT['errors']
         if STANDALONE: assert not REPORT['delivery']['unexpectedRequests'], REPORT['delivery']
         browser.close()

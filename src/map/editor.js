@@ -1,6 +1,6 @@
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
-import { validateWorldmap, getWorldmapStats, zoneAt, isLandPoint } from './model.js';
+import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint } from './model.js';
 import { renderWorldmapSvg, barrierSvg } from './render.js';
 import { makeBarrier, barrierLength } from './barriers.js';
 import { createBarrierPanel } from './barrier-panel.js';
@@ -207,7 +207,9 @@ function remember(previous) {
 function validateEdit(candidate, previous) {
   const result = validate(candidate);
   if (!result.valid) return result;
-  const waterChanged = JSON.stringify(candidate.waterAreas ?? []) !== JSON.stringify(previous.waterAreas ?? []);
+  result.errors.push(...validateStartRiverEdit(candidate, previous));
+  if (result.errors.length) { result.valid = false; return result; }
+  const waterChanged = ['waterAreas', 'rivers'].some(key => JSON.stringify(candidate[key] ?? []) !== JSON.stringify(previous[key] ?? []));
   const originals = new Map((previous.objects ?? []).map(item => [item.id, item]));
   for (const item of candidate.objects ?? []) {
     const original = originals.get(item.id);

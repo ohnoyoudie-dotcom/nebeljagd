@@ -1,5 +1,10 @@
 # Östliches Teilgebiet mit zwei Landzugängen
 
+Dieser Bericht dokumentiert den vorherigen Stand mit zwei natürlichen
+Landhälsen und ohne Wege oder Flüsse. Die neuere, an der Bildvorlage orientierte
+Karte ersetzt diese Zugänge durch zwei Brücken und ordnet die Biome neu.
+Aktueller Stand: [Layout nach Kartenreferenz](reference-layout.md).
+
 Die Goldheide-Lagune trennt einen großen östlichen Teil der Goldheide und
 Aschenhöhen vom Inselkern. Der Bereich besitzt genau zwei natürliche
 Landverbindungen: einen nördlichen und einen südlichen Zugang, jeweils rund
