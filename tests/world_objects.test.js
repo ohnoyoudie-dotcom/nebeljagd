@@ -63,7 +63,10 @@ test('retiring scenery preserves the original loot and remaining seeded placemen
   // Captured from work 39c269f before retiring tree/rock/mound/flower. This
   // covers IDs, positions, rotations, scales, names and weapon rarities.
   assert.equal(hash(loot), 'da72d212dce2d310926d2862f9ec1fdfd9e8731359346ea6b6fa7ac48bff02af');
-  assert.equal(hash(seedWorldObjects(base)), 'd217cfe11c1550a3cd6997d1f8070b3cfc01c3c3cfa21cfa6a6dbac73ae8548d',
+  // Verified against the previous d217cfe... baseline: removing the requested
+  // five ruins, four shrines and ten old GLB crates leaves all 941 survivors
+  // byte-for-byte unchanged, including the original random sequence.
+  assert.equal(hash(seedWorldObjects(base)), 'fc665233f21772095df1d3e3f7f30734738dbe7e73d8d37724434e29c35131e9',
     'Filtering retired scenery must not advance random draws differently or move surviving seeded objects');
 });
 

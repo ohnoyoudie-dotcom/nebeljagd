@@ -735,6 +735,27 @@
         ],
         "span": 6.917680083036247
       }
+    },
+    {
+      "kind": "house",
+      "variant": "kit-tripo-house-02",
+      "label": "Wohnhaus 2 · Tripo",
+      "file": "assets/catalog/house-kit-tripo-house-02.webp",
+      "bytes": 6656,
+      "sha256": "a588f6e15032a40c95c0ecf692ddcf455e9e9208b3981e5ab1d32a2ab2ef5f02",
+      "renderedBounds": {
+        "min": [
+          1188.992070198059,
+          -0.5591861605644226,
+          -10.99731159210205
+        ],
+        "max": [
+          1211.0089683532715,
+          4.4153151512146,
+          11.001764297485352
+        ],
+        "span": 35.301305703130936
+      }
     }
   ],
   "errors": []

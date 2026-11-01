@@ -32,8 +32,8 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 51);
-  assert.equal(ASSET_CATALOG.length, 51);
+  assert.equal(OBJECT_CATALOG.flatMap(def => def.variants).length, 52);
+  assert.equal(ASSET_CATALOG.length, 52);
 });
 
 test('the new Tripo inn is schema-valid and remains distinct through map save and import', () => {
@@ -134,9 +134,10 @@ test('kit catalogue sources match the committed manifest bytes and the package f
     assert.equal(createHash('sha256').update(read(asset.sourcePaths[0])).digest('hex'), expected.sha256);
     if (['wall', 'fence', 'crate'].includes(kind)) {
       const definition = getObjectDefinition(kind), [width, depth] = hints.objects[name].size_xyz;
-      assert.equal(definition.footprintWidth, width);
-      assert.equal(definition.footprintDepth, depth);
-      assert.equal(definition.footprintRadius, Math.hypot(width / 2, depth / 2));
+      const option = definition.variants.find(item => item.id === variant);
+      assert.equal(option.footprintWidth ?? definition.footprintWidth, width);
+      assert.equal(option.footprintDepth ?? definition.footprintDepth, depth);
+      assert.equal(option.footprintRadius ?? definition.footprintRadius, Math.hypot(width / 2, depth / 2));
     }
   }
 });

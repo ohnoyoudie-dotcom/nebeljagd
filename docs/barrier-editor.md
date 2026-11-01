@@ -2,8 +2,8 @@
 
 Im Karteneditor unter **Objekte → Mauern & Zäune ziehen**:
 
-1. Eine der fünf Optiken wählen: **Steinmauer**, **Steinmauer · Pfeiler & Abdeckung**,
-   **Steinmauer · Verwittert (Tripo)**, **Holzzaun** oder **Holzzaun · Kreuzstreben**.
+1. Eine der vier Optiken wählen: **Steinmauer**, **Steinmauer · Pfeiler & Abdeckung**,
+   **Steinmauer · Verwittert (Tripo)** oder **Holzzaun · Kreuzstreben**.
 2. **Gerade ziehen** oder **Freihand mit Ecken** einstellen.
 3. **Strecke ziehen** aktivieren, auf der Insel ziehen und loslassen.
 4. **Durchgang setzen** wählen und auf eine Strecke tippen. Die Breite ist
@@ -43,7 +43,11 @@ Höhenänderung. Geschosse verwenden weiterhin die tatsächliche Hindernishöhe.
 ## Modelle und Austausch
 
 Die ursprünglichen Modelle `wall:kit-stone` und `fence:kit-wood` stammen aus
-dem Nebeljagd-Umwelt-Kit. Zwei weitere Spielmodelle ergänzen die Auswahl:
+dem Nebeljagd-Umwelt-Kit. Der alte GLB-Holzzaun ist aus der Auswahl und der
+aktuellen Karte entfernt; ältere Kartendateien bleiben lesbar. Im Editor
+entfernt **Alte Objekte und Zäune entfernen** auch solche alten Zaunstrecken
+aus einem wiederhergestellten Entwurf, mit Rückgängig-Funktion.
+Zwei weitere Spielmodelle ergänzen die Auswahl:
 
 - `wall:kit-cut-stone`: gesetzte Steinquader, Pfeiler und breite Abdecksteine.
 - `fence:kit-cross-wood`: Holzpfosten mit diagonalen Kreuzstreben.

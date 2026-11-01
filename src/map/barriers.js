@@ -7,9 +7,11 @@ export const BARRIER_STYLES = Object.freeze([
   Object.freeze({ id: 'wall', label: 'Steinmauer', kind: 'wall', variant: 'kit-stone' }),
   Object.freeze({ id: 'wall-cut-stone', label: 'Steinmauer · Pfeiler & Abdeckung', kind: 'wall', variant: 'kit-cut-stone' }),
   Object.freeze({ id: 'wall-tripo', label: 'Steinmauer · Verwittert (Tripo)', kind: 'wall', variant: 'kit-tripo-wall' }),
-  Object.freeze({ id: 'fence', label: 'Holzzaun', kind: 'fence', variant: 'kit-wood' }),
+  Object.freeze({ id: 'fence', label: 'Holzzaun · GLB (alt)', kind: 'fence', variant: 'kit-wood', retired: true }),
   Object.freeze({ id: 'fence-cross-wood', label: 'Holzzaun · Kreuzstreben', kind: 'fence', variant: 'kit-cross-wood' }),
 ]);
+/** Legacy routes remain readable, but retired models cannot be drawn anew. */
+export const AUTHORING_BARRIER_STYLES = Object.freeze(BARRIER_STYLES.filter(style => !style.retired));
 export const BARRIER_LIMITS = Object.freeze({ barriers: 400, points: 128, gaps: 64, length: 5000, objects: 12000 });
 const EPS = 1e-7;
 const finite = value => typeof value === 'number' && Number.isFinite(value);

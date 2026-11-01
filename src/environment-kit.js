@@ -11,6 +11,7 @@ import oakAutumn from '../Blender/nebeljagd_umwelt_kit_v1/assets/oak_autumn.glb?
 import tavern from '../Blender/Taverne.glb?url&inline';
 import tripoTavern from '../assets/imported/tripo-tavern/runtime/tavern.glb?url&inline';
 import tripoCastle from '../assets/imported/tripo-castle/runtime/castle.glb?url&inline';
+import tripoHouse02 from '../assets/imported/tripo-houses/runtime/house-02.glb?url&inline';
 import tripoWagon from '../assets/imported/tripo-props/runtime/wagon.glb?url&inline';
 import tripoBarrel from '../assets/imported/tripo-props/runtime/barrel.glb?url&inline';
 import tripoWell from '../assets/imported/tripo-props/runtime/well.glb?url&inline';
@@ -33,6 +34,7 @@ const urls = {
   'house:kit-taverne': tavern,
   'house:kit-tripo-tavern': tripoTavern,
   'house:kit-tripo-castle': tripoCastle,
+  'house:kit-tripo-house-02': tripoHouse02,
   'wagon:kit-tripo-wagon': tripoWagon, 'barrel:kit-tripo-barrel': tripoBarrel,
   'well:kit-tripo-well': tripoWell,
   'wall:kit-tripo-wall': tripoWall,

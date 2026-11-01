@@ -5,7 +5,7 @@ import { AUTHORING_OBJECT_CATALOG, OBJECT_CATALOG, isObjectAvailable } from '../
 import { createScatterStroke, createVegetationStroke, createBiomeStroke } from '../src/map/landscape-brush.js';
 import { BIOME_PRESETS } from '../src/map/landscape.js';
 
-const retired = ['tree', 'rock', 'mound', 'flower'];
+const retired = ['tree', 'rock', 'mound', 'flower', 'ruin', 'shrine', 'crate'];
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 function fixture() {
   const map = structuredClone(base);
@@ -18,7 +18,7 @@ function fixture() {
   return map;
 }
 
-test('fresh authoring retires the four scenery kinds including Tripo rocks while keeping loot and admitted props', () => {
+test('fresh authoring retires old scenery, shrine, ruins and GLB crates while keeping loot and admitted props', () => {
   assert.ok(AUTHORING_OBJECT_CATALOG.every(item => !retired.includes(item.kind)));
   for (const definition of OBJECT_CATALOG.filter(item => retired.includes(item.kind))) {
     assert.equal(isObjectAvailable(definition.kind), false);
@@ -30,6 +30,9 @@ test('fresh authoring retires the four scenery kinds including Tripo rocks while
   }
   assert.equal(isObjectAvailable('house', 'kit-tripo-tavern'), true);
   assert.equal(isObjectAvailable('house', 'kit-taverne'), false);
+  assert.equal(isObjectAvailable('house', 'kit-tripo-castle'), false);
+  assert.equal(isObjectAvailable('fence', 'kit-wood'), false);
+  assert.equal(isObjectAvailable('fence', 'kit-cross-wood'), true);
 });
 
 test('mixed saved presets filter retired scenery without mutating their document or losing allowed scatter', () => {

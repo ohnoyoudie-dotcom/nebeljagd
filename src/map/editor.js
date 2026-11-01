@@ -101,7 +101,7 @@ if (!retiredSceneryBanner) {
   const label = document.createElement('span'); label.id = 'retired-scenery-note';
   const button = document.createElement('button');
   button.id = 'remove-retired-scenery'; button.className = 'button small';
-  button.textContent = 'Alte Landschaftsobjekte entfernen';
+  button.textContent = 'Alte Objekte und Zäune entfernen';
   retiredSceneryBanner.append(label, button);
   retiredBuildingsBanner.after(retiredSceneryBanner);
 }
@@ -112,8 +112,11 @@ $('remove-retired-scenery').addEventListener('click', () => {
   selection = null;
   const preservedMeadows = result.convertedGrass.length
     ? ` ${result.convertedGrass.length} Blumenwiesen als Gras erhalten.` : '';
-  commit(candidate => { candidate.objects = removeRetiredScenery(candidate).map.objects; },
-    `${result.removedObjects.length} alte Landschaftsobjekte entfernt.${preservedMeadows} Beute und andere Änderungen bleiben erhalten; „Zurück“ stellt den Entwurf wieder her.`);
+  commit(candidate => {
+    const cleaned = removeRetiredScenery(candidate).map;
+    candidate.objects = cleaned.objects;
+    if (cleaned.barriers !== undefined) candidate.barriers = cleaned.barriers;
+  }, `${result.totalRemoved} alte Objekte und Zaunstrecken entfernt.${preservedMeadows} Beute und andere Änderungen bleiben erhalten; „Zurück“ stellt den Entwurf wieder her.`);
 });
 function updateRetiredSceneryBanner() {
   const result = removeRetiredScenery(map);
@@ -121,7 +124,7 @@ function updateRetiredSceneryBanner() {
   const preservedMeadows = result.convertedGrass.length
     ? ` ${result.convertedGrass.length} Blumenwiesen werden als Gras erhalten.` : '';
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
-    : `Dieser Entwurf enthält ${result.removedObjects.length} alte Bäume, Felsen, Erhöhungen oder Blumen.${preservedMeadows} Beute, Gebäude und übrige Kartendaten bleiben erhalten.`;
+    : `Dieser Entwurf enthält ${result.removedObjects.length} ausgemusterte Objekte und ${result.removedBarriers.length} alte GLB-Zaunstrecken.${preservedMeadows} Beute, neue Modelle und übrige Kartendaten bleiben erhalten.`;
 }
 
 function initialView() {

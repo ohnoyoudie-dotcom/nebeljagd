@@ -1,0 +1,178 @@
+{
+  "name": "nebeljagd-tripo-houses",
+  "version": 1,
+  "sourceOrigin": "User-supplied Tripo exports in project assets/inbox; editor/game integration explicitly requested.",
+  "provider": {
+    "name": "Tripo (source GLBs)",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-tripo-houses.py",
+    "scriptSha256": "889bd18a3118c0210746842dc8a8a627ea0553b1ed601f8bbd435326d7b2a2c1",
+    "method": "Uniform scale, measured floor offset, UV-preserving decimation, bounded monotone floor-height compression and existing image downsampling; originals preserved."
+  },
+  "assets": [
+    {
+      "id": "house-02",
+      "label": "Wohnhaus 2 \u00b7 Tripo",
+      "source": {
+        "path": "assets/inbox/medieval house interior 3d model 2.glb",
+        "bytes": 65708616,
+        "sha256": "fc0dc4ab96b6cad1cdaea62d11940adb54389d3227fd85e7a5330c57e2c5ac12",
+        "triangles": 1869854,
+        "vertices": 1026354,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-houses/runtime/house-02.glb",
+        "bytes": 6993668,
+        "sha256": "9936dadb5f946eba6a026a4cd24fe0752e29b40f8359e5e233500941856f8644",
+        "triangles": 100000,
+        "vertices": 100265,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "targetWidthMetres": 22.0,
+        "uniformScale": 22.448028897054243,
+        "sourceBlenderBounds": [
+          [
+            -0.490020751953125,
+            -0.48968505859375,
+            0.0
+          ],
+          [
+            0.490020751953125,
+            0.48968505859375,
+            0.2203826904296875
+          ]
+        ],
+        "centerOffsetBlender": [
+          0.0,
+          0.0
+        ],
+        "floorOffset": 0.8429727554321289,
+        "floorSamplingQuantiles": [
+          0.7833623886108398,
+          0.837745475769043,
+          0.8440823554992676,
+          0.8462839603424073,
+          0.8505516052246094,
+          1.0087075233459473,
+          4.676578044891357
+        ],
+        "runtimeFloorLeveling": {
+          "method": "Strictly monotone piecewise vertical compression of native Y [-0.35, 0.6]; floor band [-0.2, 0.25] becomes [-0.02, 0.025]",
+          "sourceHeights": [
+            -0.35,
+            -0.2,
+            0.25,
+            0.6
+          ],
+          "runtimeHeights": [
+            -0.35,
+            -0.02,
+            0.025,
+            0.6
+          ],
+          "vertices": 27872,
+          "maximumVerticalAdjustment": 0.2249811589717865,
+          "otherVerticesUnchanged": true,
+          "uvCoordinatesUnchanged": true
+        },
+        "gltfBounds": [
+          [
+            -11.007929801940918,
+            -0.8591861724853516,
+            -10.99731159210205
+          ],
+          [
+            11.008968353271484,
+            4.115314960479736,
+            11.001764297485352
+          ]
+        ],
+        "axes": "glTF Y up, +Z front; source orientation retained; floor cluster at Y=0"
+      },
+      "textures": [
+        {
+          "name": "medieval_house_interior_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            2048,
+            2048
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "medieval_house_interior_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            2048,
+            2048
+          ],
+          "format": "PNG"
+        },
+        {
+          "name": "medieval_house_interior_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            2048,
+            2048
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "source": "medieval house interior 3d model 2.glb",
+        "label": "Wohnhaus 2 \u00b7 Tripo",
+        "width": 22.0,
+        "triangles": 100000,
+        "textureLimit": 2048
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "embeddedPBRTextures": true,
+        "preservedMaterialCount": true
+      }
+    }
+  ],
+  "license": {
+    "status": "user-provided-project-asset",
+    "commercialReceiptSupplied": false
+  },
+  "previewReview": "Source and runtime renders generated; visual and engine integration review recorded separately."
+}

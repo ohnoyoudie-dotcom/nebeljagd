@@ -4,6 +4,7 @@ import { removeRetiredScenery, isRetiredScenery } from '../src/map/retired-scene
 import { AUTHORING_OBJECT_CATALOG, makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { readFileSync } from 'node:fs';
 import { validateWorldmap } from '../src/map/model.js';
+import { AUTHORING_BARRIER_STYLES, makeBarrier } from '../src/map/barriers.js';
 
 const obj = (kind, variant, id = `${kind}-${variant}`) => makeWorldObject(kind, [30, -42], { id, variant });
 
@@ -23,6 +24,24 @@ test('scenery cleanup removes all retired variants while preserving every loot k
   assert.deepEqual(result.map, { ...before, objects: keep });
   assert.equal(result.totalChanged, removed.length);
   assert.equal(removeRetiredScenery(result.map).map, result.map, 'repeat is a no-op');
+});
+
+test('retired shrine, ruins, GLB crates and fence routes are removed without altering newer fences or walls', () => {
+  const old = [obj('shrine', 'magic'), obj('ruin', 'stone'), obj('ruin', 'kit-arch'), obj('crate', 'kit-wood'), obj('fence', 'kit-wood')];
+  const keep = [obj('fence', 'kit-cross-wood'), obj('wall', 'kit-tripo-wall'), obj('chest', 'kit-tripo-chest'), obj('barrel', 'kit-tripo-barrel')];
+  const oldRoute = makeBarrier('fence', [[-20, 0], [20, 0]], { id: 'retired-route', height: 3 });
+  const currentRoute = makeBarrier('fence-cross-wood', [[-20, 10], [20, 10]], { id: 'current-route', height: 2, gaps: [{ at: 20, width: 3 }] });
+  const map = { name: 'Persönliche Karte', objects: [...old, ...keep], barriers: [oldRoute, currentRoute], landscape: { version: 1 } };
+  const before = structuredClone(map), result = removeRetiredScenery(map);
+  assert.deepEqual(map, before, 'the unsaved draft is not mutated');
+  assert.deepEqual(result.map, { ...before, objects: keep, barriers: [currentRoute] });
+  assert.deepEqual(result.removedObjects, old);
+  assert.deepEqual(result.removedBarriers, [oldRoute]);
+  assert.equal(result.totalRemoved, 6);
+  assert.equal(removeRetiredScenery(result.map).map, result.map);
+  assert.equal(AUTHORING_BARRIER_STYLES.some(style => style.variant === 'kit-wood'), false);
+  assert.equal(AUTHORING_BARRIER_STYLES.some(style => style.variant === 'kit-cross-wood'), true);
+  assert.deepEqual(normalizeWorldmap(map), before, 'legacy import remains recoverable until explicit cleanup');
 });
 
 test('legacy flower-meadow grass becomes ordinary meadow with all authored parameters preserved', () => {

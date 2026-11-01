@@ -1,6 +1,7 @@
 import { WEAPON_TYPES } from '../loot-tiers.js';
 import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
+import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
@@ -12,7 +13,9 @@ export const OBJECT_CATALOG = Object.freeze([
     variants: [{ id: 'herbal', label: 'Kräuterhaus', footprintRadius: 11, retired: true }, { id: 'inn', label: 'Waldgasthaus', footprintRadius: 11, retired: true }, { id: 'hunter', label: 'Jägerhaus', footprintRadius: 11, retired: true },
       { id: 'kit-timber', label: 'Fachwerkhaus · GLB', footprintRadius: 11, retired: true }, { id: 'kit-taverne', label: 'Taverne · GLB', footprintRadius: 14.5, retired: true },
       { id: 'kit-tripo-tavern', label: 'Wirtshaus · Tripo (neu)', footprintRadius: 14.5 },
-      { id: 'kit-tripo-castle', label: 'Kleines Schloss · Tripo', footprintRadius: 43 }] },
+      ...TRIPO_HOUSE_DEFINITIONS.map(({ variant, label, footprint }) => ({ id: variant, label,
+        footprintRadius: Math.hypot(footprint.halfWidth, footprint.halfDepth) })),
+      { id: 'kit-tripo-castle', label: 'Kleines Schloss · Tripo', footprintRadius: 43, retired: true }] },
   { kind: 'flower', label: 'Blumenbeet', defaultVariant: 'rei-white', defaultScale: 1, footprintRadius: 1.3, defaultRadius: 1.5,
     variants: [{ id: 'rei-white', label: 'Rei-Blumen · Weiß' }, { id: 'rei-red', label: 'Rei-Blumen · Rot' }, { id: 'rei-gold', label: 'Rei-Blumen · Gold' }] },
   { kind: 'grass', label: 'Grasfläche', defaultVariant: 'tall', defaultScale: 1, footprintRadius: 3, defaultRadius: 3.5,
@@ -58,15 +61,15 @@ export const OBJECT_CATALOG = Object.freeze([
       { id: 'kit-tripo-wall', label: 'Steinmauer · Verwittert (Tripo)',
         footprintRadius: Math.hypot(TRIPO_WALL_DEFINITION.footprint.halfWidth, TRIPO_WALL_DEFINITION.footprint.halfDepth),
         footprintWidth: 2 * TRIPO_WALL_DEFINITION.footprint.halfWidth, footprintDepth: 2 * TRIPO_WALL_DEFINITION.footprint.halfDepth }] },
-  { kind: 'fence', label: 'Zaun', defaultVariant: 'kit-wood', defaultScale: 1,
-    footprintRadius: Math.hypot(1.6, .2), footprintWidth: 3.2, footprintDepth: .4,
-    variants: [{ id: 'kit-wood', label: 'Holzzaun · GLB' },
+  { kind: 'fence', label: 'Zaun', defaultVariant: 'kit-cross-wood', defaultScale: 1,
+    footprintRadius: Math.hypot(2, .22), footprintWidth: 4, footprintDepth: .44,
+    variants: [{ id: 'kit-wood', label: 'Holzzaun · GLB', footprintRadius: Math.hypot(1.6, .2), footprintWidth: 3.2, footprintDepth: .4, retired: true },
       { id: 'kit-cross-wood', label: 'Holzzaun · Kreuzstreben', footprintRadius: Math.hypot(2, .22), footprintWidth: 4, footprintDepth: .44 }] },
   { kind: 'crate', label: 'Holzkiste', defaultVariant: 'kit-wood', defaultScale: 1,
     footprintRadius: Math.hypot(.425, .425), footprintWidth: .85, footprintDepth: .85,
-    variants: [{ id: 'kit-wood', label: 'Holzkiste · GLB' }] },
+    variants: [{ id: 'kit-wood', label: 'Holzkiste · GLB', retired: true }] },
 ].map(definition => Object.freeze({ ...definition,
-  retired: RETIRED_SCENERY_KINDS.includes(definition.kind),
+  retired: RETIRED_SCENERY_KINDS.includes(definition.kind) || definition.variants.every(variant => variant.retired),
   variants: Object.freeze(definition.variants.map(variant => Object.freeze({
     ...variant, assetId: `${definition.kind}:${variant.id}`,
   }))),

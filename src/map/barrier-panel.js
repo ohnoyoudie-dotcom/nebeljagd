@@ -1,9 +1,9 @@
-import { BARRIER_STYLES, barrierLength, getBarrierStyle, makeBarrier } from './barriers.js';
+import { AUTHORING_BARRIER_STYLES, barrierLength, getBarrierStyle, makeBarrier } from './barriers.js';
 import { createBarrierPreview } from './barrier-preview.js';
 import { barrierHeightHint, getBarrierHeight } from './barrier-height.js';
 
 const $ = id => document.getElementById(id);
-const options = BARRIER_STYLES.map(style => `<option value="${style.id}">${style.label.replaceAll('&', '&amp;')}</option>`).join('');
+const options = AUTHORING_BARRIER_STYLES.map(style => `<option value="${style.id}">${style.label.replaceAll('&', '&amp;')}</option>`).join('');
 const heightValue = id => $(id).value.trim() === '' ? undefined : Number($(id).value);
 const heightOptions = id => heightValue(id) === undefined ? {} : { height: heightValue(id) };
 
@@ -84,7 +84,9 @@ export function createBarrierPanel(api) {
     inspector.hidden = type !== 'barrier' || !feature;
     for (const input of inspector.querySelectorAll('input,select')) input.disabled = inspector.hidden;
     if (inspector.hidden) return;
-    $('barrier-object-kind').value = getBarrierStyle(feature)?.id ?? ''; $('barrier-object-scale').value = feature.scale;
+    const style = getBarrierStyle(feature);
+    $('barrier-object-kind').innerHTML = options + (style?.retired ? `<option value="${style.id}" disabled>${style.label.replaceAll('&', '&amp;')}</option>` : '');
+    $('barrier-object-kind').value = style?.id ?? ''; $('barrier-object-scale').value = feature.scale;
     $('barrier-object-height').value = feature.height ?? '';
     updateHeightHints();
     $('barrier-length').textContent = `${barrierLength(feature).toLocaleString('de-DE', { maximumFractionDigits: 1 })} m Länge · ${feature.points.length} Formpunkte`;

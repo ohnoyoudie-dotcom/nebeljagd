@@ -1328,18 +1328,6 @@
       ],
       "rotation": 0,
       "scale": 1
-    },
-    {
-      "id": "object-house-mvwkiaej-3",
-      "name": "Haus",
-      "kind": "house",
-      "variant": "kit-tripo-castle",
-      "position": [
-        -34.8,
-        16.1
-      ],
-      "rotation": 0,
-      "scale": 1
     }
   ],
   "landscape": {
@@ -1409,24 +1397,6 @@
         [
           16,
           -34
-        ]
-      ],
-      "scale": 1,
-      "gaps": []
-    },
-    {
-      "id": "barrier-fence-mvwke2cy-4",
-      "name": "Holzzaun",
-      "kind": "fence",
-      "variant": "kit-wood",
-      "points": [
-        [
-          35,
-          -43
-        ],
-        [
-          53,
-          -51
         ]
       ],
       "scale": 1,

@@ -1,0 +1,178 @@
+{
+  "source": "runtime/house-02.glb",
+  "sha256": "9936dadb5f946eba6a026a4cd24fe0752e29b40f8359e5e233500941856f8644",
+  "method": "Reimported runtime GLB mesh ray casts below lintels at 0.4/1.2/2.0m; floor samples from Y=2.5m",
+  "routeChecks": [
+    {
+      "route": "front entry",
+      "height": 0.4,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "front entry",
+      "height": 1.2,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "front entry",
+      "height": 2.0,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "rear kitchen exit",
+      "height": 0.4,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "rear kitchen exit",
+      "height": 1.2,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "rear kitchen exit",
+      "height": 2.0,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "bedroom",
+      "height": 0.4,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "bedroom",
+      "height": 1.2,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "bedroom",
+      "height": 2.0,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "kitchen",
+      "height": 0.4,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "kitchen",
+      "height": 1.2,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "kitchen",
+      "height": 2.0,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "living aisle",
+      "height": 0.4,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "living aisle",
+      "height": 1.2,
+      "clear": true,
+      "hit": null
+    },
+    {
+      "route": "living aisle",
+      "height": 2.0,
+      "clear": true,
+      "hit": null
+    }
+  ],
+  "floorSamples": [
+    {
+      "x": 0,
+      "z": 8,
+      "hit": true,
+      "nativeY": 0.01625227928161621,
+      "normalY": 0.9999772906303406
+    },
+    {
+      "x": 0,
+      "z": 9.9,
+      "hit": true,
+      "nativeY": -0.015347003936767578,
+      "normalY": 0.9990641474723816
+    },
+    {
+      "x": 0,
+      "z": 10.6,
+      "hit": true,
+      "nativeY": -0.014892578125,
+      "normalY": 0.999998927116394
+    },
+    {
+      "x": 6.72,
+      "z": -10.4,
+      "hit": true,
+      "nativeY": -0.003929615020751953,
+      "normalY": 0.9999966025352478
+    },
+    {
+      "x": 6.72,
+      "z": -8,
+      "hit": true,
+      "nativeY": -0.005112171173095703,
+      "normalY": 0.9999997019767761
+    },
+    {
+      "x": 2.3,
+      "z": 0,
+      "hit": true,
+      "nativeY": 0.0015816688537597656,
+      "normalY": 0.9999999403953552
+    },
+    {
+      "x": 2.3,
+      "z": -4,
+      "hit": true,
+      "nativeY": -0.0006439685821533203,
+      "normalY": 0.9999914765357971
+    },
+    {
+      "x": -2.3,
+      "z": 0,
+      "hit": true,
+      "nativeY": 0.0009710788726806641,
+      "normalY": 0.9999929070472717
+    },
+    {
+      "x": -2.3,
+      "z": -3,
+      "hit": true,
+      "nativeY": -6.29425048828125e-05,
+      "normalY": 0.9998137354850769
+    },
+    {
+      "x": -3.1,
+      "z": 3,
+      "hit": true,
+      "nativeY": 0.016234397888183594,
+      "normalY": 0.9995508790016174
+    },
+    {
+      "x": 0,
+      "z": 1.8,
+      "hit": true,
+      "nativeY": 0.003068685531616211,
+      "normalY": 0.9989593029022217
+    }
+  ],
+  "allRouteHeightsClear": true,
+  "walkableFloorLevel": true
+}

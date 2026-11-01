@@ -62,3 +62,13 @@ test('legacy buildings remain valid when explicitly imported for recovery', () =
   assert.equal(validateWorldmap(map).valid, true);
   assert.equal(isRetiredBuilding(map.objects[0]), true);
 });
+
+test('small castle cleanup preserves the tavern, residential replacements and unrelated loot', () => {
+  const castle = object('small-castle', 'house', 'kit-tripo-castle');
+  const keep = [object('inn', 'house', 'kit-tripo-tavern'), object('residence', 'house', 'kit-tripo-house-02'), object('custom-loot', 'chest', 'kit-tripo-chest')];
+  const source = { objects: [castle, ...keep], barriers: [{ id: 'kept-wall' }] };
+  const before = structuredClone(source), result = removeRetiredBuildings(source);
+  assert.deepEqual(result.removedBuildings, [castle]);
+  assert.deepEqual(result.map, { ...source, objects: keep });
+  assert.deepEqual(source, before);
+});

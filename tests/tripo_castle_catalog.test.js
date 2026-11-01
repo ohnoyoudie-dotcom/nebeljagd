@@ -14,8 +14,8 @@ const base = read('worldmap.json'), schema = read('worldmap.schema.json');
 const variant = 'kit-tripo-castle';
 const castle = getEnvironmentKitDefinition('house', variant);
 
-test('small Tripo castle is a distinct selectable building that survives map save and import', () => {
-  assert.equal(isObjectAvailable('house', variant), true);
+test('retired small Tripo castle stays readable for legacy map recovery but cannot be placed anew', () => {
+  assert.equal(isObjectAvailable('house', variant), false);
   const rule = schema.$defs.worldObject.allOf.find(entry => entry.if?.properties?.kind?.const === 'house');
   assert.ok(rule.then.properties.variant.enum.includes(variant));
   const object = makeWorldObject('house', [180, 150], { id: 'castle-roundtrip', variant, rotation: Math.PI / 4, scale: 1.25 });

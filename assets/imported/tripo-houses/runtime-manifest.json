@@ -1,0 +1,91 @@
+{
+  "name": "nebeljagd-tripo-houses",
+  "version": 1,
+  "kind": "source-preserving-local-project-package",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3218,
+      "sha256": "12ea6e3e73ece42c4a4d467f23fa8a88da1b6e8b8046da5f226b69f97fc45a40"
+    },
+    {
+      "path": "floor-and-openings-validation.json",
+      "bytes": 3399,
+      "sha256": "306d921ee3ddb1d5881044a5bd854835971d306c5d3803c9d97da5a0414b00c4"
+    },
+    {
+      "path": "inspections/house-02-floor-samples.json",
+      "bytes": 48099,
+      "sha256": "c7efaf825787406fa2062218db0a0ec7af891c4fdbf0399a3938e4f4177aa1ec"
+    },
+    {
+      "path": "inspections/house-02-sections.json",
+      "bytes": 1490319,
+      "sha256": "720d1a44b3950acf4572a4e086f936d6484c3a15cfb314df6227228adf9f18cf"
+    },
+    {
+      "path": "inspections/house-02.json",
+      "bytes": 3467,
+      "sha256": "949b2a7b817582fc27b01ecde6462be4ea1a1939705b169804d9b511f6c2df8f"
+    },
+    {
+      "path": "previews/house-02-collision-sections.png",
+      "bytes": 122317,
+      "sha256": "9db7f0a5b628a4aee37d7bdb4e11901d0fab0e94e3c8cd5a505e57ea3e800121"
+    },
+    {
+      "path": "previews/house-02-runtime-perspective.png",
+      "bytes": 1680393,
+      "sha256": "7e9104f72afb84cf32b418a75128a4f5a3ca10b8b6d0d28c9eaf1797ce42fca1"
+    },
+    {
+      "path": "previews/house-02-runtime-top.png",
+      "bytes": 1938026,
+      "sha256": "161e9dac46295ebe6654cb2fcc2ce1c7c6370ad341ef1b4e89fd9d023a87f304"
+    },
+    {
+      "path": "previews/house-02-source-perspective.png",
+      "bytes": 1702826,
+      "sha256": "087b7b4e59f009a19d0cb3866c386ab6c523c07ea5f2a7d45a1b096fc0680d5d"
+    },
+    {
+      "path": "previews/house-02-source-top.png",
+      "bytes": 1977965,
+      "sha256": "927d4d1062ed79edcc4432cf2ae7a3de0510ae5047e1497229139355da17a442"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 5009,
+      "sha256": "30a61e3bb4af2b91571e40b33d8b113019b99cfd47b07667826c78101cbe169d"
+    },
+    {
+      "path": "runtime/house-02.glb",
+      "bytes": 6993668,
+      "sha256": "9936dadb5f946eba6a026a4cd24fe0752e29b40f8359e5e233500941856f8644"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/medieval house interior 3d model 2.glb",
+      "bytes": 65708616,
+      "sha256": "fc0dc4ab96b6cad1cdaea62d11940adb54389d3227fd85e7a5330c57e2c5ac12",
+      "triangles": 1869854,
+      "vertices": 1026354,
+      "meshes": 1,
+      "materials": 1,
+      "embeddedImages": 3,
+      "externalUris": [],
+      "animations": 0,
+      "attributes": [
+        "NORMAL",
+        "POSITION",
+        "TEXCOORD_0"
+      ]
+    }
+  ],
+  "validated": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true
+  },
+  "licenseStatus": "User-provided project assets; separate commercial provider receipt not supplied."
+}

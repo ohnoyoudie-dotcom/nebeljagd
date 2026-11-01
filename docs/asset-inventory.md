@@ -7,6 +7,18 @@ Besonderheiten. `worldmap.json` speichert weiterhin nur Objektart und Variante,
 Position, Drehung, Größe und gegebenenfalls Seltenheit/Flächenradius. Ein altes
 Kartendokument benötigt durch die Zuordnung keine neuen Pflichtfelder.
 
+Unter **Objekte → Haus → Wohnhaus 2 · Tripo** ist der texturierte Export
+`medieval house interior 3d model 2.glb` verfügbar. Das dachlose Haus misst
+ungefähr 22 × 22 Meter und besitzt Wohnraum, Schlafzimmer und Küche mit
+begehbaren Durchgängen und festen Möbelkollisionen. Die Aufbereitung und
+Prüfsummen stehen in `assets/imported/tripo-houses/README.md`.
+
+Das kleine Tripo-Schloss, Schrein, Ruinen, der alte GLB-Holzzaun und die alte
+GLB-Holzkiste sind aus der aktuellen Karte und der Auswahl entfernt.
+Die ursprünglichen Dateien und Definitionen bleiben für ältere Karten lesbar;
+die Bereinigung eines importierten alten Entwurfs ist im Editor rückgängig
+machbar. Die folgende Quellenübersicht enthält auch solche älteren Modelle.
+
 Der Editor zeigt die Varianten mit **Vorschaubildern der tatsächlichen Modelle**.
 Diese entstehen durch den vorhandenen Three.js-Renderer in
 `assets/catalog/preview.html`, nicht durch ein fremdes Grafikpaket. Die 256×192

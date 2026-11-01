@@ -2,7 +2,7 @@
  * new placement. Removal is explicit so a saved browser draft is never erased.
  */
 export const RETIRED_HOUSE_VARIANTS = Object.freeze([
-  'herbal', 'inn', 'hunter', 'kit-timber', 'kit-taverne',
+  'herbal', 'inn', 'hunter', 'kit-timber', 'kit-taverne', 'kit-tripo-castle',
 ]);
 const retired = new Set(RETIRED_HOUSE_VARIANTS);
 

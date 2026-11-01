@@ -139,10 +139,10 @@ try:
         page.locator('#tool-select').click(); tap(page, [-55, -60])
         assert state(page)['selection']['type'] == 'barrier'
         old = copy.deepcopy(routes(page)[0])
-        page.locator('#barrier-object-kind').select_option('fence'); page.locator('#barrier-object-scale').fill('1.2')
+        page.locator('#barrier-object-kind').select_option('fence-cross-wood'); page.locator('#barrier-object-scale').fill('1.2')
         page.locator('.apply-properties').click()
         swapped = routes(page)[0]
-        assert swapped['kind'] == 'fence' and swapped['variant'] == 'kit-wood' and swapped['scale'] == 1.2
+        assert swapped['kind'] == 'fence' and swapped['variant'] == 'kit-cross-wood' and swapped['scale'] == 1.2
         assert swapped['points'] == old['points'] and swapped['gaps'] == old['gaps'] and swapped['id'] == old['id']
         assert state(page)['map']['objects'] == value['objects']
         passed('Changing a selected route from stone to wood preserves its exact route, ID and both passages')
