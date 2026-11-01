@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:nebeljagd:worldmap:schema:1",
   "title": "Nebeljagd – editierbare Kartenbasis v1",
-  "description": "Strukturelles Format der editierbaren Nebeljagd-Welt. Ein Meter entspricht einer Welteinheit. Semantische Geometrie- und Spielregeln prüft src/map/model.js; objects enthält alle platzierten 3D-Objekte.",
+  "description": "Strukturelles Format der editierbaren Nebeljagd-Welt. Ein Meter entspricht einer Welteinheit. Semantische Geometrie- und Spielregeln prüft src/map/model.js; objects enthält einzeln platzierte 3D-Objekte und barriers die unabhängig vom Modell editierbaren Mauer- und Zaunverläufe.",
   "type": "object",
   "required": [
     "schemaVersion",
@@ -113,6 +113,24 @@
     "island": {
       "$ref": "#/$defs/island"
     },
+    "islets": {
+      "description": "Optionale getrennte Landflächen neben der Hauptinsel. Zwischen den Polygonen liegt kein Gelände; Brücken können die Lücke überspannen.",
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/island"
+      }
+    },
+    "waterAreas": {
+      "description": "Optionale polygonale Binnengewässer: echte Löcher im Inselboden, unabhängig von Flüssen und Wegen.",
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/island"
+      }
+    },
     "regions": {
       "type": "array",
       "minItems": 1,
@@ -147,7 +165,7 @@
     },
     "spawnAreas": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 200,
       "items": {
         "$ref": "#/$defs/spawn"
@@ -195,6 +213,14 @@
     "landscape": {
       "$ref": "#/$defs/landscape",
       "description": "Optionale, unabhängig versionierte Landschaftseinstellungen. Fehlt dieses Feld, gelten die bestehenden Welt- und Vegetationsvorgaben."
+    },
+    "barriers": {
+      "type": "array",
+      "maxItems": 400,
+      "items": {
+        "$ref": "#/$defs/barrier"
+      },
+      "description": "Optionale, editierbare Mauer- und Zaunlinien. Teilstücke werden erst beim Anzeigen erzeugt und nicht zusätzlich in objects gespeichert."
     }
   },
   "$defs": {
@@ -497,7 +523,10 @@
             "iceStaff",
             "wall",
             "fence",
-            "crate"
+            "crate",
+            "wagon",
+            "barrel",
+            "well"
           ]
         },
         "variant": {
@@ -544,6 +573,12 @@
         },
         "vegetation": {
           "$ref": "#/$defs/landscapeVegetation"
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 8,
+          "description": "Absolute Mauer- oder Zaunhöhe in Metern. Ohne Angabe bleibt die Modellhöhe mal Größe erhalten. Ab 2 Metern wird die Sicht blockiert; Bewegung bleibt bei jeder Höhe blockiert."
         }
       },
       "allOf": [
@@ -595,7 +630,10 @@
                   "inn",
                   "hunter",
                   "kit-timber",
-                  "kit-taverne"
+                  "kit-taverne",
+                  "kit-tripo-tavern",
+                  "kit-tripo-castle",
+                  "kit-tripo-house-02"
                 ]
               }
             }
@@ -665,7 +703,10 @@
                   "granite",
                   "basalt",
                   "kit-cluster",
-                  "kit-single"
+                  "kit-single",
+                  "kit-tripo-01",
+                  "kit-tripo-02",
+                  "kit-tripo-03"
                 ]
               }
             }
@@ -793,7 +834,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "wood"
+                  "wood",
+                  "kit-tripo-chest"
                 ]
               }
             }
@@ -960,7 +1002,9 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "kit-stone"
+                  "kit-stone",
+                  "kit-cut-stone",
+                  "kit-tripo-wall"
                 ]
               }
             }
@@ -981,7 +1025,8 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "kit-wood"
+                  "kit-wood",
+                  "kit-cross-wood"
                 ]
               }
             }
@@ -1003,6 +1048,77 @@
               "variant": {
                 "enum": [
                   "kit-wood"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wagon"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-wagon"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "barrel"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-barrel"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "well"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-well"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "height"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "wall",
+                  "fence"
                 ]
               }
             }
@@ -1319,6 +1435,11 @@
           "minimum": 0,
           "maximum": 1
         },
+        "softness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
         "seed": {
           "type": "integer",
           "minimum": 0,
@@ -1445,7 +1566,10 @@
                   "granite",
                   "basalt",
                   "kit-cluster",
-                  "kit-single"
+                  "kit-single",
+                  "kit-tripo-01",
+                  "kit-tripo-02",
+                  "kit-tripo-03"
                 ]
               }
             }
@@ -1592,7 +1716,7 @@
         "biomes": {
           "type": "array",
           "minItems": 0,
-          "maxItems": 1024,
+          "maxItems": 2048,
           "items": {
             "$ref": "#/$defs/landscapeBiome"
           }
@@ -1606,6 +1730,127 @@
           }
         }
       }
+    },
+    "barrier": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "variant",
+        "points",
+        "scale",
+        "gaps"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,55}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "kind": {
+          "enum": [
+            "wall",
+            "fence"
+          ]
+        },
+        "variant": {
+          "enum": [
+            "kit-stone",
+            "kit-cut-stone",
+            "kit-wood",
+            "kit-cross-wood",
+            "kit-tripo-wall"
+          ]
+        },
+        "points": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/point"
+          }
+        },
+        "scale": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 3
+        },
+        "gaps": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "required": [
+              "at",
+              "width"
+            ],
+            "properties": {
+              "at": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Mitte des Durchgangs als Entfernung entlang der gesamten Linie in Metern."
+              },
+              "width": {
+                "type": "number",
+                "minimum": 1,
+                "maximum": 30
+              }
+            }
+          }
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 8,
+          "description": "Absolute Mauer- oder Zaunhöhe in Metern. Ohne Angabe bleibt die Modellhöhe mal Größe erhalten. Ab 2 Metern wird die Sicht blockiert; Bewegung bleibt bei jeder Höhe blockiert."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wall"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-stone",
+                  "kit-cut-stone",
+                  "kit-tripo-wall"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "fence"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-wood",
+                  "kit-cross-wood"
+                ]
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }
