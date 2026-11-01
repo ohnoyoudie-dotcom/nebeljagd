@@ -1,38 +1,38 @@
 {
   "branch": "work",
-  "sourceCommit": "f8939fcdab40fafef685a3d894212ad5afc6dbbd",
+  "sourceCommit": "4aeee98d3e55971f93351e9dfa905baf53a68ad4",
   "files": {
     "map-editor.html": {
-      "bytes": 60490568,
-      "sha256": "50369e11d8d725acf5bbf50cc8a4593a8d989f55480211e6bb2ea4aef7df2ea5"
+      "bytes": 60488486,
+      "sha256": "a23014d683fc8ee72fd7ed1b409f678acdb2541aeeaf4bf64f5d054649f44df2"
     },
     "nebeljagd.html": {
-      "bytes": 75907149,
-      "sha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245"
+      "bytes": 75905083,
+      "sha256": "76356a5b796e87fbf826c634734049189abdcb27246eee25c5aa74cb80b892b4"
     },
     "index.html": {
-      "bytes": 75907149,
-      "sha256": "de648b97d46e7953316aa16e6c8101d03cd14564f0b4b806bef19801f9bb3245"
+      "bytes": 75905083,
+      "sha256": "76356a5b796e87fbf826c634734049189abdcb27246eee25c5aa74cb80b892b4"
     },
     "avatar-preview.html": {
       "bytes": 14841476,
       "sha256": "c68eead42b43e85c272aade759ee45fff98336a5329d532e09d9efdb052536fe"
     },
     "worldmap.json": {
-      "bytes": 19060,
-      "sha256": "83e3462239ba8607b23953aa71dbb710c0c5ec71d5f7f8296bac52ff12295bfc"
+      "bytes": 14961,
+      "sha256": "22423fe59d88b300db1644c89c5d51f33b797ee574ab296405e265e88ccaca48"
     },
     "worldmap.svg": {
-      "bytes": 43919,
-      "sha256": "b6bafc0086e0b4aa0e7fa8dd8d11c9daa87277db811484975fddb9e136b22546"
+      "bytes": 31707,
+      "sha256": "a14ff0a31fe5001f6525914ce5a9e2e1dca42517ad4d95ba0e36ce5e4dc7bf67"
     },
     "worldmap.schema.json": {
       "bytes": 39931,
-      "sha256": "899033eba3774929dafe305f3576f897f167240ec0eba9bc3b36771d16533158"
+      "sha256": "54234beb9d377d2333667bd049d7140edc424d55b35c3e8fd5ba186cacb8adbf"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 88349945,
-      "sha256": "701d8e4e224b620951d1b71e209c9d980909000447cafb002f95fe70f2d0a055"
+      "bytes": 88347277,
+      "sha256": "1e2eedcd81ded97789ab30c81e979d113fa88196d1f4ce74bb9e5474238ea22e"
     }
   }
 }
