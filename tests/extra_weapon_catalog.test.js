@@ -77,8 +77,12 @@ test('new staffs have portable selectable SVG symbols while maps without them re
     assert.ok(svg.includes(`href="#world-object-${kind}"`), kind);
     assert.ok(svg.includes(`id="world-object-${kind}"`), kind);
   }
-  assert.ok(!before.includes('world-object-poisonStaff'));
-  assert.ok(!before.includes('world-object-moonStaff'));
+  const legacyMap = { ...structuredClone(project), objects: project.objects.filter(
+    object => !['poisonStaff', 'moonStaff'].includes(object.kind),
+  ) };
+  const legacySvg = renderWorldmapSvg(legacyMap);
+  assert.ok(!legacySvg.includes('world-object-poisonStaff'));
+  assert.ok(!legacySvg.includes('world-object-moonStaff'));
 });
 
 test('large scenery scatter keeps all three new weapon pickups reachable', () => {

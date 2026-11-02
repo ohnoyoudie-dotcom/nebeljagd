@@ -893,6 +893,32 @@
       "rotation": 0,
       "scale": 1,
       "rarity": "common"
+    },
+    {
+      "id": "object-poisonStaff-mvzidb73-1",
+      "name": "Giftstab",
+      "kind": "poisonStaff",
+      "variant": "kit-tripo-poison-staff",
+      "position": [
+        51.1,
+        -48.5
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-moonStaff-mvzidiqx-2",
+      "name": "Mondstab",
+      "kind": "moonStaff",
+      "variant": "kit-tripo-moon-staff",
+      "position": [
+        54.1,
+        -50.2
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
     }
   ],
   "landscape": {

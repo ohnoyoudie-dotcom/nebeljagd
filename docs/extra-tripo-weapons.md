@@ -1,8 +1,10 @@
 # Giftstab, Mondstab und verzierter Bogen
 
 Die drei Inbox-Modelle sind als platzierbare, aufhebbare und benutzbare Waffen
-eingebunden. Der feste Einstieg für die veröffentlichte Fassung ist
-<https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html>.
+eingebunden. Der aktuelle Branch-Build steht als
+[Browserpaket aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+bereit. Entpacken, `map-editor.html` öffnen und über **Spielen** testen.
+Der bestehende Pages-Link wird durch Veröffentlichungen auf `work` nicht aktualisiert.
 
 | Objektart | Variante | Original in assets/inbox |
 | --- | --- | --- |
