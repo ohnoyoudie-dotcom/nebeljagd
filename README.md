@@ -40,19 +40,20 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
-Der aktuelle Browserstand auf `work` ist als
-[Browserpaket herunterladen](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
-verfügbar. Entpacken, `map-editor.html` öffnen und über **Spielen** den
-Editorentwurf testen. Der Workflow prüft und veröffentlicht ausschließlich
-auf `work`; er aktualisiert weder `main` noch GitHub Pages. Das Paket und
-`release.json` werden zusätzlich als Actions-Artefakt **nebeljagd-work-browser**
-bereitgestellt.
+Den aktuellen geprüften Stand kannst du über den festen
+[Editor-Weblink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+öffnen und mit **Spielen** direkt testen. Die Entwicklung bleibt auf `work`;
+der Veröffentlichungsworkflow aktualisiert nach erfolgreichen Tests ausschließlich
+die fertigen Browserdateien in `main/preview`. Andere Dateien auf `main` bleiben
+unverändert. Der feste Einstieg zeigt die veröffentlichte Build-Version an.
+Details: [Editor und Veröffentlichung](docs/online-editor.md).
 
-Die [bisherige öffentliche Vorschau](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
-bleibt auf ihrem bereits veröffentlichten Stand auf `main` und ist kein
-Testzugang für neue `work`-Änderungen. Sie enthält keine Schüler- und
-Lehrkraft-Anmeldung; diese benötigt den oben beschriebenen Schulserver.
-Details: [Editor und Branch-Veröffentlichung](docs/online-editor.md).
+Der Giftstab wird durch Halten, Zielen und Loslassen bedient und erzeugt eine
+Giftwolke für drei Sekunden. Die Mondsichel durchdringt Gegner und kehrt nach
+Mauerkontakt oder zwölf Metern zurück; sie trifft auf beiden Flugwegen und
+sperrt weitere Angriffe bis zur Rückkehr. Der Bogen verschießt einen 3D-Pfeil
+mit Holzschaft, Metallspitze und drei Federn.
+
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.

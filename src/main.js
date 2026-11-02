@@ -43,6 +43,8 @@ const keys = new Set();
 const stick = new THREE.Vector2();
 let ready = false;
 let inputPointer = null;
+let aimDrag = null;
+let canvasAttackPointer = null;
 const frameSamples = [];
 
 const ui = createUI({
@@ -58,7 +60,10 @@ const ui = createUI({
   onResume: () => { if (state.phase === 'paused') setPhase('playing'); },
   onRestart: () => { if (ready) reset(); },
   onDash: () => roll(),
-  onAttack: () => attackWeapon(),
+  onAttack: event => { attackWeapon(); beginAimDrag(event); },
+  onAttackMove: event => moveAttackAim(event, true),
+  onAttackRelease: () => releaseWeapon(),
+  onAttackCancel: () => { aimDrag = null; weapons?.cancelAim(); },
   onInteract: () => interactWeapon(),
   onQualityChange: (quality) => setQuality(quality),
 });
@@ -197,7 +202,7 @@ function clearInput() {
 
 function setPhase(phase) {
   state.phase = phase;
-  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); }
+  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); weapons.cancelAim(); aimDrag = null; canvasAttackPointer = null; }
   clearInput();
   state.moving = false;
   ui.setPhase(phase);
@@ -277,6 +282,31 @@ function attackWeapon() {
   if (state.phase !== 'playing') return;
   const result = weapons.attack(player, state.direction);
   if (!result && !weapons.equipped) ui.toast('Heb zuerst eine Waffe mit E auf oder öffne eine Truhe.');
+}
+
+function groundPointer(event) {
+  if (!event || !Number.isFinite(event.clientX)) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1,
+    1 - (event.clientY - rect.top) / rect.height * 2), camera);
+  const point = ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -player.y * visualScale), new THREE.Vector3());
+  return point ? world.root.worldToLocal(point) : null;
+}
+function beginAimDrag(event) {
+  const target = weapons.telemetry.special.target, start = groundPointer(event);
+  aimDrag = target && start ? { start, target } : null;
+}
+function moveAttackAim(event, relative = false) {
+  if (state.phase !== 'playing' || !weapons.telemetry.special.aiming) return;
+  const point = groundPointer(event); if (!point) return;
+  if (relative && aimDrag) point.sub(aimDrag.start).add(new THREE.Vector3(aimDrag.target.x, aimDrag.target.y, aimDrag.target.z));
+  weapons.aimAt(player, point);
+}
+function releaseWeapon() {
+  if (state.phase === 'playing') weapons.releaseAttack(player);
+  else weapons.cancelAim();
+  aimDrag = null;
 }
 
 function simulate(dt) {
@@ -360,7 +390,18 @@ window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyE' && !event.repeat) interactWeapon();
   if (event.code === 'KeyF' && !event.repeat) attackWeapon();
 });
-window.addEventListener('keyup', (event) => keys.delete(event.code));
+window.addEventListener('keyup', event => { keys.delete(event.code); if (event.code === 'KeyF') releaseWeapon(); });
+window.addEventListener('pointermove', event => { if (keys.has('KeyF')) moveAttackAim(event); });
+renderer.domElement.addEventListener('pointerdown', event => {
+  if (event.button !== 0 || state.phase !== 'playing' || canvasAttackPointer !== null) return;
+  event.preventDefault(); canvasAttackPointer = event.pointerId; renderer.domElement.setPointerCapture(event.pointerId);
+  attackWeapon(); moveAttackAim(event);
+});
+renderer.domElement.addEventListener('pointermove', event => { if (canvasAttackPointer === event.pointerId) moveAttackAim(event); });
+renderer.domElement.addEventListener('pointerup', event => { if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; releaseWeapon(); } });
+for (const name of ['pointercancel', 'lostpointercapture']) renderer.domElement.addEventListener(name, event => {
+  if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; aimDrag = null; weapons.cancelAim(); }
+});
 window.addEventListener('blur', () => {
   clearInput();
   if (state.phase === 'playing') setPhase('paused');
@@ -444,6 +485,11 @@ window.nebeljagdTestState = () => ({
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
 if (new URLSearchParams(location.search).has('inspect')) {
+  window.nebeljagdProjectPoint = ({x, z}) => {
+    const point = world.root.localToWorld(new THREE.Vector3(x, world.heightAt(x, z), z)).project(camera);
+    const rect = renderer.domElement.getBoundingClientRect();
+    return {x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2};
+  };
   window.nebeljagdInspectCamera = ({ zoom = 1 } = {}) => {
     camera.zoom = THREE.MathUtils.clamp(Number.isFinite(zoom) ? zoom : 1, 1, 4);
     camera.updateProjectionMatrix();

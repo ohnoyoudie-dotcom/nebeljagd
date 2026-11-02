@@ -106,14 +106,14 @@ export function createCombat({ onHit, onDefeat } = {}) {
     }
   }
 
-  function traceSegment(start, end, radius = 0, excludeId) {
+  function traceSegment(start, end, radius = 0, excludeId, ignoredTargets = null) {
     const dx = end.x - start.x, dz = end.z - start.z, distanceSquared = dx * dx + dz * dz;
     const startY = start.y ?? 0, dy = (end.y ?? 0) - startY;
     const projectileRadius = Math.max(0, finite(radius, 0));
     const epsilon = 1e-9;
     let nearest = null;
     for (const target of targets.values()) {
-      if (!target.alive || target.id === excludeId || target.targetable === false) continue;
+      if (!target.alive || target.id === excludeId || target.targetable === false || ignoredTargets?.has(target.id)) continue;
       const tx = start.x - target.position.x, tz = start.z - target.position.z;
       const reach = target.radius + projectileRadius;
       const c = tx * tx + tz * tz - reach * reach;

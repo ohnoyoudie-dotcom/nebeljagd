@@ -4,7 +4,8 @@ Die drei Inbox-Modelle sind als platzierbare, aufhebbare und benutzbare Waffen
 eingebunden. Der aktuelle Branch-Build steht als
 [Browserpaket aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
 bereit. Entpacken, `map-editor.html` öffnen und über **Spielen** testen.
-Der bestehende Pages-Link wird durch Veröffentlichungen auf `work` nicht aktualisiert.
+Der [feste Editor-Weblink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+wird nach erfolgreichen Prüfungen über `main/preview` aktualisiert.
 
 | Objektart | Variante | Original in assets/inbox |
 | --- | --- | --- |
@@ -65,9 +66,17 @@ nicht automatisch um zusätzliche Platzierungen ergänzt.
 Unbewaffnete Spieler nehmen erreichbare Waffen automatisch auf. **E** wechselt
 die Waffe und legt die bisherige an der Fundstelle ab. **F** greift an:
 
-- Giftstab: grünes Projektil mit eigenständigem Giftschaden über Zeit.
-- Mondstab: heller Mondzauber mit direktem Magieschaden.
-- Verzierter Bogen: gespannte Originalsehne und ein schadensfähiger Pfeil.
+- Giftstab: Maustaste auf dem Spielfeld oder die Angriffstaste halten, den
+  Zielkreis bewegen und loslassen. Mit F halten lässt sich über den Mauszeiger
+  zielen. Auf Touch-Geräten die Angriffstaste halten und ziehen. Reichweite:
+  zwölf Meter; Wolkenradius: 2,4 Meter. Die Wolke besteht drei Sekunden und
+  schädigt erreichbare Gegner im Bereich. Mauern blockieren Projektil und
+  Wolkenschaden. Abbrechen, Rollen oder Pausieren verwirft ein gehaltenes Ziel.
+- Mondstab: eine sichtbare 3D-Sichel durchdringt Gegner, trifft pro Flugweg jeden
+  Gegner höchstens einmal und kehrt nach Mauerkontakt oder zwölf Metern zurück.
+  Weitere Angriffe und Waffenwechsel sind bis zur Rückkehr gesperrt.
+- Verzierter Bogen: gespannte Originalsehne und ein 3D-Pfeil mit Holzschaft,
+  metallener Spitze und drei räumlichen Federn.
 
 Neue Stabtypen verlangen die tatsächlichen geladenen Modelle; ihre zufälligen
 Truhenfunde werden nicht durch prozedurale Ersatzmodelle dargestellt.

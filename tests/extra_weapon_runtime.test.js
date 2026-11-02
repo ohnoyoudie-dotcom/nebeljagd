@@ -64,22 +64,26 @@ test('all three new models remain the same pickups through automatic pickup, swa
   weapons.dispose();
 });
 
-test('Giftstab applies independent poison while Mondstab deals direct magical damage without slow or burn', () => {
-  for(const type of ['poisonStaff','moonStaff']) {
-    const combat=createCombat();
-    const target=combat.addTarget({id:'victim',position:{x:0,y:0,z:4},radius:.7,maxHealth:500});
-    const {actor,weapons}=setup([placed(type)],{combat});
-    weapons.tryAutoPickup(actor.position);weapons.attack(actor.position,0);tick(weapons,1);
-    const stats=weaponStats(type,'rare');
-    assert.equal(target.health,500-stats.damage);
-    assert.equal(weapons.telemetry.damageHits,1);
-    assert.equal(target.burnRemaining,0);assert.equal(target.slowRemaining,0);
-    assert.equal(weapons.telemetry.effects.emitted[type].launches,1);
+test('poison waits for release and moon remains locked until its damaging return finishes', () => {
+  for (const type of ['poisonStaff', 'moonStaff']) {
+    const combat = createCombat();
+    const target = combat.addTarget({id:'victim',position:{x:0,y:0,z:4},radius:.7,maxHealth:500});
+    const {actor,weapons} = setup([placed(type)],{combat});
+    weapons.tryAutoPickup(actor.position); weapons.attack(actor.position,0);
     if(type==='poisonStaff') {
-      assert.equal(target.poisonRemaining,3);
-      combat.update(4);
-      assert.equal(target.health,500-stats.damage-3*stats.poison.damagePerSecond);
-    }else assert.equal(target.poisonRemaining,0);
+      tick(weapons,1); assert.equal(target.health,500); assert.equal(weapons.telemetry.shotsFired,0);
+      weapons.aimAt(actor.position,target.position); assert.equal(weapons.releaseAttack(actor.position),true);
+      tick(weapons,1); assert.ok(target.health<500); assert.ok(target.poisonRemaining>0);
+      assert.equal(weapons.telemetry.special.clouds.length,1);
+    } else {
+      tick(weapons,.9); assert.ok(target.health<500);
+      assert.ok(weapons.attackCooldown>0); assert.equal(weapons.attack(actor.position,0),null);
+      tick(weapons,1); assert.equal(weapons.telemetry.special.moon,null);
+      assert.equal(weapons.telemetry.damageHits,2);
+      assert.equal(target.health,500-2*weaponStats(type,'rare').damage);
+      assert.equal(target.poisonRemaining,0);
+    }
+    assert.equal(target.burnRemaining,0); assert.equal(target.slowRemaining,0);
     weapons.dispose();
   }
 });
@@ -102,6 +106,12 @@ test('ornate bow animates its actual baked string only on the held clone and rel
   assert.deepEqual(Array.from(prototypeString.attributes.position.array),source,'template and ground pickup keep their original positions');
   tick(weapons,1);
   assert.equal(weapons.telemetry.shotsFired,1);
+  const arrow = actor.parent.getObjectByName('Fliegender Pfeil');
+  assert.ok(arrow.children.some(part => part.name === 'Pfeil · Holzschaft' && part.geometry.type === 'CylinderGeometry'));
+  assert.ok(arrow.children.some(part => part.name === 'Pfeil · Metallspitze' && part.material.metalness > .5));
+  const feathers = arrow.children.filter(part => part.name === 'Pfeil · Feder');
+  assert.equal(feathers.length, 3);
+  assert.equal(new Set(feathers.map(part => part.rotation.z)).size, 3);
   assert.equal(target.health,500-weaponStats('bow','rare').damage);
   assert.equal(weapons.telemetry.heldGrip.side,'left');
   assert.equal(weapons.telemetry.heldGrip.error,0);

@@ -33,6 +33,7 @@ function attackOnce(instance, seconds = .9) {
   const { actor, weapons } = instance;
   weapons.interact(actor.position);
   weapons.attack(actor.position, 0);
+  if (weapons.equipped === 'poisonStaff') { weapons.aimAt(actor.position, instance.target.position); weapons.releaseAttack(actor.position); seconds = 4.1; }
   for (let time = 0; time < seconds; time += .04) weapons.update(.04, time, actor.position);
 }
 
@@ -43,9 +44,10 @@ test('all five tiers increase the actual damage dealt for each weapon', () => {
       const instance = setup(type, rarity, { targetZ: type === 'sword' ? 1.6 : 4 });
       attackOnce(instance);
       const damage = 1000 - instance.target.health;
-      assert.equal(damage, weaponStats(type, rarity).damage, `${type}/${rarity} real hit`);
+      assert.ok(Math.abs(damage - weaponStats(type, rarity).damage) < 1e-6, `${type}/${rarity} real hit`);
       assert.ok(damage > previous, `${type}/${rarity} increases damage`);
-      assert.equal(instance.weapons.telemetry.damageHits, 1, 'single swing/projectile hits only once');
+      if (type === 'poisonStaff') assert.ok(instance.weapons.telemetry.damageHits > 1, 'cloud applies damage while inside');
+      else assert.equal(instance.weapons.telemetry.damageHits, 1, 'single outbound shot hits only once');
       assert.equal(instance.weapons.equippedItem.rarity, rarity);
       previous = damage;
     }

@@ -34,19 +34,18 @@ alle Dateien außerhalb von `preview/` auf `main` bleiben erhalten.
 
 Der Workflow **Work build and visual checks** testet den auslösenden
 Quellcommit auf `work`, baut das Paket und prüft die erzeugten Browserdateien.
-Danach übernimmt er den Build ausschließlich nach `work/welt`. Ein
-zwischenzeitlich geänderter `work`-Stand blockiert eine veraltete Veröffentlichung.
-Der Workflow schreibt nicht nach `main` und fordert keinen Pages-Build an.
-Das geprüfte ZIP und die Versionsdatei stehen außerdem sieben Tage als
-Actions-Artefakt **nebeljagd-work-browser** bereit.
+Danach übernimmt er den Build nach `work/welt` und die dazu passende Vorschau
+nach `main/preview`. Diese Aktualisierung der Webvorschau wurde ausdrücklich
+freigegeben. Andere Dateien auf `main` bleiben erhalten. Vor jedem Push wird
+geprüft, dass kein neuerer Entwicklungsstand vorliegt; es gibt keinen Force-Push.
+Anschließend fordert der Workflow den bestehenden Pages-Build für genau den
+veröffentlichten Commit an und prüft dessen Ergebnis. Ein erfolgreicher Push
+allein bestätigt noch keine erfolgreiche Bereitstellung.
 
-Der bisherige öffentliche Pages-Einstieg oben bleibt damit auf seinem bereits
-veröffentlichten Stand. Er ist kein Testzugang für neue `work`-Änderungen.
-Zum Testen des aktuellen Branch-Builds das
-[Browserpaket aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
-herunterladen, entpacken und `map-editor.html` öffnen. **Spielen** öffnet das
-passende `nebeljagd.html` mit dem Editorentwurf. Für einen neuen öffentlichen
-Web-Testzugang ist eine separate Hosting-Einrichtung nötig.
+Das geprüfte ZIP und die Versionsdatei stehen außerdem sieben Tage als
+Actions-Artefakt **nebeljagd-work-browser** bereit. Die
+[Offline-Kopie aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+bleibt zum Herunterladen verfügbar.
 
 ## Eigene Kartenänderungen
 

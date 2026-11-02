@@ -138,7 +138,8 @@ test('both imported staffs follow the palm socket through motion and cast from t
       assert.equal(weapons.telemetry.heldGrip.error, 0);
     }
     weapons.attack(actor.position, actor.rotation.y);
-    for (let frame = 0; frame < 3; frame++) weapons.update(.1, .4 + frame * .1, actor.position);
+    if (type === 'poisonStaff') weapons.releaseAttack(actor.position);
+    else for (let frame = 0; frame < 3; frame++) weapons.update(.1, .4 + frame * .1, actor.position);
     const flash = weapons.telemetry.effects.bursts.find(burst => burst.kind === 'muzzle');
     assert.ok(flash, 'the moved staff still releases a visible cast effect');
     const tip = held.localToWorld(new THREE.Vector3(0, held.userData.weaponTipY, 0));
@@ -202,11 +203,13 @@ test('Tripo sword and staffs retain real melee, ranged damage, burn and slow beh
     const target = combat.addTarget({ id: 'target', position: { x: 0, y: 0, z: kind === 'sword' ? 1.6 : 4 }, radius: .65, maxHealth: 500 });
     const { weapons, actor } = setup([placement(kind, variant, { rarity: 'legendary' })], { combat });
     weapons.interact(actor.position); weapons.attack(actor.position, 0);
+    if (kind === 'poisonStaff') { weapons.aimAt(actor.position, target.position); weapons.releaseAttack(actor.position); }
     const tips = [];
-    for (let i = 0; i < 24; i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
+    for (let i = 0; i < (kind === 'poisonStaff' ? 110 : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
     const expected = weaponStats(kind, 'legendary');
-    assert.equal(target.health, 500 - expected.damage, `${variant} deals the existing tier damage`);
-    assert.equal(weapons.telemetry.damageHits, 1);
+    assert.ok(Math.abs(target.health - (500 - expected.damage)) < 1e-6, `${variant} deals the tier damage, spread over the cloud lifetime for poison`);
+    if (kind === 'poisonStaff') assert.ok(weapons.telemetry.damageHits > 1);
+    else assert.equal(weapons.telemetry.damageHits, 1);
     assert.equal(weapons.equippedItem.variant, variant);
     if (kind === 'sword') assert.ok(Math.max(...tips) - Math.min(...tips) > 1.4, 'imported blade follows the attack arc');
     if (kind === 'fireStaff') {

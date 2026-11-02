@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
+import { createSpecialWeapons } from './special-weapons.js';
 
 export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-sword': 'sword',
@@ -398,8 +399,11 @@ export function createWeapons(scene, characterGroup, world, character = null,
     shaft.rotation.x = Math.PI / 2;
     const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, 0.43);
     head.rotation.x = Math.PI / 2;
-    const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
-    feather.rotation.z = Math.PI / 4;
+    shaft.name = 'Pfeil · Holzschaft'; head.name = 'Pfeil · Metallspitze';
+    for (let i = 0; i < 3; i++) {
+      const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
+      feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
+    }
     if (trailVisible) {
       const trail = addMesh(group, arrowTrailGeometry, arrowGlow, 0, 0, -0.83);
       trail.rotation.x = Math.PI / 2; trail.castShadow = false;
@@ -501,7 +505,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function equip(item, automatic = false) {
-    if (!item) return null;
+    if (!item || specials.moonBusy) return null;
+    specials.cancelAim();
     const held = selectHeldVisual(item.type, item.variant);
     // Exchange the existing pickups. The new pickup's position has already
     // passed visibility, height and reach checks, so the old weapon stays
@@ -530,7 +535,11 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function attack(position, direction) {
-    if (!equippedType || cooldown > 0 || !position || characterGroup.userData.rolling) return null;
+    if (!equippedType || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
+    if (equippedType === 'poisonStaff') {
+      if (!specials.beginAim(position, direction)) return null;
+      return { type: equippedType, message: 'Ziel wählen und loslassen' };
+    }
     // The bow releases after a short visible draw, in the direction the body faces.
     // A smoothed movement yaw therefore never produces a sideways arrow.
     attackAge = 0; shotReleased = false;
@@ -705,7 +714,20 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   const spellEffects = createSpellEffects(scene, { isVisible });
+  const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
+    lastDamage = result; damageHits++;
+  }, isVisible);
   const staffTip = new THREE.Vector3();
+  function releaseAttack(position) {
+    if (!specials.aiming || equippedType !== 'poisonStaff' || characterGroup.userData.rolling) { specials.cancelAim(); return false; }
+    cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
+    attackPhase = 'release'; shotReleased = true;
+    getStaffTip(staffTip);
+    const blocked = world?.traceProjectile?.({ x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .12);
+    specials.releasePoison(staffTip, equippedItem, blocked); shotCount++;
+    spellEffects.fire('poisonStaff', staffTip, characterGroup.rotation.y);
+    return true;
+  }
   const spells = Array.from({ length: 10 }, () => {
     const visual = spellEffects.createProjectile();
     return { visual, group: visual.group, life: 0, vx: 0, vz: 0, mode: 'inactive', payload: null,
@@ -718,8 +740,15 @@ export function createWeapons(scene, characterGroup, world, character = null,
     return result;
   }
   function releaseSpell(position) {
-    const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
     getStaffTip(staffTip); launchCenter.copy(staffTip);
+    if (equippedType === 'moonStaff') {
+      const angle = characterGroup.rotation.y;
+      const blocked = world?.traceProjectile?.({ x: position.x, y: position.y + 1.4, z: position.z }, launchCenter, .15);
+      specials.launchMoon(launchCenter, angle, equippedItem, blocked); shotCount++;
+      lastSpellLaunch = { type: equippedType, direction: angle, tip: { ...staffTip }, flightHeight: launchCenter.y };
+      spellEffects.fire(equippedType, staffTip, angle); return;
+    }
+    const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
     const angle = characterGroup.rotation.y;
     spell.mode = 'flying'; spell.life = 1.35; spell.direction = angle;
     // The crystal fixes the shot's height for its whole flight. Facing sets
@@ -766,6 +795,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function update(dt, time, position = characterGroup.position) {
     const delta = Math.max(0, Math.min(.25, Number.isFinite(dt) ? dt : 0));
     cooldown = Math.max(0, cooldown - delta);
+    if (characterGroup.userData.rolling) specials.cancelAim();
+    specials.update(delta, position, time);
     for (const item of items) {
       if (item.collected) continue;
       const wave = Math.sin(time * 2.2 + item.phase);
@@ -884,6 +915,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
     spellEffects.reset();
+    specials.reset();
     damageHits = 0; lastDamage = null;
     for (const arrow of arrows) { arrow.life = 0; arrow.mode = 'inactive'; arrow.group.visible = false; }
     impactParticles.forEach((particle, index) => {
@@ -899,6 +931,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     disposed = true;
     reset();
     spellEffects.dispose();
+    specials.dispose();
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
       ...arrows.map(arrow => arrow.group), slash, impactMesh];
     const geometries = new Set([ringGeometry, haloGeometry]), materials = new Set(baseMaterials);
@@ -919,7 +952,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     items,
     get equipped() { return equippedType; },
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
-    get attackCooldown() { return cooldown; },
+    get attackCooldown() { return specials.moonBusy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.set(0, heldSword.userData.weaponTipY, 0).applyQuaternion(heldSword.quaternion).multiplyScalar(heldSword.scale.y).add(heldSword.position);
       const held = heldByType[equippedType];
@@ -942,7 +975,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       held?.traverse(part => { if (part.isMesh) meshCount++; });
       return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        effects: spellEffects.telemetry, heldGrip, hands, lastSpellLaunch,
+        effects: spellEffects.telemetry, special: specials.telemetry, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,
         staffTip: equippedType?.endsWith('Staff') ? point(getStaffTip(new THREE.Vector3())) : null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
@@ -956,6 +989,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
           sword: { x: heldSword.position.x, y: heldSword.position.y, z: heldSword.position.z },
           swordTip: { x: bladeTip.x, y: bladeTip.y, z: bladeTip.z } } };
     },
-    nearest, interact, tryAutoPickup, attack, update, reset, addDrop, dispose,
+    nearest, interact, tryAutoPickup, attack, releaseAttack,
+    aimAt: (position, point) => specials.aimAt(position, point), cancelAim: () => specials.cancelAim(),
+    update, reset, addDrop, dispose,
   };
 }

@@ -27,8 +27,8 @@ export const WEAPON_DEFINITIONS = Object.freeze({
   sword: Object.freeze({ type: 'sword', label: 'Eisenschwert', damage: 27, cooldown: .58, range: 2.35, effect: null }),
   fireStaff: Object.freeze({ type: 'fireStaff', label: 'Feuerstab', damage: 16, cooldown: .8, range: 23, effect: 'burn' }),
   iceStaff: Object.freeze({ type: 'iceStaff', label: 'Eisstab', damage: 19, cooldown: .85, range: 23, effect: 'slow' }),
-  poisonStaff: Object.freeze({ type: 'poisonStaff', label: 'Giftstab', damage: 14, cooldown: .85, range: 23, effect: 'poison' }),
-  moonStaff: Object.freeze({ type: 'moonStaff', label: 'Mondstab', damage: 22, cooldown: .85, range: 23, effect: null }),
+  poisonStaff: Object.freeze({ type: 'poisonStaff', label: 'Giftstab', damage: 14, cooldown: .85, range: 12, effect: 'poison' }),
+  moonStaff: Object.freeze({ type: 'moonStaff', label: 'Mondstab', damage: 22, cooldown: .85, range: 12, effect: null }),
 });
 export const WEAPON_TYPES = Object.freeze(Object.keys(WEAPON_DEFINITIONS));
 export const STAFF_TYPES = Object.freeze(WEAPON_TYPES.filter(type => type.endsWith('Staff')));

@@ -154,7 +154,13 @@ def attack_target(page, identifier, distance):
     }''', {'id': identifier, 'distance': distance, 'alongX': along_x})
     wait_sim(page, .12)
     before = game_state(page)['combat']['damageHits']
-    page.keyboard.press('f')
+    if game_state(page)['equippedWeapon'] == 'poisonStaff':
+        page.keyboard.down('f')
+        point = page.evaluate('id=>nebeljagdProjectPoint(nebeljagdTestState().practiceActors.find(a=>a.id===id).position)', identifier)
+        page.mouse.move(point['x'], point['y'])
+        page.keyboard.up('f')
+    else:
+        page.keyboard.press('f')
     page.wait_for_function('n=>nebeljagdTestState().combat.damageHits>n', arg=before)
     wait_sim(page, .12)
     after = game_state(page)

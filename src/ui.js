@@ -40,7 +40,7 @@ const portrait = `<img src="${portraitUrl}" width="64" height="64" alt="" aria-h
 const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
 const timeLabel = seconds => `${pad(seconds / 60)}:${pad(seconds % 60)}`;
 
-export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
+export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
   const practice = Boolean(practiceSession);
   const root = document.getElementById('ui');
   root.dataset.phase = 'ready';
@@ -193,10 +193,23 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   $('restartBtn').addEventListener('click', () => onRestart?.());
   $('retryBtn').addEventListener('click', () => onRestart?.());
   dashButton.addEventListener('pointerdown', event => { event.preventDefault(); onDash?.(); });
-  attackButton.addEventListener('pointerdown', event => { event.preventDefault(); if (!attackButton.disabled) onAttack?.(); });
+  let attackPointer = null;
+  attackButton.style.touchAction = 'none';
+  attackButton.addEventListener('pointerdown', event => {
+    event.preventDefault(); if (attackButton.disabled || attackPointer !== null) return;
+    attackPointer = event.pointerId; attackButton.setPointerCapture(event.pointerId); onAttack?.(event);
+  });
+  attackButton.addEventListener('pointermove', event => { if (event.pointerId === attackPointer) onAttackMove?.(event); });
+  attackButton.addEventListener('pointerup', event => {
+    if (event.pointerId !== attackPointer) return;
+    attackPointer = null; onAttackRelease?.(event);
+  });
+  for (const type of ['pointercancel', 'lostpointercapture']) attackButton.addEventListener(type, event => {
+    if (event.pointerId === attackPointer) { attackPointer = null; onAttackCancel?.(); }
+  });
   interactButton.addEventListener('pointerdown', event => { event.preventDefault(); if (!interactButton.disabled) onInteract?.(); });
   pickupPrompt.addEventListener('pointerdown', event => { event.preventDefault(); if (!pickupPrompt.disabled) onInteract?.(); });
-  attackButton.addEventListener('click', event => { if (event.detail === 0 && !attackButton.disabled) onAttack?.(); });
+  attackButton.addEventListener('click', event => { if (event.detail === 0 && !attackButton.disabled) { onAttack?.(); onAttackRelease?.(); } });
   interactButton.addEventListener('click', event => { if (event.detail === 0 && !interactButton.disabled) onInteract?.(); });
   pickupPrompt.addEventListener('click', event => { if (event.detail === 0 && !pickupPrompt.disabled) onInteract?.(); });
   $('qualityMode')?.addEventListener('change', event => onQualityChange?.(event.target.value));
@@ -481,7 +494,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
       const effectDetail = { fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
-        poisonStaff: ' · Vergiftung', moonStaff: ' · Mondzauber' }[weaponType] || '';
+        poisonStaff: ' · Halten, zielen, loslassen', moonStaff: ' · Sichel kehrt zurück' }[weaponType] || '';
       weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
@@ -490,7 +503,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
       const attackLabel = { bow: 'Mit dem Bogen schießen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
-        poisonStaff: 'Giftzauber wirken', moonStaff: 'Mondzauber wirken' }[weaponType];
+        poisonStaff: 'Halten, Giftwolke zielen und loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
       lastWeaponType = weaponKey;
     }
