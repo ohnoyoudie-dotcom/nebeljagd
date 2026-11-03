@@ -18,7 +18,7 @@ const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
   { placements, heightAt = world?.heightAt, viewDistance = 100, combat = null, ownerId = 'player', isVisible = null,
-    revealSceneryThroughFog = false, tripoPrototypes = {} } = {}) {
+    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null } = {}) {
   function assertPrototype(type, variant) {
     const modelType = TRIPO_WEAPON_VARIANTS[variant];
     if (!modelType) return;
@@ -713,7 +713,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     else { projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false; }
   }
 
-  const spellEffects = createSpellEffects(scene, { isVisible });
+  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
   }, isVisible);

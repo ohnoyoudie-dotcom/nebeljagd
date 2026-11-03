@@ -52,6 +52,10 @@ jobs:
           NEBELJAGD_QA_OUT: test-results/tripo-weapons
           NEBELJAGD_BUNDLED_CHROMIUM: '1'
         run: python tests/tripo_weapon_editor_smoke.py
+      - name: Verify uploaded fireball, shader, sparks and smoke
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/fireball_browser_smoke.py
       - name: Verify targeted hold, release and return controls
         run: python tests/special_weapon_controls_smoke.py
       - name: Verify meadow, vision and shadow runtime
@@ -134,6 +138,7 @@ jobs:
             test-results/classroom
             test-results/online-editor
             test-results/tripo-weapons
+            test-results/fireball
             assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

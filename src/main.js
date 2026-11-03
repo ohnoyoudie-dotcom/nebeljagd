@@ -12,6 +12,7 @@ import { createPickups } from './pickups.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
+import { loadFireballModel } from './fireball-model.js';
 import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
@@ -171,7 +172,7 @@ for (const object of world.destructibles ?? []) {
 const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
-    tripoPrototypes: await loadTripoWeapons(world.map.objects) });
+    tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {

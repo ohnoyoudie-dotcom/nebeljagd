@@ -19,6 +19,9 @@ Die drei zusätzlichen Inbox-Modelle samt Gift-, Mond- und Bogenangriffen:
 [Giftstab, Mondstab und verzierter Bogen](docs/extra-tripo-weapons.md).
 Beim Wechsel mit **E** liegt die bisherige Waffe wieder an der Fundstelle
 der neuen und kann erneut aufgenommen werden: [Waffenwechsel](docs/weapon-swap.md).
+Der Feuerstab verwendet das hochgeladene **fiery flame**-Modell als Feuerball,
+mit animiertem Leuchten, Funken und einer kleinen Rauchspur:
+[Modell und Prüfungen](docs/tripo-fireball.md).
 Feuer und Eis besitzen eigene Lade-, Abschuss-, Flug- und Treffereffekte:
 [Zaubereffekte mit fließenden Schweifen und verfeinerten Materialien](docs/spell-effects-v2.md).
 Beide Stäbe sitzen an einem mitbewegten Griffpunkt in der Handfläche:

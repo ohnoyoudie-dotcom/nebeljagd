@@ -158,3 +158,16 @@ for (const [packageName, name, length] of [
 }
 assert.ok(weaponBytes['tripo-weapons'] <= 4 * 1024 * 1024, 'Original weapon browser payload must stay within 4 MiB');
 assert.ok(weaponBytes['tripo-extra-weapons'] <= 4.5 * 1024 * 1024, 'Additional weapon browser payload must stay within 4.5 MiB');
+
+// The uploaded fire stays untouched; only the inspected small derivative ships.
+{
+  const record = JSON.parse(await readFile('assets/imported/tripo-fireball/inspection.json', 'utf8'));
+  const source = await readFile(record.source);
+  const runtime = await readFile('assets/imported/tripo-fireball/runtime/fireball.glb');
+  assert.equal(createHash('sha256').update(source).digest('hex'), '48be7b6326161097ac628d6d52cede7a3c1f202a3e7a3309741d4144ece02f65');
+  assert.equal(createHash('sha256').update(runtime).digest('hex'), record.runtime.sha256);
+  assert.ok(Object.values(record.validation).every(Boolean));
+  assert.ok(record.runtime.triangles <= 6000 && runtime.length <= 1536 * 1024);
+  assert.ok(record.textures.every(texture => Math.max(...texture.runtimeSize) <= 512));
+  console.log(JSON.stringify({ status: 'passed', package: 'tripo-fireball', triangles: record.runtime.triangles, bytes: runtime.length, sourceUnchanged: true }));
+}

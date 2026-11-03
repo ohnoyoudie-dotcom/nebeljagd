@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/fiery flame 3d model.glb",
+  "original": {
+    "bytes": 61681500,
+    "sha256": "48be7b6326161097ac628d6d52cede7a3c1f202a3e7a3309741d4144ece02f65",
+    "triangles": 1939402,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4897613525390625,
+          0.0,
+          -0.1284027099609375
+        ],
+        "max": [
+          0.4897613525390625,
+          0.51318359375,
+          0.1284027099609375
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 459288,
+    "sha256": "65bb448bf3faa5f9c442059331fc62fce457dc4dcc7840d0bf2e65782879a770",
+    "triangles": 6000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.48559439182281494,
+          0.00257218349725008,
+          -0.12730121612548828
+        ],
+        "max": [
+          0.49066299200057983,
+          0.513841450214386,
+          0.1279575079679489
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "fiery_flame_3d_model_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "fiery_flame_3d_model_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "fiery_flame_3d_model_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-fireball.py -- --execute",
+  "sourceAxisPreserved": true,
+  "runtimePlacement": "Centered and rotated from source +X toward game +Z by loader, nominal length 0.75m.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent commercial-license certification."
+}
