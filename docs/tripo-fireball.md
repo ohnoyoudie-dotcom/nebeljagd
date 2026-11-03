@@ -14,10 +14,11 @@ Geometrie und Texturen werden pro Schuss geteilt; die animierten Materialien
 werden pro Projektil geklont.
 
 Der Materialshader bewegt das warme Leuchten mit der Simulationszeit.
-Die bestehenden Flammenzungen und Funken ergänzen das Modell. Eine kleine,
-normal geblendete Rauchspur steigt leicht auf und blendet weich aus. Ein
-fester Pool von 24 Rauchpartikeln begrenzt die Zahl der Szenenobjekte.
-Beim Treffer entstehen zusätzlich drei kurze Rauchpuffs. Pause friert die
+Flammenzungen, Funken und ein weicher orangefarbener Glühsaum ergänzen das Modell.
+Die dichtere, normal geblendete Rauchspur steigt leicht auf und blendet weich aus.
+Ein fester Pool von 64 Rauchpartikeln begrenzt die Zahl der Szenenobjekte.
+Treffer auf Figuren und Wände erzeugen zehn größere Rauchpuffs, 38 Funken,
+einen hellen Impuls und eine größere expandierende Feuerwolke. Pause friert die
 Effekte ein; Sichtnebel verdeckt sie an ihrer tatsächlichen Position;
 Neustart räumt alle aktiven Effekte auf. Eis verwendet weiterhin ausschließlich
 seinen Kristall, Frostschweif und die ursprüngliche Verlangsamung. Schaden,
