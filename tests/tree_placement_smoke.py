@@ -5,7 +5,7 @@ import json
 import math
 import os
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_TREE_URL', 'http://127.0.0.1:4175').rstrip('/')
@@ -114,16 +114,20 @@ try:
         REPORT['checks'].append('Generated 3D game loads all five placed GLB tree instances with the exact saved transforms')
         REPORT['runtimeTreePlacements'] = stats['placements']
         REPORT['rendering'] = runtime['rendering']
-        # Freeze only the test capture after real runtime/geometry assertions.
-        # Otherwise the software GPU continually renders while Playwright tries
-        # to capture a full-resolution frame. No shipped game code is changed.
+        # Stop only already scheduled application frames for this diagnostic
+        # capture. Keep native requestAnimationFrame available to Playwright.
+        # Mandatory runtime checks above are never skipped on a capture timeout.
         game.evaluate('''() => {
           const start = document.getElementById('startBtn');
           if (start && !start.disabled) start.click();
-          window.requestAnimationFrame = () => 0;
+          const last = window.requestAnimationFrame(() => {});
+          for (let id = last; id >= Math.max(1, last - 64); id--) window.cancelAnimationFrame(id);
         }''')
-        game.wait_for_timeout(750)
-        game.screenshot(path=str(OUT / 'trees-in-game.png'), timeout=30000)
+        try:
+            game.screenshot(path=str(OUT / 'trees-in-game.png'), timeout=20000)
+            REPORT['gameScreenshot'] = 'captured'
+        except PlaywrightTimeoutError:
+            REPORT['gameScreenshot'] = 'not captured: headless software-renderer screenshot timeout; runtime assertions passed'
         game.close()
         # Exercise the exported editor's actual bytes without external assets.
         page.locator('#editor-tab-more').click()
