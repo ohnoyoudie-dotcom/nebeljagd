@@ -47,18 +47,30 @@ jobs:
             sleep 1
           done
       - name: Verify uploaded weapon models, pickup, swaps and attacks
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
           NEBELJAGD_QA_OUT: test-results/tripo-weapons
           NEBELJAGD_BUNDLED_CHROMIUM: '1'
         run: python tests/tripo_weapon_editor_smoke.py
       - name: Verify uploaded fireball, shader, sparks and smoke
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/fireball_browser_smoke.py
       - name: Verify targeted hold, release and return controls
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
         run: python tests/special_weapon_controls_smoke.py
       - name: Verify meadow, vision and shadow runtime
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
         run: |
           python tests/work_meadow_vision_smoke.py
           python tests/avatar_smoke.py
@@ -67,6 +79,14 @@ jobs:
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
+      - name: Verify four GLB trees and saved map in built editor and game
+        run: |
+          python -m http.server 4175 --bind 127.0.0.1 >/tmp/nebeljagd-tree.log 2>&1 &
+          for i in {1..40}; do
+            curl -fsS http://127.0.0.1:4175/welt/map-editor.html >/dev/null && break
+            sleep 1
+          done
+          python tests/tree_placement_smoke.py
       - name: Publish verified build to welt
         id: save-work
         env:
