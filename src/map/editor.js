@@ -66,6 +66,8 @@ let toastTimer;
 let restoredDraft = startup.pendingDraft;
 let unreadableDraftPending = Boolean(storedDraftText && !validStoredDraft);
 let storageAvailable = startupStorageAvailable;
+// A browser draft is only 'saved' once this exact document is in localStorage.
+let browserDraftCurrent = startup.source === 'draft' && Boolean(validStoredDraft);
 let view = initialView();
 let zoneTime = 0;
 let listLimit = 50;
@@ -188,20 +190,24 @@ function updateWarnings(result = validate(map)) {
 const directFileSaveSupported = () => typeof window.showSaveFilePicker === 'function';
 function updateSaveStatus({ saved = false } = {}) {
   if (restoredDraft !== null || unreadableDraftPending) {
-    $('save-status').textContent = mapFileHandle ? `Voriger Entwurf wartet · ${mapFileHandle.name}` : 'Voriger Entwurf wartet · Strg+S';
+    $('save-status').textContent = 'Anderer Browser-Entwurf geschützt · zuerst wiederherstellen oder sichern';
     return;
   }
   if (saved && mapFileHandle) {
-    $('save-status').textContent = `Gespeichert · ${mapFileHandle.name}`;
+    $('save-status').textContent = `JSON gespeichert · ${mapFileHandle.name}`;
     return;
   }
   if (mapFileHandle) {
-    $('save-status').textContent = `Ungespeicherte Änderungen · ${mapFileHandle.name} · Strg+S`;
+    $('save-status').textContent = browserDraftCurrent
+      ? `Im Browser gespeichert · JSON-Datei ${mapFileHandle.name} noch nicht aktualisiert`
+      : `JSON-Datei ${mapFileHandle.name} noch nicht aktualisiert · Strg+S`;
     return;
   }
-  $('save-status').textContent = directFileSaveSupported()
-    ? 'Ungespeicherte Änderungen · Strg+S wählt worldmap.json'
-    : 'Lokal gesichert · Browser-Download nötig';
+  $('save-status').textContent = browserDraftCurrent
+    ? 'Automatisch im Browser gespeichert · JSON-Sicherung empfohlen'
+    : storageAvailable
+      ? 'Karte geöffnet · Änderungen werden automatisch im Browser gespeichert'
+      : 'Browserspeicher nicht verfügbar · bitte als JSON sichern';
 }
 function saveDraft() {
   if (restoredDraft !== null || unreadableDraftPending) {
@@ -212,9 +218,11 @@ function saveDraft() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
     storageAvailable = true;
+    browserDraftCurrent = true;
     updateSaveStatus();
   } catch {
     storageAvailable = false;
+    browserDraftCurrent = false;
     updateSaveStatus();
   }
 }
