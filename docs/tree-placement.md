@@ -14,7 +14,7 @@ assets/imported/user-trees/runtime/tree1.glb
 
 Die Datei muss **exakt** den SHA-256-Hash `d5f1b1d5ef222b85544d6be5ad320fd4acf2fd2ee979295c6034fce4cc887561` haben.
 
-Danach die Datei mit **GitHub Desktop auf den Branch `work` committen und pushen**. Erst dann kann der automatische Build sie in den Online-Editor `https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html` einbetten. Keine manuelle Änderung der `worldmap.json` erforderlich.
+Der GitHub-Build lädt die bereits hochgeladene GLB-Datei einmalig aus einem temporären Medien-Upload, prüft den SHA-256-Hash und commitet sie zusammen mit dem geprüften Browser-Build auf `work`. Danach kann der Online-Editor `https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html` einbetten. Keine manuelle Änderung der `worldmap.json` erforderlich.
 
 Der GLB-Loader erkennt `tree1.glb` anhand seines Pfads beim nächsten Vite-Build: Bei vorhandener Datei erscheinen **Objekte → Einzeln → Baum → Dein Baum 1** und **Objekte → Verteilen → Baum**. Wenn die Datei fehlt, bleiben diese Optionen aus, statt ein leeres Modell zu zeigen.
 
