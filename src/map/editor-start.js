@@ -7,14 +7,16 @@ export function requestedEditorStart(search = '') {
 }
 
 export function planEditorStart({ project, snapshot = null, draft = null, requested = null }) {
+  // A direct online visit resumes the last valid locally saved map.
+  // Explicit project/draft links and embedded standalone snapshots still win.
   const source = requested === 'draft' ? (draft ? 'draft' : 'project')
     : requested === 'project' ? 'project'
-      : snapshot ? 'snapshot' : 'project';
+      : snapshot ? 'snapshot' : draft ? 'draft' : 'project';
   const map = source === 'draft' ? draft : source === 'snapshot' ? snapshot : project;
   const pendingDraft = draft && JSON.stringify(draft) !== JSON.stringify(map) ? draft : null;
   return {
     map, source, pendingDraft,
-    offerChoice: !requested && !snapshot && Boolean(pendingDraft),
+    offerChoice: false, // Direct visits no longer interrupt the last saved map.
     missingDraft: requested === 'draft' && !draft,
   };
 }
