@@ -131,7 +131,7 @@ if (!retiredSceneryBanner) {
   const label = document.createElement('span'); label.id = 'retired-scenery-note';
   const button = document.createElement('button');
   button.id = 'remove-retired-scenery'; button.className = 'button small';
-  button.textContent = 'Auf Tripo-Objekte bereinigen';
+  button.textContent = 'Veraltete Objekte entfernen';
   retiredSceneryBanner.append(label, button);
   retiredBuildingsBanner.after(retiredSceneryBanner);
 }
@@ -152,7 +152,7 @@ function updateRetiredSceneryBanner() {
   retiredSceneryBanner.hidden = !result.totalRemoved;
   $('retired-scenery-summary').textContent = `${result.totalRemoved} ältere Platzierungen im Entwurf · Details`;
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
-    : `Bereinigung: ${result.removedObjects.length} alte Objektplatzierungen (Nicht-Tripo oder kleines Schloss) und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
+    : `Bereinigung: ${result.removedObjects.length} veraltete Objektplatzierungen und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Freigeschaltete Bäume und aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
 }
 
 function initialView() {

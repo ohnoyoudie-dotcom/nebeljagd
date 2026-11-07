@@ -6,7 +6,7 @@ import { BARRIER_STYLES, makeBarrier } from '../src/map/barriers.js';
 import { removeNonTripoObjects } from '../src/map/tripo-object-cleanup.js';
 import { validateWorldmap } from '../src/map/model.js';
 
-test('explicit cleanup removes every disallowed placement and preserves current Tripo models and drawn routes', () => {
+test('explicit cleanup removes every disallowed placement and preserves approved GLB trees, current Tripo models and drawn routes', () => {
   const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
   const objects = OBJECT_CATALOG.flatMap(item => item.variants.map(variant => makeWorldObject(item.kind, [30, -42], {
     id: `${item.kind}-${variant.id}`, variant: variant.id, name: `Custom ${variant.id}`, scale: 1.3, rotation: .4,
@@ -19,7 +19,9 @@ test('explicit cleanup removes every disallowed placement and preserves current 
   assert.deepEqual(map, before, 'input stays intact for Undo');
   assert.deepEqual(normalizeWorldmap(map), before, 'import never silently discards old objects');
   assert.deepEqual(result.map.objects, objects.filter(object => isObjectPlaceable(object.kind, object.variant)));
-  assert.equal(result.map.objects.length, 15);
+  assert.equal(result.map.objects.length, 19);
+  assert.deepEqual(result.map.objects.filter(object => object.kind === 'tree').map(object => object.variant),
+    ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn']);
   for (const variant of ['kit-tripo-ornate-bow', 'kit-tripo-poison-staff', 'kit-tripo-moon-staff']) {
     assert.ok(result.map.objects.some(object => object.variant === variant), variant);
   }

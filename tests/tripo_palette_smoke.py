@@ -1,4 +1,4 @@
-"""Exercise the Tripo-only Objects palette, safe imports and explicit cleanup.
+"""Exercise the approved GLB-tree and Tripo Objects palette, safe imports and explicit cleanup.
 
 NEBELJAGD_URL=http://127.0.0.1:5193 python tests/tripo_palette_smoke.py
 Set NEBELJAGD_STANDALONE=1 against the published welt/ server to verify the
@@ -163,14 +163,17 @@ try:
                    for o in BASE['objects']), 'The delivered map must contain only retained Tripo objects'
         page.locator('#editor-tab-objects').click()
         kinds = options(page, '#palette-kind')
-        assert {x['value'] for x in kinds} == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well',
-                                             'sword', 'fireStaff', 'iceStaff'}, kinds
+        assert {x['value'] for x in kinds} == {'tree', 'house', 'rock', 'chest', 'wagon', 'barrel', 'well',
+                                             'sword', 'fireStaff', 'iceStaff', 'bow', 'poisonStaff', 'moonStaff'}, kinds
         catalog = {}
         for item in kinds:
             page.locator('#palette-kind').select_option(item['value'])
             catalog[item['value']] = options(page, '#palette-variant')
-            assert catalog[item['value']] and all(x['value'].startswith('kit-tripo-') and 'Tripo' in x['label']
-                                                 for x in catalog[item['value']]), catalog
+            if item['value'] == 'tree':
+                assert [x['value'] for x in catalog['tree']] == ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn']
+            else:
+                assert catalog[item['value']] and all(x['value'].startswith('kit-tripo-') and 'Tripo' in x['label']
+                                                     for x in catalog[item['value']]), catalog
         assert [x['value'] for x in catalog['house']] == ['kit-tripo-tavern', 'kit-tripo-house-02']
         assert [x['value'] for x in catalog['chest']] == ['kit-tripo-chest']
         assert [x['value'] for x in catalog['rock']] == ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']

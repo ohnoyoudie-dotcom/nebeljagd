@@ -172,8 +172,8 @@ test('existing kit walls, fences, crates and compact houses guard their actual r
   const pillar = definition.walls[0];
   assert.equal(guard.reason(toWorld(arch, (pillar.minX + pillar.maxX) / 2, (pillar.minZ + pillar.maxZ) / 2), .15, 'grass'), 'structure');
   assert.throws(() => createScatterStroke(map, { radius: 35, seed: 17,
-    scatter: { density: .8, entries: [{ kind: 'tree', variant: 'kit-oak-autumn', weight: 1 }] } }),
-  /aktuell verfügbare/, 'saved tree-only scatter cannot revive a retired model');
+    scatter: { density: .8, entries: [{ kind: 'tree', variant: 'oak', weight: 1 }] } }),
+  /aktuell verfügbare/, 'saved tree-only scatter cannot revive a retired procedural model');
   const tripoRocks = createScatterStroke(fixture(), { radius: 12, seed: 11, scatter: { density: .5, entries: [{ kind: 'rock', variant: 'kit-tripo-02', weight: 1 }] } });
   tripoRocks.sample([-90, -100]);
   assert.ok(tripoRocks.objects.length > 0);

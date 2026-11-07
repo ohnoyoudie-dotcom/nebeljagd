@@ -6,7 +6,7 @@ import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
   { kind: 'tree', label: 'Baum', defaultVariant: 'oak', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'oak', label: 'Eiche' }, { id: 'birch', label: 'Birke' }, { id: 'pine', label: 'Kiefer' }, { id: 'rei-tree01', label: 'Rei-Laubbaum 1' }, { id: 'rei-tree02', label: 'Rei-Laubbaum 2' },
+    variants: [{ id: 'oak', label: 'Eiche', retired: true }, { id: 'birch', label: 'Birke', retired: true }, { id: 'pine', label: 'Kiefer', retired: true }, { id: 'rei-tree01', label: 'Rei-Laubbaum 1', retired: true }, { id: 'rei-tree02', label: 'Rei-Laubbaum 2', retired: true },
       { id: 'kit-pine-high', label: 'Große Kiefer · GLB' }, { id: 'kit-pine-young', label: 'Junge Kiefer · GLB' },
       { id: 'kit-oak-green', label: 'Grüne Eiche · GLB' }, { id: 'kit-oak-autumn', label: 'Herbsteiche · GLB' }] },
   { kind: 'house', label: 'Haus', defaultVariant: 'kit-tripo-tavern', defaultScale: 1, footprintRadius: 14.5,
@@ -83,9 +83,10 @@ export const OBJECT_CATALOG = Object.freeze([
  * render saved maps until the user deliberately applies the cleanup action. */
 export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(definition => !definition.retired));
 
-/** Only approved Tripo models belong in the individual object palette.
+/** Approved Tripo models and the four existing GLB trees belong in the palette.
  * Runtime loot, grass painting and barrier drawing keep their own catalogues. */
 const placementAssetIds = new Set([
+  'tree:kit-pine-high', 'tree:kit-pine-young', 'tree:kit-oak-green', 'tree:kit-oak-autumn',
   'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
@@ -98,7 +99,7 @@ export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.f
   if (!variants.length) return [];
   return [Object.freeze({ ...definition,
     label: definition.kind === 'chest' ? 'Schatztruhe' : definition.label,
-    defaultVariant: variants.some(variant => variant.id === definition.defaultVariant)
+    defaultVariant: definition.kind === 'tree' ? 'kit-oak-green' : variants.some(variant => variant.id === definition.defaultVariant)
       ? definition.defaultVariant : variants[0].id,
     variants: Object.freeze(variants),
   })];

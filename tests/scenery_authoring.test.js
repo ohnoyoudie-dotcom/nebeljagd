@@ -6,7 +6,7 @@ import { AUTHORING_OBJECT_CATALOG, OBJECT_CATALOG, PLACEMENT_OBJECT_CATALOG,
 import { createScatterStroke, createVegetationStroke, createBiomeStroke } from '../src/map/landscape-brush.js';
 import { BIOME_PRESETS } from '../src/map/landscape.js';
 
-const retired = ['tree', 'mound', 'flower', 'ruin', 'shrine', 'crate'];
+const retired = ['mound', 'flower', 'ruin', 'shrine', 'crate'];
 const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
 function fixture() {
   const map = structuredClone(base);
@@ -38,13 +38,14 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
   for (const variant of ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']) assert.equal(isObjectAvailable('rock', variant), true);
 });
 
-test('individual placement offers exactly the admitted Tripo models and valid defaults without changing legacy or loot definitions', () => {
-  const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02',
+test('individual placement offers exactly the admitted GLB trees and Tripo models and valid defaults without changing legacy or loot definitions', () => {
+  const expected = ['tree:kit-pine-high', 'tree:kit-pine-young', 'tree:kit-oak-green', 'tree:kit-oak-autumn',
+    'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
     'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
     'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff'];
-  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff']);
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['tree', 'house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {
     assert.equal(isObjectPlaceable(definition.kind), true);
