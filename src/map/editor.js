@@ -16,6 +16,7 @@ import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
 import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
+import { createPlacementRotationControl } from './placement-rotation.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -1242,7 +1243,10 @@ function addObjectAt(point) {
   if (!isLandPoint(map, position)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
   const kind = $('palette-kind').value;
   if (!isObjectPlaceable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
-  const added = makeWorldObject(kind, position, {variant: $('palette-variant').value, rarity: $('palette-rarity').value});
+  const added = makeWorldObject(kind, position, {
+    variant: $('palette-variant').value, rarity: $('palette-rarity').value,
+    rotation: placementRotationControl.nextRotation(kind),
+  });
   if (!canPaintGrass(position, map, objectFootprint(added))) return toast('Bitte genug Abstand zum Ufer halten: Das ganze Objekt muss auf Land stehen.', true);
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
     layers.showObjects = true; $('layer-objects').checked = true;
@@ -1296,6 +1300,7 @@ window.addEventListener('message', event => {
   playtestWindows.delete(event.source);
 });
 preparePalette();
+const placementRotationControl = createPlacementRotationControl(document);
 landscapePanel = createLandscapePanel({ getMap: () => map, getMode: () => mode, setMode, commit, toast,
   getPosition: () => selectedFeature()?.position ?? hoverPoint ?? map.gameplay.spawnPosition ?? map.zone.center,
   refreshCursor: () => updatePlacementPreview(),
@@ -1435,7 +1440,7 @@ window.nebeljagdMapTestState = () => ({
   landscape: landscapePanel?.state(),
   dirty: JSON.stringify(map) !== JSON.stringify(initialSnapshot),
   viewBox: [view.x, view.y, view.width, view.height], view: { ...view }, zoom: (map.bounds.maxX - map.bounds.minX) / view.width,
-  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
+  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value, randomRotation: placementRotationControl.isEnabled($('palette-kind').value)}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
 });
 renderAll();
 if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();
