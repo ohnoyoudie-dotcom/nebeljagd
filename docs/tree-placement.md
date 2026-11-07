@@ -1,17 +1,25 @@
-# Bäume im Nebeljagd-Online-Map-Editor
+# Dein eigener Baum 1 – GLB-Einbindung in Nebeljagd
 
-**Aktueller Stand:** Die vorherigen vier Baumvarianten Grüne Eiche, Herbsteiche, Große Kiefer und Junge Kiefer sind auf Wunsch aus **Objekte → Einzeln** und **Objekte → Verteilen** entfernt worden. Bis ein gültiger Blender-Export vorliegt, gibt es vorübergehend **keine** Bäume für neue Platzierungen.
+Die fünf ursprünglichen GLB-Exporte enthielten nur eine Fläche und keinen Baum. Der neue FBX-Export **Tree1.fbx** enthält 8.140 echte Vertices und 4.598 Polygone mit Stamm, Zweigen und Blättern. Daraus wurde ein korrektes Y-up-GLB (8.704 Dreiecke, 3 Materialien, rund 200 KB) erzeugt, ohne die große Bodenfläche und ohne das ungewöhnliche Blender-Objekt-Offset.
 
-Die Modelle wurden nicht physisch aus dem Repository gelöscht: Schon platzierte Bäume und ihre Namen, Koordinaten, Drehungen und Größen bleiben in vorhandenen Karten lesbar. Sowohl der Import als auch die manuellen Bereinigungsaktionen erhalten diese vier früheren GLB-Varianten. Die aktuelle `worldmap.json` wird nicht automatisch geändert.
+Die FBX-Datei enthält die drei Materialnamen `tree_stylizedBark01`, `opaqueShadows`, `leaves04`, aber **keine eingebetteten Texturen** und bei allen drei Materialien nur dieselbe diffuse Grundfarbe. Die GLB-Datei verwendet deshalb vorläufig braune und grüne PBR-Farben. Für eine originalgetreue Texturierung sind die Blender-Texturbilder noch nötig.
 
-## Nicht importierbare Datei
+## Einmalige Installation über GitHub Desktop
 
-Die am 7. November 2026 erneut bereitgestellte Datei `Tree green 1(2).glb` ist **nur 1.344 Bytes** groß, SHA-256 `5b3247194f3623e7011143d774c737a33fe3bb4b050172e26b40b88e03d8ad53`, und stimmt exakt mit dem vorherigen Fehlerexport überein. Die Datei enthält ein `Plane`-Mesh mit vier Vertices und zwei Dreiecken, aber keine sichtbare Geometrie des `Stylized Tree Generator`, keine Baumkrone, keinen Stamm und keine Bildtexturen. Sie wurde deshalb nicht als 3D-Baum eingebaut. Es gibt keine gefälschte Ersatzfigur unter ihrem Namen.
+Kopiere **Tree1_converted.glb** in das vorhandene Projektverzeichnis und benenne die Kopie um in
 
-## Korrekte Neuausgabe
+```text
+assets/imported/user-trees/runtime/tree1.glb
+```
 
-Im Blender-Objektmodus den tatsächlichen Baum statt der `Plane` auswählen; bei Geometry Nodes die Instanzen per `Realize Instances` in Geometrie umwandeln oder eine Kopie mittels **Objekt → Konvertieren → Mesh** herstellen. Im neuen Mesh kontrollieren, dass Stamm und Krone als Dreiecksgeometrie vorhanden sind. Nur diese Mesh-Objekte als **glTF 2.0 / GLB**, `Selected Objects` und mit angewendeten Modifikatoren exportieren. Das exportierte GLB probeweise in einer neuen Blender-Datei wieder importieren. Erst ein GLB mit wirklichem Stamm und Blättern wird der Palette hinzugefügt.
+Die Datei muss **exakt** den SHA-256-Hash `d5f1b1d5ef222b85544d6be5ad320fd4acf2fd2ee979295c6034fce4cc887561` haben.
 
-## Veröffentlichung
+Danach die Datei mit **GitHub Desktop auf den Branch `work` committen und pushen**. Erst dann kann der automatische Build sie in den Online-Editor `https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html` einbetten. Keine manuelle Änderung der `worldmap.json` erforderlich.
 
-Nur der Online-Editor unter `https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html` ist die Arbeitsoberfläche. Änderungen auf `work` durchlaufen automatische Tests und werden nach erfolgreicher Prüfung zusammen mit dem echten Browser-Build über `main/preview` veröffentlicht. Die eigene Kartenarbeit wird im selben Browser automatisch gespeichert und kann zusätzlich als `worldmap.json` exportiert werden.
+Der GLB-Loader erkennt `tree1.glb` anhand seines Pfads beim nächsten Vite-Build: Bei vorhandener Datei erscheinen **Objekte → Einzeln → Baum → Dein Baum 1** und **Objekte → Verteilen → Baum**. Wenn die Datei fehlt, bleiben diese Optionen aus, statt ein leeres Modell zu zeigen.
+
+Die alten vier GLB-Bäume bleiben für bereits gespeicherte Karten lesbar, sind aber für neue Platzierungen nicht mehr auswählbar. Der neue Baum wird in Weltkoordinaten von 0 bis 7,8 m Höhe gerendert und erhält einen Stamm-Kollisionsradius von 0,45 m. Randomisierte Drehung und JSON-Speicherung nutzen die vorhandene Editorlogik.
+
+## Technische Prüfung
+
+Die Unit-Tests validieren nach Installation Datei-Hash, GLB-Version, 8.140 Vertices, 8.704 Dreiecke, drei Materialien und die vorhandene Krone. Die Editor-Browserprüfung erwartet die neue Baum-Auswahl nur, wenn `tree1.glb` auf GitHub installiert ist. Der Rest der Karte wird nicht überschrieben.

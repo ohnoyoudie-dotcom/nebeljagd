@@ -21,6 +21,17 @@ const entry = (kind, variant, asset, label, height, footprint, walls = [], circl
   footprint, walls, circles, solid: Boolean(walls.length || circles.length), ...extra,
 });
 
+// Measured from Tree1.fbx converted to a Y-up GLB with the presentation plane omitted.
+// The GLB is optional at build time and never substituted with an old tree.
+const USER_TREE1_DEFINITION = {
+  ...entry('tree', 'kit-user-tree1', 'tree1', 'Dein Baum 1', 7.8037,
+    { halfWidth: .45, halfDepth: .45 }, [], [circle(.45, 7.8037)]),
+  nativeBounds: { min: [-2.9447074, 0, -2.6542797], max: [3.0571995, 7.8036928, 2.5590878] },
+  targetHeight: 7.8036928,
+  normalization: { scale: 1, offset: [0, 0, 0] },
+  textured: true,
+};
+
 const nativeDefinitions = [
   entry('tree', 'kit-pine-high', 'pine_high', 'Große Kiefer', 4.72, { halfWidth: .3, halfDepth: .3 }, [], [circle(.3, 4.72)]),
   entry('tree', 'kit-pine-young', 'pine_young', 'Junge Kiefer', 3.304, { halfWidth: .22, halfDepth: .22 }, [], [circle(.22, 3.304)]),
@@ -102,6 +113,7 @@ export const ENVIRONMENT_KIT_DEFINITIONS = freeze([...nativeDefinitions.map(defi
       entranceHalfWidth: interior.entranceHalfWidth, floorHeight: y(definition.floorHeight),
       floorBounds: { minX: x(-definition.footprint.halfWidth), maxX: x(definition.footprint.halfWidth), minZ: z(-definition.footprint.halfDepth), maxZ: z(definition.footprint.halfDepth) } } : {}) };
 }),
+  USER_TREE1_DEFINITION,
   // Original procedural modules already use runtime metres. Keep them outside
   // the GLB normalization table and share their exact dimensions with the editor.
   ...[
