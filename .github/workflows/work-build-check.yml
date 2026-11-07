@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -37,11 +37,8 @@ jobs:
       - name: Install, run full tests and verify assets
         run: |
           npm ci
-          # Verify the unchanged regular publication contract, not this one-time runner.
-          if ! git cat-file -e f24155074941ccdbc89d95c7ec73085e98fd6ac9^{commit}; then
-            git fetch --depth=1 origin f24155074941ccdbc89d95c7ec73085e98fd6ac9
-          fi
-          git show f24155074941ccdbc89d95c7ec73085e98fd6ac9:.github/workflows/work-build-check.yml > .github/workflows/work-build-check.yml
+          # Test the unchanged regular publication contract, not this one-time runner.
+          cp scripts/tree-placement-original-workflow.yml .github/workflows/work-build-check.yml
           npm test
           npm run verify:assets
           git restore -- .github/workflows/work-build-check.yml
@@ -69,6 +66,7 @@ jobs:
             exit 1
           fi
           git diff --exit-code "$SOURCE_COMMIT" -- worldmap.json assets/inbox Blender
+          git rm -- scripts/tree-placement-original-workflow.yml
           git add -- welt
           if ! git diff --cached --quiet; then
             git commit -m 'build: publish verified tree placement editor and game'

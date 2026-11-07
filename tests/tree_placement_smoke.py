@@ -102,6 +102,7 @@ try:
         with page.expect_popup() as popup:
             page.locator('#playtest-world').click()
         game = popup.value; game.set_default_timeout(120000)
+        game.set_viewport_size({'width':960, 'height':640})
         game.on('pageerror', lambda error: REPORT['errors'].append(str(error)))
         game.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
         runtime = game.evaluate('()=>{const s=nebeljagdTestState();return {world:s.world,rendering:s.rendering};}')
@@ -110,14 +111,21 @@ try:
         stats = runtime['world']['stats']['environmentKit']
         assert stats['placements'] == 5, stats
         assert {f'tree:{v}' for v in VARIANTS}.issubset({m['id'] for m in stats['models']})
-        if game.locator('#startBtn').is_enabled():
-            game.locator('#startBtn').click()
-        game.screenshot(path=str(OUT / 'trees-in-game.png'))
         REPORT['checks'].append('Generated 3D game loads all five placed GLB tree instances with the exact saved transforms')
         REPORT['runtimeTreePlacements'] = stats['placements']
+        REPORT['rendering'] = runtime['rendering']
+        # Freeze only the test capture after real runtime/geometry assertions.
+        # Otherwise the software GPU continually renders while Playwright tries
+        # to capture a full-resolution frame. No shipped game code is changed.
+        game.evaluate('''() => {
+          const start = document.getElementById('startBtn');
+          if (start && !start.disabled) start.click();
+          window.requestAnimationFrame = () => 0;
+        }''')
+        game.wait_for_timeout(750)
+        game.screenshot(path=str(OUT / 'trees-in-game.png'), timeout=30000)
         game.close()
-        # Export/reopen the self-contained editor via an in-memory route. This
-        # exercises its actual bytes without relying on file:// support.
+        # Exercise the exported editor's actual bytes without external assets.
         page.locator('#editor-tab-more').click()
         page.locator('#editor-tool-more-map').click()
         with page.expect_download() as download:
@@ -145,5 +153,9 @@ try:
     REPORT['mapSha256'] = hashlib.sha256(ORIGINAL_BYTES).hexdigest()
     REPORT['status'] = 'passed'
     print(json.dumps(REPORT, ensure_ascii=False), flush=True)
+except Exception as error:
+    REPORT['status'] = 'failed'
+    REPORT['failure'] = str(error)
+    raise
 finally:
     (OUT / 'result.json').write_text(json.dumps(REPORT, ensure_ascii=False, indent=2))
