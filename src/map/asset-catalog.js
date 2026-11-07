@@ -1,5 +1,6 @@
 import previews from '../../assets/catalog/previews.json' with { type: 'json' };
 import { WEAPON_TYPES } from '../loot-tiers.js';
+import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
 
 /** Explicit mapping to models already used by the game. Preview images are
  * captures of those models, embedded so the standalone editor stays offline.
@@ -64,6 +65,12 @@ export const ASSET_CATALOG = Object.freeze([
   kit('tree', 'kit-pine-young', 'Junge Kiefer · GLB', 'pine_young', 'Kleine Kiefer für gemischte Baumgruppen.'),
   kit('tree', 'kit-oak-green', 'Grüne Eiche · GLB', 'oak_green', 'Grüne Eiche aus dem bestehenden Umwelt-Kit.'),
   kit('tree', 'kit-oak-autumn', 'Herbsteiche · GLB', 'oak_autumn', 'Eichenmodell mit eigenen Herbstfarben; im Herbstbiom verwendbar.'),
+  ...(USER_TREE1_AVAILABLE ? [{ id: 'tree:kit-user-tree1', kind: 'tree', variant: 'kit-user-tree1',
+    label: 'Dein Baum 1 · eigener FBX-Export', format: 'glb',
+    sourceLabel: 'Eigener Blender-FBX-Export · in GLB umgewandelt',
+    sourcePaths: ['assets/imported/user-trees/runtime/tree1.glb'],
+    renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render',
+    notes: 'Aus Tree1.fbx übernommen: echter Stamm und Laubkrone, drei Materialien; keine eingebetteten Originaltexturen.' }] : []),
   kit('wall', 'kit-stone', 'Steinmauer · GLB', 'wall_stone_3m', 'Modulare Steinmauer mit ungefähr 3,2 × 0,62 Metern Grundfläche.'),
   tripo('wall', 'kit-tripo-wall', 'Steinmauer · Verwittert (Tripo)', 'wall', 'stone wall 3d model', 'Verwitterte graubraune Natursteinmauer aus deinem Tripo-Modell. Als einzelnes Objekt oder zusammenhängend mit dem Mauerwerkzeug platzierbar.', 'tripo-wall'),
   project('wall', 'kit-cut-stone', 'Steinmauer · Pfeiler & Abdeckung', ['src/barrier-models.js', 'src/environment-kit.js'], 'Vier Meter lange Steinmauer mit gesetzten Quadern, Pfeilern und heller Abdeckung. Im Zeichenwerkzeug als zusammenhängende Strecke verwendbar.'),

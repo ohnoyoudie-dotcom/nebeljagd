@@ -2,13 +2,15 @@ import { WEAPON_TYPES } from '../loot-tiers.js';
 import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
 import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
+import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
   { kind: 'tree', label: 'Baum', defaultVariant: 'oak', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'oak', label: 'Eiche', retired: true }, { id: 'birch', label: 'Birke', retired: true }, { id: 'pine', label: 'Kiefer', retired: true }, { id: 'rei-tree01', label: 'Rei-Laubbaum 1', retired: true }, { id: 'rei-tree02', label: 'Rei-Laubbaum 2', retired: true },
       { id: 'kit-pine-high', label: 'Große Kiefer · GLB' }, { id: 'kit-pine-young', label: 'Junge Kiefer · GLB' },
-      { id: 'kit-oak-green', label: 'Grüne Eiche · GLB' }, { id: 'kit-oak-autumn', label: 'Herbsteiche · GLB' }] },
+      { id: 'kit-oak-green', label: 'Grüne Eiche · GLB' }, { id: 'kit-oak-autumn', label: 'Herbsteiche · GLB' },
+      { id: 'kit-user-tree1', label: 'Dein Baum 1 · eigener FBX-Export', footprintRadius: .45 }] },
   { kind: 'house', label: 'Haus', defaultVariant: 'kit-tripo-tavern', defaultScale: 1, footprintRadius: 14.5,
     variants: [{ id: 'herbal', label: 'Kräuterhaus', footprintRadius: 11, retired: true }, { id: 'inn', label: 'Waldgasthaus', footprintRadius: 11, retired: true }, { id: 'hunter', label: 'Jägerhaus', footprintRadius: 11, retired: true },
       { id: 'kit-timber', label: 'Fachwerkhaus · GLB', footprintRadius: 11, retired: true }, { id: 'kit-taverne', label: 'Taverne · GLB', footprintRadius: 14.5, retired: true },
@@ -86,7 +88,8 @@ export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(defi
 /** Only approved models are placeable. Previous GLB trees remain readable in
  * saved maps, but are not offered in the editor until a valid replacement exists. */
 const placementAssetIds = new Set([
-  // The old four GLB trees are intentionally excluded from new placement.
+  // Old GLB trees are excluded; the user's real GLB is included only if installed.
+  ...(USER_TREE1_AVAILABLE ? ['tree:kit-user-tree1'] : []),
   'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',

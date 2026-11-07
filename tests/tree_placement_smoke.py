@@ -11,6 +11,7 @@ BASE = os.environ.get('NEBELJAGD_TREE_URL', 'http://127.0.0.1:4175').rstrip('/')
 OUT = ROOT / 'test-results/tree-placement'
 OUT.mkdir(parents=True, exist_ok=True)
 PREVIOUS = ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn']
+USER_TREE_PRESENT = (ROOT / 'assets/imported/user-trees/runtime/tree1.glb').is_file()
 ORIGINAL_BYTES = (ROOT / 'worldmap.json').read_bytes()
 ORIGINAL = json.loads(ORIGINAL_BYTES)
 REPORT = {'status': 'running', 'checks': [], 'errors': []}
@@ -58,8 +59,14 @@ with sync_playwright() as p:
         assert state(page)['map'] == ORIGINAL
         page.locator('#editor-tab-objects').click()
         page.locator('#editor-tool-objects-place').click()
-        assert page.locator('#palette-kind option[value="tree"]').count() == 0
-        assert page.locator('#scatter-tree').count() == 0
+        if USER_TREE_PRESENT:
+            assert page.locator('#palette-kind option[value="tree"]').count() == 1
+            page.locator('#palette-kind').select_option('tree')
+            assert page.locator('#palette-variant option').evaluate_all('(xs)=>xs.map(x=>x.value)') == ['kit-user-tree1']
+            assert page.locator('#scatter-tree').count() == 1
+        else:
+            assert page.locator('#palette-kind option[value="tree"]').count() == 0
+            assert page.locator('#scatter-tree').count() == 0
         assert page.locator('#palette-kind option[value="rock"]').count() == 1
         REPORT['checks'].append('The four former trees are absent from single and scatter placement')
 
@@ -82,7 +89,7 @@ with sync_playwright() as p:
         assert state(page)['map'] == saved_map
         assert state(page)['startup']['source'] == 'draft'
         assert page.locator('#editor-start-dialog[open]').count() == 0
-        assert page.locator('#palette-kind option[value="tree"]').count() == 0
+        assert page.locator('#palette-kind option[value="tree"]').count() == (1 if USER_TREE_PRESENT else 0)
         REPORT['checks'].append('Direct reload automatically resumes exact saved map without reviving old placement menu')
 
         with page.expect_popup() as popup:
@@ -110,7 +117,7 @@ with sync_playwright() as p:
         reopened.goto(exported.as_uri(), wait_until='domcontentloaded')
         ready(reopened)
         assert state(reopened)['map'] == saved_map
-        assert reopened.locator('#palette-kind option[value="tree"]').count() == 0
+        assert reopened.locator('#palette-kind option[value="tree"]').count() == (1 if USER_TREE_PRESENT else 0)
         offline.close()
         REPORT['checks'].append('Offline editor preserves old saved map but not retired placement choices')
         assert not REPORT['errors'], REPORT['errors']

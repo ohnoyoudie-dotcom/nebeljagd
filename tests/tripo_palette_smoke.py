@@ -24,6 +24,7 @@ OUT = ROOT / 'test-results/tripo-palette'
 OUT.mkdir(parents=True, exist_ok=True)
 BASE = json.loads((ROOT / 'worldmap.json').read_text())
 MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
+USER_TREE_PRESENT = (ROOT / 'assets/imported/user-trees/runtime/tree1.glb').is_file()
 TRIPO_WEAPONS = [('sword', 'kit-tripo-sword', 'rare'),
                  ('fireStaff', 'kit-tripo-lava-staff', 'legendary'),
                  ('iceStaff', 'kit-tripo-crystal-staff', 'uncommon')]
@@ -163,14 +164,20 @@ try:
                    for o in BASE['objects']), 'The delivered map must contain only retained Tripo objects'
         page.locator('#editor-tab-objects').click()
         kinds = options(page, '#palette-kind')
-        assert {x['value'] for x in kinds} == {'house', 'rock', 'chest', 'wagon', 'barrel', 'well',
-                                             'sword', 'fireStaff', 'iceStaff', 'bow', 'poisonStaff', 'moonStaff'}, kinds
+        expected_kinds = {'house', 'rock', 'chest', 'wagon', 'barrel', 'well',
+                          'sword', 'fireStaff', 'iceStaff', 'bow', 'poisonStaff', 'moonStaff'}
+        if USER_TREE_PRESENT:
+            expected_kinds.add('tree')
+        assert {x['value'] for x in kinds} == expected_kinds, kinds
         catalog = {}
         for item in kinds:
             page.locator('#palette-kind').select_option(item['value'])
             catalog[item['value']] = options(page, '#palette-variant')
-            assert catalog[item['value']] and all(x['value'].startswith('kit-tripo-') and 'Tripo' in x['label']
-                                                 for x in catalog[item['value']]), catalog
+            if item['value'] == 'tree':
+                assert [x['value'] for x in catalog['tree']] == ['kit-user-tree1']
+            else:
+                assert catalog[item['value']] and all(x['value'].startswith('kit-tripo-') and 'Tripo' in x['label']
+                                                     for x in catalog[item['value']]), catalog
         assert [x['value'] for x in catalog['house']] == ['kit-tripo-tavern', 'kit-tripo-house-02']
         assert [x['value'] for x in catalog['chest']] == ['kit-tripo-chest']
         assert [x['value'] for x in catalog['rock']] == ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']

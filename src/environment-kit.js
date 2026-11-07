@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
+import { USER_TREE1_URL } from './map/user-tree-asset.js';
 import { shouldOmitTavernDetail, TAVERN_DRESSING } from './map/tavern-dressing.js';
 import { createBarrierModelParts } from './barrier-models.js';
 import pineHigh from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_high.glb?url&inline';
@@ -31,6 +32,7 @@ import woodCrate from '../Blender/nebeljagd_umwelt_kit_v1/assets/crate_wood.glb?
 const urls = {
   'tree:kit-pine-high': pineHigh, 'tree:kit-pine-young': pineYoung,
   'tree:kit-oak-green': oakGreen, 'tree:kit-oak-autumn': oakAutumn,
+  ...(USER_TREE1_URL ? { 'tree:kit-user-tree1': USER_TREE1_URL } : {}),
   'house:kit-taverne': tavern,
   'house:kit-tripo-tavern': tripoTavern,
   'house:kit-tripo-castle': tripoCastle,

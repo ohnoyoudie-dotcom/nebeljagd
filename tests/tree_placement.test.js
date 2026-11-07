@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { PLACEMENT_OBJECT_CATALOG, isObjectAvailable, isObjectPlaceable, makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { isRetiredScenery, removeRetiredScenery } from '../src/map/retired-scenery.js';
@@ -30,6 +30,7 @@ test('the four old GLB trees and invalid new export are not placeable', () => {
     assert.equal(isRetiredScenery({ kind: 'tree', variant }), true);
   }
   assert.equal(isObjectPlaceable('tree', 'Tree green 1(2)'), false, 'a 4-vertex plane is not a tree');
+  assert.equal(isObjectAvailable('tree', 'kit-user-tree1'), true, 'a saved converted tree remains readable');
 });
 
 test('original four GLBs remain intact for old saved maps, not new authoring', () => {
@@ -78,4 +79,22 @@ test('new scatter refuses all four unlisted trees but still accepts rocks', () =
     scatter: { density: .5, entries: [{ kind: 'rock', variant: 'kit-tripo-02', weight: 1 }] },
   });
   assert.ok(rocks);
+});
+
+test('optional converted FBX GLB, when installed, has all real tree meshes and expected materials', () => {
+  const file = new URL('../assets/imported/user-trees/runtime/tree1.glb', import.meta.url);
+  if (!existsSync(file)) return; // The new authoring option appears only after GitHub receives this file.
+  const bytes = readFileSync(file);
+  assert.equal(hash(bytes), 'd5f1b1d5ef222b85544d6be5ad320fd4acf2fd2ee979295c6034fce4cc887561');
+  assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
+  assert.equal(bytes.readUInt32LE(4), 2);
+  assert.equal(bytes.readUInt32LE(8), bytes.length);
+  const data = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
+  assert.equal(data.meshes.length, 3);
+  assert.equal(data.materials.length, 3);
+  const positions = data.meshes.flatMap(mesh => mesh.primitives).map(primitive => data.accessors[primitive.attributes.POSITION].count);
+  assert.equal(positions.reduce((total, n) => total + n, 0), 8140);
+  const triangles = data.meshes.flatMap(mesh => mesh.primitives).reduce((total, primitive) => total + data.accessors[primitive.indices].count / 3, 0);
+  assert.equal(triangles, 8704);
+  assert.ok(data.accessors.some(accessor => accessor.max?.[1] > 7.7), 'the mesh must contain its full tree canopy');
 });
