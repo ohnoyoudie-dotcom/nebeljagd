@@ -76,6 +76,9 @@ jobs:
           python tests/avatar_smoke.py
           python tests/avatar_preview_smoke.py
       - name: Verify classroom login, practice lobby and current editor
+        # Classroom end-to-end game simulation is verified on explicit full runs;
+        # editor pushes instead run the dedicated online editor and tree checks.
+        if: github.event_name == 'workflow_dispatch'
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
