@@ -83,10 +83,10 @@ export const OBJECT_CATALOG = Object.freeze([
  * render saved maps until the user deliberately applies the cleanup action. */
 export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(definition => !definition.retired));
 
-/** Approved Tripo models and the four existing GLB trees belong in the palette.
- * Runtime loot, grass painting and barrier drawing keep their own catalogues. */
+/** Only approved models are placeable. Previous GLB trees remain readable in
+ * saved maps, but are not offered in the editor until a valid replacement exists. */
 const placementAssetIds = new Set([
-  'tree:kit-pine-high', 'tree:kit-pine-young', 'tree:kit-oak-green', 'tree:kit-oak-autumn',
+  // The old four GLB trees are intentionally excluded from new placement.
   'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
@@ -99,7 +99,7 @@ export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.f
   if (!variants.length) return [];
   return [Object.freeze({ ...definition,
     label: definition.kind === 'chest' ? 'Schatztruhe' : definition.label,
-    defaultVariant: definition.kind === 'tree' ? 'kit-oak-green' : variants.some(variant => variant.id === definition.defaultVariant)
+    defaultVariant: variants.some(variant => variant.id === definition.defaultVariant)
       ? definition.defaultVariant : variants[0].id,
     variants: Object.freeze(variants),
   })];

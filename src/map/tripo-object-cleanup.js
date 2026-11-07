@@ -6,7 +6,10 @@ import { AUTHORING_BARRIER_STYLES } from './barriers.js';
 export function removeNonTripoObjects(map) {
   const objects = Array.isArray(map?.objects) ? map.objects : [];
   const barriers = Array.isArray(map?.barriers) ? map.barriers : [];
-  const keepObject = object => isObjectPlaceable(object.kind, object.variant);
+  // Removing a model from the palette must never erase trees already drawn on a map.
+  const savedKitTrees = new Set(['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn']);
+  const keepObject = object => isObjectPlaceable(object.kind, object.variant)
+    || (object?.kind === 'tree' && savedKitTrees.has(object.variant));
   const keepBarrier = barrier => AUTHORING_BARRIER_STYLES.some(style =>
     style.kind === barrier.kind && style.variant === barrier.variant);
   const removedObjects = objects.filter(object => !keepObject(object));

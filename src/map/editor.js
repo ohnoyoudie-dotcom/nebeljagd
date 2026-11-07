@@ -154,7 +154,7 @@ function updateRetiredSceneryBanner() {
   retiredSceneryBanner.hidden = !result.totalRemoved;
   $('retired-scenery-summary').textContent = `${result.totalRemoved} ältere Platzierungen im Entwurf · Details`;
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
-    : `Bereinigung: ${result.removedObjects.length} veraltete Objektplatzierungen und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Freigeschaltete Bäume und aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
+    : `Bereinigung: ${result.removedObjects.length} veraltete Objektplatzierungen und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Bereits gesetzte GLB-Bäume und aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
 }
 
 function initialView() {

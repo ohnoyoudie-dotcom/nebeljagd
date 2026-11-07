@@ -18,7 +18,9 @@ test('explicit cleanup removes every disallowed placement and preserves approved
   const before = structuredClone(map), result = removeNonTripoObjects(map);
   assert.deepEqual(map, before, 'input stays intact for Undo');
   assert.deepEqual(normalizeWorldmap(map), before, 'import never silently discards old objects');
-  assert.deepEqual(result.map.objects, objects.filter(object => isObjectPlaceable(object.kind, object.variant)));
+  const savedKitTrees = ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn'];
+  assert.deepEqual(result.map.objects, objects.filter(object => isObjectPlaceable(object.kind, object.variant)
+    || (object.kind === 'tree' && savedKitTrees.includes(object.variant))));
   assert.equal(result.map.objects.length, 19);
   assert.deepEqual(result.map.objects.filter(object => object.kind === 'tree').map(object => object.variant),
     ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn']);

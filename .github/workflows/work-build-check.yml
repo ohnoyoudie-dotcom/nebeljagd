@@ -82,7 +82,7 @@ jobs:
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
-      - name: Verify four GLB trees and saved map in built editor and game
+      - name: Verify removed tree palette and preserved saved GLB trees in editor and game
         run: |
           python -m http.server 4175 --bind 127.0.0.1 >/tmp/nebeljagd-tree.log 2>&1 &
           for i in {1..40}; do
