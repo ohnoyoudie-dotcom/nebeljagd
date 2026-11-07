@@ -1,5 +1,5 @@
-# Work-only integration build. The integration helper restores the original
-# workflow in the verified source commit; this run never publishes to main.
+# Work-only integration build. Production workflow is checked without committing
+# workflow changes with the Actions token. Restore it via the connector after publication.
 name: Work build and visual checks
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 3
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -30,7 +30,7 @@ jobs:
           node --check src/map/editor.js
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- src/map/editor.js .github/workflows/work-build-check.yml
+          git add -- src/map/editor.js
           git rm -- scripts/integrate-placement-rotation.js
           git commit -m 'feat(editor): connect per-object random placement rotation'
       - name: Install and run unit tests
@@ -39,7 +39,12 @@ jobs:
           npm test
           npm run verify:assets
       - name: Build standalone editor and game
-        run: npm run build
+        run: |
+          # The installer exposes the original production workflow to its tests.
+          # Restore the temporary tracked workflow before building and pushing;
+          # the Actions token must never modify a workflow file.
+          git restore --source=HEAD --worktree -- .github/workflows/work-build-check.yml
+          npm run build
       - name: Install browser smoke dependencies
         run: |
           python -m pip install --quiet playwright==1.63.0
