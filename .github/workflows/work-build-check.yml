@@ -3,82 +3,142 @@ on:
   workflow_dispatch:
   push:
     branches: ['work']
+    # Every newer work commit needs a successor run, including docs-only edits.
+    # Otherwise the strict freshness guard could abort a release with no newer
+    # run to replace it. Token-authored build commits do not trigger themselves.
 permissions:
   contents: write
+  pages: write
 concurrency:
   group: nebeljagd-work-build
   cancel-in-progress: true
+
 jobs:
   verify-and-publish:
     if: github.ref == 'refs/heads/work'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
+          # Test this triggering source, not a newer moving work tip.
           ref: ${{ github.sha }}
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-      - name: Integrate reviewed tree placement without modifying models or map
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          if [ -f scripts/integrate-tree-placement.js ]; then
-            node scripts/integrate-tree-placement.js
-            node --check src/map/objects.js
-            node --check src/map/retired-scenery.js
-            git add -- src/map/objects.js src/map/retired-scenery.js src/map/editor.js src/map/landscape-panel.js tests/scenery_authoring.test.js tests/tripo_palette_smoke.py tests/landscape_brush.test.js tests/tripo_object_cleanup.test.js
-            git rm -- scripts/integrate-tree-placement.js
-            git commit -m 'feat(editor): enable four existing GLB trees for individual and brush placement'
-          fi
-      - name: Install, run full tests and verify assets
+      - name: Install and run unit tests
         run: |
           npm ci
-          # Test the unchanged regular publication contract, not this one-time runner.
-          cp scripts/tree-placement-original-workflow.yml .github/workflows/work-build-check.yml
           npm test
           npm run verify:assets
-          git restore -- .github/workflows/work-build-check.yml
-      - name: Build actual editor and game into welt
+      - name: Build standalone editor and game
         run: npm run build
       - name: Install browser smoke dependencies
         run: |
           python -m pip install --quiet playwright==1.63.0
           python -m playwright install --with-deps chromium
-      - name: Verify actual editor placement and 3D tree instances
+      - name: Start the generated browser preview
         run: |
-          python -m http.server 4175 --bind 127.0.0.1 >/tmp/tree-editor-preview.log 2>&1 &
+          npm run preview -- --port 4174 >/tmp/nebeljagd-preview.log 2>&1 &
+          echo $! >/tmp/nebeljagd-preview.pid
           for i in {1..40}; do
-            curl -fsS http://127.0.0.1:4175/welt/map-editor.html >/dev/null && break
+            curl -fsS http://127.0.0.1:4174/nebeljagd.html >/dev/null && break
             sleep 1
           done
-          python tests/tree_placement_smoke.py
-          python tests/placement_rotation_smoke.py
-      - name: Publish verified source and generated files to work only
+      - name: Verify uploaded weapon models, pickup, swaps and attacks
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+          NEBELJAGD_QA_OUT: test-results/tripo-weapons
+          NEBELJAGD_BUNDLED_CHROMIUM: '1'
+        run: python tests/tripo_weapon_editor_smoke.py
+      - name: Verify uploaded fireball, shader, sparks and smoke
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/fireball_browser_smoke.py
+      - name: Verify targeted hold, release and return controls
+        run: python tests/special_weapon_controls_smoke.py
+      - name: Verify meadow, vision and shadow runtime
+        run: |
+          python tests/work_meadow_vision_smoke.py
+          python tests/avatar_smoke.py
+          python tests/avatar_preview_smoke.py
+      - name: Verify classroom login, practice lobby and current editor
+        run: python tests/classroom_smoke.py
+      - name: Verify current editor entry, project map and preserved drafts
+        run: python tests/online_editor_smoke.py
+      - name: Publish verified build to welt
+        id: save-work
         env:
           SOURCE_COMMIT: ${{ github.sha }}
         run: |
-          if [ "$(git ls-remote origin refs/heads/work | cut -f1)" != "$SOURCE_COMMIT" ]; then
-            echo 'work advanced; refusing to overwrite newer changes.' >&2
+          # Refuse stale runs instead of overwriting a newer source change.
+          git fetch --depth=1 origin work
+          if [ "$(git rev-parse FETCH_HEAD)" != "$SOURCE_COMMIT" ]; then
+            echo 'work advanced while this build ran; the newer run must publish.' >&2
             exit 1
           fi
-          git diff --exit-code "$SOURCE_COMMIT" -- worldmap.json assets/inbox Blender
-          git rm -- scripts/tree-placement-original-workflow.yml
-          git add -- welt
+          # npm run build already synchronizes the complete portal and editor.
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add welt
           if ! git diff --cached --quiet; then
-            git commit -m 'build: publish verified tree placement editor and game'
+            git commit -m 'build: publish verified work editor and game'
+            git push origin HEAD:work
           fi
-          git push origin HEAD:work
+          echo "work_commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Read the current public site without replacing its other paths
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: .pages-site
+      - name: Prepare matched editor, map and game for the public preview
+        run: node scripts/prepare-preview.js welt .pages-site/preview
+      - name: Publish verified preview to main
+        id: save-preview
+        env:
+          EXPECTED_WORK_COMMIT: ${{ steps.save-work.outputs.work_commit }}
+        run: |
+          if [ "$(git ls-remote origin refs/heads/work | cut -f1)" != "$EXPECTED_WORK_COMMIT" ]; then
+            echo 'A newer work source is available; refusing this stale publication.' >&2
+            exit 1
+          fi
+          git -C .pages-site config user.name 'github-actions[bot]'
+          git -C .pages-site config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C .pages-site add -- preview
+          if ! git -C .pages-site diff --cached --quiet; then
+            git -C .pages-site commit -m 'build: publish matched current editor and project map'
+            # A concurrent main change makes this fail safely; never force-push.
+            git -C .pages-site push origin HEAD:main
+          fi
+          echo "commit=$(git -C .pages-site rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Request Pages publication and verify the exact main commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAGES_COMMIT: ${{ steps.save-preview.outputs.commit }}
+        # Token-authored pushes do not trigger the normal automatic Pages build.
+        # Use the existing branch-Pages API explicitly; never change site config.
+        run: node scripts/request-pages-build.js
+      - name: Upload the verified work browser package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nebeljagd-work-browser
+          path: |
+            welt/nebeljagd-welt-und-editor.zip
+            welt/release.json
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: tree-placement-check
+          name: work-meadow-vision-check
           path: |
-            test-results/tree-placement/result.json
-            test-results/tree-placement/trees-in-editor.png
-            test-results/tree-placement/trees-in-game.png
-            test-results/placement-rotation/result.json
-          retention-days: 7
+            work-smoke
+            docs/avatar-check-*
+            test-results/avatar-preview
+            test-results/classroom
+            test-results/online-editor
+            test-results/tripo-weapons
+            test-results/fireball
+            assets/characters/adventurer-inspection.json
+            /tmp/nebeljagd-preview.log
+          retention-days: 3
