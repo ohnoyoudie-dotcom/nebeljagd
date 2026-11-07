@@ -30,7 +30,7 @@ jobs:
             node scripts/integrate-tree-placement.js
             node --check src/map/objects.js
             node --check src/map/retired-scenery.js
-            git add -- src/map/objects.js src/map/retired-scenery.js src/map/editor.js src/map/landscape-panel.js tests/scenery_authoring.test.js tests/tripo_palette_smoke.py
+            git add -- src/map/objects.js src/map/retired-scenery.js src/map/editor.js src/map/landscape-panel.js tests/scenery_authoring.test.js tests/tripo_palette_smoke.py tests/landscape_brush.test.js tests/tripo_object_cleanup.test.js
             git rm -- scripts/integrate-tree-placement.js
             git commit -m 'feat(editor): enable four existing GLB trees for individual and brush placement'
           fi
@@ -38,6 +38,9 @@ jobs:
         run: |
           npm ci
           # Verify the unchanged regular publication contract, not this one-time runner.
+          if ! git cat-file -e f24155074941ccdbc89d95c7ec73085e98fd6ac9^{commit}; then
+            git fetch --depth=1 origin f24155074941ccdbc89d95c7ec73085e98fd6ac9
+          fi
           git show f24155074941ccdbc89d95c7ec73085e98fd6ac9:.github/workflows/work-build-check.yml > .github/workflows/work-build-check.yml
           npm test
           npm run verify:assets

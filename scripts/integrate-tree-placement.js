@@ -6,6 +6,8 @@ const expected = {
   'src/map/objects.js': '2b742fea6f740cca50994d973d360aaefe8c744e',
   'src/map/retired-scenery.js': '8470a0be6cf66e2d92fca734ae467d85564ae522',
   'tests/scenery_authoring.test.js': 'a84bd0d4bc2b0bea211c4ae2ebb895f87d2597c4',
+  'tests/landscape_brush.test.js': '1614a7f5dbbd701343d7199eb9dfa725f9972101',
+  'tests/tripo_object_cleanup.test.js': '927ec45bc8e1d46e47af296be2b4bbee6476eb83',
 };
 for (const [path, sha] of Object.entries(expected)) {
   const bytes = readFileSync(path);
@@ -37,6 +39,14 @@ replace(test, "const retired = ['tree', 'mound'", "const retired = ['mound'");
 replace(test, 'individual placement offers exactly the admitted Tripo models', 'individual placement offers exactly the admitted GLB trees and Tripo models');
 replace(test, "const expected = ['house:kit-tripo-tavern'", "const expected = ['tree:kit-pine-high', 'tree:kit-pine-young', 'tree:kit-oak-green', 'tree:kit-oak-autumn',\n    'house:kit-tripo-tavern'");
 replace(test, "definition => definition.kind), ['house', 'rock'", "definition => definition.kind), ['tree', 'house', 'rock'");
+// Preserve the regression against genuinely retired tree shapes. The admitted
+// GLB variants are separately exercised by tree_placement.test.js.
+replace('tests/landscape_brush.test.js',
+  "scatter: { density: .8, entries: [{ kind: 'tree', variant: 'kit-oak-autumn', weight: 1 }] } }),\n  /aktuell verfügbare/, 'saved tree-only scatter cannot revive a retired model');",
+  "scatter: { density: .8, entries: [{ kind: 'tree', variant: 'oak', weight: 1 }] } }),\n  /aktuell verfügbare/, 'saved tree-only scatter cannot revive a retired procedural model');");
+replace('tests/tripo_object_cleanup.test.js', 'preserves current Tripo models and drawn routes', 'preserves approved GLB trees, current Tripo models and drawn routes');
+replace('tests/tripo_object_cleanup.test.js', 'assert.equal(result.map.objects.length, 15);',
+  "assert.equal(result.map.objects.length, 19);\n  assert.deepEqual(result.map.objects.filter(object => object.kind === 'tree').map(object => object.variant),\n    ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn']);");
 // Update exact palette expectations; legacy cleanup assertions remain intact.
 const smoke = 'tests/tripo_palette_smoke.py';
 replace(smoke, 'Exercise the Tripo-only Objects palette', 'Exercise the approved GLB-tree and Tripo Objects palette');
