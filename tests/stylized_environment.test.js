@@ -13,7 +13,7 @@ test('quiet ground avoids automatic grass geometry but leaves explicit legacy co
   assert.equal(groundGrassSettings({groundCover:{type:'rei-grass'}}).enabled, true);
   assert.equal(groundGrassSettings({groundCover:{type:'existing'}}).enabled, false);
 });
-test('terrain presets use restrained woodland colours and grey paving', () => {
+test('terrain presets use restrained woodland colours and warm earth for stone-edged paths', () => {
   const byId=Object.fromEntries(TERRAIN_TYPES.map(t=>[t.id,t]));
   assert.equal(TERRAIN_TYPES.length,9);
   for(const key of ['meadow','forest','earth','cobble']) {
@@ -25,7 +25,7 @@ test('terrain presets use restrained woodland colours and grey paving', () => {
   });
   const grass=new THREE.Color(byId.meadow.color),stone=new THREE.Color(byId.cobble.color);
   assert.ok(grass.g>grass.r && grass.r>grass.b);
-  assert.ok(Math.abs(stone.r-stone.b)<.15);
+  assert.ok(stone.r>stone.g && stone.g>stone.b);
   assert.ok(terrainPalette('forest','#568753').g<new THREE.Color('#568753').g);
 });
 test('edge-painted earth is controlled, with no map mutations', () => {

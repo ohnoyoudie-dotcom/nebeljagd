@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import chestUrl from '../assets/imported/tripo-chest/runtime/chest.glb?url&inline';
 
@@ -14,12 +13,5 @@ export async function loadTripoChest(placements = []) {
     node.castShadow = true;
     node.receiveShadow = true;
   });
-  const halo = new THREE.Mesh(new THREE.CircleGeometry(1.2, 32), new THREE.MeshBasicMaterial({
-    color: '#e7b34e', transparent: true, opacity: .09, depthWrite: false, side: THREE.DoubleSide,
-  }));
-  halo.rotation.x = -Math.PI / 2;
-  halo.position.y = .02;
-  halo.name = 'chest-halo';
-  scene.add(halo);
   return scene;
 }

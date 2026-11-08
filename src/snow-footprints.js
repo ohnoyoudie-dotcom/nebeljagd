@@ -29,7 +29,11 @@ export function createSnowFootprints(root, world) {
   const geometry = new THREE.PlaneGeometry(.38, .64);
   geometry.rotateX(-Math.PI / 2);
   const fades = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
+  const kinds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
+  const caps = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   geometry.setAttribute('instanceFade', fades);
+  geometry.setAttribute('instanceTrackKind', kinds);
+  geometry.setAttribute('instanceTrackCaps', caps);
 
   const material = new THREE.ShaderMaterial({
     transparent: true,
@@ -41,12 +45,20 @@ export function createSnowFootprints(root, world) {
     uniforms: { uTrackColor: { value: new THREE.Color('#cfdadd') } },
     vertexShader: `
       attribute float instanceFade;
+      attribute float instanceTrackKind;
+      attribute float instanceTrackCaps;
       varying vec2 vTrackUv;
       varying float vTrackFade;
+      varying float vTrackKind;
+      varying float vTrackCaps;
+      varying vec2 vTrackWorld;
       void main() {
         vTrackUv = uv;
         vTrackFade = instanceFade;
+        vTrackKind = instanceTrackKind;
+        vTrackCaps = instanceTrackCaps;
         vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
+        vTrackWorld = worldPosition.xz;
         gl_Position = projectionMatrix * viewMatrix * worldPosition;
       }
     `,
@@ -54,12 +66,29 @@ export function createSnowFootprints(root, world) {
       uniform vec3 uTrackColor;
       varying vec2 vTrackUv;
       varying float vTrackFade;
+      varying float vTrackKind;
+      varying float vTrackCaps;
+      varying vec2 vTrackWorld;
       float ellipse(vec2 p, vec2 center, vec2 scale) {
         float d = length((p-center)/scale);
         return 1.0-smoothstep(.72,1.0,d);
       }
       void main() {
         vec2 p = vTrackUv;
+        if (vTrackKind > .5) {
+          // One broad compressed furrow with soft powder shoulders, no soles.
+          float across = abs(p.x-.5) * 2.;
+          float edge = across + sin(vTrackWorld.y*9.+vTrackWorld.x*7.)*.025;
+          float body = 1.-smoothstep(.60,.96,edge);
+          float shoulder = exp(-pow((edge-.77)/.12,2.));
+          float ends = (mod(vTrackCaps,2.)>.5 ? smoothstep(0.,.6,p.y) : 1.)
+            * (vTrackCaps>1.5 ? 1.-smoothstep(.4,1.,p.y) : 1.);
+          float scuff = .98 + .02*sin(vTrackWorld.y*7.+sin(vTrackWorld.x*9.));
+          float alpha = body * ends * .32 * vTrackFade;
+          if (alpha < .008) discard;
+          gl_FragColor = vec4(mix(uTrackColor*.94*scuff,vec3(.96,.98,.99),shoulder*.38),alpha);
+          return;
+        }
         float heel = ellipse(p, vec2(.50,.34), vec2(.31,.27));
         float toe = ellipse(p, vec2(.50,.67), vec2(.36,.34));
         float waistCut = smoothstep(.09,.23,abs(p.x-.5)) * (1.0-smoothstep(.40,.58,p.y));
@@ -105,7 +134,7 @@ export function createSnowFootprints(root, world) {
   const particles = [];
   const trackers = new Map();
   const transform = new THREE.Object3D();
-  let created = 0, particleBursts = 0, lastAverageFade = 0;
+  let created = 0, footprintsCreated = 0, rollSegmentsCreated = 0, particleBursts = 0, lastAverageFade = 0;
 
   function spawnParticles(x, y, z, direction, side, speed, time) {
     const forwardX = Math.sin(direction), forwardZ = Math.cos(direction);
@@ -141,42 +170,78 @@ export function createSnowFootprints(root, world) {
     const side = source.side ?? 1;
     const seed = created + 1;
     const lateralJitter = (hash(seed, 101) - .5) * .032;
-    const lateral = side * (source.lateral ?? .105) + lateralJitter;
+    const rolling = Boolean(source.rolling);
+    const lateral = rolling ? 0 : side * (source.lateral ?? .105) + lateralJitter;
     const x = source.x + Math.cos(direction) * lateral;
     const z = source.z - Math.sin(direction) * lateral;
+    const tracker=trackers.get(source.id ?? 'player');
     const snowWeight = snowWeightAt(world, x, z);
-    if (snowWeight < .62) return false;
-    const y = (world.snowSurfaceAt?.(x, z)
-      ?? (world.heightAt(x, z) + snowVisualOffset(x, z, snowWeight))) + .008;
+    if (snowWeight < .62) { if (tracker) tracker.lastRoll=null; return false; }
+    const surfaceY=(px,pz)=>(world.snowSurfaceAt?.(px,pz)
+      ?? (world.heightAt(px,pz)+snowVisualOffset(px,pz,snowWeightAt(world,px,pz))))+.008;
+    let y=surfaceY(x,z),pitch=0,trackLength=source.segmentLength;
+    if(rolling) {
+      const dx=Math.sin(direction)*trackLength/2,dz=Math.cos(direction)*trackLength/2;
+      const start=surfaceY(x-dx,z-dz),end=surfaceY(x+dx,z+dz);
+      y=(start+end)/2;pitch=Math.atan2(end-start,trackLength);
+      trackLength=Math.hypot(trackLength,end-start);
+    }
 
-    prints.push({
+    const print = {
       x, z, y,
-      direction, born: time,
-      rotationJitter: (hash(seed, 103) - .5) * .080,
-      scale: (.92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18))
+      direction, born: time, rolling, pitch,
+      startCap: rolling && !tracker?.lastRoll, endCap: rolling,
+      width: rolling ? .76 / .38 : 1,
+      length: rolling ? trackLength / .64 : 1,
+      rotationJitter: rolling ? 0 : (hash(seed, 103) - .5) * .080,
+      scale: rolling ? 1 : (.92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18))
         * (.96 + hash(seed, 107) * .08),
-      strength: .90 + hash(seed, 109) * .18,
+      strength: rolling ? 1 : .90 + hash(seed, 109) * .18,
       snowWeight,
-    });
+    };
+    if (rolling && tracker) {
+      if (tracker.lastRoll) tracker.lastRoll.endCap=false;
+      tracker.lastRoll=print;
+    }
+    prints.push(print);
     if (prints.length > MAX_FOOTPRINTS) prints.shift();
     created++;
-    spawnParticles(x, y, z, direction, side, source.speed ?? 0, time);
+    if (rolling) rollSegmentsCreated++; else footprintsCreated++;
+    if (tracker) tracker[rolling ? 'rollSegmentsCreated' : 'footprintsCreated']++;
+    if (!rolling || rollSegmentsCreated % 3 === 0) spawnParticles(x, y, z, direction, side, source.speed ?? 0, time);
     return true;
   }
 
   function sampleSource(source, time) {
-    if (!source?.moving || !Number.isFinite(source.x) || !Number.isFinite(source.z)) return;
+    if (!source || !Number.isFinite(source.x) || !Number.isFinite(source.z)) return;
     const id = source.id ?? 'player';
     let tracker = trackers.get(id);
     if (!tracker) {
-      tracker = { x: source.x, z: source.z, side: -1, initialized: false };
+      tracker = { x: source.x, z: source.z, side: -1, initialized: false, rolling: Boolean(source.rolling), footprintsCreated: 0, rollSegmentsCreated: 0 };
       trackers.set(id, tracker);
     }
     if (!tracker.initialized) {
       tracker.x = source.x; tracker.z = source.z; tracker.initialized = true;
       return;
     }
+    if (!source.moving || tracker.rolling !== Boolean(source.rolling)) {
+      tracker.x = source.x; tracker.z = source.z; tracker.rolling = Boolean(source.rolling);
+      tracker.lastRoll=null;
+      return;
+    }
     const distance = Math.hypot(source.x - tracker.x, source.z - tracker.z);
+    if (source.rolling) {
+      if (distance < .18) return;
+      if (distance <= 5) {
+        const dx = source.x-tracker.x, dz = source.z-tracker.z;
+        const steps = Math.min(20,Math.ceil(distance/.28)), direction = Math.atan2(dx,dz);
+        for (let i=0;i<steps;i++) add({ ...source,
+          x:tracker.x+dx*(i+.5)/steps, z:tracker.z+dz*(i+.5)/steps,
+          direction, segmentLength: distance/steps },time);
+      } else tracker.lastRoll=null;
+      tracker.x=source.x; tracker.z=source.z;
+      return;
+    }
     if (distance < (source.stepDistance ?? STEP_DISTANCE)) return;
     tracker.side *= -1;
     add({ ...source, side: tracker.side }, time);
@@ -219,12 +284,14 @@ export function createSnowFootprints(root, world) {
       if (write !== read) prints[write] = print;
       const fade = age <= FADE_START ? 1 : Math.max(0, 1 - (age - FADE_START) / (LIFETIME - FADE_START));
       transform.position.set(print.x, print.y, print.z);
-      transform.rotation.set(0, print.direction + Math.PI + print.rotationJitter, 0);
-      transform.scale.setScalar(print.scale);
+      transform.rotation.set(print.pitch, print.direction + Math.PI + print.rotationJitter, 0, 'YXZ');
+      transform.scale.set(print.scale * print.width, 1, print.scale * print.length);
       transform.updateMatrix();
       mesh.setMatrixAt(write, transform.matrix);
       const visibleFade = fade * print.strength * THREE.MathUtils.clamp(print.snowWeight * 1.15, 0, 1);
       fades.setX(write, visibleFade); fadeTotal += visibleFade;
+      kinds.setX(write, print.rolling ? 1 : 0);
+      caps.setX(write, (print.startCap ? 1 : 0)+(print.endCap ? 2 : 0));
       write++;
     }
     prints.length = write;
@@ -233,6 +300,8 @@ export function createSnowFootprints(root, world) {
     if (write) {
       mesh.instanceMatrix.needsUpdate = true;
       fades.needsUpdate = true;
+      kinds.needsUpdate = true;
+      caps.needsUpdate = true;
     }
     return activeParticles;
   }
@@ -253,6 +322,11 @@ export function createSnowFootprints(root, world) {
       const now = prints.length ? Math.max(...prints.map(print => print.born)) : 0;
       return {
         count: prints.length, maximum: MAX_FOOTPRINTS, created,
+        footprintsCreated, rollSegmentsCreated,
+        bySource: Object.fromEntries([...trackers].map(([id,t])=>[id,{footprintsCreated:t.footprintsCreated,rollSegmentsCreated:t.rollSegmentsCreated}])),
+        activeFootprints: prints.filter(print => !print.rolling).length,
+        activeRollSegments: prints.filter(print => print.rolling).length,
+        rollTrackWidthMeters: .76, rollStyle: 'continuous-body-furrow',
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
         stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,
         singleInstancedDraw: true, alignedToVisualSnowSurface: true,

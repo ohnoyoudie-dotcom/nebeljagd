@@ -14,10 +14,12 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
 export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'steel', fireStaff: 'ember', iceStaff: 'frost',
   poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
-// Shared presentation size for ground/editor models and equipped weapons.
+// Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
   fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82 });
+export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
+export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * .88])));
 
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
@@ -271,7 +273,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const x = definition.position?.[0] ?? definition.x, z = definition.position?.[1] ?? definition.z;
     if (!Number.isFinite(x) || !Number.isFinite(z)) return null;
     const visual = makeWeapon(type, variant);
-    visual.scale.setScalar(WEAPON_PRESENTATION_SCALE[type]);
+    visual.scale.setScalar(GROUND_WEAPON_SCALE[type]);
     const groundY = heightAt?.(x, z) ?? 0;
     const group = new THREE.Group();
     group.name = `${stats.name} auf dem Boden`;
@@ -317,7 +319,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   Object.assign(heldBow.userData, bowVisual.userData);
   heldBow.position.set(.17, 1.30, .13);
   heldBow.rotation.set(0, Math.PI / 2, 0);
-  heldBow.scale.setScalar(.78 * WEAPON_PRESENTATION_SCALE.bow);
+  heldBow.scale.setScalar(.78 * HELD_WEAPON_SCALE.bow);
   heldBow.visible = false;
   characterGroup.add(heldBow);
   const heldSword = new THREE.Group();
@@ -326,7 +328,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   heldSword.add(swordVisual);
   Object.assign(heldSword.userData, { weaponType: 'sword', variant: 'steel', model: 'procedural', weaponTipY: 1.13 });
   heldSword.position.set(-.22, 1.20, .42);
-  heldSword.scale.setScalar(1.10 * WEAPON_PRESENTATION_SCALE.sword);
+  heldSword.scale.setScalar(1.10 * HELD_WEAPON_SCALE.sword);
   heldSword.visible = false;
   characterGroup.add(heldSword);
   const heldStaffs = Object.fromEntries(STAFF_TYPES.map(type => [type, new THREE.Group()]));
@@ -375,7 +377,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     const imported = visual.userData.model === 'tripo';
     const baseScale = imported ? 1 : type === 'bow' ? .78 : type === 'sword' ? 1.10 : 1;
-    held.scale.setScalar(baseScale * WEAPON_PRESENTATION_SCALE[type]);
+    held.scale.setScalar(baseScale * HELD_WEAPON_SCALE[type]);
     if (type === 'sword') visual.position.y = imported ? 0 : .26;
     held.add(visual);
     delete held.userData.bowString;
@@ -987,7 +989,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
           visible: spell.group.visible, position: { x: spell.group.position.x, y: spell.group.position.y, z: spell.group.position.z } })),
         heldModel: held ? { type: equippedType, variant: held.userData.variant, model: held.userData.model,
-          visible: held.visible, meshCount, presentationScale: WEAPON_PRESENTATION_SCALE[equippedType],
+          visible: held.visible, meshCount, presentationScale: HELD_WEAPON_SCALE[equippedType],
+          groundPresentationScale: GROUND_WEAPON_SCALE[equippedType],
           stringVertices: (held.userData.bowStringDeformations ?? []).reduce((total, part) => total + part.count, 0) } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,
         arrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0).length,

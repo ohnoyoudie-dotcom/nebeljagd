@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { HIDING_GRASS_STYLE } from './hiding-grass.js';
 import { vegetationSettings } from './map/landscape.js';
 
 export const MAX_GRASS_INSTANCES = 500000;
@@ -23,7 +24,7 @@ export function buildVegetationPatch(object, { budget = MAX_GRASS_INSTANCES, all
   const meanHeight = configured ? VEGETATION_BASE_HEIGHTS[settings.type] * settings.height : tall ? 2.425 : .32;
   const patch = { id: object.id, x, z, radius: radius * scale, aspect, yaw: object.rotation ?? 0,
     height: meanHeight * scale, minBladeHeight: Infinity, maxBladeHeight: 0,
-    crossedStalksPerInstance: renderVariant === 'tall' ? 7 : 1, variant: object.variant,
+    crossedStalksPerInstance: renderVariant === 'tall' ? HIDING_GRASS_STYLE.stalksPerInstance : 1, variant: object.variant,
     type: configured ? settings.type : tall ? 'tall' : 'short', settings: configured ? settings : null,
     instanceCount: 0, decorativeInstances: 0, crossedStalkCount: 0, requestedInstances: Math.min(1800, baseCount),
     budgetLimited: count < Math.min(1800, baseCount), renderVariant,

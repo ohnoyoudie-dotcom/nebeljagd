@@ -7,7 +7,7 @@ import { createCollisionIndex } from './collision.js';
 import { collisionStructureBounds, structureContainsPoint, structureIntersectsSegment } from './map/structure-bounds.js';
 import { houseFloorFactorAt } from './map/house-floor.js';
 import { createWeatheredStone } from './stone-art.js';
-import { createHidingGrassGeometry, hidingGrassDetail, HIDING_GRASS_STYLE } from './hiding-grass.js';
+import { createHidingGrassGeometry, hidingGrassDetail, HIDING_GRASS_STYLE, applyGrassSurface } from './hiding-grass.js';
 import { createMoundPrototype } from './overgrown-mounds.js';
 import { createVegetationWind } from './vegetation-wind.js';
 import { buildVegetationPatch, buildKitGrassPatch, vegetationInstanceTint, vegetationTint, MAX_GRASS_INSTANCES, MAX_KIT_GRASS_INSTANCES } from './vegetation-patches.js';
@@ -40,6 +40,21 @@ function texture(kind) {
     ctx.fillStyle = ['#c8ca8d55', '#233c2f55', '#9b9e7255'][i % 3];
     if (kind === 'bark') ctx.fillRect(r() * 128, r() * 128, .5 + r(), 7 + r() * 22);
     else { ctx.beginPath(); ctx.ellipse(r() * 128, r() * 128, .8 + r() * 3, .7 + r() * 1.2, r() * 6, 0, Math.PI * 2); ctx.fill(); }
+  }
+  if (kind === 'bush-leaf') {
+    // Painted pointed leaves with a midrib, over the supplied bush silhouette.
+    for (let i=0;i<95;i++) {
+      ctx.save();ctx.translate(r()*128,r()*128);ctx.rotate(r()*Math.PI*2);
+      const length=7+r()*9,width=3+r()*3;
+      ctx.fillStyle=['#8d9e65','#708b52','#4c6c40','#9da772'][i%4];
+      ctx.beginPath();ctx.moveTo(0,-length);
+      ctx.bezierCurveTo(width,-length*.5,width,length*.45,0,length);
+      ctx.bezierCurveTo(-width,length*.4,-width,-length*.5,0,-length);ctx.fill();
+      ctx.strokeStyle='#c2c69b65';ctx.lineWidth=.6;
+      ctx.beginPath();ctx.moveTo(0,-length*.85);ctx.lineTo(0,length*.9);
+      for(const side of [-1,1])for(let y=-length*.4;y<length*.6;y+=length*.35){ctx.moveTo(0,y);ctx.lineTo(side*width*.68,y-length*.24);}
+      ctx.stroke();ctx.restore();
+    }
   }
   if (kind === 'soil') {
     ctx.globalCompositeOperation = 'destination-in';
@@ -85,6 +100,7 @@ function createGrassPrototypes(wind) {
     const material = wind.apply(new THREE.MeshStandardMaterial({ color: variant === 'tall' ? '#ffffff' : '#759552',
       vertexColors: variant === 'tall', side: THREE.DoubleSide, roughness: 1, forceSinglePass: true }),
       { interactionResponse: variant === 'tall' ? 1.15 : .9 });
+    if (variant === 'tall') applyGrassSurface(material);
     result.set(`grass:${variant}`, [{ geometry: variant === 'tall' ? tallGrassGeo : grassGeo,
       lowGeometry: variant === 'tall' ? tallGrassLowGeo : undefined, material, castShadow: false }]);
   }
@@ -109,6 +125,7 @@ function createGrassPrototypes(wind) {
     const tallMaterial = wind.apply(new THREE.MeshStandardMaterial({
       color: '#ffffff', vertexColors: true, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
     }), { interactionResponse: 1.15 });
+    applyGrassSurface(tallMaterial);
     result.set(`grass:short:${biome}`, [{ geometry: grassGeo, material: shortMaterial, castShadow: false }]);
     result.set(`grass:tall:${biome}`, [{ geometry: tallGeo, lowGeometry: tallLowGeo, material: tallMaterial, castShadow: false }]);
   }
@@ -245,7 +262,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const barkMap = texture('bark'), foliageMap = texture('foliage');
   const bark = new THREE.MeshStandardMaterial({ map: barkMap, bumpMap: barkMap, bumpScale: .04, color: '#c4b18f', roughness: .95 });
   const foliage = wind.apply(new THREE.MeshStandardMaterial({ map: foliageMap, color: '#d7dfbd', roughness: .92 }), { response: .65, height: 5.8 });
-  const bushFoliage = wind.apply(new THREE.MeshStandardMaterial({ map: foliageMap, color: '#d7dfbd', roughness: .92 }), { response: .5, height: 1.1 });
+  const bushFoliage = wind.apply(new THREE.MeshStandardMaterial({ map: texture('bush-leaf'), color: '#d7dfbd', roughness: .92 }), { response: .5, height: 1.1 });
   const importedFlowerMat = wind.apply(new THREE.MeshStandardMaterial({ color: '#fff', vertexColors: true, side: THREE.DoubleSide, roughness: .92, forceSinglePass: true }), { response: .3, height: .55 });
   const soil = new THREE.MeshStandardMaterial({ map: texture('soil'), color: '#c2b487', transparent: true, alphaTest: .04, depthWrite: false, side: THREE.DoubleSide, roughness: 1 });
   const prototypes = new Map();

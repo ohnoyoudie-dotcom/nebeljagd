@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { terrainPalette, cobbleCells } from '../src/terrain-art.js';
+import { terrainPalette, cobbleCells, pathVergeOffset } from '../src/terrain-art.js';
 
 test('woodland colours are muted while non-green biomes and authored variations remain distinct', () => {
   const source = new THREE.Color('#80a66a');
@@ -31,5 +31,16 @@ test('paving pattern is deterministic, irregular and covers each row without ext
       area += a[0] * b[1] - b[0] * a[1];
     }
     assert.ok(area > .02 && area < .12, 'each irregular stone has useful footprint');
+  }
+});
+
+test('path bends meet at one shared edge offset without unbounded corner spikes', () => {
+  const points=[[0,0],[0,10],[10,10]];
+  assert.deepEqual(pathVergeOffset(points,0,4).map(v=>v+0),[2,0]);
+  assert.deepEqual(pathVergeOffset(points,1,4),[2,-2]);
+  assert.deepEqual(pathVergeOffset(points,2,4).map(v=>v+0),[0,-2]);
+  for(const next of [[.01,0],[10,9.9],[-10,9.9]]) {
+    const offset=pathVergeOffset([[0,0],[0,10],next],1,4);
+    assert.ok(offset.every(Number.isFinite));assert.ok(Math.hypot(...offset)<=4);
   }
 });

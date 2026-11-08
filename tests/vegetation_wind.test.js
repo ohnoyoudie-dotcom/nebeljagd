@@ -10,9 +10,9 @@ const object = { id:'test-grass',kind:'grass',variant:'tall',position:[10,-30],r
 const configured = changes => ({...object,vegetation:{...vegetationSettings(object),...changes}});
 const windMap = (wind={},windZones=[]) => ({landscape:{version:1,wind,windZones}});
 
-test('broadleaf patches reduce instance counts while editable height remains independent of width', () => {
+test('meadow patches reduce instance counts while editable height remains independent of width', () => {
  const legacy=buildVegetationPatch(object);
- assert.equal(legacy.patch.instanceCount,49);assert.equal(legacy.patch.crossedStalkCount,343);
+ assert.equal(legacy.patch.instanceCount,49);assert.equal(legacy.patch.crossedStalkCount,686);
  assert.ok(legacy.patch.minBladeHeight>=1.75&&legacy.patch.maxBladeHeight<=2.6);
  const high=buildVegetationPatch(configured({height:3,heightVariation:0,edgeSoftness:0}));
  const low=buildVegetationPatch(configured({height:.25,heightVariation:0,edgeSoftness:0}));

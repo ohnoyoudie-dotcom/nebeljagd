@@ -95,7 +95,7 @@ test('ornate bow animates its actual baked string only on the held clone and rel
   const source=Array.from(prototypeString.attributes.position.array);
   weapons.tryAutoPickup(actor.position);
   const held=actor.children.find(child=>child.userData.weaponType==='bow');
-  assert.equal(held.scale.x,.88,'imported bow uses its reduced presentation size');
+  assert.equal(held.scale.x,.88*.88,'imported bow uses its independent smaller hand size');
   const stringMesh=held.children[0].children[0].children[1];
   assert.notEqual(stringMesh.geometry,prototypeString);
   assert.ok(weapons.telemetry.heldModel.stringVertices>0);

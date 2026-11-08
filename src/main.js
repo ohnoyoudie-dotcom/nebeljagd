@@ -591,7 +591,7 @@ function frame(now) {
   footprintSources.push({
     id: 'player', x: player.x, z: player.z, direction: state.direction,
     moving: state.phase === 'playing' && state.moving, speed: state.actualSpeed || 0,
-    stepDistance: state.rollRemaining > 0 ? .78 : .58, lateral: .105,
+    rolling: state.rollRemaining > 0, stepDistance: .58, lateral: .105,
   });
   practiceActors.appendFootprintSources?.(footprintSources);
   snowFootprints.update(state.elapsed, footprintSources);

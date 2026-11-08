@@ -74,15 +74,11 @@ function chestPrototype() {
   const latch = box(lid, [.23, .27, .1], [0, -.08, 1.08], band);
   box(lid, [.055, .09, .025], [0, -.095, 1.14], dark);
   latch.name = 'chest-lock';
-  const halo = new THREE.Mesh(new THREE.CircleGeometry(1.2, 32), new THREE.MeshBasicMaterial({
-    color: '#e7b34e', transparent: true, opacity: .09, depthWrite: false, side: THREE.DoubleSide,
-  }));
-  halo.rotation.x = -Math.PI / 2; halo.position.y = .02; halo.name = 'chest-halo'; root.add(halo);
   // Keep each chest at a handful of draw calls, even though it has many planks.
   for (const parent of [root, lid]) {
     const batches = new Map();
     for (const mesh of [...parent.children]) {
-      if (!mesh.isMesh || mesh === halo) continue;
+      if (!mesh.isMesh) continue;
       mesh.updateMatrix();
       const geometry = mesh.geometry.clone().applyMatrix4(mesh.matrix);
       if (!batches.has(mesh.material)) batches.set(mesh.material, []);
@@ -114,7 +110,7 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
     return { id: definition.id, name: definition.name || 'Holztruhe', type: 'chest', kind: 'chest',
       x, z, groundY, scale: definition.scale ?? 1, rarity: definition.rarity, group,
       variant: definition.variant ?? 'wood', model: isTripo ? 'tripo' : 'procedural',
-      lid: group.getObjectByName('chest-lid'), halo: group.getObjectByName('chest-halo'),
+      lid: group.getObjectByName('chest-lid'),
       opened: false, elapsed: 0, dropped: false, opener: null, index };
   });
 
@@ -144,7 +140,6 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
         item.elapsed += Math.max(0, dt);
         const progress = Math.min(1, item.elapsed / .55);
         item.lid.rotation.x = -1.9 * (1 - Math.pow(1 - progress, 3));
-        item.halo.visible = false;
         if (!item.dropped && item.elapsed >= .23) {
           item.dropped = true;
           const contents = chestLoot(item.id, item.index, item.rarity);
@@ -152,8 +147,6 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
             position: chestDropPosition(item, item.opener, world ?? { heightAt }, index),
             origin: [item.x, item.z], sourceChest: item.id }, { pop: true }));
         }
-      } else {
-        item.halo.scale.setScalar(.95 + Math.sin(time * 1.6 + item.index) * .04);
       }
     }
   }
@@ -161,7 +154,7 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
     items, nearest, interact, open: interact, update,
     get openedCount() { return items.filter(item => item.opened).length; },
     reset() { for (const item of items) { item.opened = false; item.elapsed = 0; item.dropped = false;
-      item.opener = null; item.lid.rotation.x = 0; item.halo.visible = true; } },
+      item.opener = null; item.lid.rotation.x = 0; } },
     dispose() {
       for (const item of items) scene.remove(item.group);
       const geometries = new Set(), materials = new Set(), textures = new Set();
