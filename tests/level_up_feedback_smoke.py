@@ -155,8 +155,8 @@ try:
                 shot=OUT/f"actual-kill-{evidence['stage']}.png"
                 shot.write_bytes(base64.b64decode(frame['image'].split(',',1)[1]))
                 REPORT['screenshots'].append(str(shot));REPORT['sequence'].append(evidence)
-            gallery=''.join(f'<figure><img src="actual-kill-{entry["stage"]}.png"><figcaption>{entry["stage"]}: {entry["effect"]["age"]:.2f} s</figcaption></figure>' for entry in REPORT['sequence'])
-            (OUT/'sequence.html').write_text('<!doctype html><meta charset="utf-8"><title>Level-up: actual rendered sequence</title><style>body{margin:16px;background:#14251e;color:#f0dfb4;font:16px sans-serif}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}figure{margin:0}img{width:100%;display:block}figcaption{padding:8px 0}</style><main>'+gallery+'</main>')
+            gallery=''.join(f'<figure><div class="detail"><img src="actual-kill-{entry["stage"]}.png"></div><figcaption>{entry["stage"]}: {entry["effect"]["age"]:.2f} s · 2× detail</figcaption></figure>' for entry in REPORT['sequence'])
+            (OUT/'sequence.html').write_text('<!doctype html><meta charset="utf-8"><title>Level-up: actual rendered sequence</title><style>body{margin:16px;background:#14251e;color:#f0dfb4;font:16px sans-serif}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}figure{margin:0}.detail{aspect-ratio:4/3;overflow:hidden}img{width:100%;display:block;transform:scale(2);transform-origin:50% 54%}figcaption{padding:8px 0}</style><main>'+gallery+'</main>')
             visible=REPORT['sequence'][1]
             assert (visible['level'],visible['health'],visible['maxHealth'])==(2,97,125),visible
             assert abs(visible['width']-initial_ui['width'])<.01 and visible['labelRight']<=visible['left']
@@ -205,6 +205,7 @@ try:
             gallery_page.wait_for_function('Array.from(document.images).every(image=>image.complete&&image.naturalWidth>0)')
             gallery_page.screenshot(path=str(OUT/'sequence.png'),full_page=True)
             REPORT['contactSheet']=str(OUT/'sequence.png')
+            REPORT['contactSheetNote']='Browser layout of four 2× detail crops. The individual PNGs retain each complete, untouched renderer frame.'
             gallery_page.close()
         except BaseException:
             try:page.screenshot(path=str(OUT/'failure.png'))
