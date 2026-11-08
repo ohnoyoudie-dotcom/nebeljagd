@@ -31,9 +31,11 @@ export function createSnowFootprints(root, world) {
   const fades = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   const kinds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   const caps = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
+  const rollDistances = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS * 2), 2);
   geometry.setAttribute('instanceFade', fades);
   geometry.setAttribute('instanceTrackKind', kinds);
   geometry.setAttribute('instanceTrackCaps', caps);
+  geometry.setAttribute('instanceRollDistance', rollDistances);
 
   const material = new THREE.ShaderMaterial({
     transparent: true,
@@ -47,16 +49,19 @@ export function createSnowFootprints(root, world) {
       attribute float instanceFade;
       attribute float instanceTrackKind;
       attribute float instanceTrackCaps;
+      attribute vec2 instanceRollDistance;
       varying vec2 vTrackUv;
       varying float vTrackFade;
       varying float vTrackKind;
       varying float vTrackCaps;
       varying vec2 vTrackWorld;
+      varying float vRollDistance;
       void main() {
         vTrackUv = uv;
         vTrackFade = instanceFade;
         vTrackKind = instanceTrackKind;
         vTrackCaps = instanceTrackCaps;
+        vRollDistance = instanceRollDistance.x + uv.y * instanceRollDistance.y;
         vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
         vTrackWorld = worldPosition.xz;
         gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -69,6 +74,7 @@ export function createSnowFootprints(root, world) {
       varying float vTrackKind;
       varying float vTrackCaps;
       varying vec2 vTrackWorld;
+      varying float vRollDistance;
       float ellipse(vec2 p, vec2 center, vec2 scale) {
         float d = length((p-center)/scale);
         return 1.0-smoothstep(.72,1.0,d);
@@ -76,17 +82,25 @@ export function createSnowFootprints(root, world) {
       void main() {
         vec2 p = vTrackUv;
         if (vTrackKind > .5) {
-          // One broad compressed furrow with soft powder shoulders, no soles.
-          float across = abs(p.x-.5) * 2.;
-          float edge = across + sin(vTrackWorld.y*9.+vTrackWorld.x*7.)*.025;
-          float body = 1.-smoothstep(.60,.96,edge);
-          float shoulder = exp(-pow((edge-.77)/.12,2.));
+          // Connected track segments share this accumulated travel coordinate.
+          // Uneven shoulder/body contact produces a wandering, broken scuff,
+          // while the supporting geometry keeps matching edges on slopes.
+          float along = vRollDistance;
+          float sway = sin(along*2.7)*.105 + sin(along*7.1+.8)*.042;
+          float width = .82 + sin(along*4.2+1.4)*.09 + sin(along*9.6)*.045;
+          float signedAcross = (p.x-.5)*2. - sway;
+          float edge = abs(signedAcross)/width + sin(along*17.+signedAcross*8.)*.045;
+          float body = 1.-smoothstep(.54,.97,edge);
+          float clumps = .55 + .45*sin(along*6.7+signedAcross*11.+sin(along*3.1));
+          float shoulder = exp(-pow((edge-.79)/.13,2.)) * (.35+.65*clumps);
           float ends = (mod(vTrackCaps,2.)>.5 ? smoothstep(0.,.6,p.y) : 1.)
             * (vTrackCaps>1.5 ? 1.-smoothstep(.4,1.,p.y) : 1.);
-          float scuff = .98 + .02*sin(vTrackWorld.y*7.+sin(vTrackWorld.x*9.));
-          float alpha = body * ends * .32 * vTrackFade;
+          float pressure = .68 + .32*pow(.5+.5*sin(along*5.3+sin(along*1.9)),2.);
+          float scrape = exp(-pow((signedAcross-.17*sin(along*3.8))/.11,2.)) * (.5+.5*sin(along*13.));
+          float scuff = .93 + .07*clumps - scrape*.055;
+          float alpha = (body*.34*pressure + shoulder*.065) * ends * vTrackFade;
           if (alpha < .008) discard;
-          gl_FragColor = vec4(mix(uTrackColor*.94*scuff,vec3(.96,.98,.99),shoulder*.38),alpha);
+          gl_FragColor = vec4(mix(uTrackColor*.94*scuff,vec3(.96,.98,.99),shoulder*.54),alpha);
           return;
         }
         float heel = ellipse(p, vec2(.50,.34), vec2(.31,.27));
@@ -190,6 +204,7 @@ export function createSnowFootprints(root, world) {
     const print = {
       x, z, y,
       direction, born: time, rolling, pitch,
+      rollDistance: source.rollDistance ?? 0, rollLength: source.segmentLength ?? 0,
       startCap: rolling && !tracker?.lastRoll, endCap: rolling,
       width: rolling ? .76 / .38 : 1,
       length: rolling ? trackLength / .64 : 1,
@@ -217,7 +232,7 @@ export function createSnowFootprints(root, world) {
     const id = source.id ?? 'player';
     let tracker = trackers.get(id);
     if (!tracker) {
-      tracker = { x: source.x, z: source.z, side: -1, initialized: false, rolling: Boolean(source.rolling), footprintsCreated: 0, rollSegmentsCreated: 0 };
+      tracker = { x: source.x, z: source.z, side: -1, initialized: false, rolling: Boolean(source.rolling), rollDistance: 0, footprintsCreated: 0, rollSegmentsCreated: 0 };
       trackers.set(id, tracker);
     }
     if (!tracker.initialized) {
@@ -226,7 +241,7 @@ export function createSnowFootprints(root, world) {
     }
     if (!source.moving || tracker.rolling !== Boolean(source.rolling)) {
       tracker.x = source.x; tracker.z = source.z; tracker.rolling = Boolean(source.rolling);
-      tracker.lastRoll=null;
+      tracker.lastRoll=null; tracker.rollDistance=0;
       return;
     }
     const distance = Math.hypot(source.x - tracker.x, source.z - tracker.z);
@@ -237,8 +252,9 @@ export function createSnowFootprints(root, world) {
         const steps = Math.min(20,Math.ceil(distance/.28)), direction = Math.atan2(dx,dz);
         for (let i=0;i<steps;i++) add({ ...source,
           x:tracker.x+dx*(i+.5)/steps, z:tracker.z+dz*(i+.5)/steps,
-          direction, segmentLength: distance/steps },time);
-      } else tracker.lastRoll=null;
+          direction, segmentLength: distance/steps, rollDistance: tracker.rollDistance + distance*i/steps },time);
+        tracker.rollDistance += distance;
+      } else { tracker.lastRoll=null; tracker.rollDistance=0; }
       tracker.x=source.x; tracker.z=source.z;
       return;
     }
@@ -292,6 +308,7 @@ export function createSnowFootprints(root, world) {
       fades.setX(write, visibleFade); fadeTotal += visibleFade;
       kinds.setX(write, print.rolling ? 1 : 0);
       caps.setX(write, (print.startCap ? 1 : 0)+(print.endCap ? 2 : 0));
+      rollDistances.setXY(write, print.rollDistance, print.rollLength);
       write++;
     }
     prints.length = write;
@@ -302,6 +319,7 @@ export function createSnowFootprints(root, world) {
       fades.needsUpdate = true;
       kinds.needsUpdate = true;
       caps.needsUpdate = true;
+      rollDistances.needsUpdate = true;
     }
     return activeParticles;
   }
@@ -326,7 +344,8 @@ export function createSnowFootprints(root, world) {
         bySource: Object.fromEntries([...trackers].map(([id,t])=>[id,{footprintsCreated:t.footprintsCreated,rollSegmentsCreated:t.rollSegmentsCreated}])),
         activeFootprints: prints.filter(print => !print.rolling).length,
         activeRollSegments: prints.filter(print => print.rolling).length,
-        rollTrackWidthMeters: .76, rollStyle: 'continuous-body-furrow',
+        rollTrackWidthMeters: .76, rollStyle: 'irregular-body-furrow',
+        continuousRollDistance: true, asymmetricPowderShoulders: true,
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
         stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,
         singleInstancedDraw: true, alignedToVisualSnowSurface: true,

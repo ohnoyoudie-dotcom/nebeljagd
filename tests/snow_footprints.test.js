@@ -74,6 +74,10 @@ test('rolling leaves a continuous body-width furrow without soles, then walking 
     assert.ok(Math.abs(matrix.elements[12])<1e-6,'roll stays centred instead of alternating left/right feet');
     assert.ok(Math.abs(matrix.elements[0])*.38>.70,'track is wider than a boot');
     assert.equal(mesh.geometry.attributes.instanceTrackKind.getX(i),1);
+    const distances=mesh.geometry.attributes.instanceRollDistance;
+    assert.ok(distances.getY(i)>0);
+    if(i>0)assert.ok(Math.abs(distances.getX(i)-distances.getX(i-1)-distances.getY(i-1))<1e-6,
+      'irregular scuff pattern continues across frame and segment boundaries');
     assert.equal(mesh.geometry.attributes.instanceTrackCaps.getX(i),i===0?1:i===mesh.count-1?2:0,
       'only the beginning and end fade; interior segments do not create transverse bands');
   }

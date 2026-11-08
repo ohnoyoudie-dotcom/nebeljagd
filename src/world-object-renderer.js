@@ -19,6 +19,7 @@ import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { isLandPoint } from './map/model.js';
 import { createGroundGrassExclusion, grassBiomeProfile } from './meadow-ground.js';
 import { WEAPON_TYPES } from './loot-tiers.js';
+import { createDestructionDebris } from './destruction-debris.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
 import bushUrl from '../assets/imported/rei/runtime/bush.glb?url&inline';
@@ -254,6 +255,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const barrierObjects = new Set((map.objects ?? []).slice(authoredObjectCount));
   const barrierSegmentCount = barrierObjects.size;
   let mode = quality, shelter = null;
+  const debris = createDestructionDebris(root, groundHeightAt);
+  let debrisVisible = null;
   const wind = createVegetationWind(map);
   const kitModels = await loadEnvironmentKit(map, { wind });
   const loader = new GLTFLoader();
@@ -583,6 +586,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function destroyDestructible(id) {
     const item = destructibles.find(candidate => candidate.id === id);
     if (!item || item.destroyed) return false;
+    debris.burst(item);
     item.destroyed = true; item.health = 0;
     for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = true; body.worldBody.destroyed = true; }
     if (item.group) item.group.visible = false;
@@ -595,6 +599,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     return true;
   }
   function resetDestructibles() {
+    debris.reset();
     for (const item of destructibles) {
       item.destroyed = false; item.health = item.maxHealth;
       for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = false; body.worldBody.destroyed = false; }
@@ -640,6 +645,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   }
   let visibleChunks = 0, lastCull = -Infinity, lastPlayer = new THREE.Vector3(Infinity, 0, Infinity);
   function update(dt, time, player) {
+    debris.update(dt, debrisVisible);
     timeUniform.value = time; playerUniform.value.copy(player); vegetation.update(time, player); wind.update(time);
     if (time - lastCull > .3 || lastPlayer.distanceToSquared(player) > 9) {
       visibleChunks = 0;
@@ -670,10 +676,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
   return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
+    setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
-    dispose() { disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
+    dispose() { debris.dispose(); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
     get shelter() { return shelter; },
-    get stats() { return { totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
+    get stats() { return { debris: debris.stats, totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
         sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: HIDING_GRASS_STYLE.stalksPerInstance,
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,

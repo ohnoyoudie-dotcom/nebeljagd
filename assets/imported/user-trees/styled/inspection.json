@@ -1,0 +1,107 @@
+{
+  "source": {
+    "path": "assets/imported/user-trees/runtime/tree1.glb",
+    "sha256": "c8c125554459d89352f23a1d9377899b145617fd589abe36cdbf7d228820c92c"
+  },
+  "authoringSource": {
+    "path": "Blender/Tree Generator/Stylized Tree Generator - Blender/Tree1.blend",
+    "sha256": "010836874509e89aa302d60812279502c07a54f03afca975d29926ae7d24d966",
+    "reader": "Blender 5.2 source preserved; Blender 4.3 styles the verified runtime GLB"
+  },
+  "runtime": {
+    "bytes": 674448,
+    "sha256": "f5ead137ff875e762153204962d6e49e7247c5e7df8377cce4fc50c901918047",
+    "triangles": 6992,
+    "bounds": [
+      {
+        "min": [
+          -1.7855297327041626,
+          0,
+          -1.221674919128418
+        ],
+        "max": [
+          1.7547698020935059,
+          6.128049850463867,
+          0.9875543117523193
+        ]
+      },
+      {
+        "min": [
+          -2.191657304763794,
+          1.5507135391235352,
+          -1.758939504623413
+        ],
+        "max": [
+          2.402942419052124,
+          7.100053310394287,
+          1.5493849515914917
+        ]
+      },
+      {
+        "min": [
+          -2.639252185821533,
+          0.9625849723815918,
+          -2.2709035873413086
+        ],
+        "max": [
+          2.824312210083008,
+          7.803692817687988,
+          2.1753525733947754
+        ]
+      }
+    ],
+    "materials": [
+      {
+        "name": "Tree1 \u00b7 Bark",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.16202937066555023,
+            0.08437620848417282,
+            0.04373503103852272,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.9599999785423279
+        }
+      },
+      {
+        "name": "Tree1 \u00b7 Inner branches",
+        "pbrMetallicRoughness": {
+          "baseColorFactor": [
+            0.09758734703063965,
+            0.05448027700185776,
+            0.028426039963960648,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.9599999785423279
+        }
+      },
+      {
+        "alphaCutoff": 0.3499999940395355,
+        "alphaMode": "MASK",
+        "doubleSided": true,
+        "name": "Tree1 \u00b7 Blattkonturen",
+        "pbrMetallicRoughness": {
+          "baseColorTexture": {
+            "index": 0
+          },
+          "metallicFactor": 0,
+          "roughnessFactor": 0.9599999785423279
+        }
+      }
+    ],
+    "images": 1,
+    "embedded": true
+  },
+  "command": "blender -b -t 3 --python scripts/style-user-tree.py -- --execute",
+  "sourcePreserved": true,
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "changes": [
+    "shorter lateral branches, coherent asymmetric crown",
+    "layered woodland leaf palette",
+    "matte walnut bark"
+  ],
+  "rights": "User-supplied project tree; existing original Blender leaf mask retained."
+}
