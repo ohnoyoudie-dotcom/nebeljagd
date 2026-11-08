@@ -41,7 +41,7 @@ export function bakeTerrainPaint(index, bounds, width, height, pavingMask = null
   return bytes;
 }
 
-export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTexture, snowWeightAt = null) {
+export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTexture, snowWeightAt = null, soilTexture = null) {
   const material = baseMaterial.clone();
   const empty = new THREE.DataTexture(new Uint8Array(4), 1, 1); empty.needsUpdate = true;
   const paintUniform = { value: empty }, pavingMaskUniform = { value: empty }, snowMaskUniform = { value: empty },
@@ -51,6 +51,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     shader.uniforms.uTerrainPaint = paintUniform; shader.uniforms.uTerrainPaintBounds = boundsUniform;
     shader.uniforms.uTerrainPavingMask = pavingMaskUniform; shader.uniforms.uTerrainSnowMask = snowMaskUniform;
     shader.uniforms.uTerrainPaving = { value: pavingTexture };
+    shader.uniforms.uTerrainSoil = { value: soilTexture ?? pavingTexture };
     shader.vertexShader = `uniform sampler2D uTerrainSnowMask; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
       ${shader.vertexShader}`.replace('#include <begin_vertex>', `#include <begin_vertex>
         vTerrainPaintPosition = (modelMatrix * vec4(position, 1.)).xz;
@@ -62,7 +63,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
           + sin(vTerrainPaintPosition.y*.15)*1.45);
         transformed.y += terrainSnowVertex * (.132 + terrainSnowBroadVertex*.052 + terrainSnowMidVertex*.024);
       `);
-    shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainSnowMask; uniform sampler2D uTerrainPaving; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
+    shader.fragmentShader = `uniform sampler2D uTerrainPaint; uniform sampler2D uTerrainPavingMask; uniform sampler2D uTerrainSnowMask; uniform sampler2D uTerrainPaving; uniform sampler2D uTerrainSoil; uniform vec4 uTerrainPaintBounds; varying vec2 vTerrainPaintPosition;
       float terrainSnowRelief(vec2 p) {
         float broad = sin(p.x*.29 + sin(p.y*.13)*1.9) * cos(p.y*.24-p.x*.08);
         float drift = sin(p.x*.78+p.y*.31+sin(p.y*.22)*1.7);
@@ -81,10 +82,17 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       #include <color_fragment>
       vec2 terrainPaintUV = (vTerrainPaintPosition - uTerrainPaintBounds.xy) / uTerrainPaintBounds.zw;
       vec4 terrainPaint = texture2D(uTerrainPaint, terrainPaintUV);
+      // Fine texture is sampled in world metres, independently of the low-res
+      // coverage tile. Paint must not turn into a blurry, textureless stripe.
+      float soil = texture2D(uTerrainSoil, vTerrainPaintPosition / 3.0).r;
+      float grain = texture2D(uTerrainSoil, vTerrainPaintPosition / .73).r;
+      float soilShade = clamp(soil / .62, .72, 1.28) * mix(.95,1.05,grain);
+      float edgeBreakup = (soil - .62) * .24;
+      terrainPaint.a = smoothstep(.08,.90,terrainPaint.a + edgeBreakup * step(.01,terrainPaint.a));
       float terrainPavingMix = texture2D(uTerrainPavingMask, terrainPaintUV).r;
       float terrainSnowMix = texture2D(uTerrainSnowMask, terrainPaintUV).r * terrainPaint.a;
       vec3 terrainPaving = clamp(texture2D(uTerrainPaving, vTerrainPaintPosition / 3.5).rgb / vec3(.32, .35, .28), .35, 1.5);
-      terrainPaint.rgb *= mix(vec3(1.), terrainPaving, terrainPavingMix);
+      terrainPaint.rgb *= mix(vec3(mix(soilShade, 1., terrainSnowMix * .65)), terrainPaving, terrainPavingMix);
       float snowRelief = terrainSnowRelief(vTerrainPaintPosition);
       float snowMicro = terrainSnowMicro(vTerrainPaintPosition);
       float snowShade = 1.0 + snowRelief*.135 + snowMicro*.018;
@@ -101,7 +109,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       roughnessFactor = mix(roughnessFactor, .965 - terrainMicroRough*.022, terrainSnowMix * .90);
     `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v6-microcrystal-snow';
+  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v7-crisp-soil';
   material.name = 'Nebeljagd · gemalter Boden aus Kartendaten';
   function release() {
     texture?.dispose(); maskTexture?.dispose(); snowMaskTexture?.dispose();

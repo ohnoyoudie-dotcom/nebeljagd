@@ -78,16 +78,26 @@ export function createTerrainArtwork() {
   const random = randomSource(21112);
   g.fillStyle = '#eef0e8'; g.fillRect(0, 0, size, size);
   e.fillStyle = '#786650'; e.fillRect(0, 0, size, size);
-  // Broad translucent washes give the floor readable patches, rather than a
-  // screen full of equally contrasted speckles. Paint wrapped copies at edges.
-  for (let i = 0; i < 32; i++) {
-    const x = random() * size, y = random() * size, radius = 25 + random() * 120;
-    for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
-      const gradient = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, radius);
-      gradient.addColorStop(0, i % 3 ? '#293b2910' : '#f4f0dd0d'); gradient.addColorStop(1, '#3b4b3700');
-      g.fillStyle = gradient; g.fillRect(x + ox - radius, y + oy - radius, radius * 2, radius * 2);
-    }
+  // Periodic multi-scale pigment fields: small organic washes rather than
+  // Voronoi paving on the lawn. Raster detail stays independent of mesh size.
+  const fields = [11,27,73].map(grid => ({grid,values:Array.from({length:grid*grid},()=>random())}));
+  const noise = (u,v,field) => {
+    const {grid,values}=field,x=u*grid,y=v*grid,ix=Math.floor(x),iy=Math.floor(y);
+    let fx=x-ix,fy=y-iy; fx=fx*fx*(3-2*fx);fy=fy*fy*(3-2*fy);
+    const at=(a,b)=>values[(b%grid)*grid+(a%grid)];
+    return (at(ix,iy)*(1-fx)+at(ix+1,iy)*fx)*(1-fy)+(at(ix,iy+1)*(1-fx)+at(ix+1,iy+1)*fx)*fy;
+  };
+  const gd=g.createImageData(size,size),ed=e.createImageData(size,size);
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    const u=x/size,v=y/size,i=(y*size+x)*4;
+    const n=noise(u,v,fields[0])*.56+noise(u,v,fields[1])*.33+noise(u,v,fields[2])*.11;
+    const t=THREE.MathUtils.smoothstep(n,.28,.72),grain=(noise(u,v,fields[2])-.5)*7;
+    // An olive highlight and a slightly cooler moss shade, without black spots.
+    for(let k=0;k<3;k++)gd.data[i+k]=[196,208,182][k]+t*[25,13,12][k]+grain;
+    for(let k=0;k<3;k++)ed.data[i+k]=[125,108,82][k]+t*18+grain;
+    gd.data[i+3]=ed.data[i+3]=255;
   }
+  g.putImageData(gd,0,0);e.putImageData(ed,0,0);
   for (let i = 0; i < 1450; i++) {
     const x = random() * size, y = random() * size;
     g.fillStyle = i % 3 ? '#655c4c10' : '#ffffec18';
@@ -96,31 +106,41 @@ export function createTerrainArtwork() {
     e.beginPath(); e.ellipse(x, y, .4 + random() * 2.1, .4 + random() * 1.4, random() * 6, 0, Math.PI * 2); e.fill();
   }
   p.drawImage(earth, 0, 0);
+  p.fillStyle='#a49a8055'; p.fillRect(0,0,size,size);
   h.fillStyle = '#404040'; h.fillRect(0, 0, size, size);
   const trace = (ctx, points, ox, oy, shift = 0) => {
     ctx.beginPath();
     for (let i = 0; i < points.length; i++) {
       const previous = points[(i + points.length - 1) % points.length], current = points[i], next = points[(i + 1) % points.length];
-      const mid = [current[0] + (previous[0] - current[0]) * .12, current[1] + (previous[1] - current[1]) * .12];
+      const mid = [current[0] + (previous[0] - current[0]) * .28, current[1] + (previous[1] - current[1]) * .28];
       if (!i) ctx.moveTo(mid[0] * size + ox, mid[1] * size + oy + shift);
       else ctx.lineTo(mid[0] * size + ox, mid[1] * size + oy + shift);
       ctx.quadraticCurveTo(current[0] * size + ox, current[1] * size + oy + shift,
-        (current[0] + (next[0] - current[0]) * .12) * size + ox, (current[1] + (next[1] - current[1]) * .12) * size + oy + shift);
+        (current[0] + (next[0] - current[0]) * .28) * size + ox, (current[1] + (next[1] - current[1]) * .28) * size + oy + shift);
     }
     ctx.closePath();
   };
-  for (const cell of cobbleCells()) for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
-    trace(p, cell.points, ox, oy, 3); p.fillStyle = '#453d3373'; p.fill();
-    const value = Math.round(171 * cell.tint);
+  for (const cell of cobbleCells(71402, 8)) for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
+    if (cell.tint < .82) continue;
+    p.globalAlpha=.58;
+    trace(p, cell.points, ox, oy, 1); p.fillStyle = '#6f685b40'; p.fill();
+    const value = Math.round(156 * cell.tint);
     const gradient = p.createLinearGradient(0, cell.cy * size + oy - 35, 0, cell.cy * size + oy + 35);
     gradient.addColorStop(0, `rgb(${value + 12},${value + 14},${value + 11})`);
     gradient.addColorStop(1, `rgb(${value - 8},${value - 6},${value - 8})`);
     trace(p, cell.points, ox, oy); p.fillStyle = gradient; p.fill();
-    p.strokeStyle = '#e4dfd038'; p.lineWidth = 1.15; p.stroke();
+    p.globalAlpha=1;
     trace(h, cell.points, ox, oy); h.fillStyle = '#c0c0c0'; h.fill();
     h.strokeStyle = '#858585'; h.lineWidth = 2.5; h.stroke();
   }
-  cached = { ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false) };
+  const soil = canvas(size), sc = soil.getContext('2d');
+  sc.drawImage(earth,0,0); const samples=sc.getImageData(0,0,size,size);
+  for(let i=0;i<samples.data.length;i+=4){
+    const value=Math.min(255,Math.round((samples.data[i]+samples.data[i+1]+samples.data[i+2])/3*1.9));
+    samples.data[i]=samples.data[i+1]=samples.data[i+2]=value;
+  }
+  sc.putImageData(samples,0,0);
+  cached = { soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false) };
   cached.ground.name = 'Nebeljagd · gemalter Naturboden ohne Grashalme';
   cached.paving.name = 'Nebeljagd · unregelmäßiges graues Steinpflaster';
   cached.earth.name = 'Nebeljagd · erdiger Wegsaum';

@@ -113,8 +113,8 @@ export function terrainSurfaceDetail(type, x, z, seed = 1) {
 export function terrainSurfaceTint(type, x, z, target = {}) {
   const broad = terrainPaintNoise(x * .085, z * .085, 402) - .5;
   const patches = terrainPaintNoise(x * .32 + 11, z * .32, 719) - .5;
-  const shade = 1 + broad * .24 + patches * .10;
-  const warm = patches * .22;
+  const shade = 1 + broad * .035 + patches * .025;
+  const warm = patches * .045;
   if (['snow'].includes(type)) {
     target.r = shade - Math.max(0, -patches) * .18;
     target.g = shade; target.b = shade + Math.max(0, -patches) * .08;

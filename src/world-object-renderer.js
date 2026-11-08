@@ -16,7 +16,8 @@ import { expandBarrierMap } from './map/barriers.js';
 import { getBarrierHeight, getBarrierHeightScale, isHeightAdjustable } from './map/barrier-height.js';
 import { loadEnvironmentKit } from './environment-kit.js';
 import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
-import { grassBiomeProfile } from './meadow-ground.js';
+import { isLandPoint } from './map/model.js';
+import { createGroundGrassExclusion, grassBiomeProfile } from './meadow-ground.js';
 import { WEAPON_TYPES } from './loot-tiers.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
@@ -161,6 +162,8 @@ async function createGrassPreview(root, { map, groundHeightAt = () => 0, colorAt
   const kitModels = await loadEnvironmentKit(map, { wind });
   for (const [key, model] of kitModels) prototypes.set(key, model.parts);
   const grassPatches = [], meshes = [], flowerTufts = new Map();
+  const fringeExcluded = createGroundGrassExclusion(map);
+  const allowFringe = (x,z) => (!map.island || isLandPoint(map,[x,z])) && !fringeExcluded(x,z);
   const matrix = new THREE.Object3D(), ground = new THREE.Color(), tint = new THREE.Color();
   let count = 0;
   for (const object of map.objects ?? []) {
@@ -168,7 +171,7 @@ async function createGrassPreview(root, { map, groundHeightAt = () => 0, colorAt
     const kit = kitModels.get(`${object.kind}:${object.variant}`);
     const { patch, instances, settings, configured, renderVariant } = kit
       ? buildKitGrassPatch(object, kit, { budget: MAX_GRASS_INSTANCES - count })
-      : buildVegetationPatch(object, { budget: MAX_GRASS_INSTANCES - count });
+      : buildVegetationPatch(object, { budget: MAX_GRASS_INSTANCES - count, allowFringe });
     grassPatches.push(patch); count += instances.length;
     if (!instances.length) continue;
     const entries = prototypes.get(`grass:${renderVariant}`).map(part => ({ part,
@@ -288,6 +291,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
 
   const chunks = new Map(), batches = new Map(), circles = [], walls = [], structures = [], trees = [], grassPatches = [], houses = [], destructibles = [], projectileObstacles = [];
   const matrix = new THREE.Object3D(), tempColor = new THREE.Color(), groundColor = new THREE.Color();
+  const fringeExcluded = createGroundGrassExclusion(map);
+  const allowFringe = (x,z) => isLandPoint(map,[x,z]) && !fringeExcluded(x,z);
   let grassInstanceCount = 0, grassBudgetUsed = 0, kitGrassInstanceCount = 0;
   let legacyBiomeAdaptedPatches = 0, legacySuppressedGrassInstances = 0;
   function chunkFor(x, z) {
@@ -405,7 +410,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       importedAssets.flowers += count; if (count) importedAssets.beds++;
     } else if (object.kind === 'grass') {
       const detail = kit ? buildKitGrassPatch(object, kit, { budget: Math.min(MAX_GRASS_INSTANCES - grassBudgetUsed, (MAX_KIT_GRASS_INSTANCES - kitGrassInstanceCount) * 10) })
-        : buildVegetationPatch(object, { budget: MAX_GRASS_INSTANCES - grassBudgetUsed });
+        : buildVegetationPatch(object, { budget: MAX_GRASS_INSTANCES - grassBudgetUsed, allowFringe });
       const { patch, instances, settings, configured, renderVariant } = detail;
       grassPatches.push(patch);
       grassBudgetUsed += detail.budgetCost ?? patch.instanceCount;
@@ -651,16 +656,17 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     setGrassInteractors(values){ wind.setInteractors(values); },
     dispose() { disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
     get shelter() { return shelter; },
-    get stats() { return { totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [2.25, 2.6], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
-        sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: 4,
+    get stats() { return { totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
+        sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: HIDING_GRASS_STYLE.stalksPerInstance,
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,
+        decorativeInstances: grassPatches.reduce((sum,p) => sum + (p.decorativeInstances ?? 0), 0),
         configuredPatches: grassPatches.filter(patch => patch.settings).length,
         legacyBiomeAdaptedPatches, legacySuppressedGrassInstances,
         biomeAdaptiveLegacyGrass: true,
         budgetLimitedPatches: grassPatches.filter(patch => patch.budgetLimited).length,
         wind: wind.stats,
-        crossedStalkDensityPerSquareMeter: HIDING_GRASS_STYLE.instanceDensity * 4,
+        crossedStalkDensityPerSquareMeter: HIDING_GRASS_STYLE.instanceDensity * HIDING_GRASS_STYLE.stalksPerInstance,
         colorGradient: [HIDING_GRASS_STYLE.rootColor, HIDING_GRASS_STYLE.tipColor],
         visibleTallGrassBatches: instanced.filter(entry => entry.tallGrass && entry.mesh.visible && entry.chunk.group.visible).length,
         tallGrassTriangles: instanced.filter(entry => entry.tallGrass && entry.mesh.visible && entry.chunk.group.visible)

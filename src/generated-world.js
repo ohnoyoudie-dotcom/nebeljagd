@@ -76,7 +76,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   };
   for (const chunk of chunks.values()) {
     const geometry = new THREE.BufferGeometry(), positions = [], colors = [], uvs = [];
-    for (const v of chunk.vertices) { positions.push(v.x, v.y, v.z); colors.push(...v.color); uvs.push(v.x / 8, v.z / 8); }
+    for (const v of chunk.vertices) { positions.push(v.x, v.y, v.z); colors.push(...v.color); uvs.push(v.x / 4, v.z / 4); }
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2)); geometry.setIndex(chunk.indices); geometry.computeVertexNormals(); geometry.computeBoundingSphere();
     // Chunk assignment uses triangle centroids, so its vertices can reach beyond
@@ -86,7 +86,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     const painted = spatial.terrainPaint.overlapping(bounds).length > 0;
     const snow = boundsHaveSnow(bounds);
     const paint = painted || snow
-      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt)
+      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt, terrainArtwork.soilDetail)
       : null;
     const mesh = new THREE.Mesh(geometry, paint?.material ?? groundMaterial); mesh.name = `Geländeabschnitt ${chunk.key}`; mesh.receiveShadow = true; root.add(mesh);
     terrainChunks.push({ mesh, x: chunk.x, z: chunk.z, paint });

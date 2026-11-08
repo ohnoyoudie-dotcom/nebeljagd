@@ -1,45 +1,42 @@
 import * as THREE from 'three';
 
-/** The broad crossed blade and four vertical sections come from the preserved
- * v011 world.js. Four offset stalks restore its close-set meadow appearance
- * without multiplying island-wide instance matrices. */
+/** Variant 2: seven broad, folded leaves in a curved rosette. One shared
+ * mesh per tuft; the existing instanced wind field keeps roots anchored. */
 export const HIDING_GRASS_STYLE = Object.freeze({
-  sourceVersion: 'nebeljagd-3d-v011', stalksPerInstance: 4, halfWidth: .14,
-  height: Object.freeze([2.25, 2.6]), instanceDensity: 20 / (Math.PI * .72),
+  sourceVersion: 'nebeljagd-broadleaf-v2', stalksPerInstance: 7, halfWidth: .16,
+  height: Object.freeze([1.75, 2.6]), instanceDensity: 4 / (Math.PI * .72),
   nearDistance: 24, lowViewDistance: 34, highViewDistance: 48,
-  rootColor: '#315e36', tipColor: '#bbc975',
+  rootColor: '#3d5731', tipColor: '#91a45f',
 });
 
 export function createHidingGrassGeometry({ low = false, rootColor = HIDING_GRASS_STYLE.rootColor, tipColor = HIDING_GRASS_STYLE.tipColor } = {}) {
-  const positions = [], colors = [], indices = [];
-  const segments = low ? 2 : 4;
-  const base = new THREE.Color(rootColor), tip = new THREE.Color(tipColor);
-  const tint = new THREE.Color();
-  const stalks = [
-    [-.17, -.13, 1, -.35], [.15, .13, 1, .48], [.15, -.16, 1, 1.04], [-.14, .16, 1, -.88],
-  ];
-  for (const [x, z, height, yaw] of stalks) for (let plane = 0; plane < 2; plane++) {
-    const offset = positions.length / 3, angle = yaw + plane * Math.PI / 2;
-    const cos = Math.cos(angle), sin = Math.sin(angle);
+  const positions = [], colors = [], indices = [], segments = low ? 4 : 8;
+  const base = new THREE.Color(rootColor), tip = new THREE.Color(tipColor), tint = new THREE.Color();
+  for (let leaf = 0; leaf < 7; leaf++) {
+    const offset = positions.length / 3, angle = leaf * 2.399963;
+    const c = Math.cos(angle), s = Math.sin(angle), height = [1,.78,.92,.66,.88,.72,.96][leaf];
+    const reach = [.58,.72,.50,.82,.64,.75,.55][leaf];
     for (let row = 0; row <= segments; row++) {
-      const t = row / segments, halfWidth = HIDING_GRASS_STYLE.halfWidth * (1 - t);
-      // Retain the original gently bent blade, with small variation per stalk.
-      const bend = t * t * (.08 + Math.abs(yaw) * .035);
-      const gradient = t * t * (3 - 2 * t);
-      tint.copy(base).lerp(tip, gradient);
-      for (const side of [-1, 1]) {
-        const along = side * halfWidth + bend;
-        positions.push(x + along * cos, t * height, z + along * sin);
-        colors.push(tint.r, tint.g, tint.b);
+      const t = row / segments, width = (.025 + Math.sin(Math.PI * t) ** .8 * HIDING_GRASS_STYLE.halfWidth) * (1-t*t*t);
+      const outward = .035 + reach * t * t;
+      // The last quarter bends down, rather than ending in an upright spike.
+      const y = height * Math.sin(t * Math.PI * .65) / Math.sin(.75 * Math.PI * .65);
+      tint.copy(base).lerp(tip, Math.min(1, t*.85 + .06 * (leaf%3)));
+      for (const side of [-1,0,1]) {
+        positions.push(c*outward - s*width*side, y - (side ? width*.08 : 0) * Math.min(1,t*8), s*outward + c*width*side);
+        colors.push(tint.r * (side===1 ? .94 : 1), tint.g * (side===1 ? .94 : 1), tint.b * (side===1 ? .94 : 1));
       }
-      if (row < segments) { const a = offset + row * 2; indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      if (row < segments) {
+        const a=offset+row*3;
+        indices.push(a,a+3,a+1, a+1,a+3,a+4, a+1,a+4,a+2, a+2,a+4,a+5);
+      }
     }
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices); geometry.computeVertexNormals(); geometry.computeBoundingBox();
-  geometry.userData = { sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalks: 4, low };
+  geometry.userData = { sourceVersion: HIDING_GRASS_STYLE.sourceVersion, leavesPerTuft: 7, crossedStalks: 7, low };
   return geometry;
 }
 
