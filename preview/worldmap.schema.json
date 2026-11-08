@@ -569,9 +569,10 @@
             "common",
             "uncommon",
             "rare",
+            "epic",
             "legendary"
           ],
-          "description": "Waffenstufe; ältere Karten ohne Stufe erhalten common beim Import."
+          "description": "Kompatibles Feld älterer Karten. Im Spiel wird die Seltenheit je Runde zufällig gewichtet; Aufheben und Tauschen behalten die gewürfelte Stufe."
         },
         "vegetation": {
           "$ref": "#/$defs/landscapeVegetation"
