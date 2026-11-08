@@ -59,11 +59,11 @@ def run(directory: Path) -> None:
             context.add_init_script('window.showSaveFilePicker = undefined; window.showOpenFilePicker = undefined;')
             page = context.new_page()
             monitor(page)
-            page.goto(base + '/editor.html')
+            page.goto(base + '/editor.html?choose=1')
             expect(page.locator('#open-project')).to_be_enabled()
             expect(page.locator('#version')).to_contain_text(release['buildId'])
             expect(page.locator('#open-draft')).to_be_disabled()
-            page.locator('#open-project').click()
+            page.goto(base + '/editor.html')
             ready(page)
             query = parse_qs(urlsplit(page.url).query)
             assert query['v'] == [release['files']['map-editor.html']['sha256']]
@@ -83,14 +83,12 @@ def run(directory: Path) -> None:
             draft['name'] = 'Mein unveröffentlichter Entwurf'
             page.evaluate('(v) => localStorage.setItem("nebeljagd.worldmap.v1", JSON.stringify(v))', draft)
             page.goto(base + '/editor.html')
-            expect(page.locator('#open-draft')).to_be_enabled()
-            page.locator('#open-draft').click()
             ready(page)
-            assert state(page)['map']['name'] == draft['name']
+            assert state(page)['map'] == draft
             expect(page.locator('#editor-map-source')).to_contain_text('Entwurf')
-            passed('Own browser draft resumes only through explicit choice')
+            passed('Stable bookmark automatically resumes the complete own draft in the current editor')
 
-            page.goto(base + '/editor.html')
+            page.goto(base + '/editor.html?choose=1')
             expect(page.locator('#open-project')).to_be_enabled()
             page.locator('#open-project').click()
             ready(page)
@@ -131,7 +129,7 @@ def run(directory: Path) -> None:
             finally:
                 exported.unlink(missing_ok=True)
 
-            page.goto(base + '/editor.html')
+            page.goto(base + '/editor.html?choose=1')
             expect(page.locator('#open-project')).to_be_enabled()
             changed = copy.deepcopy(release)
             changed['buildId'] = 'abcdef012345'
@@ -140,6 +138,13 @@ def run(directory: Path) -> None:
             page.locator('#retry').click()
             expect(page.locator('#version')).to_contain_text(changed['buildId'])
             passed('Same bookmarked URL checks fresh manifest on request')
+            page.goto(base + '/editor.html')
+            ready(page)
+            assert parse_qs(urlsplit(page.url).query)['v'] == ['b' * 64]
+            assert state(page)['map'] == draft
+            passed('An editor update automatically opens the new version with the entire saved map')
+            page.goto(base + '/editor.html?choose=1')
+            expect(page.locator('#version')).to_contain_text(changed['buildId'])
             page.unroute('**/release.json?*')
             page.route('**/release.json?*', lambda route: route.fulfill(status=503, body='Unavailable'))
             page.locator('#retry').click()

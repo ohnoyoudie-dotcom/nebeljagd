@@ -27,6 +27,6 @@ export function editorVersionLabel(info) {
 }
 
 export function editorMapSourceLabel(source, changed = false) {
-  const label = { project: 'Projektkarte', draft: 'Eigener Entwurf', snapshot: 'Mitgenommene Karte', imported: 'Geöffnete Karte' }[source] ?? 'Eigene Karte';
+  const label = { project: 'Projektkarte', draft: 'Eigener Entwurf', online: 'Online gespeicherte Karte', snapshot: 'Mitgenommene Karte', imported: 'Geöffnete Karte' }[source] ?? 'Eigene Karte';
   return changed ? `${label} · bearbeitet` : label;
 }

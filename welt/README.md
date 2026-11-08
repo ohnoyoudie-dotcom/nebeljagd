@@ -10,13 +10,17 @@ Editor und Kartenkopien zusammen und aktualisiert ihre Prüfsummen in `release.j
 ## Wo Kartenänderungen hingehören
 
 Die **maßgebliche Projektkarte ist `worldmap.json` im Hauptordner**, eine Ebene
-über diesem Ordner. Im Editor mit „JSON speichern“ exportieren und die gewünschte
-Datei dort übernehmen. Änderungen nur an `welt/worldmap.json` werden beim
+über diesem Ordner. Im Online-Editor einmal **Mit GitHub verbinden** einrichten;
+danach übernimmt **Speichern** die Karte direkt auf `work` und startet die
+Veröffentlichung. Bei manuellen JSON-Exporten die gewünschte Datei im
+Hauptordner übernehmen. Änderungen nur an `welt/worldmap.json` werden beim
 nächsten Build wieder durch die Projektquelle ersetzt.
 
 Ein automatisch gespeicherter Browserentwurf gehört zum jeweiligen Browser.
-Er wird nicht automatisch auf GitHub hochgeladen. Der feste Online-Einstieg
-bietet die veröffentlichte Projektkarte und das Fortsetzen des eigenen Entwurfs an.
+Er wird durch Bearbeiten allein noch nicht hochgeladen. **Speichern** nutzt im
+Online-Editor die eingerichtete Verbindung. Der feste Link öffnet automatisch
+den neuesten Editor mit deinem gespeicherten Entwurf. Ohne Entwurf öffnet er
+die aktuelle Projektkarte. [Verbindung und Kartenschutz](../docs/online-editor.md).
 
 ## Inhalt
 

@@ -16,6 +16,7 @@ import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
 import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
+import { createGitHubMapSync, githubSyncAvailable } from './github-map-sync.js';
 import { createPlacementRotationControl } from './placement-rotation.js';
 import './editor.css';
 
@@ -76,6 +77,7 @@ let landscapePanel = null;
 let barrierPanel = null;
 let mapFileHandle = null;
 let persistedMapFileHandle = null;
+let githubSync = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
 const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
 const layers = { showLabels: false, showSpawns: false, showGrid: false, showZone: false, showObjects: true };
@@ -225,6 +227,7 @@ function saveDraft() {
     browserDraftCurrent = false;
     updateSaveStatus();
   }
+  githubSync?.changed();
 }
 function remember(previous) {
   history.push(previous);
@@ -1086,6 +1089,11 @@ async function exportJson() {
     toast(`worldmap.json konnte nicht direkt gespeichert werden: ${error?.message ?? 'Unbekannter Fehler'}`, true);
   }
 }
+function saveCurrentMap() {
+  if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
+  saveDraft();
+  return githubSync ? githubSync.save() : exportJson();
+}
 function exportSvg() {
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   download(renderWorldmapSvg(map, { ...layers, editor: false, zoneRadius: zoneAt(map, zoneTime).radius }), 'worldmap.svg', 'image/svg+xml');
@@ -1096,6 +1104,9 @@ function exportEditor() {
   if (externalScript) return toast('Für eine eigenständige HTML-Kopie bitte die gebaute map-editor.html öffnen. JSON und SVG lassen sich hier bereits speichern.', true);
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   const doc = document.documentElement.cloneNode(true);
+  // Runtime account settings and credentials never belong to an exported file.
+  doc.querySelectorAll('[data-github-sync-ui]').forEach(element => element.remove());
+  doc.querySelector('#export-json').disabled = false;
   const snapshot = doc.querySelector('#map-snapshot');
   snapshot.textContent = JSON.stringify(map).replace(/</g, '\\u003c');
   // Rebuild transient UI on next open; no stale user inputs or validation messages.
@@ -1349,7 +1360,12 @@ for (const [id, key] of [['layer-objects', 'showObjects'], ['layer-labels', 'sho
 $('zone-time').addEventListener('input', event => { zoneTime = Number(event.target.value); renderMap(); });
 $('import-json').addEventListener('click', () => { void openJson(); });
 $('json-file-input').addEventListener('change', importJson);
-$('export-json').addEventListener('click', () => { void exportJson(); }); $('export-svg').addEventListener('click', exportSvg); $('export-editor').addEventListener('click', exportEditor);
+$('export-json').addEventListener('click', () => { void saveCurrentMap(); }); $('export-svg').addEventListener('click', exportSvg); $('export-editor').addEventListener('click', exportEditor);
+const downloadJsonButton = $('download-json') ?? document.createElement('button');
+downloadJsonButton.id = 'download-json'; downloadJsonButton.className = 'button quiet';
+downloadJsonButton.textContent = 'Karte als JSON sichern';
+downloadJsonButton.addEventListener('click', () => { void exportJson(); });
+$('export-svg').before(downloadJsonButton);
 $('reset-map').addEventListener('click', () => { $('reset-confirm').hidden = !$('reset-confirm').hidden; });
 $('reset-confirm-yes').addEventListener('click', resetMap); $('reset-confirm-no').addEventListener('click', () => { $('reset-confirm').hidden = true; });
 $('map-viewport').addEventListener('pointerdown', pointerDown);
@@ -1366,8 +1382,12 @@ $('map-viewport').addEventListener('wheel', event => {
 }, { passive: false });
 document.addEventListener('keydown', event => {
   if ($('editor-start-dialog').open) return;
+  if ($('github-map-dialog')?.open) {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') event.preventDefault();
+    return;
+  }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault(); void exportJson(); return;
+    event.preventDefault(); void saveCurrentMap(); return;
   }
   const editing = event.target.closest?.('input,textarea,select,[contenteditable=true]');
   if (editing) return;
@@ -1454,3 +1474,22 @@ renderAll();
 if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();
 if (startup.offerChoice) startDialog.showModal();
 if (startup.missingDraft) toast('Kein passender Entwurf in diesem Browser gefunden. Die Projektkarte wurde geöffnet; eine gespeicherte JSON-Datei kannst du über „Öffnen“ laden.', true);
+if (!embeddedSnapshot && githubSyncAvailable(new URL(location.href))) {
+  githubSync = createGitHubMapSync({
+    getMap: () => clone(map), project: projectMap, canSave: () => !pointer && validate(map).valid,
+    download, notify: toast,
+    getProtectedDraft: () => restoredDraft ? JSON.stringify(restoredDraft, null, 2) + '\n' : unreadableDraftPending ? storedDraftText : null,
+    onSaved() {
+      // Explicit online saving preserves any protected older draft separately,
+      // then makes the current editor document the map resumed on the next visit.
+      restoredDraft = null; unreadableDraftPending = false;
+      updatePendingDraftBanner(); if (!pointer) saveDraft();
+    },
+    applyRemote(candidate) {
+      const previous = clone(map);
+      map = clone(candidate); selection = null; view = initialView(); zoneTime = 0; $('zone-time').value = 0;
+      mapSource = 'online'; mapSourceBase = JSON.stringify(map);
+      remember(previous); renderAll();
+    },
+  });
+}

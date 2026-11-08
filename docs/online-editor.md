@@ -11,11 +11,13 @@ Editor mit seiner Datei-Prüfsumme im Link. Wenn die Versionsdatei nicht erreich
 oder ungültig ist, erscheint eine Fehlermeldung mit erneutem Versuch. Es wird
 nicht still eine möglicherweise ältere Editor-Datei geöffnet.
 
-Beim Start lässt sich die **aktuelle Projektkarte** wählen oder ein **eigener
-lokaler Entwurf fortsetzen**. Ein lokaler Entwurf gehört zum jeweiligen Browser
-und zur Website-Adresse. Das Öffnen der Projektkarte verwirft oder überschreibt
-einen vorhandenen Entwurf nicht stillschweigend. Die Versionsanzeige bezieht
-sich auf den Editor-Build, nicht auf das Alter einer importierten eigenen Karte.
+Der feste Link öffnet nach der Versionsprüfung automatisch den aktuellen Editor
+mit dem zuletzt gespeicherten Browserentwurf, ansonsten mit der aktuellen
+Projektkarte. Auch nach einem Editor-Update bleibt der vollständige Entwurf
+einschließlich Objekten, Bodenfarben und Biomflächen erhalten. Mit
+`editor.html?choose=1` ist die ausdrückliche Auswahl der Projektkarte weiterhin
+möglich; ein anderer Entwurf wird dabei geschützt. Die Versionsanzeige nennt
+den Editor-Build und kennzeichnet die geöffnete Kartenquelle separat.
 
 ## Was veröffentlicht wird
 
@@ -49,13 +51,62 @@ bleibt zum Herunterladen verfügbar.
 
 ## Eigene Kartenänderungen
 
-**Speichern** sichert weiterhin eine JSON-Datei auf dem Gerät. Es lädt weder
-Karten auf GitHub hoch noch speichert es geräteübergreifend. Für eine neue
-gemeinsame Projektkarte muss die gewünschte JSON-Datei als `worldmap.json` auf
-`work` übernommen werden. Nach erfolgreichen Prüfungen speichert derselbe
-Ablauf diese Karte zusammen mit dem passenden Editor und Spiel auf `work`.
+Im veröffentlichten Online-Editor sichert **Speichern** (auch Strg+S) die Karte
+direkt als `worldmap.json` auf `work`. Der bestehende Workflow prüft sie und
+veröffentlicht danach das zusammengehörige Paket. Der Editor unterscheidet
+„auf GitHub gesichert“ von „online veröffentlicht“ und bestätigt die
+Veröffentlichung erst, wenn die öffentliche Versionsdatei genau die
+Karten-Prüfsumme enthält. Ein unveränderter Stand erzeugt keinen weiteren Commit.
+
+### Einmalige Verbindung im Browser
+
+GitHub Pages selbst hat keinen beschreibbaren Kartenspeicher. Die Verbindung
+nutzt deshalb die GitHub-API mit einer vom Eigentümer eingerichteten Berechtigung:
+
+1. Im Editor **Mit GitHub verbinden** öffnen.
+2. Dem Link zu einem neuen **Fine-grained personal access token** folgen.
+   Resource owner **ohnoyoudie-dotcom**, nur Repository **nebeljagd** und
+   Repository permission **Contents: Read and write** wählen.
+3. Den Token ausschließlich im Editor einsetzen. Mit **Verbindung auf diesem
+   Gerät merken** bleibt er in diesem Browser gespeichert; sonst gilt er für
+   den aktuellen Tab. Danach **Verbinden** wählen.
+
+Die Verbindung ist auf die Karte dieses Repositories und den Branch `work`
+festgelegt. Zugangsdaten gehören niemals in Chat, Git, Kartenexporte oder die
+HTML-Datei. Der eingegebene Token wird nur im Authorization-Header an
+`https://api.github.com` gesendet. Die Verbindungsverwaltung kann ihn wieder
+aus dem Browser entfernen. Abgelaufene oder widerrufene Tokens müssen ersetzt
+werden; dabei bleibt die Karte erhalten. Ohne eingerichtete Verbindung kann
+die Seite nichts auf GitHub schreiben.
+
+Bei bestehender Verbindung wird beim Öffnen auch der aktuelle gespeicherte
+Stand auf `work` geprüft. Neuere Onlinekarten werden übernommen, wenn der lokale
+Stand seit seiner letzten Synchronisation unverändert ist. Eigene abweichende
+Änderungen werden nicht still ersetzt. Jede Speicherung verwendet die zuvor
+gelesene GitHub-Dateiversion als Schreibbedingung. Bei einem Konflikt bietet
+**Onlinekarte übernehmen** einen sicheren Abgleich: Der eigene Stand bleibt
+separat im Browser und unter **Vorherige Karte sichern** als JSON abrufbar.
+
+**Karte als JSON sichern** bleibt als zusätzliche lokale Sicherung verfügbar.
+In Offline-Kopien bleibt **Speichern** die bisherige Dateispeicherung. Eine
+manuell übernommene JSON-Datei gehört weiterhin in den Projektstamm; Änderungen
+nur an `welt/worldmap.json` sind keine dauerhafte Projektquelle.
 
 Lokale HTML-Kopien und ZIP-Pakete bleiben feste Offline-Stände. Ein geöffneter
 Editor tauscht während der Bearbeitung keinen Code oder Kartenstand aus.
-Vor einem Wechsel eigene Änderungen als JSON sichern und den festen Einstieg
-erneut öffnen.
+Der feste Einstieg lädt beim nächsten Öffnen den aktuellen Editor. Noch nicht
+online gesicherte Änderungen bleiben als Browserentwurf erhalten; für ein
+anderes Gerät zuvor **Speichern** verwenden und die erfolgreiche Meldung abwarten.
+
+## Verbindlicher Entwicklungsablauf
+
+Der Benutzer hat die selbstständige Veröffentlichung ausdrücklich beauftragt.
+Entwicklung bleibt auf `work`. Vor Editoränderungen den aktuellen Remote-Stand
+mit seiner neuesten Karte übernehmen; nach Tests und Build selbst pushen und
+die erfolgreiche Pages-Bereitstellung kontrollieren. Der Benutzer muss weder
+einen neuen Editor herunterladen noch für unsere Änderungen selbst pushen.
+Diese Vorgabe ist auch in `AGENTS.md` festgehalten.
+
+Die automatischen Tests der GitHub-Speicherung benutzen eine simulierte API
+mit unechten Zugangsdaten. Ein realer Schreibzugriff aus dem Browser setzt die
+einmalige Einrichtung durch den Repository-Eigentümer voraus.
