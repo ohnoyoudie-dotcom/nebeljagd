@@ -1,38 +1,38 @@
 {
-  "buildId": "3c8d4375f8ad",
-  "builtAt": "2026-11-08T14:10:23.995Z",
-  "sourceCommit": "6b06d2e8d441ab9f722bad72a11321263163166b",
+  "buildId": "e87ccd344fef",
+  "builtAt": "2026-11-08T14:20:33.027Z",
+  "sourceCommit": "f9ab657e63c1fa465bcdf01bd687d7fc89e97755",
   "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
-  "sourceBaseCommit": "6b06d2e8d441ab9f722bad72a11321263163166b",
+  "sourceBaseCommit": "f9ab657e63c1fa465bcdf01bd687d7fc89e97755",
   "localBuild": true,
   "files": {
     "index.html": {
       "bytes": 23478,
-      "sha256": "a1ab40780a9b1b5c555364c39514d568b258fd6e14a1e925882f717cfc6b1bef"
+      "sha256": "17c62f30df92c93e016e71ef011dd246769c78418c1fa515581863631537641b"
     },
     "teacher.html": {
       "bytes": 21179,
-      "sha256": "b04d3aaaccba987f08d822ed1d21ec0222d73b820020538d2e6e8fa5ca4f2e32"
+      "sha256": "3a059d507b96fb28ed57bc8f35e0c9da55668d3a42c3ef7a34036a0cc7a62a26"
     },
     "lobby.html": {
       "bytes": 1871,
-      "sha256": "7451e24521a6af070cd7ab72c2439948b4ad5a1445f71fcda2e1850ad76c9e3f"
+      "sha256": "8b9977aff81c9671fdb95a7b3a74ecf0855d2a7cef00154dc4d2a6befd8637eb"
     },
     "nebeljagd.html": {
-      "bytes": 89129661,
-      "sha256": "1ef6b4a88eb82382402404695bfc5757d6838759a922d927fe48595554bc350f"
+      "bytes": 89131703,
+      "sha256": "d546fc65be906085b1d103790478c7e10a8e8ef03abce42f0bcbc39dcb214325"
     },
     "map-editor.html": {
-      "bytes": 60883741,
-      "sha256": "d5cd01457590906509e244fb8849858442636313c24f04514d8c17cd2a9e27c6"
+      "bytes": 60884048,
+      "sha256": "5f6b9bf565cc7b04230615d3912ecab8b66ce611309354b09e4f6267c4ba7bf7"
     },
     "editor.html": {
       "bytes": 7963,
-      "sha256": "1c49dab49467e1349e5eb7b9cb65e69805da5115e70680787c0e50c81e9f3e95"
+      "sha256": "c59793a4b9203d62aa3f0695a5cdcecbd13123e887f6aae004bf90463dd91d9e"
     },
     "avatar-preview.html": {
       "bytes": 14841745,
-      "sha256": "dad5a5377993cec31faa3f25d4dc67a982720ba16f52f0eb7f19f8b949d0d2b1"
+      "sha256": "2c109e0873932450d2da98dc8f0a1452ad9692b2255a2ebcf3723e9cb6ac05de"
     },
     "worldmap.json": {
       "bytes": 56916,
@@ -43,12 +43,12 @@
       "sha256": "4f43c253a7fcf040e8d7a1ec3c404c255752c22256de792542634763c195cff1"
     },
     "worldmap.schema.json": {
-      "bytes": 41123,
-      "sha256": "bb2f3c7ae308e695b5b2da3ba71231bd4442a41d7956132cf4ec93dfe29a2923"
+      "bytes": 41222,
+      "sha256": "891dcb206c7e3fdfc9926039d777325df28481986c121c1fa12a8b4091d3fcd4"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 97978230,
-      "sha256": "932f7d186c3566cbaa2441f4ac5c7605a52b928441fb028928104ae2dd0e299f"
+      "bytes": 97979270,
+      "sha256": "30479208e315c9d5b1899d5502455e7c1136b632d85515ac90aca947910eeacc"
     }
   }
 }

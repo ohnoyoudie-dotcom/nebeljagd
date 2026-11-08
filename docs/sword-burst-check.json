@@ -64,14 +64,14 @@
               "segmentCount": 4,
               "pattern": "forehand",
               "latestBase": {
-                "x": -11.365942761357395,
-                "y": 2.4848069666080934,
-                "z": -9.741597933864755
+                "x": -11.366380091029201,
+                "y": 2.484745075104541,
+                "z": -9.741700226409641
               },
               "latestTip": {
-                "x": -10.740023001012872,
-                "y": 2.30246701110214,
-                "z": -9.808105603307817
+                "x": -10.740460330684678,
+                "y": 2.3024051195985877,
+                "z": -9.808207895852703
               },
               "activeGlints": 1,
               "emittedGlints": 1,
@@ -91,27 +91,27 @@
             },
             "swordBlade": {
               "base": {
-                "x": -11.365942761357395,
-                "y": 2.4848069666080934,
-                "z": -9.741597933864755
+                "x": -11.366380091029201,
+                "y": 2.484745075104541,
+                "z": -9.741700226409641
               },
               "tip": {
-                "x": -10.740023001012872,
-                "y": 2.30246701110214,
-                "z": -9.808105603307817
+                "x": -10.740460330684678,
+                "y": 2.3024051195985877,
+                "z": -9.808207895852703
               }
             },
             "equippedItem": {
               "type": "sword",
               "label": "Testschwert",
-              "damage": 58,
+              "damage": 27,
               "cooldown": 0.58,
               "range": 2.35,
               "effect": null,
-              "rarity": "legendary",
-              "rarityLabel": "Legendär",
-              "color": "#ffad44",
-              "name": "Testschwert · Legendär",
+              "rarity": "common",
+              "rarityLabel": "Gewöhnlich",
+              "color": "#f1eee3",
+              "name": "Testschwert · Gewöhnlich",
               "burn": null,
               "slow": null,
               "poison": null,
@@ -185,14 +185,14 @@
             "heldGrip": null,
             "hands": {
               "left": {
-                "x": 0.18160788774768477,
-                "y": 1.2193109235171997,
-                "z": 0.24862183487689293
+                "x": 0.18160788741688538,
+                "y": 1.2193109236545108,
+                "z": 0.24862183492696666
               },
               "right": {
-                "x": 0.17260036814024904,
-                "y": 1.1725741455180483,
-                "z": 0.3719685092227536
+                "x": 0.17232737452927438,
+                "y": 1.1725225692650882,
+                "z": 0.3717124652407602
               }
             },
             "lastSpellLaunch": null,
@@ -202,279 +202,36 @@
               "stanceWeight": 1,
               "leftArm": {
                 "shoulder": {
-                  "x": 0.14295135900186917,
-                  "y": 1.3913546416607798,
-                  "z": -0.13512808716139801
+                  "x": 0.14203691970488208,
+                  "y": 1.3908958347197418,
+                  "z": -0.1358182609956735
                 },
                 "elbow": {
-                  "x": 0.2939994927110883,
-                  "y": 1.2012809957041881,
-                  "z": 0.035702688934224014
+                  "x": 0.2932942134886307,
+                  "y": 1.201276700688695,
+                  "z": 0.03533225389407413
                 },
                 "hand": {
-                  "x": 0.18160788774768477,
-                  "y": 1.2193109235171997,
-                  "z": 0.24862183487689293
+                  "x": 0.18160788741688538,
+                  "y": 1.2193109236545108,
+                  "z": 0.24862183492696666
                 }
               },
               "feet": {
                 "left": {
-                  "x": 0.2989660189909742,
-                  "y": 0.17547827422006346,
-                  "z": 0.09335833633889123
+                  "x": 0.29912781276728495,
+                  "y": 0.1754462680860681,
+                  "z": 0.09445343904642733
                 },
                 "right": {
-                  "x": -0.12611485291351876,
-                  "y": 0.1759480564064685,
-                  "z": -0.09331883466446556
+                  "x": -0.12571337878970734,
+                  "y": 0.1758714520764616,
+                  "z": -0.09226363497853995
                 }
               },
               "hips": {
-                "x": 0.0015873657929619256,
-                "y": 0.937901562598371,
-                "z": 0.03267553705942916
-              }
-            },
-            "staffTip": null,
-            "spells": [],
-            "heldModel": {
-              "type": "sword",
-              "variant": "kit-tripo-sword",
-              "model": "tripo",
-              "visible": true,
-              "meshCount": 1,
-              "presentationScale": 0.7040000000000001,
-              "groundPresentationScale": 0.96,
-              "stringVertices": 0
-            },
-            "arrowsActive": 0,
-            "arrowsFlying": 0,
-            "arrowModel": {
-              "triangles": 6000,
-              "nominalLength": 1.05,
-              "forwardAxis": "+Z",
-              "source": "assets/inbox/feathered spear 3d model.glb",
-              "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
-            },
-            "importedArrowsFlying": 0,
-            "heldPose": {
-              "bow": {
-                "x": 0.17,
-                "y": 1.3,
-                "z": 0.13
-              },
-              "sword": {
-                "x": 0.17260036814024904,
-                "y": 1.1725741455180483,
-                "z": 0.3719685092227536
-              },
-              "swordTip": {
-                "x": 0.8293540758007011,
-                "y": 0.9644235113788325,
-                "z": 0.663478268227402
-              }
-            }
-          },
-          "elapsed": 0.5166666666666666,
-          "position": {
-            "x": -12,
-            "y": 1.1451587974475412,
-            "z": -10
-          }
-        },
-        {
-          "combat": {
-            "attackPhase": "strike",
-            "bowDraw": 0,
-            "swordSweep": -1.10947312869865,
-            "shotsFired": 0,
-            "impacts": 0,
-            "lastImpact": null,
-            "damageHits": 0,
-            "lastDamage": null,
-            "swordCombo": {
-              "index": 2,
-              "pattern": "backhand",
-              "swingId": 2,
-              "active": true,
-              "progress": 0.517241379310345,
-              "remaining": 1.1799999999999997
-            },
-            "swordTrail": {
-              "style": "blade-following-ribbon",
-              "trailActive": true,
-              "sampleCount": 2,
-              "segmentCount": 4,
-              "pattern": "backhand",
-              "latestBase": {
-                "x": -12.295622983809006,
-                "y": 3.0137721473924697,
-                "z": -9.205762100684746
-              },
-              "latestTip": {
-                "x": -12.625741932775224,
-                "y": 3.2839436466242415,
-                "z": -8.708292989689197
-              },
-              "activeGlints": 1,
-              "emittedGlints": 2,
-              "swingCount": 2,
-              "impactCount": 0,
-              "depthTested": true,
-              "shadingLayers": [
-                "edge",
-                "ribbon",
-                "afterimage"
-              ],
-              "drawCalls": 2,
-              "historyCapacity": 32,
-              "glintCapacity": 24,
-              "opacity": 1,
-              "lifetime": 0.18
-            },
-            "swordBlade": {
-              "base": {
-                "x": -12.295622983809006,
-                "y": 3.0137721473924697,
-                "z": -9.205762100684746
-              },
-              "tip": {
-                "x": -12.625741932775224,
-                "y": 3.2839436466242415,
-                "z": -8.708292989689197
-              }
-            },
-            "equippedItem": {
-              "type": "sword",
-              "label": "Testschwert",
-              "damage": 58,
-              "cooldown": 0.58,
-              "range": 2.35,
-              "effect": null,
-              "rarity": "legendary",
-              "rarityLabel": "Legendär",
-              "color": "#ffad44",
-              "name": "Testschwert · Legendär",
-              "burn": null,
-              "slow": null,
-              "poison": null,
-              "id": "qa-sword",
-              "variant": "kit-tripo-sword",
-              "model": "tripo",
-              "rotation": 0,
-              "scale": 1
-            },
-            "spellsActive": 0,
-            "effects": {
-              "activeProjectiles": 0,
-              "visibleProjectiles": 0,
-              "activeParticles": 0,
-              "visibleParticles": 0,
-              "activeSmoke": 0,
-              "visibleSmoke": 0,
-              "importedFireProjectiles": 0,
-              "importedIceProjectiles": 0,
-              "iceModel": {
-                "triangles": 6000,
-                "nominalLength": 0.95,
-                "forwardAxis": "+Z",
-                "source": "assets/inbox/ice crystal 3d model.glb",
-                "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
-              },
-              "fireModel": {
-                "name": "Fiery flame · Tripo-Feuerball",
-                "triangles": 6000,
-                "nominalLength": 0.75
-              },
-              "activeBursts": 0,
-              "channelActive": false,
-              "channelVisible": false,
-              "emitted": {
-                "fireStaff": {
-                  "launches": 0,
-                  "impacts": 0
-                },
-                "iceStaff": {
-                  "launches": 0,
-                  "impacts": 0
-                }
-              },
-              "latestImpact": null,
-              "bursts": [],
-              "activeTrails": 0,
-              "visibleTrailSegments": 0,
-              "presentation": "flowing-elements-v2",
-              "capacity": {
-                "particles": 160,
-                "bursts": 12,
-                "historySamplesPerProjectile": 32
-              }
-            },
-            "special": {
-              "aiming": false,
-              "target": null,
-              "moon": null,
-              "visuals": {
-                "activeClouds": 0,
-                "cloudDraws": 0,
-                "activeProjectiles": 0,
-                "volumeSteps": 16,
-                "trailSamples": 14
-              },
-              "poisonProjectiles": 0,
-              "poisonFlights": [],
-              "clouds": []
-            },
-            "heldGrip": null,
-            "hands": {
-              "left": {
-                "x": 0.2609187746996664,
-                "y": 1.259540634228304,
-                "z": 0.29839220291278323
-              },
-              "right": {
-                "x": -0.3794979982737008,
-                "y": 1.4739057541863234,
-                "z": 0.3681028236051791
-              }
-            },
-            "lastSpellLaunch": null,
-            "rigPose": {
-              "castWeight": 0,
-              "swordWeight": 1,
-              "stanceWeight": 1,
-              "leftArm": {
-                "shoulder": {
-                  "x": 0.16063144928593864,
-                  "y": 1.386050917005254,
-                  "z": -0.03604130579595477
-                },
-                "elbow": {
-                  "x": 0.36265585033831815,
-                  "y": 1.2060480755595928,
-                  "z": 0.08607253524911584
-                },
-                "hand": {
-                  "x": 0.2609187746996664,
-                  "y": 1.259540634228304,
-                  "z": 0.29839220291278323
-                }
-              },
-              "feet": {
-                "left": {
-                  "x": 0.29864202214104907,
-                  "y": 0.17562458357290545,
-                  "z": -0.12421371113802415
-                },
-                "right": {
-                  "x": -0.12521292797918182,
-                  "y": 0.17538849554010982,
-                  "z": 0.1298317463407912
-                }
-              },
-              "hips": {
-                "x": 0.00159377519582371,
-                "y": 0.9371176182546356,
+                "x": 0.0015937753033758995,
+                "y": 0.9377963565730388,
                 "z": 0.032694572517886655
               }
             },
@@ -507,18 +264,261 @@
                 "z": 0.13
               },
               "sword": {
-                "x": -0.3794979982737008,
-                "y": 1.4739057541863234,
-                "z": 0.3681028236051791
+                "x": 0.17232737452927438,
+                "y": 1.1725225692650882,
+                "z": 0.3717124652407602
               },
               "swordTip": {
-                "x": -0.9898015959599326,
-                "y": 1.78232070764725,
-                "z": 0.6714834323233257
+                "x": 0.8290810821897264,
+                "y": 0.9643719351258725,
+                "z": 0.6632222242454086
               }
             }
           },
-          "elapsed": 1.1333333333333342,
+          "elapsed": 0.5333333333333333,
+          "position": {
+            "x": -12,
+            "y": 1.1451587974475412,
+            "z": -10
+          }
+        },
+        {
+          "combat": {
+            "attackPhase": "strike",
+            "bowDraw": 0,
+            "swordSweep": -0.31658213491964854,
+            "shotsFired": 0,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "swordCombo": {
+              "index": 2,
+              "pattern": "backhand",
+              "swingId": 2,
+              "active": true,
+              "progress": 0.4024137931034508,
+              "remaining": 1.2465999999999984
+            },
+            "swordTrail": {
+              "style": "blade-following-ribbon",
+              "trailActive": true,
+              "sampleCount": 2,
+              "segmentCount": 4,
+              "pattern": "backhand",
+              "latestBase": {
+                "x": -11.867749810047597,
+                "y": 2.894082871984956,
+                "z": -9.210103685325125
+              },
+              "latestTip": {
+                "x": -11.742682473873723,
+                "y": 3.1373950722565453,
+                "z": -8.614617320678732
+              },
+              "activeGlints": 1,
+              "emittedGlints": 2,
+              "swingCount": 2,
+              "impactCount": 0,
+              "depthTested": true,
+              "shadingLayers": [
+                "edge",
+                "ribbon",
+                "afterimage"
+              ],
+              "drawCalls": 2,
+              "historyCapacity": 32,
+              "glintCapacity": 24,
+              "opacity": 1,
+              "lifetime": 0.18
+            },
+            "swordBlade": {
+              "base": {
+                "x": -11.867749810047597,
+                "y": 2.894082871984956,
+                "z": -9.210103685325125
+              },
+              "tip": {
+                "x": -11.742682473873723,
+                "y": 3.1373950722565453,
+                "z": -8.614617320678732
+              }
+            },
+            "equippedItem": {
+              "type": "sword",
+              "label": "Testschwert",
+              "damage": 27,
+              "cooldown": 0.58,
+              "range": 2.35,
+              "effect": null,
+              "rarity": "common",
+              "rarityLabel": "Gewöhnlich",
+              "color": "#f1eee3",
+              "name": "Testschwert · Gewöhnlich",
+              "burn": null,
+              "slow": null,
+              "poison": null,
+              "id": "qa-sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 0,
+              "visibleParticles": 0,
+              "activeSmoke": 0,
+              "visibleSmoke": 0,
+              "importedFireProjectiles": 0,
+              "importedIceProjectiles": 0,
+              "iceModel": {
+                "triangles": 6000,
+                "nominalLength": 0.95,
+                "forwardAxis": "+Z",
+                "source": "assets/inbox/ice crystal 3d model.glb",
+                "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+              },
+              "fireModel": {
+                "name": "Fiery flame · Tripo-Feuerball",
+                "triangles": 6000,
+                "nominalLength": 0.75
+              },
+              "activeBursts": 0,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [],
+              "activeTrails": 0,
+              "visibleTrailSegments": 0,
+              "presentation": "flowing-elements-v2",
+              "capacity": {
+                "particles": 160,
+                "bursts": 12,
+                "historySamplesPerProjectile": 32
+              }
+            },
+            "special": {
+              "aiming": false,
+              "target": null,
+              "moon": null,
+              "visuals": {
+                "activeClouds": 0,
+                "cloudDraws": 0,
+                "activeProjectiles": 0,
+                "volumeSteps": 16,
+                "trailSamples": 14
+              },
+              "poisonProjectiles": 0,
+              "poisonFlights": [],
+              "clouds": []
+            },
+            "heldGrip": null,
+            "hands": {
+              "left": {
+                "x": 0.28612375168695703,
+                "y": 1.2469381449805699,
+                "z": 0.2542834951157218
+              },
+              "right": {
+                "x": -0.17529363057115788,
+                "y": 1.3824432423961,
+                "z": 0.4469381545255793
+              }
+            },
+            "lastSpellLaunch": null,
+            "rigPose": {
+              "castWeight": 0,
+              "swordWeight": 1,
+              "stanceWeight": 1,
+              "leftArm": {
+                "shoulder": {
+                  "x": 0.1607450259685521,
+                  "y": 1.384463749633095,
+                  "z": -0.06973570748307623
+                },
+                "elbow": {
+                  "x": 0.37192730264344664,
+                  "y": 1.2028514465464029,
+                  "z": 0.03295649424032909
+                },
+                "hand": {
+                  "x": 0.28612375168695703,
+                  "y": 1.2469381449805699,
+                  "z": 0.2542834951157218
+                }
+              },
+              "feet": {
+                "left": {
+                  "x": 0.29865987178719333,
+                  "y": 0.17562445734227305,
+                  "z": -0.12416888085364164
+                },
+                "right": {
+                  "x": -0.12517621405990198,
+                  "y": 0.17537808830492352,
+                  "z": 0.12990270647856406
+                }
+              },
+              "hips": {
+                "x": 0.00159377519582371,
+                "y": 0.9370989025387747,
+                "z": 0.032694572517886655
+              }
+            },
+            "staffTip": null,
+            "spells": [],
+            "heldModel": {
+              "type": "sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1,
+              "presentationScale": 0.7040000000000001,
+              "groundPresentationScale": 0.96,
+              "stringVertices": 0
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "arrowModel": {
+              "triangles": 6000,
+              "nominalLength": 1.05,
+              "forwardAxis": "+Z",
+              "source": "assets/inbox/feathered spear 3d model.glb",
+              "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+            },
+            "importedArrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.17529363057115788,
+                "y": 1.3824432423961,
+                "z": 0.4469381545255793
+              },
+              "swordTip": {
+                "x": -0.39153985433025923,
+                "y": 1.6601968956741697,
+                "z": 1.1070294644319216
+              }
+            }
+          },
+          "elapsed": 1.0500000000000012,
           "position": {
             "x": -12,
             "y": 1.1451587974475412,
@@ -550,17 +550,17 @@
               "segmentCount": 4,
               "pattern": "overhead",
               "latestBase": {
-                "x": -11.736839320864146,
-                "y": 2.3430222203985864,
-                "z": -9.323229477382897
+                "x": -11.736683187783429,
+                "y": 2.3430175524234653,
+                "z": -9.323045474250149
               },
               "latestTip": {
-                "x": -11.464310715985063,
-                "y": 1.8945757760800088,
-                "z": -8.93071116958173
+                "x": -11.464154582904346,
+                "y": 1.8945711081048877,
+                "z": -8.930527166448982
               },
               "activeGlints": 1,
-              "emittedGlints": 3,
+              "emittedGlints": 4,
               "swingCount": 3,
               "impactCount": 0,
               "depthTested": true,
@@ -577,27 +577,27 @@
             },
             "swordBlade": {
               "base": {
-                "x": -11.736839320864146,
-                "y": 2.3430222203985864,
-                "z": -9.323229477382897
+                "x": -11.736683187783429,
+                "y": 2.3430175524234653,
+                "z": -9.323045474250149
               },
               "tip": {
-                "x": -11.464310715985063,
-                "y": 1.8945757760800088,
-                "z": -8.93071116958173
+                "x": -11.464154582904346,
+                "y": 1.8945711081048877,
+                "z": -8.930527166448982
               }
             },
             "equippedItem": {
               "type": "sword",
               "label": "Testschwert",
-              "damage": 58,
+              "damage": 27,
               "cooldown": 0.58,
               "range": 2.35,
               "effect": null,
-              "rarity": "legendary",
-              "rarityLabel": "Legendär",
-              "color": "#ffad44",
-              "name": "Testschwert · Legendär",
+              "rarity": "common",
+              "rarityLabel": "Gewöhnlich",
+              "color": "#f1eee3",
+              "name": "Testschwert · Gewöhnlich",
               "burn": null,
               "slow": null,
               "poison": null,
@@ -671,14 +671,14 @@
             "heldGrip": null,
             "hands": {
               "left": {
-                "x": 0.06673351645598125,
-                "y": 1.122180737170575,
-                "z": 0.3435356533524718
+                "x": 0.06670381927604563,
+                "y": 1.1219661426711434,
+                "z": 0.34375010842785514
               },
               "right": {
-                "x": -0.10432189324899355,
-                "y": 1.1364393136076245,
-                "z": 0.451294866142689
+                "x": -0.10428588187574483,
+                "y": 1.136435423628357,
+                "z": 0.45149271441576744
               }
             },
             "lastSpellLaunch": null,
@@ -688,36 +688,36 @@
               "stanceWeight": 1,
               "leftArm": {
                 "shoulder": {
-                  "x": 0.1455591713757629,
-                  "y": 1.4024356086751277,
-                  "z": -0.10447978997700957
+                  "x": 0.14557071270131594,
+                  "y": 1.4020484279357337,
+                  "z": -0.10436599377726452
                 },
                 "elbow": {
-                  "x": 0.127979044038252,
-                  "y": 1.2292461122561629,
-                  "z": 0.13598439204354484
+                  "x": 0.12796598482381594,
+                  "y": 1.228948887354894,
+                  "z": 0.13616115230964354
                 },
                 "hand": {
-                  "x": 0.06673351645598125,
-                  "y": 1.122180737170575,
-                  "z": 0.3435356533524718
+                  "x": 0.06670381927604563,
+                  "y": 1.1219661426711434,
+                  "z": 0.34375010842785514
                 }
               },
               "feet": {
                 "left": {
-                  "x": 0.2976556865671549,
-                  "y": 0.17538786354559333,
-                  "z": 0.09820344682375826
+                  "x": 0.2972702628963093,
+                  "y": 0.17527154936988631,
+                  "z": 0.09815063784150979
                 },
                 "right": {
-                  "x": -0.1251176139375927,
-                  "y": 0.1753510719021748,
-                  "z": -0.08810737419281445
+                  "x": -0.12537884892525408,
+                  "y": 0.17534170908083635,
+                  "z": -0.08816519717991156
                 }
               },
               "hips": {
                 "x": 0.00159377519582371,
-                "y": 0.9371132857495209,
+                "y": 0.9370985281123833,
                 "z": 0.032694572517886655
               }
             },
@@ -750,18 +750,18 @@
                 "z": 0.13
               },
               "sword": {
-                "x": -0.10432189324899355,
-                "y": 1.1364393136076245,
-                "z": 0.451294866142689
+                "x": -0.10428588187574483,
+                "y": 1.136435423628357,
+                "z": 0.45149271441576744
               },
               "swordTip": {
-                "x": -0.05893657226425178,
-                "y": 0.6245141488603895,
-                "z": 0.9948966109438673
+                "x": -0.05890056089100307,
+                "y": 0.6245102588811219,
+                "z": 0.9950944592169457
               }
             }
           },
-          "elapsed": 1.7499999999999987,
+          "elapsed": 1.6999999999999988,
           "position": {
             "x": -12,
             "y": 1.1451587974475412,
@@ -794,22 +794,22 @@
           "level": 2,
           "emitted": 1,
           "style": "core-burst",
-          "age": 0.28329999999999567,
-          "bodyGlow": 0.4336742694074288,
+          "age": 0.2833000000000029,
+          "bodyGlow": 0.43367426940739306,
           "duration": 1.6,
           "particleCount": 36,
           "haloVisible": true,
           "coreVisible": true,
           "ribbonVisible": false,
-          "lightIntensity": 5.3222362690251765,
+          "lightIntensity": 5.322236269025151,
           "depthTested": true,
           "ringCount": 0,
           "beamVisible": false,
           "reducedMotion": false,
-          "remaining": 1.3167000000000044
+          "remaining": 1.3166999999999973
         },
         "character": {
-          "levelUpGlow": 0.4336742694074288,
+          "levelUpGlow": 0.43367426940739306,
           "name": "Nebeljäger Tripo",
           "source": "assets/characters/nebeljagd_player_base_v1.glb",
           "format": "GLB",
@@ -921,9 +921,9 @@
           ],
           "opacity": 1,
           "levelUpGlowMaterials": {
-            "strength": 0.4336742694074288,
+            "strength": 0.43367426940739306,
             "count": 1,
-            "maxEmissiveIntensity": 1.390306842466686,
+            "maxEmissiveIntensity": 1.3903068424666538,
             "restored": false
           },
           "locomotion": {
@@ -958,14 +958,14 @@
             "right": 0.95
           },
           "levelBounds": {
-            "left": -1.541327057014704,
+            "left": -1.5413270570147057,
             "right": -1.03
           },
           "levelPulse": {
             "active": true,
-            "remaining": 1.3167000000000044,
-            "scale": 1.162106947760691,
-            "glow": 0.9005941542260606,
+            "remaining": 1.316699999999997,
+            "scale": 1.1621069477606945,
+            "glow": 0.9005941542260805,
             "reducedMotion": false
           }
         },
@@ -1186,22 +1186,22 @@
             "level": 2,
             "emitted": 1,
             "style": "core-burst",
-            "age": 0.28329999999999567,
-            "bodyGlow": 0.4336742694074288,
+            "age": 0.2833000000000029,
+            "bodyGlow": 0.43367426940739306,
             "duration": 1.6,
             "particleCount": 36,
             "haloVisible": true,
             "coreVisible": true,
             "ribbonVisible": false,
-            "lightIntensity": 5.3222362690251765,
+            "lightIntensity": 5.322236269025151,
             "depthTested": true,
             "ringCount": 0,
             "beamVisible": false,
             "reducedMotion": false,
-            "remaining": 1.3167000000000044
+            "remaining": 1.3166999999999973
           },
           "character": {
-            "levelUpGlow": 0.4336742694074288,
+            "levelUpGlow": 0.43367426940739306,
             "name": "Nebeljäger Tripo",
             "source": "assets/characters/nebeljagd_player_base_v1.glb",
             "format": "GLB",
@@ -1313,9 +1313,9 @@
             ],
             "opacity": 1,
             "levelUpGlowMaterials": {
-              "strength": 0.4336742694074288,
+              "strength": 0.43367426940739306,
               "count": 1,
-              "maxEmissiveIntensity": 1.390306842466686,
+              "maxEmissiveIntensity": 1.3903068424666538,
               "restored": false
             },
             "locomotion": {
@@ -1350,14 +1350,14 @@
               "right": 0.95
             },
             "levelBounds": {
-              "left": -1.541327057014704,
+              "left": -1.5413270570147057,
               "right": -1.03
             },
             "levelPulse": {
               "active": true,
-              "remaining": 1.3167000000000044,
-              "scale": 1.162106947760691,
-              "glow": 0.9005941542260606,
+              "remaining": 1.316699999999997,
+              "scale": 1.1621069477606945,
+              "glow": 0.9005941542260805,
               "reducedMotion": false
             }
           },
@@ -1382,19 +1382,19 @@
             "level": 2,
             "emitted": 1,
             "style": "core-burst",
-            "age": 0.7165999999999986,
+            "age": 0.7166000000000058,
             "bodyGlow": 0,
             "duration": 1.6,
             "particleCount": 36,
             "haloVisible": true,
             "coreVisible": false,
             "ribbonVisible": false,
-            "lightIntensity": 0.6618056344663336,
+            "lightIntensity": 0.6618056344662683,
             "depthTested": true,
             "ringCount": 0,
             "beamVisible": false,
             "reducedMotion": false,
-            "remaining": 0.8834000000000015
+            "remaining": 0.8833999999999943
           },
           "character": {
             "levelUpGlow": 0,
@@ -1546,14 +1546,14 @@
               "right": 0.95
             },
             "levelBounds": {
-              "left": -1.5328704859489384,
+              "left": -1.532870485948938,
               "right": -1.03
             },
             "levelPulse": {
               "active": true,
-              "remaining": 0.8834000000000015,
-              "scale": 1.1428874680657692,
-              "glow": 0.7938192670320521,
+              "remaining": 0.8833999999999942,
+              "scale": 1.142887468065768,
+              "glow": 0.7938192670320449,
               "reducedMotion": false
             }
           },
@@ -1574,7 +1574,7 @@
             "level": 2,
             "emitted": 1,
             "style": "core-burst",
-            "age": 1.1667000000000045,
+            "age": 1.1998999999999942,
             "bodyGlow": 0,
             "duration": 1.6,
             "particleCount": 36,
@@ -1586,7 +1586,7 @@
             "ringCount": 0,
             "beamVisible": false,
             "reducedMotion": false,
-            "remaining": 0.4332999999999956
+            "remaining": 0.4001000000000059
           },
           "character": {
             "levelUpGlow": 0,
@@ -1738,14 +1738,14 @@
               "right": 0.95
             },
             "levelBounds": {
-              "left": -1.4920119766217144,
+              "left": -1.4892011318250404,
               "right": -1.03
             },
             "levelPulse": {
               "active": true,
-              "remaining": 0.4332999999999958,
-              "scale": 1.050027219594805,
-              "glow": 0.27792899774891666,
+              "remaining": 0.4001000000000059,
+              "scale": 1.0436389359660008,
+              "glow": 0.24243853314444908,
               "reducedMotion": false
             }
           },
@@ -1788,8 +1788,8 @@
           "practice": true,
           "position": {
             "x": 5,
-            "y": 1.4344979236568827,
-            "z": 12.70847500000001
+            "y": 1.4329655910725871,
+            "z": 12.410634999999996
           },
           "health": 140,
           "maxHealth": 140,
@@ -1800,7 +1800,7 @@
           "slowRemaining": 0,
           "speedMultiplier": 1,
           "baseSpeed": 0.85,
-          "travelled": 6.063475000000064
+          "travelled": 7.749195000000071
         },
         "clearTarget": {
           "id": "practice-2",
@@ -1808,10 +1808,10 @@
           "practice": true,
           "position": {
             "x": 5,
-            "y": 1.4361996438764626,
-            "z": 13.048475000000014
+            "y": 1.4311055009267402,
+            "z": 12.070634999999992
           },
-          "health": 82,
+          "health": 113,
           "maxHealth": 140,
           "alive": true,
           "visible": true,
@@ -1820,7 +1820,7 @@
           "slowRemaining": 0,
           "speedMultiplier": 1,
           "baseSpeed": 0.85,
-          "travelled": 6.403475000000068
+          "travelled": 8.089195000000075
         }
       }
     },
@@ -1850,20 +1850,20 @@
   "errors": [],
   "unexpectedRequests": [],
   "screenshots": [
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/sword-forehand.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/sword-backhand.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/sword-overhead.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-core.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-burst.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-default-camera.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-settling.png",
-    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-fade.png"
+    "/tmp/nebeljagd-sword-burst-integrated-qa/sword-forehand.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/sword-backhand.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/sword-overhead.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/actual-kill-core.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/actual-kill-burst.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/actual-kill-default-camera.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/actual-kill-settling.png",
+    "/tmp/nebeljagd-sword-burst-integrated-qa/actual-kill-fade.png"
   ],
   "limits": "Real keyboard swings and kill in an imported test island, Chromium/SwiftShader; no physical-device performance claim.",
   "delivery": {
     "file": "/workspace/nebeljagd/welt/nebeljagd.html",
-    "bytes": 89129661,
-    "sha256": "1ef6b4a88eb82382402404695bfc5757d6838759a922d927fe48595554bc350f"
+    "bytes": 89131703,
+    "sha256": "d546fc65be906085b1d103790478c7e10a8e8ef03abce42f0bcbc39dcb214325"
   },
   "swordSequence": [
     {
@@ -1891,14 +1891,14 @@
           "segmentCount": 4,
           "pattern": "forehand",
           "latestBase": {
-            "x": -11.365942761357395,
-            "y": 2.4848069666080934,
-            "z": -9.741597933864755
+            "x": -11.366380091029201,
+            "y": 2.484745075104541,
+            "z": -9.741700226409641
           },
           "latestTip": {
-            "x": -10.740023001012872,
-            "y": 2.30246701110214,
-            "z": -9.808105603307817
+            "x": -10.740460330684678,
+            "y": 2.3024051195985877,
+            "z": -9.808207895852703
           },
           "activeGlints": 1,
           "emittedGlints": 1,
@@ -1918,27 +1918,27 @@
         },
         "swordBlade": {
           "base": {
-            "x": -11.365942761357395,
-            "y": 2.4848069666080934,
-            "z": -9.741597933864755
+            "x": -11.366380091029201,
+            "y": 2.484745075104541,
+            "z": -9.741700226409641
           },
           "tip": {
-            "x": -10.740023001012872,
-            "y": 2.30246701110214,
-            "z": -9.808105603307817
+            "x": -10.740460330684678,
+            "y": 2.3024051195985877,
+            "z": -9.808207895852703
           }
         },
         "equippedItem": {
           "type": "sword",
           "label": "Testschwert",
-          "damage": 58,
+          "damage": 27,
           "cooldown": 0.58,
           "range": 2.35,
           "effect": null,
-          "rarity": "legendary",
-          "rarityLabel": "Legendär",
-          "color": "#ffad44",
-          "name": "Testschwert · Legendär",
+          "rarity": "common",
+          "rarityLabel": "Gewöhnlich",
+          "color": "#f1eee3",
+          "name": "Testschwert · Gewöhnlich",
           "burn": null,
           "slow": null,
           "poison": null,
@@ -2012,14 +2012,14 @@
         "heldGrip": null,
         "hands": {
           "left": {
-            "x": 0.18160788774768477,
-            "y": 1.2193109235171997,
-            "z": 0.24862183487689293
+            "x": 0.18160788741688538,
+            "y": 1.2193109236545108,
+            "z": 0.24862183492696666
           },
           "right": {
-            "x": 0.17260036814024904,
-            "y": 1.1725741455180483,
-            "z": 0.3719685092227536
+            "x": 0.17232737452927438,
+            "y": 1.1725225692650882,
+            "z": 0.3717124652407602
           }
         },
         "lastSpellLaunch": null,
@@ -2029,279 +2029,36 @@
           "stanceWeight": 1,
           "leftArm": {
             "shoulder": {
-              "x": 0.14295135900186917,
-              "y": 1.3913546416607798,
-              "z": -0.13512808716139801
+              "x": 0.14203691970488208,
+              "y": 1.3908958347197418,
+              "z": -0.1358182609956735
             },
             "elbow": {
-              "x": 0.2939994927110883,
-              "y": 1.2012809957041881,
-              "z": 0.035702688934224014
+              "x": 0.2932942134886307,
+              "y": 1.201276700688695,
+              "z": 0.03533225389407413
             },
             "hand": {
-              "x": 0.18160788774768477,
-              "y": 1.2193109235171997,
-              "z": 0.24862183487689293
+              "x": 0.18160788741688538,
+              "y": 1.2193109236545108,
+              "z": 0.24862183492696666
             }
           },
           "feet": {
             "left": {
-              "x": 0.2989660189909742,
-              "y": 0.17547827422006346,
-              "z": 0.09335833633889123
+              "x": 0.29912781276728495,
+              "y": 0.1754462680860681,
+              "z": 0.09445343904642733
             },
             "right": {
-              "x": -0.12611485291351876,
-              "y": 0.1759480564064685,
-              "z": -0.09331883466446556
+              "x": -0.12571337878970734,
+              "y": 0.1758714520764616,
+              "z": -0.09226363497853995
             }
           },
           "hips": {
-            "x": 0.0015873657929619256,
-            "y": 0.937901562598371,
-            "z": 0.03267553705942916
-          }
-        },
-        "staffTip": null,
-        "spells": [],
-        "heldModel": {
-          "type": "sword",
-          "variant": "kit-tripo-sword",
-          "model": "tripo",
-          "visible": true,
-          "meshCount": 1,
-          "presentationScale": 0.7040000000000001,
-          "groundPresentationScale": 0.96,
-          "stringVertices": 0
-        },
-        "arrowsActive": 0,
-        "arrowsFlying": 0,
-        "arrowModel": {
-          "triangles": 6000,
-          "nominalLength": 1.05,
-          "forwardAxis": "+Z",
-          "source": "assets/inbox/feathered spear 3d model.glb",
-          "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
-        },
-        "importedArrowsFlying": 0,
-        "heldPose": {
-          "bow": {
-            "x": 0.17,
-            "y": 1.3,
-            "z": 0.13
-          },
-          "sword": {
-            "x": 0.17260036814024904,
-            "y": 1.1725741455180483,
-            "z": 0.3719685092227536
-          },
-          "swordTip": {
-            "x": 0.8293540758007011,
-            "y": 0.9644235113788325,
-            "z": 0.663478268227402
-          }
-        }
-      },
-      "elapsed": 0.5166666666666666,
-      "position": {
-        "x": -12,
-        "y": 1.1451587974475412,
-        "z": -10
-      }
-    },
-    {
-      "combat": {
-        "attackPhase": "strike",
-        "bowDraw": 0,
-        "swordSweep": -1.10947312869865,
-        "shotsFired": 0,
-        "impacts": 0,
-        "lastImpact": null,
-        "damageHits": 0,
-        "lastDamage": null,
-        "swordCombo": {
-          "index": 2,
-          "pattern": "backhand",
-          "swingId": 2,
-          "active": true,
-          "progress": 0.517241379310345,
-          "remaining": 1.1799999999999997
-        },
-        "swordTrail": {
-          "style": "blade-following-ribbon",
-          "trailActive": true,
-          "sampleCount": 2,
-          "segmentCount": 4,
-          "pattern": "backhand",
-          "latestBase": {
-            "x": -12.295622983809006,
-            "y": 3.0137721473924697,
-            "z": -9.205762100684746
-          },
-          "latestTip": {
-            "x": -12.625741932775224,
-            "y": 3.2839436466242415,
-            "z": -8.708292989689197
-          },
-          "activeGlints": 1,
-          "emittedGlints": 2,
-          "swingCount": 2,
-          "impactCount": 0,
-          "depthTested": true,
-          "shadingLayers": [
-            "edge",
-            "ribbon",
-            "afterimage"
-          ],
-          "drawCalls": 2,
-          "historyCapacity": 32,
-          "glintCapacity": 24,
-          "opacity": 1,
-          "lifetime": 0.18
-        },
-        "swordBlade": {
-          "base": {
-            "x": -12.295622983809006,
-            "y": 3.0137721473924697,
-            "z": -9.205762100684746
-          },
-          "tip": {
-            "x": -12.625741932775224,
-            "y": 3.2839436466242415,
-            "z": -8.708292989689197
-          }
-        },
-        "equippedItem": {
-          "type": "sword",
-          "label": "Testschwert",
-          "damage": 58,
-          "cooldown": 0.58,
-          "range": 2.35,
-          "effect": null,
-          "rarity": "legendary",
-          "rarityLabel": "Legendär",
-          "color": "#ffad44",
-          "name": "Testschwert · Legendär",
-          "burn": null,
-          "slow": null,
-          "poison": null,
-          "id": "qa-sword",
-          "variant": "kit-tripo-sword",
-          "model": "tripo",
-          "rotation": 0,
-          "scale": 1
-        },
-        "spellsActive": 0,
-        "effects": {
-          "activeProjectiles": 0,
-          "visibleProjectiles": 0,
-          "activeParticles": 0,
-          "visibleParticles": 0,
-          "activeSmoke": 0,
-          "visibleSmoke": 0,
-          "importedFireProjectiles": 0,
-          "importedIceProjectiles": 0,
-          "iceModel": {
-            "triangles": 6000,
-            "nominalLength": 0.95,
-            "forwardAxis": "+Z",
-            "source": "assets/inbox/ice crystal 3d model.glb",
-            "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
-          },
-          "fireModel": {
-            "name": "Fiery flame · Tripo-Feuerball",
-            "triangles": 6000,
-            "nominalLength": 0.75
-          },
-          "activeBursts": 0,
-          "channelActive": false,
-          "channelVisible": false,
-          "emitted": {
-            "fireStaff": {
-              "launches": 0,
-              "impacts": 0
-            },
-            "iceStaff": {
-              "launches": 0,
-              "impacts": 0
-            }
-          },
-          "latestImpact": null,
-          "bursts": [],
-          "activeTrails": 0,
-          "visibleTrailSegments": 0,
-          "presentation": "flowing-elements-v2",
-          "capacity": {
-            "particles": 160,
-            "bursts": 12,
-            "historySamplesPerProjectile": 32
-          }
-        },
-        "special": {
-          "aiming": false,
-          "target": null,
-          "moon": null,
-          "visuals": {
-            "activeClouds": 0,
-            "cloudDraws": 0,
-            "activeProjectiles": 0,
-            "volumeSteps": 16,
-            "trailSamples": 14
-          },
-          "poisonProjectiles": 0,
-          "poisonFlights": [],
-          "clouds": []
-        },
-        "heldGrip": null,
-        "hands": {
-          "left": {
-            "x": 0.2609187746996664,
-            "y": 1.259540634228304,
-            "z": 0.29839220291278323
-          },
-          "right": {
-            "x": -0.3794979982737008,
-            "y": 1.4739057541863234,
-            "z": 0.3681028236051791
-          }
-        },
-        "lastSpellLaunch": null,
-        "rigPose": {
-          "castWeight": 0,
-          "swordWeight": 1,
-          "stanceWeight": 1,
-          "leftArm": {
-            "shoulder": {
-              "x": 0.16063144928593864,
-              "y": 1.386050917005254,
-              "z": -0.03604130579595477
-            },
-            "elbow": {
-              "x": 0.36265585033831815,
-              "y": 1.2060480755595928,
-              "z": 0.08607253524911584
-            },
-            "hand": {
-              "x": 0.2609187746996664,
-              "y": 1.259540634228304,
-              "z": 0.29839220291278323
-            }
-          },
-          "feet": {
-            "left": {
-              "x": 0.29864202214104907,
-              "y": 0.17562458357290545,
-              "z": -0.12421371113802415
-            },
-            "right": {
-              "x": -0.12521292797918182,
-              "y": 0.17538849554010982,
-              "z": 0.1298317463407912
-            }
-          },
-          "hips": {
-            "x": 0.00159377519582371,
-            "y": 0.9371176182546356,
+            "x": 0.0015937753033758995,
+            "y": 0.9377963565730388,
             "z": 0.032694572517886655
           }
         },
@@ -2334,18 +2091,261 @@
             "z": 0.13
           },
           "sword": {
-            "x": -0.3794979982737008,
-            "y": 1.4739057541863234,
-            "z": 0.3681028236051791
+            "x": 0.17232737452927438,
+            "y": 1.1725225692650882,
+            "z": 0.3717124652407602
           },
           "swordTip": {
-            "x": -0.9898015959599326,
-            "y": 1.78232070764725,
-            "z": 0.6714834323233257
+            "x": 0.8290810821897264,
+            "y": 0.9643719351258725,
+            "z": 0.6632222242454086
           }
         }
       },
-      "elapsed": 1.1333333333333342,
+      "elapsed": 0.5333333333333333,
+      "position": {
+        "x": -12,
+        "y": 1.1451587974475412,
+        "z": -10
+      }
+    },
+    {
+      "combat": {
+        "attackPhase": "strike",
+        "bowDraw": 0,
+        "swordSweep": -0.31658213491964854,
+        "shotsFired": 0,
+        "impacts": 0,
+        "lastImpact": null,
+        "damageHits": 0,
+        "lastDamage": null,
+        "swordCombo": {
+          "index": 2,
+          "pattern": "backhand",
+          "swingId": 2,
+          "active": true,
+          "progress": 0.4024137931034508,
+          "remaining": 1.2465999999999984
+        },
+        "swordTrail": {
+          "style": "blade-following-ribbon",
+          "trailActive": true,
+          "sampleCount": 2,
+          "segmentCount": 4,
+          "pattern": "backhand",
+          "latestBase": {
+            "x": -11.867749810047597,
+            "y": 2.894082871984956,
+            "z": -9.210103685325125
+          },
+          "latestTip": {
+            "x": -11.742682473873723,
+            "y": 3.1373950722565453,
+            "z": -8.614617320678732
+          },
+          "activeGlints": 1,
+          "emittedGlints": 2,
+          "swingCount": 2,
+          "impactCount": 0,
+          "depthTested": true,
+          "shadingLayers": [
+            "edge",
+            "ribbon",
+            "afterimage"
+          ],
+          "drawCalls": 2,
+          "historyCapacity": 32,
+          "glintCapacity": 24,
+          "opacity": 1,
+          "lifetime": 0.18
+        },
+        "swordBlade": {
+          "base": {
+            "x": -11.867749810047597,
+            "y": 2.894082871984956,
+            "z": -9.210103685325125
+          },
+          "tip": {
+            "x": -11.742682473873723,
+            "y": 3.1373950722565453,
+            "z": -8.614617320678732
+          }
+        },
+        "equippedItem": {
+          "type": "sword",
+          "label": "Testschwert",
+          "damage": 27,
+          "cooldown": 0.58,
+          "range": 2.35,
+          "effect": null,
+          "rarity": "common",
+          "rarityLabel": "Gewöhnlich",
+          "color": "#f1eee3",
+          "name": "Testschwert · Gewöhnlich",
+          "burn": null,
+          "slow": null,
+          "poison": null,
+          "id": "qa-sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rotation": 0,
+          "scale": 1
+        },
+        "spellsActive": 0,
+        "effects": {
+          "activeProjectiles": 0,
+          "visibleProjectiles": 0,
+          "activeParticles": 0,
+          "visibleParticles": 0,
+          "activeSmoke": 0,
+          "visibleSmoke": 0,
+          "importedFireProjectiles": 0,
+          "importedIceProjectiles": 0,
+          "iceModel": {
+            "triangles": 6000,
+            "nominalLength": 0.95,
+            "forwardAxis": "+Z",
+            "source": "assets/inbox/ice crystal 3d model.glb",
+            "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+          },
+          "fireModel": {
+            "name": "Fiery flame · Tripo-Feuerball",
+            "triangles": 6000,
+            "nominalLength": 0.75
+          },
+          "activeBursts": 0,
+          "channelActive": false,
+          "channelVisible": false,
+          "emitted": {
+            "fireStaff": {
+              "launches": 0,
+              "impacts": 0
+            },
+            "iceStaff": {
+              "launches": 0,
+              "impacts": 0
+            }
+          },
+          "latestImpact": null,
+          "bursts": [],
+          "activeTrails": 0,
+          "visibleTrailSegments": 0,
+          "presentation": "flowing-elements-v2",
+          "capacity": {
+            "particles": 160,
+            "bursts": 12,
+            "historySamplesPerProjectile": 32
+          }
+        },
+        "special": {
+          "aiming": false,
+          "target": null,
+          "moon": null,
+          "visuals": {
+            "activeClouds": 0,
+            "cloudDraws": 0,
+            "activeProjectiles": 0,
+            "volumeSteps": 16,
+            "trailSamples": 14
+          },
+          "poisonProjectiles": 0,
+          "poisonFlights": [],
+          "clouds": []
+        },
+        "heldGrip": null,
+        "hands": {
+          "left": {
+            "x": 0.28612375168695703,
+            "y": 1.2469381449805699,
+            "z": 0.2542834951157218
+          },
+          "right": {
+            "x": -0.17529363057115788,
+            "y": 1.3824432423961,
+            "z": 0.4469381545255793
+          }
+        },
+        "lastSpellLaunch": null,
+        "rigPose": {
+          "castWeight": 0,
+          "swordWeight": 1,
+          "stanceWeight": 1,
+          "leftArm": {
+            "shoulder": {
+              "x": 0.1607450259685521,
+              "y": 1.384463749633095,
+              "z": -0.06973570748307623
+            },
+            "elbow": {
+              "x": 0.37192730264344664,
+              "y": 1.2028514465464029,
+              "z": 0.03295649424032909
+            },
+            "hand": {
+              "x": 0.28612375168695703,
+              "y": 1.2469381449805699,
+              "z": 0.2542834951157218
+            }
+          },
+          "feet": {
+            "left": {
+              "x": 0.29865987178719333,
+              "y": 0.17562445734227305,
+              "z": -0.12416888085364164
+            },
+            "right": {
+              "x": -0.12517621405990198,
+              "y": 0.17537808830492352,
+              "z": 0.12990270647856406
+            }
+          },
+          "hips": {
+            "x": 0.00159377519582371,
+            "y": 0.9370989025387747,
+            "z": 0.032694572517886655
+          }
+        },
+        "staffTip": null,
+        "spells": [],
+        "heldModel": {
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "visible": true,
+          "meshCount": 1,
+          "presentationScale": 0.7040000000000001,
+          "groundPresentationScale": 0.96,
+          "stringVertices": 0
+        },
+        "arrowsActive": 0,
+        "arrowsFlying": 0,
+        "arrowModel": {
+          "triangles": 6000,
+          "nominalLength": 1.05,
+          "forwardAxis": "+Z",
+          "source": "assets/inbox/feathered spear 3d model.glb",
+          "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+        },
+        "importedArrowsFlying": 0,
+        "heldPose": {
+          "bow": {
+            "x": 0.17,
+            "y": 1.3,
+            "z": 0.13
+          },
+          "sword": {
+            "x": -0.17529363057115788,
+            "y": 1.3824432423961,
+            "z": 0.4469381545255793
+          },
+          "swordTip": {
+            "x": -0.39153985433025923,
+            "y": 1.6601968956741697,
+            "z": 1.1070294644319216
+          }
+        }
+      },
+      "elapsed": 1.0500000000000012,
       "position": {
         "x": -12,
         "y": 1.1451587974475412,
@@ -2377,17 +2377,17 @@
           "segmentCount": 4,
           "pattern": "overhead",
           "latestBase": {
-            "x": -11.736839320864146,
-            "y": 2.3430222203985864,
-            "z": -9.323229477382897
+            "x": -11.736683187783429,
+            "y": 2.3430175524234653,
+            "z": -9.323045474250149
           },
           "latestTip": {
-            "x": -11.464310715985063,
-            "y": 1.8945757760800088,
-            "z": -8.93071116958173
+            "x": -11.464154582904346,
+            "y": 1.8945711081048877,
+            "z": -8.930527166448982
           },
           "activeGlints": 1,
-          "emittedGlints": 3,
+          "emittedGlints": 4,
           "swingCount": 3,
           "impactCount": 0,
           "depthTested": true,
@@ -2404,27 +2404,27 @@
         },
         "swordBlade": {
           "base": {
-            "x": -11.736839320864146,
-            "y": 2.3430222203985864,
-            "z": -9.323229477382897
+            "x": -11.736683187783429,
+            "y": 2.3430175524234653,
+            "z": -9.323045474250149
           },
           "tip": {
-            "x": -11.464310715985063,
-            "y": 1.8945757760800088,
-            "z": -8.93071116958173
+            "x": -11.464154582904346,
+            "y": 1.8945711081048877,
+            "z": -8.930527166448982
           }
         },
         "equippedItem": {
           "type": "sword",
           "label": "Testschwert",
-          "damage": 58,
+          "damage": 27,
           "cooldown": 0.58,
           "range": 2.35,
           "effect": null,
-          "rarity": "legendary",
-          "rarityLabel": "Legendär",
-          "color": "#ffad44",
-          "name": "Testschwert · Legendär",
+          "rarity": "common",
+          "rarityLabel": "Gewöhnlich",
+          "color": "#f1eee3",
+          "name": "Testschwert · Gewöhnlich",
           "burn": null,
           "slow": null,
           "poison": null,
@@ -2498,14 +2498,14 @@
         "heldGrip": null,
         "hands": {
           "left": {
-            "x": 0.06673351645598125,
-            "y": 1.122180737170575,
-            "z": 0.3435356533524718
+            "x": 0.06670381927604563,
+            "y": 1.1219661426711434,
+            "z": 0.34375010842785514
           },
           "right": {
-            "x": -0.10432189324899355,
-            "y": 1.1364393136076245,
-            "z": 0.451294866142689
+            "x": -0.10428588187574483,
+            "y": 1.136435423628357,
+            "z": 0.45149271441576744
           }
         },
         "lastSpellLaunch": null,
@@ -2515,36 +2515,36 @@
           "stanceWeight": 1,
           "leftArm": {
             "shoulder": {
-              "x": 0.1455591713757629,
-              "y": 1.4024356086751277,
-              "z": -0.10447978997700957
+              "x": 0.14557071270131594,
+              "y": 1.4020484279357337,
+              "z": -0.10436599377726452
             },
             "elbow": {
-              "x": 0.127979044038252,
-              "y": 1.2292461122561629,
-              "z": 0.13598439204354484
+              "x": 0.12796598482381594,
+              "y": 1.228948887354894,
+              "z": 0.13616115230964354
             },
             "hand": {
-              "x": 0.06673351645598125,
-              "y": 1.122180737170575,
-              "z": 0.3435356533524718
+              "x": 0.06670381927604563,
+              "y": 1.1219661426711434,
+              "z": 0.34375010842785514
             }
           },
           "feet": {
             "left": {
-              "x": 0.2976556865671549,
-              "y": 0.17538786354559333,
-              "z": 0.09820344682375826
+              "x": 0.2972702628963093,
+              "y": 0.17527154936988631,
+              "z": 0.09815063784150979
             },
             "right": {
-              "x": -0.1251176139375927,
-              "y": 0.1753510719021748,
-              "z": -0.08810737419281445
+              "x": -0.12537884892525408,
+              "y": 0.17534170908083635,
+              "z": -0.08816519717991156
             }
           },
           "hips": {
             "x": 0.00159377519582371,
-            "y": 0.9371132857495209,
+            "y": 0.9370985281123833,
             "z": 0.032694572517886655
           }
         },
@@ -2577,18 +2577,18 @@
             "z": 0.13
           },
           "sword": {
-            "x": -0.10432189324899355,
-            "y": 1.1364393136076245,
-            "z": 0.451294866142689
+            "x": -0.10428588187574483,
+            "y": 1.136435423628357,
+            "z": 0.45149271441576744
           },
           "swordTip": {
-            "x": -0.05893657226425178,
-            "y": 0.6245141488603895,
-            "z": 0.9948966109438673
+            "x": -0.05890056089100307,
+            "y": 0.6245102588811219,
+            "z": 0.9950944592169457
           }
         }
       },
-      "elapsed": 1.7499999999999987,
+      "elapsed": 1.6999999999999988,
       "position": {
         "x": -12,
         "y": 1.1451587974475412,
@@ -2800,22 +2800,22 @@
         "level": 2,
         "emitted": 1,
         "style": "core-burst",
-        "age": 0.28329999999999567,
-        "bodyGlow": 0.4336742694074288,
+        "age": 0.2833000000000029,
+        "bodyGlow": 0.43367426940739306,
         "duration": 1.6,
         "particleCount": 36,
         "haloVisible": true,
         "coreVisible": true,
         "ribbonVisible": false,
-        "lightIntensity": 5.3222362690251765,
+        "lightIntensity": 5.322236269025151,
         "depthTested": true,
         "ringCount": 0,
         "beamVisible": false,
         "reducedMotion": false,
-        "remaining": 1.3167000000000044
+        "remaining": 1.3166999999999973
       },
       "character": {
-        "levelUpGlow": 0.4336742694074288,
+        "levelUpGlow": 0.43367426940739306,
         "name": "Nebeljäger Tripo",
         "source": "assets/characters/nebeljagd_player_base_v1.glb",
         "format": "GLB",
@@ -2927,9 +2927,9 @@
         ],
         "opacity": 1,
         "levelUpGlowMaterials": {
-          "strength": 0.4336742694074288,
+          "strength": 0.43367426940739306,
           "count": 1,
-          "maxEmissiveIntensity": 1.390306842466686,
+          "maxEmissiveIntensity": 1.3903068424666538,
           "restored": false
         },
         "locomotion": {
@@ -2964,14 +2964,14 @@
           "right": 0.95
         },
         "levelBounds": {
-          "left": -1.541327057014704,
+          "left": -1.5413270570147057,
           "right": -1.03
         },
         "levelPulse": {
           "active": true,
-          "remaining": 1.3167000000000044,
-          "scale": 1.162106947760691,
-          "glow": 0.9005941542260606,
+          "remaining": 1.316699999999997,
+          "scale": 1.1621069477606945,
+          "glow": 0.9005941542260805,
           "reducedMotion": false
         }
       },
@@ -2996,19 +2996,19 @@
         "level": 2,
         "emitted": 1,
         "style": "core-burst",
-        "age": 0.7165999999999986,
+        "age": 0.7166000000000058,
         "bodyGlow": 0,
         "duration": 1.6,
         "particleCount": 36,
         "haloVisible": true,
         "coreVisible": false,
         "ribbonVisible": false,
-        "lightIntensity": 0.6618056344663336,
+        "lightIntensity": 0.6618056344662683,
         "depthTested": true,
         "ringCount": 0,
         "beamVisible": false,
         "reducedMotion": false,
-        "remaining": 0.8834000000000015
+        "remaining": 0.8833999999999943
       },
       "character": {
         "levelUpGlow": 0,
@@ -3160,14 +3160,14 @@
           "right": 0.95
         },
         "levelBounds": {
-          "left": -1.5328704859489384,
+          "left": -1.532870485948938,
           "right": -1.03
         },
         "levelPulse": {
           "active": true,
-          "remaining": 0.8834000000000015,
-          "scale": 1.1428874680657692,
-          "glow": 0.7938192670320521,
+          "remaining": 0.8833999999999942,
+          "scale": 1.142887468065768,
+          "glow": 0.7938192670320449,
           "reducedMotion": false
         }
       },
@@ -3188,7 +3188,7 @@
         "level": 2,
         "emitted": 1,
         "style": "core-burst",
-        "age": 1.1667000000000045,
+        "age": 1.1998999999999942,
         "bodyGlow": 0,
         "duration": 1.6,
         "particleCount": 36,
@@ -3200,7 +3200,7 @@
         "ringCount": 0,
         "beamVisible": false,
         "reducedMotion": false,
-        "remaining": 0.4332999999999956
+        "remaining": 0.4001000000000059
       },
       "character": {
         "levelUpGlow": 0,
@@ -3352,14 +3352,14 @@
           "right": 0.95
         },
         "levelBounds": {
-          "left": -1.4920119766217144,
+          "left": -1.4892011318250404,
           "right": -1.03
         },
         "levelPulse": {
           "active": true,
-          "remaining": 0.4332999999999958,
-          "scale": 1.050027219594805,
-          "glow": 0.27792899774891666,
+          "remaining": 0.4001000000000059,
+          "scale": 1.0436389359660008,
+          "glow": 0.24243853314444908,
           "reducedMotion": false
         }
       },
@@ -3374,11 +3374,11 @@
   "contactSheetNote": "Browser layout of four 2× detail crops. The individual PNGs retain each complete, untouched renderer frame.",
   "swordContactSheet": "sword-combo-sequence.png",
   "sourceMapUnchanged": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
-  "sourceCommit": "6b06d2e8d441ab9f722bad72a11321263163166b",
-  "buildId": "3c8d4375f8ad",
+  "sourceCommit": "f9ab657e63c1fa465bcdf01bd687d7fc89e97755",
+  "buildId": "e87ccd344fef",
   "unitTests": {
-    "passed": 505,
+    "passed": 509,
     "failed": 0
   },
-  "rootVisualReview": "Accepted actual core/burst/default-camera frames and three sword poses. Short body-origin glow and outward gold streaks; blade-following ivory edge and distinct motion planes."
+  "rootVisualReview": "Accepted actual body-origin burst and three blade-following sword patterns, including default camera readability. Integrated current Tripo-sword and weighted-loot changes; common 27-damage weapon took six real hits and exercised combo wrap."
 }
