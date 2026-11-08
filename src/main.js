@@ -4,6 +4,7 @@ import './lobby.css';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
 import { createGeneratedWorld } from './generated-world.js';
+import { isIPadDevice, initialGraphicsQuality, graphicsSettings } from './graphics-quality.js';
 import defaultMap from '../worldmap.json';
 import { zoneAt as mapZoneAt, getWorldmapStats } from './map/model.js';
 import { loadRuntimeWorldmap, importRuntimeWorldmap } from './map/runtime-document.js';
@@ -33,12 +34,14 @@ const lobbySession = lobbyMode ? await requireLobbySession() : null;
 if (lobbyMode) { document.body.dataset.mode = 'lobby'; document.title = 'Nebeljagd · Übungswiese'; }
 const startingHealth = lobbyMode ? MAX_HEALTH : START_HEALTH;
 const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+const iPad = isIPadDevice(navigator);
 const requestedQuality = new URLSearchParams(location.search).get('quality');
+const deviceProfile = { iPad, coarsePointer, devicePixelRatio: window.devicePixelRatio || 1 };
 const state = {
   phase: 'ready', ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0,
   gold: 0, inDanger: false, moving: false, distance: 0, snowWeight: 0,
   rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
-  quality: requestedQuality === 'low' || (requestedQuality !== 'high' && coarsePointer) ? 'low' : 'high',
+  quality: initialGraphicsQuality({ requestedQuality, coarsePointer, iPad }),
 };
 const keys = new Set();
 const stick = new THREE.Vector2();
@@ -231,12 +234,12 @@ function reset() {
 
 function setQuality(quality) {
   state.quality = quality === 'low' ? 'low' : 'high';
-  const high = state.quality === 'high';
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, high ? 1.75 : 1.15));
+  const profile = graphicsSettings(state.quality, deviceProfile);
+  renderer.setPixelRatio(profile.pixelRatio);
   world.setQuality?.(state.quality);
-  const size = high ? 4096 : 2048;
-  sun.shadow.blurSamples = high ? 24 : 14;
-  sun.shadow.radius = high ? 3 : 2;
+  const size = profile.shadowMapSize;
+  sun.shadow.blurSamples = profile.shadowBlurSamples;
+  sun.shadow.radius = profile.shadowRadius;
   if (sun.shadow.mapSize.x !== size) {
     sun.shadow.mapSize.set(size, size);
     sun.shadow.map?.dispose(); sun.shadow.map = null;
@@ -482,6 +485,8 @@ window.nebeljagdTestState = () => ({
   shadows: { type: renderer.shadowMap.type === THREE.VSMShadowMap ? 'VSM' : renderer.shadowMap.type,
     mapSize: sun.shadow.mapSize.x, bias: sun.shadow.bias, normalBias: sun.shadow.normalBias,
     radius: sun.shadow.radius, blurSamples: sun.shadow.blurSamples },
+  graphicsProfile: { iPad, coarsePointer, quality: state.quality, pixelRatio: renderer.getPixelRatio(),
+    settings: graphicsSettings(state.quality, deviceProfile) },
 });
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.

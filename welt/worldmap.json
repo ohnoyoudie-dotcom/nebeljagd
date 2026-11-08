@@ -919,6 +919,7 @@
       "rotation": 0,
       "scale": 1,
       "rarity": "common"
+<<<<<<< HEAD
     },
     {
       "id": "object-tree-mw76d4jx-1",
@@ -1075,6 +1076,8 @@
       ],
       "rotation": 3.7352982807933377,
       "scale": 1
+=======
+>>>>>>> 670f426b45b3872d262cddb1b877dd614e821ea7
     }
   ],
   "landscape": {

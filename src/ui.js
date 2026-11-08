@@ -115,7 +115,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         <button id="resumeBtn" class="primary-button"><span>Weiter erkunden</span>${icon('arrow')}</button>
         <button id="restartBtn" class="secondary-button">Neu beginnen</button>
         ${practice ? '<button class="secondary-button lobby-leave" type="button">Übungswiese verlassen</button>' : ''}
-        ${onQualityChange ? '<label class="quality-option" for="qualityMode">Darstellung<select id="qualityMode"><option value="high">Detailreich</option><option value="low">Leistung</option></select></label>' : ''}
+        ${onQualityChange ? '<label class="quality-option" for="qualityMode">Darstellung<select id="qualityMode"><option value="high">Detailreich</option><option value="low">Leistung / iPad</option></select></label>' : ''}
         <p class="pause-help desktop-hint">WASD / Pfeile · Bewegen<br>Leertaste · Rolle &nbsp; F · Angriff &nbsp; E · Aufheben / Truhe öffnen<br>Esc · Pause</p>
       </div>
     </section>
