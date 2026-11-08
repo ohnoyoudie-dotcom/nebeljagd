@@ -102,9 +102,9 @@ export function terrainSurfaceDetail(type, x, z, seed = 1) {
   }
   if (type === 'mud') return .93 + broad * .2 + fine * .06;
   if (type === 'rock') return .93 + broad * .3 + Math.abs(Math.sin(x * .8 + z * 1.1 + broad * 3)) * .08;
-  if (type === 'forest') return .96 + broad * .15 + fine * .1;
-  if (type === 'earth') return .98 + broad * .11 + fine * .14;
-  return .98 + broad * .08 + fine * .055;
+  if (type === 'forest') return .98 + broad * .11 + fine * .04;
+  if (type === 'earth') return .98 + broad * .095 + fine * .055;
+  return .99 + broad * .065 + fine * .028;
 }
 
 /** Return unpremultiplied linear RGB plus coverage in alpha. This alpha only

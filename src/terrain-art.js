@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 
 const PALETTES = {
-  meadow: ['#36825b', .64],
-  forest: ['#346c53', .48],
-  marsh: ['#3a8074', .24],
+  // Muted grass, olive and moss tones. Still honour the edited biome colour.
+  meadow: ['#4c6945', .52],
+  forest: ['#354b3d', .55],
+  marsh: ['#4d6358', .35],
 };
 
 /** Keep the editor's chosen regional colours, with a woodland material tint for
@@ -75,23 +76,23 @@ export function createTerrainArtwork() {
   const size = 512, ground = canvas(size), earth = canvas(size), paving = canvas(size), relief = canvas(size);
   const g = ground.getContext('2d'), e = earth.getContext('2d'), p = paving.getContext('2d'), h = relief.getContext('2d');
   const random = randomSource(21112);
-  g.fillStyle = '#eff2e8'; g.fillRect(0, 0, size, size);
-  e.fillStyle = '#7d7b65'; e.fillRect(0, 0, size, size);
+  g.fillStyle = '#eef0e8'; g.fillRect(0, 0, size, size);
+  e.fillStyle = '#786650'; e.fillRect(0, 0, size, size);
   // Broad translucent washes give the floor readable patches, rather than a
   // screen full of equally contrasted speckles. Paint wrapped copies at edges.
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 32; i++) {
     const x = random() * size, y = random() * size, radius = 25 + random() * 120;
     for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
       const gradient = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, radius);
-      gradient.addColorStop(0, i % 3 ? '#253c3012' : '#fbffe51c'); gradient.addColorStop(1, '#3b4b3700');
+      gradient.addColorStop(0, i % 3 ? '#293b2910' : '#f4f0dd0d'); gradient.addColorStop(1, '#3b4b3700');
       g.fillStyle = gradient; g.fillRect(x + ox - radius, y + oy - radius, radius * 2, radius * 2);
     }
   }
-  for (let i = 0; i < 4300; i++) {
+  for (let i = 0; i < 1450; i++) {
     const x = random() * size, y = random() * size;
-    g.strokeStyle = i % 3 ? '#29433114' : '#f5ffe923'; g.lineWidth = .6;
+    g.strokeStyle = i % 3 ? '#2e412e0a' : '#f6f4d813'; g.lineWidth = .5;
     g.beginPath(); g.moveTo(x, y); g.lineTo(x + (random() - .5) * 3, y - 1 - random() * 3); g.stroke();
-    e.fillStyle = i % 4 ? '#313d3125' : '#e5ddae32';
+    e.fillStyle = i % 4 ? '#30281f19' : '#dbc5a021';
     e.beginPath(); e.ellipse(x, y, .4 + random() * 2.1, .4 + random() * 1.4, random() * 6, 0, Math.PI * 2); e.fill();
   }
   p.drawImage(earth, 0, 0);
@@ -109,13 +110,13 @@ export function createTerrainArtwork() {
     ctx.closePath();
   };
   for (const cell of cobbleCells()) for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
-    trace(p, cell.points, ox, oy, 3); p.fillStyle = '#2a3e3485'; p.fill();
-    const value = Math.round(162 * cell.tint);
+    trace(p, cell.points, ox, oy, 3); p.fillStyle = '#453d3373'; p.fill();
+    const value = Math.round(171 * cell.tint);
     const gradient = p.createLinearGradient(0, cell.cy * size + oy - 35, 0, cell.cy * size + oy + 35);
-    gradient.addColorStop(0, `rgb(${value + 14},${value + 20},${value + 9})`);
-    gradient.addColorStop(1, `rgb(${value - 7},${value + 2},${value - 9})`);
+    gradient.addColorStop(0, `rgb(${value + 12},${value + 14},${value + 11})`);
+    gradient.addColorStop(1, `rgb(${value - 8},${value - 6},${value - 8})`);
     trace(p, cell.points, ox, oy); p.fillStyle = gradient; p.fill();
-    p.strokeStyle = '#dce2c643'; p.lineWidth = 1.3; p.stroke();
+    p.strokeStyle = '#e4dfd038'; p.lineWidth = 1.15; p.stroke();
     trace(h, cell.points, ox, oy); h.fillStyle = '#c0c0c0'; h.fill();
     h.strokeStyle = '#858585'; h.lineWidth = 2.5; h.stroke();
   }

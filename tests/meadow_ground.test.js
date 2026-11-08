@@ -3,8 +3,10 @@ import assert from 'node:assert/strict';
 import { groundGrassSettings, regionHasGroundGrass, grassBiomeProfile, grassBiomeBlend, createGroundGrassExclusion } from '../src/meadow-ground.js';
 import { getEnvironmentKitDefinition } from '../src/map/environment-kit-definitions.js';
 
-test('dense meadow adapts automatically across grassy biomes including snow', () => {
-  const settings = groundGrassSettings({});
+test('dense ground grass is off by default but explicit legacy grass remains available', () => {
+  assert.equal(groundGrassSettings({}).enabled, false);
+  assert.equal(groundGrassSettings({groundCover:{enabled:false}}).enabled, false);
+  const settings = groundGrassSettings({groundCover:{enabled:true}});
   assert.equal(settings.enabled, true);
   assert.equal(regionHasGroundGrass({ biome: 'meadow' }, settings), true);
   assert.equal(regionHasGroundGrass({ biome: 'forest' }, settings), true);
