@@ -19,13 +19,15 @@ schmaler. Die Anzeige für aktuelle und maximale Lebenspunkte sowie die
 zugänglichen Beschriftungen folgen dem tatsächlichen Wert.
 
 Die Levelzahl sitzt in einer goldenen Plakette mit abgesetztem Rand. Beim
-Aufstieg vergrößert sich das Abzeichen über der Figur kurz und leuchtet auf;
-auch die Zahl in der Lebensanzeige pulst. Zwei goldene Wellen, ein weicher
-Lichtschein und deutlich sichtbare aufsteigende Funken markieren den Spieler.
-Ein Textfenster erscheint nicht. Die Rückmeldung klingt nach etwa 1,6 Sekunden
-ab. Bei reduzierten Animationen bleiben ein ruhiger Lichtschein und eine
-Aufhellung der Zahl ohne Vergrößerung oder aufsteigende Partikel. Pause und
-Neustart räumen die Rückmeldung auf.
+Aufstieg schwillt sie einmal sanft auf 1,18-fache Größe an und klingt wieder ab.
+Ein weicher goldener Lichtimpuls, ein dünner aufsteigender Lichtfaden und kleine,
+zeitlich versetzte Lichtpunkte begleiten die Figur. Das Licht hellt auch Boden
+und Grashalme kurz auf; Gras, Figur und Hindernisse verdecken die Partikel und
+den Lichtfaden räumlich korrekt. Harte helle Ringe, kantige Funken und die
+zylindrische Lichtsäule sind entfernt. Es erscheint weiterhin kein Textfenster.
+Die Rückmeldung klingt nach etwa 1,6 Sekunden ab. Bei reduzierten Animationen
+bleiben ein ruhiger Lichtschein und eine Aufhellung der Zahl ohne Vergrößerung
+oder aufsteigende Partikel. Pause und Neustart räumen die Rückmeldung auf.
 
 Der tödliche Treffer zählt für seinen Verursacher. Das gilt auch für einen
 Gegner, der durch nachwirkenden Brandschaden stirbt. Ein bereits besiegtes Ziel
