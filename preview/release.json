@@ -1,45 +1,45 @@
 {
-  "buildId": "f928f2ddf3ae",
-  "builtAt": "2026-11-08T10:38:18.047Z",
-  "sourceCommit": "4b288a77fe4978f4b315fbc95861e1484b3bd277",
-  "mapSha256": "07b1310c4dcbebc42978f5e4fc750b0c9ebcff12172c33389ef63634271f8c44",
-  "sourceBaseCommit": "4b288a77fe4978f4b315fbc95861e1484b3bd277",
+  "buildId": "05bf1665e7f8",
+  "builtAt": "2026-11-08T11:16:03.401Z",
+  "sourceCommit": "8a1282792cf08703ecb59604924820d4d475ec24",
+  "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+  "sourceBaseCommit": "8a1282792cf08703ecb59604924820d4d475ec24",
   "files": {
     "editor.html": {
       "bytes": 7670,
-      "sha256": "22ff5a9fc6a692818bf4819c4db377198600d40b04cfa4c3874b36cadf80e1d4"
+      "sha256": "8b148e945c635097bfe3ef69140ea1541778a477a9b125bcb47b878a62e942f0"
     },
     "map-editor.html": {
-      "bytes": 60843216,
-      "sha256": "ee1a051c90c94eee6a62c94cf57f89983570b81f362911b41d4cdafe88f112fc"
+      "bytes": 60866314,
+      "sha256": "c46df67f722ff4fb590254c72ce93a3e619ba2a98f06b8ef4297f74e2b63a9d3"
     },
     "nebeljagd.html": {
-      "bytes": 87529271,
-      "sha256": "2ccbfb342849f301f7bd2f694ed971afd3cca90788cbcf24cde59c3e7ce48c08"
+      "bytes": 87552369,
+      "sha256": "f58f4b312496b0273224d9b41188f4f956acad962ab9c50fb4dfb76d96915e99"
     },
     "avatar-preview.html": {
       "bytes": 14841745,
-      "sha256": "e62199785e417206a92dcdbfad0bdcb4230ce7d91e960397177f5cfc48f2ff54"
+      "sha256": "3b5656cbbe560704d1886e698f431d623e69aee374eb46ae84f9794c51cac850"
     },
     "worldmap.json": {
-      "bytes": 16309,
-      "sha256": "07b1310c4dcbebc42978f5e4fc750b0c9ebcff12172c33389ef63634271f8c44"
+      "bytes": 56916,
+      "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
     },
     "worldmap.svg": {
-      "bytes": 34778,
-      "sha256": "d7f128471ec8964163942c325628f508eaf2f2c857bc51316418ea39cfdf19fd"
+      "bytes": 130143,
+      "sha256": "4f43c253a7fcf040e8d7a1ec3c404c255752c22256de792542634763c195cff1"
     },
     "worldmap.schema.json": {
       "bytes": 41123,
       "sha256": "bb2f3c7ae308e695b5b2da3ba71231bd4442a41d7956132cf4ec93dfe29a2923"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 96798824,
-      "sha256": "7b9f8091f25fb90703faf32bb6f0a1d6f491c21a142411d8421d516e53a91202"
+      "bytes": 96816035,
+      "sha256": "a7b14eacbf7be44b6e34f9f8cd5cf51eca13c9a3a4149a8b41afbbcc4ee94f9c"
     },
     "index.html": {
-      "bytes": 87529271,
-      "sha256": "2ccbfb342849f301f7bd2f694ed971afd3cca90788cbcf24cde59c3e7ce48c08"
+      "bytes": 87552369,
+      "sha256": "f58f4b312496b0273224d9b41188f4f956acad962ab9c50fb4dfb76d96915e99"
     }
   },
   "name": "Nebeljagd – aktuelle Spielwelt und Editor",
@@ -48,6 +48,6 @@
   "loginAvailable": false,
   "projectMap": {
     "name": "Nebelinsel · Vier Biome und zwei freie Brücken",
-    "sha256": "07b1310c4dcbebc42978f5e4fc750b0c9ebcff12172c33389ef63634271f8c44"
+    "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
   }
 }
