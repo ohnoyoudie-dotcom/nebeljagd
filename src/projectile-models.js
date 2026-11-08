@@ -4,8 +4,9 @@ import iceUrl from '../assets/imported/tripo-projectiles/runtime/ice-crystal.glb
 import arrowUrl from '../assets/imported/tripo-projectiles/runtime/feathered-arrow.glb?url&inline';
 import moonUrl from '../assets/imported/tripo-star-moon/runtime/moon-crescent.glb?url&inline';
 
-// Both uploads point diagonally up/right in their source XY plane. Rotate that
-// measured tail-to-tip axis to gameplay +Z, then size the actual oriented mesh.
+// Ice and arrow point diagonally up/right in their source XY plane. Rotate
+// their measured tail-to-tip axis to gameplay +Z. The crescent retains its XY
+// silhouette here; its flight wrapper lays that decorated face upward.
 const definitions = {
   ice: { url: iceUrl, source: 'ice crystal 3d model.glb', runtime: 'ice-crystal.glb',
     name: 'Eiskristall · hochgeladenes Projektil', forward: [.982, .614, 0], length: .95 },

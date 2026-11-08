@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/crescent moon prop 3d model.glb",
+  "original": {
+    "bytes": 62235820,
+    "sha256": "45d3e2ddcb987144a1faa1cf7aeea24c9f9eb94c708576feb7d9e0ddfaa79551",
+    "triangles": 1912266,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4594879150390625,
+          0.0,
+          -0.11937713623046875
+        ],
+        "max": [
+          0.4594879150390625,
+          0.97882080078125,
+          0.11937713623046875
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 496172,
+    "sha256": "073ce95ac1764a99fdc2825260d83a987ecc7ccccf8e456514100b0fe5329376",
+    "triangles": 6000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4595116972923279,
+          -0.00010541348456172273,
+          -0.11948948353528976
+        ],
+        "max": [
+          0.45802393555641174,
+          0.9792856574058533,
+          0.11931674182415009
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "crescent_moon_prop_3d_model_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "crescent_moon_prop_3d_model_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "crescent_moon_prop_3d_model_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-moon-projectile.py -- --execute",
+  "sourceAxisPreserved": true,
+  "preview": "Prepared derivative, front view with source +X to image right.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent license certification."
+}
