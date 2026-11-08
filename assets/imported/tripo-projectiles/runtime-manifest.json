@@ -1,0 +1,44 @@
+{
+  "sources": [
+    {
+      "path": "assets/inbox/ice crystal 3d model.glb",
+      "sha256": "bd13db83001f5dfaa286180cf31b073b26fcb4504b4be6e0c101c4603b4e8c42"
+    },
+    {
+      "path": "assets/inbox/feathered spear 3d model.glb",
+      "sha256": "eb66a058ef2d9aab9fed589ddc750e0af8978f6a331a1f627b37b06c3a4327eb"
+    }
+  ],
+  "files": [
+    {
+      "path": "feathered-arrow-inspection.json",
+      "bytes": 2285,
+      "sha256": "fc89ec2f4db6c2bf378a831f4298073880e6bee21ffa2b3175e0a0666034aaed"
+    },
+    {
+      "path": "feathered-arrow-preview.png",
+      "bytes": 272120,
+      "sha256": "1914c97dbf4f4cedc794f3f4e2a87cc2aedc80d7cb0ca3d76fe5616400b04389"
+    },
+    {
+      "path": "ice-crystal-inspection.json",
+      "bytes": 2265,
+      "sha256": "4516c0deaa65f2627a0cd2a07461d0ccaa4f75e548883cd09269ff3e3744d362"
+    },
+    {
+      "path": "ice-crystal-preview.png",
+      "bytes": 302466,
+      "sha256": "3b740e336ee5b8535372c966d201bc9194215b7f3b6c758bd4fa7fb9ef3d233b"
+    },
+    {
+      "path": "runtime/feathered-arrow.glb",
+      "bytes": 598600,
+      "sha256": "0dd06b3d669d05bb3e3624242cd70cb4226f76a98cdcff26f7da76078ff0b164"
+    },
+    {
+      "path": "runtime/ice-crystal.glb",
+      "bytes": 568852,
+      "sha256": "f38ddd35dc1974eb8acc52183e7f1c7e69ceb26653e97096fde0f3fb9de9b0ae"
+    }
+  ]
+}

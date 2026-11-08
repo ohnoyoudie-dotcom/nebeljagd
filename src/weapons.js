@@ -24,7 +24,7 @@ export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
   { placements, heightAt = world?.heightAt, viewDistance = 100, combat = null, ownerId = 'player', isVisible = null,
-    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null } = {}) {
+    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {} } = {}) {
   function assertPrototype(type, variant) {
     const modelType = TRIPO_WEAPON_VARIANTS[variant];
     if (!modelType) return;
@@ -403,14 +403,26 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const arrowTrailGeometry = new THREE.ConeGeometry(0.085, 0.8, 5);
   function makeArrow(trailVisible = true) {
     const group = new THREE.Group();
-    const shaft = addMesh(group, arrowShaftGeometry, arrowWood);
-    shaft.rotation.x = Math.PI / 2;
-    const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, 0.43);
-    head.rotation.x = Math.PI / 2;
-    shaft.name = 'Pfeil · Holzschaft'; head.name = 'Pfeil · Metallspitze';
-    for (let i = 0; i < 3; i++) {
-      const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
-      feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
+    if (projectilePrototypes.arrow) {
+      const model = projectilePrototypes.arrow.clone(true);
+      model.traverse(part => {
+        if (!part.isMesh) return;
+        part.userData.sharedWeaponGeometry = true;
+        part.userData.ownsWeaponMaterial = true;
+        part.material = Array.isArray(part.material) ? part.material.map(m => m.clone()) : part.material.clone();
+      });
+      group.add(model);
+      group.userData.projectileSource = model.userData.source;
+    } else {
+      const shaft = addMesh(group, arrowShaftGeometry, arrowWood);
+      shaft.rotation.x = Math.PI / 2;
+      const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, 0.43);
+      head.rotation.x = Math.PI / 2;
+      shaft.name = 'Pfeil · Holzschaft'; head.name = 'Pfeil · Metallspitze';
+      for (let i = 0; i < 3; i++) {
+        const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
+        feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
+      }
     }
     if (trailVisible) {
       const trail = addMesh(group, arrowTrailGeometry, arrowGlow, 0, 0, -0.83);
@@ -721,7 +733,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     else { projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false; }
   }
 
-  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype });
+  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype, iceProjectilePrototype: projectilePrototypes.ice });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
   }, isVisible);
@@ -942,7 +954,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     specials.dispose();
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
       ...arrows.map(arrow => arrow.group), slash, impactMesh];
-    const geometries = new Set([ringGeometry, haloGeometry]), materials = new Set(baseMaterials);
+    const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry, arrowTrailGeometry]), materials = new Set(baseMaterials);
     for (const root of roots) {
       root.traverse(part => {
         if (!part.isMesh && !part.isLine) return;
@@ -994,6 +1006,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
           stringVertices: (held.userData.bowStringDeformations ?? []).reduce((total, part) => total + part.count, 0) } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,
         arrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0).length,
+        arrowModel: projectilePrototypes.arrow ? { ...projectilePrototypes.arrow.userData } : null,
+        importedArrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0 && arrow.group.userData.projectileSource).length,
         heldPose: { bow: { x: heldBow.position.x, y: heldBow.position.y, z: heldBow.position.z },
           sword: { x: heldSword.position.x, y: heldSword.position.y, z: heldSword.position.z },
           swordTip: { x: bladeTip.x, y: bladeTip.y, z: bladeTip.z } } };

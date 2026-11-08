@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/feathered spear 3d model.glb",
+  "original": {
+    "bytes": 67816868,
+    "sha256": "eb66a058ef2d9aab9fed589ddc750e0af8978f6a331a1f627b37b06c3a4327eb",
+    "triangles": 1991440,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4895476996898651,
+          0.0,
+          -0.17762000858783722
+        ],
+        "max": [
+          0.4895476996898651,
+          0.6554871201515198,
+          0.17762000858783722
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 598600,
+    "sha256": "0dd06b3d669d05bb3e3624242cd70cb4226f76a98cdcff26f7da76078ff0b164",
+    "triangles": 6000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4896714389324188,
+          -0.001091120415367186,
+          -0.17819641530513763
+        ],
+        "max": [
+          0.48851755261421204,
+          0.6544215679168701,
+          0.17834073305130005
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "feathered_spear_3d_model_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "feathered_spear_3d_model_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "feathered_spear_3d_model_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-projectiles.py -- --execute",
+  "sourceAxisPreserved": true,
+  "preview": "Prepared derivative, front view with source +X to image right.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent license certification."
+}

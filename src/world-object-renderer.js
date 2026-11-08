@@ -344,7 +344,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const local = { ...body, type: body.type ?? (house ? 'house-wall' : object.kind), minY: body.minY ?? 0, maxY: body.maxY ?? (house ? 4.2 : 3.6) };
       const corners = [[body.minX, body.minZ], [body.maxX, body.minZ], [body.maxX, body.maxZ], [body.minX, body.maxZ]].map(([a, b]) => toWorld({ x: a, z: b }));
       const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, destructibleId: local.furnitureId ? `${object.id}-furniture-${local.furnitureId}` : undefined,
-        type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
+        type: local.type, objectKind: object.kind, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
         minY: y + local.minY * scale, maxY: y + local.maxY * scale, rotation, oriented: true, corners,
         ...(isHeightAdjustable(object) ? { barrierHeight: getBarrierHeight(object) } : {}) };
       if (!local.movementOnly) projectileObstacles.push(worldBody);
@@ -533,7 +533,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const part of parts) {
       const mesh = new THREE.InstancedMesh(mode === 'low' && part.lowGeometry ? part.lowGeometry : part.geometry, part.material, batch.placements.length);
       mesh.name = `${batch.key} · ${batch.chunk.id}`; mesh.castShadow = part.castShadow; mesh.receiveShadow = true;
-      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence|wagon|barrel|well):/.test(batch.key);
+      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence):/.test(batch.key);
       for (let i = 0; i < batch.placements.length; i++) {
         const p = batch.placements[i]; matrix.position.set(p.x, p.y + (batch.key === 'bed:soil' ? .04 : .01), p.z); matrix.rotation.set(0, p.rotation, 0); matrix.scale.set(...p.scale); matrix.updateMatrix(); mesh.setMatrixAt(i, matrix.matrix);
         if (p.object.kind === 'crate' || kitModels.get(batch.key)?.destructible) {

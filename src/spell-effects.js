@@ -15,7 +15,7 @@ const typeOf = type => Object.hasOwn(ELEMENTS, type) ? type : 'fireStaff';
 const crystalline = type => type === 'iceStaff' || type === 'moonStaff';
 
 /** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
-export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null } = {}) {
+export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null, iceProjectilePrototype = null } = {}) {
   const roots = [], geometries = new Set(), materials = new Set(), projectiles = [];
   const clock = { value: 0 };
   const ownGeometry = geometry => (geometries.add(geometry), geometry);
@@ -151,6 +151,19 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       iceMists.push(mist);
     }
     const crystal = mesh(ice, crystalGeometry, crystalMaterial);
+    const iceModel = iceProjectilePrototype?.clone(true) ?? null;
+    if (iceModel) {
+      iceModel.traverse(part => {
+        if (!part.isMesh) return;
+        const prepare = source => {
+          const copy = ownMaterial(source.clone());
+          copy.emissive.set('#6aaec5'); copy.emissiveIntensity = .12;
+          return copy;
+        };
+        part.material = Array.isArray(part.material) ? part.material.map(prepare) : prepare(part.material);
+      });
+      ice.add(iceModel);
+    }
     const coldCore = mesh(ice, octahedron, iceCore, 0, 0, .10);
     coldCore.scale.set(.042, .042, .39);
     const iceFins = [];
@@ -166,7 +179,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, fire, ice, haze, hotCore, fireModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, fire, ice, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -278,6 +291,10 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const appearance = projectileMaterials[type];
     visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type); visual.ice.visible = crystalline(type);
     if (visual.fireModel) visual.fireModel.visible = type === 'fireStaff';
+    const importedIce = Boolean(visual.iceModel && type === 'iceStaff');
+    if (visual.iceModel) visual.iceModel.visible = importedIce;
+    visual.crystal.visible = visual.coldCore.visible = !importedIce;
+    for (const fin of visual.iceFins) fin.visible = !importedIce;
     visual.haze.visible = type === 'fireStaff';
     visual.hotCore.visible = !(visual.fireModel && type === 'fireStaff');
     if (crystalline(type)) {
@@ -501,6 +518,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         activeSmoke: smoke.filter(p => p.life > 0).length,
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
         importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,
+        importedIceProjectiles: projectiles.filter(p => p.active && p.type === 'iceStaff' && p.iceModel).length,
+        iceModel: iceProjectilePrototype ? { ...iceProjectilePrototype.userData } : null,
         fireModel: fireProjectilePrototype ? { name: fireProjectilePrototype.name,
           triangles: fireProjectilePrototype.userData.triangles,
           nominalLength: fireProjectilePrototype.userData.nominalLength } : null,

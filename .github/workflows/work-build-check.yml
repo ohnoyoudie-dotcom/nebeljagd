@@ -78,6 +78,11 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/fireball_browser_smoke.py
+      - name: Verify imported projectiles, artillery arc and see-over props
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/projectiles_sight_smoke.py
       - name: Verify targeted hold, release and return controls
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
