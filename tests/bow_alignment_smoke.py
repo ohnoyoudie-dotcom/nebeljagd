@@ -11,7 +11,8 @@ report={'passed':False,'errors':[],'checks':[],'sha256':hashlib.sha256((ROOT/'we
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else p.chromium.executable_path),headless=True,args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
  try:
-  for touch in [False,True]:
+  for mode in ['keyboard','mouse','touch']:
+   touch=mode=='touch'
    context=browser.new_context(viewport={'width':1100,'height':800},has_touch=touch,is_mobile=touch)
    context.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');')
    page=context.new_page();page.set_default_timeout(120000)
@@ -22,7 +23,7 @@ with sync_playwright() as p:
    page.evaluate('nebeljagdInspect({x:0,z:-14,direction:.8,health:100})')
    page.wait_for_function('nebeljagdTestState().equippedWeapon==="bow"')
    page.evaluate('nebeljagdInspectCamera({zoom:2.8})')
-   label='touch' if touch else 'keyboard'
+   label=mode
    page.screenshot(path=str(OUT/(label+'-nocked.png')))
    page.evaluate('''() => {window.__arrowFrame=null;const sample=()=>{if(nebeljagdTestState().combat.arrowsFlying>0){window.__arrowFrame=nebeljagdCaptureFrame();window.__arrowState=nebeljagdTestState();return;}requestAnimationFrame(sample);};requestAnimationFrame(sample);}''')
    if touch:
@@ -30,6 +31,8 @@ with sync_playwright() as p:
     session=context.new_cdp_session(page)
     attack_point={'id':1,'x':box['x']+box['width']/2,'y':box['y']+box['height']/2}
     session.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[attack_point]})
+   elif mode=='mouse':
+    page.mouse.move(750,550);page.mouse.down()
    else:page.keyboard.down('f')
    page.wait_for_function('nebeljagdTestState().combat.bowDraw===1')
    started=page.evaluate('nebeljagdTestState().elapsed')
@@ -58,6 +61,7 @@ with sync_playwright() as p:
    (OUT/(label+'-pose.json')).write_text(json.dumps(held,indent=2))
    page.screenshot(path=str(OUT/(label+'-turned.png')))
    if touch:session.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
+   elif mode=='mouse':page.mouse.up()
    else:page.keyboard.up('f')
    page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
    page.wait_for_function('window.__arrowFrame')

@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { applyCharacterSnowClip, createCharacterConcealment } from '../src/character-concealment.js';
 import { createCharacterGlow } from '../src/character-glow.js';
 
-function fixture() {
+function fixture({ textured = false } = {}) {
   const group = new THREE.Group(), geometry = new THREE.BoxGeometry(.4, 1.8, .3);
-  const material = new THREE.MeshStandardMaterial({ color: '#805c39', emissive: '#020306', opacity: .9 });
+  const material = new THREE.MeshStandardMaterial({ map: textured ? new THREE.DataTexture(new Uint8Array([80,40,20,255]),1,1) : null, color: '#805c39', emissive: '#020306', opacity: .9 });
   const bone = new THREE.Bone(), skeleton = new THREE.Skeleton([bone]);
   const mesh = new THREE.SkinnedMesh(geometry, material);
   mesh.add(bone); mesh.bind(skeleton); mesh.castShadow = true; group.add(mesh);
@@ -29,7 +29,7 @@ test('concealment smoothly softens only the local presentation and restores orig
   assert.ok(first.bodyOpacity > .58 && first.bodyOpacity < 1);
   const hidden = settle(effect, true);
   assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .58) < 1e-10);
-  assert.equal(hidden.fillOpacity, .07); assert.equal(hidden.outlineOpacity, .42);
+  assert.equal(hidden.fillOpacity, .45); assert.equal(hidden.outlineOpacity, .42);
   assert.equal(hidden.color, '#cbd8d0'); assert.equal(hidden.localOnly, true);
   assert.equal(material.transparent, true); assert.equal(material.depthWrite, false);
   assert.equal(mesh.castShadow, false);
@@ -93,4 +93,16 @@ test('level-up emissive remains independent and reset clears hidden style withou
   assert.equal(state.active, false); assert.equal(state.blend, 0); assert.equal(state.materialsRestored, true);
   glow.reset(); assert.equal(glow.inspect().restored, true);
   effect.dispose();
+});
+
+test('read-through fill retains the real colour map without owning or bleaching the source',()=>{
+ const {group,material,effect}=fixture({textured:true});
+ const fill=group.children.find(p=>p.userData.concealmentLayer==='fill');
+ assert.ok(fill.material.color.equals(material.color));
+ assert.ok(material.map?.isTexture);
+ assert.equal(fill.material.map,material.map);
+ let textureDisposed=0;material.map.addEventListener('dispose',()=>textureDisposed++);
+ assert.notEqual(fill.material,material);
+ let disposed=0;fill.material.addEventListener('dispose',()=>disposed++);
+ effect.dispose();assert.equal(disposed,1);assert.equal(textureDisposed,0);
 });

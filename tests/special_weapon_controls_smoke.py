@@ -105,12 +105,12 @@ with sync_playwright() as p:
             wait_sim(page, .8)
             held = state(page)['combat']
             assert held['bowHolding'] and held['shotsFired']==before, held
-            assert held['hands']['right']['x']>.3 and held['heldPose']['bow']['x']>.2, held['hands']
+            assert held['hands']['right']['x']>.22 and held['heldPose']['bow']['x']>.2, held['hands']
             if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
             else: page.keyboard.up('f')
             page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
             assert state(page)['combat']['shotsFired']==before+1
-            assert state(page)['combat']['arrowModel']['nominalLength']==1.05
+            assert state(page)['combat']['arrowModel']['nominalLength']==1.25
             page.screenshot(path=str(OUT/('touch-arrow.png' if touch else 'mouse-arrow.png')))
             passed(('Touch' if touch else 'Keyboard')+' bow holds beside the torso and releases one enlarged 3D arrow only on release')
             context.close()

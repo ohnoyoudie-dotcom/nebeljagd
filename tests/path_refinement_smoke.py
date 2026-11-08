@@ -205,7 +205,7 @@ try:
               s.character.concealmentAppearance.blend>.99&&s.world.trees.find(t=>t.id==='qa-local-tree').canopy.opacity<.055}''')
             hidden = state(page); visual = hidden['character']['concealmentAppearance']; under = trees(page)
             assert hidden['hiddenFromOtherPlayers'] and hidden['concealment'] > .01
-            assert visual['style'] == 'soft-textured-concealment-v2'
+            assert visual['style'] == 'textured-hidden-character-v3'
             assert visual['active'] and visual['localOnly'] and visual['color'] == '#cbd8d0'
             assert visual['outline'] == 'stencil-contour' and visual['outlineWidthPixels'] == 1.4
             assert .575 <= visual['bodyOpacity'] < .59 and .065 < visual['fillOpacity'] < .075
