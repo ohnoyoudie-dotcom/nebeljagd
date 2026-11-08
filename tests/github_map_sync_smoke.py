@@ -192,6 +192,7 @@ try:
         assert page.evaluate('(key)=>sessionStorage.getItem(key)', AUTH) == FAKE
         expect(page.locator('#restore-banner')).not_to_be_visible()
         page.reload(); ready(page)
+        page.wait_for_function('(name)=>nebeljagdMapTestState().map.name===name', arg=other['name'])
         assert state(page)['map'] == other
         passed('Explicit online save preserves a protected older draft separately and resumes the saved map; session-only credentials stay out of persistent storage')
         assert not report['pageErrors'], report['pageErrors']
