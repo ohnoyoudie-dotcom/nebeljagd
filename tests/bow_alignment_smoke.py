@@ -72,7 +72,7 @@ with sync_playwright() as p:
    report['checks'].append(label+': held left, changed to up, kept full draw, released exactly one arrow upward')
    assert state['combat']['shotsFired']==1,state['combat']
    assert state['combat']['arrowModel']['source'].endswith('feathered spear 3d model.glb')
-   assert state['combat']['arrowModel']['nominalLength']==1.25
+   assert state['combat']['arrowModel']['nominalLength']==1.05
    report['checks'].append(label+': real ornate bow picked up and one visible physical arrow fired')
    context.close()
   assert not report['errors'],report['errors'];report['passed']=True

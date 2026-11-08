@@ -110,7 +110,7 @@ with sync_playwright() as p:
             else: page.keyboard.up('f')
             page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
             assert state(page)['combat']['shotsFired']==before+1
-            assert state(page)['combat']['arrowModel']['nominalLength']==1.25
+            assert state(page)['combat']['arrowModel']['nominalLength']==1.05
             page.screenshot(path=str(OUT/('touch-arrow.png' if touch else 'mouse-arrow.png')))
             passed(('Touch' if touch else 'Keyboard')+' bow holds beside the torso and releases one enlarged 3D arrow only on release')
             context.close()
