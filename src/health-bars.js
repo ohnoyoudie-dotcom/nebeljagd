@@ -10,8 +10,8 @@ const LEVEL_PADDING = .20;
 const LEVEL_HEIGHT = .48;
 const GLYPHS = '0123456789.kMBTP';
 const LEVEL_PULSE_DURATION = 1.6;
-const LEVEL_PULSE_SCALE = 1.55;
-const LEVEL_GLOW_MARGIN = .18;
+const LEVEL_PULSE_SCALE = 1.18;
+const LEVEL_GLOW_MARGIN = .14;
 const LEVEL_RESERVE = LEVEL_GAP + (LEVEL_PADDING + GLYPH_WIDTH * 4) * LEVEL_PULSE_SCALE + LEVEL_GLOW_MARGIN;
 const validLevel = value => Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1;
 const capacityOf = value => Number.isFinite(value) ? Math.max(1, value) : 100;
@@ -148,18 +148,18 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
             if (vLevelPulse.y <= 0.0 || outside > ${LEVEL_GLOW_MARGIN}) discard;
             // Stop the halo in the gap rather than tinting or covering the bar.
             float rightFade = 1.0 - smoothstep(badgeRight + .018, badgeRight + ${LEVEL_GAP - .006}, vPosition.x);
-            float glow = exp(-outside * 16.0) * vLevelPulse.y * rightFade;
+            float glow = exp(-outside * 22.0) * vLevelPulse.y * rightFade;
             glow *= 1.0 - smoothstep(${LEVEL_GLOW_MARGIN * .65}, ${LEVEL_GLOW_MARGIN}, outside);
-            gl_FragColor = vec4(1.0, .58, .10, glow * .64);
+            gl_FragColor = vec4(1.0, .62, .18, glow * .34);
           } else {
           float light = clamp(badgePosition.y / ${LEVEL_HEIGHT} + .5, 0.0, 1.0);
           vec3 gold = mix(vec3(.55, .25, .055), vec3(1.0, .77, .32), light);
-          gold = mix(gold, vec3(1.0, .95, .62), vLevelPulse.y * .65);
+          gold = mix(gold, vec3(1.0, .84, .48), vLevelPulse.y * .34);
           vec3 badgeColor = mix(vec3(.055, .032, .012), vec3(.16, .10, .028), light);
           if (edge > -.024) badgeColor = gold;
           else if (edge > -.043) badgeColor = vec3(.045, .025, .008);
           else if (edge > -.055) badgeColor = gold * .66;
-          badgeColor += vec3(.22, .11, .014) * vLevelPulse.y;
+          badgeColor += vec3(.11, .055, .008) * vLevelPulse.y;
           float textX = (badgePosition.x - badgeRight + badgeWidth - ${LEVEL_PADDING / 2}) / ${GLYPH_WIDTH};
           float textY = badgePosition.y / .44 + .5;
           if (textX >= 0.0 && textX < vLength && textY > 0.0 && textY < 1.0) {
@@ -170,7 +170,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
             float ink = texture2D(levelAtlas, glyphUv).a;
             badgeColor = mix(badgeColor, vec3(.012, .007, .002), shadow * .9);
             vec3 inkColor = mix(vec3(1.0, .69, .24), vec3(1.0, .96, .72), light);
-            inkColor = mix(inkColor, vec3(1.0, 1.0, .90), vLevelPulse.y * .65);
+            inkColor = mix(inkColor, vec3(1.0, .96, .76), vLevelPulse.y * .28);
             badgeColor = mix(badgeColor, inkColor, ink);
           }
           gl_FragColor = vec4(badgeColor, .98);
@@ -259,7 +259,7 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
     // Repeated level-ups restart the same lightweight instance effect.
     bar.levelPulseRemaining = LEVEL_PULSE_DURATION;
     bar.levelPulseReducedMotion = Boolean(reducedMotion);
-    bar.levelPulseScale = 1; bar.levelPulseGlow = 1;
+    bar.levelPulseScale = 1; bar.levelPulseGlow = reducedMotion ? .65 : 0;
     return true;
   }
 
@@ -287,12 +287,14 @@ export function createHealthBars(scene, { capacity = 128 } = {}) {
         if (!bar.levelPulseRemaining) clearPulse(bar);
         else if (bar.levelPulseReducedMotion) {
           // Accessibility mode is a steady highlight with no movement/pulsing.
-          bar.levelPulseScale = 1; bar.levelPulseGlow = 1;
+          bar.levelPulseScale = 1; bar.levelPulseGlow = .65;
         } else {
           const progress = 1 - bar.levelPulseRemaining / LEVEL_PULSE_DURATION;
-          const pop = progress < .15 ? 1 - Math.pow(1 - progress / .15, 3) : 1 - smoothstep((progress - .15) / .61);
-          bar.levelPulseScale = 1 + (LEVEL_PULSE_SCALE - 1) * pop;
-          bar.levelPulseGlow = 1 - smoothstep((progress - .70) / .30);
+          // One eased swell: the number catches the light, then settles with
+          // the figure's effect instead of bouncing or flashing a second time.
+          const swell = progress < .22 ? smoothstep(progress / .22) : 1 - smoothstep((progress - .22) / .78);
+          bar.levelPulseScale = 1 + (LEVEL_PULSE_SCALE - 1) * swell;
+          bar.levelPulseGlow = swell;
         }
       }
       dummy.position.copy(bar.position); dummy.position.y += bar.height;
