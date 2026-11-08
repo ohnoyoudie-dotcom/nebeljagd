@@ -1,4 +1,4 @@
-import { VEGETATION_TYPES, TERRAIN_TYPES, BIOME_PRESETS, PRIMARY_BIOME_IDS, WIND_DEFAULTS, getLandscape, ensureLandscape, vegetationSettings, terrainSettings, biomePreset } from './landscape.js';
+import { VEGETATION_TYPES, TERRAIN_TYPES, PATH_BRUSH_PRESETS, pathBrushSettings, BIOME_PRESETS, PRIMARY_BIOME_IDS, WIND_DEFAULTS, getLandscape, ensureLandscape, vegetationSettings, terrainSettings, biomePreset } from './landscape.js';
 import { PLACEMENT_OBJECT_CATALOG, isObjectPlaceable } from './objects.js';
 import { createVegetationStroke, createTerrainStroke, createScatterStroke, createBiomeStroke } from './landscape-brush.js';
 import { createLandscapePreview } from './landscape-preview.js';
@@ -58,7 +58,7 @@ export function createLandscapePanel(api) {
   sidebar.prepend(nav);
   for (const [key, label, pane] of [
     ['biomes', 'Landschaft malen', 'paint'], ['vegetation', 'Versteckgras malen', 'paint'],
-    ['terrain', 'Natürlichen Boden malen', 'paint'], ['objects', 'Mehrere Objekte verteilen', 'objects'],
+    ['terrain', 'Boden und Wege malen', 'paint'], ['objects', 'Mehrere Objekte verteilen', 'objects'],
     ['wind', 'Wind einstellen', 'more'], ['map', 'Ansicht und Dateien', 'more'],
   ]) {
     const details = document.createElement('details'); details.className = 'landscape-section';
@@ -171,7 +171,7 @@ export function createLandscapePanel(api) {
   }
   const vegetation = mount('vegetation', `<details class="biome-advanced"><summary>Gras fein einstellen</summary>${vegetationFields('vegetation')}${range('vegetation-strength', 'Pinselstärke', 0, 100, 100)}</details>`);
   $('vegetation-type').value = 'tall';
-  mount('terrain', `<p class="small-note">Ruhige, natürliche Bodenfarben ohne automatisch bewegtes Wiesengras.</p>${selector('terrain-type', 'Bodenart', TERRAIN_TYPES)}${button('landscape-terrain-brush', 'Boden malen')}${range('terrain-radius', 'Pinselradius', .5, 80, 8, .5, ' m')}<details class="tool-fine-settings"><summary>Farbe & Übergang</summary>${range('terrain-strength', 'Pinselstärke', 0, 100, 90)}${range('terrain-hardness', 'Randhärte', 0, 100, 65)}<label for="terrain-color">Bodenfarbe</label><input id="terrain-color" type="color" value="#527149">${range('terrain-variation', 'Farbvariation', 0, 100, 9)}</details><button type="button" class="button small" id="terrain-edit-paths">Wege zeichnen oder bearbeiten</button><p class="small-note">Pflaster und Erde grenzen mit schmalem, leicht unregelmäßigem Wegsaum an den Boden. Hohes Versteckgras malst du weiterhin extra unter „Malen → Versteckgras“.</p>`);
+  mount('terrain', `<h3>Wege zeichnen</h3>${selector('path-preset', 'Wegbelag', PATH_BRUSH_PRESETS)}${button('landscape-path-brush', 'Weg malen')}<p class="small-note">Ziehen malt einen zusammenhängenden Weg. Der Pinselradius ist die halbe Wegbreite; unter „Farbe & Übergang“ stellst du die Ränder ein.</p><h3>Bodenflächen</h3><p class="small-note">Ruhige, natürliche Bodenfarben ohne automatisch bewegtes Wiesengras.</p>${selector('terrain-type', 'Bodenart', TERRAIN_TYPES)}${button('landscape-terrain-brush', 'Boden malen')}${range('terrain-radius', 'Pinselradius', .5, 80, 8, .5, ' m')}<details class="tool-fine-settings"><summary>Farbe & Übergang</summary>${range('terrain-strength', 'Pinselstärke', 0, 100, 90)}${range('terrain-hardness', 'Randhärte', 0, 100, 65)}<label for="terrain-color">Bodenfarbe</label><input id="terrain-color" type="color" value="#527149">${range('terrain-variation', 'Farbvariation', 0, 100, 9)}</details><button type="button" class="button small" id="terrain-edit-paths">Wege zeichnen oder bearbeiten</button><p class="small-note">Pflaster und Erde grenzen mit schmalem, leicht unregelmäßigem Wegsaum an den Boden. Hohes Versteckgras malst du weiterhin extra unter „Malen → Versteckgras“.</p>`);
   $('terrain-edit-paths').addEventListener('click', () => { showPane('more', 'shape'); mapTools.open = true; });
   const scatterKinds = PLACEMENT_OBJECT_CATALOG.filter(item => ['tree', 'bush', 'grass', 'rock', 'flower'].includes(item.kind));
   mount('objects', `<h3>Felsen verteilen</h3><p class="small-note">Über die Karte ziehen, um eine Gruppe zu setzen.</p>${scatterKinds.map(item => `<div class="scatter-model"><label class="landscape-check"><input type="checkbox" id="scatter-${item.kind}"${item.kind === 'rock' ? ' checked' : ''}>${item.label}</label><select id="scatter-variant-${item.kind}" aria-label="${item.label}: Modell">${options(item.variants)}</select></div>`).join('')}${button('landscape-scatter-brush', 'Objekte verteilen')}${range('scatter-radius', 'Pinselradius', .5, 20, 12, .5, ' m')}${range('scatter-density', 'Objektdichte', 0, 100, 35)}<details class="tool-fine-settings"><summary>Abstände & Größen</summary>${range('scatter-strength', 'Pinselstärke', 0, 100, 100)}${range('scatter-distance', 'Mindestabstand', .5, 30, 3, .5, ' m')}${range('scatter-min', 'Kleinste Größe', 25, 300, 80)}${range('scatter-max', 'Größte Größe', 25, 300, 125)}${range('scatter-clustering', 'Gruppenbildung', 0, 100, 65)}${check('scatter-rotation', 'Zufällige Drehung', true)}</details>`);
@@ -180,7 +180,7 @@ export function createLandscapePanel(api) {
     const preset = biomePreset(id);
     return `<button type="button" class="biome-choice" data-biome-choice="${id}" aria-pressed="false"><span class="biome-choice-swatch" style="--biome-color:${preset.terrain.color}"></span><strong>${preset.label}</strong></button>`;
   }).join('');
-  mount('biomes', `<p class="tool-intro">Landschaft wählen und auf der Karte malen.</p><div class="biome-choice-grid">${biomeQuickButtons}</div>${range('biome-radius', 'Pinselgröße', 2, 80, 22, 1, ' m')}${button('landscape-biome-brush', 'Mit Wiese malen')}<p class="small-note">Boden und Bewuchs passen zusammen. Unter „Radieren“ machst du gemalte Flächen wieder frei.</p><details class="biome-advanced"><summary>Farben & eigene Vorlagen</summary>${selector('biome-preset', 'Landschaft', BIOME_PRESETS)}${range('biome-softness', 'Weicher Rand', 0, 100, 65)}${range('biome-strength', 'Deckkraft', 10, 100, 100)}<button type="button" class="button small" id="biome-settings">Farben und Gras als Vorlage übernehmen</button><label for="landscape-preset-name">Name deiner Vorlage</label><input id="landscape-preset-name" maxlength="120" placeholder="Zum Beispiel Abendwiese"><button type="button" class="button" id="landscape-preset-save">Vorlage speichern</button><label for="landscape-preset-select">Deine Vorlagen</label><select id="landscape-preset-select"></select><div class="property-pair"><button type="button" id="landscape-preset-load" class="button small">Laden</button><button type="button" id="landscape-preset-delete" class="button small">Entfernen</button></div></details>`);
+  mount('biomes', `<p class="tool-intro">Landschaft wählen und auf der Karte malen.</p><div class="biome-choice-grid">${biomeQuickButtons}</div>${range('biome-radius', 'Pinselgröße', 2, 80, 22, 1, ' m')}${button('landscape-biome-brush', 'Mit Wiese malen')}<p class="small-note">Farbige Bodenstrukturen ohne automatische Grasdecke. Versteckgras setzt du bei Bedarf separat. Unter „Radieren“ machst du gemalte Flächen wieder frei.</p><details class="biome-advanced"><summary>Farben & eigene Vorlagen</summary>${selector('biome-preset', 'Landschaft', BIOME_PRESETS)}${range('biome-softness', 'Weicher Rand', 0, 100, 65)}${range('biome-strength', 'Deckkraft', 10, 100, 100)}<button type="button" class="button small" id="biome-settings">Farben und Gras als Vorlage übernehmen</button><label for="landscape-preset-name">Name deiner Vorlage</label><input id="landscape-preset-name" maxlength="120" placeholder="Zum Beispiel Abendwiese"><button type="button" class="button" id="landscape-preset-save">Vorlage speichern</button><label for="landscape-preset-select">Deine Vorlagen</label><select id="landscape-preset-select"></select><div class="property-pair"><button type="button" id="landscape-preset-load" class="button small">Laden</button><button type="button" id="landscape-preset-delete" class="button small">Entfernen</button></div></details>`);
   mount('map', `<details class="tool-fine-settings"><summary>Grasvorschau</summary><div id="landscape-preview" class="landscape-preview"></div><p id="landscape-preview-status" class="small-note">Vegetation und Wind werden mit denselben Regeln wie im Spiel dargestellt.</p><p id="landscape-status" class="small-note" role="status">Ziehen: malen · Leertaste: verschieben · Esc: abbrechen</p></details>`);
 
   const overview = document.querySelector('.overview');
@@ -192,7 +192,7 @@ export function createLandscapePanel(api) {
   const barrierSlot = document.createElement('div'); barrierSlot.id = 'editor-tool-panel-objects-barriers';
   panes.objects.append(barrierSlot);
   addToolChoices('paint', [
-    ['biomes', 'Landschaft', sections.biomes], ['vegetation', 'Versteckgras', sections.vegetation], ['terrain', 'Boden', sections.terrain],
+    ['biomes', 'Landschaft', sections.biomes], ['vegetation', 'Versteckgras', sections.vegetation], ['terrain', 'Boden & Wege', sections.terrain],
   ]);
   addToolChoices('objects', [
     ['place', 'Einzeln', document.querySelector('.object-palette')], ['barriers', 'Mauern & Zäune', barrierSlot],
@@ -244,6 +244,14 @@ export function createLandscapePanel(api) {
   const refresh = () => { updateOutputs(); preview.refresh(); api.refreshCursor(); };
   for (const input of document.querySelectorAll('.landscape-controls input,.landscape-controls select,#landscape-feature-properties input,#landscape-feature-properties select')) input.addEventListener('input', refresh);
   for (const prefix of ['vegetation','object-vegetation']) $(`${prefix}-type`).addEventListener('change', () => { writeVegetation(VEGETATION_TYPES.find(type=>type.id===$(`${prefix}-type`).value).settings,prefix); refresh(); });
+  $('landscape-path-brush').addEventListener('click', () => {
+    writeTerrain(pathBrushSettings($('path-preset').value));
+    $('terrain-radius').value = 2.5; updateOutputs(); refresh(); api.setMode('terrain');
+    api.toast('Weg malen: Ziehen zum Zeichnen. Pinselradius und Randhärte bestimmen Breite und Übergang.');
+  });
+  $('path-preset').addEventListener('change', () => {
+    writeTerrain(pathBrushSettings($('path-preset').value)); refresh();
+  });
   for (const prefix of ['terrain','object-terrain']) $(`${prefix}-type`).addEventListener('change',()=>{writeTerrain(terrainSettings($(`${prefix}-type`).value),prefix);refresh();});
   const modeButtons = { terrain:'landscape-terrain-brush', scatter:'landscape-scatter-brush', biome:'landscape-biome-brush', windzone:'landscape-wind-zone', terrainErase:'landscape-terrain-erase' };
   for(const [mode,id] of Object.entries(modeButtons)) $(id).addEventListener('click',()=>api.setMode(api.getMode()===mode?'select':mode));

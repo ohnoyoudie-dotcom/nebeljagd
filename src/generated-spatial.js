@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { pointInPolygon, distanceToSegment, isLandPoint, outerLandRings, waterBoundaryRings, landBoundaryRings } from './map/model.js';
 import { terrainPalette } from './terrain-art.js';
-import { createTerrainPaintIndex, applyTerrainPaint } from './map/terrain-paint.js';
+import { createTerrainPaintIndex, applyTerrainPaint, terrainSurfaceTint } from './map/terrain-paint.js';
 import { getLandscape, biomeRuntimeId } from './map/landscape.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
 
@@ -110,14 +110,15 @@ export function createWorldSpatialModel(map) {
     if (biome === 'heath') return 1.6 + 1.3 * (wave + 1) / 2;
     return 1.15 + .35 * wave + .12 * Math.sin(x * .06 + z * .04);
   }
-  function regionWeights(x, z) {
+  function regionWeights(x, z, transition = 24, softColor = false) {
     const weights = [];
     for (const region of regions) {
-      if (x < region.minX - 24 || x > region.maxX + 24 || z < region.minZ - 24 || z > region.maxZ + 24) continue;
+      if (x < region.minX - transition || x > region.maxX + transition || z < region.minZ - transition || z > region.maxZ + transition) continue;
       const inside = pointInPolygon([x, z], region.points);
-      let distance = 24;
+      let distance = transition;
       for (let i = 0; i < region.points.length; i++) distance = Math.min(distance, distanceToSegment([x, z], region.points[i], region.points[(i + 1) % region.points.length]));
-      const weight = inside ? 1 + distance / 24 : Math.max(0, 1 - distance / 24);
+      const signed = inside ? distance : -distance;
+      const weight = softColor ? smooth(-transition, transition, signed) : 1 + signed / transition;
       if (weight > 0) weights.push([region, weight]);
     }
     if (!weights.length) weights.push([regionAt(x, z), 1]);
@@ -291,16 +292,18 @@ export function createWorldSpatialModel(map) {
     }
     return null;
   }
+  const groundTint = {};
   function baseColorAt(x, z, target = new THREE.Color()) {
     target.setRGB(0, 0, 0); let total = 0;
-    for (const [region, weight] of regionWeights(x, z)) {
-      target.r += region.colorValue.r * weight; target.g += region.colorValue.g * weight; target.b += region.colorValue.b * weight; total += weight;
+    // Wider smoothstep shoulders soften the visual boundary only. Collision,
+    // coastlines, building foundations and authored elevation stay unchanged.
+    for (const [region, weight] of regionWeights(x, z, 36, true)) {
+      const tint = terrainSurfaceTint(region.biome, x, z, groundTint);
+      target.r += region.colorValue.r * tint.r * weight;
+      target.g += region.colorValue.g * tint.g * weight;
+      target.b += region.colorValue.b * tint.b * weight; total += weight;
     }
-    // Broad green washes stay legible under trees and provide a soft painted
-    // floor. Variation stays deterministic and does not change terrain height.
-    const broad = Math.sin(x * .075 + Math.sin(z * .061) * 1.7) * Math.cos(z * .081 - x * .022);
-    const patches = Math.sin(x * .19 - z * .13) * Math.cos(z * .23 + x * .07);
-    target.multiplyScalar((.94 + .10 * broad + .035 * patches) / total);
+    target.multiplyScalar(1 / total);
     const shore = coast.closest(x, z);
     if (shore?.distance < 3.2) target.lerp(new THREE.Color('#c9bb87'), (1 - shore.distance / 3.2) * .75);
     return target;
