@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { createVegetationWind } from '../src/vegetation-wind.js';
 import { buildVegetationPatch, vegetationTint, MAX_GRASS_INSTANCES } from '../src/vegetation-patches.js';
 import { vegetationSettings } from '../src/map/landscape.js';
+import { isTreeFoliagePart, USER_TREE_WIND_RESPONSE } from '../src/map/tree-wind.js';
 
 const object = { id:'test-grass',kind:'grass',variant:'tall',position:[10,-30],radius:3.5,scale:1,rotation:.3 };
 const configured = changes => ({...object,vegetation:{...vegetationSettings(object),...changes}});
@@ -77,4 +78,27 @@ test('wind shader is instancing aware, changes no fragment alpha and updates uni
  assert.equal(mat.alphaTest,.45);assert.equal(mat.opacity,.7);assert.equal(mat.transparent,true);
  field.update(5);assert.equal(shader.uniforms.uVegetationTime.value,5);
  assert.equal(field.stats.gpu,true);mat.dispose();
+});
+
+test('Tree1 leaf cards receive GPU movement while bark, houses and transparent leaf masks stay intact', () => {
+  const masked = new THREE.MeshStandardMaterial({alphaTest:.35,side:THREE.DoubleSide,roughness:.94});
+  const leaves = {isMesh:true,name:'Tree1 · ausgeschnittene Blätter',material:masked};
+  const trunk = {isMesh:true,name:'Tree1 · Stamm',material:new THREE.MeshStandardMaterial()};
+  assert.equal(isTreeFoliagePart('tree',leaves),true);
+  assert.equal(isTreeFoliagePart('tree',trunk),false);
+  assert.equal(isTreeFoliagePart('house',leaves),false);
+  assert.equal(isTreeFoliagePart('tree',{isMesh:true,name:'Blätter',material:masked}),true);
+  assert.equal(isTreeFoliagePart('tree',{isMesh:true,name:'Cards',material:masked}),true);
+  assert.equal(USER_TREE_WIND_RESPONSE,1.35);
+  const field=createVegetationWind(windMap({enabled:true,strength:.35}));
+  const alpha=masked.alphaTest, side=masked.side;
+  field.apply(masked,{response:USER_TREE_WIND_RESPONSE,height:7.8,interactionResponse:0,replaceLegacySway:false});
+  const shader={uniforms:{},vertexShader:'#include <begin_vertex>',fragmentShader:'#include <alphatest_fragment>'};
+  masked.onBeforeCompile(shader);
+  assert.match(shader.vertexShader,/vegetationWindAt/);
+  assert.match(shader.vertexShader,/1\.35000/);
+  assert.equal(shader.fragmentShader,'#include <alphatest_fragment>');
+  assert.equal(masked.alphaTest,alpha);assert.equal(masked.side,side);
+  field.update(4);assert.equal(shader.uniforms.uVegetationTime.value,4);
+  masked.dispose();trunk.material.dispose();
 });
