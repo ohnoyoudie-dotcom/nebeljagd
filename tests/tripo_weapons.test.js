@@ -64,6 +64,8 @@ test('placed Tripo pickups keep authored transforms and original PBR textures wi
     assert.equal(item.ringMaterial.color.getHexString(), new THREE.Color(rarityVisual(item.rarity).color).getHexString());
     assert.deepEqual(item.group.position.toArray(), [item.x, 2.5, item.z]);
     assert.equal(item.group.rotation.y, .9); assert.equal(item.group.scale.x, 1.4);
+    assert.equal(item.visual.scale.x, item.type === 'sword' ? .8 : item.type === 'bow' ? .88 : .82,
+      'weapon presentation shrinks independently of the authored placement scale');
     item.group.updateMatrixWorld(true);
     const center = new THREE.Box3().setFromObject(item.visual).getCenter(new THREE.Vector3());
     near(center, new THREE.Vector3(item.x, 2.5 + .75 * 1.4, item.z), 'ground preview centers the weapon above its halo');
@@ -100,6 +102,7 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
     assert.equal(weapons.telemetry.heldModel.variant, variant);
     assert.equal(weapons.telemetry.heldModel.meshCount, 1);
     const held = actor.children.find(group => group.userData.weaponType === kind && group.visible);
+    assert.equal(held.scale.x, weapons.items[index].visual.scale.x, 'pickup and held model share the same presentation size');
     near(held.position, hand, 'model grip stays at the animated hand');
     actor.updateWorldMatrix(true, true);
     near(held.children[0].children[0].getWorldPosition(new THREE.Vector3()),

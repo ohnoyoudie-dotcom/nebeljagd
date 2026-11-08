@@ -6,6 +6,7 @@ import { TRIPO_PROP_DEFINITIONS, TRIPO_CHEST_MOVEMENT_WALLS } from '../src/map/t
 import { getEnvironmentKitDefinition } from '../src/map/environment-kit-definitions.js';
 import { createCollisionIndex } from '../src/collision.js';
 import { createSightModel } from '../src/visibility-model.js';
+import { getObjectFootprintRadius } from '../src/map/objects.js';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -44,11 +45,13 @@ test('six Tripo props preserve their original uploads and carry bounded embedded
     assert.deepEqual(prop.nativeBounds, { min: bounds[0], max: bounds[1] }, `${id} measured runtime bounds`);
     assert.equal(getEnvironmentKitDefinition(prop.kind, prop.variant), prop);
     assert.equal(prop.textured, true);
-    assert.deepEqual(prop.normalization, { scale: 1, offset: [0, 0, 0] });
+    const scale = ({ wagon: 1.4, barrel: 1.4, well: 1.3 })[id] ?? 1;
+    assert.deepEqual(prop.normalization, { scale, offset: [0, 0, 0] });
     assert.ok(Math.abs(bounds[0][1]) < .002, `${id} grounded`);
-    assert.ok(prop.footprint.halfWidth >= Math.max(Math.abs(bounds[0][0]), Math.abs(bounds[1][0])), `${id} editor width`);
-    assert.ok(prop.footprint.halfDepth >= Math.max(Math.abs(bounds[0][2]), Math.abs(bounds[1][2])), `${id} editor depth`);
-    assert.ok(Math.abs(prop.height - bounds[1][1]) < .04, `${id} gameplay height matches model`);
+    assert.ok(prop.footprint.halfWidth >= Math.max(Math.abs(bounds[0][0]), Math.abs(bounds[1][0])) * scale, `${id} editor width`);
+    assert.ok(prop.footprint.halfDepth >= Math.max(Math.abs(bounds[0][2]), Math.abs(bounds[1][2])) * scale, `${id} editor depth`);
+    assert.ok(Math.abs(prop.height - bounds[1][1] * scale) < .04, `${id} gameplay height matches model`);
+    assert.ok(getObjectFootprintRadius(prop.kind, prop.variant) >= Math.hypot(prop.footprint.halfWidth, prop.footprint.halfDepth), `${id} editor selection encloses the enlarged model`);
   }
 });
 
@@ -71,13 +74,14 @@ test('Tripo scenery stops walking through solids and allows shots above low rock
 
 test('well canopy stops high arrows without blocking walking under its outside overhang', () => {
   const well = definition('well');
+  const scaledPoint = (x, z, y = .4) => point(x * 1.3, z * 1.3, y * 1.3);
   const projectiles = createCollisionIndex(well.circles, well.walls);
   const movement = createCollisionIndex(well.circles, well.walls.filter(body => !body.projectileOnly));
-  const beside = point(1.1, .8), before = { ...beside };
+  const beside = scaledPoint(1.1, .8), before = { ...beside };
   movement.resolve(beside, .15);
   assert.deepEqual(beside, before, 'roof outline does not create an invisible ground wall');
-  assert.ok(projectiles.traceSegment(point(-2, .68, 2), point(2, .68, 2), .06), 'canopy blocks an elevated projectile');
-  assert.equal(projectiles.traceSegment(point(-2, .8, 1.1), point(2, .8, 1.1), .03), null, 'space below roof remains clear above the basin');
+  assert.ok(projectiles.traceSegment(scaledPoint(-2, .68, 2), scaledPoint(2, .68, 2), .06), 'enlarged canopy blocks an elevated projectile');
+  assert.equal(projectiles.traceSegment(scaledPoint(-2, .8, 1.1), scaledPoint(2, .8, 1.1), .03), null, 'space below the enlarged roof remains clear above the basin');
 });
 
 test('barrel collisions and sight obstruction disappear after destruction and return on reset', () => {
@@ -89,6 +93,8 @@ test('barrel collisions and sight obstruction disappear after destruction and re
   sight.update(point(-3, 0, 0));
   assert.equal(sight.isVisible(point(3, 0, 0)), false);
   assert.ok(index.traceSegment(point(-3, 0), point(3, 0), .06));
+  assert.ok(index.traceSegment(point(.55, -2, 1.15), point(.55, 2, 1.15), .03), 'new barrel edge and height stop a shot outside the former small collider');
+  assert.ok(barrel.destructible.radius > .59, 'melee target also reaches the enlarged barrel');
   for (const body of walls) body.destroyed = true;
   sight.update(point(-3, 0, 0));
   assert.equal(sight.isVisible(point(3, 0, 0)), true);
