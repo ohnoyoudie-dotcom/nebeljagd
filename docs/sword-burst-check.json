@@ -1,0 +1,3384 @@
+{
+  "status": "passed",
+  "url": "http://127.0.0.1:5232",
+  "checks": [
+    {
+      "name": "Gold badge starts at level 1 and no celebration runs before a victory",
+      "evidence": {
+        "ui": {
+          "width": 154,
+          "left": 143,
+          "labelRight": 137,
+          "background": "linear-gradient(155deg, rgb(255, 240, 176) 0%, rgb(233, 189, 101) 38%, rgb(185, 120, 45) 100%)",
+          "border": "rgb(255, 229, 160)",
+          "color": "rgb(44, 32, 13)",
+          "fontWeight": "800",
+          "noticeAbsent": true
+        },
+        "effect": {
+          "active": false,
+          "level": 1,
+          "emitted": 0,
+          "style": "core-burst",
+          "age": 0,
+          "bodyGlow": 0,
+          "duration": 1.6,
+          "particleCount": 0,
+          "haloVisible": false,
+          "coreVisible": false,
+          "ribbonVisible": false,
+          "lightIntensity": 0,
+          "depthTested": true,
+          "ringCount": 0,
+          "beamVisible": false,
+          "reducedMotion": false,
+          "remaining": 0
+        }
+      }
+    },
+    {
+      "name": "Three real F attacks use distinct forehand, backhand and overhead blade trails; cooldown input cannot advance the chain",
+      "evidence": [
+        {
+          "combat": {
+            "attackPhase": "strike",
+            "bowDraw": 0,
+            "swordSweep": 1.1530562540100286,
+            "shotsFired": 0,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "swordCombo": {
+              "index": 1,
+              "pattern": "forehand",
+              "swingId": 1,
+              "active": true,
+              "progress": 0.517241379310345,
+              "remaining": 1.1799999999999997
+            },
+            "swordTrail": {
+              "style": "blade-following-ribbon",
+              "trailActive": true,
+              "sampleCount": 2,
+              "segmentCount": 4,
+              "pattern": "forehand",
+              "latestBase": {
+                "x": -11.365942761357395,
+                "y": 2.4848069666080934,
+                "z": -9.741597933864755
+              },
+              "latestTip": {
+                "x": -10.740023001012872,
+                "y": 2.30246701110214,
+                "z": -9.808105603307817
+              },
+              "activeGlints": 1,
+              "emittedGlints": 1,
+              "swingCount": 1,
+              "impactCount": 0,
+              "depthTested": true,
+              "shadingLayers": [
+                "edge",
+                "ribbon",
+                "afterimage"
+              ],
+              "drawCalls": 2,
+              "historyCapacity": 32,
+              "glintCapacity": 24,
+              "opacity": 1,
+              "lifetime": 0.18
+            },
+            "swordBlade": {
+              "base": {
+                "x": -11.365942761357395,
+                "y": 2.4848069666080934,
+                "z": -9.741597933864755
+              },
+              "tip": {
+                "x": -10.740023001012872,
+                "y": 2.30246701110214,
+                "z": -9.808105603307817
+              }
+            },
+            "equippedItem": {
+              "type": "sword",
+              "label": "Testschwert",
+              "damage": 58,
+              "cooldown": 0.58,
+              "range": 2.35,
+              "effect": null,
+              "rarity": "legendary",
+              "rarityLabel": "Legendär",
+              "color": "#ffad44",
+              "name": "Testschwert · Legendär",
+              "burn": null,
+              "slow": null,
+              "poison": null,
+              "id": "qa-sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 0,
+              "visibleParticles": 0,
+              "activeSmoke": 0,
+              "visibleSmoke": 0,
+              "importedFireProjectiles": 0,
+              "importedIceProjectiles": 0,
+              "iceModel": {
+                "triangles": 6000,
+                "nominalLength": 0.95,
+                "forwardAxis": "+Z",
+                "source": "assets/inbox/ice crystal 3d model.glb",
+                "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+              },
+              "fireModel": {
+                "name": "Fiery flame · Tripo-Feuerball",
+                "triangles": 6000,
+                "nominalLength": 0.75
+              },
+              "activeBursts": 0,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [],
+              "activeTrails": 0,
+              "visibleTrailSegments": 0,
+              "presentation": "flowing-elements-v2",
+              "capacity": {
+                "particles": 160,
+                "bursts": 12,
+                "historySamplesPerProjectile": 32
+              }
+            },
+            "special": {
+              "aiming": false,
+              "target": null,
+              "moon": null,
+              "visuals": {
+                "activeClouds": 0,
+                "cloudDraws": 0,
+                "activeProjectiles": 0,
+                "volumeSteps": 16,
+                "trailSamples": 14
+              },
+              "poisonProjectiles": 0,
+              "poisonFlights": [],
+              "clouds": []
+            },
+            "heldGrip": null,
+            "hands": {
+              "left": {
+                "x": 0.18160788774768477,
+                "y": 1.2193109235171997,
+                "z": 0.24862183487689293
+              },
+              "right": {
+                "x": 0.17260036814024904,
+                "y": 1.1725741455180483,
+                "z": 0.3719685092227536
+              }
+            },
+            "lastSpellLaunch": null,
+            "rigPose": {
+              "castWeight": 0,
+              "swordWeight": 1,
+              "stanceWeight": 1,
+              "leftArm": {
+                "shoulder": {
+                  "x": 0.14295135900186917,
+                  "y": 1.3913546416607798,
+                  "z": -0.13512808716139801
+                },
+                "elbow": {
+                  "x": 0.2939994927110883,
+                  "y": 1.2012809957041881,
+                  "z": 0.035702688934224014
+                },
+                "hand": {
+                  "x": 0.18160788774768477,
+                  "y": 1.2193109235171997,
+                  "z": 0.24862183487689293
+                }
+              },
+              "feet": {
+                "left": {
+                  "x": 0.2989660189909742,
+                  "y": 0.17547827422006346,
+                  "z": 0.09335833633889123
+                },
+                "right": {
+                  "x": -0.12611485291351876,
+                  "y": 0.1759480564064685,
+                  "z": -0.09331883466446556
+                }
+              },
+              "hips": {
+                "x": 0.0015873657929619256,
+                "y": 0.937901562598371,
+                "z": 0.03267553705942916
+              }
+            },
+            "staffTip": null,
+            "spells": [],
+            "heldModel": {
+              "type": "sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1,
+              "presentationScale": 0.7040000000000001,
+              "groundPresentationScale": 0.96,
+              "stringVertices": 0
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "arrowModel": {
+              "triangles": 6000,
+              "nominalLength": 1.05,
+              "forwardAxis": "+Z",
+              "source": "assets/inbox/feathered spear 3d model.glb",
+              "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+            },
+            "importedArrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": 0.17260036814024904,
+                "y": 1.1725741455180483,
+                "z": 0.3719685092227536
+              },
+              "swordTip": {
+                "x": 0.8293540758007011,
+                "y": 0.9644235113788325,
+                "z": 0.663478268227402
+              }
+            }
+          },
+          "elapsed": 0.5166666666666666,
+          "position": {
+            "x": -12,
+            "y": 1.1451587974475412,
+            "z": -10
+          }
+        },
+        {
+          "combat": {
+            "attackPhase": "strike",
+            "bowDraw": 0,
+            "swordSweep": -1.10947312869865,
+            "shotsFired": 0,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "swordCombo": {
+              "index": 2,
+              "pattern": "backhand",
+              "swingId": 2,
+              "active": true,
+              "progress": 0.517241379310345,
+              "remaining": 1.1799999999999997
+            },
+            "swordTrail": {
+              "style": "blade-following-ribbon",
+              "trailActive": true,
+              "sampleCount": 2,
+              "segmentCount": 4,
+              "pattern": "backhand",
+              "latestBase": {
+                "x": -12.295622983809006,
+                "y": 3.0137721473924697,
+                "z": -9.205762100684746
+              },
+              "latestTip": {
+                "x": -12.625741932775224,
+                "y": 3.2839436466242415,
+                "z": -8.708292989689197
+              },
+              "activeGlints": 1,
+              "emittedGlints": 2,
+              "swingCount": 2,
+              "impactCount": 0,
+              "depthTested": true,
+              "shadingLayers": [
+                "edge",
+                "ribbon",
+                "afterimage"
+              ],
+              "drawCalls": 2,
+              "historyCapacity": 32,
+              "glintCapacity": 24,
+              "opacity": 1,
+              "lifetime": 0.18
+            },
+            "swordBlade": {
+              "base": {
+                "x": -12.295622983809006,
+                "y": 3.0137721473924697,
+                "z": -9.205762100684746
+              },
+              "tip": {
+                "x": -12.625741932775224,
+                "y": 3.2839436466242415,
+                "z": -8.708292989689197
+              }
+            },
+            "equippedItem": {
+              "type": "sword",
+              "label": "Testschwert",
+              "damage": 58,
+              "cooldown": 0.58,
+              "range": 2.35,
+              "effect": null,
+              "rarity": "legendary",
+              "rarityLabel": "Legendär",
+              "color": "#ffad44",
+              "name": "Testschwert · Legendär",
+              "burn": null,
+              "slow": null,
+              "poison": null,
+              "id": "qa-sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 0,
+              "visibleParticles": 0,
+              "activeSmoke": 0,
+              "visibleSmoke": 0,
+              "importedFireProjectiles": 0,
+              "importedIceProjectiles": 0,
+              "iceModel": {
+                "triangles": 6000,
+                "nominalLength": 0.95,
+                "forwardAxis": "+Z",
+                "source": "assets/inbox/ice crystal 3d model.glb",
+                "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+              },
+              "fireModel": {
+                "name": "Fiery flame · Tripo-Feuerball",
+                "triangles": 6000,
+                "nominalLength": 0.75
+              },
+              "activeBursts": 0,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [],
+              "activeTrails": 0,
+              "visibleTrailSegments": 0,
+              "presentation": "flowing-elements-v2",
+              "capacity": {
+                "particles": 160,
+                "bursts": 12,
+                "historySamplesPerProjectile": 32
+              }
+            },
+            "special": {
+              "aiming": false,
+              "target": null,
+              "moon": null,
+              "visuals": {
+                "activeClouds": 0,
+                "cloudDraws": 0,
+                "activeProjectiles": 0,
+                "volumeSteps": 16,
+                "trailSamples": 14
+              },
+              "poisonProjectiles": 0,
+              "poisonFlights": [],
+              "clouds": []
+            },
+            "heldGrip": null,
+            "hands": {
+              "left": {
+                "x": 0.2609187746996664,
+                "y": 1.259540634228304,
+                "z": 0.29839220291278323
+              },
+              "right": {
+                "x": -0.3794979982737008,
+                "y": 1.4739057541863234,
+                "z": 0.3681028236051791
+              }
+            },
+            "lastSpellLaunch": null,
+            "rigPose": {
+              "castWeight": 0,
+              "swordWeight": 1,
+              "stanceWeight": 1,
+              "leftArm": {
+                "shoulder": {
+                  "x": 0.16063144928593864,
+                  "y": 1.386050917005254,
+                  "z": -0.03604130579595477
+                },
+                "elbow": {
+                  "x": 0.36265585033831815,
+                  "y": 1.2060480755595928,
+                  "z": 0.08607253524911584
+                },
+                "hand": {
+                  "x": 0.2609187746996664,
+                  "y": 1.259540634228304,
+                  "z": 0.29839220291278323
+                }
+              },
+              "feet": {
+                "left": {
+                  "x": 0.29864202214104907,
+                  "y": 0.17562458357290545,
+                  "z": -0.12421371113802415
+                },
+                "right": {
+                  "x": -0.12521292797918182,
+                  "y": 0.17538849554010982,
+                  "z": 0.1298317463407912
+                }
+              },
+              "hips": {
+                "x": 0.00159377519582371,
+                "y": 0.9371176182546356,
+                "z": 0.032694572517886655
+              }
+            },
+            "staffTip": null,
+            "spells": [],
+            "heldModel": {
+              "type": "sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1,
+              "presentationScale": 0.7040000000000001,
+              "groundPresentationScale": 0.96,
+              "stringVertices": 0
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "arrowModel": {
+              "triangles": 6000,
+              "nominalLength": 1.05,
+              "forwardAxis": "+Z",
+              "source": "assets/inbox/feathered spear 3d model.glb",
+              "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+            },
+            "importedArrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.3794979982737008,
+                "y": 1.4739057541863234,
+                "z": 0.3681028236051791
+              },
+              "swordTip": {
+                "x": -0.9898015959599326,
+                "y": 1.78232070764725,
+                "z": 0.6714834323233257
+              }
+            }
+          },
+          "elapsed": 1.1333333333333342,
+          "position": {
+            "x": -12,
+            "y": 1.1451587974475412,
+            "z": -10
+          }
+        },
+        {
+          "combat": {
+            "attackPhase": "strike",
+            "bowDraw": 0,
+            "swordSweep": 0.08329683674086111,
+            "shotsFired": 0,
+            "impacts": 0,
+            "lastImpact": null,
+            "damageHits": 0,
+            "lastDamage": null,
+            "swordCombo": {
+              "index": 3,
+              "pattern": "overhead",
+              "swingId": 3,
+              "active": true,
+              "progress": 0.517241379310345,
+              "remaining": 1.1799999999999997
+            },
+            "swordTrail": {
+              "style": "blade-following-ribbon",
+              "trailActive": true,
+              "sampleCount": 2,
+              "segmentCount": 4,
+              "pattern": "overhead",
+              "latestBase": {
+                "x": -11.736839320864146,
+                "y": 2.3430222203985864,
+                "z": -9.323229477382897
+              },
+              "latestTip": {
+                "x": -11.464310715985063,
+                "y": 1.8945757760800088,
+                "z": -8.93071116958173
+              },
+              "activeGlints": 1,
+              "emittedGlints": 3,
+              "swingCount": 3,
+              "impactCount": 0,
+              "depthTested": true,
+              "shadingLayers": [
+                "edge",
+                "ribbon",
+                "afterimage"
+              ],
+              "drawCalls": 2,
+              "historyCapacity": 32,
+              "glintCapacity": 24,
+              "opacity": 1,
+              "lifetime": 0.18
+            },
+            "swordBlade": {
+              "base": {
+                "x": -11.736839320864146,
+                "y": 2.3430222203985864,
+                "z": -9.323229477382897
+              },
+              "tip": {
+                "x": -11.464310715985063,
+                "y": 1.8945757760800088,
+                "z": -8.93071116958173
+              }
+            },
+            "equippedItem": {
+              "type": "sword",
+              "label": "Testschwert",
+              "damage": 58,
+              "cooldown": 0.58,
+              "range": 2.35,
+              "effect": null,
+              "rarity": "legendary",
+              "rarityLabel": "Legendär",
+              "color": "#ffad44",
+              "name": "Testschwert · Legendär",
+              "burn": null,
+              "slow": null,
+              "poison": null,
+              "id": "qa-sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "rotation": 0,
+              "scale": 1
+            },
+            "spellsActive": 0,
+            "effects": {
+              "activeProjectiles": 0,
+              "visibleProjectiles": 0,
+              "activeParticles": 0,
+              "visibleParticles": 0,
+              "activeSmoke": 0,
+              "visibleSmoke": 0,
+              "importedFireProjectiles": 0,
+              "importedIceProjectiles": 0,
+              "iceModel": {
+                "triangles": 6000,
+                "nominalLength": 0.95,
+                "forwardAxis": "+Z",
+                "source": "assets/inbox/ice crystal 3d model.glb",
+                "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+              },
+              "fireModel": {
+                "name": "Fiery flame · Tripo-Feuerball",
+                "triangles": 6000,
+                "nominalLength": 0.75
+              },
+              "activeBursts": 0,
+              "channelActive": false,
+              "channelVisible": false,
+              "emitted": {
+                "fireStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                },
+                "iceStaff": {
+                  "launches": 0,
+                  "impacts": 0
+                }
+              },
+              "latestImpact": null,
+              "bursts": [],
+              "activeTrails": 0,
+              "visibleTrailSegments": 0,
+              "presentation": "flowing-elements-v2",
+              "capacity": {
+                "particles": 160,
+                "bursts": 12,
+                "historySamplesPerProjectile": 32
+              }
+            },
+            "special": {
+              "aiming": false,
+              "target": null,
+              "moon": null,
+              "visuals": {
+                "activeClouds": 0,
+                "cloudDraws": 0,
+                "activeProjectiles": 0,
+                "volumeSteps": 16,
+                "trailSamples": 14
+              },
+              "poisonProjectiles": 0,
+              "poisonFlights": [],
+              "clouds": []
+            },
+            "heldGrip": null,
+            "hands": {
+              "left": {
+                "x": 0.06673351645598125,
+                "y": 1.122180737170575,
+                "z": 0.3435356533524718
+              },
+              "right": {
+                "x": -0.10432189324899355,
+                "y": 1.1364393136076245,
+                "z": 0.451294866142689
+              }
+            },
+            "lastSpellLaunch": null,
+            "rigPose": {
+              "castWeight": 0,
+              "swordWeight": 1,
+              "stanceWeight": 1,
+              "leftArm": {
+                "shoulder": {
+                  "x": 0.1455591713757629,
+                  "y": 1.4024356086751277,
+                  "z": -0.10447978997700957
+                },
+                "elbow": {
+                  "x": 0.127979044038252,
+                  "y": 1.2292461122561629,
+                  "z": 0.13598439204354484
+                },
+                "hand": {
+                  "x": 0.06673351645598125,
+                  "y": 1.122180737170575,
+                  "z": 0.3435356533524718
+                }
+              },
+              "feet": {
+                "left": {
+                  "x": 0.2976556865671549,
+                  "y": 0.17538786354559333,
+                  "z": 0.09820344682375826
+                },
+                "right": {
+                  "x": -0.1251176139375927,
+                  "y": 0.1753510719021748,
+                  "z": -0.08810737419281445
+                }
+              },
+              "hips": {
+                "x": 0.00159377519582371,
+                "y": 0.9371132857495209,
+                "z": 0.032694572517886655
+              }
+            },
+            "staffTip": null,
+            "spells": [],
+            "heldModel": {
+              "type": "sword",
+              "variant": "kit-tripo-sword",
+              "model": "tripo",
+              "visible": true,
+              "meshCount": 1,
+              "presentationScale": 0.7040000000000001,
+              "groundPresentationScale": 0.96,
+              "stringVertices": 0
+            },
+            "arrowsActive": 0,
+            "arrowsFlying": 0,
+            "arrowModel": {
+              "triangles": 6000,
+              "nominalLength": 1.05,
+              "forwardAxis": "+Z",
+              "source": "assets/inbox/feathered spear 3d model.glb",
+              "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+            },
+            "importedArrowsFlying": 0,
+            "heldPose": {
+              "bow": {
+                "x": 0.17,
+                "y": 1.3,
+                "z": 0.13
+              },
+              "sword": {
+                "x": -0.10432189324899355,
+                "y": 1.1364393136076245,
+                "z": 0.451294866142689
+              },
+              "swordTip": {
+                "x": -0.05893657226425178,
+                "y": 0.6245141488603895,
+                "z": 0.9948966109438673
+              }
+            }
+          },
+          "elapsed": 1.7499999999999987,
+          "position": {
+            "x": -12,
+            "y": 1.1451587974475412,
+            "z": -10
+          }
+        }
+      ]
+    },
+    {
+      "name": "Idle clears the combo and removes the trailing geometry",
+      "evidence": {
+        "index": 0,
+        "pattern": null,
+        "swingId": 3,
+        "active": false,
+        "progress": 0,
+        "remaining": 0
+      }
+    },
+    {
+      "name": "A real victory adds 25 HP with a body-origin burst, brief character glow, number pulse and unchanged health-bar width",
+      "evidence": {
+        "stage": "burst",
+        "requestedAge": 0.28,
+        "level": 2,
+        "health": 97,
+        "maxHealth": 125,
+        "effect": {
+          "active": true,
+          "level": 2,
+          "emitted": 1,
+          "style": "core-burst",
+          "age": 0.28329999999999567,
+          "bodyGlow": 0.4336742694074288,
+          "duration": 1.6,
+          "particleCount": 36,
+          "haloVisible": true,
+          "coreVisible": true,
+          "ribbonVisible": false,
+          "lightIntensity": 5.3222362690251765,
+          "depthTested": true,
+          "ringCount": 0,
+          "beamVisible": false,
+          "reducedMotion": false,
+          "remaining": 1.3167000000000044
+        },
+        "character": {
+          "levelUpGlow": 0.4336742694074288,
+          "name": "Nebeljäger Tripo",
+          "source": "assets/characters/nebeljagd_player_base_v1.glb",
+          "format": "GLB",
+          "skinned": true,
+          "joints": 66,
+          "clips": [
+            "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+            "standing_relax",
+            "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "defeat_03"
+          ],
+          "normalizedHeight": 1.82,
+          "sourceHeight": 0.98500635508701,
+          "normalizedScale": 1.8477038149050637,
+          "geometryPreparation": {
+            "version": "tripo-neutral-finger-v1",
+            "repairedVertices": 4,
+            "repairs": [
+              {
+                "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "vertices": [
+                  5828,
+                  5829,
+                  5830,
+                  5831
+                ],
+                "replacedBone": "neutral_bone",
+                "influences": [
+                  {
+                    "bone": "mixamorigRightHandIndex1",
+                    "weight": 0.5563358767413223
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle1",
+                    "weight": 0.4116030543172535
+                  },
+                  {
+                    "bone": "mixamorigRightHandIndex2",
+                    "weight": 0.02015267200548744
+                  },
+                  {
+                    "bone": "mixamorigRightHandMiddle2",
+                    "weight": 0.011908396935936705
+                  }
+                ]
+              }
+            ]
+          },
+          "handBones": {
+            "left": [
+              "mixamorigLeftArm",
+              "mixamorigLeftForeArm",
+              "mixamorigLeftHand"
+            ],
+            "right": [
+              "mixamorigRightArm",
+              "mixamorigRightForeArm",
+              "mixamorigRightHand"
+            ]
+          },
+          "gripSockets": {
+            "left": {
+              "source": "palm"
+            },
+            "right": {
+              "source": "palm"
+            }
+          },
+          "materials": [
+            {
+              "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "baseColorTexture": true,
+              "normalTexture": true,
+              "roughnessTexture": true,
+              "metalnessTexture": true
+            }
+          ],
+          "meshes": 1,
+          "triangles": 20161,
+          "activeAnimation": "standing_relax",
+          "mappedAnimations": {
+            "idle": "standing_relax",
+            "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+            "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+          },
+          "animationPreparation": {
+            "rootAligned": true,
+            "runSourceWindow": [
+              1.7083333333333333,
+              2.4166666666666665
+            ],
+            "groundedSamples": 131,
+            "maxGroundCorrection": 0.18472989118046884,
+            "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+          },
+          "rollProgress": 0,
+          "rollClipTime": 0,
+          "rollDuration": 0.72,
+          "rollWeight": 0,
+          "presentationRotation": [
+            0,
+            0,
+            0
+          ],
+          "modelScale": [
+            1.8477038149050637,
+            1.8477038149050637,
+            1.8477038149050637
+          ],
+          "opacity": 1,
+          "levelUpGlowMaterials": {
+            "strength": 0.4336742694074288,
+            "count": 1,
+            "maxEmissiveIntensity": 1.390306842466686,
+            "restored": false
+          },
+          "locomotion": {
+            "speed": 0,
+            "walkWeight": 0,
+            "playbackSpeed": 0.42,
+            "yaw": 1.5707963267948966,
+            "turnRate": 0,
+            "forwardLean": 0,
+            "sideLean": 0
+          },
+          "snowWeight": 0,
+          "snowSinkMeters": 0,
+          "snowClipStrength": 0,
+          "snowClipHeight": -10000
+        },
+        "bar": {
+          "id": "player",
+          "health": 97,
+          "maxHealth": 125,
+          "level": 2,
+          "levelLabel": "2",
+          "local": true,
+          "visible": true,
+          "displayedRatio": 0.776,
+          "flash": 0,
+          "healthPerSegment": 25,
+          "segmentCount": 5,
+          "barWidth": 1.805,
+          "barBounds": {
+            "left": -0.95,
+            "right": 0.95
+          },
+          "levelBounds": {
+            "left": -1.541327057014704,
+            "right": -1.03
+          },
+          "levelPulse": {
+            "active": true,
+            "remaining": 1.3167000000000044,
+            "scale": 1.162106947760691,
+            "glow": 0.9005941542260606,
+            "reducedMotion": false
+          }
+        },
+        "width": 154,
+        "left": 143,
+        "labelRight": 137,
+        "label": "2",
+        "noticeAbsent": true,
+        "hudPulse": {
+          "label": "2",
+          "pulsing": true
+        }
+      }
+    },
+    {
+      "name": "Four actual renderer frames cover appearance, peak, settling and fade of one celebration",
+      "evidence": [
+        {
+          "stage": "core",
+          "requestedAge": 0.1,
+          "level": 2,
+          "health": 97,
+          "maxHealth": 125,
+          "effect": {
+            "active": true,
+            "level": 2,
+            "emitted": 1,
+            "style": "core-burst",
+            "age": 0.1,
+            "bodyGlow": 1,
+            "duration": 1.6,
+            "particleCount": 36,
+            "haloVisible": true,
+            "coreVisible": true,
+            "ribbonVisible": false,
+            "lightIntensity": 5.4,
+            "depthTested": true,
+            "ringCount": 0,
+            "beamVisible": false,
+            "reducedMotion": false,
+            "remaining": 1.5
+          },
+          "character": {
+            "levelUpGlow": 1,
+            "name": "Nebeljäger Tripo",
+            "source": "assets/characters/nebeljagd_player_base_v1.glb",
+            "format": "GLB",
+            "skinned": true,
+            "joints": 66,
+            "clips": [
+              "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+              "standing_relax",
+              "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "defeat_03"
+            ],
+            "normalizedHeight": 1.82,
+            "sourceHeight": 0.98500635508701,
+            "normalizedScale": 1.8477038149050637,
+            "geometryPreparation": {
+              "version": "tripo-neutral-finger-v1",
+              "repairedVertices": 4,
+              "repairs": [
+                {
+                  "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                  "vertices": [
+                    5828,
+                    5829,
+                    5830,
+                    5831
+                  ],
+                  "replacedBone": "neutral_bone",
+                  "influences": [
+                    {
+                      "bone": "mixamorigRightHandIndex1",
+                      "weight": 0.5563358767413223
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle1",
+                      "weight": 0.4116030543172535
+                    },
+                    {
+                      "bone": "mixamorigRightHandIndex2",
+                      "weight": 0.02015267200548744
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle2",
+                      "weight": 0.011908396935936705
+                    }
+                  ]
+                }
+              ]
+            },
+            "handBones": {
+              "left": [
+                "mixamorigLeftArm",
+                "mixamorigLeftForeArm",
+                "mixamorigLeftHand"
+              ],
+              "right": [
+                "mixamorigRightArm",
+                "mixamorigRightForeArm",
+                "mixamorigRightHand"
+              ]
+            },
+            "gripSockets": {
+              "left": {
+                "source": "palm"
+              },
+              "right": {
+                "source": "palm"
+              }
+            },
+            "materials": [
+              {
+                "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "baseColorTexture": true,
+                "normalTexture": true,
+                "roughnessTexture": true,
+                "metalnessTexture": true
+              }
+            ],
+            "meshes": 1,
+            "triangles": 20161,
+            "activeAnimation": "standing_relax",
+            "mappedAnimations": {
+              "idle": "standing_relax",
+              "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+            },
+            "animationPreparation": {
+              "rootAligned": true,
+              "runSourceWindow": [
+                1.7083333333333333,
+                2.4166666666666665
+              ],
+              "groundedSamples": 131,
+              "maxGroundCorrection": 0.18472989118046884,
+              "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+            },
+            "rollProgress": 0,
+            "rollClipTime": 0,
+            "rollDuration": 0.72,
+            "rollWeight": 0,
+            "presentationRotation": [
+              0,
+              0,
+              0
+            ],
+            "modelScale": [
+              1.8477038149050637,
+              1.8477038149050637,
+              1.8477038149050637
+            ],
+            "opacity": 1,
+            "levelUpGlowMaterials": {
+              "strength": 1,
+              "count": 1,
+              "maxEmissiveIntensity": 1.9,
+              "restored": false
+            },
+            "locomotion": {
+              "speed": 0,
+              "walkWeight": 0,
+              "playbackSpeed": 0.42,
+              "yaw": 1.5707963267948966,
+              "turnRate": 0,
+              "forwardLean": 0,
+              "sideLean": 0
+            },
+            "snowWeight": 0,
+            "snowSinkMeters": 0,
+            "snowClipStrength": 0,
+            "snowClipHeight": -10000
+          },
+          "bar": {
+            "id": "player",
+            "health": 97,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.776,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.4855442923553719,
+              "right": -1.03
+            },
+            "levelPulse": {
+              "active": true,
+              "remaining": 1.5,
+              "scale": 1.0353279371712998,
+              "glow": 0.1962663176183321,
+              "reducedMotion": false
+            }
+          },
+          "width": 154,
+          "left": 143,
+          "labelRight": 137,
+          "label": "2",
+          "noticeAbsent": true
+        },
+        {
+          "stage": "burst",
+          "requestedAge": 0.28,
+          "level": 2,
+          "health": 97,
+          "maxHealth": 125,
+          "effect": {
+            "active": true,
+            "level": 2,
+            "emitted": 1,
+            "style": "core-burst",
+            "age": 0.28329999999999567,
+            "bodyGlow": 0.4336742694074288,
+            "duration": 1.6,
+            "particleCount": 36,
+            "haloVisible": true,
+            "coreVisible": true,
+            "ribbonVisible": false,
+            "lightIntensity": 5.3222362690251765,
+            "depthTested": true,
+            "ringCount": 0,
+            "beamVisible": false,
+            "reducedMotion": false,
+            "remaining": 1.3167000000000044
+          },
+          "character": {
+            "levelUpGlow": 0.4336742694074288,
+            "name": "Nebeljäger Tripo",
+            "source": "assets/characters/nebeljagd_player_base_v1.glb",
+            "format": "GLB",
+            "skinned": true,
+            "joints": 66,
+            "clips": [
+              "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+              "standing_relax",
+              "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "defeat_03"
+            ],
+            "normalizedHeight": 1.82,
+            "sourceHeight": 0.98500635508701,
+            "normalizedScale": 1.8477038149050637,
+            "geometryPreparation": {
+              "version": "tripo-neutral-finger-v1",
+              "repairedVertices": 4,
+              "repairs": [
+                {
+                  "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                  "vertices": [
+                    5828,
+                    5829,
+                    5830,
+                    5831
+                  ],
+                  "replacedBone": "neutral_bone",
+                  "influences": [
+                    {
+                      "bone": "mixamorigRightHandIndex1",
+                      "weight": 0.5563358767413223
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle1",
+                      "weight": 0.4116030543172535
+                    },
+                    {
+                      "bone": "mixamorigRightHandIndex2",
+                      "weight": 0.02015267200548744
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle2",
+                      "weight": 0.011908396935936705
+                    }
+                  ]
+                }
+              ]
+            },
+            "handBones": {
+              "left": [
+                "mixamorigLeftArm",
+                "mixamorigLeftForeArm",
+                "mixamorigLeftHand"
+              ],
+              "right": [
+                "mixamorigRightArm",
+                "mixamorigRightForeArm",
+                "mixamorigRightHand"
+              ]
+            },
+            "gripSockets": {
+              "left": {
+                "source": "palm"
+              },
+              "right": {
+                "source": "palm"
+              }
+            },
+            "materials": [
+              {
+                "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "baseColorTexture": true,
+                "normalTexture": true,
+                "roughnessTexture": true,
+                "metalnessTexture": true
+              }
+            ],
+            "meshes": 1,
+            "triangles": 20161,
+            "activeAnimation": "standing_relax",
+            "mappedAnimations": {
+              "idle": "standing_relax",
+              "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+            },
+            "animationPreparation": {
+              "rootAligned": true,
+              "runSourceWindow": [
+                1.7083333333333333,
+                2.4166666666666665
+              ],
+              "groundedSamples": 131,
+              "maxGroundCorrection": 0.18472989118046884,
+              "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+            },
+            "rollProgress": 0,
+            "rollClipTime": 0,
+            "rollDuration": 0.72,
+            "rollWeight": 0,
+            "presentationRotation": [
+              0,
+              0,
+              0
+            ],
+            "modelScale": [
+              1.8477038149050637,
+              1.8477038149050637,
+              1.8477038149050637
+            ],
+            "opacity": 1,
+            "levelUpGlowMaterials": {
+              "strength": 0.4336742694074288,
+              "count": 1,
+              "maxEmissiveIntensity": 1.390306842466686,
+              "restored": false
+            },
+            "locomotion": {
+              "speed": 0,
+              "walkWeight": 0,
+              "playbackSpeed": 0.42,
+              "yaw": 1.5707963267948966,
+              "turnRate": 0,
+              "forwardLean": 0,
+              "sideLean": 0
+            },
+            "snowWeight": 0,
+            "snowSinkMeters": 0,
+            "snowClipStrength": 0,
+            "snowClipHeight": -10000
+          },
+          "bar": {
+            "id": "player",
+            "health": 97,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.776,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.541327057014704,
+              "right": -1.03
+            },
+            "levelPulse": {
+              "active": true,
+              "remaining": 1.3167000000000044,
+              "scale": 1.162106947760691,
+              "glow": 0.9005941542260606,
+              "reducedMotion": false
+            }
+          },
+          "width": 154,
+          "left": 143,
+          "labelRight": 137,
+          "label": "2",
+          "noticeAbsent": true,
+          "hudPulse": {
+            "label": "2",
+            "pulsing": true
+          }
+        },
+        {
+          "stage": "settling",
+          "requestedAge": 0.65,
+          "level": 2,
+          "health": 97,
+          "maxHealth": 125,
+          "effect": {
+            "active": true,
+            "level": 2,
+            "emitted": 1,
+            "style": "core-burst",
+            "age": 0.7165999999999986,
+            "bodyGlow": 0,
+            "duration": 1.6,
+            "particleCount": 36,
+            "haloVisible": true,
+            "coreVisible": false,
+            "ribbonVisible": false,
+            "lightIntensity": 0.6618056344663336,
+            "depthTested": true,
+            "ringCount": 0,
+            "beamVisible": false,
+            "reducedMotion": false,
+            "remaining": 0.8834000000000015
+          },
+          "character": {
+            "levelUpGlow": 0,
+            "name": "Nebeljäger Tripo",
+            "source": "assets/characters/nebeljagd_player_base_v1.glb",
+            "format": "GLB",
+            "skinned": true,
+            "joints": 66,
+            "clips": [
+              "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+              "standing_relax",
+              "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "defeat_03"
+            ],
+            "normalizedHeight": 1.82,
+            "sourceHeight": 0.98500635508701,
+            "normalizedScale": 1.8477038149050637,
+            "geometryPreparation": {
+              "version": "tripo-neutral-finger-v1",
+              "repairedVertices": 4,
+              "repairs": [
+                {
+                  "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                  "vertices": [
+                    5828,
+                    5829,
+                    5830,
+                    5831
+                  ],
+                  "replacedBone": "neutral_bone",
+                  "influences": [
+                    {
+                      "bone": "mixamorigRightHandIndex1",
+                      "weight": 0.5563358767413223
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle1",
+                      "weight": 0.4116030543172535
+                    },
+                    {
+                      "bone": "mixamorigRightHandIndex2",
+                      "weight": 0.02015267200548744
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle2",
+                      "weight": 0.011908396935936705
+                    }
+                  ]
+                }
+              ]
+            },
+            "handBones": {
+              "left": [
+                "mixamorigLeftArm",
+                "mixamorigLeftForeArm",
+                "mixamorigLeftHand"
+              ],
+              "right": [
+                "mixamorigRightArm",
+                "mixamorigRightForeArm",
+                "mixamorigRightHand"
+              ]
+            },
+            "gripSockets": {
+              "left": {
+                "source": "palm"
+              },
+              "right": {
+                "source": "palm"
+              }
+            },
+            "materials": [
+              {
+                "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "baseColorTexture": true,
+                "normalTexture": true,
+                "roughnessTexture": true,
+                "metalnessTexture": true
+              }
+            ],
+            "meshes": 1,
+            "triangles": 20161,
+            "activeAnimation": "standing_relax",
+            "mappedAnimations": {
+              "idle": "standing_relax",
+              "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+            },
+            "animationPreparation": {
+              "rootAligned": true,
+              "runSourceWindow": [
+                1.7083333333333333,
+                2.4166666666666665
+              ],
+              "groundedSamples": 131,
+              "maxGroundCorrection": 0.18472989118046884,
+              "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+            },
+            "rollProgress": 0,
+            "rollClipTime": 0,
+            "rollDuration": 0.72,
+            "rollWeight": 0,
+            "presentationRotation": [
+              0,
+              0,
+              0
+            ],
+            "modelScale": [
+              1.8477038149050637,
+              1.8477038149050637,
+              1.8477038149050637
+            ],
+            "opacity": 1,
+            "levelUpGlowMaterials": {
+              "strength": 0,
+              "count": 1,
+              "maxEmissiveIntensity": 1,
+              "restored": true
+            },
+            "locomotion": {
+              "speed": 0,
+              "walkWeight": 0,
+              "playbackSpeed": 0.42,
+              "yaw": 1.5707963267948966,
+              "turnRate": 0,
+              "forwardLean": 0,
+              "sideLean": 0
+            },
+            "snowWeight": 0,
+            "snowSinkMeters": 0,
+            "snowClipStrength": 0,
+            "snowClipHeight": -10000
+          },
+          "bar": {
+            "id": "player",
+            "health": 97,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.776,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.5328704859489384,
+              "right": -1.03
+            },
+            "levelPulse": {
+              "active": true,
+              "remaining": 0.8834000000000015,
+              "scale": 1.1428874680657692,
+              "glow": 0.7938192670320521,
+              "reducedMotion": false
+            }
+          },
+          "width": 154,
+          "left": 143,
+          "labelRight": 137,
+          "label": "2",
+          "noticeAbsent": true
+        },
+        {
+          "stage": "fade",
+          "requestedAge": 1.15,
+          "level": 2,
+          "health": 97,
+          "maxHealth": 125,
+          "effect": {
+            "active": true,
+            "level": 2,
+            "emitted": 1,
+            "style": "core-burst",
+            "age": 1.1667000000000045,
+            "bodyGlow": 0,
+            "duration": 1.6,
+            "particleCount": 36,
+            "haloVisible": false,
+            "coreVisible": false,
+            "ribbonVisible": false,
+            "lightIntensity": 0,
+            "depthTested": true,
+            "ringCount": 0,
+            "beamVisible": false,
+            "reducedMotion": false,
+            "remaining": 0.4332999999999956
+          },
+          "character": {
+            "levelUpGlow": 0,
+            "name": "Nebeljäger Tripo",
+            "source": "assets/characters/nebeljagd_player_base_v1.glb",
+            "format": "GLB",
+            "skinned": true,
+            "joints": 66,
+            "clips": [
+              "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+              "standing_relax",
+              "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "defeat_03"
+            ],
+            "normalizedHeight": 1.82,
+            "sourceHeight": 0.98500635508701,
+            "normalizedScale": 1.8477038149050637,
+            "geometryPreparation": {
+              "version": "tripo-neutral-finger-v1",
+              "repairedVertices": 4,
+              "repairs": [
+                {
+                  "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                  "vertices": [
+                    5828,
+                    5829,
+                    5830,
+                    5831
+                  ],
+                  "replacedBone": "neutral_bone",
+                  "influences": [
+                    {
+                      "bone": "mixamorigRightHandIndex1",
+                      "weight": 0.5563358767413223
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle1",
+                      "weight": 0.4116030543172535
+                    },
+                    {
+                      "bone": "mixamorigRightHandIndex2",
+                      "weight": 0.02015267200548744
+                    },
+                    {
+                      "bone": "mixamorigRightHandMiddle2",
+                      "weight": 0.011908396935936705
+                    }
+                  ]
+                }
+              ]
+            },
+            "handBones": {
+              "left": [
+                "mixamorigLeftArm",
+                "mixamorigLeftForeArm",
+                "mixamorigLeftHand"
+              ],
+              "right": [
+                "mixamorigRightArm",
+                "mixamorigRightForeArm",
+                "mixamorigRightHand"
+              ]
+            },
+            "gripSockets": {
+              "left": {
+                "source": "palm"
+              },
+              "right": {
+                "source": "palm"
+              }
+            },
+            "materials": [
+              {
+                "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+                "baseColorTexture": true,
+                "normalTexture": true,
+                "roughnessTexture": true,
+                "metalnessTexture": true
+              }
+            ],
+            "meshes": 1,
+            "triangles": 20161,
+            "activeAnimation": "standing_relax",
+            "mappedAnimations": {
+              "idle": "standing_relax",
+              "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+              "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+            },
+            "animationPreparation": {
+              "rootAligned": true,
+              "runSourceWindow": [
+                1.7083333333333333,
+                2.4166666666666665
+              ],
+              "groundedSamples": 131,
+              "maxGroundCorrection": 0.18472989118046884,
+              "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+            },
+            "rollProgress": 0,
+            "rollClipTime": 0,
+            "rollDuration": 0.72,
+            "rollWeight": 0,
+            "presentationRotation": [
+              0,
+              0,
+              0
+            ],
+            "modelScale": [
+              1.8477038149050637,
+              1.8477038149050637,
+              1.8477038149050637
+            ],
+            "opacity": 1,
+            "levelUpGlowMaterials": {
+              "strength": 0,
+              "count": 1,
+              "maxEmissiveIntensity": 1,
+              "restored": true
+            },
+            "locomotion": {
+              "speed": 0,
+              "walkWeight": 0,
+              "playbackSpeed": 0.42,
+              "yaw": 1.5707963267948966,
+              "turnRate": 0,
+              "forwardLean": 0,
+              "sideLean": 0
+            },
+            "snowWeight": 0,
+            "snowSinkMeters": 0,
+            "snowClipStrength": 0,
+            "snowClipHeight": -10000
+          },
+          "bar": {
+            "id": "player",
+            "health": 97,
+            "maxHealth": 125,
+            "level": 2,
+            "levelLabel": "2",
+            "local": true,
+            "visible": true,
+            "displayedRatio": 0.776,
+            "flash": 0,
+            "healthPerSegment": 25,
+            "segmentCount": 5,
+            "barWidth": 1.805,
+            "barBounds": {
+              "left": -0.95,
+              "right": 0.95
+            },
+            "levelBounds": {
+              "left": -1.4920119766217144,
+              "right": -1.03
+            },
+            "levelPulse": {
+              "active": true,
+              "remaining": 0.4332999999999958,
+              "scale": 1.050027219594805,
+              "glow": 0.27792899774891666,
+              "reducedMotion": false
+            }
+          },
+          "width": 154,
+          "left": 143,
+          "labelRight": 137,
+          "label": "2",
+          "noticeAbsent": true
+        }
+      ]
+    },
+    {
+      "name": "The figure effect and number pulse expire after a single victory",
+      "evidence": {
+        "active": false,
+        "level": 2,
+        "emitted": 1,
+        "style": "core-burst",
+        "age": 0,
+        "bodyGlow": 0,
+        "duration": 1.6,
+        "particleCount": 0,
+        "haloVisible": false,
+        "coreVisible": false,
+        "ribbonVisible": false,
+        "lightIntensity": 0,
+        "depthTested": true,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 0
+      }
+    },
+    {
+      "name": "A wall prevents an in-range sword hit; the same opponent is hit exactly once from the clear side",
+      "evidence": {
+        "blockedTarget": {
+          "id": "practice-2",
+          "name": "Übungsgegner 2",
+          "practice": true,
+          "position": {
+            "x": 5,
+            "y": 1.4344979236568827,
+            "z": 12.70847500000001
+          },
+          "health": 140,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": false,
+          "burnRemaining": 0,
+          "poisonRemaining": 0,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 6.063475000000064
+        },
+        "clearTarget": {
+          "id": "practice-2",
+          "name": "Übungsgegner 2",
+          "practice": true,
+          "position": {
+            "x": 5,
+            "y": 1.4361996438764626,
+            "z": 13.048475000000014
+          },
+          "health": 82,
+          "maxHealth": 140,
+          "alive": true,
+          "visible": true,
+          "burnRemaining": 0,
+          "poisonRemaining": 0,
+          "slowRemaining": 0,
+          "speedMultiplier": 1,
+          "baseSpeed": 0.85,
+          "travelled": 6.403475000000068
+        }
+      }
+    },
+    {
+      "name": "Restart clears the celebration and restores the initial level and health",
+      "evidence": {
+        "active": false,
+        "level": 1,
+        "emitted": 0,
+        "style": "core-burst",
+        "age": 0,
+        "bodyGlow": 0,
+        "duration": 1.6,
+        "particleCount": 0,
+        "haloVisible": false,
+        "coreVisible": false,
+        "ribbonVisible": false,
+        "lightIntensity": 0,
+        "depthTested": true,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 0
+      }
+    }
+  ],
+  "errors": [],
+  "unexpectedRequests": [],
+  "screenshots": [
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/sword-forehand.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/sword-backhand.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/sword-overhead.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-core.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-burst.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-default-camera.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-settling.png",
+    "/tmp/nebeljagd-sword-burst-feedback-qa-v3/actual-kill-fade.png"
+  ],
+  "limits": "Real keyboard swings and kill in an imported test island, Chromium/SwiftShader; no physical-device performance claim.",
+  "delivery": {
+    "file": "/workspace/nebeljagd/welt/nebeljagd.html",
+    "bytes": 89129661,
+    "sha256": "1ef6b4a88eb82382402404695bfc5757d6838759a922d927fe48595554bc350f"
+  },
+  "swordSequence": [
+    {
+      "combat": {
+        "attackPhase": "strike",
+        "bowDraw": 0,
+        "swordSweep": 1.1530562540100286,
+        "shotsFired": 0,
+        "impacts": 0,
+        "lastImpact": null,
+        "damageHits": 0,
+        "lastDamage": null,
+        "swordCombo": {
+          "index": 1,
+          "pattern": "forehand",
+          "swingId": 1,
+          "active": true,
+          "progress": 0.517241379310345,
+          "remaining": 1.1799999999999997
+        },
+        "swordTrail": {
+          "style": "blade-following-ribbon",
+          "trailActive": true,
+          "sampleCount": 2,
+          "segmentCount": 4,
+          "pattern": "forehand",
+          "latestBase": {
+            "x": -11.365942761357395,
+            "y": 2.4848069666080934,
+            "z": -9.741597933864755
+          },
+          "latestTip": {
+            "x": -10.740023001012872,
+            "y": 2.30246701110214,
+            "z": -9.808105603307817
+          },
+          "activeGlints": 1,
+          "emittedGlints": 1,
+          "swingCount": 1,
+          "impactCount": 0,
+          "depthTested": true,
+          "shadingLayers": [
+            "edge",
+            "ribbon",
+            "afterimage"
+          ],
+          "drawCalls": 2,
+          "historyCapacity": 32,
+          "glintCapacity": 24,
+          "opacity": 1,
+          "lifetime": 0.18
+        },
+        "swordBlade": {
+          "base": {
+            "x": -11.365942761357395,
+            "y": 2.4848069666080934,
+            "z": -9.741597933864755
+          },
+          "tip": {
+            "x": -10.740023001012872,
+            "y": 2.30246701110214,
+            "z": -9.808105603307817
+          }
+        },
+        "equippedItem": {
+          "type": "sword",
+          "label": "Testschwert",
+          "damage": 58,
+          "cooldown": 0.58,
+          "range": 2.35,
+          "effect": null,
+          "rarity": "legendary",
+          "rarityLabel": "Legendär",
+          "color": "#ffad44",
+          "name": "Testschwert · Legendär",
+          "burn": null,
+          "slow": null,
+          "poison": null,
+          "id": "qa-sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rotation": 0,
+          "scale": 1
+        },
+        "spellsActive": 0,
+        "effects": {
+          "activeProjectiles": 0,
+          "visibleProjectiles": 0,
+          "activeParticles": 0,
+          "visibleParticles": 0,
+          "activeSmoke": 0,
+          "visibleSmoke": 0,
+          "importedFireProjectiles": 0,
+          "importedIceProjectiles": 0,
+          "iceModel": {
+            "triangles": 6000,
+            "nominalLength": 0.95,
+            "forwardAxis": "+Z",
+            "source": "assets/inbox/ice crystal 3d model.glb",
+            "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+          },
+          "fireModel": {
+            "name": "Fiery flame · Tripo-Feuerball",
+            "triangles": 6000,
+            "nominalLength": 0.75
+          },
+          "activeBursts": 0,
+          "channelActive": false,
+          "channelVisible": false,
+          "emitted": {
+            "fireStaff": {
+              "launches": 0,
+              "impacts": 0
+            },
+            "iceStaff": {
+              "launches": 0,
+              "impacts": 0
+            }
+          },
+          "latestImpact": null,
+          "bursts": [],
+          "activeTrails": 0,
+          "visibleTrailSegments": 0,
+          "presentation": "flowing-elements-v2",
+          "capacity": {
+            "particles": 160,
+            "bursts": 12,
+            "historySamplesPerProjectile": 32
+          }
+        },
+        "special": {
+          "aiming": false,
+          "target": null,
+          "moon": null,
+          "visuals": {
+            "activeClouds": 0,
+            "cloudDraws": 0,
+            "activeProjectiles": 0,
+            "volumeSteps": 16,
+            "trailSamples": 14
+          },
+          "poisonProjectiles": 0,
+          "poisonFlights": [],
+          "clouds": []
+        },
+        "heldGrip": null,
+        "hands": {
+          "left": {
+            "x": 0.18160788774768477,
+            "y": 1.2193109235171997,
+            "z": 0.24862183487689293
+          },
+          "right": {
+            "x": 0.17260036814024904,
+            "y": 1.1725741455180483,
+            "z": 0.3719685092227536
+          }
+        },
+        "lastSpellLaunch": null,
+        "rigPose": {
+          "castWeight": 0,
+          "swordWeight": 1,
+          "stanceWeight": 1,
+          "leftArm": {
+            "shoulder": {
+              "x": 0.14295135900186917,
+              "y": 1.3913546416607798,
+              "z": -0.13512808716139801
+            },
+            "elbow": {
+              "x": 0.2939994927110883,
+              "y": 1.2012809957041881,
+              "z": 0.035702688934224014
+            },
+            "hand": {
+              "x": 0.18160788774768477,
+              "y": 1.2193109235171997,
+              "z": 0.24862183487689293
+            }
+          },
+          "feet": {
+            "left": {
+              "x": 0.2989660189909742,
+              "y": 0.17547827422006346,
+              "z": 0.09335833633889123
+            },
+            "right": {
+              "x": -0.12611485291351876,
+              "y": 0.1759480564064685,
+              "z": -0.09331883466446556
+            }
+          },
+          "hips": {
+            "x": 0.0015873657929619256,
+            "y": 0.937901562598371,
+            "z": 0.03267553705942916
+          }
+        },
+        "staffTip": null,
+        "spells": [],
+        "heldModel": {
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "visible": true,
+          "meshCount": 1,
+          "presentationScale": 0.7040000000000001,
+          "groundPresentationScale": 0.96,
+          "stringVertices": 0
+        },
+        "arrowsActive": 0,
+        "arrowsFlying": 0,
+        "arrowModel": {
+          "triangles": 6000,
+          "nominalLength": 1.05,
+          "forwardAxis": "+Z",
+          "source": "assets/inbox/feathered spear 3d model.glb",
+          "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+        },
+        "importedArrowsFlying": 0,
+        "heldPose": {
+          "bow": {
+            "x": 0.17,
+            "y": 1.3,
+            "z": 0.13
+          },
+          "sword": {
+            "x": 0.17260036814024904,
+            "y": 1.1725741455180483,
+            "z": 0.3719685092227536
+          },
+          "swordTip": {
+            "x": 0.8293540758007011,
+            "y": 0.9644235113788325,
+            "z": 0.663478268227402
+          }
+        }
+      },
+      "elapsed": 0.5166666666666666,
+      "position": {
+        "x": -12,
+        "y": 1.1451587974475412,
+        "z": -10
+      }
+    },
+    {
+      "combat": {
+        "attackPhase": "strike",
+        "bowDraw": 0,
+        "swordSweep": -1.10947312869865,
+        "shotsFired": 0,
+        "impacts": 0,
+        "lastImpact": null,
+        "damageHits": 0,
+        "lastDamage": null,
+        "swordCombo": {
+          "index": 2,
+          "pattern": "backhand",
+          "swingId": 2,
+          "active": true,
+          "progress": 0.517241379310345,
+          "remaining": 1.1799999999999997
+        },
+        "swordTrail": {
+          "style": "blade-following-ribbon",
+          "trailActive": true,
+          "sampleCount": 2,
+          "segmentCount": 4,
+          "pattern": "backhand",
+          "latestBase": {
+            "x": -12.295622983809006,
+            "y": 3.0137721473924697,
+            "z": -9.205762100684746
+          },
+          "latestTip": {
+            "x": -12.625741932775224,
+            "y": 3.2839436466242415,
+            "z": -8.708292989689197
+          },
+          "activeGlints": 1,
+          "emittedGlints": 2,
+          "swingCount": 2,
+          "impactCount": 0,
+          "depthTested": true,
+          "shadingLayers": [
+            "edge",
+            "ribbon",
+            "afterimage"
+          ],
+          "drawCalls": 2,
+          "historyCapacity": 32,
+          "glintCapacity": 24,
+          "opacity": 1,
+          "lifetime": 0.18
+        },
+        "swordBlade": {
+          "base": {
+            "x": -12.295622983809006,
+            "y": 3.0137721473924697,
+            "z": -9.205762100684746
+          },
+          "tip": {
+            "x": -12.625741932775224,
+            "y": 3.2839436466242415,
+            "z": -8.708292989689197
+          }
+        },
+        "equippedItem": {
+          "type": "sword",
+          "label": "Testschwert",
+          "damage": 58,
+          "cooldown": 0.58,
+          "range": 2.35,
+          "effect": null,
+          "rarity": "legendary",
+          "rarityLabel": "Legendär",
+          "color": "#ffad44",
+          "name": "Testschwert · Legendär",
+          "burn": null,
+          "slow": null,
+          "poison": null,
+          "id": "qa-sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rotation": 0,
+          "scale": 1
+        },
+        "spellsActive": 0,
+        "effects": {
+          "activeProjectiles": 0,
+          "visibleProjectiles": 0,
+          "activeParticles": 0,
+          "visibleParticles": 0,
+          "activeSmoke": 0,
+          "visibleSmoke": 0,
+          "importedFireProjectiles": 0,
+          "importedIceProjectiles": 0,
+          "iceModel": {
+            "triangles": 6000,
+            "nominalLength": 0.95,
+            "forwardAxis": "+Z",
+            "source": "assets/inbox/ice crystal 3d model.glb",
+            "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+          },
+          "fireModel": {
+            "name": "Fiery flame · Tripo-Feuerball",
+            "triangles": 6000,
+            "nominalLength": 0.75
+          },
+          "activeBursts": 0,
+          "channelActive": false,
+          "channelVisible": false,
+          "emitted": {
+            "fireStaff": {
+              "launches": 0,
+              "impacts": 0
+            },
+            "iceStaff": {
+              "launches": 0,
+              "impacts": 0
+            }
+          },
+          "latestImpact": null,
+          "bursts": [],
+          "activeTrails": 0,
+          "visibleTrailSegments": 0,
+          "presentation": "flowing-elements-v2",
+          "capacity": {
+            "particles": 160,
+            "bursts": 12,
+            "historySamplesPerProjectile": 32
+          }
+        },
+        "special": {
+          "aiming": false,
+          "target": null,
+          "moon": null,
+          "visuals": {
+            "activeClouds": 0,
+            "cloudDraws": 0,
+            "activeProjectiles": 0,
+            "volumeSteps": 16,
+            "trailSamples": 14
+          },
+          "poisonProjectiles": 0,
+          "poisonFlights": [],
+          "clouds": []
+        },
+        "heldGrip": null,
+        "hands": {
+          "left": {
+            "x": 0.2609187746996664,
+            "y": 1.259540634228304,
+            "z": 0.29839220291278323
+          },
+          "right": {
+            "x": -0.3794979982737008,
+            "y": 1.4739057541863234,
+            "z": 0.3681028236051791
+          }
+        },
+        "lastSpellLaunch": null,
+        "rigPose": {
+          "castWeight": 0,
+          "swordWeight": 1,
+          "stanceWeight": 1,
+          "leftArm": {
+            "shoulder": {
+              "x": 0.16063144928593864,
+              "y": 1.386050917005254,
+              "z": -0.03604130579595477
+            },
+            "elbow": {
+              "x": 0.36265585033831815,
+              "y": 1.2060480755595928,
+              "z": 0.08607253524911584
+            },
+            "hand": {
+              "x": 0.2609187746996664,
+              "y": 1.259540634228304,
+              "z": 0.29839220291278323
+            }
+          },
+          "feet": {
+            "left": {
+              "x": 0.29864202214104907,
+              "y": 0.17562458357290545,
+              "z": -0.12421371113802415
+            },
+            "right": {
+              "x": -0.12521292797918182,
+              "y": 0.17538849554010982,
+              "z": 0.1298317463407912
+            }
+          },
+          "hips": {
+            "x": 0.00159377519582371,
+            "y": 0.9371176182546356,
+            "z": 0.032694572517886655
+          }
+        },
+        "staffTip": null,
+        "spells": [],
+        "heldModel": {
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "visible": true,
+          "meshCount": 1,
+          "presentationScale": 0.7040000000000001,
+          "groundPresentationScale": 0.96,
+          "stringVertices": 0
+        },
+        "arrowsActive": 0,
+        "arrowsFlying": 0,
+        "arrowModel": {
+          "triangles": 6000,
+          "nominalLength": 1.05,
+          "forwardAxis": "+Z",
+          "source": "assets/inbox/feathered spear 3d model.glb",
+          "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+        },
+        "importedArrowsFlying": 0,
+        "heldPose": {
+          "bow": {
+            "x": 0.17,
+            "y": 1.3,
+            "z": 0.13
+          },
+          "sword": {
+            "x": -0.3794979982737008,
+            "y": 1.4739057541863234,
+            "z": 0.3681028236051791
+          },
+          "swordTip": {
+            "x": -0.9898015959599326,
+            "y": 1.78232070764725,
+            "z": 0.6714834323233257
+          }
+        }
+      },
+      "elapsed": 1.1333333333333342,
+      "position": {
+        "x": -12,
+        "y": 1.1451587974475412,
+        "z": -10
+      }
+    },
+    {
+      "combat": {
+        "attackPhase": "strike",
+        "bowDraw": 0,
+        "swordSweep": 0.08329683674086111,
+        "shotsFired": 0,
+        "impacts": 0,
+        "lastImpact": null,
+        "damageHits": 0,
+        "lastDamage": null,
+        "swordCombo": {
+          "index": 3,
+          "pattern": "overhead",
+          "swingId": 3,
+          "active": true,
+          "progress": 0.517241379310345,
+          "remaining": 1.1799999999999997
+        },
+        "swordTrail": {
+          "style": "blade-following-ribbon",
+          "trailActive": true,
+          "sampleCount": 2,
+          "segmentCount": 4,
+          "pattern": "overhead",
+          "latestBase": {
+            "x": -11.736839320864146,
+            "y": 2.3430222203985864,
+            "z": -9.323229477382897
+          },
+          "latestTip": {
+            "x": -11.464310715985063,
+            "y": 1.8945757760800088,
+            "z": -8.93071116958173
+          },
+          "activeGlints": 1,
+          "emittedGlints": 3,
+          "swingCount": 3,
+          "impactCount": 0,
+          "depthTested": true,
+          "shadingLayers": [
+            "edge",
+            "ribbon",
+            "afterimage"
+          ],
+          "drawCalls": 2,
+          "historyCapacity": 32,
+          "glintCapacity": 24,
+          "opacity": 1,
+          "lifetime": 0.18
+        },
+        "swordBlade": {
+          "base": {
+            "x": -11.736839320864146,
+            "y": 2.3430222203985864,
+            "z": -9.323229477382897
+          },
+          "tip": {
+            "x": -11.464310715985063,
+            "y": 1.8945757760800088,
+            "z": -8.93071116958173
+          }
+        },
+        "equippedItem": {
+          "type": "sword",
+          "label": "Testschwert",
+          "damage": 58,
+          "cooldown": 0.58,
+          "range": 2.35,
+          "effect": null,
+          "rarity": "legendary",
+          "rarityLabel": "Legendär",
+          "color": "#ffad44",
+          "name": "Testschwert · Legendär",
+          "burn": null,
+          "slow": null,
+          "poison": null,
+          "id": "qa-sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "rotation": 0,
+          "scale": 1
+        },
+        "spellsActive": 0,
+        "effects": {
+          "activeProjectiles": 0,
+          "visibleProjectiles": 0,
+          "activeParticles": 0,
+          "visibleParticles": 0,
+          "activeSmoke": 0,
+          "visibleSmoke": 0,
+          "importedFireProjectiles": 0,
+          "importedIceProjectiles": 0,
+          "iceModel": {
+            "triangles": 6000,
+            "nominalLength": 0.95,
+            "forwardAxis": "+Z",
+            "source": "assets/inbox/ice crystal 3d model.glb",
+            "runtime": "assets/imported/tripo-projectiles/runtime/ice-crystal.glb"
+          },
+          "fireModel": {
+            "name": "Fiery flame · Tripo-Feuerball",
+            "triangles": 6000,
+            "nominalLength": 0.75
+          },
+          "activeBursts": 0,
+          "channelActive": false,
+          "channelVisible": false,
+          "emitted": {
+            "fireStaff": {
+              "launches": 0,
+              "impacts": 0
+            },
+            "iceStaff": {
+              "launches": 0,
+              "impacts": 0
+            }
+          },
+          "latestImpact": null,
+          "bursts": [],
+          "activeTrails": 0,
+          "visibleTrailSegments": 0,
+          "presentation": "flowing-elements-v2",
+          "capacity": {
+            "particles": 160,
+            "bursts": 12,
+            "historySamplesPerProjectile": 32
+          }
+        },
+        "special": {
+          "aiming": false,
+          "target": null,
+          "moon": null,
+          "visuals": {
+            "activeClouds": 0,
+            "cloudDraws": 0,
+            "activeProjectiles": 0,
+            "volumeSteps": 16,
+            "trailSamples": 14
+          },
+          "poisonProjectiles": 0,
+          "poisonFlights": [],
+          "clouds": []
+        },
+        "heldGrip": null,
+        "hands": {
+          "left": {
+            "x": 0.06673351645598125,
+            "y": 1.122180737170575,
+            "z": 0.3435356533524718
+          },
+          "right": {
+            "x": -0.10432189324899355,
+            "y": 1.1364393136076245,
+            "z": 0.451294866142689
+          }
+        },
+        "lastSpellLaunch": null,
+        "rigPose": {
+          "castWeight": 0,
+          "swordWeight": 1,
+          "stanceWeight": 1,
+          "leftArm": {
+            "shoulder": {
+              "x": 0.1455591713757629,
+              "y": 1.4024356086751277,
+              "z": -0.10447978997700957
+            },
+            "elbow": {
+              "x": 0.127979044038252,
+              "y": 1.2292461122561629,
+              "z": 0.13598439204354484
+            },
+            "hand": {
+              "x": 0.06673351645598125,
+              "y": 1.122180737170575,
+              "z": 0.3435356533524718
+            }
+          },
+          "feet": {
+            "left": {
+              "x": 0.2976556865671549,
+              "y": 0.17538786354559333,
+              "z": 0.09820344682375826
+            },
+            "right": {
+              "x": -0.1251176139375927,
+              "y": 0.1753510719021748,
+              "z": -0.08810737419281445
+            }
+          },
+          "hips": {
+            "x": 0.00159377519582371,
+            "y": 0.9371132857495209,
+            "z": 0.032694572517886655
+          }
+        },
+        "staffTip": null,
+        "spells": [],
+        "heldModel": {
+          "type": "sword",
+          "variant": "kit-tripo-sword",
+          "model": "tripo",
+          "visible": true,
+          "meshCount": 1,
+          "presentationScale": 0.7040000000000001,
+          "groundPresentationScale": 0.96,
+          "stringVertices": 0
+        },
+        "arrowsActive": 0,
+        "arrowsFlying": 0,
+        "arrowModel": {
+          "triangles": 6000,
+          "nominalLength": 1.05,
+          "forwardAxis": "+Z",
+          "source": "assets/inbox/feathered spear 3d model.glb",
+          "runtime": "assets/imported/tripo-projectiles/runtime/feathered-arrow.glb"
+        },
+        "importedArrowsFlying": 0,
+        "heldPose": {
+          "bow": {
+            "x": 0.17,
+            "y": 1.3,
+            "z": 0.13
+          },
+          "sword": {
+            "x": -0.10432189324899355,
+            "y": 1.1364393136076245,
+            "z": 0.451294866142689
+          },
+          "swordTip": {
+            "x": -0.05893657226425178,
+            "y": 0.6245141488603895,
+            "z": 0.9948966109438673
+          }
+        }
+      },
+      "elapsed": 1.7499999999999987,
+      "position": {
+        "x": -12,
+        "y": 1.1451587974475412,
+        "z": -10
+      }
+    }
+  ],
+  "sequence": [
+    {
+      "stage": "core",
+      "requestedAge": 0.1,
+      "level": 2,
+      "health": 97,
+      "maxHealth": 125,
+      "effect": {
+        "active": true,
+        "level": 2,
+        "emitted": 1,
+        "style": "core-burst",
+        "age": 0.1,
+        "bodyGlow": 1,
+        "duration": 1.6,
+        "particleCount": 36,
+        "haloVisible": true,
+        "coreVisible": true,
+        "ribbonVisible": false,
+        "lightIntensity": 5.4,
+        "depthTested": true,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 1.5
+      },
+      "character": {
+        "levelUpGlow": 1,
+        "name": "Nebeljäger Tripo",
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "format": "GLB",
+        "skinned": true,
+        "joints": 66,
+        "clips": [
+          "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+          "standing_relax",
+          "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "defeat_03"
+        ],
+        "normalizedHeight": 1.82,
+        "sourceHeight": 0.98500635508701,
+        "normalizedScale": 1.8477038149050637,
+        "geometryPreparation": {
+          "version": "tripo-neutral-finger-v1",
+          "repairedVertices": 4,
+          "repairs": [
+            {
+              "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "vertices": [
+                5828,
+                5829,
+                5830,
+                5831
+              ],
+              "replacedBone": "neutral_bone",
+              "influences": [
+                {
+                  "bone": "mixamorigRightHandIndex1",
+                  "weight": 0.5563358767413223
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle1",
+                  "weight": 0.4116030543172535
+                },
+                {
+                  "bone": "mixamorigRightHandIndex2",
+                  "weight": 0.02015267200548744
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle2",
+                  "weight": 0.011908396935936705
+                }
+              ]
+            }
+          ]
+        },
+        "handBones": {
+          "left": [
+            "mixamorigLeftArm",
+            "mixamorigLeftForeArm",
+            "mixamorigLeftHand"
+          ],
+          "right": [
+            "mixamorigRightArm",
+            "mixamorigRightForeArm",
+            "mixamorigRightHand"
+          ]
+        },
+        "gripSockets": {
+          "left": {
+            "source": "palm"
+          },
+          "right": {
+            "source": "palm"
+          }
+        },
+        "materials": [
+          {
+            "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+            "baseColorTexture": true,
+            "normalTexture": true,
+            "roughnessTexture": true,
+            "metalnessTexture": true
+          }
+        ],
+        "meshes": 1,
+        "triangles": 20161,
+        "activeAnimation": "standing_relax",
+        "mappedAnimations": {
+          "idle": "standing_relax",
+          "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+        },
+        "animationPreparation": {
+          "rootAligned": true,
+          "runSourceWindow": [
+            1.7083333333333333,
+            2.4166666666666665
+          ],
+          "groundedSamples": 131,
+          "maxGroundCorrection": 0.18472989118046884,
+          "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+        },
+        "rollProgress": 0,
+        "rollClipTime": 0,
+        "rollDuration": 0.72,
+        "rollWeight": 0,
+        "presentationRotation": [
+          0,
+          0,
+          0
+        ],
+        "modelScale": [
+          1.8477038149050637,
+          1.8477038149050637,
+          1.8477038149050637
+        ],
+        "opacity": 1,
+        "levelUpGlowMaterials": {
+          "strength": 1,
+          "count": 1,
+          "maxEmissiveIntensity": 1.9,
+          "restored": false
+        },
+        "locomotion": {
+          "speed": 0,
+          "walkWeight": 0,
+          "playbackSpeed": 0.42,
+          "yaw": 1.5707963267948966,
+          "turnRate": 0,
+          "forwardLean": 0,
+          "sideLean": 0
+        },
+        "snowWeight": 0,
+        "snowSinkMeters": 0,
+        "snowClipStrength": 0,
+        "snowClipHeight": -10000
+      },
+      "bar": {
+        "id": "player",
+        "health": 97,
+        "maxHealth": 125,
+        "level": 2,
+        "levelLabel": "2",
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.776,
+        "flash": 0,
+        "healthPerSegment": 25,
+        "segmentCount": 5,
+        "barWidth": 1.805,
+        "barBounds": {
+          "left": -0.95,
+          "right": 0.95
+        },
+        "levelBounds": {
+          "left": -1.4855442923553719,
+          "right": -1.03
+        },
+        "levelPulse": {
+          "active": true,
+          "remaining": 1.5,
+          "scale": 1.0353279371712998,
+          "glow": 0.1962663176183321,
+          "reducedMotion": false
+        }
+      },
+      "width": 154,
+      "left": 143,
+      "labelRight": 137,
+      "label": "2",
+      "noticeAbsent": true
+    },
+    {
+      "stage": "burst",
+      "requestedAge": 0.28,
+      "level": 2,
+      "health": 97,
+      "maxHealth": 125,
+      "effect": {
+        "active": true,
+        "level": 2,
+        "emitted": 1,
+        "style": "core-burst",
+        "age": 0.28329999999999567,
+        "bodyGlow": 0.4336742694074288,
+        "duration": 1.6,
+        "particleCount": 36,
+        "haloVisible": true,
+        "coreVisible": true,
+        "ribbonVisible": false,
+        "lightIntensity": 5.3222362690251765,
+        "depthTested": true,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 1.3167000000000044
+      },
+      "character": {
+        "levelUpGlow": 0.4336742694074288,
+        "name": "Nebeljäger Tripo",
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "format": "GLB",
+        "skinned": true,
+        "joints": 66,
+        "clips": [
+          "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+          "standing_relax",
+          "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "defeat_03"
+        ],
+        "normalizedHeight": 1.82,
+        "sourceHeight": 0.98500635508701,
+        "normalizedScale": 1.8477038149050637,
+        "geometryPreparation": {
+          "version": "tripo-neutral-finger-v1",
+          "repairedVertices": 4,
+          "repairs": [
+            {
+              "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "vertices": [
+                5828,
+                5829,
+                5830,
+                5831
+              ],
+              "replacedBone": "neutral_bone",
+              "influences": [
+                {
+                  "bone": "mixamorigRightHandIndex1",
+                  "weight": 0.5563358767413223
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle1",
+                  "weight": 0.4116030543172535
+                },
+                {
+                  "bone": "mixamorigRightHandIndex2",
+                  "weight": 0.02015267200548744
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle2",
+                  "weight": 0.011908396935936705
+                }
+              ]
+            }
+          ]
+        },
+        "handBones": {
+          "left": [
+            "mixamorigLeftArm",
+            "mixamorigLeftForeArm",
+            "mixamorigLeftHand"
+          ],
+          "right": [
+            "mixamorigRightArm",
+            "mixamorigRightForeArm",
+            "mixamorigRightHand"
+          ]
+        },
+        "gripSockets": {
+          "left": {
+            "source": "palm"
+          },
+          "right": {
+            "source": "palm"
+          }
+        },
+        "materials": [
+          {
+            "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+            "baseColorTexture": true,
+            "normalTexture": true,
+            "roughnessTexture": true,
+            "metalnessTexture": true
+          }
+        ],
+        "meshes": 1,
+        "triangles": 20161,
+        "activeAnimation": "standing_relax",
+        "mappedAnimations": {
+          "idle": "standing_relax",
+          "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+        },
+        "animationPreparation": {
+          "rootAligned": true,
+          "runSourceWindow": [
+            1.7083333333333333,
+            2.4166666666666665
+          ],
+          "groundedSamples": 131,
+          "maxGroundCorrection": 0.18472989118046884,
+          "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+        },
+        "rollProgress": 0,
+        "rollClipTime": 0,
+        "rollDuration": 0.72,
+        "rollWeight": 0,
+        "presentationRotation": [
+          0,
+          0,
+          0
+        ],
+        "modelScale": [
+          1.8477038149050637,
+          1.8477038149050637,
+          1.8477038149050637
+        ],
+        "opacity": 1,
+        "levelUpGlowMaterials": {
+          "strength": 0.4336742694074288,
+          "count": 1,
+          "maxEmissiveIntensity": 1.390306842466686,
+          "restored": false
+        },
+        "locomotion": {
+          "speed": 0,
+          "walkWeight": 0,
+          "playbackSpeed": 0.42,
+          "yaw": 1.5707963267948966,
+          "turnRate": 0,
+          "forwardLean": 0,
+          "sideLean": 0
+        },
+        "snowWeight": 0,
+        "snowSinkMeters": 0,
+        "snowClipStrength": 0,
+        "snowClipHeight": -10000
+      },
+      "bar": {
+        "id": "player",
+        "health": 97,
+        "maxHealth": 125,
+        "level": 2,
+        "levelLabel": "2",
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.776,
+        "flash": 0,
+        "healthPerSegment": 25,
+        "segmentCount": 5,
+        "barWidth": 1.805,
+        "barBounds": {
+          "left": -0.95,
+          "right": 0.95
+        },
+        "levelBounds": {
+          "left": -1.541327057014704,
+          "right": -1.03
+        },
+        "levelPulse": {
+          "active": true,
+          "remaining": 1.3167000000000044,
+          "scale": 1.162106947760691,
+          "glow": 0.9005941542260606,
+          "reducedMotion": false
+        }
+      },
+      "width": 154,
+      "left": 143,
+      "labelRight": 137,
+      "label": "2",
+      "noticeAbsent": true,
+      "hudPulse": {
+        "label": "2",
+        "pulsing": true
+      }
+    },
+    {
+      "stage": "settling",
+      "requestedAge": 0.65,
+      "level": 2,
+      "health": 97,
+      "maxHealth": 125,
+      "effect": {
+        "active": true,
+        "level": 2,
+        "emitted": 1,
+        "style": "core-burst",
+        "age": 0.7165999999999986,
+        "bodyGlow": 0,
+        "duration": 1.6,
+        "particleCount": 36,
+        "haloVisible": true,
+        "coreVisible": false,
+        "ribbonVisible": false,
+        "lightIntensity": 0.6618056344663336,
+        "depthTested": true,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 0.8834000000000015
+      },
+      "character": {
+        "levelUpGlow": 0,
+        "name": "Nebeljäger Tripo",
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "format": "GLB",
+        "skinned": true,
+        "joints": 66,
+        "clips": [
+          "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+          "standing_relax",
+          "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "defeat_03"
+        ],
+        "normalizedHeight": 1.82,
+        "sourceHeight": 0.98500635508701,
+        "normalizedScale": 1.8477038149050637,
+        "geometryPreparation": {
+          "version": "tripo-neutral-finger-v1",
+          "repairedVertices": 4,
+          "repairs": [
+            {
+              "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "vertices": [
+                5828,
+                5829,
+                5830,
+                5831
+              ],
+              "replacedBone": "neutral_bone",
+              "influences": [
+                {
+                  "bone": "mixamorigRightHandIndex1",
+                  "weight": 0.5563358767413223
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle1",
+                  "weight": 0.4116030543172535
+                },
+                {
+                  "bone": "mixamorigRightHandIndex2",
+                  "weight": 0.02015267200548744
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle2",
+                  "weight": 0.011908396935936705
+                }
+              ]
+            }
+          ]
+        },
+        "handBones": {
+          "left": [
+            "mixamorigLeftArm",
+            "mixamorigLeftForeArm",
+            "mixamorigLeftHand"
+          ],
+          "right": [
+            "mixamorigRightArm",
+            "mixamorigRightForeArm",
+            "mixamorigRightHand"
+          ]
+        },
+        "gripSockets": {
+          "left": {
+            "source": "palm"
+          },
+          "right": {
+            "source": "palm"
+          }
+        },
+        "materials": [
+          {
+            "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+            "baseColorTexture": true,
+            "normalTexture": true,
+            "roughnessTexture": true,
+            "metalnessTexture": true
+          }
+        ],
+        "meshes": 1,
+        "triangles": 20161,
+        "activeAnimation": "standing_relax",
+        "mappedAnimations": {
+          "idle": "standing_relax",
+          "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+        },
+        "animationPreparation": {
+          "rootAligned": true,
+          "runSourceWindow": [
+            1.7083333333333333,
+            2.4166666666666665
+          ],
+          "groundedSamples": 131,
+          "maxGroundCorrection": 0.18472989118046884,
+          "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+        },
+        "rollProgress": 0,
+        "rollClipTime": 0,
+        "rollDuration": 0.72,
+        "rollWeight": 0,
+        "presentationRotation": [
+          0,
+          0,
+          0
+        ],
+        "modelScale": [
+          1.8477038149050637,
+          1.8477038149050637,
+          1.8477038149050637
+        ],
+        "opacity": 1,
+        "levelUpGlowMaterials": {
+          "strength": 0,
+          "count": 1,
+          "maxEmissiveIntensity": 1,
+          "restored": true
+        },
+        "locomotion": {
+          "speed": 0,
+          "walkWeight": 0,
+          "playbackSpeed": 0.42,
+          "yaw": 1.5707963267948966,
+          "turnRate": 0,
+          "forwardLean": 0,
+          "sideLean": 0
+        },
+        "snowWeight": 0,
+        "snowSinkMeters": 0,
+        "snowClipStrength": 0,
+        "snowClipHeight": -10000
+      },
+      "bar": {
+        "id": "player",
+        "health": 97,
+        "maxHealth": 125,
+        "level": 2,
+        "levelLabel": "2",
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.776,
+        "flash": 0,
+        "healthPerSegment": 25,
+        "segmentCount": 5,
+        "barWidth": 1.805,
+        "barBounds": {
+          "left": -0.95,
+          "right": 0.95
+        },
+        "levelBounds": {
+          "left": -1.5328704859489384,
+          "right": -1.03
+        },
+        "levelPulse": {
+          "active": true,
+          "remaining": 0.8834000000000015,
+          "scale": 1.1428874680657692,
+          "glow": 0.7938192670320521,
+          "reducedMotion": false
+        }
+      },
+      "width": 154,
+      "left": 143,
+      "labelRight": 137,
+      "label": "2",
+      "noticeAbsent": true
+    },
+    {
+      "stage": "fade",
+      "requestedAge": 1.15,
+      "level": 2,
+      "health": 97,
+      "maxHealth": 125,
+      "effect": {
+        "active": true,
+        "level": 2,
+        "emitted": 1,
+        "style": "core-burst",
+        "age": 1.1667000000000045,
+        "bodyGlow": 0,
+        "duration": 1.6,
+        "particleCount": 36,
+        "haloVisible": false,
+        "coreVisible": false,
+        "ribbonVisible": false,
+        "lightIntensity": 0,
+        "depthTested": true,
+        "ringCount": 0,
+        "beamVisible": false,
+        "reducedMotion": false,
+        "remaining": 0.4332999999999956
+      },
+      "character": {
+        "levelUpGlow": 0,
+        "name": "Nebeljäger Tripo",
+        "source": "assets/characters/nebeljagd_player_base_v1.glb",
+        "format": "GLB",
+        "skinned": true,
+        "joints": 66,
+        "clips": [
+          "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der ",
+          "standing_relax",
+          "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "defeat_03"
+        ],
+        "normalizedHeight": 1.82,
+        "sourceHeight": 0.98500635508701,
+        "normalizedScale": 1.8477038149050637,
+        "geometryPreparation": {
+          "version": "tripo-neutral-finger-v1",
+          "repairedVertices": 4,
+          "repairs": [
+            {
+              "mesh": "tripo_node_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+              "vertices": [
+                5828,
+                5829,
+                5830,
+                5831
+              ],
+              "replacedBone": "neutral_bone",
+              "influences": [
+                {
+                  "bone": "mixamorigRightHandIndex1",
+                  "weight": 0.5563358767413223
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle1",
+                  "weight": 0.4116030543172535
+                },
+                {
+                  "bone": "mixamorigRightHandIndex2",
+                  "weight": 0.02015267200548744
+                },
+                {
+                  "bone": "mixamorigRightHandMiddle2",
+                  "weight": 0.011908396935936705
+                }
+              ]
+            }
+          ]
+        },
+        "handBones": {
+          "left": [
+            "mixamorigLeftArm",
+            "mixamorigLeftForeArm",
+            "mixamorigLeftHand"
+          ],
+          "right": [
+            "mixamorigRightArm",
+            "mixamorigRightForeArm",
+            "mixamorigRightHand"
+          ]
+        },
+        "gripSockets": {
+          "left": {
+            "source": "palm"
+          },
+          "right": {
+            "source": "palm"
+          }
+        },
+        "materials": [
+          {
+            "name": "tripo_mat_fbfd8831-df28-426c-b48d-eb2bbb7cecb2",
+            "baseColorTexture": true,
+            "normalTexture": true,
+            "roughnessTexture": true,
+            "metalnessTexture": true
+          }
+        ],
+        "meshes": 1,
+        "triangles": 20161,
+        "activeAnimation": "standing_relax",
+        "mappedAnimations": {
+          "idle": "standing_relax",
+          "run": "Die Figur sprintet schnell und kraftvoll nach vorne. Natürlich",
+          "roll": "Die Figur führt eine schnelle, saubere Vorwärtsrolle auf der "
+        },
+        "animationPreparation": {
+          "rootAligned": true,
+          "runSourceWindow": [
+            1.7083333333333333,
+            2.4166666666666665
+          ],
+          "groundedSamples": 131,
+          "maxGroundCorrection": 0.18472989118046884,
+          "groundingProfile": "29232024a0a1be5b6e8d81cf48b2433d6bbd58ac5b0ccb6c035e6c5acab22624"
+        },
+        "rollProgress": 0,
+        "rollClipTime": 0,
+        "rollDuration": 0.72,
+        "rollWeight": 0,
+        "presentationRotation": [
+          0,
+          0,
+          0
+        ],
+        "modelScale": [
+          1.8477038149050637,
+          1.8477038149050637,
+          1.8477038149050637
+        ],
+        "opacity": 1,
+        "levelUpGlowMaterials": {
+          "strength": 0,
+          "count": 1,
+          "maxEmissiveIntensity": 1,
+          "restored": true
+        },
+        "locomotion": {
+          "speed": 0,
+          "walkWeight": 0,
+          "playbackSpeed": 0.42,
+          "yaw": 1.5707963267948966,
+          "turnRate": 0,
+          "forwardLean": 0,
+          "sideLean": 0
+        },
+        "snowWeight": 0,
+        "snowSinkMeters": 0,
+        "snowClipStrength": 0,
+        "snowClipHeight": -10000
+      },
+      "bar": {
+        "id": "player",
+        "health": 97,
+        "maxHealth": 125,
+        "level": 2,
+        "levelLabel": "2",
+        "local": true,
+        "visible": true,
+        "displayedRatio": 0.776,
+        "flash": 0,
+        "healthPerSegment": 25,
+        "segmentCount": 5,
+        "barWidth": 1.805,
+        "barBounds": {
+          "left": -0.95,
+          "right": 0.95
+        },
+        "levelBounds": {
+          "left": -1.4920119766217144,
+          "right": -1.03
+        },
+        "levelPulse": {
+          "active": true,
+          "remaining": 0.4332999999999958,
+          "scale": 1.050027219594805,
+          "glow": 0.27792899774891666,
+          "reducedMotion": false
+        }
+      },
+      "width": 154,
+      "left": 143,
+      "labelRight": 137,
+      "label": "2",
+      "noticeAbsent": true
+    }
+  ],
+  "contactSheet": "level-up-burst-sequence.png",
+  "contactSheetNote": "Browser layout of four 2× detail crops. The individual PNGs retain each complete, untouched renderer frame.",
+  "swordContactSheet": "sword-combo-sequence.png",
+  "sourceMapUnchanged": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+  "sourceCommit": "6b06d2e8d441ab9f722bad72a11321263163166b",
+  "buildId": "3c8d4375f8ad",
+  "unitTests": {
+    "passed": 505,
+    "failed": 0
+  },
+  "rootVisualReview": "Accepted actual core/burst/default-camera frames and three sword poses. Short body-origin glow and outward gold streaks; blade-following ivory edge and distinct motion planes."
+}

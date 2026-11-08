@@ -11,7 +11,31 @@ Projektkarte und eigenem lokalen Entwurf wählen. Der geprüfte Build wird auf
 Die Versionslinks in den folgenden historischen Berichten dokumentieren deren
 damalige Veröffentlichung, sie wählen keine historische Karte aus.
 
-## Größerer weicher Levelaufstieg in der Spielwelt
+## Körperlicht und drei Schwertschläge
+
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+und **Spielen** wählen. Die Figur leuchtet beim Aufstieg kurz golden auf;
+aus ihrer Mitte brechen Lichtspuren nach außen und oben aus. Das Schwert
+wechselt bei aufeinanderfolgenden Angriffen zwischen diagonalem Hieb,
+Gegenschlag und Schlag von oben. Die Lichtspur folgt der echten Klinge,
+mit feiner heller Kante und kurzen Funken bei bestätigten Treffern.
+
+Geprüfte Quelle: `6b06d2e8d441ab9f722bad72a11321263163166b`, Build
+`3c8d4375f8ad`. 505 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild
+sind bestanden. Die aktuelle Projektkarte bleibt bytegleich erhalten
+(SHA-256 `a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3`).
+Schaden, Reichweite, Abklingzeit, Projektilregeln und Lebensbalken bleiben
+unverändert. [Schwertdetails](sword-combat-feedback.md).
+
+Acht Prüfabläufe in der erzeugten Spieldatei sind bestanden: drei echte
+Schläge samt Abklingzeit, ein echter Kill mit vier Animationsphasen, Körperglanz
+und vollständige Materialrücksetzung, +25 LP bei fester Balkenbreite,
+blockierter Treffer mit freiem Kontrolltreffer sowie Ablauf und Neustart.
+Keine Browser-/Shaderfehler oder zusätzlichen Ressourcenanfragen.
+[Prüfbericht](sword-burst-check.json) · [Aufstiegsbilder](level-up-burst-sequence.png) ·
+[Schwertbilder](sword-combo-sequence.png).
+
+## Vorheriger größerer weicher Levelaufstieg in der Spielwelt
 
 [Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
 und **Spielen** wählen. Der Aufstieg folgt einem kurzen Aufbau, einem warmen

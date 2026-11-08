@@ -23,3 +23,8 @@ die Übereinstimmung zwischen Klinge und Spur auch bei transformierter Szene.
 `tests/level_up_feedback_smoke.py` prüft die erzeugte Spieldatei mit tatsächlichen
 Tastatureingaben: drei verschiedene Schläge, einen echten Kill samt Körperglanz,
 unveränderte Lebensbalken, Ablauf, blockierten Treffer und Neustart.
+
+505 Node-Tests, Asset-/Kartenprüfung und Build bestanden. Acht Browserprüfungen
+in der tatsächlichen Spieldatei sind ohne Browser-/Shaderfehler oder externe
+Ressourcenanfragen bestanden. Die aktuelle Projektkarte ist unverändert.
+[Prüfbericht](sword-burst-check.json) · [Drei tatsächliche Schlagbilder](sword-combo-sequence.png).
