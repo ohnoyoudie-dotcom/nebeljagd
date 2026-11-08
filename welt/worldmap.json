@@ -919,18 +919,6 @@
       "rotation": 0,
       "scale": 1,
       "rarity": "common"
-    },
-    {
-      "id": "object-tree-mw756m4n-1",
-      "name": "Baum",
-      "kind": "tree",
-      "variant": "kit-user-tree1",
-      "position": [
-        22,
-        -50.9
-      ],
-      "rotation": 2.171127186085906,
-      "scale": 1
     }
   ],
   "landscape": {
