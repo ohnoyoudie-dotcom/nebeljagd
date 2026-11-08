@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
+import { createSwordEffects } from './sword-effects.js';
+import { createSwordPose, sampleSwordPose, SWORD_PATTERNS, SWORD_COMBO_GRACE,
+  SWORD_STRIKE_START, SWORD_STRIKE_END } from './sword-motion.js';
 
 export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-sword': 'sword',
@@ -445,24 +448,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     return { group, life: 0, mode: 'inactive', direction: 0, vx: 0, vy: 0, vz: 0 };
   });
 
-  const slashMaterial = new THREE.MeshBasicMaterial({
-    color: '#fff2ba', transparent: true, opacity: 0,
-    side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
-  });
-  const slashPoints = [], slashIndices = [];
-  for (let i = 0; i <= 28; i++) {
-    const angle = -1.12 + i / 28 * 2.24;
-    for (const radius of [.91, 1.09]) slashPoints.push(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
-    if (i < 28) { const a = i * 2; slashIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
-  }
-  const slashGeometry = new THREE.BufferGeometry();
-  slashGeometry.setAttribute('position', new THREE.Float32BufferAttribute(slashPoints, 3));
-  slashGeometry.setIndex(slashIndices);
-  const slash = new THREE.Mesh(slashGeometry, slashMaterial);
-  slash.name = 'Schwertschwung';
-  slash.position.set(0, 1.25, .06);
-  slash.visible = false;
-  characterGroup.add(slash);
+  const swordEffects = createSwordEffects(scene, { isVisible });
 
   const impactCapacity = 32;
   const impactParticles = Array.from({ length: impactCapacity }, () => ({
@@ -483,12 +469,15 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const launchCenter = new THREE.Vector3(), launchOrigin = new THREE.Vector3();
   const forward = new THREE.Vector3(), hand = new THREE.Vector3();
   const bladeDirection = new THREE.Vector3(), bladeTip = new THREE.Vector3();
+  const swordBase = new THREE.Vector3(), swordTip = new THREE.Vector3(), swordContact = new THREE.Vector3();
+  const swordPose = createSwordPose();
   const up = new THREE.Vector3(0, 1, 0);
   const leftHand = new THREE.Vector3(), rightHand = new THREE.Vector3();
   const combatPose = { weapon: null, phase: 'idle', leftHand, rightHand, chestTwist: 0 };
   let equippedType = null, equippedItem = null, equippedPickup = null;
   let cooldown = 0, attackAge = -1, attackDuration = 0;
   let shotReleased = false, bowDraw = 0, swordSweep = 0;
+  let swordIndex = -1, swordComboRemaining = 0, swordSwingId = 0;
   let attackPhase = 'idle', shotCount = 0, impactCount = 0, lastImpact = null, particleCursor = 0;
   let lastSpellLaunch = null;
   const pickupRadius = 1.85;
@@ -539,7 +528,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       id: item.id, variant: item.variant, model: item.model,
       rotation: item.rotation ?? 0, scale: item.scale ?? 1 };
     applyTier(held, equippedItem.rarity);
-    slashMaterial.color.set(equippedItem.color);
+    clearSwordCombo();
     cooldown = 0; attackAge = -1; attackPhase = 'idle';
     spellEffects.channel(null);
     applyHeldPose();
@@ -565,6 +554,12 @@ export function createWeapons(scene, characterGroup, world, character = null,
     attackAge = 0; shotReleased = false;
     attackDuration = equippedItem.cooldown;
     cooldown = attackDuration;
+    if (equippedType === 'sword') {
+      swordIndex = swordComboRemaining > 0 ? (swordIndex + 1) % SWORD_PATTERNS.length : 0;
+      swordComboRemaining = attackDuration + SWORD_COMBO_GRACE;
+      swordSwingId++;
+      swordEffects.beginSwing({ color: equippedItem.color, pattern: SWORD_PATTERNS[swordIndex] });
+    }
     attackPhase = equippedType === 'bow' ? 'draw' : equippedType === 'sword' ? 'windup' : 'channel';
     applyHeldPose();
     return { type: equippedType, message: equippedType === 'bow' ? 'Bogensehne gespannt' : equippedType === 'sword' ? 'Schwertschlag' : 'Zauber gewirkt' };
@@ -576,11 +571,11 @@ export function createWeapons(scene, characterGroup, world, character = null,
     heldSword.visible = equippedType === 'sword' && !rolling;
     for (const [type, held] of Object.entries(heldStaffs)) held.visible = equippedType === type && !rolling;
     nockedArrow.visible = equippedType === 'bow' && !rolling && (attackAge < 0 || attackAge < .23 || attackAge > .51);
-    slash.visible = false;
     if (!equippedType || rolling) { character?.setCombatState?.(null); return; }
     combatPose.weapon = equippedType; combatPose.phase = attackPhase;
     combatPose.leftHand = leftHand;
     combatPose.leftHandWeight = 1; combatPose.castWeight = 0;
+    combatPose.swordWeight = 0; combatPose.swordLead = 1; combatPose.chestLean = 0;
     if (equippedType === 'bow') {
       bowDraw = attackAge < 0 ? 0 : attackAge < .23 ? ease(0, .23, attackAge) : 1 - ease(.23, .36, attackAge);
       leftHand.set(.06, 1.34, .40);
@@ -620,24 +615,16 @@ export function createWeapons(scene, characterGroup, world, character = null,
     } else if (equippedType === 'sword') {
       bowDraw = 0;
       const progress = attackAge < 0 ? 0 : attackAge / attackDuration;
-      const windup = attackAge < 0 ? 0 : ease(0, .24, progress);
-      const strike = attackAge < 0 ? 0 : ease(.24, .66, progress);
-      const recover = attackAge < 0 ? 0 : ease(.70, 1, progress);
-      swordSweep = attackAge < 0 ? -.12 : THREE.MathUtils.lerp(-1.12 * windup, 1.17, strike) * (1 - recover) - .12 * recover;
-      rightHand.set(THREE.MathUtils.lerp(-.22, -.38 + strike * .72, 1 - recover),
-        1.22 + Math.sin(progress * Math.PI) * .09,
-        .40 + Math.sin(progress * Math.PI) * .15);
-      leftHand.set(.24, 1.25, .22 + strike * .05);
-      combatPose.chestTwist = -.16 * windup + strike * .29 - recover * .13;
+      sampleSwordPose(swordIndex, progress, attackAge >= 0, swordPose);
+      rightHand.copy(swordPose.rightHand); leftHand.copy(swordPose.leftHand);
+      combatPose.chestTwist = swordPose.chestTwist; combatPose.chestLean = swordPose.chestLean;
+      combatPose.swordWeight = swordPose.swordWeight; combatPose.swordLead = swordPose.swordLead;
       character?.setCombatState?.(combatPose);
       if (character?.getHandPosition) character.getHandPosition('right', hand); else hand.copy(rightHand);
       heldSword.position.copy(hand);
-      bladeDirection.set(Math.sin(swordSweep), attackAge < 0 ? .38 : .20 + recover * .18, Math.cos(swordSweep)).normalize();
+      bladeDirection.copy(swordPose.bladeDirection);
+      swordSweep = Math.atan2(bladeDirection.x, bladeDirection.z);
       heldSword.quaternion.setFromUnitVectors(up, bladeDirection);
-      const inStrike = attackAge >= 0 && progress > .24 && progress < .72;
-      slash.visible = inStrike;
-      slash.scale.setScalar(1.26);
-      slashMaterial.opacity = inStrike ? Math.sin((progress - .24) / .48 * Math.PI) * .32 : 0;
     } else {
       bowDraw = swordSweep = 0;
       const pulse = attackAge >= 0 ? Math.sin(Math.min(1, attackAge / .45) * Math.PI) : 0;
@@ -669,6 +656,19 @@ export function createWeapons(scene, characterGroup, world, character = null,
       const aimWeight = attackAge >= .16 && !shotReleased ? 1 : castWeight;
       staff.rotation.set(THREE.MathUtils.lerp(.28 + pulse * .5, aimedPitch, aimWeight), 0, cant);
     }
+  }
+
+  function clearSwordCombo() {
+    swordIndex = -1; swordComboRemaining = 0; swordEffects.clear();
+  }
+
+  function measureSwordBlade() {
+    characterGroup.updateWorldMatrix(true, true); scene.updateWorldMatrix(true, false);
+    swordTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY, 0]);
+    // Start beyond the crossguard, so neither the hand nor grip emits a ribbon.
+    swordBase.copy(swordTip).multiplyScalar(heldSword.userData.model === 'tripo' ? .27 : .35 / 1.13);
+    heldSword.localToWorld(swordBase); heldSword.localToWorld(swordTip);
+    scene.worldToLocal(swordBase); scene.worldToLocal(swordTip);
   }
 
   function impact(arrow, hit) {
@@ -815,6 +815,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function update(dt, time, position = characterGroup.position) {
     const delta = Math.max(0, Math.min(.25, Number.isFinite(dt) ? dt : 0));
     cooldown = Math.max(0, cooldown - delta);
+    swordComboRemaining = Math.max(0, swordComboRemaining - delta);
+    if (swordComboRemaining === 0 && attackAge < 0) swordIndex = -1;
+    swordEffects.update(delta);
     if (characterGroup.userData.rolling) specials.cancelAim();
     specials.update(delta, position, time);
     for (const item of items) {
@@ -837,8 +840,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       item.group.visible = (!position || (position.x - item.x) ** 2 + (position.z - item.z) ** 2 <= viewDistance ** 2)
         && (revealSceneryThroughFog || !isVisible || isVisible(item.group.position));
     }
-    if (characterGroup.userData.rolling && attackAge >= 0) {
-      attackAge = -1; attackPhase = 'idle'; shotReleased = true;
+    if (characterGroup.userData.rolling) {
+      if (attackAge >= 0) { attackAge = -1; attackPhase = 'idle'; shotReleased = true; }
+      if (swordIndex >= 0) clearSwordCombo();
     }
     if (attackAge >= 0) {
       attackAge += delta;
@@ -846,10 +850,15 @@ export function createWeapons(scene, characterGroup, world, character = null,
       else if (equippedType.endsWith('Staff')) attackPhase = attackAge < .25 ? 'channel' : attackAge < .4 ? 'release' : 'recover';
       else {
         const p = attackAge / attackDuration;
-        attackPhase = p < .24 ? 'windup' : p < .66 ? 'strike' : 'follow-through';
+        attackPhase = p < SWORD_STRIKE_START ? 'windup' : p < SWORD_STRIKE_END ? 'strike' : 'follow-through';
       }
     }
     applyHeldPose();
+    const opacity = characterGroup.userData.concealmentOpacity ?? 1;
+    const swordProgress = attackAge < 0 ? 0 : attackAge / attackDuration;
+    if (heldSword.visible) measureSwordBlade();
+    swordEffects.sample({ base: swordBase, tip: swordTip, opacity,
+      active: heldSword.visible && attackAge >= 0 && swordProgress >= SWORD_STRIKE_START && swordProgress <= SWORD_STRIKE_END });
     if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
       spellEffects.channel(equippedType, getStaffTip(staffTip), characterGroup.rotation.y, attackAge / .25);
     } else spellEffects.channel(null);
@@ -866,12 +875,22 @@ export function createWeapons(scene, characterGroup, world, character = null,
         const end = { x: target.position.x, y: target.position.y + 1.1, z: target.position.z };
         const blocker = world?.traceProjectile?.(start, end, .06);
         if (!blocker || blocksTarget(blocker.collider, target)) {
-          lastDamage = combat.hit(target, { ...equippedItem, sourceId: ownerId }); damageHits++;
+          lastDamage = combat.hit(target, { ...equippedItem, sourceId: ownerId });
+          if (lastDamage) {
+            damageHits++;
+            const concealed = target.concealed || (world?.concealmentAt?.(end.x, end.z) ?? 0) > .01;
+            if (!concealed && (!isVisible || isVisible(end))) {
+              const reach = Math.hypot(end.x - start.x, end.z - start.z) || 1;
+              const inset = Math.min(target.radius ?? .3, reach * .5);
+              swordContact.set(end.x + (start.x - end.x) / reach * inset, end.y,
+                end.z + (start.z - end.z) / reach * inset);
+              swordEffects.impact({ point: swordContact, color: equippedItem.color });
+            }
+          }
         }
       }
     }
     if (attackAge >= attackDuration && attackAge >= 0) { attackAge = -1; attackPhase = 'idle'; }
-    const opacity = characterGroup.userData.concealmentOpacity ?? 1;
     for (const mat of heldMaterials) {
       const translucent = opacity < .995;
       const appearance = heldAppearance.get(mat);
@@ -922,8 +941,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     for (const held of Object.values(heldByType)) held.visible = false;
-    slash.visible = nockedArrow.visible = false;
-    slashMaterial.opacity = 0; character?.setCombatState?.(null);
+    nockedArrow.visible = false;
+    clearSwordCombo(); swordEffects.reset(); swordSwingId = 0; character?.setCombatState?.(null);
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
       if (item.dynamic) {
@@ -952,8 +971,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     reset();
     spellEffects.dispose();
     specials.dispose();
+    swordEffects.dispose();
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
-      ...arrows.map(arrow => arrow.group), slash, impactMesh];
+      ...arrows.map(arrow => arrow.group), impactMesh];
     const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry, arrowTrailGeometry]), materials = new Set(baseMaterials);
     for (const root of roots) {
       root.traverse(part => {
@@ -974,7 +994,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
     get attackCooldown() { return specials.moonBusy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
-      bladeTip.set(0, heldSword.userData.weaponTipY, 0).applyQuaternion(heldSword.quaternion).multiplyScalar(heldSword.scale.y).add(heldSword.position);
+      bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY, 0])
+        .multiply(heldSword.scale).applyQuaternion(heldSword.quaternion).add(heldSword.position);
       const held = heldByType[equippedType];
       const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
       const actualHand = side => character?.getHandPosition
@@ -994,6 +1015,10 @@ export function createWeapons(scene, characterGroup, world, character = null,
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
       return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
+        swordCombo: { index: swordIndex + 1, pattern: SWORD_PATTERNS[swordIndex] ?? null, swingId: swordSwingId,
+          active: equippedType === 'sword' && attackAge >= 0, progress: equippedType === 'sword' && attackAge >= 0 ? Math.min(1, attackAge / attackDuration) : 0,
+          remaining: swordComboRemaining },
+        swordTrail: swordEffects.inspect(), swordBlade: { base: point(swordBase), tip: point(swordTip) },
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
         effects: spellEffects.telemetry, special: specials.telemetry, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,

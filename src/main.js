@@ -142,7 +142,7 @@ const isVisible = (position, options = { concealed: false }) => vision.isVisible
 const healthBars = createHealthBars(world.root);
 healthBars.add('player', { position: player, health: state.health, maxHealth: state.maxHealth,
   level: state.level, local: true, height: 2.9 });
-const levelUpEffect = createLevelUpEffect(world.root);
+const levelUpEffect = createLevelUpEffect(world.root, { onGlow: character.setLevelUpGlow });
 const damageFeedback = createDamageFeedback(world.root, {
   isVisible: (position, options = {}) => vision.isVisible(position, {
     ...options, concealed: options.concealed ?? world.concealmentAt(position.x, position.z) > .01,
@@ -471,6 +471,7 @@ window.nebeljagdTestState = () => ({
   weaponDrops: weapons.items.map(({ id, type, variant, model, rarity, x, z, collected, group }) => ({ id, type, variant, model, rarity, x, z, collected, visible: group.visible })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
+    levelUpGlowMaterials: character.inspectLevelUpGlow(),
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
     snowSinkMeters: character.group.userData.snowSinkMeters ?? 0,
     snowClipStrength: character.group.userData.snowClipStrength ?? 0,

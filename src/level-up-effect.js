@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 
 const DURATION = 1.6;
-const PARTICLES = 22;
+const PARTICLES = 36;
 const clamp01 = value => Math.max(0, Math.min(1, value));
 const smooth = (start, end, value) => { const t = clamp01((value - start) / (end - start)); return t * t * (3 - 2 * t); };
 
-// A quiet rise and release. Geometry and particle seeds are reused; a victory
+// A brief light burst from the body. Geometry and particle seeds are reused; a victory
 // only restarts the timeline, without changing health or combat state.
-export function createLevelUpEffect(scene) {
+export function createLevelUpEffect(scene, { onGlow = () => {} } = {}) {
   const root = new THREE.Group();
   root.name = 'Levelaufstieg'; root.visible = false;
-  // Give the approved soft effect more reach without changing its timing or glow.
+  // Keep the generous reach of the approved effect around the character.
   root.scale.set(1.35, 1.4, 1.35);
   root.userData.ignoreVision = true;
   scene.add(root);
@@ -44,50 +44,35 @@ export function createLevelUpEffect(scene) {
   halo.rotation.x = -Math.PI / 2; halo.position.y = .06;
   root.add(halo);
 
-  // One tapered thread travels upward around the body. Its soft edges and
-  // moving tail replace the solid hoops and cylindrical light wall.
-  const ribbonGeometry = new THREE.BufferGeometry();
-  const segments = 96, positions = [], uvs = [], indices = [];
-  for (let index = 0; index <= segments; index++) {
-    const t = index / segments, angle = -1.5 + t * Math.PI * 1.7;
-    const radius = .62 + Math.sin(t * Math.PI) * .10;
-    const width = .055 * Math.sin(Math.PI * t) + .015;
-    for (const side of [-1, 1]) {
-      const r = radius + side * width;
-      positions.push(Math.cos(angle) * r, .18 + t * 2.15, Math.sin(angle) * r);
-      uvs.push((side + 1) / 2, t);
-    }
-    if (index < segments) {
-      const a = index * 2;
-      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
-    }
-  }
-  ribbonGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  ribbonGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-  ribbonGeometry.setIndex(indices);
-  const ribbonMaterial = makeMaterial('Level – rising gold thread', `
-    uniform float uOpacity, uHead; uniform vec3 uGold, uLight; varying vec2 vUv;
+  // A brief soft flare originates in the chest. Depth testing lets the actual
+  // glowing body remain in front; it is not a screen-wide white flash.
+  const coreMaterial = makeMaterial('Level – inner light release', `
+    uniform float uOpacity; uniform vec3 uGold; varying vec2 vUv;
     void main() {
-      float edge = exp(-pow((vUv.x - .5) * 4.5, 2.0));
-      edge *= smoothstep(0.0, .13, vUv.x) * (1.0 - smoothstep(.87, 1.0, vUv.x));
-      float trail = smoothstep(uHead - .65, uHead - .10, vUv.y)
-        * (1.0 - smoothstep(uHead - .035, uHead + .035, vUv.y));
-      float tip = smoothstep(0.0, .09, vUv.y) * (1.0 - smoothstep(.85, 1.0, vUv.y));
-      gl_FragColor = vec4(mix(uGold, uLight, trail * .65), uOpacity * edge * trail * tip);
+      float radius = length(vUv * 2.0 - 1.0);
+      float alpha = exp(-radius * radius * 4.0) * (1.0 - smoothstep(.7, 1.0, radius));
+      gl_FragColor = vec4(uGold, alpha * uOpacity);
       #include <colorspace_fragment>
-    }`, { uHead: { value: 0 }, uGold: { value: new THREE.Color('#c6a35e') },
-      uLight: { value: new THREE.Color('#f3d99c') } });
-  const ribbon = new THREE.Mesh(ribbonGeometry, ribbonMaterial);
-  root.add(ribbon);
+    }`, { uGold: { value: new THREE.Color('#f8d690') } }, `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      vec4 center = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+      center.xy += position.xy * length(modelMatrix[0].xyz);
+      gl_Position = projectionMatrix * center;
+    }`);
+  const core = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), coreMaterial);
+  core.position.y = .92;
+  root.add(core);
 
-  // Camera-facing flecks with individual rise/fade times and a golden-angle
-  // distribution. Soft cores remain small, without faceted confetti or spokes.
+  // The flecks start together inside the body and shoot outward, then
+  // slow into drifting embers. Their streaks follow the projected travel direction.
   const moteGeometry = new THREE.PlaneGeometry(1, 1);
   const seeds = new Float32Array(PARTICLES * 4);
   for (let index = 0; index < PARTICLES; index++) {
     const random = ((index * 17 + 11) % 23) / 23;
-    seeds.set([.045 + random * .30, .78 + ((index * 7) % 11) / 11 * .43,
-      index * 2.39996323, .34 + ((index * 13) % 19) / 19 * .48], index * 4);
+    seeds.set([.045 + random * .045, .78 + ((index * 7) % 11) / 11 * .48,
+      index * 2.39996323, -.22 + ((index * 13) % 31) / 31 * 1.15], index * 4);
   }
   moteGeometry.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 4));
   const moteMaterial = makeMaterial('Level – floating gold motes', `
@@ -108,19 +93,21 @@ export function createLevelUpEffect(scene) {
     void main() {
       vUv = uv;
       float t = clamp((uAge - aSeed.x) / aSeed.y, 0.0, 1.0);
-      float drift = 1.0 - pow(1.0 - t, 2.0);
-      float angle = aSeed.z + drift * .55;
-      float radius = aSeed.w + drift * .22;
+      float travel = (1.0 - exp(-4.0 * t)) / (1.0 - exp(-4.0));
       float variation = fract(aSeed.z * .37);
-      vec3 center = vec3(cos(angle) * radius, .18 + (1.65 + variation * .65) * drift, sin(angle) * radius);
+      float horizontal = sqrt(max(.01, 1.0 - aSeed.w * aSeed.w));
+      vec3 direction = vec3(cos(aSeed.z) * horizontal, aSeed.w, sin(aSeed.z) * horizontal);
+      vec3 center = vec3(0.0, .92, 0.0) + direction * (1.65 + variation * .50) * travel;
+      center.y += .22 * t * t;
       vec4 viewCenter = modelViewMatrix * vec4(center, 1.0);
-      float size = (.14 + variation * .08) * (1.0 - t * .35);
-      // Billboard corners bypass modelViewMatrix, so carry the effect's scale
-      // into their size as well as the rising particle positions.
+      float size = (.17 + variation * .10) * (1.0 - t * .45);
       float effectScale = length(modelMatrix[0].xyz);
-      viewCenter.xy += position.xy * vec2(size, size * 1.5) * effectScale;
+      vec2 outward = (modelViewMatrix * vec4(direction, 0.0)).xy;
+      outward /= max(.001, length(outward));
+      vec2 across = vec2(-outward.y, outward.x);
+      viewCenter.xy += (across * position.x + outward * position.y * (2.6 - t * 1.2)) * size * effectScale;
       gl_Position = projectionMatrix * viewCenter;
-      vFade = smoothstep(0.0, .16, t) * (1.0 - smoothstep(.38, 1.0, t));
+      vFade = smoothstep(0.0, .07, t) * (1.0 - smoothstep(.28, 1.0, t));
     }`);
   const motes = new THREE.InstancedMesh(moteGeometry, moteMaterial, PARTICLES);
   motes.frustumCulled = false;
@@ -131,12 +118,13 @@ export function createLevelUpEffect(scene) {
   const light = new THREE.PointLight('#eac17a', 0, 4.86, 2);
   light.name = 'Levelaufstieg – warmes Umgebungslicht';
   scene.add(light);
-  let age = 0, active = false, reducedMotion = false, level = 1, emitted = 0, disposed = false;
+  let age = 0, active = false, reducedMotion = false, level = 1, emitted = 0, disposed = false, bodyGlow = 0;
 
   function reset() {
     active = false; age = 0; root.visible = false; motes.count = 0;
-    haloMaterial.uniforms.uOpacity.value = ribbonMaterial.uniforms.uOpacity.value = 0;
+    haloMaterial.uniforms.uOpacity.value = coreMaterial.uniforms.uOpacity.value = 0;
     moteMaterial.uniforms.uOpacity.value = 0; light.intensity = 0;
+    bodyGlow = 0; onGlow(0);
   }
 
   function update(dt, position) {
@@ -145,15 +133,20 @@ export function createLevelUpEffect(scene) {
     const duration = reducedMotion ? .9 : DURATION;
     if (age >= duration) { reset(); return; }
     if (position) root.position.copy(position);
-    light.position.copy(root.position); light.position.y += .85;
+    light.position.copy(root.position); light.position.y += 1.2;
     root.visible = true;
-    const rise = smooth(0, .16, age), release = 1 - smooth(.35, reducedMotion ? .9 : 1.15, age);
-    halo.scale.setScalar(reducedMotion ? 1.15 : .65 + 1.0 * (1 - (1 - clamp01(age / .85)) ** 3));
-    haloMaterial.uniforms.uOpacity.value = (reducedMotion ? .28 : .60) * rise * release;
-    light.intensity = (reducedMotion ? 1.2 : 3.2) * rise * release;
-    ribbon.visible = !reducedMotion;
-    ribbonMaterial.uniforms.uHead.value = (age - .06) / .84;
-    ribbonMaterial.uniforms.uOpacity.value = reducedMotion ? 0 : .78 * smooth(.06, .20, age) * (1 - smooth(.9, 1.45, age));
+    const rise = smooth(0, reducedMotion ? .18 : .10, age);
+    const release = 1 - smooth(reducedMotion ? .35 : .24, reducedMotion ? .9 : .85, age);
+    bodyGlow = reducedMotion ? .30 * rise * release
+      : smooth(.01, .095, age) * (1 - smooth(.12, .42, age));
+    onGlow(bodyGlow);
+    halo.scale.setScalar(reducedMotion ? 1.15 : .35 + 1.55 * (1 - (1 - clamp01((age - .035) / .6)) ** 3));
+    haloMaterial.uniforms.uOpacity.value = (reducedMotion ? .28 : .68) * rise * release;
+    light.intensity = (reducedMotion ? 1.2 : 5.4) * rise * release;
+    core.visible = !reducedMotion;
+    core.scale.setScalar(.18 + 1.30 * smooth(.025, .35, age));
+    coreMaterial.uniforms.uOpacity.value = reducedMotion ? 0
+      : .65 * smooth(.01, .09, age) * (1 - smooth(.13, .42, age));
     motes.count = reducedMotion ? 0 : PARTICLES;
     moteMaterial.uniforms.uAge.value = age;
     moteMaterial.uniforms.uOpacity.value = reducedMotion ? 0 : .90;
@@ -168,16 +161,17 @@ export function createLevelUpEffect(scene) {
     },
     update,
     reset() { reset(); emitted = 0; level = 1; },
-    inspect: () => ({ active, level, emitted, style: 'woven-gold', age,
+    inspect: () => ({ active, level, emitted, style: 'core-burst', age, bodyGlow,
       duration: reducedMotion ? .9 : DURATION, particleCount: active ? motes.count : 0,
       haloVisible: active && haloMaterial.uniforms.uOpacity.value > 0,
-      ribbonVisible: active && !reducedMotion && ribbonMaterial.uniforms.uOpacity.value > 0,
+      coreVisible: active && !reducedMotion && coreMaterial.uniforms.uOpacity.value > 0,
+      ribbonVisible: false,
       lightIntensity: light.intensity, depthTested: true, ringCount: 0, beamVisible: false,
       reducedMotion, remaining: active ? (reducedMotion ? .9 : DURATION) - age : 0 }),
     dispose() {
       reset(); disposed = true; scene.remove(root); scene.remove(light);
-      halo.geometry.dispose(); ribbonGeometry.dispose(); moteGeometry.dispose();
-      haloMaterial.dispose(); ribbonMaterial.dispose(); moteMaterial.dispose(); light.dispose();
+      halo.geometry.dispose(); core.geometry.dispose(); moteGeometry.dispose();
+      haloMaterial.dispose(); coreMaterial.dispose(); moteMaterial.dispose(); light.dispose();
     },
   };
 }

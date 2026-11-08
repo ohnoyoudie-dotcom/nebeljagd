@@ -7,6 +7,7 @@ import { createAvatarAnimator } from '../src/avatar-animation.js';
 import { createCombatPoseController } from '../src/character-combat-pose.js';
 import { createHandGripSocket } from '../src/hand-grip.js';
 import { preparePlayerGeometry } from '../src/player-model.js';
+import { createSwordPose, sampleSwordPose } from '../src/sword-motion.js';
 
 const bytes = await readFile(new URL('../assets/characters/nebeljagd_player_base_v1.glb', import.meta.url));
 
@@ -137,4 +138,33 @@ test('the standing foot pose fades out before running and releases completely fo
   const reset = point(legs.left[2]);
   controller.apply(pose(1)); controller.restore();
   near(point(legs.left[2]), reset, 'restart does not retain the prior wide stance');
+});
+
+test('the real sword rig changes lead foot between swings, keeps soles planted and restores every bone', async () => {
+  const { gltf, controller, legs, point, bone } = await rig();
+  const original = new Map();
+  gltf.scene.traverse(node => { if (node.isBone) original.set(node,
+    { rotation: node.quaternion.clone(), position: node.position.clone() }); });
+  const feet = ['left', 'right'].map(side => ({ ankle: point(legs[side][2]),
+    toe: point(bone(`${side === 'left' ? 'Left' : 'Right'}ToeBase`)) }));
+  const leads = [];
+  for (const index of [0, 1, 2]) {
+    const sword = sampleSwordPose(index, .36, true, createSwordPose());
+    controller.apply(sword);
+    leads.push(controller.inspect().feet.left.z - controller.inspect().feet.right.z);
+    assert.equal(controller.inspect().swordWeight, 1);
+    for (const [i, side] of ['left', 'right'].entries()) {
+      assert.ok(Math.abs(point(legs[side][2]).y - feet[i].ankle.y) < 2e-5, 'sword motion keeps the ankle planted');
+      assert.ok(Math.abs(point(bone(`${side === 'left' ? 'Left' : 'Right'}ToeBase`)).y - feet[i].toe.y) < 2e-5,
+        'sword motion keeps the toe planted');
+    }
+    controller.apply(sword, { walkWeight: 1 });
+    assert.equal(controller.inspect().stanceWeight, 0, 'sword does not pin the walking feet');
+  }
+  assert.ok(leads[0] > .1 && leads[1] < -.1 && leads[2] > .1, 'reverse cut visibly transfers the lead foot');
+  controller.apply(null);
+  for (const [node, pose] of original) {
+    near(node.position, pose.position, 'sword cancellation restores bone positions', 1e-8);
+    assert.deepEqual(node.quaternion.toArray(), pose.rotation.toArray(), 'sword cancellation restores bone rotations');
+  }
 });
