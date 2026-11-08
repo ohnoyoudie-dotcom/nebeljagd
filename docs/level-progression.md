@@ -23,7 +23,9 @@ Aufstieg schwillt sie einmal sanft auf 1,18-fache Größe an und klingt wieder a
 Ein weicher goldener Lichtimpuls, ein dünner aufsteigender Lichtfaden und kleine,
 zeitlich versetzte Lichtpunkte begleiten die Figur. Das Licht hellt auch Boden
 und Grashalme kurz auf; Gras, Figur und Hindernisse verdecken die Partikel und
-den Lichtfaden räumlich korrekt. Harte helle Ringe, kantige Funken und die
+den Lichtfaden räumlich korrekt. Die Bewegung reicht jetzt 35 Prozent weiter
+nach außen und 40 Prozent höher; die Lichtpunkte sind ebenfalls 35 Prozent
+größer. Farben und weicher Ablauf bleiben erhalten. Harte helle Ringe, kantige Funken und die
 zylindrische Lichtsäule sind entfernt. Es erscheint weiterhin kein Textfenster.
 Die Rückmeldung klingt nach etwa 1,6 Sekunden ab. Bei reduzierten Animationen
 bleiben ein ruhiger Lichtschein und eine Aufhellung der Zahl ohne Vergrößerung
