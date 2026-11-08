@@ -53,8 +53,9 @@ with sync_playwright() as p:
    else:
     page.keyboard.up('a');page.keyboard.down('w')
    page.wait_for_function('Math.cos(nebeljagdTestState().direction)<-.999 && Math.cos(nebeljagdTestState().combat.bowAlignment.direction)<-.999')
-   if touch:session.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[{'id':2,'x':cx,'y':cy-30}]})
-   else:page.keyboard.up('w')
+   # Keep both touch contacts down until the final release. CDP touchEnd
+   # ends the active gesture rather than reliably lifting just one finger.
+   if not touch:page.keyboard.up('w')
    held=page.evaluate('nebeljagdTestState().combat')
    assert held['shotsFired']==0 and held['bowHolding'] and held['bowDraw']==1,held
    assert held['bowAlignment']['error']<.025,held['bowAlignment']
@@ -71,7 +72,7 @@ with sync_playwright() as p:
    report['checks'].append(label+': held left, changed to up, kept full draw, released exactly one arrow upward')
    assert state['combat']['shotsFired']==1,state['combat']
    assert state['combat']['arrowModel']['source'].endswith('feathered spear 3d model.glb')
-   assert state['combat']['arrowModel']['nominalLength']==1.05
+   assert state['combat']['arrowModel']['nominalLength']==1.25
    report['checks'].append(label+': real ornate bow picked up and one visible physical arrow fired')
    context.close()
   assert not report['errors'],report['errors'];report['passed']=True

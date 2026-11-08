@@ -5,8 +5,8 @@ Loslassen verwendet nochmals die aktuelle Richtung, auch zwischen zwei Frames.
 Aufladung bleibt beim Richtungswechsel erhalten; ein Loslassen schießt genau
 einen Pfeil. Rollen, Abbruch, Waffenwechsel und Neustart brechen das Spannen ab.
 
-Der gehaltene Bogen ist rund 34 % größer; Pfeillänge und Flugmodell bleiben
-identisch. Der linke Griff liegt weiter vorn auf der rechten Schulterlinie.
+Der gehaltene Bogen ist rund 34 % größer; Aufgelegter und fliegender Pfeil
+verwenden dasselbe vergrößerte Modell (`ARROW_LENGTH = 1.25`, Querschnittsfaktor 2.2). Der linke Griff liegt weiter vorn auf der rechten Schulterlinie.
 Beide Handflächen werden am tatsächlichen Griff beziehungsweise an der
 beweglichen Sehne ausgerichtet. Die rechte Armbeuge bleibt rechts außerhalb
 des Oberkörpers. Der einfache Holzbogen erhält einen kürzeren Auszug, damit seine
