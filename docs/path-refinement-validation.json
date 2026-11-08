@@ -1,0 +1,196 @@
+{
+  "status": "passed",
+  "buildId": "bce5ae98074e",
+  "sourceCommit": "82f6a1e4f185346e2d60a7cdfe347a09b4a76181",
+  "unitTests": {
+    "passed": 565,
+    "failed": 0
+  },
+  "assetVerification": "passed; original assets unchanged",
+  "mapVerification": "passed",
+  "mapUnchangedSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+  "generatedGame": {
+    "browser": "154.0.8037.57",
+    "stencil": true,
+    "checks": [
+      "All seven saved .55/1/radius2.5 path styles now have borders with singletons and small/large clusters",
+      "Only the local crown fades further; subtle textured hiding compiles in Low/High and restores after walking out",
+      "Active hiding resets cleanly; original map and objects remain unchanged; no shader/browser/network errors"
+    ],
+    "savedPathRenderedCounts": {
+      "earth": 32,
+      "forest": 15,
+      "sand": 38,
+      "snow": 18,
+      "stone": 37,
+      "mud": 19,
+      "cobble": 19
+    },
+    "screenshots": 3,
+    "errors": [],
+    "unexpectedRequests": [],
+    "report": "test-results/path-refinement-integrated/report.json",
+    "limits": "Actual generated Chromium/SwiftShader render and keyboard input; no hardware performance claim.",
+    "borders": {
+      "count": 286,
+      "clusterCount": 74,
+      "singletonCount": 19,
+      "largestCluster": 11,
+      "clusterSizeHistogram": {
+        "1": 19,
+        "2": 10,
+        "3": 11,
+        "4": 8,
+        "5": 11,
+        "6": 3,
+        "7": 2,
+        "8": 3,
+        "9": 2,
+        "10": 2,
+        "11": 3
+      }
+    },
+    "visibility": {
+      "under": {
+        "qa-local-tree": {
+          "opacity": 0.05348252967126458,
+          "targetOpacity": 0.045,
+          "underCanopy": true,
+          "barkOpacity": 1,
+          "footprint": {
+            "center": [
+              35.07783362855393,
+              25.930817426489064
+            ],
+            "radiusX": 2.7317821979522705,
+            "radiusZ": 2.223128080368042,
+            "rotation": 0.25,
+            "minY": 2.399610619889672,
+            "maxY": 9.240718465196068
+          }
+        },
+        "qa-other-tree": {
+          "opacity": 1,
+          "targetOpacity": 1,
+          "underCanopy": false,
+          "barkOpacity": 1,
+          "footprint": {
+            "center": [
+              48.07783362855393,
+              25.930817426489064
+            ],
+            "radiusX": 2.7317821979522705,
+            "radiusZ": 2.223128080368042,
+            "rotation": 0.25,
+            "minY": 1.9107383269443448,
+            "maxY": 8.75184617225074
+          }
+        }
+      },
+      "hidden": {
+        "style": "soft-textured-concealment-v2",
+        "active": true,
+        "blend": 1,
+        "bodyOpacity": 0.58,
+        "fillOpacity": 0.07,
+        "outlineOpacity": 0.42,
+        "color": "#cbd8d0",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 1.4,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0,
+        "materialsRestored": false
+      },
+      "restored": {
+        "style": "soft-textured-concealment-v2",
+        "active": false,
+        "blend": 0,
+        "bodyOpacity": 1,
+        "fillOpacity": 0,
+        "outlineOpacity": 0,
+        "color": "#cbd8d0",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 1.4,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0.045,
+        "materialsRestored": true
+      }
+    }
+  },
+  "fullPathVisuals": {
+    "buildId": "acd409e09c53",
+    "report": "test-results/path-refinement-acd409e09c53/report.json",
+    "screenshots": 7,
+    "runtimeChangesSince": [
+      "src/gold-coin.js",
+      "src/main.js: pickup inspection only",
+      "src/pickups.js"
+    ]
+  },
+  "generatedEditorLauncher": {
+    "buildId": "acd409e09c53",
+    "checks": [
+      "Fresh launcher opens matching editor and project map with visible version",
+      "Stable bookmark automatically resumes the complete own draft in the current editor",
+      "Opening current project preserves the different local draft",
+      "Direct editor visit automatically resumes the last browser draft",
+      "Automatically resumed map remains exportable as a normal JSON file",
+      "Exported standalone snapshot reopens its own map",
+      "Same bookmarked URL checks fresh manifest on request",
+      "An editor update automatically opens the new version with the entire saved map",
+      "Failed release check never silently opens stale editor or destroys a draft",
+      "Unreadable browser draft remains intact while project opens"
+    ],
+    "errors": [],
+    "report": "test-results/online-editor/report.json"
+  },
+  "finalCoinChestAndEditor": {
+    "buildId": "bce5ae98074e",
+    "checks": [
+      "Real chest drops two large symmetric gold coins: slow clockwise turn, pause freezes rotation, collection awards exact gold",
+      "Real chest GLB: textured floor/walls/lid; new sword drop; keyboard opening and touch swap preserve tier/damage",
+      "Restart rerolls tiers, restores exact locations and removes chest drops",
+      "Generated editor offers only new sword, explains random tiers/damage and preserves all existing map content"
+    ],
+    "errors": [],
+    "report": "test-results/chest-loot/report.json"
+  },
+  "preservedBowChecks": {
+    "buildId": "acd409e09c53",
+    "gameSha256": "f04b8bf76da578c28c2291d8f1daec2e5866b5e4e57cd7c682357daa95c0c36f",
+    "checks": [
+      "keyboard: held full draw without firing; hands and bow stay beside the torso",
+      "keyboard: real ornate bow picked up and one visible physical arrow fired",
+      "touch: held full draw without firing; hands and bow stay beside the torso",
+      "touch: real ornate bow picked up and one visible physical arrow fired"
+    ],
+    "errors": [],
+    "runtimeUnchangedSinceCheck": true
+  },
+  "preservedConcurrentCommits": [
+    "d6d689fad134717b4b8dceac296bed941f9dc849",
+    "7ae48fe834cf731761b229ae3ad45e983a7d1f37"
+  ],
+  "files": {
+    "magebrawl.html": {
+      "bytes": 91917177,
+      "sha256": "2185b1d0e5f0e3a93e71b39594a0594acbcbae0249ca3ea4b12edbddef4dca7f"
+    },
+    "map-editor.html": {
+      "bytes": 61649325,
+      "sha256": "55b426add267e72c832c4e90464859b6ceb6ae0fa478f72793418b887cb2189d"
+    },
+    "worldmap.json": {
+      "bytes": 56916,
+      "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
+    },
+    "magebrawl-welt-und-editor.zip": {
+      "bytes": 100390330,
+      "sha256": "210c9bb7471bcf859dd64ade51d8b403277354a85c5cb5215379a1ffe71e72d1"
+    }
+  }
+}

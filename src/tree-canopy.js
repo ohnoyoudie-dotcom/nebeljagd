@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export const TREE_CANOPY_STYLE = Object.freeze({ minimumOpacity: .08, enterSeconds: .22, leaveSeconds: .32, opaqueThreshold: .999 });
+export const TREE_CANOPY_STYLE = Object.freeze({ minimumOpacity: .045, enterSeconds: .22, leaveSeconds: .32, opaqueThreshold: .999 });
 const smooth = value => { const t = THREE.MathUtils.clamp(value, 0, 1); return t * t * (3 - 2 * t); };
 export const isTreeFoliage = part => Boolean(part.treePart === 'foliage' || part.foliage || part.kitFoliage);
 export const canFadeTreeCanopy = part => isTreeFoliage(part) || part.canopyCore === true;
