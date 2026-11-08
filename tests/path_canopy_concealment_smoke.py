@@ -17,11 +17,14 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5232').rstrip('/')
-OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT / 'test-results/path-canopy-concealment'))
+SUCCESSOR = os.environ.get('NEBELJAGD_QA_SUCCESSOR') == '1'
+OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT / ('test-results/path-canopy-concealment-integrated'
+    if SUCCESSOR else 'test-results/path-canopy-concealment')))
 OUT.mkdir(parents=True, exist_ok=True)
 RELEASE = Path(os.environ.get('NEBELJAGD_RELEASE_DIR', ROOT / 'welt'))
 MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
 REPORT = {'status': 'running', 'checks': [], 'screenshots': [], 'errors': [], 'unexpectedRequests': [],
+          'mode': 'compact-successor' if SUCCESSOR else 'full',
           'limits': 'Actual Chromium/SwiftShader rendering and inputs; no hardware performance claim.'}
 
 
@@ -153,6 +156,8 @@ try:
             stage('load actual path, tree and tall-grass fixture')
             page.goto(URL+'/magebrawl.html?mapSource=editor&inspect=1&quality=low', wait_until='domcontentloaded', timeout=120000)
             wait(page, 'window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0')
+            REPORT['webglContext'] = page.evaluate('document.querySelector("#game").getContext("webgl2").getContextAttributes()')
+            assert REPORT['webglContext']['stencil'] is True
             assert state(page)['world']['source'] == 'editor'
             assert state(page)['world']['objects'] == testmap['objects']
             page.locator('#startBtn').click()
@@ -167,21 +172,23 @@ try:
             assert any(s['minWidth'] < s['maxWidth'] and s['shapeVariants'] > 1 for s in borders['byStyle'].values())
             assert borders['suppressed']['crossing'] > 0
             assert any(g['length'] > .3 for g in borders['gaps'])
-            for name, x, z in [('native-crossing',-22,-23),('painted-union-crossing',3,-28),
-                               ('path-themes-north',-28,11),('path-themes-south',-28,32)]:
+            path_views = [('painted-union-crossing',3,-28)] if SUCCESSOR else [
+                ('native-crossing',-22,-23),('painted-union-crossing',3,-28),
+                ('path-themes-north',-28,11),('path-themes-south',-28,32)]
+            for name, x, z in path_views:
                 move(page,x,z);capture(page,name)
             passed('All requested path themes use broken borders; native crossings and painted unions remain open', borders)
 
             baseline_trees = trees(page)
             original_styles = {identifier: tree['appearance'] for identifier, tree in baseline_trees.items()}
-            for identifier in ['qa-tree-a','qa-tree-b']:
+            for identifier in (['qa-tree-a'] if SUCCESSOR else ['qa-tree-a','qa-tree-b']):
                 stage(f'real entry and exit under {identifier}')
                 tree = trees(page)[identifier]; footprint = tree['canopy']['footprint']
                 cx, cz = footprint['center']; rx, rz = footprint['radiusX'], footprint['radiusZ']
                 line_z = cz + (1 if cz >= tree['z'] else -1) * rz * .45
                 move(page,cx-rx-2,line_z)
                 wait(page, 'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
-                if identifier == 'qa-tree-a':
+                if identifier == 'qa-tree-a' and not SUCCESSOR:
                     capture(page,'canopy-before-entering',1.4)
                 walk_until(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx)
                 wait(page, 'id=>nebeljagdTestState().world.trees.find(t=>t.id===id).canopy.opacity<.10',identifier)
@@ -210,7 +217,8 @@ try:
             move(page,16,18)
             wait(page,'!nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.materialsRestored')
             normal = appearance(page)
-            capture(page,'character-before-hiding',1.8)
+            if not SUCCESSOR:
+                capture(page,'character-before-hiding',1.8)
             walk_until(page,'KeyD','nebeljagdTestState().position.x>=22')
             wait(page,'nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.blend>.98')
             hidden = state(page); visual = appearance(page)
@@ -220,7 +228,8 @@ try:
             assert visual['bodyOpacity'] < .3 and .15 < visual['fillOpacity'] < .4 and visual['outlineOpacity'] > .9
             assert not visual['depthTest'] and not visual['materialsRestored']
             capture(page,'white-hidden-character-default',1)
-            capture(page,'white-hidden-character-low',1.8)
+            if not SUCCESSOR:
+                capture(page,'white-hidden-character-low',1.8)
             quality(page,'high');capture(page,'white-hidden-character-high',1.8)
             walk_until(page,'KeyD','nebeljagdTestState().position.x>=28')
             wait(page,'!nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.materialsRestored')
@@ -232,10 +241,11 @@ try:
 
             stage('high-quality path shaders and restart restoration')
             move(page,3,-28);capture(page,'painted-union-high-quality')
-            move(page,-28,11);capture(page,'path-themes-high-quality')
-            move(page,16,18)
-            walk_until(page,'KeyD','nebeljagdTestState().position.x>=22')
-            wait(page,'nebeljagdTestState().character.concealmentAppearance.blend>.95')
+            if not SUCCESSOR:
+                move(page,-28,11);capture(page,'path-themes-high-quality')
+                move(page,16,18)
+                walk_until(page,'KeyD','nebeljagdTestState().position.x>=22')
+                wait(page,'nebeljagdTestState().character.concealmentAppearance.blend>.95')
             pause(page);page.locator('#restartBtn').click()
             wait(page,'nebeljagdTestState().phase==="playing"&&nebeljagdTestState().character.concealmentAppearance.materialsRestored')
             wait(page,'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
