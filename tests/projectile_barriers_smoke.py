@@ -47,12 +47,19 @@ with sync_playwright() as pw:
         p.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         p.locator('#startBtn').click()
         for i, (weapon, _) in enumerate(weapons):
+            selected = os.environ.get('NEBELJAGD_QA_WEAPONS', '').split(',')
+            if selected != [''] and weapon not in selected:
+                continue
+            print('Testing', weapon, flush=True)
             p.evaluate('x=>nebeljagdInspect({x,z:-14,direction:0})', i*5)
-            p.wait_for_timeout(150)
+            p.wait_for_function('kind=>{const s=nebeljagdTestState();return s.equippedWeapon===kind || s.nearWeapon===kind}', arg=weapon)
             if p.evaluate('nebeljagdTestState().equippedWeapon') != weapon:
                 p.keyboard.press('e')
             p.wait_for_function('kind=>nebeljagdTestState().equippedWeapon===kind', arg=weapon)
             for name, x, kind, height in lanes:
+                selected_lanes = os.environ.get('NEBELJAGD_QA_BARRIERS', '').split(',')
+                if selected_lanes != [''] and name not in selected_lanes:
+                    continue
                 low = height < 2
                 p.evaluate('x=>nebeljagdInspect({x,z:-35,direction:0})', x)
                 pos = p.evaluate('nebeljagdTestState().position')
@@ -60,7 +67,7 @@ with sync_playwright() as pw:
                 z = -35.9 if weapon == 'poisonStaff' and not low else -39
                 p.evaluate('p=>nebeljagdInspect({...p,direction:0})', dict(x=x, z=z))
                 p.wait_for_function('nebeljagdTestState().attackCooldown===0')
-                p.wait_for_function('p=>{const o=nebeljagdTestState().vision.origin;return Math.abs(o.x-p.x)<.01 && Math.abs(o.z-p.z)<.01}', arg=dict(x=x,z=z))
+                p.wait_for_function('()=>{const s=nebeljagdTestState(),o=s.vision.origin,p=s.position;return Math.abs(o.x-p.x)<.01 && Math.abs(o.z-p.z)<.01}')
                 assert p.evaluate('p=>nebeljagdInspectVisibility(p)', dict(x=x, z=-31)) == low, name
                 p.evaluate('''() => {
                   const before=nebeljagdTestState();
