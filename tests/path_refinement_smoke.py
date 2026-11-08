@@ -17,11 +17,14 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5232').rstrip('/')
-OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT / 'test-results/path-refinement'))
+SUCCESSOR = os.environ.get('NEBELJAGD_QA_SUCCESSOR') == '1'
+OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT / ('test-results/path-refinement-integrated'
+    if SUCCESSOR else 'test-results/path-refinement')))
 OUT.mkdir(parents=True, exist_ok=True)
 RELEASE = Path(os.environ.get('NEBELJAGD_RELEASE_DIR', ROOT / 'welt'))
 MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
 REPORT = {'status': 'running', 'checks': [], 'screenshots': [], 'errors': [], 'unexpectedRequests': [],
+          'mode': 'compact-successor' if SUCCESSOR else 'full',
           'limits': 'Actual generated Chromium/SwiftShader render and keyboard input; no hardware performance claim.'}
 
 
@@ -183,7 +186,8 @@ try:
             assert border['gapCount'] > 0 and any(g['length'] > 4 for g in border['gaps'])
             assert all(abs(p['x']) > 6.8 or abs(p['z']-26) > 6.8 for p in border['samples']), 'Natural soft patch received border stones'
             assert any(s['minWidth'] < s['maxWidth'] and s['shapeVariants'] > 1 for s in border['byStyle'].values())
-            for name,x,z in [('saved-earth-forest',-24,-24),('saved-cobble',-36,24),('varied-stone-clusters',-10,48)]:
+            path_views = [] if SUCCESSOR else [('saved-earth-forest',-24,-24),('saved-cobble',-36,24),('varied-stone-clusters',-10,48)]
+            for name,x,z in path_views:
                 move(page,x,z);capture(page,name)
             passed('All seven saved .55/1/radius2.5 path styles now have borders with singletons and small/large clusters', border)
 
@@ -194,7 +198,8 @@ try:
             line_z = cz + (1 if cz >= tree['z'] else -1)*rz*.45
             move(page,cx-rx-3,line_z)
             wait(page, '!nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
-            capture(page,'outside-canopy-and-grass',1.5)
+            if not SUCCESSOR:
+                capture(page,'outside-canopy-and-grass',1.5)
             walk(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx)
             wait(page, '''()=>{const s=nebeljagdTestState();return s.hiddenInGrass&&
               s.character.concealmentAppearance.blend>.99&&s.world.trees.find(t=>t.id==='qa-local-tree').canopy.opacity<.055}''')

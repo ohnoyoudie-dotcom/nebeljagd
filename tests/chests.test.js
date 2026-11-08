@@ -55,7 +55,7 @@ test('gold flies out before it can be collected and resets without leaving dupli
   const scene = new THREE.Scene(), collected = [];
   const pickups = createPickups(scene, { placements: [], heightAt: ground, world: openWorld });
   const gold = pickups.addDrop({ id: 'coins', type: 'gold', amount: 17, position: [10, 22], origin: [10, 20] }, { pop: true });
-  assert.equal(gold.visual.geometry.type, 'CylinderGeometry', 'gold uses coins, not diamond geometry');
+  assert.equal(gold.visual.userData.coin?.model, 'symmetric-gold-coin', 'gold uses the new solid coin');
   pickups.update(.25, .25, opener, { onCollect: item => collected.push(item) });
   assert.equal(collected.length, 0);
   assert.ok(gold.group.position.y > 12, 'coins rise above the chest');
