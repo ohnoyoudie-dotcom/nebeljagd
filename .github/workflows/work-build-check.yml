@@ -76,6 +76,10 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/chest_loot_browser_smoke.py
+      - name: Verify barrel and crate scattering in the generated game
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/woodland_details_smoke.py
       - name: Verify uploaded fireball, shader, sparks and smoke
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
@@ -88,12 +92,11 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/projectiles_sight_smoke.py
-      - name: Verify woodland paths, barrel debris and irregular snow rolls
+      - name: Verify irregular snow rolls and moon return
         if: github.event_name == 'workflow_dispatch'
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: |
-          python tests/woodland_details_smoke.py
           python tests/snow_roll_smoke.py
           python tests/moon_projectile_smoke.py
       - name: Verify targeted hold, release and return controls

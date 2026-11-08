@@ -53,7 +53,7 @@ with sync_playwright() as pw:
     b=pw.chromium.launch(executable_path=executable,headless=True,
         args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
     try:
-        ctx=b.new_context(viewport={'width':900,'height':700})
+        ctx=b.new_context(viewport={'width':720,'height':560})
         ctx.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');')
         p=ctx.new_page();p.set_default_timeout(180000)
         p.route('**/favicon.ico',lambda route:route.fulfill(status=204))
@@ -81,14 +81,20 @@ with sync_playwright() as pw:
             before=state(p)['combat']['damageHits']
             p.keyboard.press('KeyF')
             p.wait_for_function('n=>nebeljagdTestState().combat.damageHits>n',arg=before)
-            p.wait_for_function('nebeljagdTestState().attackCooldown===0')
+            if not state(p)['world']['destructibles'][0]['destroyed']:
+                p.wait_for_function('nebeljagdTestState().attackCooldown===0')
         assert state(p)['world']['destructibles'][0]['destroyed']
         assert state(p)['world']['stats']['debris']['active']>=8
+        pause_when(p,'s.world.stats.debris.airborne>=8 && s.world.stats.debris.farthestTravel>1')
+        capture(p,'barrel-burst')
+        passed('Barrel fragments fly outward through the air after a real sword hit')
+        p.keyboard.press('Escape')
         pause_when(p,'s.world.stats.debris.settled===s.world.stats.debris.active && s.world.stats.debris.active>0')
         capture(p,'barrel-settled')
         frozen=state(p)['world']['stats']['debris'];p.wait_for_timeout(1200)
         assert state(p)['world']['stats']['debris']==frozen
         assert frozen['averageOpacity']==1
+        assert frozen['farthestTravel']>2
         passed('Sword breaks the barrel into original textured pieces; settled pieces remain and pause correctly')
         p.keyboard.press('Escape')
         pause_when(p,'s.world.stats.debris.averageOpacity<.6 && s.world.stats.debris.active>0')
@@ -97,6 +103,23 @@ with sync_playwright() as pw:
         p.wait_for_function('nebeljagdTestState().world.stats.debris.active===0')
         assert state(p)['world']['destructibles'][0]['destroyed']
         passed('Debris gradually fades and expires while the destroyed barrel stays removed')
+        p.evaluate('nebeljagdInspect({x:6,z:3.3,direction:0})')
+        p.wait_for_function('nebeljagdTestState().attackCooldown===0')
+        for _ in range(4):
+            if state(p)['world']['destructibles'][1]['destroyed']: break
+            before=state(p)['combat']['damageHits']
+            p.keyboard.press('KeyF')
+            p.wait_for_function('n=>nebeljagdTestState().combat.damageHits>n',arg=before)
+            if not state(p)['world']['destructibles'][1]['destroyed']:
+                p.wait_for_function('nebeljagdTestState().attackCooldown===0')
+        assert state(p)['world']['destructibles'][1]['destroyed']
+        pause_when(p,'s.world.stats.debris.airborne>=4 && s.world.stats.debris.farthestTravel>1')
+        capture(p,'crate-burst')
+        passed('Wooden crate also scatters outward instead of falling into its own footprint')
+        p.locator('#restartBtn').click()
+        assert state(p)['world']['stats']['debris']['active']==0
+        assert all(not item['destroyed'] for item in state(p)['world']['destructibles'])
+        passed('Restart removes flying pieces and restores both breakable props')
         assert not report['errors'],report['errors']
         assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==source_hash
         report['status']='passed'

@@ -50,13 +50,16 @@ export function createDestructionDebris(root, heightAt) {
   const cache = new Map(), pieces = [];
   let serial = 0, disposed = false;
   const random = (seed, salt) => { const n = Math.sin(seed * 12.9898 + salt * 78.233) * 43758.5453; return n - Math.floor(n); };
-  const scratch = new THREE.Vector3();
+  const scratch = new THREE.Vector3(), spinRotation = new THREE.Quaternion();
   function remove(piece) {
     piece.mesh.removeFromParent();
     for (const material of Array.isArray(piece.mesh.material) ? piece.mesh.material : [piece.mesh.material]) material.dispose();
   }
   function burst(item) {
     if (disposed || !['barrel', 'crate'].includes(item.kind)) return;
+    // Enough impulse to read as shattering from the overhead camera. Scaling
+    // by sqrt(size) keeps small props lively without launching large ones away.
+    const impulseScale = Math.sqrt(THREE.MathUtils.clamp(item.scale ?? 1, .25, 4));
     for (const instance of item.instances ?? []) {
       const source = instance.mesh.geometry, key = `${source.uuid}:${item.kind}`;
       if (!cache.has(key)) cache.set(key, fractureGeometry(source, item.kind));
@@ -74,13 +77,19 @@ export function createDestructionDebris(root, heightAt) {
         mesh.position.copy(fragment.pivot).applyMatrix4(instance.originalMatrix);
         mesh.quaternion.copy(orientation); mesh.scale.copy(scale);
         mesh.castShadow = mesh.receiveShadow = true; group.add(mesh);
-        const seed = ++serial, angle = Math.atan2(mesh.position.z - item.z, mesh.position.x - item.x) + (random(seed, 1) - .5) * .6;
-        const speed = (.65 + random(seed, 2) * 1.2) * item.scale;
+        const seed = ++serial, dx = mesh.position.x - item.x, dz = mesh.position.z - item.z;
+        // Centre pieces (lids and bottom boards) have no radial direction.
+        // Give each its own heading instead of sending all of them along +X.
+        const angle = (Math.hypot(dx, dz) < .08 * impulseScale ? random(seed, 3) * Math.PI * 2 : Math.atan2(dz, dx))
+          + (random(seed, 1) - .5) * .65;
+        const speed = (3.2 + random(seed, 2) * 2.6) * impulseScale;
         const up = new THREE.Vector3(0, 1, 0);
         const targetRotation = new THREE.Quaternion().setFromUnitVectors(fragment.restNormal.clone().applyQuaternion(orientation), up)
           .multiply(orientation).premultiply(new THREE.Quaternion().setFromAxisAngle(up, random(seed, 4) * Math.PI * 2));
-        pieces.push({ mesh, age: 0, settled: false, bounces: 0, seed,
-          velocity: new THREE.Vector3(Math.cos(angle) * speed, 1.6 + random(seed, 6) * 1.4, Math.sin(angle) * speed),
+        pieces.push({ mesh, origin: mesh.position.clone(), age: 0, settled: false, bounces: 0,
+          spinAxis: new THREE.Vector3(random(seed, 7) - .5, .2 + random(seed, 8), random(seed, 9) - .5).normalize(),
+          spinSpeed: 5 + random(seed, 10) * 6,
+          velocity: new THREE.Vector3(Math.cos(angle) * speed, (3.2 + random(seed, 6) * 1.8) * impulseScale, Math.sin(angle) * speed),
           targetRotation });
       }
     }
@@ -104,13 +113,23 @@ export function createDestructionDebris(root, heightAt) {
         let left = dt;
         while (left > 1e-8) {
           const step = Math.min(left, 1 / 60); left -= step;
-          piece.velocity.y -= 9.8 * step; piece.mesh.position.addScaledVector(piece.velocity, step);
-          piece.mesh.quaternion.slerp(piece.targetRotation, 1 - Math.exp(-step * 5));
+          piece.velocity.y -= 9.8 * step;
+          const drag = Math.exp(-step * .35);
+          piece.velocity.x *= drag; piece.velocity.z *= drag;
+          piece.mesh.position.addScaledVector(piece.velocity, step);
+          if (!piece.bounces) {
+            // Tumble freely in the air; only flatten out after hitting ground.
+            spinRotation.setFromAxisAngle(piece.spinAxis, piece.spinSpeed * step);
+            piece.mesh.quaternion.premultiply(spinRotation);
+          } else piece.mesh.quaternion.slerp(piece.targetRotation, 1 - Math.exp(-step * 14));
           const floor = heightAt(piece.mesh.position.x, piece.mesh.position.z) + .015 + bottomHeight(piece);
           if (piece.mesh.position.y <= floor) {
             piece.mesh.position.y = floor;
-            piece.velocity.y = Math.abs(piece.velocity.y) * .19;
-            piece.velocity.x *= .48; piece.velocity.z *= .48; piece.bounces++;
+            // A low board can rotate into the floor while still lifting off.
+            // Correct the overlap without killing its upward launch impulse.
+            if (piece.velocity.y > 0) continue;
+            piece.velocity.y = Math.abs(piece.velocity.y) * .28;
+            piece.velocity.x *= .66; piece.velocity.z *= .66; piece.bounces++;
             if (piece.bounces >= 3 || piece.velocity.length() < .25 || piece.age > 2) {
               piece.mesh.quaternion.copy(piece.targetRotation);
               piece.mesh.position.y = heightAt(piece.mesh.position.x, piece.mesh.position.z) + .015 + bottomHeight(piece);
@@ -130,6 +149,8 @@ export function createDestructionDebris(root, heightAt) {
   function reset() { pieces.forEach(remove); pieces.length = 0; }
   return { burst, update, reset,
     get stats() { return { active: pieces.length, settled: pieces.filter(p => p.settled).length,
+      airborne: pieces.filter(p => !p.settled && !p.bounces).length,
+      farthestTravel: pieces.reduce((max, p) => Math.max(max, Math.hypot(p.mesh.position.x - p.origin.x, p.mesh.position.z - p.origin.z)), 0),
       maximum: DEBRIS_RULES.maximum, fadeAfter: DEBRIS_RULES.stay, lifetime: DEBRIS_RULES.lifetime,
       averageOpacity: pieces.length ? pieces.reduce((s, p) => s + (Array.isArray(p.mesh.material) ? p.mesh.material[0] : p.mesh.material).opacity, 0) / pieces.length : 0,
       texturedOriginalFragments: true }; },

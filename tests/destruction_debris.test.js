@@ -27,13 +27,41 @@ test('fractures preserve every original triangle and UV without changing the pro
   }
 });
 
-function scene() {
+function scene(kind = 'barrel') {
   const root = new THREE.Group(), texture = new THREE.Texture(), material = new THREE.MeshStandardMaterial({map:texture});
-  const geometry = new THREE.CylinderGeometry(.5,.5,1.3,24,4); geometry.translate(0,.65,0);
+  const geometry = kind === 'barrel' ? new THREE.CylinderGeometry(.5,.5,1.3,24,4) : new THREE.BoxGeometry(1.2,1.3,1.2,2,2,2);
+  geometry.translate(0,.65,0);
   const mesh = new THREE.InstancedMesh(geometry,material,1), matrix = new THREE.Matrix4().makeTranslation(3,0,4);
   mesh.setMatrixAt(0,matrix);
-  return {root,material,texture,geometry,mesh,item:{kind:'barrel',x:3,z:4,scale:1,instances:[{mesh,originalMatrix:matrix}]}};
+  return {root,material,texture,geometry,mesh,item:{kind,x:3,z:4,scale:1,instances:[{mesh,originalMatrix:matrix}]}};
 }
+
+test('barrels and crates scatter outward, lift and tumble before landing', () => {
+  for (const kind of ['barrel', 'crate']) {
+    const s=scene(kind), debris=createDestructionDebris(s.root,()=>0);
+    debris.burst(s.item);
+    const meshes=s.root.children[0].children, starts=meshes.map(m=>({position:m.position.clone(),rotation:m.quaternion.clone()}));
+    for(let i=0;i<15;i++)debris.update(1/60);
+    assert.equal(debris.stats.airborne,meshes.length,'the burst must launch all pieces, not collapse onto the floor');
+    const quadrants=new Set();
+    meshes.forEach((m,i)=>{
+      const start=starts[i],dx=m.position.x-start.position.x,dz=m.position.z-start.position.z;
+      assert.ok(Math.hypot(dx,dz)>.65,'pieces visibly separate within a quarter second');
+      assert.ok(m.position.y>start.position.y+.35,'each piece follows a raised arc');
+      assert.ok(m.quaternion.angleTo(start.rotation)>1,'pieces tumble in flight');
+      const rx=start.position.x-s.item.x,rz=start.position.z-s.item.z;
+      if(Math.hypot(rx,rz)>.1)assert.ok(dx*rx+dz*rz>0,'outer pieces move away from the prop centre');
+      quadrants.add(`${Math.sign(dx)},${Math.sign(dz)}`);
+    });
+    assert.equal(quadrants.size,4,'scatter surrounds the broken prop');
+    assert.ok(debris.stats.farthestTravel>1);
+    for(let i=0;i<165;i++)debris.update(1/60);
+    assert.equal(debris.stats.settled,meshes.length);
+    assert.ok(debris.stats.farthestTravel>2,'debris lands beyond the old prop footprint');
+    assert.ok(debris.stats.farthestTravel<7,'scatter remains local to the destroyed prop');
+    debris.dispose();s.geometry.dispose();s.material.dispose();s.texture.dispose();
+  }
+});
 
 test('fragments settle on terrain, pause, fade gradually, and expire without disposing shared assets', () => {
   const s=scene(), floor=(x,z)=>(x-3)*.08+(z-4)*.06, debris=createDestructionDebris(s.root,floor);

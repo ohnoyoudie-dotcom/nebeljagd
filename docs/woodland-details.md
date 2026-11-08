@@ -2,8 +2,11 @@
 
 Fässer und Holzkisten zerbrechen beim tödlichen Treffer in Teile ihrer eigenen
 Modelloberfläche. UVs, Holztexturen und Metallbänder bleiben erhalten. Die Teile
-fallen und kippen auf die Geländeoberfläche, bleiben sechs Spielsekunden sichtbar
-und verblassen bis Sekunde zehn. Pause hält die Bewegung und Lebensdauer an;
+fliegen nach außen und oben, wirbeln durch die Luft und prallen kurz vom Boden ab.
+Erst danach legen sie sich flach auf die Geländeoberfläche. Der Impuls streut
+zwischen den Teilen und skaliert gemäßigt mit der Objektgröße; bei normaler Größe
+landen die Reste einige Meter um das zerstörte Objekt herum. Sie bleiben sechs
+Spielsekunden sichtbar und verblassen bis Sekunde zehn. Pause hält die Bewegung und Lebensdauer an;
 Neustart entfernt alle Reste. Die vorhandenen Regeln für Schaden und Kollision
 bleiben erhalten. Maximal 112 Bruchstücke können gleichzeitig aktiv sein.
 
