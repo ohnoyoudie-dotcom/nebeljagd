@@ -392,15 +392,10 @@ export function createWeapons(scene, characterGroup, world, character = null,
 
   const arrowWood = material('#b77740');
   const arrowFeather = material('#ffedbf', { side: THREE.DoubleSide });
-  const arrowGlow = new THREE.MeshBasicMaterial({
-    color: '#ffd78c', transparent: true, opacity: 0.26,
-    depthWrite: false, blending: THREE.AdditiveBlending,
-  });
   const arrowShaftGeometry = new THREE.CylinderGeometry(0.026, 0.03, 0.69, 5);
   const arrowHeadGeometry = new THREE.ConeGeometry(0.085, 0.23, 5);
   const arrowFeatherGeometry = box(0.15, 0.024, 0.2);
-  const arrowTrailGeometry = new THREE.ConeGeometry(0.085, 0.8, 5);
-  function makeArrow(trailVisible = true) {
+  function makeArrow() {
     const group = new THREE.Group();
     if (projectilePrototypes.arrow) {
       const model = projectilePrototypes.arrow.clone(true);
@@ -423,13 +418,26 @@ export function createWeapons(scene, characterGroup, world, character = null,
         feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
       }
     }
-    if (trailVisible) {
-      const trail = addMesh(group, arrowTrailGeometry, arrowGlow, 0, 0, -0.83);
-      trail.rotation.x = Math.PI / 2; trail.castShadow = false;
-      group.userData.trail = trail;
-    }
     return group;
   }
+  let committedBowDirection = 0;
+  function alignNockedArrow() {
+  const aim = attackAge >= 0 ? committedBowDirection : characterGroup.rotation.y;
+  const relative = aim - characterGroup.rotation.y;
+  heldBow.rotation.y = Math.PI / 2 + relative;
+  heldBow.updateMatrix();
+  const rig = heldBow.userData.bowRig;
+  const nock = rig ? rig.lower.clone().lerp(rig.upper,.5) : new THREE.Vector3(.02,0,0);
+  nock.x += bowDraw * (rig?.drawDistance ?? .31);
+  nock.applyMatrix4(heldBow.matrix);
+  // The flying arrow is scene-owned; keep the held arrow the same world size.
+  nockedArrow.scale.set(1/characterGroup.scale.x,1/characterGroup.scale.y,1/characterGroup.scale.z);
+  nockedArrow.rotation.set(0,relative,0);
+  const tail = new THREE.Vector3(0,0,-.43).multiply(nockedArrow.scale).applyEuler(nockedArrow.rotation);
+  nockedArrow.position.copy(nock).sub(tail);
+}
+
+
   const nockedArrow = makeArrow(false);
   nockedArrow.name = 'Aufgelegter Pfeil';
   nockedArrow.position.set(.17, 1.30, .45);
@@ -546,8 +554,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (!specials.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
-    // The bow releases after a short visible draw, in the direction the body faces.
-    // A smoothed movement yaw therefore never produces a sideways arrow.
+    // Keep the requested direction fixed while the body finishes turning.
+    committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
     attackAge = 0; shotReleased = false;
     attackDuration = equippedItem.cooldown;
     cooldown = attackDuration;
@@ -609,6 +617,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
         nockedArrow.position.z += .34;
       } else nockedArrow.position.set(hand.x, hand.y, heldBow.position.z + .34 - (.02 + bowDraw * .31) * heldBow.scale.x);
       nockedArrow.rotation.set(0, 0, 0);
+      alignNockedArrow();
     } else if (equippedType === 'sword') {
       bowDraw = 0;
       const progress = attackAge < 0 ? 0 : attackAge / attackDuration;
@@ -696,7 +705,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     characterGroup.updateWorldMatrix(true, true); scene.updateWorldMatrix(true, false);
     nockedArrow.getWorldPosition(launchCenter); scene.worldToLocal(launchCenter);
     const arrow = arrows.find(entry => entry.life <= 0) ?? arrows[0];
-    const angle = characterGroup.rotation.y;
+    const angle = committedBowDirection;
     arrow.mode = 'flying'; arrow.life = 1.35; arrow.direction = angle; arrow.payload = { ...equippedItem, sourceId: ownerId };
     arrow.vx = Math.sin(angle) * 18; arrow.vz = Math.cos(angle) * 18; arrow.vy = 0;
     arrow.group.position.copy(launchCenter); arrow.group.rotation.set(0, angle, 0); arrow.group.visible = true;
@@ -987,7 +996,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     items.forEach(item => item.aura.dispose());
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
       ...arrows.map(arrow => arrow.group), impactMesh];
-    const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry, arrowTrailGeometry]), materials = new Set(baseMaterials);
+    const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry]), materials = new Set(baseMaterials);
     for (const root of roots) {
       root.traverse(part => {
         if (!part.isMesh && !part.isLine) return;

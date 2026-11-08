@@ -1,0 +1,42 @@
+"""Render the actual ornate bow and replacement arrow in the built game."""
+import json,os,subprocess,hashlib,base64
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/'test-results/bow-alignment';OUT.mkdir(parents=True,exist_ok=True)
+fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {createLobbyMap} from './src/lobby-map.js';console.log(JSON.stringify(createLobbyMap()))"],cwd=ROOT))
+fixture['regions'][0]['biome']='desert'
+fixture['objects']=[dict(id='bow',name='Verzierter Bogen',kind='bow',variant='kit-tripo-ornate-bow',position=[0,-14],rotation=0,scale=1,rarity='common')]
+report={'passed':False,'errors':[],'checks':[],'sha256':hashlib.sha256((ROOT/'welt/magebrawl.html').read_bytes()).hexdigest()}
+with sync_playwright() as p:
+ browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
+ try:
+  for touch in [False,True]:
+   context=browser.new_context(viewport={'width':1100,'height':800},has_touch=touch,is_mobile=touch)
+   context.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');')
+   page=context.new_page();page.set_default_timeout(120000)
+   page.on('pageerror',lambda e:report['errors'].append(str(e)))
+   page.goto(os.environ.get('NEBELJAGD_URL','http://127.0.0.1:8770')+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
+   page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
+   page.locator('#startBtn').click()
+   page.evaluate('nebeljagdInspect({x:0,z:-14,direction:.8,health:100})')
+   page.wait_for_function('nebeljagdTestState().equippedWeapon==="bow"')
+   page.evaluate('nebeljagdInspectCamera({zoom:2.8})')
+   label='touch' if touch else 'keyboard'
+   page.screenshot(path=str(OUT/(label+'-nocked.png')))
+   page.evaluate('''() => {window.__arrowFrame=null;const sample=()=>{if(nebeljagdTestState().combat.arrowsFlying>0){window.__arrowFrame=nebeljagdCaptureFrame();return;}requestAnimationFrame(sample);};requestAnimationFrame(sample);}''')
+   if touch:page.locator('#attackBtn').tap()
+   else:page.keyboard.press('f')
+   page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
+   page.wait_for_function('window.__arrowFrame')
+   (OUT/(label+'-flight.png')).write_bytes(base64.b64decode(page.evaluate('window.__arrowFrame').split(',',1)[1]))
+   state=page.evaluate('nebeljagdTestState()')
+   assert state['combat']['shotsFired']==1,state['combat']
+   assert state['combat']['arrowModel']['source'].endswith('feathered spear 3d model.glb')
+   assert state['combat']['arrowModel']['nominalLength']==.86
+   report['checks'].append(label+': real ornate bow picked up and one visible physical arrow fired')
+   context.close()
+  assert not report['errors'],report['errors'];report['passed']=True
+ finally:
+  browser.close();(OUT/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))
