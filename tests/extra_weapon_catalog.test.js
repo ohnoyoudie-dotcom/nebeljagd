@@ -9,7 +9,7 @@ import { renderWorldmapSvg } from '../src/map/render.js';
 import { removeNonTripoObjects } from '../src/map/tripo-object-cleanup.js';
 import { createLandscapePlacementGuard } from '../src/map/landscape-brush.js';
 
-const project = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const project = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 const schema = JSON.parse(readFileSync(new URL('../worldmap.schema.json', import.meta.url))).$defs.worldObject;
 const additions = [
   { kind: 'bow', variant: 'kit-tripo-ornate-bow', asset: 'ornate-bow', original: 'ornate bow 3d model' },
@@ -67,7 +67,7 @@ test('portable JSON schema permits the same new variants and weapon rarity as ru
 
 test('new staffs have portable selectable SVG symbols while maps without them retain their authored SVG', () => {
   const before = renderWorldmapSvg(project, { showSpawns: false, showZone: false, showLabels: false });
-  assert.equal(before, readFileSync(new URL('../worldmap.svg', import.meta.url), 'utf8'));
+  assert.equal(before, readFileSync(new URL('./fixtures/editor-project-worldmap.svg', import.meta.url), 'utf8'));
   const objects = additions.map(({ kind, variant }, index) => makeWorldObject(kind, [30 + 3 * index, -42], {
     id: `svg-${kind}`, variant, rarity: 'legendary', rotation: .35,
   }));

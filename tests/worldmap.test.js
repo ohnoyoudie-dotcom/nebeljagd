@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { validateWorldmap, getWorldmapStats, pointInPolygon, zoneAt, worldToThree } from '../src/map/model.js';
 import { renderWorldmapSvg } from '../src/map/render.js';
 
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
 const copy = () => structuredClone(base);
 const withFeatures = () => ({ ...copy(),
   places: [

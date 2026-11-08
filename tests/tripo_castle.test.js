@@ -72,7 +72,7 @@ test('castle facades, partitions and furniture stop movement and low projectiles
 });
 
 test('terrain supports the full castle footprint after rotation and scaling', () => {
-  const map = JSON.parse(read('worldmap.json'));
+  const map = JSON.parse(read('tests/fixtures/editor-project-worldmap.json'));
   // Foundation tests use dry terrain independently of the authored coastline.
   const { minX, minZ, maxX, maxZ } = map.bounds;
   map.island = { ...map.island, points: [[minX, minZ], [maxX, minZ], [maxX, maxZ], [minX, maxZ]] };

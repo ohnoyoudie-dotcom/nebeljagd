@@ -7,7 +7,7 @@ import { createScatterStroke, createVegetationStroke, createBiomeStroke } from '
 import { BIOME_PRESETS } from '../src/map/landscape.js';
 
 const retired = ['mound', 'flower', 'ruin', 'shrine', 'crate'];
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 function fixture() {
   const map = structuredClone(base);
   map.island.points = [[-200, -200], [200, -200], [200, 200], [-200, 200]];

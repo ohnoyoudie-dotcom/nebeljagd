@@ -110,3 +110,7 @@ Diese Vorgabe ist auch in `AGENTS.md` festgehalten.
 Die automatischen Tests der GitHub-Speicherung benutzen eine simulierte API
 mit unechten Zugangsdaten. Ein realer Schreibzugriff aus dem Browser setzt die
 einmalige Einrichtung durch den Repository-Eigentümer voraus.
+Tests für feste Inselgeometrien und Platzierungen benutzen eigene Referenzkarten;
+sie schreiben der bearbeitbaren Projektkarte keine bestimmte Objektzahl oder
+Regionsaufteilung vor. Die tatsächliche Karte wird beim Build validiert und
+in den Browserprüfungen vollständig geöffnet.

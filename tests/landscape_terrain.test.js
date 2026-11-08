@@ -7,7 +7,7 @@ import { createTerrainPaintIndex, terrainStampWeight, sampleTerrainPaint, applyT
 import { bakeTerrainPaint, terrainPaintTextureSize, TERRAIN_PAINT_BUDGET } from '../src/terrain-paint-renderer.js';
 import { createWorldSpatialModel } from '../src/generated-spatial.js';
 
-const baseMap = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const baseMap = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 const stamp = (options = {}) => ({ id: 'paint-test', name: 'Bodentest', ...terrainSettings('sand'),
   position: [30, -42], radius: 8, hardness: .2, strength: 1, seed: 19, ...options });
 

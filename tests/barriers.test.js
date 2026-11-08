@@ -23,7 +23,7 @@ const close = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8
 const barrier = (kind = 'wall', options = {}) => makeBarrier(kind, [[-20, 0], [20, 0]], { id: 'line-a', ...options });
 
 test('legacy documents retain compatibility and no lines are generated implicitly', () => {
-  const project = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+  const project = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
   assert.equal(validateWorldmap(project).valid, true);
   // The editable project may already contain user-drawn routes. A legacy
   // fixture deliberately omits them instead of depending on an empty map.

@@ -5,7 +5,7 @@ import { renderWorldmapSvg } from '../src/map/render.js';
 import { ensureLandscape, terrainSettings, vegetationSettings } from '../src/map/landscape.js';
 import { makeWorldObject } from '../src/map/objects.js';
 
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 test('editable SVG keeps authored terrain and wind in named layers with safe literal settings', () => {
   const map = structuredClone(base), landscape = ensureLandscape(map);
   const name = 'Boden </metadata><script>alert(1)</script>';

@@ -8,7 +8,7 @@ import { makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { validateWorldmap } from '../src/map/model.js';
 
 const read = path => JSON.parse(readFileSync(new URL('../' + path, import.meta.url)));
-const base = read('worldmap.json');
+const base = read('tests/fixtures/editor-project-worldmap.json');
 const schema = read('worldmap.schema.json');
 const points = [[-20, 0], [0, 0], [0, 20]], gaps = [{ at: 10, width: 3 }];
 const mapWith = (objects = [], barriers = []) => ({ ...structuredClone(base), objects, barriers });

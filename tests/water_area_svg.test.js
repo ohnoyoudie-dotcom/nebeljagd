@@ -5,7 +5,7 @@ import { renderWorldmapSvg } from '../src/map/render.js';
 import { validateWorldmap } from '../src/map/model.js';
 
 function fixture() {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
   const square = [[-100, -100], [100, -100], [100, 100], [-100, 100]];
   map.bounds = { minX: -120, minZ: -120, maxX: 120, maxZ: 120 };
   map.island.points = square;

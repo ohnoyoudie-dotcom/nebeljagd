@@ -7,7 +7,7 @@ import { canPaintGrass, createGrassBrushStroke } from '../src/map/grass-brush.js
 import { createLandscapePlacementGuard } from '../src/map/landscape-brush.js';
 
 function fixture() {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
   map.bounds = { minX: -160, maxX: 160, minZ: -120, maxZ: 120 };
   map.island = { id: 'mainland', name: 'Hauptland', points: [[-140, -90], [-20, -90], [-20, 90], [-140, 90]] };
   map.islets = [{ id: 'east', name: 'Ostland <Test>', points: [[20, -90], [140, -90], [140, 90], [20, 90]] }];

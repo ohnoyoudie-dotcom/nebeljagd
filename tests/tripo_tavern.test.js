@@ -68,7 +68,7 @@ test('solid facade, partitions and dining furniture stop movement and low shots'
 });
 
 test('large and rotated Tripo inns flatten their full footprint and refine only nearby terrain', () => {
-  const map = JSON.parse(read('worldmap.json'));
+  const map = JSON.parse(read('tests/fixtures/editor-project-worldmap.json'));
   for (const rotation of [0, Math.PI / 4, Math.PI / 2]) {
     const scale = 1.25, c = Math.cos(rotation), s = Math.sin(rotation);
     map.objects = [{ id: 'tavern-terrain-test', kind: 'house', variant: 'kit-tripo-tavern', position: [180, 150], rotation, scale }];

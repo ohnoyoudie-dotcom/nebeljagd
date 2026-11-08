@@ -5,7 +5,7 @@ import { barrierSvg, renderWorldmapSvg } from '../src/map/render.js';
 import { getEnvironmentKitDefinition } from '../src/map/environment-kit-definitions.js';
 import { BARRIER_STYLES, makeBarrier } from '../src/map/barriers.js';
 
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
 const barrier = (kind = 'wall', options = {}) => ({
   id: `drawn-${kind}`, name: kind === 'wall' ? 'Gartenmauer' : 'Weidezaun',
   kind, variant: kind === 'wall' ? 'kit-stone' : 'kit-wood',

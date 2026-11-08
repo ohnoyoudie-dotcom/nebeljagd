@@ -13,7 +13,7 @@ import { createScatterStroke } from '../src/map/landscape-brush.js';
 const previousKitTrees = ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn'];
 const oldProcedural = ['oak', 'birch', 'pine', 'rei-tree01', 'rei-tree02'];
 const source = readFileSync(new URL('../worldmap.json', import.meta.url));
-const original = JSON.parse(source);
+const original = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url))); // Stable geometry; source above is checked for accidental writes.
 const hash = data => createHash('sha256').update(data).digest('hex');
 
 test('the four old GLB trees and invalid new export are not placeable', () => {

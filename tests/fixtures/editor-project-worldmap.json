@@ -1,0 +1,2982 @@
+{
+  "$schema": "./worldmap.schema.json",
+  "schemaVersion": 1,
+  "id": "nebeljagd-world-v1",
+  "name": "Nebelinsel · Vier Biome und zwei freie Brücken",
+  "description": "Vier Landschaften nach der Kartenreferenz: Schnee im Nordwesten, ein großer grüner Waldkern, Sumpf im Südwesten und Sand im Süden und Osten. Zwei Brücken überspannen die freie Lücke zur Ostinsel; Flüsse und künstliche Wasserkanäle sind entfernt.",
+  "coordinateSystem": {
+    "units": "meters",
+    "horizontalAxes": [
+      "x",
+      "z"
+    ],
+    "north": "-z",
+    "metersPerUnit": 1
+  },
+  "bounds": {
+    "minX": -600,
+    "minZ": -720,
+    "maxX": 600,
+    "maxZ": 720
+  },
+  "gameplay": {
+    "targetPlayers": 50,
+    "walkSpeedMetersPerSecond": 5.6,
+    "spawnPosition": [
+      30,
+      -42
+    ],
+    "notes": "10 verteilte Startbereiche für je 5 Spieler; konkrete Team- und Spawnregeln sowie Balance werden später im Multiplayer geprüft."
+  },
+  "island": {
+    "id": "nebelinsel",
+    "name": "Hauptinsel",
+    "points": [
+      [
+        -460,
+        -560
+      ],
+      [
+        -425,
+        -630
+      ],
+      [
+        -355,
+        -650
+      ],
+      [
+        -260,
+        -560
+      ],
+      [
+        -205,
+        -545
+      ],
+      [
+        -175,
+        -600
+      ],
+      [
+        -185,
+        -650
+      ],
+      [
+        -80,
+        -705
+      ],
+      [
+        -20,
+        -680
+      ],
+      [
+        15,
+        -625
+      ],
+      [
+        -50,
+        -530
+      ],
+      [
+        -35,
+        -480
+      ],
+      [
+        30,
+        -465
+      ],
+      [
+        205,
+        -565
+      ],
+      [
+        270,
+        -550
+      ],
+      [
+        300,
+        -505
+      ],
+      [
+        375,
+        -510
+      ],
+      [
+        415,
+        -465
+      ],
+      [
+        395,
+        -405
+      ],
+      [
+        335,
+        -385
+      ],
+      [
+        225,
+        -405
+      ],
+      [
+        185,
+        -365
+      ],
+      [
+        192.389144,
+        -324.359707
+      ],
+      [
+        143.483241,
+        -275.453803
+      ],
+      [
+        110,
+        -260
+      ],
+      [
+        110,
+        -220
+      ],
+      [
+        116,
+        -160
+      ],
+      [
+        142,
+        -95
+      ],
+      [
+        125,
+        -25
+      ],
+      [
+        163,
+        35
+      ],
+      [
+        181,
+        90
+      ],
+      [
+        151,
+        155
+      ],
+      [
+        158,
+        215
+      ],
+      [
+        185,
+        265
+      ],
+      [
+        207.939291,
+        273.124332
+      ],
+      [
+        259.082363,
+        314.968664
+      ],
+      [
+        270,
+        355
+      ],
+      [
+        325,
+        400
+      ],
+      [
+        435,
+        380
+      ],
+      [
+        495,
+        405
+      ],
+      [
+        530,
+        455
+      ],
+      [
+        505,
+        515
+      ],
+      [
+        440,
+        535
+      ],
+      [
+        415,
+        590
+      ],
+      [
+        235,
+        680
+      ],
+      [
+        175,
+        670
+      ],
+      [
+        115,
+        680
+      ],
+      [
+        55,
+        660
+      ],
+      [
+        20,
+        600
+      ],
+      [
+        -40,
+        580
+      ],
+      [
+        -100,
+        605
+      ],
+      [
+        -170,
+        590
+      ],
+      [
+        -205,
+        540
+      ],
+      [
+        -190,
+        490
+      ],
+      [
+        -220,
+        450
+      ],
+      [
+        -265,
+        460
+      ],
+      [
+        -350,
+        540
+      ],
+      [
+        -410,
+        525
+      ],
+      [
+        -445,
+        480
+      ],
+      [
+        -430,
+        425
+      ],
+      [
+        -520,
+        345
+      ],
+      [
+        -450,
+        195
+      ],
+      [
+        -475,
+        160
+      ],
+      [
+        -535,
+        150
+      ],
+      [
+        -565,
+        100
+      ],
+      [
+        -550,
+        30
+      ],
+      [
+        -470,
+        -15
+      ],
+      [
+        -445,
+        -65
+      ],
+      [
+        -460,
+        -110
+      ],
+      [
+        -555,
+        -195
+      ],
+      [
+        -545,
+        -260
+      ],
+      [
+        -435,
+        -375
+      ],
+      [
+        -460,
+        -420
+      ],
+      [
+        -510,
+        -435
+      ],
+      [
+        -535,
+        -485
+      ],
+      [
+        -505,
+        -540
+      ]
+    ]
+  },
+  "regions": [
+    {
+      "id": "frostkamm",
+      "name": "Frostkamm",
+      "biome": "snow",
+      "color": "#aabfc8",
+      "points": [
+        [
+          -600,
+          -720
+        ],
+        [
+          100,
+          -720
+        ],
+        [
+          70,
+          -600
+        ],
+        [
+          20,
+          -530
+        ],
+        [
+          -55,
+          -465
+        ],
+        [
+          -120,
+          -405
+        ],
+        [
+          -170,
+          -320
+        ],
+        [
+          -260,
+          -270
+        ],
+        [
+          -360,
+          -260
+        ],
+        [
+          -450,
+          -270
+        ],
+        [
+          -600,
+          -240
+        ]
+      ],
+      "label": [
+        -320,
+        -540
+      ]
+    },
+    {
+      "id": "dunkelhain",
+      "name": "Grünwald",
+      "biome": "forest",
+      "color": "#568753",
+      "points": [
+        [
+          -600,
+          -240
+        ],
+        [
+          -450,
+          -270
+        ],
+        [
+          -360,
+          -260
+        ],
+        [
+          -260,
+          -270
+        ],
+        [
+          -170,
+          -320
+        ],
+        [
+          -120,
+          -405
+        ],
+        [
+          -55,
+          -465
+        ],
+        [
+          20,
+          -530
+        ],
+        [
+          70,
+          -600
+        ],
+        [
+          100,
+          -720
+        ],
+        [
+          600,
+          -720
+        ],
+        [
+          600,
+          -360
+        ],
+        [
+          300,
+          -360
+        ],
+        [
+          210,
+          -335
+        ],
+        [
+          185,
+          -290
+        ],
+        [
+          200,
+          -210
+        ],
+        [
+          190,
+          -120
+        ],
+        [
+          220,
+          -45
+        ],
+        [
+          210,
+          45
+        ],
+        [
+          230,
+          125
+        ],
+        [
+          224,
+          200
+        ],
+        [
+          238,
+          270
+        ],
+        [
+          244,
+          291
+        ],
+        [
+          160,
+          350
+        ],
+        [
+          115,
+          335
+        ],
+        [
+          65,
+          360
+        ],
+        [
+          5,
+          325
+        ],
+        [
+          0,
+          270
+        ],
+        [
+          -40,
+          225
+        ],
+        [
+          -110,
+          210
+        ],
+        [
+          -180,
+          230
+        ],
+        [
+          -250,
+          210
+        ],
+        [
+          -300,
+          250
+        ],
+        [
+          -390,
+          250
+        ],
+        [
+          -600,
+          240
+        ]
+      ],
+      "label": [
+        -100,
+        -180
+      ]
+    },
+    {
+      "id": "nebelmoor",
+      "name": "Nebelmoor",
+      "biome": "marsh",
+      "color": "#408f7e",
+      "points": [
+        [
+          -600,
+          240
+        ],
+        [
+          -390,
+          250
+        ],
+        [
+          -300,
+          250
+        ],
+        [
+          -250,
+          210
+        ],
+        [
+          -180,
+          230
+        ],
+        [
+          -110,
+          210
+        ],
+        [
+          -40,
+          225
+        ],
+        [
+          0,
+          270
+        ],
+        [
+          5,
+          325
+        ],
+        [
+          65,
+          360
+        ],
+        [
+          25,
+          410
+        ],
+        [
+          -50,
+          440
+        ],
+        [
+          -130,
+          415
+        ],
+        [
+          -180,
+          450
+        ],
+        [
+          -260,
+          425
+        ],
+        [
+          -330,
+          450
+        ],
+        [
+          -400,
+          420
+        ],
+        [
+          -460,
+          430
+        ],
+        [
+          -600,
+          440
+        ]
+      ],
+      "label": [
+        -235,
+        330
+      ]
+    },
+    {
+      "id": "sonnenduene",
+      "name": "Sandlande",
+      "biome": "dunes",
+      "color": "#bd9d69",
+      "points": [
+        [
+          -600,
+          440
+        ],
+        [
+          -460,
+          430
+        ],
+        [
+          -400,
+          420
+        ],
+        [
+          -330,
+          450
+        ],
+        [
+          -260,
+          425
+        ],
+        [
+          -180,
+          450
+        ],
+        [
+          -130,
+          415
+        ],
+        [
+          -50,
+          440
+        ],
+        [
+          25,
+          410
+        ],
+        [
+          65,
+          360
+        ],
+        [
+          115,
+          335
+        ],
+        [
+          160,
+          350
+        ],
+        [
+          244,
+          291
+        ],
+        [
+          238,
+          270
+        ],
+        [
+          224,
+          200
+        ],
+        [
+          230,
+          125
+        ],
+        [
+          210,
+          45
+        ],
+        [
+          220,
+          -45
+        ],
+        [
+          190,
+          -120
+        ],
+        [
+          200,
+          -210
+        ],
+        [
+          185,
+          -290
+        ],
+        [
+          210,
+          -335
+        ],
+        [
+          300,
+          -360
+        ],
+        [
+          600,
+          -360
+        ],
+        [
+          600,
+          100
+        ],
+        [
+          600,
+          350
+        ],
+        [
+          600,
+          720
+        ],
+        [
+          -600,
+          720
+        ]
+      ],
+      "label": [
+        65,
+        590
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "nordbruecke",
+      "name": "Nordbrücke",
+      "kind": "bridge",
+      "width": 12,
+      "points": [
+        [
+          161,
+          -324
+        ],
+        [
+          209,
+          -276
+        ]
+      ]
+    },
+    {
+      "id": "suedbruecke",
+      "name": "Südbrücke",
+      "kind": "bridge",
+      "width": 10,
+      "points": [
+        [
+          226,
+          313
+        ],
+        [
+          262,
+          269
+        ]
+      ]
+    }
+  ],
+  "rivers": [],
+  "places": [],
+  "spawnAreas": [],
+  "zone": {
+    "center": [
+      0,
+      0
+    ],
+    "initialRadius": 800,
+    "damagePerSecond": 11,
+    "phases": [
+      {
+        "id": "erste-nebel",
+        "name": "Erster Nebel",
+        "holdSeconds": 180,
+        "shrinkSeconds": 180,
+        "radius": 560
+      },
+      {
+        "id": "rueckzug",
+        "name": "Rückzug",
+        "holdSeconds": 120,
+        "shrinkSeconds": 180,
+        "radius": 380
+      },
+      {
+        "id": "enge-pfade",
+        "name": "Enge Pfade",
+        "holdSeconds": 90,
+        "shrinkSeconds": 150,
+        "radius": 210
+      },
+      {
+        "id": "letzte-zuflucht",
+        "name": "Letzte Zuflucht",
+        "holdSeconds": 60,
+        "shrinkSeconds": 120,
+        "radius": 75
+      },
+      {
+        "id": "finale",
+        "name": "Finale",
+        "holdSeconds": 0,
+        "shrinkSeconds": 120,
+        "radius": 20
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": "object-house-mvviwx0g-2",
+      "name": "Haus",
+      "kind": "house",
+      "variant": "kit-tripo-tavern",
+      "position": [
+        2.7,
+        -70.5
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-sword-mvxue2sl-1",
+      "name": "Schwert",
+      "kind": "sword",
+      "variant": "kit-tripo-sword",
+      "position": [
+        34.8,
+        -42.6
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-fireStaff-mvxueb0c-2",
+      "name": "Feuerstab",
+      "kind": "fireStaff",
+      "variant": "kit-tripo-lava-staff",
+      "position": [
+        39.8,
+        -44.7
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-iceStaff-mvxuedo9-3",
+      "name": "Eisstab",
+      "kind": "iceStaff",
+      "variant": "kit-tripo-crystal-staff",
+      "position": [
+        45.6,
+        -45.9
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-poisonStaff-mvzidb73-1",
+      "name": "Giftstab",
+      "kind": "poisonStaff",
+      "variant": "kit-tripo-poison-staff",
+      "position": [
+        51.1,
+        -48.5
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-moonStaff-mvzidiqx-2",
+      "name": "Mondstab",
+      "kind": "moonStaff",
+      "variant": "kit-tripo-moon-staff",
+      "position": [
+        54.1,
+        -50.2
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-tree-mw76d4jx-1",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        23.1,
+        -53.1
+      ],
+      "rotation": 4.1216159181027905,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76eaip-2",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        31,
+        -45.1
+      ],
+      "rotation": 6.25764646000496,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76eb5b-3",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        11.6,
+        -37
+      ],
+      "rotation": 3.938437217367932,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ebgm-4",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        30.2,
+        -22.2
+      ],
+      "rotation": 6.258619100216961,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ebqh-5",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        42,
+        -38.5
+      ],
+      "rotation": 2.445010273029076,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ec6z-6",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        43.3,
+        -71.5
+      ],
+      "rotation": 2.2483574681183787,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ecgo-7",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        -5.4,
+        -70.2
+      ],
+      "rotation": 4.973752036933892,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ed0c-8",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        17.5,
+        -67.2
+      ],
+      "rotation": 2.7782569448690317,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ed8y-9",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        -6.8,
+        -38.4
+      ],
+      "rotation": 5.434226262457778,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76edy2-a",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        54.5,
+        -51.7
+      ],
+      "rotation": 6.28056843165286,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ee9e-b",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        7.4,
+        -20.8
+      ],
+      "rotation": 3.3366031129871603,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76eesh-c",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        44.7,
+        -24.7
+      ],
+      "rotation": 1.826204672570852,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76efir-d",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        52.7,
+        -29.5
+      ],
+      "rotation": 3.7352982807933377,
+      "scale": 1
+    },
+    {
+      "id": "object-rock-mw7krdhw-1",
+      "name": "Felsen",
+      "kind": "rock",
+      "variant": "kit-tripo-01",
+      "position": [
+        35.1,
+        -53.1
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-wagon-mw7krkie-2",
+      "name": "Holzwagen",
+      "kind": "wagon",
+      "variant": "kit-tripo-wagon",
+      "position": [
+        36.1,
+        -58.4
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-barrel-mw7krq70-3",
+      "name": "Holzfass",
+      "kind": "barrel",
+      "variant": "kit-tripo-barrel",
+      "position": [
+        40.9,
+        -58.4
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-well-mw7krvba-4",
+      "name": "Brunnen",
+      "kind": "well",
+      "variant": "kit-tripo-well",
+      "position": [
+        45.2,
+        -55.4
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-chest-mw7ks12x-5",
+      "name": "Holztruhe",
+      "kind": "chest",
+      "variant": "kit-tripo-chest",
+      "position": [
+        38.3,
+        -48.1
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-bow-mw7ks7pk-6",
+      "name": "Bogen",
+      "kind": "bow",
+      "variant": "kit-tripo-ornate-bow",
+      "position": [
+        38.3,
+        -40.3
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-grass-mw7m1aa7-1",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        26.352,
+        -74.817
+      ],
+      "rotation": 3.878,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": false,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 1919463779,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m1bap-2",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        30.987,
+        -59.193
+      ],
+      "rotation": 0.787,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": false,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 1544238810,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m1c0k-3",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        48.392,
+        -60.188
+      ],
+      "rotation": 3.064,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": false,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 719692825,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m1cmk-4",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        23.528,
+        -38.722
+      ],
+      "rotation": 4.992,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": false,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 21253873,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m1d3u-5",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        5.958,
+        -52.148
+      ],
+      "rotation": 0.224,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": false,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 1815441807,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m1e6n-6",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        35.546,
+        -71.791
+      ],
+      "rotation": 3.628,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": false,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 973042805,
+        "type": "tall"
+      }
+    }
+  ],
+  "landscape": {
+    "version": 1,
+    "terrain": [
+      {
+        "id": "paint-terrain-mw7kk3od-1",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#685e49",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.12,
+        "position": [
+          29.638,
+          -59.795
+        ],
+        "radius": 6,
+        "seed": 4173559818
+      },
+      {
+        "id": "paint-terrain-mw7kk4bg-3",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#685e49",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.12,
+        "position": [
+          32.759,
+          -59.016
+        ],
+        "radius": 6,
+        "seed": 3886940108
+      },
+      {
+        "id": "paint-terrain-mw7kk4mu-5",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#685e49",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.12,
+        "position": [
+          35.966,
+          -58.323
+        ],
+        "radius": 6,
+        "seed": 163272414
+      },
+      {
+        "id": "paint-terrain-mw7kk67e-7",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#c3ac7b",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.1,
+        "position": [
+          4.262,
+          -52.867
+        ],
+        "radius": 6,
+        "seed": 1039938176
+      },
+      {
+        "id": "paint-terrain-mw7kk6de-9",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#c3ac7b",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.1,
+        "position": [
+          8.162,
+          -52.867
+        ],
+        "radius": 6,
+        "seed": 1626570674
+      },
+      {
+        "id": "paint-terrain-mw7kk7to-b",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#dce7e8",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.08,
+        "position": [
+          25.048,
+          -76.077
+        ],
+        "radius": 6,
+        "seed": 238808855
+      },
+      {
+        "id": "paint-terrain-mw7kk82j-d",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#dce7e8",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.08,
+        "position": [
+          24.251,
+          -72.873
+        ],
+        "radius": 6,
+        "seed": 2497004385
+      },
+      {
+        "id": "paint-terrain-mw7kk9k2-f",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#836f56",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.1,
+        "position": [
+          51.03,
+          -61.354
+        ],
+        "radius": 6,
+        "seed": 3978996530
+      },
+      {
+        "id": "paint-terrain-mw7kk9pq-h",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#836f56",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.1,
+        "position": [
+          48.287,
+          -59.449
+        ],
+        "radius": 6,
+        "seed": 519120180
+      },
+      {
+        "id": "paint-terrain-mw7kkcad-j",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#425942",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.11,
+        "position": [
+          25.048,
+          -36.238
+        ],
+        "radius": 6,
+        "seed": 1279815913
+      },
+      {
+        "id": "paint-terrain-mw7kkchk-l",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#425942",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.11,
+        "position": [
+          22.87,
+          -38.576
+        ],
+        "radius": 6,
+        "seed": 1303277315
+      },
+      {
+        "id": "paint-terrain-mw7m07em-1",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          64.058,
+          -69.831
+        ],
+        "radius": 2.5,
+        "seed": 386461290
+      },
+      {
+        "id": "paint-terrain-mw7m07it-2",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          65.012,
+          -68.97
+        ],
+        "radius": 2.5,
+        "seed": 1060850369
+      },
+      {
+        "id": "paint-terrain-mw7m07ll-3",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          65.733,
+          -67.883
+        ],
+        "radius": 2.5,
+        "seed": 1595122988
+      },
+      {
+        "id": "paint-terrain-mw7m07p3-4",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          66.375,
+          -66.684
+        ],
+        "radius": 2.5,
+        "seed": 92921499
+      },
+      {
+        "id": "paint-terrain-mw7m07pk-5",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          67.077,
+          -65.456
+        ],
+        "radius": 2.5,
+        "seed": 809763646
+      },
+      {
+        "id": "paint-terrain-mw7m07qi-6",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          67.534,
+          -64.107
+        ],
+        "radius": 2.5,
+        "seed": 440127877
+      },
+      {
+        "id": "paint-terrain-mw7m07ti-7",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          68.146,
+          -63.095
+        ],
+        "radius": 2.5,
+        "seed": 3706754336
+      },
+      {
+        "id": "paint-terrain-mw7m07u0-8",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          68.566,
+          -61.643
+        ],
+        "radius": 2.5,
+        "seed": 3761325567
+      },
+      {
+        "id": "paint-terrain-mw7m07va-9",
+        "name": "Gemalter Boden",
+        "type": "earth",
+        "color": "#99815b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          69.319,
+          -60.428
+        ],
+        "radius": 2.5,
+        "seed": 381295442
+      },
+      {
+        "id": "paint-terrain-mw7m0ag9-a",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          70.19,
+          -71.603
+        ],
+        "radius": 2.5,
+        "seed": 2663038694
+      },
+      {
+        "id": "paint-terrain-mw7m0am3-b",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          71.144,
+          -70.932
+        ],
+        "radius": 2.5,
+        "seed": 1483753741
+      },
+      {
+        "id": "paint-terrain-mw7m0ar8-c",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          72.317,
+          -70.24
+        ],
+        "radius": 2.5,
+        "seed": 2575488776
+      },
+      {
+        "id": "paint-terrain-mw7m0av8-d",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          72.988,
+          -69.286
+        ],
+        "radius": 2.5,
+        "seed": 696848071
+      },
+      {
+        "id": "paint-terrain-mw7m0aws-e",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          73.87,
+          -68.163
+        ],
+        "radius": 2.5,
+        "seed": 1706491258
+      },
+      {
+        "id": "paint-terrain-mw7m0b1f-f",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          74.279,
+          -66.946
+        ],
+        "radius": 2.5,
+        "seed": 279080593
+      },
+      {
+        "id": "paint-terrain-mw7m0b4i-g",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          74.836,
+          -65.879
+        ],
+        "radius": 2.5,
+        "seed": 2565166780
+      },
+      {
+        "id": "paint-terrain-mw7m0b7x-h",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          75.531,
+          -64.789
+        ],
+        "radius": 2.5,
+        "seed": 3640607467
+      },
+      {
+        "id": "paint-terrain-mw7m0ba0-i",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          75.971,
+          -63.388
+        ],
+        "radius": 2.5,
+        "seed": 2130836302
+      },
+      {
+        "id": "paint-terrain-mw7m0bcj-j",
+        "name": "Gemalter Boden",
+        "type": "forest",
+        "color": "#74634a",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          76.595,
+          -62.223
+        ],
+        "radius": 2.5,
+        "seed": 71813717
+      },
+      {
+        "id": "paint-terrain-mw7m0dq8-k",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          78.776,
+          -73.647
+        ],
+        "radius": 2.5,
+        "seed": 1142341777
+      },
+      {
+        "id": "paint-terrain-mw7m0dvc-l",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          79.049,
+          -72.294
+        ],
+        "radius": 2.5,
+        "seed": 2423881916
+      },
+      {
+        "id": "paint-terrain-mw7m0dws-m",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          79.661,
+          -71.036
+        ],
+        "radius": 2.5,
+        "seed": 2386650347
+      },
+      {
+        "id": "paint-terrain-mw7m0dxk-n",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          80.048,
+          -69.558
+        ],
+        "radius": 2.5,
+        "seed": 1592374606
+      },
+      {
+        "id": "paint-terrain-mw7m0e12-o",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          80.684,
+          -68.569
+        ],
+        "radius": 2.5,
+        "seed": 3777510485
+      },
+      {
+        "id": "paint-terrain-mw7m0e2c-p",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          81.221,
+          -67.242
+        ],
+        "radius": 2.5,
+        "seed": 2547048880
+      },
+      {
+        "id": "paint-terrain-mw7m0e4p-q",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          81.991,
+          -66.235
+        ],
+        "radius": 2.5,
+        "seed": 908495183
+      },
+      {
+        "id": "paint-terrain-mw7m0e8o-r",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          82.728,
+          -65.309
+        ],
+        "radius": 2.5,
+        "seed": 3218105954
+      },
+      {
+        "id": "paint-terrain-mw7m0e9s-s",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#d7bd88",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          83.998,
+          -64.609
+        ],
+        "radius": 2.5,
+        "seed": 39924313
+      },
+      {
+        "id": "paint-terrain-mw7m0g4y-t",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          85.181,
+          -76.1
+        ],
+        "radius": 2.5,
+        "seed": 2044021531
+      },
+      {
+        "id": "paint-terrain-mw7m0g7n-u",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          86.364,
+          -75.418
+        ],
+        "radius": 2.5,
+        "seed": 3184756158
+      },
+      {
+        "id": "paint-terrain-mw7m0g8g-v",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          87.498,
+          -74.737
+        ],
+        "radius": 2.5,
+        "seed": 923038213
+      },
+      {
+        "id": "paint-terrain-mw7m0g9e-w",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          88.179,
+          -73.793
+        ],
+        "radius": 2.5,
+        "seed": 4019436448
+      },
+      {
+        "id": "paint-terrain-mw7m0gbm-x",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          88.976,
+          -72.965
+        ],
+        "radius": 2.5,
+        "seed": 2521905791
+      },
+      {
+        "id": "paint-terrain-mw7m0gdf-y",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          89.647,
+          -72.011
+        ],
+        "radius": 2.5,
+        "seed": 4064576978
+      },
+      {
+        "id": "paint-terrain-mw7m0gfz-z",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          90.372,
+          -70.921
+        ],
+        "radius": 2.5,
+        "seed": 3904727817
+      },
+      {
+        "id": "paint-terrain-mw7m0gjd-10",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          90.905,
+          -69.829
+        ],
+        "radius": 2.5,
+        "seed": 4204001492
+      },
+      {
+        "id": "paint-terrain-mw7m0gjv-11",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          91.586,
+          -68.885
+        ],
+        "radius": 2.5,
+        "seed": 936054307
+      },
+      {
+        "id": "paint-terrain-mw7m0gmr-12",
+        "name": "Gemalter Boden",
+        "type": "sand",
+        "color": "#b58b55",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          92.249,
+          -67.923
+        ],
+        "radius": 2.5,
+        "seed": 1523293478
+      },
+      {
+        "id": "paint-terrain-mw7m0it2-13",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          59.288,
+          -86.184
+        ],
+        "radius": 2.5,
+        "seed": 3506646210
+      },
+      {
+        "id": "paint-terrain-mw7m0iva-14",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          60.651,
+          -85.732
+        ],
+        "radius": 2.5,
+        "seed": 2086634809
+      },
+      {
+        "id": "paint-terrain-mw7m0ix4-15",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          61.645,
+          -84.918
+        ],
+        "radius": 2.5,
+        "seed": 2666425668
+      },
+      {
+        "id": "paint-terrain-mw7m0ixg-16",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          62.794,
+          -83.769
+        ],
+        "radius": 2.5,
+        "seed": 4189558739
+      },
+      {
+        "id": "paint-terrain-mw7m0j22-17",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          63.943,
+          -82.62
+        ],
+        "radius": 2.5,
+        "seed": 3839539990
+      },
+      {
+        "id": "paint-terrain-mw7m0j44-18",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          64.739,
+          -81.724
+        ],
+        "radius": 2.5,
+        "seed": 1195063165
+      },
+      {
+        "id": "paint-terrain-mw7m0j4z-19",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          65.531,
+          -80.461
+        ],
+        "radius": 2.5,
+        "seed": 3720450744
+      },
+      {
+        "id": "paint-terrain-mw7m0j8i-1a",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#aabdc8",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          66.392,
+          -79.507
+        ],
+        "radius": 2.5,
+        "seed": 4088444599
+      },
+      {
+        "id": "paint-terrain-mw7m0lkx-1b",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          67.465,
+          -90
+        ],
+        "radius": 2.5,
+        "seed": 902343518
+      },
+      {
+        "id": "paint-terrain-mw7m0lmx-1c",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          68.598,
+          -89.319
+        ],
+        "radius": 2.5,
+        "seed": 2819955493
+      },
+      {
+        "id": "paint-terrain-mw7m0log-1d",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          69.542,
+          -88.637
+        ],
+        "radius": 2.5,
+        "seed": 3572437568
+      },
+      {
+        "id": "paint-terrain-mw7m0loz-1e",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          70.399,
+          -87.747
+        ],
+        "radius": 2.5,
+        "seed": 370696351
+      },
+      {
+        "id": "paint-terrain-mw7m0lqu-1f",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          71.147,
+          -86.593
+        ],
+        "radius": 2.5,
+        "seed": 2175939954
+      },
+      {
+        "id": "paint-terrain-mw7m0lrp-1g",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          72.235,
+          -85.816
+        ],
+        "radius": 2.5,
+        "seed": 199824937
+      },
+      {
+        "id": "paint-terrain-mw7m0lt4-1h",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          73.169,
+          -84.978
+        ],
+        "radius": 2.5,
+        "seed": 3759827316
+      },
+      {
+        "id": "paint-terrain-mw7m0ltw-1i",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          74.082,
+          -83.726
+        ],
+        "radius": 2.5,
+        "seed": 1881048643
+      },
+      {
+        "id": "paint-terrain-mw7m0lvt-1j",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          74.859,
+          -82.606
+        ],
+        "radius": 2.5,
+        "seed": 872773318
+      },
+      {
+        "id": "paint-terrain-mw7m0lyg-1k",
+        "name": "Gemalter Boden",
+        "type": "stone",
+        "color": "#a7a08c",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          75.642,
+          -81.305
+        ],
+        "radius": 2.5,
+        "seed": 2808012653
+      },
+      {
+        "id": "paint-terrain-mw7m0o34-1l",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          78.64,
+          -91.09
+        ],
+        "radius": 2.5,
+        "seed": 2010424372
+      },
+      {
+        "id": "paint-terrain-mw7m0o59-1m",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          79.73,
+          -90.316
+        ],
+        "radius": 2.5,
+        "seed": 347865603
+      },
+      {
+        "id": "paint-terrain-mw7m0o6p-1n",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          80.543,
+          -89.188
+        ],
+        "radius": 2.5,
+        "seed": 1695760262
+      },
+      {
+        "id": "paint-terrain-mw7m0o7b-1o",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          81.448,
+          -87.956
+        ],
+        "radius": 2.5,
+        "seed": 1036947757
+      },
+      {
+        "id": "paint-terrain-mw7m0o7z-1p",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          82.455,
+          -87.178
+        ],
+        "radius": 2.5,
+        "seed": 3676913832
+      },
+      {
+        "id": "paint-terrain-mw7m0o9e-1q",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          83.409,
+          -86.317
+        ],
+        "radius": 2.5,
+        "seed": 498215911
+      },
+      {
+        "id": "paint-terrain-mw7m0oa4-1r",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          84.13,
+          -85.205
+        ],
+        "radius": 2.5,
+        "seed": 92813338
+      },
+      {
+        "id": "paint-terrain-mw7m0oat-1s",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          85.181,
+          -84.079
+        ],
+        "radius": 2.5,
+        "seed": 1161701553
+      },
+      {
+        "id": "paint-terrain-mw7m0obg-1t",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          86.135,
+          -83.218
+        ],
+        "radius": 2.5,
+        "seed": 2115406428
+      },
+      {
+        "id": "paint-terrain-mw7m0oc3-1u",
+        "name": "Gemalter Boden",
+        "type": "mud",
+        "color": "#81705b",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          87.368,
+          -82.362
+        ],
+        "radius": 2.5,
+        "seed": 565223947
+      },
+      {
+        "id": "paint-terrain-mw7m0qkt-1v",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          51.793,
+          -82.505
+        ],
+        "radius": 2.5,
+        "seed": 3090208301
+      },
+      {
+        "id": "paint-terrain-mw7m0qmh-1w",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          52.736,
+          -81.824
+        ],
+        "radius": 2.5,
+        "seed": 4137992616
+      },
+      {
+        "id": "paint-terrain-mw7m0qp6-1x",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          53.977,
+          -81.341
+        ],
+        "radius": 2.5,
+        "seed": 1365096679
+      },
+      {
+        "id": "paint-terrain-mw7m0qqi-1y",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          54.814,
+          -80.461
+        ],
+        "radius": 2.5,
+        "seed": 3295437082
+      },
+      {
+        "id": "paint-terrain-mw7m0qrx-1z",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          55.884,
+          -79.507
+        ],
+        "radius": 2.5,
+        "seed": 3760864689
+      },
+      {
+        "id": "paint-terrain-mw7m0qsu-20",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          56.563,
+          -78.37
+        ],
+        "radius": 2.5,
+        "seed": 2037488476
+      },
+      {
+        "id": "paint-terrain-mw7m0qtb-21",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          57.023,
+          -76.929
+        ],
+        "radius": 2.5,
+        "seed": 3608575755
+      },
+      {
+        "id": "paint-terrain-mw7m0qtt-22",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          57.517,
+          -75.504
+        ],
+        "radius": 2.5,
+        "seed": 2269432046
+      },
+      {
+        "id": "paint-terrain-mw7m0qx0-23",
+        "name": "Gemalter Boden",
+        "type": "cobble",
+        "color": "#a0a38d",
+        "hardness": 0.55,
+        "strength": 1,
+        "variation": 0.25,
+        "position": [
+          58.198,
+          -74.561
+        ],
+        "radius": 2.5,
+        "seed": 574225269
+      }
+    ],
+    "wind": {
+      "enabled": true,
+      "strength": 0.35,
+      "speed": 1,
+      "direction": 0.65,
+      "gusts": true,
+      "gustStrength": 0.35,
+      "gustFrequency": 0.18,
+      "turbulence": 0.2
+    },
+    "windZones": [],
+    "biomes": [
+      {
+        "id": "paint-biome-mw7kk3od-2",
+        "name": "Moor",
+        "presetId": "swamp",
+        "position": [
+          29.638,
+          -59.795
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 2032797665
+      },
+      {
+        "id": "paint-biome-mw7kk4bg-4",
+        "name": "Moor",
+        "presetId": "swamp",
+        "position": [
+          32.759,
+          -59.016
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 1327249595
+      },
+      {
+        "id": "paint-biome-mw7kk4mu-6",
+        "name": "Moor",
+        "presetId": "swamp",
+        "position": [
+          35.966,
+          -58.323
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 3678195877
+      },
+      {
+        "id": "paint-biome-mw7kk67e-8",
+        "name": "Wüste",
+        "presetId": "desert",
+        "position": [
+          4.262,
+          -52.867
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 3437003743
+      },
+      {
+        "id": "paint-biome-mw7kk6de-a",
+        "name": "Wüste",
+        "presetId": "desert",
+        "position": [
+          8.162,
+          -52.867
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 2786024297
+      },
+      {
+        "id": "paint-biome-mw7kk7to-c",
+        "name": "Schnee",
+        "presetId": "snow",
+        "position": [
+          25.048,
+          -76.077
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 805061002
+      },
+      {
+        "id": "paint-biome-mw7kk82j-e",
+        "name": "Schnee",
+        "presetId": "snow",
+        "position": [
+          24.251,
+          -72.873
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 1486161228
+      },
+      {
+        "id": "paint-biome-mw7kk9k2-g",
+        "name": "Heide",
+        "presetId": "heath",
+        "position": [
+          51.03,
+          -61.354
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 4289827049
+      },
+      {
+        "id": "paint-biome-mw7kk9pq-i",
+        "name": "Heide",
+        "presetId": "heath",
+        "position": [
+          48.287,
+          -59.449
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 2241105667
+      },
+      {
+        "id": "paint-biome-mw7kkcad-k",
+        "name": "Wald",
+        "presetId": "forest",
+        "position": [
+          25.048,
+          -36.238
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 4292511028
+      },
+      {
+        "id": "paint-biome-mw7kkchk-m",
+        "name": "Wald",
+        "presetId": "forest",
+        "position": [
+          22.87,
+          -38.576
+        ],
+        "radius": 6,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 2245052550
+      }
+    ],
+    "presets": []
+  },
+  "barriers": [
+    {
+      "id": "barrier-wall-mvwkdprc-1",
+      "name": "Steinmauer",
+      "kind": "wall",
+      "variant": "kit-stone",
+      "points": [
+        [
+          -10,
+          -36
+        ],
+        [
+          17,
+          -44
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-wall-mvwkdudz-2",
+      "name": "Steinmauer · Pfeiler & Abdeckung",
+      "kind": "wall",
+      "variant": "kit-cut-stone",
+      "points": [
+        [
+          -8,
+          -32
+        ],
+        [
+          17,
+          -39
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-wall-mvwkdy5m-3",
+      "name": "Steinmauer · Verwittert (Tripo)",
+      "kind": "wall",
+      "variant": "kit-tripo-wall",
+      "points": [
+        [
+          -7,
+          -28
+        ],
+        [
+          16,
+          -34
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    },
+    {
+      "id": "barrier-fence-mvwke5jq-5",
+      "name": "Holzzaun · Kreuzstreben",
+      "kind": "fence",
+      "variant": "kit-cross-wood",
+      "points": [
+        [
+          35,
+          -38
+        ],
+        [
+          55,
+          -47
+        ]
+      ],
+      "scale": 1,
+      "gaps": []
+    }
+  ],
+  "waterAreas": [],
+  "islets": [
+    {
+      "id": "ostinsel",
+      "name": "Ostinsel",
+      "points": [
+        [
+          205.606602,
+          -303.636039
+        ],
+        [
+          245,
+          -280
+        ],
+        [
+          355,
+          -330
+        ],
+        [
+          415,
+          -320
+        ],
+        [
+          485,
+          -350
+        ],
+        [
+          535,
+          -315
+        ],
+        [
+          555,
+          -245
+        ],
+        [
+          545,
+          -195
+        ],
+        [
+          550,
+          -145
+        ],
+        [
+          485,
+          -55
+        ],
+        [
+          445,
+          -90
+        ],
+        [
+          405,
+          -70
+        ],
+        [
+          395,
+          30
+        ],
+        [
+          440,
+          50
+        ],
+        [
+          490,
+          35
+        ],
+        [
+          535,
+          75
+        ],
+        [
+          550,
+          140
+        ],
+        [
+          475,
+          225
+        ],
+        [
+          460,
+          295
+        ],
+        [
+          415,
+          335
+        ],
+        [
+          285,
+          260
+        ],
+        [
+          260.404818,
+          292.793576
+        ],
+        [
+          234.925128,
+          271.946556
+        ],
+        [
+          242,
+          235
+        ],
+        [
+          268,
+          185
+        ],
+        [
+          283,
+          112
+        ],
+        [
+          320,
+          50
+        ],
+        [
+          302,
+          -25
+        ],
+        [
+          310,
+          -85
+        ],
+        [
+          262,
+          -148
+        ],
+        [
+          245,
+          -215
+        ],
+        [
+          210,
+          -255
+        ],
+        [
+          183.485281,
+          -281.514719
+        ]
+      ]
+    }
+  ]
+}
