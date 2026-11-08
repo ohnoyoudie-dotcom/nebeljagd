@@ -49,3 +49,28 @@ Prüfung: `node --test tests/natural_ground.test.js` sowie nach `npm run build`
 bei laufendem Preview auf Port 4174 `python3 tests/natural_ground_smoke.py`.
 Der Browsertest zeichnet mit Maus und Touch, prüft Undo/Redo und JSON-Rundreise
 und startet die gespeicherte Karte über den Editor im Spiel.
+
+## Gewählte Variante 2: breite, gebogene Blattbüschel
+
+Das Versteckgras verwendet sieben breite, leicht gefaltete Blätter je Büschel.
+Die Spitzen biegen nach außen und etwas nach unten. Unterschiedliche Blatthöhen,
+Büschelhöhen und kleine dekorative Randbüschel lösen die frühere Spitzenwand ab.
+Der instanzierte Wind verankert weiterhin die Wurzeln und reagiert auf Figuren.
+Randbüschel erhalten keinen eigenen Versteckradius; Wege, Gewässer und Gebäude
+werden bei ihrer Platzierung ausgespart. Bestehende Kartenobjekte bleiben erhalten.
+
+Die Dichte sinkt von 20 auf 4 Büschel je Radiusquadrat. Ein volles Büschel hat
+224 statt 64 Dreiecke; insgesamt sind das bei gleicher Fläche 896 statt 1280
+Dreiecke je Radiusquadrat (30 % weniger). Leistungsgeometrie halbiert diese
+Werte. Das ist ein Geometrievergleich, keine gemessene iPad-Bildrate.
+
+Bodenfarben entstehen nun aus vielen kleinen, unregelmäßigen Farbflecken in
+einer gemeinsamen 512-Pixel-Textur statt dominanten großen Farbwolken.
+Wegoberflächen werden unabhängig von der gröberen Pinselmaske im Shader
+abgetastet. Der Rand erhält schmale, unregelmäßige Übergänge; Pflaster zeigt
+kleinere, gedecktere Steine mit weniger dominanten Fugen. Neue Wegpinsel
+verwenden 72 % Randhärte. Kein externes Grafikpaket ist nötig.
+
+`tests/broadleaf_game_smoke.py` prüft den tatsächlichen erzeugten Spielbuild
+in beiden Qualitätsstufen: Blattmodell, Randbüschel, Texturbudget, Verstecken
+und Verlassen des Bereichs. Aufnahmen liegen in `test-results/broadleaf/`.

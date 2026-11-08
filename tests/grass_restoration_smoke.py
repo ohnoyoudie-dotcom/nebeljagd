@@ -1,4 +1,4 @@
-"""Verify restored archived grass against actual world visuals in both qualities."""
+"""Verify broadleaf hiding grass against actual world visuals in both qualities."""
 import json,os,hashlib
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -23,14 +23,14 @@ with sync_playwright() as p:
   state=page.evaluate('''()=>{const s=nebeljagdTestState();return {quality:s.quality,hiddenInGrass:s.hiddenInGrass,hiddenFromOtherPlayers:s.hiddenFromOtherPlayers,opacity:s.character.opacity,grass:s.world.stats.grassRendering,patch:s.world.grassPatches.find(p=>p.id==='obj-grass-start'),rendering:s.rendering}}''')
   state['servedHTMLSHA256']=served_hash
   assert state['hiddenInGrass'] and state['hiddenFromOtherPlayers']
-  assert state['grass']['crossedStalkDensityPerSquareMeter']>30
-  assert state['patch']['crossedStalkCount']==state['patch']['instanceCount']*4
-  assert state['patch']['minBladeHeight']>=2.25
+  assert state['grass']['sourceVersion']=='nebeljagd-broadleaf-v2'
+  assert state['patch']['crossedStalkCount']==state['patch']['instanceCount']*7
+  assert state['patch']['minBladeHeight']>=1.75
   assert state['patch']['maxBladeHeight']<=2.6
   path=root/f'docs/screenshots/restored-grass-{quality}.png';page.screenshot(path=str(path));shots.append(str(path.relative_to(root)));captures.append(state)
   print('PASS',quality,json.dumps(state),flush=True)
   page.close()
  b.close()
 assert not errors,errors
-report={'status':'passed','url':base,'captures':captures,'errors':errors,'screenshots':shots,'historicalSource':'archive/nebeljagd-3d-v011-source.zip/src/world.js','note':'Chromium software-WebGL, not a physical iPad performance claim.'}
+report={'status':'passed','url':base,'captures':captures,'errors':errors,'screenshots':shots,'style':'broadleaf-v2','note':'Chromium software-WebGL, not a physical iPad performance claim.'}
 (root/'docs/grass-restoration-check.json').write_text(json.dumps(report,indent=2)+'\n')

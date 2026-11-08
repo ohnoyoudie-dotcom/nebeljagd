@@ -10,17 +10,17 @@ const object = { id:'test-grass',kind:'grass',variant:'tall',position:[10,-30],r
 const configured = changes => ({...object,vegetation:{...vegetationSettings(object),...changes}});
 const windMap = (wind={},windZones=[]) => ({landscape:{version:1,wind,windZones}});
 
-test('legacy patch density/heights remain unchanged, while editable density and height are independent of width', () => {
+test('broadleaf patches reduce instance counts while editable height remains independent of width', () => {
  const legacy=buildVegetationPatch(object);
- assert.equal(legacy.patch.instanceCount,245);assert.equal(legacy.patch.crossedStalkCount,980);
- assert.ok(legacy.patch.minBladeHeight>=2.25&&legacy.patch.maxBladeHeight<=2.6);
+ assert.equal(legacy.patch.instanceCount,49);assert.equal(legacy.patch.crossedStalkCount,343);
+ assert.ok(legacy.patch.minBladeHeight>=1.75&&legacy.patch.maxBladeHeight<=2.6);
  const high=buildVegetationPatch(configured({height:3,heightVariation:0,edgeSoftness:0}));
  const low=buildVegetationPatch(configured({height:.25,heightVariation:0,edgeSoftness:0}));
  assert.equal(high.patch.instanceCount,low.patch.instanceCount);
  assert.deepEqual(high.instances.map(i=>[i.position,i.scale[0],i.scale[2]]),low.instances.map(i=>[i.position,i.scale[0],i.scale[2]]));
  assert.ok(Math.abs(high.patch.minBladeHeight/low.patch.minBladeHeight-12)<1e-10);
  assert.equal(buildVegetationPatch(configured({density:0})).patch.instanceCount,0);
- assert.equal(buildVegetationPatch(configured({density:.5})).patch.instanceCount,123);
+ assert.equal(buildVegetationPatch(configured({density:.5})).patch.instanceCount,25);
  assert.equal(buildVegetationPatch(configured({}),{budget:3}).patch.instanceCount,3);
  assert.equal(buildVegetationPatch(configured({}),{budget:3}).patch.budgetLimited,true);
  assert.ok(MAX_GRASS_INSTANCES>=239693&&MAX_GRASS_INSTANCES<=500000);
@@ -101,4 +101,20 @@ test('Tree1 leaf cards receive GPU movement while bark, houses and transparent l
   assert.equal(masked.alphaTest,alpha);assert.equal(masked.side,side);
   field.update(4);assert.equal(shader.uniforms.uVegetationTime.value,4);
   masked.dispose();trunk.material.dispose();
+});
+
+
+test('small decorative fringe tufts do not change the authored hiding footprint and respect exclusion', () => {
+ const result=buildVegetationPatch(object);
+ assert.ok(result.patch.decorativeInstances>0);
+ assert.equal(result.patch.radius,object.radius);
+ const c=Math.cos(object.rotation),s=Math.sin(object.rotation);
+ for(const tuft of result.instances.filter(i=>i.decorative)){
+  const dx=tuft.position[0]-object.position[0],dz=tuft.position[1]-object.position[1];
+  assert.ok(Math.hypot((c*dx-s*dz)/object.radius,(s*dx+c*dz)/(object.radius*.72))>1);
+  assert.ok(tuft.scale[1]<1.1);
+ }
+ const excluded=buildVegetationPatch(object,{allowFringe:()=>false});
+ assert.equal(excluded.patch.decorativeInstances,0);
+ assert.ok(excluded.patch.instanceCount<=result.patch.instanceCount);
 });

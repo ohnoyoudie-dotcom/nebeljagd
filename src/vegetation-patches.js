@@ -9,31 +9,33 @@ export function vegetationSeed(text) { let seed = 2166136261; for (const c of te
 function randomSource(seed) { return () => { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 4294967296; }; }
 const clamp = THREE.MathUtils.clamp;
 
-/** Returns a stable detail field, never new world objects. An old patch keeps
- * its exact seeds, height and density until the user changes its settings. */
-export function buildVegetationPatch(object, { budget = MAX_GRASS_INSTANCES } = {}) {
+/** Returns a stable detail field, never new world objects. Patch centres and concealment radii remain authored; decorative fringes
+ * consume the same bounded instance budget and never enlarge concealment. */
+export function buildVegetationPatch(object, { budget = MAX_GRASS_INSTANCES, allowFringe = () => true } = {}) {
   const [x, z] = object.position, radius = object.radius ?? 3.5, scale = object.scale ?? 1;
   const configured = Boolean(object.vegetation), settings = vegetationSettings(object);
   const tall = object.variant === 'tall', aspect = .72;
   const renderVariant = configured && ['meadow', 'tall', 'dry', 'swamp'].includes(settings.type) ? 'tall' : configured ? 'short' : object.variant;
-  const baseCount = configured ? Math.round(radius * radius * (renderVariant === 'tall' ? 20 : 13) * settings.density)
-    : Math.max(30, Math.round(radius * radius * (tall ? 20 : 13)));
+  const baseCount = configured ? Math.round(radius * radius * (renderVariant === 'tall' ? 4 : 13) * settings.density)
+    : Math.max(30, Math.round(radius * radius * (tall ? 4 : 13)));
   const count = Math.max(0, Math.min(1800, baseCount, budget));
   const seed = vegetationSeed(object.id) ^ (configured ? settings.seed >>> 0 : 0), r = randomSource(seed);
   const meanHeight = configured ? VEGETATION_BASE_HEIGHTS[settings.type] * settings.height : tall ? 2.425 : .32;
   const patch = { id: object.id, x, z, radius: radius * scale, aspect, yaw: object.rotation ?? 0,
     height: meanHeight * scale, minBladeHeight: Infinity, maxBladeHeight: 0,
-    crossedStalksPerInstance: renderVariant === 'tall' ? 4 : 1, variant: object.variant,
+    crossedStalksPerInstance: renderVariant === 'tall' ? 7 : 1, variant: object.variant,
     type: configured ? settings.type : tall ? 'tall' : 'short', settings: configured ? settings : null,
-    instanceCount: 0, crossedStalkCount: 0, requestedInstances: Math.min(1800, baseCount),
+    instanceCount: 0, decorativeInstances: 0, crossedStalkCount: 0, requestedInstances: Math.min(1800, baseCount),
     budgetLimited: count < Math.min(1800, baseCount), renderVariant,
     rootAnchored: true, colorSamples: [], rootHeightRange: [Infinity, -Infinity] };
   const instances = [], phase = (seed >>> 0) / 4294967296 * Math.PI * 2;
   const c = Math.cos(object.rotation ?? 0), s = Math.sin(object.rotation ?? 0);
+  const fringeCount = renderVariant === 'tall' && count >= 12 ? Math.max(2, Math.floor(count * .12)) : 0;
   let attempts = 0;
   while (instances.length < count && attempts++ < Math.max(1, count * 8)) {
-    const angle = r() * Math.PI * 2, normalizedRadius = Math.sqrt(r());
-    if (configured && settings.edgeSoftness > 0) {
+    const decorative = instances.length >= count - fringeCount;
+    const angle = r() * Math.PI * 2, normalizedRadius = decorative ? 1.06 + r()*.20 : Math.sqrt(r());
+    if (!decorative && configured && settings.edgeSoftness > 0) {
       const edge = 1 - settings.edgeSoftness * (.1 + .06 * Math.sin(angle * 3 + phase) + .04 * Math.cos(angle * 7 - phase));
       if (normalizedRadius > edge) continue;
       const feather = Math.min(1, (edge - normalizedRadius) / Math.max(.001, settings.edgeSoftness * .28));
@@ -42,15 +44,19 @@ export function buildVegetationPatch(object, { budget = MAX_GRASS_INSTANCES } = 
     const reach = normalizedRadius * radius * scale;
     const px = Math.cos(angle) * reach, pz = Math.sin(angle) * reach * aspect;
     const position = [x + c * px + s * pz, z - s * px + c * pz];
+    if (decorative && !allowFringe(...position)) continue;
     const bladeHeight = configured ? meanHeight * (1 + (r() * 2 - 1) * settings.heightVariation)
-      : tall ? 2.25 + r() * .35 : .22 + r() * .2;
+      : tall ? 1.75 + r() * .85 : .22 + r() * .2;
     const bladeWidth = configured
       ? (settings.type === 'dry' ? .5 : settings.type === 'swamp' ? .75 : renderVariant === 'tall' ? 1 : .75) + r() * .65
       : (tall ? 1 : .75) + r() * .65;
     const rotation = r() * Math.PI * 2;
-    patch.minBladeHeight = Math.min(patch.minBladeHeight, bladeHeight * scale);
-    patch.maxBladeHeight = Math.max(patch.maxBladeHeight, bladeHeight * scale);
-    instances.push({ position, scale: [bladeWidth, bladeHeight, bladeWidth], rotation });
+    if (!decorative) {
+      patch.minBladeHeight = Math.min(patch.minBladeHeight, bladeHeight * scale);
+      patch.maxBladeHeight = Math.max(patch.maxBladeHeight, bladeHeight * scale);
+    } else patch.decorativeInstances++;
+    const fringeScale = decorative ? .20 + r()*.22 : 1;
+    instances.push({ position, scale: [bladeWidth * (decorative ? .55 : 1), bladeHeight * fringeScale, bladeWidth * (decorative ? .55 : 1)], rotation, decorative });
   }
   patch.instanceCount = instances.length; patch.crossedStalkCount = instances.length * patch.crossedStalksPerInstance;
   if (!instances.length) { patch.minBladeHeight = patch.maxBladeHeight = 0; patch.rootHeightRange = [0, 0]; }

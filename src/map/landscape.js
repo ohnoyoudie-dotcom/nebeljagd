@@ -53,7 +53,7 @@ export const PATH_BRUSH_PRESETS = freeze([
 ]);
 export function pathBrushSettings(id) {
   const preset = PATH_BRUSH_PRESETS.find(item => item.id === id) ?? PATH_BRUSH_PRESETS[0];
-  return { ...terrainSettings(preset.type), color: preset.color, hardness: .55, strength: 1, variation: .25 };
+  return { ...terrainSettings(preset.type), color: preset.color, hardness: .72, strength: 1, variation: .18 };
 }
 
 const typeById = new Map(VEGETATION_TYPES.map(type => [type.id, type]));

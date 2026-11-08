@@ -10,6 +10,8 @@ const smooth = (start, end, value) => { const t = clamp01((value - start) / (end
 export function createLevelUpEffect(scene) {
   const root = new THREE.Group();
   root.name = 'Levelaufstieg'; root.visible = false;
+  // Give the approved soft effect more reach without changing its timing or glow.
+  root.scale.set(1.35, 1.4, 1.35);
   root.userData.ignoreVision = true;
   scene.add(root);
 
@@ -113,7 +115,10 @@ export function createLevelUpEffect(scene) {
       vec3 center = vec3(cos(angle) * radius, .18 + (1.65 + variation * .65) * drift, sin(angle) * radius);
       vec4 viewCenter = modelViewMatrix * vec4(center, 1.0);
       float size = (.14 + variation * .08) * (1.0 - t * .35);
-      viewCenter.xy += position.xy * vec2(size, size * 1.5);
+      // Billboard corners bypass modelViewMatrix, so carry the effect's scale
+      // into their size as well as the rising particle positions.
+      float effectScale = length(modelMatrix[0].xyz);
+      viewCenter.xy += position.xy * vec2(size, size * 1.5) * effectScale;
       gl_Position = projectionMatrix * viewCenter;
       vFade = smoothstep(0.0, .16, t) * (1.0 - smoothstep(.38, 1.0, t));
     }`);
@@ -123,7 +128,7 @@ export function createLevelUpEffect(scene) {
 
   // Keep one unshadowed light registered at zero intensity between celebrations.
   // Adding/removing it on a kill would recompile all lit world materials.
-  const light = new THREE.PointLight('#eac17a', 0, 3.6, 2);
+  const light = new THREE.PointLight('#eac17a', 0, 4.86, 2);
   light.name = 'Levelaufstieg – warmes Umgebungslicht';
   scene.add(light);
   let age = 0, active = false, reducedMotion = false, level = 1, emitted = 0, disposed = false;
