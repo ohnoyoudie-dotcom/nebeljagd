@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createGoldCoinGeometry, createGoldCoinMaterial, GOLD_COIN_STYLE } from './gold-coin.js';
 
 function heartGeometry() {
   const shape = new THREE.Shape();
@@ -19,15 +20,12 @@ function heartGeometry() {
 /** Visible pickups with proximity collection and a fixed-size particle pool. */
 export function createPickups(scene, { placements, heightAt = () => 0, viewDistance = 100, isVisible = () => true, world = null, revealSceneryThroughFog = false } = {}) {
   const hearts = heartGeometry();
-  const coins = new THREE.CylinderGeometry(0.19, 0.19, 0.055, 14);
+  const coins = createGoldCoinGeometry();
   const heartMat = new THREE.MeshStandardMaterial({
     color: '#ed6380', emissive: '#9b193f', emissiveIntensity: 0.24,
     roughness: 0.32, metalness: 0.1,
   });
-  const goldMat = new THREE.MeshStandardMaterial({
-    color: '#f4cd76', emissive: '#d98728', emissiveIntensity: 0.3,
-    roughness: 0.3, metalness: 0.4, flatShading: true,
-  });
+  const goldMat = createGoldCoinMaterial();
   const ringGeo = new THREE.RingGeometry(0.41, 0.45, 32);
   const ringMat = new THREE.MeshBasicMaterial({
     color: '#f3d18c', transparent: true, opacity: 0.62,
@@ -38,6 +36,7 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
     color: '#ed7994', transparent: true, opacity: 0.08,
     depthWrite: false, side: THREE.DoubleSide,
   });
+  const goldHaloMat = haloMat.clone(); goldHaloMat.color.set('#e8b13e');
   const sparkleGeo = new THREE.OctahedronGeometry(0.045);
   const sparkleMat = new THREE.MeshBasicMaterial({ color: '#fff1b9' });
   // An explicit placement list is authoritative, including an empty list. Old
@@ -73,29 +72,27 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
     const visual = new THREE.Mesh(definition.type === 'heart' ? hearts : coins,
       definition.type === 'heart' ? heartMat : goldMat);
     if (definition.type === 'gold') {
-      visual.rotation.x = Math.PI / 2;
-      for (let i = 0; i < 3; i++) {
-        const coin = new THREE.Mesh(coins, goldMat);
-        coin.position.set((i - 1) * .13, -.16 + i * .04, -.04);
-        coin.rotation.x = Math.PI / 2; floating.add(coin);
-      }
+      visual.name = 'Goldmünze · identische Seiten';
+      visual.rotation.x = GOLD_COIN_STYLE.tilt;
+      visual.userData.coin = GOLD_COIN_STYLE;
     }
     visual.castShadow = true;
     floating.add(visual);
     const glint = new THREE.Mesh(sparkleGeo, sparkleMat);
     glint.position.set(-0.20, 0.20, 0.14);
+    if (definition.type === 'gold') glint.position.set(-.29, .28, .23);
     floating.add(glint);
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = 0.045;
     group.add(ring);
-    const halo = new THREE.Mesh(haloGeo, haloMat);
+    const halo = new THREE.Mesh(haloGeo, definition.type === 'gold' ? goldHaloMat : haloMat);
     halo.rotation.x = -Math.PI / 2;
     halo.position.y = 0.038;
     group.add(halo);
     scene.add(group);
     const item = { ...definition, groundY, group, floating, visual, glint, ring, halo,
-      collected: false, dynamic, flight: pop ? .65 : 0, flightDuration: .65, phase: index * 1.67 };
+      collected: false, dynamic, flight: pop ? .65 : 0, flightDuration: .65, phase: index * 1.67, coinTime: 0 };
     items.push(item);
     if (pop) {
       const origin = definition.origin ?? [definition.x, definition.z];
@@ -166,6 +163,9 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
     let remainingHealth = health;
     for (const item of items) {
       if (item.collected) continue;
+      // Gameplay time makes rotation/bobbing pause with the round. Advancing
+      // while out of view also avoids a delayed jump when gold becomes visible.
+      if (item.type === 'gold') item.coinTime += Math.max(0, dt);
       if (item.flight > 0) {
         item.flight = Math.max(0, item.flight - Math.max(0, dt));
         const progress = 1 - item.flight / item.flightDuration;
@@ -178,12 +178,20 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
       const inSight = visible({ x: item.x, y: item.groundY + .5, z: item.z });
       item.group.visible = nearViewer && (revealSceneryThroughFog || inSight);
       if (!item.group.visible) continue;
-      item.floating.position.y = 0.95 + Math.sin(time * 2.4 + item.phase) * 0.12;
-      item.visual.rotation.y = Math.sin(time * 0.8 + item.phase) * 0.35;
-      item.visual.rotation.z = Math.sin(time * 1.7 + item.phase) * 0.08;
+      const animationTime = item.type === 'gold' ? item.coinTime : time;
+      if (item.type === 'gold') {
+        item.floating.position.y = 1.02 + Math.sin(animationTime * 1.5 + item.phase) * .06;
+        // Negative yaw is clockwise viewed from above. About 20 s per turn;
+        // the fixed tilt presents a round face to the game's overhead camera.
+        item.visual.rotation.y = -animationTime * GOLD_COIN_STYLE.radiansPerSecond;
+      } else {
+        item.floating.position.y = 0.95 + Math.sin(time * 2.4 + item.phase) * 0.12;
+        item.visual.rotation.y = Math.sin(time * 0.8 + item.phase) * 0.35;
+        item.visual.rotation.z = Math.sin(time * 1.7 + item.phase) * 0.08;
+      }
       item.ring.visible = item.halo.visible = item.flight <= 0;
-      item.glint.scale.setScalar(0.6 + Math.pow(Math.max(0, Math.sin(time * 3 + item.phase)), 6) * 1.3);
-      item.ring.scale.setScalar(1 + Math.sin(time * 2 + item.phase) * 0.045);
+      item.glint.scale.setScalar(0.6 + Math.pow(Math.max(0, Math.sin(animationTime * 3 + item.phase)), 6) * 1.3);
+      item.ring.scale.setScalar(1 + Math.sin(animationTime * 2 + item.phase) * 0.045);
       const available = item.type !== 'heart' || remainingHealth < maxHealth;
       const nearCollector = Boolean(playerPosition && Math.hypot(playerPosition.x - item.x, playerPosition.z - item.z) < 1.15);
       const clearReach = !nearCollector || !world?.traceProjectile || !world.traceProjectile(

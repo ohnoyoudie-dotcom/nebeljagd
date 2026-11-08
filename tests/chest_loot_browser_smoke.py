@@ -47,13 +47,32 @@ with sync_playwright() as pw:
         page.evaluate('nebeljagdInspect({x:0,z:2,health:100});nebeljagdInspectCamera({zoom:1.5})')
         page.wait_for_function('nebeljagdTestState().nearChest')
         page.keyboard.press('e')
+        # Step back before the gold lands so its actual model and animation
+        # remain visible instead of being collected immediately at the chest.
+        page.evaluate('nebeljagdInspect({x:0,z:4.5})')
         page.wait_for_function('nebeljagdTestState().chests[0].lidRotation < -1.89')
+        page.wait_for_function('nebeljagdTestState().pickups.filter(p=>p.type==="gold" && !p.collected && p.flight===0).length===2')
         opened = state()
+        coins = [p for p in opened['pickups'] if p['type']=='gold']
+        assert all(c['coin']['model']=='symmetric-gold-coin' and c['coin']['diameter']>=1 for c in coins), coins
+        rotation = coins[0]['coin']['rotation']
+        page.wait_for_function('r=>nebeljagdTestState().pickups.find(p=>p.type==="gold").coin.rotation<r-.12', arg=rotation)
         drop = next(d for d in opened['weaponDrops'] if d['id'].endswith('-weapon'))
         assert drop['model']=='tripo' and drop['variant']=='kit-tripo-sword' and drop['rarity'] in tiers
         page.keyboard.press('Escape')
+        paused = [p['coin']['rotation'] for p in state()['pickups'] if p['type']=='gold']
+        page.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
+        assert [p['coin']['rotation'] for p in state()['pickups'] if p['type']=='gold']==paused
+        page.evaluate('nebeljagdInspectCamera({zoom:2.2})')
         (OUT/'open-chest.png').write_bytes(base64.b64decode(page.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]))
+        (OUT/'gold-coins.json').write_text(json.dumps(state()['pickups'],indent=2))
         page.keyboard.press('Escape')
+        for coin in coins:
+            page.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z})', coin)
+            page.wait_for_function('id=>nebeljagdTestState().pickups.find(p=>p.id===id).collected', arg=coin['id'])
+        assert state()['gold']==sum(c['amount'] for c in coins)
+        expect(page.locator('#goldCount')).to_have_text(str(state()['gold']))
+        checks.append('Real chest drops two large symmetric gold coins: slow clockwise turn, pause freezes rotation, collection awards exact gold')
         page.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z})', drop)
         page.wait_for_function('nebeljagdTestState().equippedItem?.type==="sword"')
         equipped = state()['equippedItem']
@@ -69,6 +88,7 @@ with sync_playwright() as pw:
         page.keyboard.press('Escape'); page.locator('#restartBtn').click()
         fresh = state()
         assert not fresh['chests'][0]['opened'] and fresh['equippedItem'] is None
+        assert fresh['gold']==0 and not fresh['pickups']
         assert len(fresh['weaponDrops'])==17 and fresh['world']['objects']==fixture['objects']
         assert [d['rarity'] for d in fresh['weaponDrops']] != [d['rarity'] for d in initial['weaponDrops']]
         assert [[d['x'],d['z']] for d in fresh['weaponDrops']]==[[d['x'],d['z']] for d in initial['weaponDrops']]
