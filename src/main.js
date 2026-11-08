@@ -140,6 +140,7 @@ player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.sp
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
+world.setDebrisVisibility?.(isVisible);
 const healthBars = createHealthBars(world.root);
 healthBars.add('player', { position: player, health: state.health, maxHealth: state.maxHealth,
   level: state.level, local: true, height: 2.9 });
@@ -552,7 +553,7 @@ function frame(now) {
   const dt = Math.min(0.1, frameMs / 1000);
   previousTime = now; time += dt; accumulator += dt;
   while (accumulator >= 1 / 60) { simulate(1 / 60); accumulator -= 1 / 60; }
-  world.update(dt, time, player, currentZone.radius);
+  world.update(dt, time, player, currentZone.radius, state.phase === 'playing' ? dt : 0);
   vision.update(player, time);
   state.shelter = world.shelter;
   state.hiddenInGrass = world.concealmentAt(player.x, player.z) > 0.01;

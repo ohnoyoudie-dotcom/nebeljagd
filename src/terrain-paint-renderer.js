@@ -92,22 +92,10 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       terrainPaint.a = smoothstep(.08,.90,terrainPaint.a + edgeBreakup * step(.01,terrainPaint.a));
       float terrainPavingMix = texture2D(uTerrainPavingMask, terrainPaintUV).r;
       float terrainSnowMix = texture2D(uTerrainSnowMask, terrainPaintUV).r * terrainPaint.a;
-      vec4 vergeStone = texture2D(uTerrainPaving, vTerrainPaintPosition / 3.5);
       terrainPaint.rgb *= mix(soilShade, 1., terrainSnowMix * .65);
-      // Existing cobble strokes become worn earth with scattered verge stones.
-      // Keep the brush/export contract and the author's exact painted footprint.
+      // Border stones are separate shallow, instanced meshes placed on the
+      // union contour. The painted walkway itself stays clear of scattered rocks.
       terrainPaint.rgb = mix(terrainPaint.rgb,vec3(.31,.24,.145)*soilShade,terrainPavingMix*.85);
-      // Select at each stone's centre, rather than cutting its outline with
-      // the brush mask. The whole stone can then straddle the soft verge.
-      vec2 stoneUV = vTerrainPaintPosition/3.5;
-      vec2 centerOffset = fract(texture2D(uTerrainStoneCenters,stoneUV).rg-fract(stoneUV)+.5)-.5;
-      vec2 centerPaintUV = terrainPaintUV + centerOffset*3.5/uTerrainPaintBounds.zw;
-      float centerCoverage = texture2D(uTerrainPaint,centerPaintUV).a;
-      float centerPaving = texture2D(uTerrainPavingMask,centerPaintUV).r;
-      float stoneBand = smoothstep(.10,.30,centerCoverage)*(1.-smoothstep(.75,.97,centerCoverage));
-      float stoneWeight = vergeStone.a * stoneBand * centerPaving;
-      terrainPaint.rgb = mix(terrainPaint.rgb,vergeStone.rgb,stoneWeight);
-      terrainPaint.a = max(terrainPaint.a,stoneWeight*.94);
       float snowRelief = terrainSnowRelief(vTerrainPaintPosition);
       float snowMicro = terrainSnowMicro(vTerrainPaintPosition);
       float snowShade = 1.0 + snowRelief*.135 + snowMicro*.018;
@@ -124,7 +112,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       roughnessFactor = mix(roughnessFactor, .965 - terrainMicroRough*.022, terrainSnowMix * .90);
     `);
   };
-  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v9-whole-verge-stones';
+  material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v10-clear-path-interior';
   material.name = 'Nebeljagd · gemalter Boden aus Kartendaten';
   function release() {
     texture?.dispose(); maskTexture?.dispose(); snowMaskTexture?.dispose();
