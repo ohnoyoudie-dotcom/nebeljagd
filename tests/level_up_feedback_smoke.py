@@ -201,7 +201,12 @@ try:
             assert not REPORT['unexpectedRequests'],REPORT['unexpectedRequests']
             gallery_page=context.new_page()
             gallery_page.set_viewport_size({'width':1280,'height':1000})
-            gallery_page.goto((OUT/'sequence.html').as_uri(),wait_until='load')
+            # Managed Chromium disables file:// navigation. Render these
+            # already captured images in memory, without new URL requests.
+            gallery_document=(OUT/'sequence.html').read_text()
+            for frame in frames:
+                gallery_document=gallery_document.replace(f'actual-kill-{frame["evidence"]["stage"]}.png',frame['image'])
+            gallery_page.set_content(gallery_document,wait_until='load')
             gallery_page.wait_for_function('Array.from(document.images).every(image=>image.complete&&image.naturalWidth>0)')
             gallery_page.screenshot(path=str(OUT/'sequence.png'),full_page=True)
             REPORT['contactSheet']=str(OUT/'sequence.png')
