@@ -6,23 +6,37 @@ export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, retur
   cloudRadius: 2.4, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */
-export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, isVisible) {
+export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, isVisible, { moonProjectilePrototype = null } = {}) {
   const roots = [], geometries = new Set(), materials = new Set();
   const geometry = value => (geometries.add(value), value);
   const material = value => (materials.add(value), value);
-  const silver = material(new THREE.MeshStandardMaterial({ color: '#ede1ff', emissive: '#a378da', emissiveIntensity: .8, metalness: .55, roughness: .25 }));
   const ringGeometry = geometry(new THREE.RingGeometry(SPECIAL_RULES.cloudRadius - .07, SPECIAL_RULES.cloudRadius, 48));
   const ringMaterial = material(new THREE.MeshBasicMaterial({ color: '#91ab53', side: THREE.DoubleSide, transparent: true, opacity: .22, depthWrite: false }));
   function root(object) { roots.push(object); scene.add(object); return object; }
   const targetMaterial = material(ringMaterial.clone()); targetMaterial.depthTest = false; targetMaterial.color.set('#e4ffa1'); targetMaterial.opacity = .85;
   const targetRing = root(new THREE.Mesh(ringGeometry, targetMaterial)); targetRing.renderOrder = 30;
   targetRing.name = 'Giftwolke · Zielbereich'; targetRing.rotation.x = -Math.PI / 2; targetRing.visible = false;
-  const shape = new THREE.Shape();
-  shape.moveTo(0, .6); shape.bezierCurveTo(-.85, .35, -.85, -.35, 0, -.6);
-  shape.bezierCurveTo(-.35, -.2, -.35, .2, 0, .6);
-  const crescentGeometry = geometry(new THREE.ExtrudeGeometry(shape, { depth: .09, bevelEnabled: true, bevelSize: .025, bevelThickness: .025, bevelSegments: 1, steps: 1, curveSegments: 16 }));
-  const moonMesh = root(new THREE.Mesh(crescentGeometry, silver));
-  moonMesh.name = 'Mondstab · Rückkehrende Sichel'; moonMesh.rotation.x = -Math.PI / 2; moonMesh.visible = false;
+  let moonMesh;
+  if (moonProjectilePrototype) {
+    moonMesh = root(new THREE.Group());
+    const model = moonProjectilePrototype.clone(true);
+    model.traverse(part => {
+      if (!part.isMesh) return;
+      const clone = original => material(original.clone());
+      part.material = Array.isArray(part.material) ? part.material.map(clone) : clone(part.material);
+    });
+    moonMesh.add(model);
+  } else {
+    // Pure simulation callers can omit browser assets. The generated game
+    // always supplies the uploaded crescent with its original PBR textures.
+    const shape = new THREE.Shape();
+    shape.moveTo(0, .6); shape.bezierCurveTo(-.85, .35, -.85, -.35, 0, -.6);
+    shape.bezierCurveTo(-.35, -.2, -.35, .2, 0, .6);
+    const crescentGeometry = geometry(new THREE.ExtrudeGeometry(shape, { depth: .09, bevelEnabled: true, bevelSize: .025, bevelThickness: .025, bevelSegments: 1, steps: 1, curveSegments: 16 }));
+    const silver = material(new THREE.MeshStandardMaterial({ color: '#ede1ff', emissive: '#a378da', emissiveIntensity: .8, metalness: .55, roughness: .25 }));
+    moonMesh = root(new THREE.Mesh(crescentGeometry, silver)); moonMesh.rotation.x = -Math.PI / 2;
+  }
+  moonMesh.name = 'Mondstab · Rückkehrende Sichel'; moonMesh.visible = false;
   let moon = null, aim = null;
   const orbs = [], clouds = [];
   const canSee = p => !isVisible || isVisible(p);
@@ -106,7 +120,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
         pierce(start, end, moon.returnHits, moon.payload);
         if (end.distanceTo(hand) < .25) { moon = null; moonMesh.visible = false; }
       }
-      moonMesh.position.copy(end); moonMesh.rotation.z += dt * 12;
+      moonMesh.position.copy(end); moonMesh.rotation[moonProjectilePrototype ? 'y' : 'z'] += dt * 12;
       if (moon) { moonMesh.visible = canSee(end); if (moon.age > 15) { moon = null; moonMesh.visible = false; } }
     }
     for (let i = orbs.length - 1; i >= 0; i--) {
@@ -153,6 +167,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   return { beginAim, aimAt, cancelAim, releasePoison, launchMoon, update, reset,
     get moonBusy() { return Boolean(moon); }, get aiming() { return Boolean(aim); },
     get telemetry() { return { aiming: Boolean(aim), target: aim ? { ...aim.target } : null,
+      moonModel: moonProjectilePrototype ? { ...moonProjectilePrototype.userData } : null,
       moon: moon ? { mode: moon.mode, distance: moon.distance, position: { ...moonMesh.position }, outboundHits: [...moon.outboundHits], returnHits: [...moon.returnHits] } : null,
       visuals: poisonVisuals.telemetry,
       poisonProjectiles: orbs.length,

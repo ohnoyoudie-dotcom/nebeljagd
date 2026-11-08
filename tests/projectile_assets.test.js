@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import * as THREE from 'three';
 import { createSpellEffects } from '../src/spell-effects.js';
 import { createWeapons } from '../src/weapons.js';
+import { createSpecialWeapons } from '../src/special-weapons.js';
 
 function imageSize(bytes) {
   if (bytes.toString('ascii', 1, 4) === 'PNG') return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)];
@@ -20,8 +21,8 @@ function imageSize(bytes) {
   throw new Error('Missing JPEG dimensions');
 }
 
-for (const name of ['ice-crystal', 'feathered-arrow']) test(`${name} preserves its upload and ships bounded, embedded PBR geometry`, () => {
-  const root = new URL('../assets/imported/tripo-projectiles/', import.meta.url);
+for (const name of ['ice-crystal', 'feathered-arrow', 'crescent-moon']) test(`${name} preserves its upload and ships bounded, embedded PBR geometry`, () => {
+  const root = new URL(`../assets/imported/${name === 'crescent-moon' ? 'tripo-moon-projectile' : 'tripo-projectiles'}/`, import.meta.url);
   const report = JSON.parse(readFileSync(new URL(`${name}-inspection.json`, root)));
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(readFileSync(new URL(`../${report.source}`, import.meta.url))), report.original.sha256);
@@ -47,6 +48,29 @@ for (const name of ['ice-crystal', 'feathered-arrow']) test(`${name} preserves i
   }
   assert.ok(triangles > 0 && triangles <= 6000);
   for (const mat of doc.materials) assert.ok(mat.normalTexture && mat.pbrMetallicRoughness.baseColorTexture && mat.pbrMetallicRoughness.metallicRoughnessTexture);
+});
+
+test('the imported crescent spins, pauses and returns without mutating or disposing its shared prototype', () => {
+  const scene=new THREE.Scene(), prototype=new THREE.Group(), geometry=new THREE.TorusGeometry(.4,.1,6,12,Math.PI);
+  const originalMaterial=new THREE.MeshStandardMaterial(), texture=new THREE.Texture();originalMaterial.map=texture;
+  prototype.add(new THREE.Mesh(geometry,originalMaterial));prototype.userData.source='uploaded-moon';
+  let visible=true,disposed=0;for(const resource of [geometry,originalMaterial,texture])resource.addEventListener('dispose',()=>disposed++);
+  const special=createSpecialWeapons(scene,{heightAt:()=>0},null,'player',()=>{},()=>visible,{moonProjectilePrototype:prototype});
+  const visual=scene.getObjectByName('Mondstab · Rückkehrende Sichel');
+  assert.equal(special.telemetry.moonModel.source,'uploaded-moon');
+  assert.equal(visual.children[0].children[0].geometry,geometry);
+  assert.notEqual(visual.children[0].children[0].material,originalMaterial);
+  assert.equal(visual.children[0].children[0].material.map,texture);
+  const origin=new THREE.Vector3(0,1.4,0),player=new THREE.Vector3();special.launchMoon(origin,0,{});
+  special.update(.2,player,.2);assert.ok(visual.rotation.y>0&&visual.visible);
+  const position=visual.position.clone(),rotation=visual.rotation.y;special.update(0,player,10);
+  assert.deepEqual(visual.position,position);assert.equal(visual.rotation.y,rotation);
+  visible=false;special.update(.1,player,.3);assert.equal(visual.visible,false);
+  for(let t=.3;t<2;t+=.05)special.update(.05,player,t);
+  assert.equal(special.telemetry.moon,null);assert.equal(visual.visible,false);
+  special.launchMoon(origin,0,{});special.reset();assert.equal(special.moonBusy,false);
+  special.dispose();assert.equal(disposed,0);assert.equal(scene.children.length,0);
+  geometry.dispose();originalMaterial.dispose();texture.dispose();
 });
 
 test('ice uses the uploaded mesh with independent materials; swaps, fog, reset and disposal preserve prototype ownership', () => {

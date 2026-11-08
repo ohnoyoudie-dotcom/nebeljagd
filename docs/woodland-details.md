@@ -37,13 +37,20 @@ Ausgaben. Die Blender-5.2-Quelldatei lässt sich im vorhandenen Blender 4.3 nich
 direkt öffnen; deshalb wird der geprüfte GLB-Export bearbeitet. Das Ergebnis hat
 weiterhin 6.992 Dreiecke, eingebettete Texturen und keine Netzwerkdecoder.
 
-Das vom Benutzer benannte Mondprojektil `crescent moon prop 3d model.glb` ist in
-diesem Repository-Stand nicht vorhanden. Der Mondstab selbst ist vorhanden;
-seine bisherige Sichel bleibt bis zur Synchronisierung der Projektilquelle
-erhalten. Es wird kein anderes Inbox-Modell als das Mondprojektil ausgegeben.
+Der Mondstab verwendet das inzwischen synchronisierte Inbox-Modell
+`crescent moon prop 3d model.glb`: eine räumliche silberne Sichel mit
+eingearbeiteten Mondmotiven und violettem Innenrand. Die unveränderte Quelle
+hat 1.912.266 Dreiecke und 62,2 MB. Die separate Spielversion unter
+`assets/imported/tripo-moon-projectile/` hat 6.000 Dreiecke, eingebettete
+512-Pixel-PBR-Texturen und 496.172 Bytes. Sie ist 1,10 m lang, liegt mit der
+verzierten Vorderseite nach oben und rotiert während Hin- und Rückflug. Die
+vorhandenen Treffer-, Reichweiten-, Pausen- und Rückkehrregeln bleiben erhalten.
+`scripts/prepare-moon-projectile.py` nutzt dieselbe geprüfte Vorbereitung wie
+Eiskristall und Federpfeil und überschreibt keine vorhandenen Dateien.
 
 Prüfung: `npm test`, `npm run verify:assets`, `npm run build`, anschließend
-`tests/woodland_details_smoke.py` und `tests/snow_roll_smoke.py` gegen die
+`tests/woodland_details_smoke.py`, `tests/snow_roll_smoke.py` und
+`tests/moon_projectile_smoke.py` gegen die
 generierten Browserdateien. Die Browserprüfungen verwenden nur temporäre
 Spieltestkarten und speichern Bilder und Messwerte unter `test-results/`.
 Chromium/SwiftShader prüft Darstellung und Verhalten, keine Tablet-Leistung.

@@ -1,0 +1,25 @@
+{
+  "sources": [
+    {
+      "path": "assets/inbox/crescent moon prop 3d model.glb",
+      "sha256": "45d3e2ddcb987144a1faa1cf7aeea24c9f9eb94c708576feb7d9e0ddfaa79551"
+    }
+  ],
+  "files": [
+    {
+      "path": "crescent-moon-inspection.json",
+      "bytes": 2295,
+      "sha256": "cb3dbbb4be86ad8a99a41131eeaca0ca5cc847b8675a9c42b54de7b6a4486bd1"
+    },
+    {
+      "path": "crescent-moon-preview.png",
+      "bytes": 339697,
+      "sha256": "aa917938f1ad5bd542f34bbcd63ab0f76756bb109737f550cec35a186c8336ec"
+    },
+    {
+      "path": "runtime/crescent-moon.glb",
+      "bytes": 496172,
+      "sha256": "073ce95ac1764a99fdc2825260d83a987ecc7ccccf8e456514100b0fe5329376"
+    }
+  ]
+}

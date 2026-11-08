@@ -2,14 +2,19 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import iceUrl from '../assets/imported/tripo-projectiles/runtime/ice-crystal.glb?url&inline';
 import arrowUrl from '../assets/imported/tripo-projectiles/runtime/feathered-arrow.glb?url&inline';
+import moonUrl from '../assets/imported/tripo-moon-projectile/runtime/crescent-moon.glb?url&inline';
 
-// Both uploads point diagonally up/right in their source XY plane. Rotate that
+// Ice and arrow point diagonally up/right in their source XY plane. Rotate that
 // measured tail-to-tip axis to gameplay +Z, then size the actual oriented mesh.
 const definitions = {
   ice: { url: iceUrl, source: 'ice crystal 3d model.glb', runtime: 'ice-crystal.glb',
     name: 'Eiskristall · hochgeladenes Projektil', forward: [.982, .614, 0], length: .95 },
   arrow: { url: arrowUrl, source: 'feathered spear 3d model.glb', runtime: 'feathered-arrow.glb',
     name: 'Federpfeil · hochgeladenes Projektil', forward: [.978, .655, 0], length: 1.05 },
+  // The crescent lies in source XY. Point -Y along flight +Z so its sculpted
+  // front faces upward; the special-weapon system spins it around world Y.
+  moon: { url: moonUrl, source: 'crescent moon prop 3d model.glb', runtime: 'crescent-moon.glb',
+    packageName: 'tripo-moon-projectile', name: 'Mondsichel · hochgeladenes Projektil', forward: [0, -1, 0], length: 1.1 },
 };
 
 export async function loadProjectileModels() {
@@ -32,7 +37,7 @@ export async function loadProjectileModels() {
     const prototype = new THREE.Group(); prototype.add(oriented);
     prototype.name = definition.name; prototype.scale.setScalar(definition.length / size.z);
     prototype.userData = { triangles, nominalLength: definition.length, forwardAxis: '+Z',
-      source: `assets/inbox/${definition.source}`, runtime: `assets/imported/tripo-projectiles/runtime/${definition.runtime}` };
+      source: `assets/inbox/${definition.source}`, runtime: `assets/imported/${definition.packageName ?? 'tripo-projectiles'}/runtime/${definition.runtime}` };
     return [key, prototype];
   })));
 }

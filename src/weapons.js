@@ -723,7 +723,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype, iceProjectilePrototype: projectilePrototypes.ice });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
-  }, isVisible);
+  }, isVisible, { moonProjectilePrototype: projectilePrototypes.moon });
   const staffTip = new THREE.Vector3();
   function releaseAttack(position) {
     if (!specials.aiming || equippedType !== 'poisonStaff' || characterGroup.userData.rolling) { specials.cancelAim(); return false; }
