@@ -1,0 +1,158 @@
+{
+  "status": "passed",
+  "buildId": "e6622b05f723",
+  "sourceCommit": "9d798d987b1759039db41b7780f530de69681aa6",
+  "unitTests": {
+    "passed": 559,
+    "failed": 0
+  },
+  "assetVerification": "passed",
+  "mapVerification": "passed",
+  "mapUnchangedSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+  "generatedGame": {
+    "browser": "154.0.8037.57",
+    "stencil": true,
+    "checks": [
+      "All seven saved .55/1/radius2.5 path styles now have borders with singletons and small/large clusters",
+      "Only the local crown fades further; softer white hiding compiles in Low/High and restores after walking out",
+      "Active hiding resets cleanly; original map and objects remain unchanged; no shader/browser/network errors"
+    ],
+    "savedPathRenderedCounts": {
+      "earth": 32,
+      "forest": 15,
+      "sand": 38,
+      "snow": 18,
+      "stone": 37,
+      "mud": 19,
+      "cobble": 19
+    },
+    "screenshots": 7,
+    "errors": [],
+    "unexpectedRequests": [],
+    "report": "test-results/path-refinement/report.json",
+    "limits": "Actual generated Chromium/SwiftShader render and keyboard input; no hardware performance claim.",
+    "borders": {
+      "count": 286,
+      "clusterCount": 74,
+      "singletonCount": 19,
+      "largestCluster": 11,
+      "clusterSizeHistogram": {
+        "1": 19,
+        "2": 10,
+        "3": 11,
+        "4": 8,
+        "5": 11,
+        "6": 3,
+        "7": 2,
+        "8": 3,
+        "9": 2,
+        "10": 2,
+        "11": 3
+      }
+    },
+    "visibility": {
+      "under": {
+        "qa-local-tree": {
+          "opacity": 0.05415150005710529,
+          "targetOpacity": 0.045,
+          "underCanopy": true,
+          "barkOpacity": 1,
+          "footprint": {
+            "center": [
+              35.07783362855393,
+              25.930817426489064
+            ],
+            "radiusX": 2.7317821979522705,
+            "radiusZ": 2.223128080368042,
+            "rotation": 0.25,
+            "minY": 2.399610619889672,
+            "maxY": 9.240718465196068
+          }
+        },
+        "qa-other-tree": {
+          "opacity": 1,
+          "targetOpacity": 1,
+          "underCanopy": false,
+          "barkOpacity": 1,
+          "footprint": {
+            "center": [
+              48.07783362855393,
+              25.930817426489064
+            ],
+            "radiusX": 2.7317821979522705,
+            "radiusZ": 2.223128080368042,
+            "rotation": 0.25,
+            "minY": 1.9107383269443448,
+            "maxY": 8.75184617225074
+          }
+        }
+      },
+      "hidden": {
+        "style": "white-hidden-rim-v1",
+        "active": true,
+        "blend": 1,
+        "bodyOpacity": 0.21999999999999997,
+        "fillOpacity": 0.12,
+        "outlineOpacity": 0.62,
+        "color": "#ffffff",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 1.6,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0,
+        "materialsRestored": false
+      },
+      "restored": {
+        "style": "white-hidden-rim-v1",
+        "active": false,
+        "blend": 0,
+        "bodyOpacity": 1,
+        "fillOpacity": 0,
+        "outlineOpacity": 0,
+        "color": "#ffffff",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 1.6,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0.045,
+        "materialsRestored": true
+      }
+    }
+  },
+  "generatedEditor": {
+    "checks": [
+      "Fresh launcher opens matching editor and project map with visible version",
+      "Stable bookmark automatically resumes the complete own draft in the current editor",
+      "Opening current project preserves the different local draft",
+      "Direct editor visit automatically resumes the last browser draft",
+      "Automatically resumed map remains exportable as a normal JSON file",
+      "Exported standalone snapshot reopens its own map",
+      "Same bookmarked URL checks fresh manifest on request",
+      "An editor update automatically opens the new version with the entire saved map",
+      "Failed release check never silently opens stale editor or destroys a draft",
+      "Unreadable browser draft remains intact while project opens"
+    ],
+    "errors": [],
+    "report": "test-results/online-editor/report.json"
+  },
+  "files": {
+    "magebrawl.html": {
+      "bytes": 91914288,
+      "sha256": "8856ce1918b2e90eeaa3b1c2a6533ff3e4ab519deb3e54ee3c92951f394e60c6"
+    },
+    "map-editor.html": {
+      "bytes": 61649325,
+      "sha256": "9113d53159fab9122d90c87fca2987db034e19ac5977b119c34a9b527b5087ab"
+    },
+    "worldmap.json": {
+      "bytes": 56916,
+      "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
+    },
+    "magebrawl-welt-und-editor.zip": {
+      "bytes": 100389949,
+      "sha256": "b3087e37e36ba4b617a63f3e101b7203d98028b1650a9fadf30cbe39f337a82a"
+    }
+  }
+}
