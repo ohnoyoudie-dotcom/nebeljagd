@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
+import { ARROW_LENGTH } from '../src/arrow-alignment.js';
 import { createWeapons } from '../src/weapons.js';
 
 for (const variant of ['wood', 'kit-tripo-ornate-bow']) test(`arrow nock, direction and flight stay aligned: ${variant}`, () => {
@@ -22,14 +23,20 @@ for (const variant of ['wood', 'kit-tripo-ornate-bow']) test(`arrow nock, direct
   const nock = rig ? rig.lower.clone().lerp(rig.upper,.5) : new THREE.Vector3(.02,0,0);
   nock.x += weapons.telemetry.bowDraw * (rig?.drawDistance ?? .31);
   bow.localToWorld(nock);
-  const tail=loaded.localToWorld(new THREE.Vector3(0,0,-.43));
+  const tail=loaded.localToWorld(new THREE.Vector3(0,0,-ARROW_LENGTH / 2));
   assert.ok(tail.distanceTo(nock)<1e-6,'arrow tail touches animated string');
-  const tip=loaded.localToWorld(new THREE.Vector3(0,0,.43));
-  assert.ok(Math.abs(tip.distanceTo(tail)-.86)<1e-6,'same physical length on bow and in flight');
+  const tip=loaded.localToWorld(new THREE.Vector3(0,0,ARROW_LENGTH / 2));
+  assert.ok(Math.abs(tip.distanceTo(tail)-ARROW_LENGTH)<1e-6,'same physical length on bow and in flight');
   const forward=new THREE.Vector3(Math.sin(aim),0,Math.cos(aim));
   assert.ok(tip.clone().sub(tail).normalize().dot(forward)> .999999);
   actor.rotation.y=.6; // rotate during draw; committed aim must remain fixed
   weapons.update(.14,.24,actor.position);
+  for(let i=0;i<100;i++) weapons.update(.05,.24+i*.05,actor.position);
+  assert.equal(weapons.telemetry.shotsFired,0,'holding indefinitely never fires');
+  assert.equal(weapons.telemetry.bowDraw,1);
+  assert.equal(weapons.attack(actor.position,aim),null,'repeat presses do not restart the draw');
+  assert.equal(weapons.releaseAttack(actor.position),true);
+  assert.equal(weapons.releaseAttack(actor.position),false,'one release fires exactly once');
   const flying=scene.children.find(part=>part.name==='Fliegender Pfeil'&&part.visible);
   assert.ok(flying); assert.equal(flying.userData.trail,undefined);
   const heading=new THREE.Vector3(0,0,1).applyQuaternion(flying.quaternion);
@@ -53,8 +60,32 @@ test('actual uploaded arrow endpoints align to flight and collision axis in all 
   const vertices=Array.from({length:accessor.count},(_,i)=>new THREE.Vector3(...[0,1,2].map(k=>bytes.readFloatLE(offset+i*(view.byteStride??12)+k*4))));
   for(const endpoint of [ARROW_TIP,ARROW_TAIL])assert.ok(vertices.some(v=>v.distanceTo(new THREE.Vector3(...endpoint))<1e-6),'measured endpoint belongs to the real mesh');
   const source=new THREE.Group(),model=alignArrowModel(source);model.updateMatrixWorld(true);
-  for(const [point,z] of [[ARROW_TIP,.43],[ARROW_TAIL,-.43]]) {
+  for(const [point,z] of [[ARROW_TIP,ARROW_LENGTH / 2],[ARROW_TAIL,-ARROW_LENGTH / 2]]) {
     const actual=source.localToWorld(new THREE.Vector3(...point));
     assert.ok(actual.distanceTo(new THREE.Vector3(0,0,z))<1e-7);
   }
+});
+
+for (const reason of ['cancel', 'roll', 'swap', 'reset']) test(`held bow cancels safely on ${reason}`, () => {
+  const scene=new THREE.Scene(),actor=new THREE.Group();scene.add(actor);
+  let pose;
+  const character={setCombatState:state=>{pose=state;}};
+  const weapons=createWeapons(scene,actor,{bounds:100,heightAt:()=>0},character,{placements:[
+    {id:'bow',kind:'bow',variant:'wood',position:[0,0]},
+    {id:'staff',kind:'iceStaff',variant:'frost',position:[3,0]},
+  ]});
+  weapons.interact(actor.position);weapons.attack(actor.position,0);
+  weapons.update(.5,.5,actor.position);
+  assert.equal(weapons.bowHolding,true);
+  assert.ok(pose.rightHand.x>.3 && pose.leftHand.x>.3,'both hands keep the string beside the torso');
+  assert.ok(pose.rightHand.z<pose.leftHand.z,'draw hand pulls toward the shoulder');
+  if(reason==='cancel')weapons.cancelAim();
+  if(reason==='roll'){actor.userData.rolling=true;weapons.update(.016,.516,actor.position);actor.userData.rolling=false;}
+  if(reason==='swap'){actor.position.x=3;weapons.interact(actor.position);}
+  if(reason==='reset')weapons.reset();
+  assert.equal(weapons.bowHolding,false);
+  assert.equal(weapons.releaseAttack(actor.position),false);
+  weapons.update(1,2,actor.position);
+  assert.equal(weapons.telemetry.shotsFired,0,'cancel and subsequent release never fire');
+  weapons.dispose();
 });

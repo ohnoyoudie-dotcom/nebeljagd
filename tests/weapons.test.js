@@ -29,7 +29,8 @@ test('bow draws before release and swept flight impacts the wall without passing
   weapons.update(.12, .12, position);
   assert.equal(weapons.telemetry.attackPhase, 'draw');
   assert.equal(weapons.telemetry.shotsFired, 0);
-  assert.ok(weapons.telemetry.bowDraw > .3);
+  assert.ok(weapons.telemetry.bowDraw > .2);
+  weapons.releaseAttack(position);
   weapons.update(.12, .24, position);
   assert.equal(weapons.telemetry.shotsFired, 1);
   assert.equal(weapons.telemetry.impacts, 1);
@@ -45,6 +46,7 @@ test('an obstacle between body and muzzle catches the arrow at release', () => {
   const { weapons, position, wallZ } = setup('bow', .25);
   weapons.attack(position, 0);
   weapons.update(.24, .24, position);
+  weapons.releaseAttack(position);
   assert.equal(weapons.telemetry.impacts, 1);
   assert.equal(weapons.telemetry.lastImpact.point.z, wallZ);
   assert.equal(weapons.telemetry.arrowsFlying, 0);

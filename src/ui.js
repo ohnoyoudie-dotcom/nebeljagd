@@ -494,7 +494,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     if (weaponKey !== lastWeaponType) {
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
-      const effectDetail = { fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
+      const effectDetail = { bow: ' · Halten, spannen, loslassen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
         poisonStaff: ' · Halten, zielen, loslassen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz' }[weaponType] || '';
       weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
@@ -502,7 +502,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponIcon.innerHTML = icon(weaponType || 'shield');
       weaponStatus.setAttribute('aria-label', weaponType ? `${weapon.name}, ${weapon.rarityLabel}, ${weapon.damage} Schaden` : 'Keine Waffe ausgerüstet');
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
-      const attackLabel = { bow: 'Mit dem Bogen schießen', sword: 'Mit dem Schwert angreifen',
+      const attackLabel = { bow: 'Halten zum Spannen, loslassen zum Schießen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
         poisonStaff: 'Halten, Giftwolke zielen und loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
