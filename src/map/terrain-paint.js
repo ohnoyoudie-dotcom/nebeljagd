@@ -4,6 +4,7 @@ import { TERRAIN_TYPES } from './landscape.js';
 // sample the same ordered paint document without loading a second renderer.
 const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
+const tintScratch = {};
 const palettes = new Map(TERRAIN_TYPES.map(item => [item.id, item]));
 const toLinear = value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4;
 const hexColor = value => {
@@ -107,6 +108,27 @@ export function terrainSurfaceDetail(type, x, z, seed = 1) {
   return .99 + broad * .065 + fine * .028;
 }
 
+/** Static colour washes shared by natural ground and painted surfaces.
+ * World coordinates keep neighbouring chunks and overlapping strokes aligned. */
+export function terrainSurfaceTint(type, x, z, target = {}) {
+  const broad = terrainPaintNoise(x * .085, z * .085, 402) - .5;
+  const patches = terrainPaintNoise(x * .32 + 11, z * .32, 719) - .5;
+  const shade = 1 + broad * .24 + patches * .10;
+  const warm = patches * .22;
+  if (['snow'].includes(type)) {
+    target.r = shade - Math.max(0, -patches) * .18;
+    target.g = shade; target.b = shade + Math.max(0, -patches) * .08;
+  } else if (['forest', 'meadow', 'marsh', 'mud', 'heath'].includes(type)) {
+    // Olive/earth patches break up a uniform green carpet, without grass meshes.
+    target.r = shade + warm; target.g = shade - warm * .35; target.b = shade - warm * .65;
+  } else if (['sand', 'dunes', 'desert', 'earth'].includes(type)) {
+    target.r = shade + warm * .45; target.g = shade; target.b = shade - warm;
+  } else {
+    target.r = shade; target.g = shade + warm * .2; target.b = shade + warm * .55;
+  }
+  return target;
+}
+
 /** Return unpremultiplied linear RGB plus coverage in alpha. This alpha only
  * blends ground materials; vegetation texture transparency is never touched. */
 export function sampleTerrainPaint(index, x, z, target = {}, withDetail = false) {
@@ -122,9 +144,11 @@ export function sampleTerrainPaint(index, x, z, target = {}, withDetail = false)
     const variation = 1 + (terrainPaintNoise(x * .31, z * .31, stamp.seed ?? 1) - .5) * stamp.variation * .7;
     const detail = withDetail && !(withDetail === 'shared-paving' && stamp.type === 'cobble') ? terrainSurfaceDetail(stamp.type, x, z, stamp.seed) : 1;
     const shade = variation * detail;
-    red += stamp.linear[0] * shade * amount;
-    green += stamp.linear[1] * shade * amount;
-    blue += stamp.linear[2] * shade * amount;
+    const tint = terrainSurfaceTint(stamp.type, x, z, tintScratch);
+    for (const channel of ['r', 'g', 'b']) tint[channel] = 1 + (tint[channel] - 1) * Math.min(1, stamp.variation * 4);
+    red += stamp.linear[0] * shade * tint.r * amount;
+    green += stamp.linear[1] * shade * tint.g * amount;
+    blue += stamp.linear[2] * shade * tint.b * amount;
     paving += stamp.type === 'cobble' ? amount : 0;
     snow += stamp.type === 'snow' ? amount : 0;
     alpha += amount;

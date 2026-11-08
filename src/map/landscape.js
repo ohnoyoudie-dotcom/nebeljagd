@@ -39,6 +39,23 @@ export const TERRAIN_TYPES = freeze([
   { id: 'snow', label: 'Schnee', color: '#dce7e8', variation: .08 },
   { id: 'cobble', label: 'Steinpflaster · Hellgrau', color: '#a8a69d', variation: .09 },
 ]);
+/** Way brushes store ordinary terrain stamps: existing export, undo and
+ * offline play keep the exact painted surface without a second map format. */
+export const PATH_BRUSH_PRESETS = freeze([
+  { id: 'earth', label: 'Erdweg · Wiese / Dorf', type: 'earth', color: '#99815b' },
+  { id: 'forest', label: 'Waldpfad · Laub und Erde', type: 'forest', color: '#74634a' },
+  { id: 'sand', label: 'Sandweg · Strand', type: 'sand', color: '#d7bd88' },
+  { id: 'desert', label: 'Wüstenpfad · Ocker', type: 'sand', color: '#b58b55' },
+  { id: 'snow', label: 'Festgetretener Schnee', type: 'snow', color: '#aabdc8' },
+  { id: 'gravel', label: 'Kiesweg · Fels / Heide', type: 'stone', color: '#a7a08c' },
+  { id: 'marsh', label: 'Schlammpfad · Moor', type: 'mud', color: '#81705b' },
+  { id: 'cobble', label: 'Steinpflaster', type: 'cobble', color: '#a0a38d' },
+]);
+export function pathBrushSettings(id) {
+  const preset = PATH_BRUSH_PRESETS.find(item => item.id === id) ?? PATH_BRUSH_PRESETS[0];
+  return { ...terrainSettings(preset.type), color: preset.color, hardness: .55, strength: 1, variation: .25 };
+}
+
 const typeById = new Map(VEGETATION_TYPES.map(type => [type.id, type]));
 const terrainById = new Map(TERRAIN_TYPES.map(type => [type.id, type]));
 const scatter = (density, entries, extras = {}) => ({ density, minDistance: 3,
