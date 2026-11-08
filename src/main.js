@@ -10,6 +10,7 @@ import { zoneAt as mapZoneAt, getWorldmapStats } from './map/model.js';
 import { loadRuntimeWorldmap, importRuntimeWorldmap } from './map/runtime-document.js';
 import { createCharacter } from './character.js';
 import { createPickups } from './pickups.js';
+import { rollLootRarity } from './loot-tiers.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
@@ -176,6 +177,7 @@ for (const object of world.destructibles ?? []) {
 const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
+    rollRarity: rollLootRarity,
     tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel(),
     projectilePrototypes: await loadProjectileModels() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
@@ -459,7 +461,7 @@ window.nebeljagdTestState = () => ({
   snowFootprints: snowFootprints.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
   levelUpEffect: levelUpEffect.inspect(),
-  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid }) => ({ id, x, z, opened, variant, model, lidRotation: lid.rotation.x, visible: group.visible })),
+  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid, texturedInteriorSurfaces }) => ({ id, x, z, opened, variant, model, texturedInteriorSurfaces, lidRotation: lid.rotation.x, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
     destructibles: world.destructibles?.map(({ id, name, kind, x, z, health, maxHealth, destroyed }) => ({ id, name, kind, x, z, health, maxHealth, destroyed })) ?? [],

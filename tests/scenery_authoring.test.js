@@ -60,7 +60,7 @@ test('individual placement only offers approved Tripo assets; old trees remain l
   assert.equal(getObjectDefinition('chest').defaultVariant, 'wood', 'legacy and loot defaults are independent of the palette');
   assert.equal(getObjectDefinition('rock').defaultVariant, 'granite');
   assert.equal(makeWorldObject('chest', [0, 0]).variant, 'wood');
-  assert.equal(isObjectAvailable('sword', 'steel'), true, 'gameplay definitions are retained');
+  assert.equal(isObjectAvailable('sword', 'steel'), false, 'old sword is retired from new placements; saved entries still resolve to the Tripo sword');
   assert.equal(PLACEMENT_OBJECT_CATALOG.find(definition => definition.kind === 'bow').defaultVariant, 'kit-tripo-ornate-bow');
   assert.equal(getObjectDefinition('bow').defaultVariant, 'wood', 'existing maps and chest bow drops retain their old default');
   assert.equal(makeWorldObject('bow', [0, 0]).variant, 'wood');
