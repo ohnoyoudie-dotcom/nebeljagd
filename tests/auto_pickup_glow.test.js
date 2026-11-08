@@ -304,6 +304,28 @@ test('rarity materials stay independent and dynamic glow resources are released 
   assert.equal(weapons.items[0].rarity, 'common');
 });
 
+test('popped chest loot reveals its terrain-conforming aura after landing and releases it on reset', () => {
+  const heightAt = (x, z) => .02 * x + .05 * Math.sin(x * 2) + z * .03;
+  const { actor, weapons } = setup([], { world: { heightAt } });
+  const drop = weapons.addDrop({ type: 'bow', rarity: 'epic', position: [6, 3], origin: [0, 0] });
+  assert.equal(drop.aura.inspect().visible, false, 'the aura waits for the flying chest reward to land');
+  for (let frame = 0; frame < 7; frame++) weapons.update(.1, frame * .1, actor.position);
+  assert.equal(drop.aura.inspect().visible, true, 'the completed .65-second pop must reveal its aura');
+  assert.deepEqual(drop.group.position.toArray(), [6, heightAt(6, 3), 3]);
+  const ground = drop.aura.group.getObjectByName('Beute – Licht auf dem Boden');
+  const vertices = ground.geometry.attributes.position, point = new THREE.Vector3();
+  ground.updateWorldMatrix(true, false);
+  for (let i = 0; i < vertices.count; i++) {
+    point.fromBufferAttribute(vertices, i).applyMatrix4(ground.matrixWorld);
+    const clearance = point.y - heightAt(point.x, point.z);
+    assert.ok(clearance > .02 && clearance < .10, 'landed aura follows the destination terrain');
+  }
+  weapons.reset();
+  assert.equal(drop.aura.inspect().visible, false);
+  assert.equal(drop.group.parent, null);
+  weapons.dispose();
+});
+
 
 test('translucent fog can reveal scenery without enabling pickup or chest interaction', () => {
   let visible = false;

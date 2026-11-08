@@ -64,6 +64,11 @@ def fixture():
     return value
 
 
+def stage(name):
+    REPORT['stage'] = name
+    print('STAGE', name, flush=True)
+
+
 def passed(name, evidence=None):
     REPORT['checks'].append({'name': name, 'evidence': evidence})
     print('PASS', name, flush=True)
@@ -109,7 +114,9 @@ def capture(page, name, zoom=None):
 
 
 def monitor(page):
-    page.set_default_timeout(150000)
+    page.set_default_timeout(15000)
+    original_wait = page.wait_for_function
+    page.wait_for_function = lambda *args, **kwargs: original_wait(*args, **{'timeout': 150000, **kwargs})
     page.on('pageerror', lambda error: REPORT['errors'].append(str(error)))
     page.on('console', lambda message: REPORT['errors'].append(message.text) if message.type == 'error' else None)
 
@@ -126,7 +133,7 @@ def record_document(name):
 
 try:
     testmap = fixture()
-    record_document('map-editor.html'); record_document('nebeljagd.html')
+    record_document('map-editor.html'); record_document('magebrawl.html')
     release = json.loads((RELEASE / 'release.json').read_text())
     REPORT['buildId'] = release['buildId']; REPORT['sourceCommit'] = release['sourceCommit']
     with sync_playwright() as pw:
@@ -140,7 +147,7 @@ try:
             context.on('request', lambda request: REPORT['unexpectedRequests'].append(request.url)
                 if request.url.startswith(('http:', 'https:')) and request.resource_type != 'document'
                 and not urlsplit(request.url).path.endswith('/favicon.ico') else None)
-            REPORT['stage'] = 'place and export Sternstab in actual editor'
+            stage('place and export Sternstab in actual editor')
             editor = context.new_page()
             editor.goto(URL + '/map-editor.html?start=project', wait_until='domcontentloaded')
             editor.wait_for_function('window.nebeljagdMapTestState')
@@ -159,6 +166,8 @@ try:
             star = edited['objects'][-1]
             assert star['kind'] == 'starStaff' and star['variant'] == 'kit-tripo-star-staff' and star['position'] == [-14, -16]
             assert edited['objects'][:-1] == imported['objects']
+            editor.locator('#editor-tab-more').click()
+            editor.locator('#editor-tool-more-map').click()
             with editor.expect_download() as downloaded:
                 editor.locator('#download-json').click()
             exported = OUT / 'editor-star-roundtrip.json'; downloaded.value.save_as(exported)
@@ -166,19 +175,22 @@ try:
             editor.locator('#json-file-input').set_input_files(str(exported))
             editor.wait_for_function('id=>nebeljagdMapTestState().map.objects.some(o=>o.id===id&&o.kind==="starStaff")', arg=star['id'])
             assert editor.evaluate('nebeljagdMapTestState().map') == edited
+            editor.locator('#editor-tab-objects').click()
+            editor.locator('#editor-tool-objects-place').click()
+            editor.locator('#palette-kind').select_option('starStaff')
             editor.screenshot(path=str(OUT / 'editor-sternstab.png'))
             REPORT['screenshots'].append(str(OUT / 'editor-sternstab.png'))
             passed('Sternstab is in the real palette; placement, JSON export and reload preserve its model and all prior objects', star)
 
-            REPORT['stage'] = 'real Spielen handoff'
+            stage('real Spielen handoff')
             with editor.expect_popup() as popup:
                 editor.locator('#playtest-world').click()
             game = popup.value
-            game.wait_for_url('**/nebeljagd.html?mapSource=editor*', wait_until='commit')
+            game.wait_for_url('**/magebrawl.html?mapSource=editor*', wait_until='commit')
             assert 'mapSource=editor' in game.url, game.url
             # Same real popup/document handoff, with the existing opt-in inspection
             # query before the first large scene initializes; no gameplay override.
-            game.goto(URL + '/nebeljagd.html?mapSource=editor&inspect=1&quality=low', wait_until='domcontentloaded')
+            game.goto(URL + '/magebrawl.html?mapSource=editor&inspect=1&quality=low', wait_until='domcontentloaded')
             game.wait_for_function('window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0')
             initial = state(game)
             assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
@@ -191,7 +203,7 @@ try:
             passed('Spielen transfers the exact edited map and loads both the uploaded moon projectile and styled trees',
                 {'moonModel': moon_model, 'treeCount': initial['world']['treeCount']})
 
-            REPORT['stage'] = 'dark chest and stronger loot aura'
+            stage('dark chest and stronger loot aura')
             move(game, 0, 10, math.pi)
             game.wait_for_function('nebeljagdTestState().nearChest==="qa-chest"')
             game.keyboard.press('e')
@@ -212,18 +224,21 @@ try:
                 assert aura['color'].lower() == colors[drop['rarity']], aura
                 assert aura['visible'] and aura['depthTested'] and 0 < aura['drawCalls'] <= 2, aura
                 assert aura['intensity'] >= .8 and aura['particleCount'] >= 3, aura
+                assert aura['groundConforming'] and aura['groundRefreshes'] >= 1, aura
             capture(game, 'rarity-ground-default', 1)
             capture(game, 'rarity-ground-detail', 1.6)
             passed('Real randomly rolled loot uses the stronger tier-colored, depth-tested aura without changing its rarity', drops)
 
-            REPORT['stage'] = 'styled trees and rounded snow roll'
+            stage('styled trees and rounded snow roll')
             move(game, -14, 8)
             game.locator('#pauseBtn').click()
             capture(game, 'tree-rounded-crown-bark', 1.3)
             tree = next(t for t in state(game)['world']['trees'] if t.get('asset') == 'tree1.glb')
             passed('The current derived tree loads at its authored position with the new crown and bark appearance', tree)
-            move(game, 38, -12, math.pi)
-            game.wait_for_function('nebeljagdTestState().character.snowWeight>.9')
+            stage('move to pure snow, outside the 24m biome blend')
+            move(game, 48, -12, math.pi)
+            game.wait_for_function('nebeljagdTestState().character.snowWeight>.9', timeout=15000)
+            stage('real keyboard roll and rounded snow capture')
             snow_before = state(game)['snowFootprints']
             player_before = snow_before['bySource'].get('player', {'footprintsCreated': 0})['footprintsCreated']
             game.keyboard.press('Space')
@@ -234,7 +249,7 @@ try:
             assert snow['rollTrackWidthMeters'] == 1 and snow['rollEndStyle'] == 'rounded-powder-caps'
             assert snow['rollCapLengthMeters'] > .4 and snow['singleInstancedDraw'] and snow['continuousRollDistance']
             capture(game, 'snow-roll-default', 1)
-            capture(game, 'snow-roll-rounded-detail', 2)
+            capture(game, 'snow-roll-rounded-detail', 1.6)
             frozen = state(game)['snowFootprints']; game.wait_for_timeout(100)
             assert state(game)['snowFootprints'] == frozen
             resume(game); game.keyboard.down('d')
@@ -242,7 +257,7 @@ try:
             game.keyboard.up('d')
             passed('A real roll leaves a wider continuous furrow with rounded end caps, no soles, and correct pause/walking behavior', snow)
 
-            REPORT['stage'] = 'actual star staff pickup, shot and wall collision'
+            stage('actual star staff pickup, shot and wall collision')
             move(game, -14, -16)
             if state(game)['equippedWeapon'] != 'starStaff':
                 game.keyboard.press('e')
@@ -254,6 +269,7 @@ try:
             target = next(a for a in equipped['practiceActors'] if a['id'] == 'practice-1')
             move(game, target['position']['x'] - 5, target['position']['z'], math.pi / 2)
             before = state(game)['combat']['damageHits']
+            stage('fire Sternstab at first practice opponent')
             game.keyboard.press('f')
             pause_when(game, 's.combat.effects.starProjectiles>0')
             flight = state(game)['combat']
@@ -277,10 +293,10 @@ try:
             passed('The uploaded Sternstab is picked up and fires its own star bolt; it hits one opponent and is blocked by a wall',
                 {'held': equipped['combat']['heldModel'], 'projectile': flight['effects'], 'hit': hit['lastDamage']})
 
-            REPORT['stage'] = 'uploaded moon mesh flight and return lock'
+            stage('uploaded moon mesh flight and return lock')
             move(game, -8, -16)
             game.keyboard.press('e')
-            game.wait_for_function('nebeljagdTestState().equippedWeapon==="moonStaff"')
+            game.wait_for_function('nebeljagdTestState().equippedWeapon==="moonStaff"', timeout=30000)
             move(game, -28, -26, math.pi / 2)
             game.keyboard.press('f')
             pause_when(game, 's.combat.special.moon?.distance>2&&s.combat.special.moon.mode==="outbound"')
@@ -301,7 +317,7 @@ try:
             game.wait_for_function('n=>nebeljagdTestState().combat.shotsFired>n&&nebeljagdTestState().combat.special.moon!==null', arg=shots)
             passed('The actual uploaded silver crescent flies, pauses, returns, locks repeat attacks and can be launched again', moon)
 
-            REPORT['stage'] = 'restart and final errors'
+            stage('restart and final errors')
             game.keyboard.press('Escape'); game.locator('#restartBtn').click()
             game.wait_for_function('nebeljagdTestState().phase==="playing"')
             restarted = state(game)
@@ -322,6 +338,8 @@ try:
                         candidate.screenshot(path=str(OUT / 'failure.png'))
                         if candidate == locals().get('game'):
                             (OUT / 'failure-state.json').write_text(json.dumps(state(candidate), indent=2))
+                        else:
+                            (OUT / 'failure-editor-state.json').write_text(json.dumps(candidate.evaluate('nebeljagdMapTestState()'), indent=2))
                         break
                     except Exception:
                         pass

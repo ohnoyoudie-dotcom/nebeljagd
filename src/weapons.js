@@ -307,7 +307,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       origin: definition.origin ?? [x, z] };
     if (pop) { ring.visible = halo.visible = false; group.position.set(item.origin[0], heightAt?.(...item.origin) ?? groundY, item.origin[1]); }
     item.halo = halo;
-    item.aura = createLootGlow(group, { rarity: stats.rarity, radius: 1.15, height: .68, phase: item.phase });
+    item.aura = createLootGlow(group, { rarity: stats.rarity, radius: 1.15, height: .68, phase: item.phase,
+      heightAt, surfaceSpace: scene });
     item.aura.setVisible(!pop);
     items.push(item);
     return item;
@@ -502,6 +503,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function returnToGround(item, { x, z, groundY }) {
     Object.assign(item, { x, z, groundY, position: [x, z], origin: [x, z], popAge: 1, collected: false });
     item.group.position.set(x, groundY, z);
+    item.aura.refreshGround();
     item.group.visible = true;
     item.floating.position.set(0, .75, 0);
     item.floating.rotation.set(0, 0, 0);
@@ -823,6 +825,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
         const t = item.popAge / .65, easeOut = 1 - (1 - t) ** 2;
         const originY = heightAt?.(...item.origin) ?? item.groundY;
         item.group.position.set(THREE.MathUtils.lerp(item.origin[0], item.x, easeOut), THREE.MathUtils.lerp(originY, item.groundY, easeOut), THREE.MathUtils.lerp(item.origin[1], item.z, easeOut));
+        if (t >= 1) item.aura.refreshGround();
         item.floating.position.y = .72 + Math.sin(t * Math.PI) * 1.8;
         item.floating.rotation.z = Math.sin(t * Math.PI) * 1.1;
         item.ring.visible = t >= 1;
@@ -831,7 +834,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       item.ring.scale.setScalar(1 + wave * .065); item.ringMaterial.opacity = .26 + (wave + 1) * .035;
       item.halo.scale.setScalar(1 + wave * .075);
       item.halo.material.opacity = item.glow.halo * (.9 + wave * .1);
-      item.aura.setVisible(item.popAge >= 1); item.aura.update(time);
+      item.aura.setVisible(item.popAge >= .65); item.aura.update(time);
       for (const entry of item.glowingMaterials) entry.material.emissiveIntensity = entry.strength * (1 + wave * .08);
       item.group.visible = (!position || (position.x - item.x) ** 2 + (position.z - item.z) ** 2 <= viewDistance ** 2)
         && (revealSceneryThroughFog || !isVisible || isVisible(item.group.position));

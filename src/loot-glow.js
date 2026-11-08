@@ -36,7 +36,8 @@ const clamp01 = value => Math.max(0, Math.min(1, value));
 /** A shared-geometry rarity aura for an existing ground-item group.
  * The owner controls range/LOS through the parent and hides collected items.
  * No light, texture, timer or gameplay state is created per item. */
-export function createLootGlow(parent, { rarity = 'common', radius = 1, height = .55, phase = 0 } = {}) {
+export function createLootGlow(parent, { rarity = 'common', radius = 1, height = .55, phase = 0,
+  heightAt = null, surfaceSpace = null } = {}) {
   const resources = acquireGeometry();
   const group = new THREE.Group(); group.name = 'Beute – Seltenheitsleuchten';
   group.userData.lootGlow = true;
@@ -76,7 +77,9 @@ export function createLootGlow(parent, { rarity = 'common', radius = 1, height =
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }`);
-  const ground = new THREE.Mesh(resources.ground, groundMaterial);
+  const conformsToGround = typeof heightAt === 'function';
+  const groundGeometry = conformsToGround ? new THREE.PlaneGeometry(2, 2, 6, 6) : resources.ground;
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
   ground.name = 'Beute – Licht auf dem Boden'; ground.rotation.x = -Math.PI / 2;
   ground.position.y = .047; ground.scale.setScalar(safeRadius * 1.35);
   group.add(ground);
@@ -132,7 +135,37 @@ export function createLootGlow(parent, { rarity = 'common', radius = 1, height =
   const sprites = new THREE.InstancedMesh(resources.sprites, spriteMaterial, MAX_MOTES + 1);
   sprites.name = 'Beute – sichtbarer Lichtsaum'; sprites.frustumCulled = false;
   group.add(sprites);
-  let tier = 'common', disposed = false;
+  let tier = 'common', disposed = false, groundRefreshes = 0;
+  const samplePoint = new THREE.Vector3();
+  const groundInverse = new THREE.Matrix4(), surfaceInverse = new THREE.Matrix4();
+
+  /** Resample only after placement, landing or swapping the drop.
+   * heightAt uses surfaceSpace coordinates (world coordinates if omitted).
+   * UVs preserve the undeformed grid, so repeated refreshes never drift. */
+  function refreshGround() {
+    if (disposed || !conformsToGround) return;
+    ground.updateWorldMatrix(true, false);
+    surfaceSpace?.updateWorldMatrix(true, false);
+    groundInverse.copy(ground.matrixWorld).invert();
+    if (surfaceSpace) surfaceInverse.copy(surfaceSpace.matrixWorld).invert();
+    else surfaceInverse.identity();
+    const positions = groundGeometry.attributes.position, uv = groundGeometry.attributes.uv;
+    for (let index = 0; index < positions.count; index++) {
+      const x = uv.getX(index) * 2 - 1, y = uv.getY(index) * 2 - 1;
+      samplePoint.set(x, y, 0).applyMatrix4(ground.matrixWorld).applyMatrix4(surfaceInverse);
+      const surfaceY = heightAt(samplePoint.x, samplePoint.z);
+      if (Number.isFinite(surfaceY)) {
+        samplePoint.y = surfaceY + .047;
+        if (surfaceSpace) samplePoint.applyMatrix4(surfaceSpace.matrixWorld);
+        samplePoint.applyMatrix4(groundInverse);
+        positions.setXYZ(index, samplePoint.x, samplePoint.y, samplePoint.z);
+      } else positions.setXYZ(index, x, y, 0);
+    }
+    positions.needsUpdate = true;
+    groundGeometry.computeVertexNormals();
+    groundGeometry.computeBoundingSphere();
+    groundRefreshes++;
+  }
 
   function setRarity(value = 'common') {
     if (disposed) return;
@@ -147,9 +180,11 @@ export function createLootGlow(parent, { rarity = 'common', radius = 1, height =
     return Boolean(group.parent);
   }
   setRarity(rarity);
+  refreshGround();
   return {
     group,
     setRarity,
+    refreshGround,
     setVisible(value) { if (!disposed) group.visible = Boolean(value); },
     update(time = 0, opacity = 1) {
       if (disposed) return;
@@ -163,12 +198,13 @@ export function createLootGlow(parent, { rarity = 'common', radius = 1, height =
       return { style: 'layered-rarity-aura', rarity: tier, color: `#${uniforms.uColor.value.getHexString()}`,
         intensity: uniforms.uIntensity.value, particleCount: visible ? PRESENTATION[tier].motes : 0,
         opacity: uniforms.uOpacity.value, visible, depthTested: true, drawCalls: visible ? 2 : 0,
-        radius: safeRadius, height: safeHeight };
+        radius: safeRadius, height: safeHeight, groundConforming: conformsToGround, groundRefreshes };
     },
     dispose() {
       if (disposed) return;
       disposed = true; group.removeFromParent();
       groundMaterial.dispose(); spriteMaterial.dispose();
+      if (conformsToGround) groundGeometry.dispose();
       if (--resources.references === 0) {
         resources.ground.dispose(); resources.sprites.dispose();
         if (shared === resources) shared = null;

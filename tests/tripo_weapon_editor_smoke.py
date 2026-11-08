@@ -34,7 +34,8 @@ WEAPONS = [
     ('moonStaff', 'kit-tripo-moon-staff', 'common', [68, -54]),
     ('bow', 'kit-tripo-ornate-bow', 'uncommon', [76, -54]),
 ]
-WEAPON_KINDS = {entry[0] for entry in WEAPONS}
+# Count existing star drops too; the six legacy fixtures remain covered here.
+WEAPON_KINDS = {entry[0] for entry in WEAPONS} | {'starStaff'}
 EXPECTED_DROPS = sum(obj['kind'] in WEAPON_KINDS for obj in BASE['objects']) + len(WEAPONS)
 REPORT = {'status': 'running', 'stage': 'launch browser', 'url': URL, 'checks': [], 'errors': [],
           'unexpectedRequests': [], 'screenshots': [], 'documents': [],
