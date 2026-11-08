@@ -81,11 +81,11 @@ test('new scatter refuses all four unlisted trees but still accepts rocks', () =
   assert.ok(rocks);
 });
 
-test('optional converted FBX GLB, when installed, has all real tree meshes and expected materials', () => {
+test('the corrected FBX tree has real alpha-cutout leaves, UVs and no duplicated branches', () => {
   const file = new URL('../assets/imported/user-trees/runtime/tree1.glb', import.meta.url);
   if (!existsSync(file)) return; // The new authoring option appears only after GitHub receives this file.
   const bytes = readFileSync(file);
-  assert.equal(hash(bytes), 'd5f1b1d5ef222b85544d6be5ad320fd4acf2fd2ee979295c6034fce4cc887561');
+  assert.equal(hash(bytes), 'c8c125554459d89352f23a1d9377899b145617fd589abe36cdbf7d228820c92c');
   assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
   assert.equal(bytes.readUInt32LE(4), 2);
   assert.equal(bytes.readUInt32LE(8), bytes.length);
@@ -93,8 +93,22 @@ test('optional converted FBX GLB, when installed, has all real tree meshes and e
   assert.equal(data.meshes.length, 3);
   assert.equal(data.materials.length, 3);
   const positions = data.meshes.flatMap(mesh => mesh.primitives).map(primitive => data.accessors[primitive.attributes.POSITION].count);
-  assert.equal(positions.reduce((total, n) => total + n, 0), 8140);
+  assert.equal(positions.reduce((total, n) => total + n, 0), 7256);
   const triangles = data.meshes.flatMap(mesh => mesh.primitives).reduce((total, primitive) => total + data.accessors[primitive.indices].count / 3, 0);
-  assert.equal(triangles, 8704);
+  assert.equal(triangles, 6992, '1194 alpha-masked leaf cards and no duplicate branch meshes');
+  assert.equal(data.images?.length, 1, 'packed original Blender leaf silhouette is inside the GLB');
+  assert.equal(data.images[0].mimeType, 'image/png');
+  assert.equal(data.textures?.length, 1);
+  const leaves = data.meshes.find(mesh => mesh.name.includes('Blätter'));
+  assert.ok(leaves, 'dedicated leaf geometry');
+  const leafPart = leaves.primitives[0];
+  assert.equal(data.accessors[leafPart.attributes.POSITION].count, 4776);
+  assert.equal(data.accessors[leafPart.attributes.TEXCOORD_0].count, 4776, 'every leaf card has reconstructed UV coordinates');
+  assert.equal(data.accessors[leafPart.indices].count / 3, 2388);
+  const material = data.materials[leafPart.material];
+  assert.equal(material.alphaMode, 'MASK', 'transparent parts of leaf cards must not render');
+  assert.equal(material.doubleSided, true, 'leaf cards must render from above and below');
+  assert.ok(material.alphaCutoff > 0 && material.alphaCutoff < .6);
+  assert.notEqual(material.pbrMetallicRoughness.baseColorTexture?.index, undefined);
   assert.ok(data.accessors.some(accessor => accessor.max?.[1] > 7.7), 'the mesh must contain its full tree canopy');
 });
