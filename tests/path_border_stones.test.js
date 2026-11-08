@@ -1,10 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { buildBorderStonePlacements, paintedPathCoverage, createPathBorderStones, BORDER_STONE_RULES } from '../src/path-border-stones.js';
 import { createTerrainPaintIndex } from '../src/map/terrain-paint.js';
 
-const stamp = (x, z, type = 'cobble', radius = 2.5) => ({ position: [x, z], radius, strength: 1, hardness: .72, seed: 1, type });
+// Existing authored paths predate the current .72 brush preset: their softer
+// .55 shoulder must still receive the same material-specific edge treatment.
+const stamp = (x, z, type = 'cobble', radius = 2.5) => ({ position: [x, z], radius, strength: 1, hardness: .55, seed: 1, type });
 const path = (kind = 'main', z = 0, length = 100) => ({ kind, width: 4, points: [[0, z], [length, z]] });
 const distanceToRoute = (point, route) => {
   let distance = Infinity;
@@ -58,9 +61,68 @@ test('worn borders have clustered missing sections and substantially different s
   assert.ok(diagnostics.gapCount >= 6);
   assert.ok(diagnostics.gaps.length <= 120, 'inspection data has a bounded size');
   for (const gap of diagnostics.gaps) for (const stone of contours.get(gap.contourId) ?? []) {
-    assert.ok(stone.along + stone.length / 2 <= gap.start || stone.along - stone.length / 2 >= gap.end,
+    assert.ok(stone.along + stone.alongSpan / 2 <= gap.start || stone.along - stone.alongSpan / 2 >= gap.end,
       'reported missing sections are real gaps in the placement geometry');
   }
+});
+
+test('surviving groups vary from lone stones to dense mixed-size remnants, with irregular long gaps', () => {
+  const diagnostics = {}, map = { paths: [path('main', 0, 240)] };
+  const stones = buildBorderStonePlacements(map, undefined, diagnostics), groups = new Map();
+  for (const stone of stones) {
+    assert.ok(stone.clusterId, 'each surviving stone identifies its actual group');
+    if (!groups.has(stone.clusterId)) groups.set(stone.clusterId, []);
+    groups.get(stone.clusterId).push(stone);
+  }
+  const histogram = {};
+  for (const group of groups.values()) histogram[group.length] = (histogram[group.length] ?? 0) + 1;
+  assert.ok(histogram[1] >= 2, 'solitary stones break up repeated group silhouettes');
+  assert.ok([...groups.values()].some(group => group.length >= 5), 'some longer pieces of the old border survive');
+  assert.ok(Object.keys(histogram).length >= 5, 'surviving groups cannot all repeat one small count');
+  const largerGroups = [...groups.values()].filter(group => group.length >= 5);
+  assert.ok(largerGroups.filter(group => Math.max(...group.map(p => p.length)) / Math.min(...group.map(p => p.length)) > 2).length >= 2,
+    'large and small stones occur within the same group, not only in separate groups');
+  const densities = [...groups.values()].filter(group => group.length >= 2).map(group => {
+    const start = Math.min(...group.map(p => p.along - p.alongSpan / 2));
+    const end = Math.max(...group.map(p => p.along + p.alongSpan / 2));
+    return group.length / (end - start);
+  });
+  assert.ok(Math.max(...densities) / Math.min(...densities) > 1.5, 'internal spacing changes the density of different surviving patches');
+  assert.ok(diagnostics.gaps.some(gap => gap.length > 4), 'some worn sections stay empty for several meters');
+  assert.ok(Math.max(...diagnostics.gaps.map(p => p.length)) - Math.min(...diagnostics.gaps.map(p => p.length)) > 3,
+    'gaps do not form a regular repeating rhythm');
+  assert.equal(diagnostics.clusterCount, groups.size);
+  assert.equal(diagnostics.singletonCount, histogram[1]);
+  assert.equal(diagnostics.largestCluster, Math.max(...Object.keys(histogram).map(Number)));
+  assert.deepEqual(diagnostics.clusterSizeHistogram, histogram);
+  assert.ok(diagnostics.clusters.length <= 120, 'cluster inspection remains bounded');
+  for (const cluster of diagnostics.clusters) {
+    const actual = groups.get(cluster.id);
+    assert.equal(cluster.count, actual.length, 'reported counts use admitted stones, not requested group sizes');
+    assert.ok(actual.every(stone => stone.contourId === cluster.contourId));
+    assert.ok(Math.abs(cluster.start - Math.min(...actual.map(p => p.along - p.alongSpan / 2))) < 1e-8);
+    assert.ok(Math.abs(cluster.end - Math.max(...actual.map(p => p.along + p.alongSpan / 2))) < 1e-8);
+  }
+  const repeated = {};
+  assert.deepEqual(buildBorderStonePlacements(map, undefined, repeated), stones);
+  assert.deepEqual(repeated, diagnostics, 'regeneration preserves groups, gaps and placements exactly');
+});
+
+test('all path materials already painted on the authored map receive borders without changing the map', () => {
+  const file = new URL('../worldmap.json', import.meta.url), original = readFileSync(file, 'utf8');
+  const map = JSON.parse(original), before = JSON.stringify(map);
+  const pathTypes = new Set(['earth', 'forest', 'sand', 'stone', 'mud', 'snow', 'cobble', 'rock']);
+  const authoredPathStamps = (map.landscape?.terrain ?? []).filter(p => pathTypes.has(p.type) && p.strength === 1 && p.hardness >= .5);
+  const expected = [...new Set(authoredPathStamps.map(p => p.type))].sort();
+  const stones = buildBorderStonePlacements(map);
+  assert.deepEqual([...new Set(stones.map(p => p.style))].sort(), expected,
+    'existing earth, forest, sand, snow, gravel and marsh paths cannot silently disappear from the border renderer');
+  for (const style of expected) assert.ok(stones.some(p => p.style === style && p.source === 'paint'));
+  const softGround = { ...map, paths: [], landscape: { ...map.landscape,
+    terrain: (map.landscape?.terrain ?? []).filter(p => p.hardness <= .35 && p.strength <= .8) } };
+  assert.deepEqual(buildBorderStonePlacements(softGround), [], 'the actual natural ground patches remain unbordered');
+  assert.equal(JSON.stringify(map), before);
+  assert.equal(readFileSync(file, 'utf8'), original);
 });
 
 test('different painted path materials share their outer contour and leave crossings open', () => {
@@ -148,6 +210,8 @@ test('stone instances align with actual sloping ground, filter water, cull and d
   assert.equal(stones.stats.batches, root.children.length);
   assert.ok(stones.stats.batches <= stones.stats.chunks * 3, 'shape variation stays within three instanced batches per chunk');
   assert.equal(stones.stats.byStyle.cobble.count, instances);
+  assert.equal(Object.entries(stones.stats.clusterSizeHistogram).reduce((sum, [size, count]) => sum + Number(size) * count, 0), instances,
+    'rendered group telemetry excludes stones filtered off land');
   assert.ok(stones.stats.byStyle.cobble.minLength > 0 && stones.stats.byStyle.cobble.maxLength > stones.stats.byStyle.cobble.minLength);
   assert.ok(stones.stats.samples.length <= 12, 'inspection remains bounded per style');
   stones.update({ x: 1000, z: 1000 }); assert.equal(stones.stats.visibleChunks, 0);

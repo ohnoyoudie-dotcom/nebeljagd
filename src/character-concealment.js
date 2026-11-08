@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 export const CHARACTER_CONCEALMENT_STYLE = 'white-hidden-rim-v1';
-export const CONCEALED_BODY_OPACITY = .24;
+export const CONCEALED_BODY_OPACITY = .22;
 
 /** Shared by the textured skin and its local read-through, so snow still covers
  * the same animated feet. The clipping plane is in world metres. */
@@ -51,7 +51,7 @@ export function createCharacterConcealment({ meshes, materials, snowClipHeight, 
     shader.uniforms.uLocalSilhouetteBaseline = baselineUniform;
     shader.fragmentShader = `uniform float uLocalConcealmentBlend, uLocalSilhouetteBaseline;\n${shader.fragmentShader}`
       .replace('#include <opaque_fragment>', `
-        diffuseColor.a = mix(uLocalSilhouetteBaseline, .24, uLocalConcealmentBlend);
+        diffuseColor.a = mix(uLocalSilhouetteBaseline, .12, uLocalConcealmentBlend);
         outgoingLight = mix(outgoingLight, vec3(1.0), uLocalConcealmentBlend);
         #include <opaque_fragment>`);
   };
@@ -67,7 +67,7 @@ export function createCharacterConcealment({ meshes, materials, snowClipHeight, 
     stencilWrite: true, stencilWriteMask: 0, stencilFuncMask: 1, stencilRef: 1, stencilFunc: THREE.NotEqualStencilFunc,
     stencilFail: THREE.KeepStencilOp, stencilZFail: THREE.KeepStencilOp, stencilZPass: THREE.KeepStencilOp,
   }), snowClipHeight, snowClipStrength);
-  const viewport = { value: new THREE.Vector2(1, 1) }, outlinePixels = { value: 2.2 };
+  const viewport = { value: new THREE.Vector2(1, 1) }, outlinePixels = { value: 1.6 };
   outlineMaterial.defines = { LOCAL_CONCEALMENT_OUTLINE: 1 };
   const outlineCompile = outlineMaterial.onBeforeCompile;
   const outlineKey = outlineMaterial.customProgramCacheKey();
@@ -124,7 +124,7 @@ export function createCharacterConcealment({ meshes, materials, snowClipHeight, 
       if (original.isSkinnedMesh) overlay.bindMatrixInverse.copy(original.bindMatrixInverse);
       if (role === 'outline' && renderer) {
         renderer.getDrawingBufferSize(viewport.value);
-        outlinePixels.value = 2.2 * renderer.getPixelRatio();
+        outlinePixels.value = 1.6 * renderer.getPixelRatio();
       }
     };
     overlay.frustumCulled = false;
@@ -139,7 +139,7 @@ export function createCharacterConcealment({ meshes, materials, snowClipHeight, 
   }
   let blend = 0;
   const state = { style: CHARACTER_CONCEALMENT_STYLE, active: false, blend: 0,
-    bodyOpacity: 1, fillOpacity: 0, outlineOpacity: 0, color: '#ffffff', outline: 'stencil-contour', outlineWidthPixels: 2.2,
+    bodyOpacity: 1, fillOpacity: 0, outlineOpacity: 0, color: '#ffffff', outline: 'stencil-contour', outlineWidthPixels: 1.6,
     localOnly: true, depthTest: false, snowClipped: false, baselineOpacity: .045, materialsRestored: true };
   function apply() {
     const bodyOpacity = 1 - blend * (1 - CONCEALED_BODY_OPACITY);
@@ -155,10 +155,10 @@ export function createCharacterConcealment({ meshes, materials, snowClipHeight, 
     }
     for (const [mesh, castShadow] of originalShadows) mesh.castShadow = castShadow && !translucent;
     blendUniform.value = blend;
-    outlineMaterial.opacity = blend * .98;
+    outlineMaterial.opacity = blend * .62;
     const overlayVisible = blend > 0 || baselineUniform.value > .001;
     for (const overlay of overlays) overlay.visible = overlay.userData.concealmentLayer === 'fill' ? overlayVisible : blend > 0;
-    Object.assign(state, { blend, bodyOpacity, fillOpacity: blend * .24, outlineOpacity: blend * .98,
+    Object.assign(state, { blend, bodyOpacity, fillOpacity: blend * .12, outlineOpacity: blend * .62,
       baselineOpacity: baselineUniform.value * (1 - blend),
       materialsRestored: blend === 0 && entries.every(([bodyMaterial, original]) =>
         bodyMaterial.opacity === original.opacity && bodyMaterial.transparent === original.transparent

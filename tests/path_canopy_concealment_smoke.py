@@ -254,7 +254,7 @@ try:
             assert hidden['concealment'] > .01 and hidden['hiddenFromOtherPlayers']
             assert visual['style'] == 'white-hidden-rim-v1' and visual['active'] and visual['localOnly']
             assert visual['color'] == '#ffffff' and visual['outline'] == 'stencil-contour'
-            assert visual['bodyOpacity'] < .3 and .15 < visual['fillOpacity'] < .4 and visual['outlineOpacity'] > .9
+            assert visual['bodyOpacity'] < .3 and .11 < visual['fillOpacity'] < .13 and .6 < visual['outlineOpacity'] < .64
             assert not visual['depthTest'] and not visual['materialsRestored']
             capture(page,'white-hidden-character-default',1)
             if not SUCCESSOR:

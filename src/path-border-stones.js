@@ -5,20 +5,20 @@ import { pathVergeOffset } from './terrain-art.js';
 export const BORDER_STONE_RULES = Object.freeze({ spacing: .49, maximum: 6000, contourLevel: .5, grid: .32, maximumCells: 180000 });
 const hash = (x, z, salt = 0) => { const n = Math.sin(x * 12.9898 + z * 78.233 + salt * 37.17) * 43758.5453; return n - Math.floor(n); };
 const profiles = Object.freeze({
-  cobble: { color: '#969889', width: [.17,.53], length: [.25,.94], height: [.075,.23], cluster: [1.8,4.5], gap: [.85,2.7], scatter: .12 },
-  earth: { color: '#91866b', width: [.12,.35], length: [.17,.58], height: [.045,.13], cluster: [.8,2.2], gap: [1.3,3.8], scatter: .18 },
-  forest: { color: '#53624a', width: [.12,.34], length: [.19,.62], height: [.035,.10], cluster: [.7,1.8], gap: [1.8,4.6], scatter: .17 },
-  sand: { color: '#bea77a', width: [.15,.46], length: [.23,.78], height: [.04,.13], cluster: [.8,2.2], gap: [1.7,4.5], scatter: .19 },
-  stone: { color: '#737b78', width: [.10,.32], length: [.13,.49], height: [.04,.14], cluster: [1.2,3.1], gap: [.8,2.4], scatter: .16 },
-  mud: { color: '#535747', width: [.13,.38], length: [.19,.66], height: [.025,.085], cluster: [.7,1.9], gap: [1.6,4.1], scatter: .17 },
-  snow: { color: '#bdc8c7', width: [.13,.35], length: [.19,.56], height: [.025,.08], cluster: [.7,1.6], gap: [2.0,4.6], scatter: .12 },
-  rock: { color: '#707367', width: [.16,.46], length: [.24,.76], height: [.07,.20], cluster: [.9,2.5], gap: [1.1,3.2], scatter: .16 },
+  cobble: { color: '#969889', width: [.17,.53], length: [.25,.94], height: [.075,.23], gap: [.85,2.7], scatter: .12 },
+  earth: { color: '#91866b', width: [.12,.35], length: [.17,.58], height: [.045,.13], gap: [1.3,3.8], scatter: .18 },
+  forest: { color: '#53624a', width: [.12,.34], length: [.19,.62], height: [.035,.10], gap: [1.8,4.6], scatter: .17 },
+  sand: { color: '#bea77a', width: [.15,.46], length: [.23,.78], height: [.04,.13], gap: [1.7,4.5], scatter: .19 },
+  stone: { color: '#737b78', width: [.10,.32], length: [.13,.49], height: [.04,.14], gap: [.8,2.4], scatter: .16 },
+  mud: { color: '#535747', width: [.13,.38], length: [.19,.66], height: [.025,.085], gap: [1.6,4.1], scatter: .17 },
+  snow: { color: '#bdc8c7', width: [.13,.35], length: [.19,.56], height: [.025,.08], gap: [2.0,4.6], scatter: .12 },
+  rock: { color: '#707367', width: [.16,.46], length: [.24,.76], height: [.07,.20], gap: [1.1,3.2], scatter: .16 },
 });
 const between = (range, random) => range[0] + (range[1] - range[0]) * random;
-// Path presets are firm, fully painted strokes (.72 / 1). Soft natural-ground
-// brushes and regional biome polygons must not acquire a decorative stone ring.
+// Older saved path strokes use hardness .55, newer presets .72. Both are
+// fully painted; soft natural ground (.35 / .8) stays free of decorative rings.
 const isPathPaint = stamp => Boolean(profiles[stamp.type]) && (stamp.type === 'cobble'
-  || (stamp.hardness ?? .3) >= .6 && (stamp.strength ?? .8) >= .85);
+  || (stamp.hardness ?? .3) >= .5 && (stamp.strength ?? .8) >= .85);
 
 /** Ordered visible coverage. null selects the union of all path-like paint;
  * keeping the old default also supports callers inspecting cobble alone. */
@@ -113,6 +113,24 @@ function distanceToRoute(point, path) {
   return closest;
 }
 
+function summarizeClusters(placements) {
+  const groups = new Map(), histogram = {};
+  for (const stone of placements) {
+    let group = groups.get(stone.clusterId);
+    if (!group) {
+      group = { id: stone.clusterId, contourId: stone.contourId, style: stone.style, count: 0, start: Infinity, end: -Infinity };
+      groups.set(stone.clusterId, group);
+    }
+    group.count++;
+    group.start = Math.min(group.start, stone.along - stone.alongSpan / 2);
+    group.end = Math.max(group.end, stone.along + stone.alongSpan / 2);
+  }
+  let largest = 0;
+  for (const group of groups.values()) { histogram[group.count] = (histogram[group.count] ?? 0) + 1; largest = Math.max(largest, group.count); }
+  return { clusterCount: groups.size, singletonCount: histogram[1] ?? 0, largestCluster: largest,
+    clusterSizeHistogram: histogram, clusters: [...groups.values()].slice(0,120) };
+}
+
 /** One visible union contour, with surviving clusters and genuinely empty worn
  * sections. Every variation is seeded from the contour/world, never Math.random. */
 export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(map), diagnostics = {}) {
@@ -138,16 +156,32 @@ export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(
     };
     while (clusterStart < total && placements.length < BORDER_STONE_RULES.maximum) {
       const startPoint = at(clusterStart), clusterStyle = owner ? owner.kind === 'main' ? 'cobble' : 'earth' : paintStyle(index, startPoint.x, startPoint.z);
-      const clusterProfile = profiles[clusterStyle], clusterEnd = Math.min(total, clusterStart + between(clusterProfile.cluster, hash(seed, ordinal, 11)));
-      let along = clusterStart + .15;
-      while (along < clusterEnd && placements.length < BORDER_STONE_RULES.maximum) {
-        const point = at(along), style = owner ? clusterStyle : paintStyle(index, point.x, point.z), profile = profiles[style];
-        const random = hash(point.x, point.z), length = between(profile.length, Math.pow(random, 1.15));
-        const width = between(profile.width, hash(point.x, point.z, 3));
-        const center = along; along += length * .72 + .10 + hash(point.x, point.z, 1) * .15;
-        // Entire stones stay outside the deliberately missing sections.
-        if (center - length / 2 < clusterStart || center + length / 2 > clusterEnd) continue;
-        const lateral = (hash(point.x, point.z, 4) - .5) * profile.scatter * 2;
+      const clusterProfile = profiles[clusterStyle], groupChoice = hash(seed, ordinal, 11);
+      // Select counts, not a repeating length of curb: lone remnants, small
+      // handfuls and occasional surviving piles have visibly different density.
+      const countRandom = hash(seed, ordinal, 13);
+      const targetCount = groupChoice < .26 ? 1 : groupChoice < .53 ? 2 + Math.floor(countRandom * 2)
+        : groupChoice < .80 ? 4 + Math.floor(countRandom * 3) : 7 + Math.floor(countRandom * 5);
+      const clusterId = `${contourId}:${ordinal}`, density = .35 + hash(seed, ordinal, 19) * 2.4;
+      const largeMember = Math.floor(hash(seed,ordinal,23) * targetCount);
+      const smallMember = (largeMember + 1 + Math.floor(hash(seed,ordinal,29) * Math.max(1,targetCount-1))) % targetCount;
+      let edge = clusterStart, clusterEnd = clusterStart;
+      for (let member = 0; member < targetCount && edge < total && placements.length < BORDER_STONE_RULES.maximum; member++) {
+        const anchor = at(edge), style = owner ? clusterStyle : paintStyle(index,anchor.x,anchor.z), profile = profiles[style];
+        const random = hash(seed,ordinal * 17 + member,31);
+        const size = targetCount >= 4 && member === largeMember ? .86 + random * .14
+          : targetCount >= 4 && member === smallMember ? random * .12 : Math.pow(random,1.3);
+        const length = between(profile.length,size), width = between(profile.width,size * .68 + hash(seed,ordinal * 17 + member,37) * .32);
+        const turn = (hash(seed,ordinal * 17 + member,41)-.5) * (style === 'cobble' ? 1.8 : 2.8);
+        // Include the rotated silhouette in the gap bounds, including its width.
+        const alongSpan = Math.max(length,1.2 * (Math.abs(Math.cos(turn))*length + Math.abs(Math.sin(turn))*width));
+        const center = edge + alongSpan / 2;
+        if (center + alongSpan / 2 > total) break;
+        const point = at(center);
+        clusterEnd = center + alongSpan / 2;
+        edge = clusterEnd + .025 + Math.pow(hash(seed,ordinal * 17 + member,43),2) * .32 * density;
+        const drift = (hash(seed,ordinal,47)-.5) * profile.scatter * 2;
+        const lateral = drift + (hash(point.x,point.z,4)-.5) * profile.scatter * 2.2;
         const x = point.x + point.dz * lateral, z = point.z - point.dx * lateral;
         if (routes.some(p => p !== owner && distanceToRoute([x,z], p) < p.width / 2 + (p.kind === 'bridge' ? .2 : .04))) {
           diagnostics.suppressed.crossing++; continue;
@@ -161,14 +195,16 @@ export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(
         if (nearby) { diagnostics.suppressed.overlap++; continue; }
         const shapeRandom = hash(point.x, point.z, 10);
         const shape = ['mud','snow','stone'].includes(style) ? shapeRandom < .65 ? 2 : Math.floor(shapeRandom * 2) : Math.floor(shapeRandom * 3);
-        const stone = { x, z, contourX: point.x, contourZ: point.z, along: center, contourId,
-          direction: Math.atan2(point.dx, point.dz) + (hash(point.x, point.z, 2) - .5) * (style === 'cobble' ? 1.15 : 2.3),
+        const stone = { x, z, contourX: point.x, contourZ: point.z, along: center, alongSpan, contourId, clusterId,
+          direction: Math.atan2(point.dx, point.dz) + turn,
           width, length, height: between(profile.height, hash(point.x, point.z, 5)),
           tint: .74 + hash(point.x, point.z, 6) * .46, source, style, shape, radius };
         placements.push(stone);
         const key = `${gx},${gz}`; if (!occupied.has(key)) occupied.set(key, []); occupied.get(key).push(stone);
       }
-      const gapEnd = Math.min(total, clusterEnd + between(clusterProfile.gap, hash(seed, ordinal, 17)));
+      const gapRandom = hash(seed,ordinal,17), longGap = hash(seed,ordinal,53) < .29;
+      const gapLength = between(clusterProfile.gap,gapRandom) * (longGap ? 2.2 + hash(seed,ordinal,59) * 1.3 : .6 + hash(seed,ordinal,61) * .9);
+      const gapEnd = Math.min(total,clusterEnd + gapLength);
       if (gapEnd - clusterEnd > .3) {
         diagnostics.gapCount++;
         // Bounded inspect data; the total still reports every deliberate gap.
@@ -183,6 +219,7 @@ export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(
     }), 'route', path);
   }
   for (const points of paintEdges(index)) append(points, 'paint');
+  Object.assign(diagnostics,summarizeClusters(placements));
   return placements;
 }
 
@@ -213,6 +250,7 @@ function stoneGeometry(variant) {
 
 export function createPathBorderStones(root, map, heightAt, isLand = () => true, index) {
   const diagnostics = {}, placements = buildBorderStonePlacements(map,index,diagnostics).filter(p => isLand(p.x,p.z)), chunks = new Map();
+  Object.assign(diagnostics,summarizeClusters(placements));
   const geometries = [0,1,2].map(stoneGeometry), material = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, roughness: .98 });
   const transform = new THREE.Object3D(), tint = new THREE.Color(), up = new THREE.Vector3(0,1,0), normal = new THREE.Vector3();
   const yaw = new THREE.Quaternion(), ground = new THREE.Quaternion(), byStyle = {};
@@ -238,7 +276,7 @@ export function createPathBorderStones(root, map, heightAt, isLand = () => true,
     mesh.castShadow = mesh.receiveShadow = true; mesh.computeBoundingBox(); mesh.computeBoundingSphere(); root.add(mesh); chunk.meshes.push(mesh);
   }
   const sample = p => ({ x:p.x,z:p.z,contourX:p.contourX,contourZ:p.contourZ,source:p.source,style:p.style,
-    width:p.width,length:p.length,height:p.height,shape:p.shape,along:p.along,contourId:p.contourId });
+    width:p.width,length:p.length,height:p.height,shape:p.shape,along:p.along,alongSpan:p.alongSpan,contourId:p.contourId,clusterId:p.clusterId });
   const samples = Object.keys(byStyle).flatMap(style => placements.filter(p=>p.style===style).slice(0,12).map(sample));
   return { update(player, range = 100) {
       for (const chunk of chunks.values()) for (const mesh of chunk.meshes) mesh.visible = Math.hypot(player.x-chunk.x,player.z-chunk.z) < range+46;

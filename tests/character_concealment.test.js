@@ -26,10 +26,10 @@ test('concealment smoothly whitens only the local presentation and restores orig
   const color = material.color.clone(), emissive = material.emissive.clone();
   const first = effect.update(1 / 60, { concealed: true });
   assert.ok(first.blend > 0 && first.blend < 1);
-  assert.ok(first.bodyOpacity > .24 && first.bodyOpacity < 1);
+  assert.ok(first.bodyOpacity > .22 && first.bodyOpacity < 1);
   const hidden = settle(effect, true);
-  assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .24) < 1e-10);
-  assert.equal(hidden.fillOpacity, .24); assert.equal(hidden.outlineOpacity, .98);
+  assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .22) < 1e-10);
+  assert.equal(hidden.fillOpacity, .12); assert.equal(hidden.outlineOpacity, .62);
   assert.equal(hidden.color, '#ffffff'); assert.equal(hidden.localOnly, true);
   assert.equal(material.transparent, true); assert.equal(material.depthWrite, false);
   assert.equal(mesh.castShadow, false);
