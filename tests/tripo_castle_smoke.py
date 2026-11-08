@@ -155,7 +155,7 @@ try:
                 'mode': 'Generated standalone HTML served over HTTP, not file://',
                 'files': {name: {'sha256': hashlib.sha256((ROOT/'welt'/name).read_bytes()).hexdigest(),
                                  'bytes': (ROOT/'welt'/name).stat().st_size}
-                          for name in ['map-editor.html', 'index.html', 'nebeljagd.html']},
+                          for name in ['map-editor.html', 'index.html', 'magebrawl.html']},
                 'unexpectedResourceRequests': []}
 
             def check_request(request):
@@ -164,7 +164,7 @@ try:
                     return
                 if (parsed.scheme, parsed.netloc) == (origin.scheme, origin.netloc):
                     if ((request.is_navigation_request() and parsed.path in
-                         ['/map-editor.html', '/index.html', '/nebeljagd.html'])
+                         ['/map-editor.html', '/index.html', '/magebrawl.html'])
                             or parsed.path == '/favicon.ico'):
                         return
                 REPORT['delivery']['unexpectedResourceRequests'].append(request.url)

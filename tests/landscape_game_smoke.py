@@ -16,7 +16,7 @@ from playwright.sync_api import sync_playwright, expect
 
 ROOT=Path(__file__).resolve().parents[1]
 URL=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:4174').rstrip('/')
-GAME_PATH=os.environ.get('NEBELJAGD_GAME_PATH','/nebeljagd.html')
+GAME_PATH=os.environ.get('NEBELJAGD_GAME_PATH','/magebrawl.html')
 contract=json.loads(subprocess.check_output(['node','--input-type=module','-e',
     "import {VEGETATION_TYPES,WIND_DEFAULTS} from './src/map/landscape.js';console.log(JSON.stringify({types:VEGETATION_TYPES,wind:WIND_DEFAULTS}));"],cwd=ROOT))
 TYPES={item['id']:item for item in contract['types']}

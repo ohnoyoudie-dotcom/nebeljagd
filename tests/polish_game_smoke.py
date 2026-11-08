@@ -14,7 +14,7 @@ from playwright.sync_api import sync_playwright, expect
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
-GAME = os.environ.get('NEBELJAGD_GAME_PATH', '/nebeljagd.html')
+GAME = os.environ.get('NEBELJAGD_GAME_PATH', '/magebrawl.html')
 MINIMAP_ONLY = '--minimap-only' in sys.argv
 previous = json.loads((ROOT / 'docs/polish-game-check.json').read_text()) if MINIMAP_ONLY else None
 checks, errors, screenshots = (previous['checks'], [], previous['screenshots']) if previous else ([], [], [])

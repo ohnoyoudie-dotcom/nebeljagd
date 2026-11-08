@@ -73,5 +73,5 @@ Breite wurden geprüft und die Screenshots visuell gesichtet. Die Touch-Prüfung
 ersetzt keine Leistungsprüfung auf einem physischen iPad.
 
 Die geprüften Dateien stehen auf Branch `work` unter `welt/`. Nach dem
-Aktualisieren `welt/map-editor.html` öffnen; `welt/nebeljagd.html` bleibt daneben.
+Aktualisieren `welt/map-editor.html` öffnen; `welt/magebrawl.html` bleibt daneben.
 Die öffentliche Pages-Veröffentlichung auf `main` wird dadurch nicht geändert.

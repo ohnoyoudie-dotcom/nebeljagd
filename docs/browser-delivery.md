@@ -292,7 +292,7 @@ Veröffentlichungscommit: `a786ff0cdb5ae8df8b1014d1b788e585df669740`, ausschlie�
 `preview/` auf `main`; Quellstand auf `work`: `d5e20584aab7ff6149c63c5e5f95b1b6c2e8e5ec`.
 Build: `03d805c5e9d5`. 337 Node-Tests, sieben Browserprüfungen, Asset- und
 Kartenprüfung bestanden. Der echte Übergang von `/preview/map-editor.html`
-zu `/preview/nebeljagd.html` übernimmt auch den Versionsparameter des Editorlinks.
+zu `/preview/magebrawl.html` übernimmt auch den Versionsparameter des Editorlinks.
 Details und Prüfbericht: [Waffenwechsel](weapon-swap.md).
 
 [GitHub Pages](https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/runs/41311535345) hat genau diesen Commit erfolgreich bereitgestellt.
@@ -341,7 +341,7 @@ ein Hosting-Dienst wurde noch nicht angelegt.
 GitHub Pages und das Öffnen einer lokalen HTML-Datei führen den Anmeldeserver
 nicht aus. Ohne Server erklärt die Startseite den Offline-Modus und bietet
 den eigenständigen Editor an; Spiel und Editor lassen sich weiterhin direkt
-öffnen. Das ZIP `nebeljagd-welt-und-editor.zip` ist ein Offline-Paket und richtet
+öffnen. Das ZIP `magebrawl-welt-und-editor.zip` ist ein Offline-Paket und richtet
 keinen Schulserver ein.
 
 ## Aktuellen Browserstand bauen
@@ -353,12 +353,12 @@ synchronisiert ihn automatisch nach `welt/`:
 - `welt/teacher.html`: Lehrkraftbereich mit Codeverwaltung und Editor-Link.
 - `welt/lobby.html`: Einstieg in die Übungswiese nach Anmeldung.
 - `welt/map-editor.html`: aktueller eigenständiger Editor.
-- `welt/nebeljagd.html`: eigenständiges Spiel, auch für Editor-Spieltests.
-- `welt/nebeljagd-welt-und-editor.zip`: Browserdateien, Kartendaten und Anleitung.
+- `welt/magebrawl.html`: eigenständiges Spiel, auch für Editor-Spieltests.
+- `welt/magebrawl-welt-und-editor.zip`: Browserdateien, Kartendaten und Anleitung.
 
 `welt/index.html` ist in diesem neuen Stand die Startseite. Sie darf beim
 Veröffentlichen nicht durch eine Kopie des Spiels ersetzt werden. **In 3D testen**
-öffnet aus dem gebauten Editor `nebeljagd.html?mapSource=editor` und übergibt den
+öffnet aus dem gebauten Editor `magebrawl.html?mapSource=editor` und übergibt den
 Entwurf. In Vite wird stattdessen `game.html?mapSource=editor` verwendet.
 
 `welt/release.json` enthält die Build-Kennung sowie Größen und SHA-256-Werte
@@ -397,13 +397,13 @@ Die veröffentlichte Ausgabe liegt unter einem stabilen GitHub-Pages-Pfad auf
 `main`. Dessen `preview/`-Dateien sind von den neuen Klassenserver-Dateien in
 `welt/` auf dem Entwicklungsbranch getrennt:
 
-- [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
+- [Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/magebrawl.html)
 - [Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/)
 - [Aktueller Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=476f9d0)
 
 Der veröffentlichte Ordner `preview/` enthält den eigenständigen Build und
 Kartendaten. Die Quelldateien und die fortlaufende Entwicklung bleiben auf
-`work`. Der [ZIP-Download aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+`work`. Der [ZIP-Download aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/magebrawl-welt-und-editor.zip)
 enthält jeweils den dort eingecheckten Browserstand; lokale Änderungen sind
 vor einer Übernahme auf diesen Branch darin noch nicht enthalten.
 
@@ -438,9 +438,9 @@ zwischengespeicherten älteren Editor.
 Die folgenden GitHub-Pages-Adressen verwenden weiterhin `main` und wurden durch
 die neue Klassenportal-Vorbereitung nicht aktualisiert:
 
-- [Älterer Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/)
-- [Älterer Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html)
-- [Älteres Offline-Paket](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip)
+- [Älterer Spieleinstieg](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/)
+- [Älterer Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html)
+- [Älteres Offline-Paket](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/magebrawl-welt-und-editor.zip)
 
 Der erste veröffentlichte Stand wurde mit Commit `c79e642` auf `main` unter
 `welt/` ergänzt. Commit `63d2a73` aktualisierte diese Dateien um taktische Sicht,

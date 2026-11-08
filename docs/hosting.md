@@ -1,7 +1,7 @@
-# Nebeljagd mit einer festen Internetadresse
+# Magebrawl mit einer festen Internetadresse
 
 Für den ersten gemeinsamen Schulserver ist **Render** vorbereitet. Der Dienst
-startet Nebeljagd aus GitHub und stellt eine HTTPS-Adresse bereit. Schüler und
+startet Magebrawl aus GitHub und stellt eine HTTPS-Adresse bereit. Schüler und
 Lehrkräfte benutzen später dieselbe Adresse. Visual Studio, Node.js und
 Terminalbefehle werden auf ihren Geräten dafür nicht benötigt.
 
@@ -12,7 +12,7 @@ Terminalbefehle werden auf ihren Geräten dafür nicht benötigt.
    `ohnoyoudie-dotcom/nebeljagd` geben.
 2. **New → Blueprint** wählen, dieses Repository und den Branch **work**
    auswählen. Render liest die Datei `render.yaml`.
-3. Bei **NEBELJAGD_INITIAL_TEACHER_PASSWORD** dein gewünschtes Lehrkraft-Passwort
+3. Bei **MAGEBRAWL_INITIAL_TEACHER_PASSWORD** dein gewünschtes Lehrkraft-Passwort
    mit mindestens 12 Zeichen eingeben. Dieses Passwort gehört ausschließlich
    in das geschützte Einstellungsfeld bei Render, nicht in GitHub oder den Chat.
 4. Den von Render angezeigten Preis für Dienst und Speicher prüfen. Erst mit

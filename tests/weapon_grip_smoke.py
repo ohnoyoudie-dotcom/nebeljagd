@@ -274,7 +274,7 @@ def run(url):
             else:
                 route.continue_()
 
-        context.route(re.compile('^' + re.escape(url + '/nebeljagd.html') + r'\?'), inspect_navigation)
+        context.route(re.compile('^' + re.escape(url + '/magebrawl.html') + r'\?'), inspect_navigation)
         editor = context.new_page()
         try:
             stage('Place real staves in the standalone editor without changing the source map')
@@ -306,7 +306,7 @@ def run(url):
             game.bring_to_front()
             game.wait_for_function('window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0')
             expect(game.locator('#errorScreen')).to_be_hidden()
-            record_document(url, 'nebeljagd.html')
+            record_document(url, 'magebrawl.html')
             assert parse_qs(urlsplit(game.url).query).get('v') == ['grip-check']
             current = state(game)
             assert current['world']['source'] == 'editor' and current['world']['objects'] == draft['objects']

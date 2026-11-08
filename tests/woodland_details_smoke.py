@@ -59,7 +59,7 @@ with sync_playwright() as pw:
         p.route('**/favicon.ico',lambda route:route.fulfill(status=204))
         p.on('pageerror',lambda e:browser_error(str(e)))
         p.on('console',lambda m:browser_error(m.text) if m.type=='error' else None)
-        p.goto(BASE+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
+        p.goto(BASE+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
         print('STAGE waiting for generated world',flush=True)
         p.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         print('STAGE starting round',flush=True)

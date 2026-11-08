@@ -1,4 +1,4 @@
-# Nebeljagd · Die Nebelinsel
+# Magebrawl · Magie der Elemente
 
 Der gemeinsame Einstieg liegt unter [`welt/index.html`](welt/index.html):
 Schüler betreten mit dem automatisch erzeugten Lehrkraft-Code eine grüne
@@ -59,7 +59,7 @@ mit Holzschaft, Metallspitze und drei Federn.
 
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
-[`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
+[`welt/magebrawl.html`](welt/magebrawl.html) das Spiel.
 [`welt/avatar-preview.html`](welt/avatar-preview.html) zeigt den neu hochgeladenen
 Spieleravatar mit Nahansicht, Spielkamera und Animations-Zeitlupe. Die zentrale Projektkarte
 bleibt [`worldmap.json`](worldmap.json) im Projektstamm.
@@ -86,7 +86,7 @@ Der aktuelle Spieleravatar ist die feste Stilreferenz für neue Modelle und
 Tripo-Vorlagen. Gemeinsame Formen, Materialien und Prüfbedingungen stehen in
 [`docs/art-style.md`](docs/art-style.md).
 
-Nebeljagd ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
+Magebrawl ist ein spielbarer 3D-Fantasy-Prototyp für den Browser. Die große Insel
 wird direkt aus [`worldmap.json`](worldmap.json) erzeugt: rund **1,02 km²**
 Land mit vier Landschaften, zwei getrennten Landflächen und zwei Brücken. Der
 animierte Spieleravatar, Bogen, Schwert, Sammelgegenstände und Versteckgras sind
@@ -115,9 +115,9 @@ und [`docs/reference-terrain.md`](docs/reference-terrain.md).
 Vorgemerkte Pakete: [`docs/next-packages.md`](docs/next-packages.md).
 
 Ältere Veröffentlichung unter `welt/` (ohne die neuen Landschaftswerkzeuge):
-[Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/) ·
-[Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html) ·
-[ZIP herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip).
+[Spiel](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) ·
+[Editor](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html) ·
+[ZIP herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/magebrawl-welt-und-editor.zip).
 Bereitstellung und Aktualisierung: [`docs/browser-delivery.md`](docs/browser-delivery.md).
 
 ## Starten und Bauen
@@ -159,10 +159,10 @@ Der Build erzeugt Einzeldateien mit eingebettetem JavaScript, CSS und allen
 benötigten Modellen:
 
 - **`dist/index.html`**: Startseite für Schüler und Lehrkräfte.
-- **`dist/nebeljagd.html`**: Spiel direkt im Browser öffnen.
+- **`dist/magebrawl.html`**: Spiel direkt im Browser öffnen.
 - **`dist/map-editor.html`**: Editor direkt im Browser öffnen.
 
-**`dist/nebeljagd-welt-und-editor.zip`** bündelt Startseite, Spiel, Editor,
+**`dist/magebrawl-welt-und-editor.zip`** bündelt Startseite, Spiel, Editor,
 Avatar-Vorschau, Kartendaten, SVG, Schema und eine kurze Anleitung. Das ZIP entpacken und die Dateien im
 gemeinsamen Ordner lassen.
 
@@ -263,7 +263,7 @@ prozedurale Projektquellen. Die hochgeladenen Rei-Bäume, Büsche und Blumen sin
 weiter eingebunden, unter anderem nahe Auenwacht. Unveränderte Quelldateien,
 Herkunft und Materialanpassungen: [`assets/imported/rei/`](assets/imported/rei/README.md).
 Die hochgeladene Rei-Gras-GLB enthielt keine Halme; die sieben Pinseltypen
-verwenden deshalb Projektgeometrie. Das vorhandene Nebeljagd-Umwelt-Kit ergänzt
+verwenden deshalb Projektgeometrie. Das vorhandene Magebrawl-Umwelt-Kit ergänzt
 echtes GLB-Gras, vier Bäume einschließlich einer Herbsteiche, zwei Felsen,
 Mauer, Zaun, Ruinenbogen und Holzkiste. Zehn Holzkisten sind weiterhin auf der Karte
 verteilt. Die älteren Fachwerkhäuser bleiben für vorhandene Karten importierbar;

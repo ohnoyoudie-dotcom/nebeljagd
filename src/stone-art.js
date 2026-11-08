@@ -82,7 +82,7 @@ function stoneMaps() {
   for (const texture of [map, bumpMap]) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.anisotropy = 4;
-    texture.name = 'Nebeljagd original weathered stone';
+    texture.name = 'Magebrawl original weathered stone';
   }
   cachedMaps = { map, bumpMap };
   return cachedMaps;

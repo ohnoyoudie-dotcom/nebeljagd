@@ -32,7 +32,7 @@ if EDITOR_URL != URL:
         'mode': 'Published standalone HTML files served over local HTTP',
         'files': {name: {'sha256': hashlib.sha256((ROOT / 'welt' / name).read_bytes()).hexdigest(),
                          'bytes': (ROOT / 'welt' / name).stat().st_size}
-                  for name in ['map-editor.html', 'index.html', 'nebeljagd.html']},
+                  for name in ['map-editor.html', 'index.html', 'magebrawl.html']},
         'unexpectedResourceRequests': [],
         'fileProtocolLimitation': 'This run exercises HTTP-served standalone files, not file:// navigation.',
     }

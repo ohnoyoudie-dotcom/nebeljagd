@@ -1,4 +1,4 @@
-"""Actual browser checks for the editable, offline Nebeljagd map workspace.
+"""Actual browser checks for the editable, offline Magebrawl map workspace.
 
 Run after npm run build with npm run preview listening on port 4173.
 All mutations go through visible controls, pointer events or JSON file import.

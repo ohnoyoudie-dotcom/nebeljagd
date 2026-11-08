@@ -57,16 +57,16 @@ def cast(p,label):
  print('PASS',label,flush=True)
  return row
 try:
- data=urlopen(URL+'/nebeljagd.html',timeout=60).read()
+ data=urlopen(URL+'/magebrawl.html',timeout=60).read()
  R['delivery']={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
- assert R['delivery']['sha256']==hashlib.sha256((RELEASE/'nebeljagd.html').read_bytes()).hexdigest()
+ assert R['delivery']['sha256']==hashlib.sha256((RELEASE/'magebrawl.html').read_bytes()).hexdigest()
  del data
  with sync_playwright() as pw:
   b=pw.chromium.launch(executable_path=shutil.which('chromium'),headless=True,args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
   try:
    p=b.new_page(viewport={'width':960,'height':640});p.set_default_timeout(120000)
    p.on('pageerror',lambda e:R['errors'].append(str(e)));p.on('console',lambda m:R['errors'].append(m.text) if m.type=='error' else None)
-   p.goto(URL+'/nebeljagd.html?inspect=1&quality=low',wait_until='domcontentloaded')
+   p.goto(URL+'/magebrawl.html?inspect=1&quality=low',wait_until='domcontentloaded')
    p.wait_for_function('window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0');p.locator('#startBtn').click()
    R['initial']=s(p);print('Loaded current authored map',flush=True)
    for kind in ['fireStaff','iceStaff']:

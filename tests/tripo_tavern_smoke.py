@@ -31,7 +31,7 @@ if STANDALONE:
         'fileProtocolLimitation': 'This run validates HTTP-served standalone bytes; actual file:// behavior is outside this run.',
         'files': {name: {'sha256': hashlib.sha256((ROOT / 'welt' / name).read_bytes()).hexdigest(),
                          'bytes': (ROOT / 'welt' / name).stat().st_size}
-                  for name in ['map-editor.html', 'index.html', 'nebeljagd.html']},
+                  for name in ['map-editor.html', 'index.html', 'magebrawl.html']},
         'unexpectedResourceRequests': [],
     }
 FIXTURE = json.loads((ROOT / 'worldmap.json').read_text())
@@ -124,7 +124,7 @@ try:
                     return
                 same_origin = (parsed.scheme, parsed.netloc) == (origin.scheme, origin.netloc)
                 if same_origin and ((request.is_navigation_request()
-                    and parsed.path in ['/map-editor.html', '/index.html', '/nebeljagd.html'])
+                    and parsed.path in ['/map-editor.html', '/index.html', '/magebrawl.html'])
                     or parsed.path == '/favicon.ico'):
                     return
                 REPORT['delivery']['unexpectedResourceRequests'].append(request.url)

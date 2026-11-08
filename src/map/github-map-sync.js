@@ -208,7 +208,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
   });
   $('github-map-backup').addEventListener('click', () => {
     const backup = read(localStorage, $('github-backup-choice').value || BACKUP);
-    if (backup) download(backup, 'nebeljagd-vor-online-abgleich.json', 'application/json');
+    if (backup) download(backup, 'magebrawl-vor-online-abgleich.json', 'application/json');
   });
   $('github-load-remote').addEventListener('click', async () => {
     if (busy || !canSave()) return;

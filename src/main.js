@@ -33,7 +33,7 @@ import { MAX_HEALTH, START_HEALTH, ROLL_SPEED, ROLL_DURATION, ROLL_COOLDOWN,
 const lobbyMode = document.body.dataset.mode === 'lobby' || new URLSearchParams(location.search).get('mode') === 'lobby';
 // Resolve access before creating the renderer, world or character.
 const lobbySession = lobbyMode ? await requireLobbySession() : null;
-if (lobbyMode) { document.body.dataset.mode = 'lobby'; document.title = 'Nebeljagd · Übungswiese'; }
+if (lobbyMode) { document.body.dataset.mode = 'lobby'; document.title = 'Magebrawl · Übungswiese'; }
 const startingHealth = lobbyMode ? MAX_HEALTH : START_HEALTH;
 const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
 const iPad = isIPadDevice(navigator);

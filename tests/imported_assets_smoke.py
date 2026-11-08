@@ -166,7 +166,7 @@ try:
         page.set_default_timeout(90000)
         requests = []
         page.on('request', lambda request: requests.append(request.url) if request.url.startswith(('http:', 'https:')) else None)
-        start(page, 'nebeljagd.html')
+        start(page, 'magebrawl.html')
         embedded = state(page)['world']['importedAssets']
         assert len(requests) == 1, requests
         assert embedded['loadedGLBs'] == 5 and embedded['flowers'] == 24, embedded

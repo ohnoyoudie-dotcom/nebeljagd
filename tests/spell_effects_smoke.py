@@ -270,7 +270,7 @@ def run(url):
             else:
                 route.continue_()
 
-        context.route(re.compile('^' + re.escape(url + '/nebeljagd.html') + r'\?'), inspect_navigation)
+        context.route(re.compile('^' + re.escape(url + '/magebrawl.html') + r'\?'), inspect_navigation)
         editor = context.new_page()
         try:
             stage('Create a browser-only wall fixture and place both staves with editor controls')
@@ -317,10 +317,10 @@ def run(url):
             game.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
             expect(game.locator('#errorScreen')).to_be_hidden()
             parsed = urlsplit(game.url)
-            assert parsed.path == urlsplit(url).path + '/nebeljagd.html'
+            assert parsed.path == urlsplit(url).path + '/magebrawl.html'
             assert parse_qs(parsed.query).get('v') == ['spell-check']
             assert parse_qs(urlsplit(REPORT['editorPlayNavigation']).query).get('mapSource') == ['editor']
-            record_document(url, 'nebeljagd.html')
+            record_document(url, 'magebrawl.html')
             initial = state(game)
             assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
             assert 'effects' in initial['combat'] and 'spells' in initial['combat']

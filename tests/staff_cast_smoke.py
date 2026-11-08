@@ -268,7 +268,7 @@ def run(url):
             else:
                 route.continue_()
 
-        context.route(re.compile('^' + re.escape(url + '/nebeljagd.html') + r'\?'), inspect_navigation)
+        context.route(re.compile('^' + re.escape(url + '/magebrawl.html') + r'\?'), inspect_navigation)
         editor = context.new_page()
         try:
             support.stage('Place both actual staves in the delivered editor')
@@ -299,7 +299,7 @@ def run(url):
             game.bring_to_front()
             game.wait_for_function('window.nebeljagdInspectCamera&&nebeljagdTestState().rendering.calls>0')
             expect(game.locator('#errorScreen')).to_be_hidden()
-            support.record_document(url, 'nebeljagd.html')
+            support.record_document(url, 'magebrawl.html')
             assert parse_qs(urlsplit(game.url).query).get('v') == ['staff-cast-check']
             current = support.state(game)
             assert current['world']['source'] == 'editor' and current['world']['objects'] == draft['objects']

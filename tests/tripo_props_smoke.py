@@ -153,7 +153,7 @@ try:
             'fileProtocolLimitation': 'This validates HTTP-served standalone bytes; no file:// success is claimed.',
             'files': {name: {'sha256': hashlib.sha256((ROOT/'welt'/name).read_bytes()).hexdigest(),
                              'bytes': (ROOT/'welt'/name).stat().st_size}
-                      for name in ['map-editor.html', 'index.html', 'nebeljagd.html']},
+                      for name in ['map-editor.html', 'index.html', 'magebrawl.html']},
             'unexpectedResourceRequests': [],
         }
     with sync_playwright() as p:
@@ -167,7 +167,7 @@ try:
                 if parsed.scheme not in ('http', 'https'):
                     return
                 if (parsed.scheme, parsed.netloc) == (origin.scheme, origin.netloc) and (
-                    request.is_navigation_request() and parsed.path in ['/map-editor.html', '/index.html', '/nebeljagd.html']
+                    request.is_navigation_request() and parsed.path in ['/map-editor.html', '/index.html', '/magebrawl.html']
                     or parsed.path == '/favicon.ico'):
                     return
                 REPORT['delivery']['unexpectedResourceRequests'].append(request.url)

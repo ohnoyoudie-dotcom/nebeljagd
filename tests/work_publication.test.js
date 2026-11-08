@@ -11,6 +11,6 @@ test('publication keeps development on work and limits public-site changes to th
   assert.match(workflow, /node scripts\/prepare-preview\.js welt \.pages-site\/preview/);
   assert.match(workflow, /git -C \.pages-site add -- preview/);
   assert.doesNotMatch(workflow, /--force|git -C \.pages-site add (?:\.|--all)/);
-  assert.match(workflow, /name: nebeljagd-work-browser/);
-  assert.match(workflow, /welt\/nebeljagd-welt-und-editor\.zip/);
+  assert.match(workflow, /name: magebrawl-work-browser/);
+  assert.match(workflow, /welt\/magebrawl-welt-und-editor\.zip/);
 });

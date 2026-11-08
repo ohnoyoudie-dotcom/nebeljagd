@@ -23,7 +23,7 @@ with sync_playwright() as pw:
   p=ctx.new_page();p.set_default_timeout(180000)
   p.on('pageerror',lambda e:errors.append(str(e)))
   p.on('console',lambda m:errors.append(m.text) if m.type=='error' else None)
-  p.goto(URL+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
+  p.goto(URL+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
   p.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
   p.locator('#startBtn').click();p.evaluate('nebeljagdInspect({x:0,z:0,direction:Math.PI})')
   p.wait_for_function('nebeljagdTestState().character.snowWeight>.9')

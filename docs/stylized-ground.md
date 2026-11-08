@@ -1,4 +1,4 @@
-# Nebeljagd – ruhige Bodenflächen und natürliche Wege
+# Magebrawl – ruhige Bodenflächen und natürliche Wege
 
 Der vom Nutzer gezeigte Battlerite-Screenshot dient als gestalterische Referenz:
 ruhige, zusammenhängende Grünflächen, deutlich erkennbare hellgraue

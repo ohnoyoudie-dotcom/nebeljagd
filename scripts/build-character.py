@@ -1,4 +1,4 @@
-"""Original Nebeljagd ranger. Blender 4.3+, no external assets.
+"""Original Magebrawl ranger. Blender 4.3+, no external assets.
 
 Run: blender --background --python scripts/build-character.py
 All coordinates are metres, Z up, facing -Y; glTF exports Y up, facing +Z.
@@ -361,7 +361,7 @@ bpy.ops.export_scene.gltf(filepath=str(OUT/'ranger.glb'),export_format='GLB',use
     export_animations=True,export_animation_mode='NLA_TRACKS',export_skins=True,
     export_yup=True,export_apply=False,export_materials='EXPORT',export_all_vertex_colors=True)
 mesh.calc_loop_triangles()
-report={'asset':'Nebeljagd original ranger','generator':'scripts/build-character.py','blender':bpy.app.version_string,
+report={'asset':'Magebrawl original ranger','generator':'scripts/build-character.py','blender':bpy.app.version_string,
         'vertices':len(mesh.vertices),'triangles':len(mesh.loop_triangles),'materials':len(mesh.materials),
         'bones':len(rig_data.bones),'clips':['Idle','Walk'],'height_metres':round(max(v[2] for v in V),3),
         'source':'Original local Blender geometry; no third-party models, textures or motion capture.'}

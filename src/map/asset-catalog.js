@@ -7,7 +7,7 @@ import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
  * This catalogue does not import arbitrary files or admit external packages. */
 const project = (kind, variant, label, paths, notes, extra = {}) => ({
   id: `${kind}:${variant}`, kind, variant, label, format: 'procedural',
-  sourceLabel: 'Nebeljagd · Spielmodell', sourcePaths: paths,
+  sourceLabel: 'Magebrawl · Spielmodell', sourcePaths: paths,
   renderer: paths[0], status: 'available', previewKind: 'render', notes, ...extra,
 });
 const rei = (kind, variant, label, runtime, source, notes, extra = {}) => ({
@@ -19,7 +19,7 @@ const rei = (kind, variant, label, runtime, source, notes, extra = {}) => ({
 });
 const kit = (kind, variant, label, filename, notes) => ({
   id: `${kind}:${variant}`, kind, variant, label, format: 'glb',
-  sourceLabel: 'Nebeljagd Umwelt-Kit v1',
+  sourceLabel: 'Magebrawl Umwelt-Kit v1',
   sourcePaths: [`Blender/nebeljagd_umwelt_kit_v1/assets/${filename}.glb`],
   renderer: 'src/world-object-renderer.js', status: 'available', previewKind: 'render', notes,
   provenance: 'Blender/nebeljagd_umwelt_kit_v1/manifest.json',
@@ -61,7 +61,7 @@ export const ASSET_CATALOG = Object.freeze([
   project('sword', 'steel', 'Schwert · alter Karteneintrag', ['src/weapons.js'], 'Wird im Spiel durch das neue Tripo-Schwert ersetzt. Neue Platzierungen verwenden direkt Schwert · Tripo.'),
   project('fireStaff', 'ember', 'Glutstab · Verbrennung', ['src/weapons.js'], 'Feuerstab mit Glutspitze; verursacht Brandschaden.'),
   project('iceStaff', 'frost', 'Froststab · Verlangsamung', ['src/weapons.js'], 'Eisstab mit Frostspitze; verlangsamt getroffene Ziele.'),
-  kit('tree', 'kit-pine-high', 'Große Kiefer · GLB', 'pine_high', 'Hohe Kiefer aus dem bereits eingebundenen Nebeljagd-Umwelt-Kit.'),
+  kit('tree', 'kit-pine-high', 'Große Kiefer · GLB', 'pine_high', 'Hohe Kiefer aus dem bereits eingebundenen Magebrawl-Umwelt-Kit.'),
   kit('tree', 'kit-pine-young', 'Junge Kiefer · GLB', 'pine_young', 'Kleine Kiefer für gemischte Baumgruppen.'),
   kit('tree', 'kit-oak-green', 'Grüne Eiche · GLB', 'oak_green', 'Grüne Eiche aus dem bestehenden Umwelt-Kit.'),
   kit('tree', 'kit-oak-autumn', 'Herbsteiche · GLB', 'oak_autumn', 'Eichenmodell mit eigenen Herbstfarben; im Herbstbiom verwendbar.'),

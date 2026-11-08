@@ -43,7 +43,7 @@ Höhenänderung. Geschosse verwenden weiterhin die tatsächliche Hindernishöhe.
 ## Modelle und Austausch
 
 Die ursprünglichen Modelle `wall:kit-stone` und `fence:kit-wood` stammen aus
-dem Nebeljagd-Umwelt-Kit. Der alte GLB-Holzzaun ist aus der Auswahl und der
+dem Magebrawl-Umwelt-Kit. Der alte GLB-Holzzaun ist aus der Auswahl und der
 aktuellen Karte entfernt; ältere Kartendateien bleiben lesbar. Im Editor
 entfernt **Alte Objekte und Zäune entfernen** auch solche alten Zaunstrecken
 aus einem wiederhergestellten Entwurf, mit Rückgängig-Funktion.

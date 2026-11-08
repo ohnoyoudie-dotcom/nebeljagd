@@ -167,7 +167,7 @@ function grassAlphaTexture() {
   texture.colorSpace = THREE.NoColorSpace;
   texture.minFilter = THREE.LinearMipmapLinearFilter; texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
-  texture.name = 'Nebeljagd · dense meadow grass alpha';
+  texture.name = 'Magebrawl · dense meadow grass alpha';
   return texture;
 }
 
@@ -233,7 +233,7 @@ export function createMeadowGround(root, { map, heightAt, colorAt, spatial, qual
   if (!settings.enabled || typeof document === 'undefined') return empty;
 
   const texture = grassAlphaTexture(), geometry = tuftGeometry(), detailGeometry = detailBladeGeometry(), group = new THREE.Group();
-  group.name = 'Nebeljagd · dichte animierte Wiese'; root.add(group);
+  group.name = 'Magebrawl · dichte animierte Wiese'; root.add(group);
   const excluded = createGroundGrassExclusion(map);
   const windDirection = new THREE.Vector2(Math.cos(settings.windDirection * Math.PI / 180), Math.sin(settings.windDirection * Math.PI / 180));
   const uniforms = {

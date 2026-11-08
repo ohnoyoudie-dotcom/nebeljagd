@@ -4,7 +4,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 root=Path(__file__).resolve().parents[1];errors=[];shots=[];captures=[]
 base=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:4174').rstrip('/')
-game=os.environ.get('NEBELJAGD_GAME_PATH','/nebeljagd.html')
+game=os.environ.get('NEBELJAGD_GAME_PATH','/magebrawl.html')
 with sync_playwright() as p:
  b=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
  for quality in ['low','high']:

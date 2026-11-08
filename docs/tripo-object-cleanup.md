@@ -45,4 +45,4 @@ Auswahl, Platzierung, Import/Export, Bereinigung und Undo/Redo, Graspinsel
 sowie Mauer-/Zaunzeichnung. Keine Browserfehler oder externen Ressourcenabrufe. Ergebnisse:
 `docs/tripo-palette-check.json`.
 Die erzeugten Dateien liegen weiterhin unter `welt/map-editor.html` und
-`welt/nebeljagd.html` auf `work`; `main` wird dadurch nicht veröffentlicht.
+`welt/magebrawl.html` auf `work`; `main` wird dadurch nicht veröffentlicht.

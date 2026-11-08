@@ -22,7 +22,7 @@ Browser-Link zur aktuellen Veröffentlichung:
 [Bereinigten Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html?v=df3b250).
 
 Die aktuellen Dateien liegen auf `work` unter `welt/map-editor.html` und
-`welt/nebeljagd.html`. Der Editor beginnt eine neue Sitzung mit der bereinigten
+`welt/magebrawl.html`. Der Editor beginnt eine neue Sitzung mit der bereinigten
 Karte. Ein älterer eigener Entwurf wird durch diese Aktualisierung nicht
 überschrieben. Zum Wechseln zunächst eigene Änderungen speichern und dann
 die aktuelle `welt/worldmap.json` über **Öffnen** laden.

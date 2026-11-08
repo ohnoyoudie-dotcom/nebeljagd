@@ -1,9 +1,9 @@
-# Nebeljagd development
+# Magebrawl development
 
 - The existing checkout is the working project. Do not create a Git worktree unless explicitly requested.
 - Preserve the user's original files in assets/inbox and the authored worldmap.json unless the task explicitly changes them.
 - All game and editor changes must reach the usable editor file. After relevant source changes, run the required tests and `npm run build`; this builds and synchronizes the portal, game and editor into `welt/` and records their hashes in `welt/release.json`. Do not leave a finished change only in src/ or an alternate editor copy.
-- `welt/index.html` is the shared entry, `welt/map-editor.html` the current editor, and `welt/nebeljagd.html` the game. Keep teacher links pointing to this current editor. Do not overwrite the portal with a game alias when publishing.
+- `welt/index.html` is the shared entry, `welt/map-editor.html` the current editor, and `welt/magebrawl.html` the game. Keep teacher links pointing to this current editor. Do not overwrite the portal with a game alias when publishing.
 - Validate changed flows in the actual generated files. Keep offline single-player/editor behavior distinct from the classroom server's authenticated code flow. Never describe device-local storage as shared class authentication or multiplayer.
 - Server credentials and classroom state belong in the ignored .nebeljagd/ directory, never in source, browser bundles, test reports or Git. The optional online editor connection accepts the owner's scoped GitHub token only at runtime in the browser (session storage, or local storage by explicit opt-in). Never request it in chat or embed Cloud/server credentials in the public editor.
 - Stay on `work` for normal development. The user explicitly authorized automatic publication of every editor/game change through the existing verified `work` → `main/preview` → GitHub Pages workflow. Complete tests, build, push and exact Pages deployment verification yourself; do not ask the user to upload, push, download a new editor or change their bookmark. This authorization covers the managed preview files, not unrelated changes on main.

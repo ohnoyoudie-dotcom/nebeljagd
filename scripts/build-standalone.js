@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { renderWorldmapSvg } from '../src/map/render.js';
 import { packageWorldBundle } from './package-world-bundle.js';
 import { createBuildInfo, embedBuildInfo } from './build-info.js';
+import { legacyGameEntry } from './legacy-game-entry.js';
 
 const root = resolve('dist');
 async function inlineEntry(source, destination) {
@@ -25,7 +26,8 @@ async function inlineEntry(source, destination) {
 await inlineEntry('index.html', 'index.html');
 await inlineEntry('teacher.html', 'teacher.html');
 await inlineEntry('lobby.html', 'lobby.html');
-await inlineEntry('game.html', 'nebeljagd.html');
+await inlineEntry('game.html', 'magebrawl.html');
+await writeFile(resolve(root, 'nebeljagd.html'), legacyGameEntry());
 await inlineEntry('map-editor.html', 'map-editor.html');
 await inlineEntry('avatar-preview.html', 'avatar-preview.html');
 for (const file of ['worldmap.json', 'worldmap.schema.json']) {
@@ -33,7 +35,7 @@ for (const file of ['worldmap.json', 'worldmap.schema.json']) {
 }
 const map = JSON.parse(await readFile(resolve('worldmap.json'), 'utf8'));
 await writeFile(resolve(root, 'worldmap.svg'), renderWorldmapSvg(map, { showSpawns: false, showZone: false, showLabels: false }));
-const htmlNames = ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html',
+const htmlNames = ['index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'nebeljagd.html',
   'map-editor.html', 'avatar-preview.html', 'editor.html'];
 const versionedNames = [...htmlNames, 'worldmap.json', 'worldmap.schema.json', 'worldmap.svg'];
 const versioned = await Promise.all(versionedNames.map(async name => ({
@@ -47,7 +49,7 @@ for (const { name, bytes } of versioned) {
     await writeFile(resolve(root, name), embedBuildInfo(bytes.toString('utf8'), buildInfo));
   }
 }
-console.log('Standalone browser files: dist/nebeljagd.html and dist/map-editor.html');
+console.log('Standalone browser files: dist/magebrawl.html and dist/map-editor.html');
 console.log(`Online editor entry: dist/editor.html (build ${buildInfo.buildId})`);
 console.log('Character review: dist/avatar-preview.html');
 console.log('Editable map data: dist/worldmap.json, dist/worldmap.svg, dist/worldmap.schema.json');

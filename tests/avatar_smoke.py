@@ -19,7 +19,7 @@ SOURCE_MAP = json.loads((ROOT/'worldmap.json').read_text())
 ARTIFACT_ROOT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT/'docs'))
 ARTIFACT_ROOT.mkdir(parents=True, exist_ok=True)
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
-PAGE_URL = URL if URL.endswith('.html') else URL + '/nebeljagd.html'
+PAGE_URL = URL if URL.endswith('.html') else URL + '/magebrawl.html'
 REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [], 'screenshots': [],
           'sourceGlbSha256': hashlib.sha256((ROOT/'assets/characters/nebeljagd_player_base_v1.glb').read_bytes()).hexdigest(),
           'limits': 'Chromium WebGL2 via SwiftShader; this is functional/render validation, not an iPad GPU performance benchmark.'}

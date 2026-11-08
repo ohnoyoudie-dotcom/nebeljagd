@@ -163,8 +163,8 @@ export function createTerrainArtwork() {
   cached = { soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false), stoneCenters: texture(centers,false) };
   cached.stoneCenters.minFilter=cached.stoneCenters.magFilter=THREE.NearestFilter;
   cached.stoneCenters.generateMipmaps=false;
-  cached.ground.name = 'Nebeljagd · gemalter Naturboden ohne Grashalme';
-  cached.paving.name = 'Nebeljagd · einzelne verwitterte Randsteine';
-  cached.earth.name = 'Nebeljagd · erdiger Wegsaum';
+  cached.ground.name = 'Magebrawl · gemalter Naturboden ohne Grashalme';
+  cached.paving.name = 'Magebrawl · einzelne verwitterte Randsteine';
+  cached.earth.name = 'Magebrawl · erdiger Wegsaum';
   return cached;
 }

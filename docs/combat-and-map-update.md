@@ -3,7 +3,7 @@
 Die zwei vom Nutzer bereitgestellten Gameplay-Aufnahmen zeigen eine gut lesbare
 schräge Top-Down-Perspektive: offene Aktionsflächen, Deckung und Requisiten an den
 Rändern, klare Wege sowie grüne Außenflächen und dunklere Innenräume. Diese
-Gestaltungsprinzipien werden auf die eigene Nebeljagd-Welt übertragen. Es werden
+Gestaltungsprinzipien werden auf die eigene Magebrawl-Welt übertragen. Es werden
 keine Originalmodelle, Bildtexturen oder UI-Bestandteile aus dem Referenzspiel benutzt.
 
 ## Umsetzung

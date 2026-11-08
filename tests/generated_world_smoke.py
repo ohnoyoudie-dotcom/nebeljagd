@@ -415,7 +415,7 @@ def editor_checks(browser):
     page = offline.new_page(); page.set_default_timeout(120000); monitor(page)
     requests = []
     page.on('request', lambda request: requests.append(request.url) if request.url.startswith(('http:', 'https:')) else None)
-    page.set_content((ROOT / 'dist/nebeljagd.html').read_text(), wait_until='domcontentloaded')
+    page.set_content((ROOT / 'dist/magebrawl.html').read_text(), wait_until='domcontentloaded')
     page.wait_for_function('window.nebeljagdTestState && window.nebeljagdTestState().rendering.calls > 0')
     assert state(page)['world']['stats']['totalObjects'] == 4030
     assert not requests, requests

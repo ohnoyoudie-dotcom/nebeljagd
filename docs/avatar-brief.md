@@ -1,4 +1,4 @@
-Du arbeitest an meinem Browser-Spiel **Nebeljagd**, einem Top-down-Fantasy-Battle-Royale / Action-RPG, optisch grob in Richtung Battlerite / Battlerite Royale, aber mit eigener Designsprache.
+Du arbeitest an meinem Browser-Spiel **Magebrawl**, einem Top-down-Fantasy-Battle-Royale / Action-RPG, optisch grob in Richtung Battlerite / Battlerite Royale, aber mit eigener Designsprache.
 
 ## Projekt
 
@@ -24,7 +24,7 @@ Prüfe die tatsächliche Repository-Struktur selbst und verwende die real vorhan
 
 # Ziel
 
-Erstelle einen **neuen hochwertigen neutralen menschlichen Basisavatar** für Nebeljagd, den wir tatsächlich direkt im Spiel verwenden können.
+Erstelle einen **neuen hochwertigen neutralen menschlichen Basisavatar** für Magebrawl, den wir tatsächlich direkt im Spiel verwenden können.
 
 Die Figur soll qualitativ deutlich über dem bisherigen Avatar liegen.
 

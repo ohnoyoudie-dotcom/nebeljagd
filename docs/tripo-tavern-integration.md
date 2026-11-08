@@ -11,7 +11,7 @@ Das neue Wirtshaus bleibt auswählbar und wird nicht automatisch verteilt.
 ## Ausprobieren
 
 1. Den aktuellen Branch `work` lokal aktualisieren und `welt/map-editor.html`
-   öffnen. `welt/nebeljagd.html` muss im gleichen Ordner bleiben.
+   öffnen. `welt/magebrawl.html` muss im gleichen Ordner bleiben.
 2. **Objekte & Verteilung** öffnen, Objektart **Haus** wählen und als Modell
    **Wirtshaus · Tripo (neu)** auswählen.
 3. **Auf Karte setzen** wählen und eine freie Fläche anklicken. Alternativ

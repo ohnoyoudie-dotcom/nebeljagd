@@ -1056,7 +1056,7 @@ async function writablePermission(handle, request = false) {
 async function chooseMapFileHandle() {
   const handle = await window.showSaveFilePicker({
     suggestedName: 'worldmap.json',
-    types: [{ description: 'Nebeljagd Weltkarte', accept: { 'application/json': ['.json'] } }],
+    types: [{ description: 'Magebrawl Weltkarte', accept: { 'application/json': ['.json'] } }],
     excludeAcceptAllOption: false,
   });
   mapFileHandle = handle; persistedMapFileHandle = handle;
@@ -1147,7 +1147,7 @@ async function openJson() {
   try {
     const [handle] = await window.showOpenFilePicker({
       multiple: false,
-      types: [{ description: 'Nebeljagd Weltkarte', accept: { 'application/json': ['.json'] } }],
+      types: [{ description: 'Magebrawl Weltkarte', accept: { 'application/json': ['.json'] } }],
       excludeAcceptAllOption: false,
     });
     await loadMapFile(await handle.getFile(), handle);
@@ -1302,7 +1302,7 @@ function playtestWorld() {
   let stored = false;
   try { localStorage.setItem(PLAYTEST_KEY, JSON.stringify(snapshot)); stored = true; } catch { /* Popup handshake also works without storage. */ }
   if (!['http:', 'https:', 'file:'].includes(location.protocol)) return toast('JSON speichern und im Spiel laden, oder den Editor als HTML-Datei im Browser öffnen.', true);
-  const gamePath = import.meta.env?.DEV ? './game.html' : './nebeljagd.html';
+  const gamePath = import.meta.env?.DEV ? './game.html' : './magebrawl.html';
   const url = new URL(`${gamePath}?mapSource=editor`, location.href);
   const version = new URLSearchParams(location.search).get('v');
   if (version) url.searchParams.set('v', version);
@@ -1310,7 +1310,7 @@ function playtestWorld() {
   if (!popup) return toast('Der Browser hat das neue Fenster blockiert. Pop-ups für diesen Editor erlauben oder JSON im Spiel laden.', true);
   playtestWindows.set(popup, {map: snapshot, origin: location.origin});
   setTimeout(() => playtestWindows.delete(popup), 30_000);
-  toast(location.protocol === 'file:' ? '3D-Test geöffnet. Die nebeljagd.html muss neben dieser Editor-Datei liegen.' : stored ? '3D-Welt mit diesem Kartenstand geöffnet.' : '3D-Welt erhält diesen Kartenstand direkt vom Editor.');
+  toast(location.protocol === 'file:' ? '3D-Test geöffnet. Die magebrawl.html muss neben dieser Editor-Datei liegen.' : stored ? '3D-Welt mit diesem Kartenstand geöffnet.' : '3D-Welt erhält diesen Kartenstand direkt vom Editor.');
 }
 window.addEventListener('message', event => {
   const session = playtestWindows.get(event.source);
@@ -1429,7 +1429,7 @@ function restorePendingDraft() {
 $('restore-draft').addEventListener('click', restorePendingDraft);
 $('download-pending-draft').addEventListener('click', () => {
   const contents = restoredDraft ? JSON.stringify(restoredDraft, null, 2) + '\n' : storedDraftText;
-  if (contents) download(contents, 'nebeljagd-gespeicherter-entwurf.json', 'application/json');
+  if (contents) download(contents, 'magebrawl-gespeicherter-entwurf.json', 'application/json');
 });
 $('discard-draft').addEventListener('click', () => {
   try { localStorage.removeItem(STORAGE_KEY); } catch { storageAvailable = false; }

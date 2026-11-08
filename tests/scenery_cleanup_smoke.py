@@ -120,7 +120,7 @@ try:
     if STANDALONE:
         REPORT['delivery']={'mode':'Actual welt/ standalone HTML served by local HTTP',
             'files':{n:{'bytes':(ROOT/'welt'/n).stat().st_size,'sha256':hashlib.sha256((ROOT/'welt'/n).read_bytes()).hexdigest()}
-                for n in ['map-editor.html','nebeljagd.html','index.html']},
+                for n in ['map-editor.html','magebrawl.html','index.html']},
             'unexpectedResourceRequests':[], 'fileProtocolTested':False}
     with sync_playwright() as p:
         browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,
@@ -131,7 +131,7 @@ try:
             def request_check(request):
                 parsed,origin=urlsplit(request.url),urlsplit(URL)
                 if parsed.scheme not in ['http','https']: return
-                if parsed.netloc==origin.netloc and (request.is_navigation_request() and parsed.path in ['/map-editor.html','index.html','/index.html','/nebeljagd.html'] or parsed.path=='/favicon.ico'): return
+                if parsed.netloc==origin.netloc and (request.is_navigation_request() and parsed.path in ['/map-editor.html','index.html','/index.html','/magebrawl.html'] or parsed.path=='/favicon.ico'): return
                 REPORT['delivery']['unexpectedResourceRequests'].append(request.url)
             context.on('request',request_check)
         editor=context.new_page(); monitor(editor); editor.set_default_timeout(90000)

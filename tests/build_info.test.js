@@ -7,7 +7,7 @@ const map = Buffer.from('{"name":"Project map","objects":[]}\n');
 const entries = [
   { name: 'worldmap.json', bytes: map },
   { name: 'map-editor.html', bytes: Buffer.from('<html><head></head><body>Editor</body></html>') },
-  { name: 'nebeljagd.html', bytes: Buffer.from('<html><head></head><body>Game</body></html>') },
+  { name: 'magebrawl.html', bytes: Buffer.from('<html><head></head><body>Game</body></html>') },
 ];
 const make = (files = entries, overrides = {}) => createBuildInfo(files, {
   sourceCommit, builtAt: '2026-11-01T10:00:00.000Z', ...overrides,
@@ -22,7 +22,7 @@ test('matching build ID is independent of timestamp and artifact order', () => {
 });
 
 test('changing editor, game, project map or source changes the shared build ID', () => {
-  for (const name of ['worldmap.json', 'map-editor.html', 'nebeljagd.html']) {
+  for (const name of ['worldmap.json', 'map-editor.html', 'magebrawl.html']) {
     const changed = entries.map(entry => entry.name === name ? { ...entry, bytes: Buffer.concat([entry.bytes, Buffer.from(' changed')]) } : entry);
     assert.notEqual(make(changed).buildId, make().buildId, name);
   }

@@ -1,4 +1,4 @@
-# Generierte Nebeljagd-Spielwelt
+# Generierte Magebrawl-Spielwelt
 
 Der aktuelle Spieleinstieg erzeugt eine begehbare 3D-Insel aus `worldmap.json`.
 Editor und Spiel verwenden denselben Küstenumriss, dieselben Regionen, Wege,
@@ -108,7 +108,7 @@ des alten Walddorfs für dessen bestehende Tests und historische Verwendung.
 „In 3D testen“ öffnet `index.html?mapSource=editor` mit einem Stand des aktuellen
 Editor-Dokuments. Die Übergabe verwendet lokalen Speicher oder eine auf das
 geöffnete Fenster und dessen Herkunft beschränkte Nachrichtenübergabe. Bei
-lokalen Einzeldateien heißt das Spielziel `nebeljagd.html`; beide HTML-Dateien
+lokalen Einzeldateien heißt das Spielziel `magebrawl.html`; beide HTML-Dateien
 müssen im selben Ordner liegen. Ein bereits laufendes Spiel verändert sich
 nicht automatisch, während der Editor weiter bearbeitet wird.
 
@@ -123,7 +123,7 @@ Kartenmodule keine extern benötigten JavaScript-Chunks erzeugen.
 `scripts/build-standalone.js` bettet Skripte, CSS und lokale Modelle in die
 Einzeldateien ein. Der normale Build verändert die SVG im Projektstamm nicht.
 `scripts/package-world-bundle.js` erzeugt zusätzlich
-`dist/nebeljagd-welt-und-editor.zip` mit beiden HTML-Dateien, JSON, SVG, Schema
+`dist/magebrawl-welt-und-editor.zip` mit beiden HTML-Dateien, JSON, SVG, Schema
 und `Anleitung.txt`, damit der lokale 3D-Test aus dem Editor zusammenbleibt.
 
 ## Validierung und frühere Stände

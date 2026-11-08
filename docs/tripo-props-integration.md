@@ -31,7 +31,7 @@ Den aktuellen Branch `work` lokal aktualisieren und `welt/map-editor.html`
 lassen sich anschließend in den Eigenschaften ändern; Duplizieren und der
 Radiergummi funktionieren wie bei den bisherigen Objekten. **In 3D testen**
 übergibt den aktuellen Entwurf an das Spiel. Für die Einzeldateien müssen
-`map-editor.html` und `nebeljagd.html` im selben Ordner liegen.
+`map-editor.html` und `magebrawl.html` im selben Ordner liegen.
 
 Wagen, Brunnen und Felsen sind feste Hindernisse. Beim Brunnen blockiert der
 Steinsockel die Bewegung; das Dach hält hohe Geschosse auf. Das Holzfass hat

@@ -115,7 +115,7 @@ Aussage zur Leistung auf einem Endgerät.
 ## Öffnen und Weiterbearbeiten
 
 Die aktuellen Dateien liegen wie bisher unter `welt/map-editor.html` und
-`welt/nebeljagd.html`. Bei einem wiederhergestellten älteren Entwurf die neue
+`welt/magebrawl.html`. Bei einem wiederhergestellten älteren Entwurf die neue
 `welt/worldmap.json` über **Öffnen** laden; eigene Entwürfe vorher speichern.
 Ältere Karten bleiben ladbar und werden nicht automatisch umgeschrieben.
 Die Aktualisierung wird auf `work` gesichert.

@@ -30,16 +30,20 @@ test('preview delivers one verified editor/map/game build and preserves other ma
   await mkdir(destination, {recursive: true});
   await writeFile(join(main, 'index.html'), 'existing classroom portal');
   await writeFile(join(destination, 'authored-map.json'), 'unrelated existing map');
+  await writeFile(join(destination, 'nebeljagd-welt-und-editor.zip'), 'old managed download');
   const result = await preparePreview(source, destination);
   assert.equal(await readFile(join(main, 'index.html'), 'utf8'), 'existing classroom portal');
   assert.equal(await readFile(join(destination, 'authored-map.json'), 'utf8'), 'unrelated existing map');
-  assert.equal(await readFile(join(destination, 'index.html'), 'utf8'), await readFile(join(source, 'nebeljagd.html'), 'utf8'));
+  assert.equal(await readFile(join(destination, 'index.html'), 'utf8'), await readFile(join(source, 'magebrawl.html'), 'utf8'));
   assert.equal(result.buildId, release.buildId);
   assert.equal(result.sourceCommit, release.sourceBaseCommit);
   assert.equal(result.projectMap.sha256, release.files['worldmap.json'].sha256);
   assert.equal(result.files['map-editor.html'].sha256, release.files['map-editor.html'].sha256);
   assert.equal(result.loginAvailable, false);
   assert.equal('localBuild' in result, false);
+  await assert.rejects(readFile(join(destination, 'nebeljagd-welt-und-editor.zip')), {code: 'ENOENT'});
+  assert.ok(result.files['magebrawl-welt-und-editor.zip']);
+  assert.ok(result.files['nebeljagd.html'], 'old bookmarks receive the verified redirect');
 });
 
 test('tampered artifacts fail before touching the destination', async t => {

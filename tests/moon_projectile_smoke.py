@@ -35,7 +35,7 @@ with sync_playwright() as pw:
         p.route('**/favicon.ico',lambda r:r.fulfill(status=204))
         p.on('pageerror',lambda e:report['errors'].append(str(e)))
         p.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' else None)
-        p.goto(BASE+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
+        p.goto(BASE+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
         p.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         p.locator('#startBtn').click();p.wait_for_function('nebeljagdTestState().equippedWeapon==="moonStaff"')
         before=state(p);model=before['combat']['special']['moonModel']

@@ -48,7 +48,7 @@ with sync_playwright() as p:
         page.route('**/favicon.ico', lambda r:r.fulfill(status=204))
         page.on('pageerror', lambda e:report['errors'].append(str(e)))
         page.on('console', lambda m:report['errors'].append(m.text) if m.type=='error' else None)
-        page.goto(BASE+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
+        page.goto(BASE+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         page.locator('#startBtn').click()
         page.wait_for_function('nebeljagdTestState().equippedWeapon==="poisonStaff"')

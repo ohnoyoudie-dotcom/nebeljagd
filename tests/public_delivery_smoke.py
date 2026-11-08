@@ -1,4 +1,4 @@
-"""Verify the real published Nebeljagd URLs against the current local build.
+"""Verify the real published Magebrawl URLs against the current local build.
 
 Run only AFTER publishing dist/ into the existing Pages welt/ directory.
 Uses normal certificate verification for downloads and a fresh browser context
@@ -83,12 +83,12 @@ def run(base: str, report_path: Path) -> None:
         assert expected_counts['fireStaff'] and expected_counts['iceStaff'], 'Local build lacks starter magic staves.'
         paths = [
             ('', 'index.html'),
-            ('nebeljagd.html', 'nebeljagd.html'),
+            ('magebrawl.html', 'magebrawl.html'),
             ('map-editor.html', 'map-editor.html'),
-            ('nebeljagd-welt-und-editor.zip', 'nebeljagd-welt-und-editor.zip'),
+            ('magebrawl-welt-und-editor.zip', 'magebrawl-welt-und-editor.zip'),
         ]
         for remote_path, filename in paths:
-            request = urllib.request.Request(base + remote_path, headers={'User-Agent': 'Nebeljagd-delivery-verification/1.0'})
+            request = urllib.request.Request(base + remote_path, headers={'User-Agent': 'Magebrawl-delivery-verification/1.0'})
             with urllib.request.urlopen(request, timeout=60) as response:
                 data = response.read()
                 record = {
@@ -105,7 +105,7 @@ def run(base: str, report_path: Path) -> None:
                     record['zipIntegrity'] = archive.testzip()
                     record['zipFiles'] = archive.namelist()
                     assert record['zipIntegrity'] is None, 'ZIP CRC check failed.'
-                    expected_names = {'index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json', 'Anleitung.txt'}
+                    expected_names = {'index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json', 'Anleitung.txt'}
                     assert set(archive.namelist()) == expected_names
                     for name in expected_names - {'Anleitung.txt'}:
                         assert archive.read(name) == (ROOT / 'dist' / name).read_bytes(), f'ZIP contains outdated {name}.'
@@ -120,7 +120,7 @@ def run(base: str, report_path: Path) -> None:
             context = browser.new_context(viewport={'width': 1280, 'height': 800}, ignore_https_errors=True)
             game = context.new_page()
             monitor(game)
-            response = game.goto(base + 'nebeljagd.html?inspect=1', wait_until='domcontentloaded', timeout=60000)
+            response = game.goto(base + 'magebrawl.html?inspect=1', wait_until='domcontentloaded', timeout=60000)
             assert response.status == 200
             snapshot = game_ready(game)
             assert snapshot['objects'] == expected_total, snapshot
@@ -222,7 +222,7 @@ def run(base: str, report_path: Path) -> None:
             assert snapshot['source'] == 'editor', snapshot
             assert snapshot['objects'] == expected_total + 2, snapshot
             assert snapshot['chests'] == expected_counts['chest'] + 1, snapshot
-            assert popup.url == base + 'nebeljagd.html?mapSource=editor', popup.url
+            assert popup.url == base + 'magebrawl.html?mapSource=editor', popup.url
             received_objects = popup.evaluate('window.nebeljagdTestState().world.objects')
             assert received_objects == edited_map['objects'], 'The hosted game did not receive the exact edited object document.'
             assert popup.evaluate('window.nebeljagdTestState().world.mapId') == edited_map['id']

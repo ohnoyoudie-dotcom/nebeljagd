@@ -80,7 +80,7 @@ def run(url, password):
             monitor(page)
 
         stage('Anonymous guards and responsive landing')
-        for path in ['/teacher.html', '/map-editor.html', '/lobby.html', '/nebeljagd.html', '/nebeljagd.html?mode=lobby']:
+        for path in ['/teacher.html', '/map-editor.html', '/lobby.html', '/magebrawl.html', '/magebrawl.html?mode=lobby']:
             response = pupil_context.request.get(url + path, max_redirects=0)
             assert response.status == 302, (path, response.status)
             assert 'index.html' in response.headers['location']
@@ -152,11 +152,11 @@ def run(url, password):
         stage('Pupil enters the practice lobby from a separate browser context')
         # Keep the real lobby redirect/auth flow, adding only the documented
         # software-rendering quality/capture switches to the final game URL.
-        pupil_context.route(url + '/nebeljagd.html?mode=lobby', lambda route: route.fulfill(
-            status=302, headers={'location': url + '/nebeljagd.html?mode=lobby&quality=low&inspect=1'}))
+        pupil_context.route(url + '/magebrawl.html?mode=lobby', lambda route: route.fulfill(
+            status=302, headers={'location': url + '/magebrawl.html?mode=lobby&quality=low&inspect=1'}))
         pupil.locator('#access-code').fill(code.lower())
         pupil.locator('#student-form button[type=submit]').click()
-        pupil.wait_for_url(re.compile(r'/nebeljagd\.html\?mode=lobby'))
+        pupil.wait_for_url(re.compile(r'/magebrawl\.html\?mode=lobby'))
         pupil.wait_for_function('typeof nebeljagdTestState === "function"')
         pupil_session = session(pupil_context, url)
         assert pupil_session['role'] == 'student'
@@ -233,7 +233,7 @@ def run(url, password):
         expect(pupil.locator('#access-code')).to_be_enabled()
         pupil.locator('#access-code').fill(code)
         pupil.locator('#student-form button[type=submit]').click()
-        pupil.wait_for_url(re.compile(r'/nebeljagd\.html\?mode=lobby'))
+        pupil.wait_for_url(re.compile(r'/magebrawl\.html\?mode=lobby'))
         pupil.wait_for_function('typeof nebeljagdTestState === "function"')
         assert session(pupil_context, url)['role'] == 'student'
         pupil.locator('#startBtn').click()
@@ -273,7 +273,7 @@ def main():
     server = None
     password = secrets.token_urlsafe(36)
     try:
-        for name in ['index.html', 'teacher.html', 'lobby.html', 'map-editor.html', 'nebeljagd.html', 'release.json']:
+        for name in ['index.html', 'teacher.html', 'lobby.html', 'map-editor.html', 'magebrawl.html', 'release.json']:
             assert (ROOT / 'welt' / name).is_file(), f'Run npm run build: welt/{name} is missing'
         with tempfile.TemporaryDirectory(prefix='nebeljagd-classroom-test-') as data_dir:
             server = subprocess.Popen(['node', 'tests/classroom-browser-fixture.js'], cwd=ROOT,

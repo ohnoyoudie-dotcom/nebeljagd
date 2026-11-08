@@ -225,7 +225,7 @@ def write_package():
                   'evidenceBoundary': 'Static validation plus actual Blender render. Project GPU import/collisions and artistic approval are checked separately.'}
     (OUTPUT / 'provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
     (OUTPUT / 'inspection.json').write_text(json.dumps({'assets': reports}, indent=2) + '\n')
-    readme = '''# Tripo-Gegenstände für Nebeljagd
+    readme = '''# Tripo-Gegenstände für Magebrawl
 
 Originale: `assets/inbox/`. Die hochgeladenen GLBs bleiben unverändert.
 Ableitungen: `runtime/`, normale glTF-Meterkoordinaten (+Y oben, +Z vorne),
