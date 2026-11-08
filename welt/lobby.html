@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <script id="editor-build-info" type="application/json">{"buildId":"fffaee4b0730","builtAt":"2026-11-08T14:26:51.391Z","sourceCommit":"efd60a025e608cfd8dfba0219749c7438481142b","mapSha256":"a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"}</script>
+    <script id="editor-build-info" type="application/json">{"buildId":"45e536894baf","builtAt":"2026-11-08T15:15:08.249Z","sourceCommit":"a84c8fba2f56b8d9087b1f543d1ff550f08bc900","mapSha256":"a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"}</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#173c32">
-    <title>Nebeljagd · Übungswiese</title>
-    <script type="module">async function e(e=globalThis.fetch){let t=await e(`/api/session`,{credentials:`same-origin`,cache:`no-store`,signal:AbortSignal.timeout(8e3)});if(!t.ok)return null;let n=await t.json();return n?.role===`teacher`||n?.role===`student`&&n.room?n:null}async function t({fetchImpl:t=globalThis.fetch,location:n=globalThis.location}={}){let r=await e(t).catch(()=>null);if(r)return r;throw n.replace(`./index.html?reason=session-ended`),Error(`Bitte melde dich für die Übungswiese an.`)}try{await t();let e=new URL(`./nebeljagd.html`,location.href);e.searchParams.set(`mode`,`lobby`);let n=new URLSearchParams(location.search).get(`quality`);(n===`low`||n===`high`)&&e.searchParams.set(`quality`,n),location.replace(e.href)}catch(e){document.getElementById(`lobbyStatus`).textContent=e.message}</script>
+    <title>Magebrawl · Übungswiese</title>
+    <script type="module">async function e(e=globalThis.fetch){let t=await e(`/api/session`,{credentials:`same-origin`,cache:`no-store`,signal:AbortSignal.timeout(8e3)});if(!t.ok)return null;let n=await t.json();return n?.role===`teacher`||n?.role===`student`&&n.room?n:null}async function t({fetchImpl:t=globalThis.fetch,location:n=globalThis.location}={}){let r=await e(t).catch(()=>null);if(r)return r;throw n.replace(`./index.html?reason=session-ended`),Error(`Bitte melde dich für die Übungswiese an.`)}try{await t();let e=new URL(`./magebrawl.html`,location.href);e.searchParams.set(`mode`,`lobby`);let n=new URLSearchParams(location.search).get(`quality`);(n===`low`||n===`high`)&&e.searchParams.set(`quality`,n),location.replace(e.href)}catch(e){document.getElementById(`lobbyStatus`).textContent=e.message}</script>
     <style>body{color:#eee5cc;background:#142b23;place-items:center;min-height:100vh;margin:0;font:18px/1.6 system-ui,sans-serif;display:grid}main{max-width:32rem;padding:2rem}h1{font-family:Georgia,serif;font-weight:400}a{color:#c7dba7}
 </style>
   </head>
   <body data-mode="lobby">
-    <main><h1>Auf zur Übungswiese.</h1><p id="lobbyStatus" role="status">Dein Zugang wird geprüft …</p><a href="./index.html">Zur Startseite</a><noscript><p>Bitte aktiviere JavaScript, um Nebeljagd zu spielen.</p></noscript></main>
+    <main><h1>Auf zur Übungswiese.</h1><p id="lobbyStatus" role="status">Dein Zugang wird geprüft …</p><a href="./index.html">Zur Startseite</a><noscript><p>Bitte aktiviere JavaScript, um Magebrawl zu spielen.</p></noscript></main>
   </body>
 </html>

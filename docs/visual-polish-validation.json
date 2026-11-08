@@ -1,0 +1,36 @@
+{
+  "status": "passed",
+  "buildId": "45e536894baf",
+  "sourceCommit": "a84c8fba2f56b8d9087b1f543d1ff550f08bc900",
+  "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+  "documents": [
+    {
+      "name": "map-editor.html",
+      "bytes": 61639188,
+      "sha256": "0f8af2e6dde97c256d9a6d99ccf6a2e8c94f54935308c998d48b79524f59333d"
+    },
+    {
+      "name": "magebrawl.html",
+      "bytes": 91888506,
+      "sha256": "6165e826f1740387a96f6003fa80f3f1535989bc41a7b64e300e7d92fd1241e4"
+    }
+  ],
+  "browser": "154.0.8037.57",
+  "limits": "Actual generated files in Chromium/SwiftShader; no hardware performance claim. Rarity rolls remain random; deterministic all-tier comparison is a separate isolated render.",
+  "unitTestsPassed": 526,
+  "assetVerification": "passed",
+  "mapValidation": "passed",
+  "browserChecks": [
+    "Sternstab is in the real palette; placement, JSON export and reload preserve its model and all prior objects",
+    "Spielen transfers the exact edited map and loads both the uploaded moon projectile and styled trees",
+    "Real E interaction opens the textured chest; darker inner panels are captured in the generated game",
+    "Real randomly rolled loot uses the stronger tier-colored, depth-tested aura without changing its rarity",
+    "The current derived tree loads at its authored position with the new crown and bark appearance",
+    "A real roll leaves a wider continuous furrow with rounded end caps, no soles, and correct pause/walking behavior",
+    "The uploaded Sternstab is picked up and fires its own star bolt; it hits one opponent and is blocked by a wall",
+    "The actual uploaded silver crescent flies, pauses, returns, locks repeat attacks and can be launched again",
+    "Restart clears both new weapon effects and tracks; authored map is unchanged and no shader/browser/network errors occurred"
+  ],
+  "browserErrors": [],
+  "unexpectedRequests": []
+}
