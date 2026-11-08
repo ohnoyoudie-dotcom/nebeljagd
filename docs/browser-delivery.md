@@ -20,13 +20,14 @@ wechselt bei aufeinanderfolgenden Angriffen zwischen diagonalem Hieb,
 Gegenschlag und Schlag von oben. Die Lichtspur folgt der echten Klinge,
 mit feiner heller Kante und kurzen Funken bei bestätigten Treffern.
 
-Geprüfte Quelle: `f9ab657e63c1fa465bcdf01bd687d7fc89e97755`, Build
-`e87ccd344fef`. 509 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild
+Geprüfte Quelle: `efd60a025e608cfd8dfba0219749c7438481142b`, Build
+`fffaee4b0730`. 515 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild
 sind bestanden. Die aktuelle Projektkarte bleibt bytegleich erhalten
 (SHA-256 `a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3`).
 Die gleichzeitig eingegangenen Änderungen an Truhen, zufälligen
 Beutestufen und der ausschließlichen Verwendung des Tripo-Schwerts sind
-übernommen. Die neue Schlagfolge ändert weder den Schaden der jeweiligen
+übernommen, ebenso die aktuellen Wald-, Bruchstück- und Rollspurenänderungen.
+Die neue Schlagfolge ändert weder den Schaden der jeweiligen
 Beutestufe noch Reichweite, Abklingzeit, Projektilregeln oder Lebensbalken. [Schwertdetails](sword-combat-feedback.md).
 
 Acht Prüfabläufe in der erzeugten Spieldatei sind bestanden: drei echte
