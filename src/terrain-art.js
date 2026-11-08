@@ -69,7 +69,7 @@ function texture(image, color = true) {
 }
 
 let cached;
-/** Original small Canvas artwork: a mottled grass substrate, earth and grey
+/** Original small Canvas artwork: a mottled mineral/earth substrate, earth and grey
  * stones. No additional world meshes or downloaded textures are required. */
 export function createTerrainArtwork() {
   if (cached) return cached;
@@ -90,8 +90,8 @@ export function createTerrainArtwork() {
   }
   for (let i = 0; i < 1450; i++) {
     const x = random() * size, y = random() * size;
-    g.strokeStyle = i % 3 ? '#2e412e0a' : '#f6f4d813'; g.lineWidth = .5;
-    g.beginPath(); g.moveTo(x, y); g.lineTo(x + (random() - .5) * 3, y - 1 - random() * 3); g.stroke();
+    g.fillStyle = i % 3 ? '#655c4c10' : '#ffffec18';
+    g.beginPath(); g.ellipse(x, y, .5 + random() * 2.2, .4 + random() * 1.2, random() * 6, 0, Math.PI * 2); g.fill();
     e.fillStyle = i % 4 ? '#30281f19' : '#dbc5a021';
     e.beginPath(); e.ellipse(x, y, .4 + random() * 2.1, .4 + random() * 1.4, random() * 6, 0, Math.PI * 2); e.fill();
   }
@@ -121,7 +121,7 @@ export function createTerrainArtwork() {
     h.strokeStyle = '#858585'; h.lineWidth = 2.5; h.stroke();
   }
   cached = { ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false) };
-  cached.ground.name = 'Nebeljagd · weiche Wiesenmalerei';
+  cached.ground.name = 'Nebeljagd · gemalter Naturboden ohne Grashalme';
   cached.paving.name = 'Nebeljagd · unregelmäßiges graues Steinpflaster';
   cached.earth.name = 'Nebeljagd · erdiger Wegsaum';
   return cached;

@@ -26,3 +26,26 @@ keine fremden Spiel-Assets übernommen.
 Der Projektkarten-Datensatz `worldmap.json` wird nicht geändert. Frühere
 Browserentwürfe und vorhandene Wegpunkte, Gebäude und Bäume behalten ihre
 Positionen. Ein echter Leistungstest auf iPads bleibt erforderlich.
+
+## Wegpinsel und Biomfarben
+
+Unter **Malen → Boden & Wege** stehen acht Wegbeläge zur Wahl: Erdweg,
+Waldpfad, Strand-Sandweg, ockerfarbener Wüstenpfad, festgetretener Schnee,
+Kies, Schlammpfad und Steinpflaster. **Weg malen** aktiviert den Pinsel mit
+2,5 m Radius (5 m Gesamtbreite). Radius und Randhärte lassen sich anschließend
+anpassen. Ein Ziehen ist ein rückgängig machbarer Strich. Die Flächen bleiben
+im vorhandenen `landscape.terrain`-Format und funktionieren nach JSON-Export,
+Import und beim Spielstart aus dem Editor.
+
+Große, deterministische Farbflächen ergänzen die Naturböden: Moos/Oliv/Erde
+für grüne Biome, warme Sand-/Ockertöne und kühlere Schneeschatten. Die
+Bodenmalerei verwendet dieselben Farbabstufungen. Regionale Farbgrenzen
+blenden über weiche 36-m-Schultern; die Höhen- und Kollisionsberechnung
+bleibt erhalten. Die kleine gemeinsame Bodentextur zeigt feine mineralische
+Flecken statt gezeichneter Halme. Keine zusätzlichen Bodenmeshes oder
+animierten Bodeneffekte sind dafür nötig.
+
+Prüfung: `node --test tests/natural_ground.test.js` sowie nach `npm run build`
+bei laufendem Preview auf Port 4174 `python3 tests/natural_ground_smoke.py`.
+Der Browsertest zeichnet mit Maus und Touch, prüft Undo/Redo und JSON-Rundreise
+und startet die gespeicherte Karte über den Editor im Spiel.
