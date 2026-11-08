@@ -520,7 +520,7 @@ export async function createWorld(scene, { quality = 'high' } = {}) {
       return house?.floorHeight ?? groundHeight(x, z);
     },
     resolveMovement,
-    traceProjectile: (start, end, radius = .06) => collisionIndex.traceSegment(start, end, radius),
+    traceProjectile: (start, end, radius = .06, accepts = null) => collisionIndex.traceSegment(start, end, radius, accepts),
     trees: [...treeLocations.map(({ x, y, z, scale }) => ({ x, y, z, radius: .34 * scale })), ...importedGarden.trees],
     importedAssets: importedGarden.stats,
     grassPatches: tallGrassPatches.map(p => ({ ...p })),

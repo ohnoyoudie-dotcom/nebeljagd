@@ -4,6 +4,12 @@ import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
  * retain their original model proportions, including the saved overall scale. */
 export const BARRIER_SIGHT_HEIGHT = 2;
 export const BARRIER_HEIGHT_LIMITS = Object.freeze({ min: .25, max: 8 });
+/** Shared sight/ranged rule, evaluated in world metres even for rotated kits. */
+export function isLowSightBarrier(collider) {
+  const body = collider?.worldBody ?? collider;
+  if (body?.type !== 'wall' && body?.type !== 'fence') return false;
+  return (body.barrierHeight ?? ((body.maxY ?? Infinity) - (body.minY ?? 0))) < BARRIER_SIGHT_HEIGHT;
+}
 export const isHeightAdjustable = object => ['wall', 'fence'].includes(object?.kind);
 export const isValidBarrierHeight = value => typeof value === 'number' && Number.isFinite(value)
   && value >= BARRIER_HEIGHT_LIMITS.min && value <= BARRIER_HEIGHT_LIMITS.max;

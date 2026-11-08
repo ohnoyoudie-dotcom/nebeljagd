@@ -1,4 +1,4 @@
-import { BARRIER_SIGHT_HEIGHT } from './map/barrier-height.js';
+import { isLowSightBarrier } from './map/barrier-height.js';
 
 // These props provide physical cover without hiding actors, loot or the ground.
 // objectKind also covers a well's separately named posts and roof colliders.
@@ -70,10 +70,7 @@ export function createSightModel({ obstacles = [], radius = 18, samples = 512, c
     // own existing behavior. Use authored physical height, not world altitude.
     nearby = [...candidates].filter(body => {
       if (body.destroyed) return false;
-      if (body.type === 'wall' || body.type === 'fence') {
-        const height = body.barrierHeight ?? ((body.maxY ?? Infinity) - (body.minY ?? 0));
-        if (height < BARRIER_SIGHT_HEIGHT) return false;
-      }
+      if (isLowSightBarrier(body)) return false;
       // A tree or wall far below eye level cannot hide a traveller on a ridge.
       return (body.maxY ?? Infinity) >= observer.y + .85 && (body.minY ?? -Infinity) <= observer.y + 2.3;
     });

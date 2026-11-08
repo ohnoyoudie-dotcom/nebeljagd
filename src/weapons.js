@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { traceRangedProjectile } from './projectile-collision.js';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
@@ -724,7 +725,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   let damageHits = 0, lastDamage = null;
   const blocksTarget = (collider, target) => collider?.objectId === target.id || collider?.destructibleId === target.id;
   function firstHit(start, end, radius) {
-    const terrain = world?.traceProjectile?.(start, end, radius);
+    const terrain = traceRangedProjectile(world, start, end, radius);
     const entity = combat?.traceSegment(start, end, radius, ownerId);
     if (!entity) return terrain;
     if (!terrain) return entity;
@@ -749,7 +750,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
     getStaffTip(staffTip);
-    const blocked = world?.traceProjectile?.({ x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .12);
+    const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .12);
     specials.releasePoison(staffTip, equippedItem, blocked); shotCount++;
     spellEffects.fire('poisonStaff', staffTip, characterGroup.rotation.y);
     return true;
@@ -769,7 +770,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     getStaffTip(staffTip); launchCenter.copy(staffTip);
     if (equippedType === 'moonStaff') {
       const angle = characterGroup.rotation.y;
-      const blocked = world?.traceProjectile?.({ x: position.x, y: position.y + 1.4, z: position.z }, launchCenter, .15);
+      const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, launchCenter, .15);
       specials.launchMoon(launchCenter, angle, equippedItem, blocked); shotCount++;
       lastSpellLaunch = { type: equippedType, direction: angle, tip: { ...staffTip }, flightHeight: launchCenter.y };
       spellEffects.fire(equippedType, staffTip, angle); return;
@@ -1053,6 +1054,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           groundPresentationScale: GROUND_WEAPON_SCALE[equippedType],
           stringVertices: (held.userData.bowStringDeformations ?? []).reduce((total, part) => total + part.count, 0) } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,
+        arrows: arrows.filter(arrow => arrow.life > 0).map(arrow => ({ mode: arrow.mode, position: point(arrow.group.position) })),
         arrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0).length,
         lootAuras: items.filter(item => !item.collected).map(item => ({ id: item.id, visible: item.group.visible, ...item.aura.inspect() })),
         arrowModel: projectilePrototypes.arrow ? { ...projectilePrototypes.arrow.userData } : null,

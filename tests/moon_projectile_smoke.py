@@ -16,7 +16,7 @@ fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',
 fixture['name']='Hochgeladene Mondsichel · QA';fixture['paths']=[]
 fixture['objects']=[dict(id='moon-staff',name='Mondstab',kind='moonStaff',variant='kit-tripo-moon-staff',position=[0,-14],rotation=0,scale=1,rarity='common')]
 for kind,variant,x,scale in [('wall','kit-stone',-18,1),('barrel','kit-tripo-barrel',-30,2)]:
-    fixture['objects'].append(dict(id='impact-'+kind,name=kind,kind=kind,variant=variant,position=[x,-5],rotation=0,scale=scale))
+    fixture['objects'].append(dict(id='impact-'+kind,name=kind,kind=kind,variant=variant,position=[x,-5],rotation=0,scale=scale,**({'height':2} if kind=='wall' else {})))
 report={'status':'running','errors':[],'checks':[]}
 def state(p):return p.evaluate('nebeljagdTestState()')
 def capture(p,name):

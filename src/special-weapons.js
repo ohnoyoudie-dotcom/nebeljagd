@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { traceRangedProjectile } from './projectile-collision.js';
 import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
 
@@ -124,7 +125,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       if (moon.mode === 'outbound') {
         const step = Math.min(SPECIAL_RULES.moonSpeed * dt, SPECIAL_RULES.moonRange - moon.distance);
         end.x += Math.sin(moon.direction) * step; end.z += Math.cos(moon.direction) * step;
-        const wall = world?.traceProjectile?.(start, end, .15);
+        const wall = traceRangedProjectile(world, start, end, .15);
         if (wall) { end.copy(wall.point); moonImpacts.emit(wall.point, wall.normal, moon.direction); }
         pierce(start, end, moon.outboundHits, moon.payload);
         moon.distance += start.distanceTo(end);
@@ -150,7 +151,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
         const t = Math.min(1, (orb.age + step) / orb.duration);
         const end = orb.origin.clone().lerp(orb.target, t);
         end.y += 4 * t * (1 - t) * SPECIAL_RULES.poisonArcHeight;
-        const wall = world?.traceProjectile?.(start, end, .12);
+        const wall = traceRangedProjectile(world, start, end, .12);
         const travelled = step * (wall ? THREE.MathUtils.clamp(wall.t ?? 1, 0, 1) : 1);
         orb.age += travelled; elapsed += travelled;
         poisonVisuals.moveProjectile(orb.visual, start, wall?.point ?? end, orb.age);

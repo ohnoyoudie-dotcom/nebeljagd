@@ -75,8 +75,10 @@ export function createCollisionIndex(circles, walls, cellSize = 4) {
      * swept-radius corners. Optional minY/maxY delimit either collider's height.
      * Missing heights are unbounded, so callers can adopt height metadata gradually.
      * `point` is the projectile centre at contact, not a point pushed into the surface.
+     * Optional `accepts` filters candidates before finding the nearest contact;
+     * skipping one body must still find a blocking body farther along the segment.
      */
-    traceSegment(start, end, radius = .06) {
+    traceSegment(start, end, radius = .06, accepts = null) {
       if (![start.x, start.z, end.x, end.z].every(Number.isFinite)) return null;
       const projectileRadius = Math.max(0, Number.isFinite(radius) ? radius : .06);
       const delta = { x: end.x - start.x, y: (end.y ?? 0) - (start.y ?? 0), z: end.z - start.z };
@@ -90,7 +92,7 @@ export function createCollisionIndex(circles, walls, cellSize = 4) {
       }
       let closest = null;
       for (const body of nearby) {
-        if (body.destroyed) continue;
+        if (body.destroyed || accepts && !accepts(body)) continue;
         const height = slabInterval(start.y ?? 0, delta.y,
           (body.minY ?? -Infinity) - projectileRadius, (body.maxY ?? Infinity) + projectileRadius);
         if (!height) continue;

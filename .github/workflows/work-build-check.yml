@@ -92,6 +92,10 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/projectiles_sight_smoke.py
+      - name: Verify all projectiles clear low walls and fences
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/projectile_barriers_smoke.py
       - name: Verify irregular snow rolls and moon return
         if: github.event_name == 'workflow_dispatch'
         env:
@@ -204,6 +208,7 @@ jobs:
             test-results/tripo-weapons
             test-results/fireball
             test-results/projectiles-sight
+            test-results/projectile-barriers
             test-results/woodland-details
             test-results/natural-details
             test-results/moon-projectile

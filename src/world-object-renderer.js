@@ -630,11 +630,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     return position;
   }
-  function traceProjectile(start, end, radius = .06) {
-    let best = collisionIndex.traceSegment(start, end, radius);
+  function traceProjectile(start, end, radius = .06, accepts = null) {
+    let best = collisionIndex.traceSegment(start, end, radius, accepts);
     for (const structure of structures) {
       if (!structureIntersectsSegment(structure.bounds, start, end, radius)) continue;
-      const hit = structure.index.traceSegment(structure.toLocal(start), structure.toLocal(end), radius / structure.scale);
+      const hit = structure.index.traceSegment(structure.toLocal(start), structure.toLocal(end), radius / structure.scale, accepts);
       if (!hit || best && hit.t >= best.t) continue;
       best = { ...hit, point: structure.toWorld(hit.point), normal: { x: structure.cos * hit.normal.x + structure.sin * hit.normal.z, z: -structure.sin * hit.normal.x + structure.cos * hit.normal.z }, collider: hit.collider.worldBody };
     }
