@@ -1,25 +1,25 @@
 {
-  "buildId": "17db608b083b",
-  "builtAt": "2026-11-08T09:36:15.462Z",
-  "sourceCommit": "dc372123e03e0d1e275593c809412e4de22a8743",
+  "buildId": "5d31fb9bf597",
+  "builtAt": "2026-11-08T09:49:12.500Z",
+  "sourceCommit": "8594538419f754794788549de1dd97835328227a",
   "mapSha256": "07b1310c4dcbebc42978f5e4fc750b0c9ebcff12172c33389ef63634271f8c44",
-  "sourceBaseCommit": "dc372123e03e0d1e275593c809412e4de22a8743",
+  "sourceBaseCommit": "8594538419f754794788549de1dd97835328227a",
   "files": {
     "editor.html": {
       "bytes": 7670,
-      "sha256": "4382959e26cc485e4434a06631e45fb43c2aab6f14d83dd188cdc39abb2275a5"
+      "sha256": "1136cd57da59e17fa3acfa573a6e50e2c15507a1d604701b1cd48836bd7a7da5"
     },
     "map-editor.html": {
-      "bytes": 60841054,
-      "sha256": "8d2a1c831491b1055ce908f1d3466708627e6ede5c52483179a79d694a4098bd"
+      "bytes": 60843216,
+      "sha256": "192094c6dcc287fec7b3a00a60ae7acee3d98965ef6b0d115e1f8daf853dfdce"
     },
     "nebeljagd.html": {
-      "bytes": 87527213,
-      "sha256": "65859f9894923b656e94507fa838e44c9591589fdbd796104a278fac158c7300"
+      "bytes": 87529271,
+      "sha256": "20c0197d36e535beae43aa376e7fd02bb3cd9683e202ede9bf496810a57e822c"
     },
     "avatar-preview.html": {
       "bytes": 14841745,
-      "sha256": "c8ee1ee25939926b2c6bd49171a8a73d79c84dd7cf55f2fe29fc2e6d793836b8"
+      "sha256": "f6cf2bb42ae6cdea7a0ac512b69f23d645f5f3043ebba4495b013dfee447099a"
     },
     "worldmap.json": {
       "bytes": 16309,
@@ -34,12 +34,12 @@
       "sha256": "bb2f3c7ae308e695b5b2da3ba71231bd4442a41d7956132cf4ec93dfe29a2923"
     },
     "nebeljagd-welt-und-editor.zip": {
-      "bytes": 96797270,
-      "sha256": "04d253c03916a0cad8164b2d0a67f09a1237bd10781f23e9ce65efc0f462cce5"
+      "bytes": 96798843,
+      "sha256": "ca67c21e6b743457ef2d5b331780d645fbed4dd6d086b8d247a628742348872d"
     },
     "index.html": {
-      "bytes": 87527213,
-      "sha256": "65859f9894923b656e94507fa838e44c9591589fdbd796104a278fac158c7300"
+      "bytes": 87529271,
+      "sha256": "20c0197d36e535beae43aa376e7fd02bb3cd9683e202ede9bf496810a57e822c"
     }
   },
   "name": "Nebeljagd – aktuelle Spielwelt und Editor",
