@@ -17,13 +17,23 @@ const nativeBounds = {
   'rock-02': { min: [-.9304180145263672, 0, -1.100463628768921], max: [.9304180145263672, 1.3078104257583618, 1.100463628768921] },
   'rock-03': { min: [-1.174299716949463, 0, -1.301117181777954], max: [1.174299716949463, 2.553933620452881, 1.301117181777954] },
 };
-const prop = (kind, variant, file, label, height, halfWidth, halfDepth, walls, circles = [], extra = {}) => ({
+// Presentation relative to the 1.82 m avatar. Authored object.scale remains an
+// additional multiplier; measured source bounds and uploaded GLBs stay intact.
+const presentationScale = { wagon: 1.4, barrel: 1.4, well: 1.3 };
+const scaleBody = (body, scale) => Object.fromEntries(Object.entries(body).map(([key, value]) =>
+  [key, ['minX', 'maxX', 'minY', 'maxY', 'minZ', 'maxZ', 'x', 'z', 'radius'].includes(key) ? value * scale : value]));
+const prop = (kind, variant, file, label, height, halfWidth, halfDepth, walls, circles = [], extra = {}) => {
+  const scale = presentationScale[kind] ?? 1;
+  return {
   id: `${kind}:${variant}`, kind, variant, file: `${file}.glb`, asset: `tripo-${file}`, label,
-  height, nativeBounds: nativeBounds[file], targetHeight: nativeBounds[file].max[1] - nativeBounds[file].min[1],
-  normalization: { scale: 1, offset: [0, 0, 0] },
-  footprint: { halfWidth, halfDepth }, walls, circles, solid: true, textured: true,
+  height: height * scale, nativeBounds: nativeBounds[file], targetHeight: (nativeBounds[file].max[1] - nativeBounds[file].min[1]) * scale,
+  normalization: { scale, offset: [0, 0, 0] },
+  footprint: { halfWidth: halfWidth * scale, halfDepth: halfDepth * scale },
+  walls: walls.map(body => scaleBody(body, scale)), circles: circles.map(body => scaleBody(body, scale)), solid: true, textured: true,
   ...extra,
-});
+  ...(extra.destructible ? { destructible: { ...extra.destructible, radius: extra.destructible.radius * scale } } : {}),
+  };
+};
 
 export const TRIPO_PROP_DEFINITIONS = [
   prop('wagon', 'kit-tripo-wagon', 'wagon', 'Holzkarren · Tripo', 1.1, .82, 1.46, [

@@ -2,6 +2,7 @@ import { WEAPON_TYPES } from '../loot-tiers.js';
 import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
 import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
+import { TRIPO_PROP_DEFINITIONS } from './tripo-prop-definitions.js';
 import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
@@ -122,6 +123,8 @@ export function isObjectAvailable(kind, variant) {
   return variant === undefined || definition.variants.some(entry => entry.id === variant && !entry.retired);
 }
 export function getObjectFootprintRadius(kind, variant) {
+  const prop = TRIPO_PROP_DEFINITIONS.find(entry => entry.kind === kind && entry.variant === variant);
+  if (prop) return Math.hypot(prop.footprint.halfWidth, prop.footprint.halfDepth);
   const definition = getObjectDefinition(kind);
   return definition?.variants.find(entry => entry.id === variant)?.footprintRadius ?? definition?.footprintRadius ?? 1;
 }
