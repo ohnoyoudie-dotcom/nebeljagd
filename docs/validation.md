@@ -6,7 +6,7 @@ Pfeilkollisionen ist in [combat-and-map-update.md](combat-and-map-update.md) dok
 
 ## Durchgeführte Checks
 
-- Produktionsbuild inklusive eigenständiger `dist/nebeljagd.html` erfolgreich.
+- Produktionsbuild inklusive eigenständiger `dist/magebrawl.html` erfolgreich.
 - Sechs Node-Tests: Gesundheit/Heilung, Zone, Mauer-Kollision und Gleiten,
   Durchgang durch reale Spielerbreite, Kreis-Hindernisse über Rastergrenzen.
 - `npm run verify:assets`: alle sieben Sicherungs-Prüfsummen unverändert;

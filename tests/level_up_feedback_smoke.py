@@ -159,11 +159,11 @@ def wall_guard(page):
 
 def record_document():
     digest=hashlib.sha256();size=0
-    with urlopen(URL+'/nebeljagd.html',timeout=60) as response:
+    with urlopen(URL+'/magebrawl.html',timeout=60) as response:
         assert response.status==200
         while chunk:=response.read(1024*1024):digest.update(chunk);size+=len(chunk)
-    assert digest.hexdigest()==hashlib.sha256((RELEASE/'nebeljagd.html').read_bytes()).hexdigest()
-    REPORT['delivery']={'file':str(RELEASE/'nebeljagd.html'),'bytes':size,'sha256':digest.hexdigest()}
+    assert digest.hexdigest()==hashlib.sha256((RELEASE/'magebrawl.html').read_bytes()).hexdigest()
+    REPORT['delivery']={'file':str(RELEASE/'magebrawl.html'),'bytes':size,'sha256':digest.hexdigest()}
 
 
 try:
@@ -179,7 +179,7 @@ try:
             context.on('request',lambda r:REPORT['unexpectedRequests'].append(r.url)
                 if r.url.startswith(('http:','https:')) and r.resource_type!='document'
                 and not urlsplit(r.url).path.endswith('/favicon.ico') else None)
-            page.goto(URL+'/nebeljagd.html?inspect=1&quality=low',wait_until='domcontentloaded')
+            page.goto(URL+'/magebrawl.html?inspect=1&quality=low',wait_until='domcontentloaded')
             page.wait_for_function('window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0')
             testmap=fixture()
             with page.expect_navigation(wait_until='domcontentloaded'):

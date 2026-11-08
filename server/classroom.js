@@ -1,3 +1,4 @@
+import { runtimeEnvironment } from './runtime-environment.js';
 import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
 import { readFile, mkdir, writeFile, rename, realpath, stat, link, unlink } from 'node:fs/promises';
@@ -11,7 +12,7 @@ const HOURS = 8 * 60 * 60 * 1000;
 const COOKIE = 'nebeljagd_session';
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.glb': 'model/gltf-binary', '.ico': 'image/x-icon' };
-const PUBLIC_FILES = new Set(['index.html', 'teacher.html', 'lobby.html', 'game.html', 'nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.schema.json', 'worldmap.svg', 'release.json', 'favicon.ico']);
+const PUBLIC_FILES = new Set(['index.html', 'teacher.html', 'lobby.html', 'game.html', 'magebrawl.html', 'nebeljagd.html', 'map-editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.schema.json', 'worldmap.svg', 'release.json', 'favicon.ico']);
 const teacherPages = new Set(['/teacher.html', '/map-editor.html', '/avatar-preview.html']);
 
 export async function passwordRecord(password) {
@@ -102,10 +103,10 @@ function tokenHash(token) { return createHash('sha256').update(token).digest('he
 export async function createClassroomServer({ publicDir = resolve('welt'), dataDir = resolve('.nebeljagd'), now = Date.now, secureCookies = false, roomLifetime = HOURS, sessionLifetime = HOURS, initialTeacherPassword, requireTeacherConfigured = false } = {}) {
   publicDir = resolve(publicDir); dataDir = resolve(dataDir);
   if (requireTeacherConfigured) {
-    for (const name of ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'release.json']) {
+    for (const name of ['index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'map-editor.html', 'release.json']) {
       let valid = false;
       try { valid = (await stat(join(publicDir, name))).isFile(); } catch {}
-      if (!valid) throw new Error(`Der Browserstand ist unvollständig: ${name} fehlt oder ist keine Datei. Bitte den vollständigen Nebeljagd-Build bereitstellen.`);
+      if (!valid) throw new Error(`Der Browserstand ist unvollständig: ${name} fehlt oder ist keine Datei. Bitte den vollständigen Magebrawl-Build bereitstellen.`);
     }
   }
   await mkdir(dataDir, { recursive: true, mode: 0o700 });
@@ -113,7 +114,7 @@ export async function createClassroomServer({ publicDir = resolve('welt'), dataD
   // before accepting connections. The factory never reads process.env itself.
   const credential = await initializeTeacherPassword(dataDir, initialTeacherPassword);
   if (requireTeacherConfigured && !credential) {
-    throw new Error('Der Lehrkraft-Zugang fehlt. Bitte NEBELJAGD_INITIAL_TEACHER_PASSWORD in den Hosting-Einstellungen setzen und den Server neu starten.');
+    throw new Error('Der Lehrkraft-Zugang fehlt. Bitte MAGEBRAWL_INITIAL_TEACHER_PASSWORD in den Hosting-Einstellungen setzen und den Server neu starten.');
   }
   let rooms;
   try {
@@ -268,7 +269,7 @@ export async function createClassroomServer({ publicDir = resolve('welt'), dataD
         if (session) throw httpError(403, 'Dieser Bereich ist nur für Lehrkräfte.');
         response.writeHead(302, { Location: './index.html?role=teacher' }); return response.end();
       }
-      const gamePage = ['/game.html', '/nebeljagd.html', '/lobby.html'].includes(pathname);
+      const gamePage = ['/game.html', '/magebrawl.html', '/nebeljagd.html', '/lobby.html'].includes(pathname);
       if (gamePage && !session) {
         response.writeHead(302, { Location: './index.html?reason=session' }); return response.end();
       }
@@ -298,18 +299,19 @@ export async function createClassroomServer({ publicDir = resolve('welt'), dataD
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const host = process.env.HOST || '127.0.0.1';
+  const env = runtimeEnvironment();
+  const host = env.HOST || '127.0.0.1';
   const port = Number(process.env.PORT || 5200);
-  const publicDir = resolve(process.env.NEBELJAGD_PUBLIC_DIR || 'welt');
-  const dataDir = resolve(process.env.NEBELJAGD_DATA_DIR || '.nebeljagd');
+  const publicDir = resolve(env.MAGEBRAWL_PUBLIC_DIR || 'welt');
+  const dataDir = resolve(env.MAGEBRAWL_DATA_DIR || '.nebeljagd');
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT muss zwischen 1 und 65535 liegen.');
   const server = await createClassroomServer({ publicDir, dataDir,
-    secureCookies: process.env.NEBELJAGD_SECURE_COOKIES === '1',
-    initialTeacherPassword: process.env.NEBELJAGD_INITIAL_TEACHER_PASSWORD,
-    requireTeacherConfigured: process.env.NEBELJAGD_REQUIRE_TEACHER === '1' });
+    secureCookies: env.MAGEBRAWL_SECURE_COOKIES === '1',
+    initialTeacherPassword: env.MAGEBRAWL_INITIAL_TEACHER_PASSWORD,
+    requireTeacherConfigured: env.MAGEBRAWL_REQUIRE_TEACHER === '1' });
   const teacherConfigured = Boolean(await readCredential(dataDir));
   server.listen(port, host, () => {
-    console.log(`Nebeljagd-Schulserver läuft auf ${host}:${port}.`);
+    console.log(`Magebrawl-Schulserver läuft auf ${host}:${port}.`);
     console.log(teacherConfigured ? 'Der Lehrkraft-Zugang ist eingerichtet.' : 'Lehrkraft-Zugang einmalig mit npm run school:setup einrichten.');
   });
 }

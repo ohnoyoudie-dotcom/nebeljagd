@@ -25,8 +25,8 @@ REPORT = {'status': 'running', 'url': URL, 'standalone': STANDALONE,
           'sourceSha256': SOURCE_HASH, 'checks': [], 'errors': [], 'screenshots': [],
           'limits': 'Chromium/SwiftShader game loading, read-only telemetry, normal keyboard movement and island minimap; no physical-device performance claim.'}
 if STANDALONE:
-    payload = (ROOT / 'welt/nebeljagd.html').read_bytes()
-    REPORT['delivery'] = {'file': 'welt/nebeljagd.html', 'bytes': len(payload),
+    payload = (ROOT / 'welt/magebrawl.html').read_bytes()
+    REPORT['delivery'] = {'file': 'welt/magebrawl.html', 'bytes': len(payload),
                           'sha256': hashlib.sha256(payload).hexdigest(), 'unexpectedRequests': []}
 
 
@@ -64,7 +64,7 @@ try:
                     return
                 REPORT['delivery']['unexpectedRequests'].append(request.url)
             context.on('request', resource)
-        path = '/nebeljagd.html' if STANDALONE else '/game.html'
+        path = '/magebrawl.html' if STANDALONE else '/game.html'
         page.goto(URL + path + '?quality=low', wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
         expect(page.locator('#errorScreen')).to_be_hidden()

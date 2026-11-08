@@ -4,7 +4,7 @@ import { validateLandscape } from './landscape.js';
 import { validateBarriers } from './barriers.js';
 import { isHeightAdjustable, isValidBarrierHeight } from './barrier-height.js';
 
-/** Nebeljagd map contract v1. Coordinates are world meters: north = -z. */
+/** Magebrawl map contract v1. Coordinates are world meters: north = -z. */
 const LIMIT = 1e7;
 const ID = /^[a-zA-Z][a-zA-Z0-9_-]{0,79}$/;
 const HEX = /^#[a-fA-F0-9]{6}$/;

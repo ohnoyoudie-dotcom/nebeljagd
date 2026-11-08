@@ -1,3 +1,4 @@
+import { runtimeEnvironment } from '../server/runtime-environment.js';
 import { resolve } from 'node:path';
 import { stdin, stdout } from 'node:process';
 import { saveTeacherPassword } from '../server/classroom.js';
@@ -28,7 +29,7 @@ try {
   const first = await hiddenQuestion('Neues Lehrkraft-Passwort (mindestens 12 Zeichen, Eingabe unsichtbar): ');
   const second = await hiddenQuestion('Passwort wiederholen: ');
   if (first !== second) throw new Error('Die Passwörter stimmen nicht überein.');
-  await saveTeacherPassword(resolve(process.env.NEBELJAGD_DATA_DIR || '.nebeljagd'), first, { replace: process.argv.includes('--replace') });
+  await saveTeacherPassword(resolve(runtimeEnvironment().MAGEBRAWL_DATA_DIR || '.nebeljagd'), first, { replace: process.argv.includes('--replace') });
   console.log('Lehrkraft-Zugang eingerichtet. Das Passwort wurde ausschließlich als gesalzener Hash gespeichert.');
   if (process.argv.includes('--replace')) console.log('Bitte den Schulserver neu starten, um bestehende Anmeldungen zu beenden.');
 } catch (error) {

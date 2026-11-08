@@ -49,7 +49,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     <div class="world-vignette" aria-hidden="true"></div>
     <header class="brand-lockup">
       <div class="brand-mark">${icon('leaf')}</div>
-      <div><div class="brand-title">NEBELJAGD</div><div class="brand-subtitle">DIE NEBELINSEL</div></div>
+      <div><div class="brand-title">MAGEBRAWL</div><div class="brand-subtitle">MAGIE DER ELEMENTE</div></div>
     </header>
 
     <div class="zone-panel playing-only" id="zonePanel">
@@ -97,10 +97,10 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     <section class="intro-screen" id="startScreen" aria-labelledby="introTitle">
       <div class="intro-atmosphere" aria-hidden="true"></div>
       <div class="intro-card">
-        <div class="intro-eyebrow"><span></span>DIE GROSSE NEBELINSEL</div>
+        <div class="intro-eyebrow"><span></span>MAGEBRAWL · MAGIE DER ELEMENTE</div>
         <h1 id="introTitle">Die Insel<br><em>ruft.</em></h1>
         <p class="intro-description">Erkunde offene Häuser und alte Ruinen. Finde Gold und seltene Waffen in Truhen. Hinter Mauern, Bäumen und hohem Gras bleibst du verborgen — deine Sicht reicht nur in die Nähe.</p>
-        <div class="intro-world-summary"><strong id="worldName">Die Nebelinsel</strong><span id="worldStats">Die Welt wird vorbereitet …</span></div>
+        <div class="intro-world-summary"><strong id="worldName">Deine Spielwelt</strong><span id="worldStats">Die Welt wird vorbereitet …</span></div>
         <div class="intro-features"><span>${icon('leaf')}Erkunden</span><span>${icon('chest')}Schätze finden</span><span>${icon('shield')}Überleben</span></div>
         <button id="startBtn" class="primary-button"><span>Insel betreten</span>${icon('arrow')}</button>
         ${practice ? '<button class="lobby-intro-exit lobby-leave" type="button">Zurück zur Startseite</button>' : ''}
@@ -108,7 +108,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         <input id="worldMapFile" type="file" accept=".json,application/json" hidden>
         <div class="intro-controls"><span class="desktop-hint">WASD / PFEILE <b>BEWEGEN</b><span>·</span> LEERTASTE <b>ROLLE</b><span>·</span> F <b>ANGRIFF</b><span>·</span> E <b>WECHSELN / ÖFFNEN</b><br>ERSTE WAFFE <b>AUTOMATISCH BEIM DARÜBERLAUFEN</b></span><span class="touch-hint">JOYSTICK ZUM BEWEGEN · TASTEN FÜR ROLLE UND ANGRIFF</span></div>
       </div>
-      <div class="intro-location"><span>01</span><div>Die Nebelinsel<small>Ein Ort voller Geheimnisse</small></div></div>
+      <div class="intro-location"><span>01</span><div>Magebrawl<small>Eine Welt voller Magie</small></div></div>
     </section>
 
     <section class="modal-screen" id="pauseScreen" aria-labelledby="pauseTitle" hidden>
@@ -369,7 +369,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     landmarkObjects.push(...(data.objects || []).filter(object => ['house', 'ruin', 'shrine'].includes(object.kind)));
     mapBackdrop = document.createElement('canvas'); mapBackdrop.width = mapBackdrop.height = 512;
     const ctx = mapBackdrop.getContext('2d'); ctx.setTransform(2, 0, 0, 2, 0, 0); drawGeography(ctx, false);
-    $('worldName').textContent = data.name || 'Die Nebelinsel';
+    $('worldName').textContent = data.name || 'Deine Spielwelt';
     const area = (getWorldmapStats(data).landAreaM2 / 1e6).toLocaleString('de-DE', { maximumFractionDigits: 2 });
     $('worldStats').textContent = practice ? `${maxX - minX} × ${maxZ - minZ} Meter · Schwert, Feuerstab und Eisstab · Übungsgegner` : `${area} km² · ${(data.regions || []).length} Landschaften · ${landmarkObjects.filter(item => item.kind === 'house').length} begehbare Häuser`;
     lastMapTime = -Infinity; drawMap(latestState);
@@ -424,7 +424,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     const scaleMeters = local ? 25 : 200, scalePixels = scaleMeters * scale;
     ctx.strokeStyle = '#e6e5bd'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(12, size - 16); ctx.lineTo(12 + scalePixels, size - 16); ctx.stroke();
     ctx.fillStyle = '#f5edce'; ctx.font = '600 8px system-ui,sans-serif'; ctx.textAlign = 'left'; ctx.fillText(`${scaleMeters} m`, 12, size - 22);
-    $('mapViewLabel').textContent = local ? 'UMGEBUNG' : 'NEBELINSEL';
+    $('mapViewLabel').textContent = local ? 'UMGEBUNG' : 'WELTKARTE';
     map.dataset.mode = mapMode; map.dataset.markerCount = String(mapDrawnMarkers.length);
   }
   for (const mode of ['local', 'island']) {

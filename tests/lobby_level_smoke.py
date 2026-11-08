@@ -112,7 +112,7 @@ def run(url, password):
             page.on('pageerror', lambda error: REPORT['errors'].append({'kind': 'pageerror'}))
             page.on('console', lambda message: REPORT['errors'].append({'kind': 'console-error'}) if message.type == 'error' else None)
             stage('Initial level and full practice health')
-            page.goto(url + '/nebeljagd.html?mode=lobby&inspect=1&quality=low', wait_until='domcontentloaded')
+            page.goto(url + '/magebrawl.html?mode=lobby&inspect=1&quality=low', wait_until='domcontentloaded')
             page.wait_for_function('window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0')
             page.locator('#startBtn').click()
             first = assert_health(page, 1, 100)
@@ -174,8 +174,8 @@ def main():
     password = secrets.token_urlsafe(32)
     original_map_hash = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
     try:
-        built = (PUBLIC / 'nebeljagd.html').read_bytes()
-        REPORT['delivery'] = {'file': str(PUBLIC / 'nebeljagd.html'), 'bytes': len(built), 'sha256': hashlib.sha256(built).hexdigest(),
+        built = (PUBLIC / 'magebrawl.html').read_bytes()
+        REPORT['delivery'] = {'file': str(PUBLIC / 'magebrawl.html'), 'bytes': len(built), 'sha256': hashlib.sha256(built).hexdigest(),
                               'buildId': json.loads((PUBLIC / 'release.json').read_text()).get('buildId')}
         del built
         with tempfile.TemporaryDirectory(prefix='nebeljagd-level-lobby-') as data_dir:
@@ -195,7 +195,7 @@ def main():
                 server.kill(); server.wait()
             server = None
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == original_map_hash
-        assert hashlib.sha256((PUBLIC / 'nebeljagd.html').read_bytes()).hexdigest() == REPORT['delivery']['sha256']
+        assert hashlib.sha256((PUBLIC / 'magebrawl.html').read_bytes()).hexdigest() == REPORT['delivery']['sha256']
         REPORT['sourceMapUnchanged'] = original_map_hash
         REPORT['status'] = 'passed'
     except Exception as error:

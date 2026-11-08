@@ -1,4 +1,4 @@
-"""Nebeljagd neutral Adventurer, original deterministic Blender authoring.
+"""Magebrawl neutral Adventurer, original deterministic Blender authoring.
 Run blender -b --python scripts/build-avatar.py [--render].
 Metres, Blender Z-up/-Y forward; glTF Y-up/+Z forward. No external assets.
 """
@@ -371,7 +371,7 @@ def component_root(i):
  return i
 for e in core.data.edges:component_parent[component_root(e.vertices[1])]=component_root(e.vertices[0])
 component_count=len({component_root(i) for i in range(len(component_parent))})
-report={'sourceBasemesh':{'object':core.name,'connectedComponents':component_count,'vertices':len(core.data.vertices),'skinned':True,'exported':False},'name':'Nebeljagd neutral human Adventurer','authoring':'Original procedural sculpted/lofted topology, no external meshes/textures or mocap','triangles':tris,'visibleMeshes':[o.name for o in objects],'bones':list(rigdata.bones.keys()),'clips':{k:(max(fc.range()[1] for fc in a.fcurves)-min(fc.range()[0] for fc in a.fcurves))/30 for k,a in A.items()},'heightMetres':round(max(v[2] for b in B.values() for v in b.v)-min(v[2] for b in B.values() for v in b.v),4),'materials':[m.name for m in MATS],'forward':'Blender -Y; glTF +Z','up':'Blender Z; glTF Y','roll':'In-place forward X full revolution with physical tuck; vertical root compensation keeps deformed mesh touching ground; gameplay moves horizontal root','sha256':hashlib.sha256((OUT/'adventurer.glb').read_bytes()).hexdigest()}
+report={'sourceBasemesh':{'object':core.name,'connectedComponents':component_count,'vertices':len(core.data.vertices),'skinned':True,'exported':False},'name':'Magebrawl neutral human Adventurer','authoring':'Original procedural sculpted/lofted topology, no external meshes/textures or mocap','triangles':tris,'visibleMeshes':[o.name for o in objects],'bones':list(rigdata.bones.keys()),'clips':{k:(max(fc.range()[1] for fc in a.fcurves)-min(fc.range()[0] for fc in a.fcurves))/30 for k,a in A.items()},'heightMetres':round(max(v[2] for b in B.values() for v in b.v)-min(v[2] for b in B.values() for v in b.v),4),'materials':[m.name for m in MATS],'forward':'Blender -Y; glTF +Z','up':'Blender Z; glTF Y','roll':'In-place forward X full revolution with physical tuck; vertical root compensation keeps deformed mesh touching ground; gameplay moves horizontal root','sha256':hashlib.sha256((OUT/'adventurer.glb').read_bytes()).hexdigest()}
 (OUT/'adventurer-inspection.json').write_text(json.dumps(report,indent=2)+'\n');print('AVATAR_REPORT '+json.dumps(report))
 if '--render' in sys.argv:
  scene.cycles.samples=48;scene.camera=cam;scene.render.filepath=str(OUT/'adventurer-preview.png');bpy.ops.render.render(write_still=True)

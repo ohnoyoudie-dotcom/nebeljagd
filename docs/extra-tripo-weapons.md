@@ -2,7 +2,7 @@
 
 Die drei Inbox-Modelle sind als platzierbare, aufhebbare und benutzbare Waffen
 eingebunden. Der aktuelle Branch-Build steht als
-[Browserpaket aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+[Browserpaket aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/magebrawl-welt-und-editor.zip)
 bereit. Entpacken, `map-editor.html` öffnen und über **Spielen** testen.
 Der [feste Editor-Weblink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
 wird nach erfolgreichen Prüfungen über `main/preview` aktualisiert.

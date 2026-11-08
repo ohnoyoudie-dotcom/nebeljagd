@@ -1,4 +1,4 @@
-# Nebeljagd: Weltkarte und Objekteditor
+# Magebrawl: Weltkarte und Objekteditor
 
 > Die aktuelle Bedienung und Inselform stehen unter
 > [Kompakter Editor und neue Inselform](compact-editor.md).
@@ -18,12 +18,12 @@ Insel auf; der frühere Walddorf-Spielstand ist separat erhalten.
 | `worldmap.svg` | Editierbare Vektorkarte mit benannten Ebenen und Objektsymbolen |
 | `map-editor.html` | Einstieg bei laufendem Entwicklungsserver |
 | `dist/map-editor.html` | Eigenständiger Editor nach `npm run build` |
-| `dist/nebeljagd.html` | Eigenständige Spielversion nach dem Build |
-| `dist/nebeljagd-welt-und-editor.zip` | Spiel, Editor, Kartendaten, SVG, Schema und Kurzanleitung zusammen |
+| `dist/magebrawl.html` | Eigenständige Spielversion nach dem Build |
+| `dist/magebrawl-welt-und-editor.zip` | Spiel, Editor, Kartendaten, SVG, Schema und Kurzanleitung zusammen |
 
 Bei `npm run dev` `/map-editor.html` öffnen. Die gebauten Einzeldateien
 funktionieren ohne Server. Für „In 3D testen“ bei lokal geöffneten Dateien
-`nebeljagd.html` neben `map-editor.html` legen.
+`magebrawl.html` neben `map-editor.html` legen.
 Das ZIP-Paket enthält diese Ordneranordnung bereits; vor dem Öffnen entpacken.
 
 ## Bäume, Häuser und Pflanzen bearbeiten

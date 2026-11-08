@@ -20,7 +20,7 @@ BASELINE_BYTES = (ROOT/'docs/reference-layout-check.json').read_bytes()
 BASELINE = json.loads(BASELINE_BYTES)
 assert BASELINE['status']=='passed' and BASELINE['sourceSha256']==SOURCE_HASH
 FILES = {name:{'bytes':(ROOT/'welt'/name).stat().st_size,'sha256':hashlib.sha256((ROOT/'welt'/name).read_bytes()).hexdigest()}
-         for name in ['map-editor.html','nebeljagd.html','worldmap.json']}
+         for name in ['map-editor.html','magebrawl.html','worldmap.json']}
 assert FILES['worldmap.json']==BASELINE['delivery']['files']['worldmap.json']
 editor_same = FILES['map-editor.html']==BASELINE['delivery']['files']['map-editor.html']
 if editor_same:
@@ -38,7 +38,7 @@ REPORT={'status':'running','url':URL,'standalone':True,'sourceSha256':SOURCE_HAS
         'editorVerification':{'mode':'reused_identical_html' if editor_same else 'repeated_editor_only',
                               'htmlSha256':FILES['map-editor.html']['sha256'],'checks':editor_checks},
         'previousFullTraversal':BASELINE.get('previousFullTraversal',{'reportSha256':hashlib.sha256(BASELINE_BYTES).hexdigest(),
-                                 'gameHtmlSha256':BASELINE['delivery']['files']['nebeljagd.html']['sha256'],
+                                 'gameHtmlSha256':BASELINE['delivery']['files']['magebrawl.html']['sha256'],
                                  'note':'Earlier full crossings established the fixture routes; they were not repeated on this corrected build.'}),
         'delivery':{'files':FILES,'unexpectedRequests':[]},'checks':[],'errors':[],'screenshots':[],
         'limits':'Chromium software WebGL. Player state is read only; fixture starts use ordinary JSON imports and movement uses WASD. No device-performance claim.'}
@@ -134,7 +134,7 @@ try:
             REPORT['delivery']['unexpectedRequests'].append(request.url)
         context.on('request',resource)
         game=context.new_page();monitor(game)
-        game.goto(URL+'/nebeljagd.html?quality=low',wait_until='domcontentloaded')
+        game.goto(URL+'/magebrawl.html?quality=low',wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
         for label,identifier,point,entry_keys,entry_time,side_keys,side_time,exit_keys,exit_time in [
             ('north','nordbruecke',[213,-272],['w','a'],2.0,['w','d'],.7,['s','d'],2.0),

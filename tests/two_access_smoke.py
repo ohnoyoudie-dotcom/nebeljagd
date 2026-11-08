@@ -28,7 +28,7 @@ REPORT = {'status': 'running', 'url': URL, 'standalone': STANDALONE, 'editorOnly
           'limits': 'Chromium with software WebGL; imported fixture starts and ordinary movement. Topological isolation is independently covered by the map graph tests; no device-performance claim.'}
 if STANDALONE:
     REPORT['delivery'] = {'files': {}, 'unexpectedRequests': []}
-    for name in ['map-editor.html', 'nebeljagd.html', 'worldmap.json']:
+    for name in ['map-editor.html', 'magebrawl.html', 'worldmap.json']:
         data = (ROOT / 'welt' / name).read_bytes()
         REPORT['delivery']['files'][name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
 
@@ -247,7 +247,7 @@ try:
             # Keep software rendering bounded during travel; captures use the
             # same full desktop size as the editor for visual review.
             game.set_viewport_size({'width': 960, 'height': 600})
-            game.goto(URL + ('/nebeljagd.html' if STANDALONE else '/game.html') + '?quality=low', wait_until='domcontentloaded')
+            game.goto(URL + ('/magebrawl.html' if STANDALONE else '/game.html') + '?quality=low', wait_until='domcontentloaded')
             game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
             expect(game.locator('#startBtn')).to_be_enabled()
             assert game_state(game)['world']['mapName'] == SOURCE['name']

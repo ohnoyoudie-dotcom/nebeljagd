@@ -40,7 +40,7 @@ Auf schmalen Mobilgeräten liegt ein kompakter Werkzeugbereich über der Karte.
 ## Öffnen und gespeicherte Entwürfe
 
 Nach dem Aktualisieren von `work` dieselben Dateien unter `welt/map-editor.html`
-und `welt/nebeljagd.html` verwenden. Eine neue Editorsitzung startet mit der
+und `welt/magebrawl.html` verwenden. Eine neue Editorsitzung startet mit der
 überarbeiteten Projektkarte. Wer einen älteren lokalen Entwurf wiederherstellt
 oder eine alte JSON-Datei öffnet, sieht bewusst dessen gespeicherte Inselform.
 Die aktuelle `worldmap.json` lässt sich über **Öffnen** laden; eigene Entwürfe

@@ -59,7 +59,7 @@ jobs:
           npm run preview -- --port 4174 >/tmp/nebeljagd-preview.log 2>&1 &
           echo $! >/tmp/nebeljagd-preview.pid
           for i in {1..40}; do
-            curl -fsS http://127.0.0.1:4174/nebeljagd.html >/dev/null && break
+            curl -fsS http://127.0.0.1:4174/magebrawl.html >/dev/null && break
             sleep 1
           done
       - name: Verify uploaded weapon models, pickup, swaps and attacks
@@ -182,9 +182,9 @@ jobs:
       - name: Upload the verified work browser package
         uses: actions/upload-artifact@v4
         with:
-          name: nebeljagd-work-browser
+          name: magebrawl-work-browser
           path: |
-            welt/nebeljagd-welt-und-editor.zip
+            welt/magebrawl-welt-und-editor.zip
             welt/release.json
           retention-days: 7
       - uses: actions/upload-artifact@v4

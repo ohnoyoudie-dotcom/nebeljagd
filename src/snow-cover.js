@@ -69,14 +69,14 @@ function snowPatchGeometry() {
  * as wind drifts. Gameplay collision stays on the original terrain. */
 export function createSnowCover(root, { map, heightAt, spatial, quality = 'high' }) {
   const group = new THREE.Group();
-  group.name = 'Nebeljagd · natürliche volumige Schneedecke';
+  group.name = 'Magebrawl · natürliche volumige Schneedecke';
   root.add(group);
 
   const geometry = snowPatchGeometry();
   const material = new THREE.MeshStandardMaterial({
     color: '#edf3f4', roughness: .995, metalness: 0, vertexColors: true,
   });
-  material.name = 'Nebeljagd · windgeformter Pulverschnee';
+  material.name = 'Magebrawl · windgeformter Pulverschnee';
   material.onBeforeCompile = shader => {
     shader.vertexShader = `varying vec3 vSnowCoverWorld;
 ${shader.vertexShader}`.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
@@ -146,7 +146,7 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
     if (definition.type === 'base') treeBaseDrifts++;
   }
   const capMaterial = material.clone();
-  capMaterial.name = 'Nebeljagd · Schneeauflagen auf Winterobjekten';
+  capMaterial.name = 'Magebrawl · Schneeauflagen auf Winterobjekten';
   const capMesh = new THREE.InstancedMesh(geometry, capMaterial, Math.max(1, capItems.length));
   capMesh.name = 'Schneekappen und Baumfuß-Verwehungen';
   capMesh.count = capItems.length;

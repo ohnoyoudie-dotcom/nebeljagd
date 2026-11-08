@@ -116,7 +116,7 @@ def set_eraser(page, target, radius):
 try:
     if STANDALONE:
         REPORT['delivery']={'mode':'Actual welt/ standalone HTML served by local HTTP','files':{},'unexpectedRequests':[]}
-        for name in ['map-editor.html','nebeljagd.html','index.html']:
+        for name in ['map-editor.html','magebrawl.html','index.html']:
             payload=(ROOT/'welt'/name).read_bytes()
             REPORT['delivery']['files'][name]={'bytes':len(payload),'sha256':hashlib.sha256(payload).hexdigest()}
         with urlopen(URL+'/map-editor.html') as response:

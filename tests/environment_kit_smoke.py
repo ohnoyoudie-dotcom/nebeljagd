@@ -112,18 +112,18 @@ def check_offline_kit(browser):
     context=browser.new_context(offline=True,viewport={'width':1280,'height':850})
     page=context.new_page();page.set_default_timeout(120000);monitor(page)
     requests=[]
-    source=ROOT/'dist/nebeljagd.html'
+    source=ROOT/'dist/magebrawl.html'
     origin='http://127.0.0.1:4174'
     document_requests=[]
     def serve_document(route):
         request=route.request
-        if request.is_navigation_request() and request.url.startswith(origin+'/nebeljagd.html'):
+        if request.is_navigation_request() and request.url.startswith(origin+'/magebrawl.html'):
             document_requests.append(request.url)
             route.fulfill(status=200,content_type='text/html',body=source.read_bytes())
         else:
             requests.append(request.url);route.abort()
     page.route('**/*',serve_document)
-    page.goto(origin+'/nebeljagd.html?inspect=1&quality=low',wait_until='domcontentloaded')
+    page.goto(origin+'/magebrawl.html?inspect=1&quality=low',wait_until='domcontentloaded')
     page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
     with page.expect_navigation(wait_until='domcontentloaded'):
         page.locator('#worldMapFile').set_input_files({'name':'offline-kit.json',

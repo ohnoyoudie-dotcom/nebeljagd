@@ -17,7 +17,7 @@ async function fixture(t, { configured = true } = {}) {
   const root = await mkdtemp(join(tmpdir(), 'nebeljagd launcher '));
   const dataDir = join(root, '.nebeljagd'), publicDir = join(root, 'welt');
   await mkdir(publicDir);
-  for (const name of ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html']) {
+  for (const name of ['index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'map-editor.html']) {
     await writeFile(join(publicDir, name), '<!doctype html><title>Starter</title>');
   }
   if (configured) await saveTeacherPassword(dataDir, randomBytes(24).toString('hex'));

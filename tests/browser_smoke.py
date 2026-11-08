@@ -148,7 +148,7 @@ with sync_playwright() as p:
     page.on('request', lambda request: requests.append(request.url) if request.url.startswith(('http:', 'https:')) else None)
     # Managed cloud Chromium blocks file:// by policy. Validate the same single file
     # over HTTP and ensure it makes no additional resource requests.
-    standalone_url = URL.rstrip('/') + '/nebeljagd.html'
+    standalone_url = URL.rstrip('/') + '/magebrawl.html'
     start(page, standalone_url)
     assert requests == [standalone_url], requests
     assert state(page)['rendering']['triangles'] > 0

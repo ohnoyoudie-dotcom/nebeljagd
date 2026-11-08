@@ -1,6 +1,6 @@
-# Nebeljagd – Map-Editor erweitern: Vegetation, Gelände, Wind und natürliche Spielwelt
+# Magebrawl – Map-Editor erweitern: Vegetation, Gelände, Wind und natürliche Spielwelt
 
-Erweitere den bestehenden Map-Editor von Nebeljagd um professionelle Landschafts- und Vegetationswerkzeuge.
+Erweitere den bestehenden Map-Editor von Magebrawl um professionelle Landschafts- und Vegetationswerkzeuge.
 
 **Wichtig:** Bestehende Editorfunktionen, Karten, Objektplatzierungen, Kollisionen und Spielmechaniken müssen erhalten bleiben. Analysiere zunächst die vorhandene Architektur und erweitere die bestehenden Systeme, statt einen zweiten Editor aufzubauen.
 
@@ -182,7 +182,7 @@ Speichere Versionen so, dass bestehende Karten weiterhin geladen werden können.
 
 Verändere keine bestehenden Spielmechaniken ohne Notwendigkeit.
 
-**GitHub:** Arbeite ausschließlich auf dem vorhandenen Entwicklungsbranch von Nebeljagd. Keine Änderungen an `main`.
+**GitHub:** Arbeite ausschließlich auf dem vorhandenen Entwicklungsbranch von Magebrawl. Keine Änderungen an `main`.
 
 ## 9. Umsetzung und Prüfung
 

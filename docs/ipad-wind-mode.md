@@ -1,4 +1,4 @@
-# Nebeljagd – GPU-Wind und sparsame Grafik auf iPads
+# Magebrawl – GPU-Wind und sparsame Grafik auf iPads
 
 Der eigene Baum `tree:kit-user-tree1` wird im bestehenden 3D-Weltobjekt-Renderer aus der unveränderten GLB-Geometrie und ihren erhaltenen Texturen, UVs und Alpha-Masken geladen.
 

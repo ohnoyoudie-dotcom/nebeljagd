@@ -56,7 +56,7 @@ Objekte vor Überflutung; neue Objekte und Grasflächen lassen sich nicht ins
 Wasser setzen. Ohne `waterAreas` bleiben ältere Karten gültig.
 
 Nach dem Aktualisieren von `work` weiterhin `welt/map-editor.html` und
-`welt/nebeljagd.html` öffnen. Ein wiederhergestellter lokaler Entwurf behält
+`welt/magebrawl.html` öffnen. Ein wiederhergestellter lokaler Entwurf behält
 seinen bisherigen Kartenstand. Für die neue Insel die aktuelle
 `welt/worldmap.json` über **Öffnen** laden; eigene Entwürfe vorher speichern.
 Die Veröffentlichung auf `main` wird nicht verändert.

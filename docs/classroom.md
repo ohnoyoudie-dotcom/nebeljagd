@@ -1,4 +1,4 @@
-# Gemeinsamer Einstieg für Nebeljagd
+# Gemeinsamer Einstieg für Magebrawl
 
 Die Startseite trennt zwei Wege: Schüler geben den Zugangscode der Lehrkraft
 ein; Lehrkräfte melden sich mit ihrem Passwort an. Im Lehrerbereich sind der
@@ -10,7 +10,7 @@ Hosting-Konto und die ausdrückliche Tarifauswahl beim Anbieter.
 
 ## Unter Windows per Doppelklick öffnen
 
-Im aktuellen Projektordner **`Nebeljagd-starten.cmd`** doppelt anklicken.
+Im aktuellen Projektordner **`Magebrawl-starten.cmd`** doppelt anklicken.
 Visual Studio und eingegebene `npm`-Befehle sind dafür nicht nötig. Einmalig
 muss [Node.js ab 22.12](https://nodejs.org/en/download) installiert sein; der
 Starter erklärt dies, falls Node.js noch fehlt.
@@ -58,9 +58,9 @@ oder das Doppelklicken einer HTML-Datei führen diesen Server nicht aus.
 Ein öffentlicher Schulserver und dessen Domain wurden mit dieser Änderung noch
 nicht bereitgestellt.
 
-Hinter einem HTTPS-Reverse-Proxy `NEBELJAGD_SECURE_COOKIES=1` setzen und den
+Hinter einem HTTPS-Reverse-Proxy `MAGEBRAWL_SECURE_COOKIES=1` setzen und den
 ursprünglichen Hostnamen weiterreichen. Dann gelten die Anmelde-Cookies nur
-über HTTPS. `NEBELJAGD_DATA_DIR` kann einen eigenen Speicherort für die
+über HTTPS. `MAGEBRAWL_DATA_DIR` kann einen eigenen Speicherort für die
 Serverdaten festlegen. Ein bestehendes Passwort lässt sich lokal mit
 `npm run school:setup -- --replace` wechseln; danach den Server neu starten,
 um vorhandene Anmeldungen zu beenden.
@@ -97,7 +97,7 @@ Ein bereits laufender Server auf einem anderen Rechner erhält sie erst durch
 Übertragen beziehungsweise Aktualisieren des Repository-Stands. Das wurde
 nicht als automatische Internetveröffentlichung eingerichtet.
 
-Der eigenständige Editor und `nebeljagd.html` bleiben direkt nutzbar. Wenn die
+Der eigenständige Editor und `magebrawl.html` bleiben direkt nutzbar. Wenn die
 Startseite ohne Server geöffnet wird, erklärt sie den fehlenden Klassenbetrieb
 und bietet den Offline-Editor an. Sie simuliert keine Anmeldung.
 Auf dem Schulserver erfordert auch der direkte Aufruf der Spiel-Datei eine

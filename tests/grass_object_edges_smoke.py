@@ -70,7 +70,7 @@ with sync_playwright() as p:
         const module=useBefore?before:current;
         meadow=module.createMeadowGround(root,{map,heightAt:()=>0,colorAt,spatial,quality:'high'});
         for(let i=0;i<80;i++)meadow.update(1,player);
-        const carpet=root.getObjectByName('Nebeljagd · dichte animierte Wiese');
+        const carpet=root.getObjectByName('Magebrawl · dichte animierte Wiese');
         let roots=0,interiorRoots=0,leftStrip=0,frontStrip=0,nearLeft=Infinity,nearFront=Infinity;
         const matrix=new THREE.Matrix4();
         carpet.traverse(mesh=>{

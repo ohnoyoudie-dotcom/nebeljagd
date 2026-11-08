@@ -39,7 +39,7 @@ with sync_playwright() as p:
             page = context.new_page(); page.set_default_timeout(120000)
             page.on('pageerror', lambda e: (report['errors'].append(str(e)), print('BROWSER ERROR',str(e),flush=True)))
             print('START', 'touch' if touch else 'mouse', flush=True)
-            page.goto(BASE+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low', wait_until='domcontentloaded')
+            page.goto(BASE+'/magebrawl.html?inspect=1&mapSource=editor&quality=low', wait_until='domcontentloaded')
             page.wait_for_function('window.nebeljagdProjectPoint && window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
             page.locator('#startBtn').click()
             page.evaluate('nebeljagdInspect({x:0,z:-14,direction:0})')

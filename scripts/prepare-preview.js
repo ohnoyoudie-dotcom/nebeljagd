@@ -1,14 +1,14 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Public single-player delivery. The classroom portal remains at its own entry;
 // a Pages deployment must never replace it with an offline game alias.
 export const previewFiles = Object.freeze([
-  'editor.html', 'map-editor.html', 'nebeljagd.html', 'avatar-preview.html',
+  'editor.html', 'map-editor.html', 'magebrawl.html', 'nebeljagd.html', 'avatar-preview.html',
   'worldmap.json', 'worldmap.svg', 'worldmap.schema.json',
-  'nebeljagd-welt-und-editor.zip',
+  'magebrawl-welt-und-editor.zip',
 ]);
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -39,7 +39,7 @@ export async function preparePreview(sourceDirectory = 'welt', destinationDirect
   if (typeof map.name !== 'string' || !map.name) throw new Error('Project map needs a name.');
   const sourceCommit = sourceRelease.sourceCommit ?? sourceRelease.sourceBaseCommit ?? null;
   const mapSha256 = sourceRelease.files['worldmap.json'].sha256;
-  for (const name of ['map-editor.html', 'nebeljagd.html']) {
+  for (const name of ['map-editor.html', 'magebrawl.html']) {
     const html = entries.find(entry => entry.name === name).bytes.toString('utf8');
     const match = html.match(/<script\b(?=[^>]*\bid=["']editor-build-info["'])[^>]*>([\s\S]*?)<\/script>/i);
     if (!match) throw new Error(`Build metadata is missing from ${name}`);
@@ -50,14 +50,14 @@ export async function preparePreview(sourceDirectory = 'welt', destinationDirect
       throw new Error(`Editor, game and project map do not belong to the same build: ${name}`);
     }
   }
-  entries.push({ name: 'index.html', bytes: entries.find(entry => entry.name === 'nebeljagd.html').bytes });
+  entries.push({ name: 'index.html', bytes: entries.find(entry => entry.name === 'magebrawl.html').bytes });
   const files = Object.fromEntries(entries.map(({name, bytes}) => [name, {
     bytes: bytes.length, sha256: digest(bytes),
   }]));
   const { localBuild, ...metadata } = sourceRelease;
   const release = {
     ...metadata,
-    name: 'Nebeljagd – aktuelle Spielwelt und Editor',
+    name: 'Magebrawl – aktuelle Spielwelt und Editor',
     type: 'static-game-editor-preview',
     sourceBranch: 'work',
     sourceCommit,
@@ -71,6 +71,8 @@ export async function preparePreview(sourceDirectory = 'welt', destinationDirect
   await mkdir(destination, {recursive: true});
   await Promise.all(entries.map(({name, bytes}) => writeFile(join(destination, name), bytes)));
   await writeFile(join(destination, 'release.json'), JSON.stringify(release, null, 2) + '\n');
+  // This was the previous managed download; all unrelated files stay intact.
+  await rm(join(destination, 'nebeljagd-welt-und-editor.zip'), {force: true});
   return release;
 }
 

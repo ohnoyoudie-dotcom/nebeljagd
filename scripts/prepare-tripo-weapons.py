@@ -280,7 +280,7 @@ def write_package():
                   'evidenceBoundary': 'Static validation and actual Blender PBR renders. Editor/game GPU import, equipment alignment, gameplay, and artistic approval are assessed separately.'}
     (OUTPUT / 'provenance.json').write_text(json.dumps(provenance, indent=2) + '\n')
     (OUTPUT / 'inspection.json').write_text(json.dumps({'assets': reports}, indent=2) + '\n')
-    readme = '''# Tripo-Waffen für Nebeljagd
+    readme = '''# Tripo-Waffen für Magebrawl
 
 Die drei Original-GLBs in `assets/inbox/` bleiben unverändert. Dieses lokale,
 quellenerhaltende Paket stellt getrennte Browser-Ableitungen bereit.

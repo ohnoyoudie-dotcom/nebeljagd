@@ -38,7 +38,7 @@ with sync_playwright() as pw:
    p=ctx.new_page();p.set_default_timeout(180000)
    p.on('pageerror',lambda e:errors.append(str(e)))
    p.on('console',lambda m:errors.append(m.text) if m.type=='error' else None)
-   p.goto(URL+'/nebeljagd.html?inspect=1&mapSource=editor&quality='+quality,wait_until='domcontentloaded')
+   p.goto(URL+'/magebrawl.html?inspect=1&mapSource=editor&quality='+quality,wait_until='domcontentloaded')
    p.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0');p.locator('#startBtn').click()
    p.wait_for_function('nebeljagdTestState().world.stats.terrainPaint.queuedChunks===0')
    p.evaluate('nebeljagdInspect({x:1,z:0,health:100});nebeljagdInspectCamera({zoom:.9})')

@@ -146,11 +146,11 @@ def attack_target(page, identifier, distance=1.3):
 
 def record_document():
     digest = hashlib.sha256(); size = 0
-    with urlopen(URL + '/nebeljagd.html', timeout=60) as response:
+    with urlopen(URL + '/magebrawl.html', timeout=60) as response:
         assert response.status == 200
         while chunk := response.read(1024 * 1024):
             digest.update(chunk); size += len(chunk)
-    local = RELEASE / 'nebeljagd.html'
+    local = RELEASE / 'magebrawl.html'
     assert digest.hexdigest() == hashlib.sha256(local.read_bytes()).hexdigest()
     REPORT['delivery'] = {'file': str(local), 'bytes': size, 'sha256': digest.hexdigest()}
 
@@ -168,7 +168,7 @@ try:
             context.on('request', lambda request: REPORT['unexpectedRequests'].append(request.url)
                 if request.url.startswith(('http:', 'https:')) and request.resource_type != 'document'
                 and not urlsplit(request.url).path.endswith('/favicon.ico') else None)
-            page.goto(URL + '/nebeljagd.html?inspect=1&quality=low', wait_until='domcontentloaded')
+            page.goto(URL + '/magebrawl.html?inspect=1&quality=low', wait_until='domcontentloaded')
             page.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
             expected = fixture()
             with page.expect_navigation(wait_until='domcontentloaded'):

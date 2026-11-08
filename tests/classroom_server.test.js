@@ -14,7 +14,7 @@ async function fixture(t, options = {}) {
   const root = await mkdtemp(join(tmpdir(), 'nebeljagd-school-'));
   const publicDir = join(root, 'public'), dataDir = join(root, 'private');
   await mkdir(publicDir); await mkdir(dataDir);
-  for (const name of ['index.html', 'teacher.html', 'map-editor.html', 'avatar-preview.html', 'lobby.html', 'nebeljagd.html']) await writeFile(join(publicDir, name), `<!doctype html><title>${name}</title>`);
+  for (const name of ['index.html', 'teacher.html', 'map-editor.html', 'avatar-preview.html', 'lobby.html', 'magebrawl.html', 'nebeljagd.html']) await writeFile(join(publicDir, name), `<!doctype html><title>${name}</title>`);
   await writeFile(join(publicDir, 'release.json'), JSON.stringify({ buildId: 'test-build', builtAt: '2026-11-01T12:00:00.000Z' }));
   if (options.configured !== false) await saveTeacherPassword(dataDir, password);
   let clock = Date.parse('2026-11-01T12:00:00.000Z');
@@ -41,15 +41,17 @@ test('teacher and pupils have separate sessions; only teacher can issue/close co
   assert.equal(anonymous.value.role, null); assert.equal(anonymous.value.teacherConfigured, true);
   assert.equal(anonymous.value.build.id, 'test-build');
   assert.equal((await f.call('/map-editor.html')).status, 302);
-  assert.equal((await f.call('/nebeljagd.html')).status, 302);
-  assert.equal((await f.call('/game.html')).status, 302);
+  assert.equal((await f.call('/magebrawl.html')).status, 302);
   assert.equal((await f.call('/nebeljagd.html?mode=lobby')).status, 302);
+  assert.equal((await f.call('/game.html')).status, 302);
+  assert.equal((await f.call('/magebrawl.html?mode=lobby')).status, 302);
   assert.equal((await f.call('/api/rooms')).status, 403);
   assert.equal((await f.call('/api/teacher/login', { method: 'POST', data: { password: 'wrong' } })).status, 401);
   const teacher = await f.login(); assert.equal(teacher.status, 200);
   assert.match(teacher.headers.get('set-cookie'), /HttpOnly/); assert.match(teacher.headers.get('set-cookie'), /SameSite=Strict/);
   assert.equal((await f.call('/teacher.html', { cookie: teacher.cookie })).status, 200);
   assert.equal((await f.call('/map-editor.html', { cookie: teacher.cookie })).status, 200);
+  assert.equal((await f.call('/magebrawl.html?mapSource=editor', { cookie: teacher.cookie })).status, 200);
   assert.equal((await f.call('/nebeljagd.html?mapSource=editor', { cookie: teacher.cookie })).status, 200);
   const created = await f.call('/api/rooms', { method: 'POST', cookie: teacher.cookie, data: { name: 'Klasse 7 · Übung' } });
   assert.equal(created.status, 201); assert.match(created.value.room.code, /^[A-HJ-NP-Z2-9]{8}$/);
@@ -60,7 +62,7 @@ test('teacher and pupils have separate sessions; only teacher can issue/close co
   assert.notEqual(peer.cookie, pupil.cookie, 'each browser gets its own session');
   assert.equal((await f.call('/api/session', { cookie: pupil.cookie })).value.room.name, 'Klasse 7 · Übung');
   assert.equal((await f.call('/lobby.html', { cookie: pupil.cookie })).status, 200);
-  assert.equal((await f.call('/nebeljagd.html?mode=lobby', { cookie: pupil.cookie })).status, 200);
+  assert.equal((await f.call('/magebrawl.html?mode=lobby', { cookie: pupil.cookie })).status, 200);
   assert.equal((await f.call('/map-editor.html', { cookie: pupil.cookie })).status, 403);
   assert.equal((await f.call('/api/rooms', { method: 'POST', cookie: pupil.cookie, data: {} })).status, 403);
   assert.equal((await f.call(`/api/rooms/${created.value.room.id}`, { method: 'DELETE', cookie: pupil.cookie })).status, 403);
@@ -69,8 +71,8 @@ test('teacher and pupils have separate sessions; only teacher can issue/close co
   assert.equal((await f.call('/api/session', { cookie: pupil.cookie })).value.role, null);
   assert.equal((await f.call('/api/session', { cookie: peer.cookie })).value.role, null);
   assert.equal((await f.call('/lobby.html', { cookie: pupil.cookie })).status, 302);
-  assert.equal((await f.call('/nebeljagd.html', { cookie: pupil.cookie })).status, 302);
-  assert.equal((await f.call('/nebeljagd.html?mode=lobby', { cookie: pupil.cookie })).status, 302);
+  assert.equal((await f.call('/magebrawl.html', { cookie: pupil.cookie })).status, 302);
+  assert.equal((await f.call('/magebrawl.html?mode=lobby', { cookie: pupil.cookie })).status, 302);
   assert.equal((await f.call('/api/student/join', { method: 'POST', data: { code: created.value.room.code } })).status, 401);
   assert.equal((await f.call('/api/logout', { method: 'POST', data: {}, cookie: teacher.cookie })).status, 200);
   assert.equal((await f.call('/api/session', { cookie: teacher.cookie })).value.role, null);
@@ -170,7 +172,7 @@ test('hosting requires an initial teacher secret once, then accepts its persiste
   const f = await fixture(t, { configured: false });
   for (const initialTeacherPassword of [undefined, '']) {
     await assert.rejects(createClassroomServer({ publicDir: f.publicDir, dataDir: f.dataDir,
-      requireTeacherConfigured: true, initialTeacherPassword }), /NEBELJAGD_INITIAL_TEACHER_PASSWORD.*Hosting-Einstellungen/);
+      requireTeacherConfigured: true, initialTeacherPassword }), /MAGEBRAWL_INITIAL_TEACHER_PASSWORD.*Hosting-Einstellungen/);
   }
   assert.deepEqual(await readdir(f.dataDir), []);
   await saveTeacherPassword(f.dataDir, randomBytes(24).toString('hex'));
@@ -180,7 +182,7 @@ test('hosting requires an initial teacher secret once, then accepts its persiste
 
 test('hosting refuses an incomplete browser build before returning a server, without changing local setup', async t => {
   const f = await fixture(t);
-  for (const name of ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'release.json']) {
+  for (const name of ['index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'map-editor.html', 'release.json']) {
     const path = join(f.publicDir, name), bytes = await readFile(path);
     await rm(path);
     await assert.rejects(createClassroomServer({ publicDir: f.publicDir, dataDir: f.dataDir,
@@ -253,9 +255,9 @@ test('the server command consumes the hosting secret through its environment wit
   const initial = randomBytes(24).toString('base64url');
   const child = spawn(process.execPath, ['server/classroom.js'], { env: {
     ...process.env, HOST: '127.0.0.1', PORT: String(port),
-    NEBELJAGD_DATA_DIR: f.dataDir, NEBELJAGD_PUBLIC_DIR: f.publicDir,
-    NEBELJAGD_SECURE_COOKIES: '0', NEBELJAGD_INITIAL_TEACHER_PASSWORD: initial,
-    NEBELJAGD_REQUIRE_TEACHER: '1',
+    MAGEBRAWL_DATA_DIR: f.dataDir, MAGEBRAWL_PUBLIC_DIR: f.publicDir,
+    MAGEBRAWL_SECURE_COOKIES: '0', MAGEBRAWL_INITIAL_TEACHER_PASSWORD: initial,
+    MAGEBRAWL_REQUIRE_TEACHER: '1',
   }, stdio: ['ignore', 'pipe', 'pipe'] });
   let output = '';
   child.stdout.on('data', chunk => { output += chunk; });
@@ -268,7 +270,7 @@ test('the server command consumes the hosting secret through its environment wit
   await new Promise((resolveReady, reject) => {
     const timer = setTimeout(() => { cleanup(); reject(new Error('Hosting server did not become ready')); }, 10000);
     const cleanup = () => { clearTimeout(timer); child.stdout.removeListener('data', ready); child.removeListener('exit', failed); };
-    const ready = () => { if (output.includes('Nebeljagd-Schulserver läuft')) { cleanup(); resolveReady(); } };
+    const ready = () => { if (output.includes('Magebrawl-Schulserver läuft')) { cleanup(); resolveReady(); } };
     const failed = () => { cleanup(); reject(new Error('Hosting server exited before readiness')); };
     child.stdout.on('data', ready); child.once('exit', failed); child.once('error', failed);
   });

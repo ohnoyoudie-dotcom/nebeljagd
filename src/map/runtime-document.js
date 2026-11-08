@@ -59,11 +59,11 @@ export async function importRuntimeWorldmap(file) {
     sessionStorage.setItem(IMPORT_KEY, JSON.stringify(map));
   } catch {
     // A packaged game can preserve an imported document without browser storage.
-    if (document.querySelector('script[src]')) throw new Error('Dieser Browser erlaubt keinen lokalen Speicher. Öffne die eigenständige nebeljagd.html und lade dort deine Karte.');
+    if (document.querySelector('script[src]')) throw new Error('Dieser Browser erlaubt keinen lokalen Speicher. Öffne die eigenständige magebrawl.html und lade dort deine Karte.');
     const doc = document.documentElement.cloneNode(true);
     doc.querySelector('#worldmap-snapshot').textContent = JSON.stringify(map).replace(/</g, '\\u003c');
     const url = URL.createObjectURL(new Blob([`<!doctype html>\n${doc.outerHTML}`], { type: 'text/html' }));
-    const link = document.createElement('a'); link.href = url; link.download = 'nebeljagd-eigene-welt.html'; link.click();
+    const link = document.createElement('a'); link.href = url; link.download = 'magebrawl-eigene-welt.html'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 3000);
     return 'Die Spielversion mit deiner Karte wurde gespeichert. Öffne die heruntergeladene HTML-Datei im Browser.';
   }

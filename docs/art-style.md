@@ -1,4 +1,4 @@
-# Gemeinsamer Stil für Nebeljagd
+# Gemeinsamer Stil für Magebrawl
 
 Die feste Stilreferenz für neu erstellte Modelle ist der aktuelle, vom Nutzer
 gelieferte Avatar `assets/characters/nebeljagd_player_base_v1.glb`.
@@ -35,7 +35,7 @@ Beschriftung. Avatar und Objekt nicht als gemeinsame Szene an die 3D-Erzeugung
 
 Wiederverwendbarer Stilzusatz für die Bildgestaltung:
 
-> Match the supplied Nebeljagd avatar reference: premium stylized realism,
+> Match the supplied Magebrawl avatar reference: premium stylized realism,
 > sculpted readable forms, warm muted walnut and leather browns, linen neutrals,
 > charcoal iron and restrained aged-brass accents. Broad calm surfaces with
 > purposeful medium-scale details, subtle grain, selective edge wear and soft

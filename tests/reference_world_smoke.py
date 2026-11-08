@@ -13,7 +13,7 @@ from playwright.sync_api import sync_playwright, expect
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
 checks, errors, screenshots = [], [], []
-report = {'status': 'running', 'url': URL + '/nebeljagd.html', 'checks': checks,
+report = {'status': 'running', 'url': URL + '/magebrawl.html', 'checks': checks,
           'errors': errors, 'screenshots': screenshots}
 
 
@@ -59,7 +59,7 @@ try:
         page.set_default_timeout(120000)
         page.on('pageerror', lambda e: errors.append(str(e)))
         page.on('console', lambda m: errors.append(m.text) if m.type == 'error' else None)
-        response = page.goto(URL + '/nebeljagd.html?inspect=1&quality=low', wait_until='domcontentloaded')
+        response = page.goto(URL + '/magebrawl.html?inspect=1&quality=low', wait_until='domcontentloaded')
         report['served_html_sha256'] = hashlib.sha256(response.body()).hexdigest()
         page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls > 0')
         expect(page.locator('#errorScreen')).to_be_hidden()

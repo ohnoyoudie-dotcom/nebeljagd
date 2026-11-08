@@ -56,7 +56,7 @@ jobs:
           PY
           python tools/grass-ground/build.py
           node --check grass-build/map-editor.html.mjs
-          node --check grass-build/nebeljagd.html.mjs
+          node --check grass-build/magebrawl.html.mjs
       - name: Test editor, grass, collisions, opening chests and vision
         run: python tools/test_meadow_v2.py
       # Historical patch experiments remain downloadable artifacts only.

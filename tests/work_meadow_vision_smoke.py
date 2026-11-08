@@ -65,7 +65,7 @@ with sync_playwright() as p:
     errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.on('console',lambda m:errors.append(m.text) if m.type=='error' and 'favicon' not in m.text else None)
-    page.goto(URL+'/nebeljagd.html?inspect=1&quality=low',wait_until='domcontentloaded',timeout=120000)
+    page.goto(URL+'/magebrawl.html?inspect=1&quality=low',wait_until='domcontentloaded',timeout=120000)
     page.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0',timeout=120000)
     fixture=runtime_fixture()
     (OUT/'meadow-vision-fixture.json').write_text(json.dumps(fixture,indent=2)+'\n')

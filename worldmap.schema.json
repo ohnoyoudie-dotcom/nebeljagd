@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:nebeljagd:worldmap:schema:1",
-  "title": "Nebeljagd – editierbare Kartenbasis v1",
-  "description": "Strukturelles Format der editierbaren Nebeljagd-Welt. Ein Meter entspricht einer Welteinheit. Semantische Geometrie- und Spielregeln prüft src/map/model.js; objects enthält einzeln platzierte 3D-Objekte und barriers die unabhängig vom Modell editierbaren Mauer- und Zaunverläufe.",
+  "title": "Magebrawl – editierbare Kartenbasis v1",
+  "description": "Strukturelles Format der editierbaren Magebrawl-Welt. Ein Meter entspricht einer Welteinheit. Semantische Geometrie- und Spielregeln prüft src/map/model.js; objects enthält einzeln platzierte 3D-Objekte und barriers die unabhängig vom Modell editierbaren Mauer- und Zaunverläufe.",
   "type": "object",
   "required": [
     "schemaVersion",

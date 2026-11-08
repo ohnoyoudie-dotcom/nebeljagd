@@ -181,7 +181,7 @@ def run(url):
             else:
                 route.continue_()
 
-        context.route(re.compile('^' + re.escape(url + '/nebeljagd.html') + r'\?'), inspect_navigation)
+        context.route(re.compile('^' + re.escape(url + '/magebrawl.html') + r'\?'), inspect_navigation)
         editor = context.new_page()
         try:
             stage('Place sword and both staves in the delivered editor')
@@ -220,11 +220,11 @@ def run(url):
             game.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
             expect(game.locator('#errorScreen')).to_be_hidden()
             parsed = urlsplit(game.url)
-            assert parsed.path == urlsplit(url).path + '/nebeljagd.html', game.url
+            assert parsed.path == urlsplit(url).path + '/magebrawl.html', game.url
             assert parse_qs(parsed.query)['mapSource'] == ['editor']
             assert parse_qs(parsed.query).get('v') == ['swap-check'], game.url
             assert parse_qs(urlsplit(REPORT['editorPlayNavigation']).query).get('v') == ['swap-check'], REPORT['editorPlayNavigation']
-            record_document(url, 'nebeljagd.html')
+            record_document(url, 'magebrawl.html')
             initial = state(game)
             assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
             expected_ids = {drop['id'] for drop in initial['weaponDrops']}

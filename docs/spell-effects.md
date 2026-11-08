@@ -29,7 +29,7 @@ Waffenwechsel während des Ladens brechen den noch nicht abgeschossenen Zauber a
 Pause hält die Effekte an; ein Neustart entfernt alle laufenden Effekte.
 
 Nach Anpassungen Tests und `npm run build` ausführen. Dadurch landet der aktuelle
-Spielstand auch in `welt/nebeljagd.html`, das der Editor über **Spielen** öffnet.
+Spielstand auch in `welt/magebrawl.html`, das der Editor über **Spielen** öffnet.
 Der Browsercheck `python3 tests/spell_effects_smoke.py` startet seinen eigenen
 lokalen Server und prüft die tatsächlich erzeugten Dateien unter `/preview/`.
 Er verändert nur einen Testentwurf im Browser; die gespeicherte Nutzerkarte

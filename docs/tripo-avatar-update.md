@@ -62,7 +62,7 @@ npm run preview -- --port 4174
 python tests/avatar_smoke.py
 ```
 
-Das Spiel liegt nach dem Build unter `dist/nebeljagd.html`, die Nahansicht unter
+Das Spiel liegt nach dem Build unter `dist/magebrawl.html`, die Nahansicht unter
 `dist/avatar-preview.html`. Beide enthalten das komplette Modell samt Texturen.
 Die auf `work` gespeicherten Ausgaben stehen unter `welt/`.
 `main` und die öffentliche Veröffentlichung dieses Branches werden nicht geändert.

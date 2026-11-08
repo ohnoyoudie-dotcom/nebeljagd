@@ -21,7 +21,7 @@ REPORT={'status':'running','url':URL,'standalone':STANDALONE,'sourceSha256':SOUR
         'limits':'Chromium software WebGL. One ordinary full traversal per bridge supplies both landing images; no device-performance claim.'}
 if STANDALONE:
     REPORT['delivery']={'files':{},'unexpectedRequests':[]}
-    for name in ['map-editor.html','nebeljagd.html','worldmap.json']:
+    for name in ['map-editor.html','magebrawl.html','worldmap.json']:
         data=(ROOT/'welt'/name).read_bytes()
         REPORT['delivery']['files'][name]={'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
 
@@ -260,7 +260,7 @@ try:
             passed('Exported standalone HTML reopens the exact map and retains the islet editing controls')
 
         game=context.new_page();monitor(game);game.set_viewport_size({'width':960,'height':600})
-        game.goto(URL+('/nebeljagd.html' if STANDALONE else '/game.html')+'?quality=low',wait_until='domcontentloaded')
+        game.goto(URL+('/magebrawl.html' if STANDALONE else '/game.html')+'?quality=low',wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
         assert game_state(game)['world']['mapName']==SOURCE['name']
         for label,identifier,point,keys,entry_seconds,middle_seconds,exit_seconds,expected_biome in [

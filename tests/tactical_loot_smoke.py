@@ -14,7 +14,7 @@ from playwright.sync_api import sync_playwright, expect
 
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4174').rstrip('/')
-GAME = os.environ.get('NEBELJAGD_GAME_PATH', '/nebeljagd.html')
+GAME = os.environ.get('NEBELJAGD_GAME_PATH', '/magebrawl.html')
 SHOTS = ROOT / 'docs/screenshots'
 SHOTS.mkdir(exist_ok=True)
 checks, errors, screenshots = [], [], []

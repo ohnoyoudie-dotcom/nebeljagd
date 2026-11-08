@@ -21,7 +21,7 @@ export async function createCharacter(scene) {
   // Keep normalization outside the imported hierarchy: animation tracks may
   // animate the scene/armature, but must never overwrite its metre scale.
   const model = new THREE.Group();
-  model.name = 'Nebeljagd · normalisierter Spieleravatar';
+  model.name = 'Magebrawl · normalisierter Spieleravatar';
   const assetRoot = gltf.scene;
   const geometryPreparation = preparePlayerGeometry(assetRoot);
   model.add(assetRoot);

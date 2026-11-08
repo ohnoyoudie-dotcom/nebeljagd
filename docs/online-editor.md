@@ -45,8 +45,8 @@ veröffentlichten Commit an und prüft dessen Ergebnis. Ein erfolgreicher Push
 allein bestätigt noch keine erfolgreiche Bereitstellung.
 
 Das geprüfte ZIP und die Versionsdatei stehen außerdem sieben Tage als
-Actions-Artefakt **nebeljagd-work-browser** bereit. Die
-[Offline-Kopie aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+Actions-Artefakt **magebrawl-work-browser** bereit. Die
+[Offline-Kopie aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/magebrawl-welt-und-editor.zip)
 bleibt zum Herunterladen verfügbar.
 
 ## Eigene Kartenänderungen

@@ -30,7 +30,7 @@ with sync_playwright() as p:
         page=context.new_page();page.set_default_timeout(120000)
         page.on('pageerror',lambda e:report['errors'].append(str(e)))
         page.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' else None)
-        page.goto(URL+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
+        page.goto(URL+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
         model=state(page)['combat']['effects']['fireModel']
         assert model and model['triangles']<=6000 and model['nominalLength']==.75,model

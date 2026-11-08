@@ -229,7 +229,7 @@ try:
         page = browser.new_page(viewport={'width': 960, 'height': 640}); page.set_default_timeout(90000)
         requests = []
         page.on('request', lambda request: requests.append(request.url) if request.url.startswith(('http:', 'https:')) else None)
-        start(page, 'nebeljagd.html')
+        start(page, 'magebrawl.html')
         assert len(requests) == 1, requests
         assert state(page)['character']['skinned'] is True
         passed('Standalone HTML embeds the skinned GLB and makes no additional HTTP requests')

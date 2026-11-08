@@ -113,7 +113,7 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
     `);
   };
   material.customProgramCacheKey = () => 'nebeljagd-terrain-paint-v10-clear-path-interior';
-  material.name = 'Nebeljagd · gemalter Boden aus Kartendaten';
+  material.name = 'Magebrawl · gemalter Boden aus Kartendaten';
   function release() {
     texture?.dispose(); maskTexture?.dispose(); snowMaskTexture?.dispose();
     texture = null; maskTexture = null; snowMaskTexture = null; textureSize = null;
@@ -134,15 +134,15 @@ export function createTerrainPaintMaterial(baseMaterial, index, bounds, pavingTe
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.magFilter = texture.minFilter = THREE.LinearFilter;
       texture.generateMipmaps = false; texture.flipY = false; texture.needsUpdate = true;
-      texture.name = 'Nebeljagd · lokaler Bodenfarbauftrag';
+      texture.name = 'Magebrawl · lokaler Bodenfarbauftrag';
       maskTexture = new THREE.DataTexture(mask, next.width, next.height, THREE.RedFormat, THREE.UnsignedByteType);
       maskTexture.magFilter = maskTexture.minFilter = THREE.LinearFilter;
       maskTexture.generateMipmaps = false; maskTexture.flipY = false; maskTexture.unpackAlignment = 1; maskTexture.needsUpdate = true;
-      maskTexture.name = 'Nebeljagd · gemalte Pflastergewichtung';
+      maskTexture.name = 'Magebrawl · gemalte Pflastergewichtung';
       snowMaskTexture = new THREE.DataTexture(snowMask, next.width, next.height, THREE.RedFormat, THREE.UnsignedByteType);
       snowMaskTexture.magFilter = snowMaskTexture.minFilter = THREE.LinearFilter;
       snowMaskTexture.generateMipmaps = false; snowMaskTexture.flipY = false; snowMaskTexture.unpackAlignment = 1; snowMaskTexture.needsUpdate = true;
-      snowMaskTexture.name = 'Nebeljagd · gemalte Schneegewichtung';
+      snowMaskTexture.name = 'Magebrawl · gemalte Schneegewichtung';
       paintUniform.value = texture; pavingMaskUniform.value = maskTexture; snowMaskUniform.value = snowMaskTexture; textureSize = next; bakeCount++;
       const elapsed = performance.now() - started; totalBakeMs += elapsed; maximumBakeMs = Math.max(maximumBakeMs, elapsed);
     },

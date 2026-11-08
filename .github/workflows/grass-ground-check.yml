@@ -28,7 +28,7 @@ jobs:
         run: |
           python tools/grass-ground/build.py
           node --check grass-build/map-editor.html.mjs
-          node --check grass-build/nebeljagd.html.mjs
+          node --check grass-build/magebrawl.html.mjs
       - name: Browser integration test
         run: python tools/grass-ground/test_browser.py
       # Historical patch experiments remain downloadable artifacts only.

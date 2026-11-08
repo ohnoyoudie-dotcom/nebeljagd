@@ -89,7 +89,7 @@ with sync_playwright() as playwright:
     expect(page.locator('#palette-preview-image svg')).to_be_visible()
     assert 'Rei' in page.locator('#palette-preview-source').inner_text()
     page.locator('#palette-variant').select_option('pine')
-    assert 'Nebeljagd' in page.locator('#palette-preview-source').inner_text()
+    assert 'Magebrawl' in page.locator('#palette-preview-source').inner_text()
     checks.append('Asset model previews and source labels follow the selected existing variant')
     page.locator('#feature-list .feature-row').nth(len(painted) // 2).click()
     page.locator('#focus-selection').click()

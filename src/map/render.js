@@ -293,7 +293,7 @@ export function renderWorldmapSvg(map, options = {}) {
   out.push('  </g>', '  <g id="frame" data-layer="frame" inkscape:groupmode="layer" inkscape:label="Rahmen und Maßstab" pointer-events="none" font-family="system-ui, sans-serif" fill="#dfd8ba">');
   if (!editor) {
     out.push(`    <rect x="${minX + 14}" y="${minZ + 14}" width="${width - 28}" height="${height - 28}" rx="8" fill="none" stroke="#c9c09b" stroke-opacity=".4" stroke-width="1.5"/>`);
-    out.push(`    <text x="${minX + 36}" y="${minZ + 48}" font-family="Georgia, serif" font-size="26" font-weight="700">NEBELJAGD</text>`);
+    out.push(`    <text x="${minX + 36}" y="${minZ + 48}" font-family="Georgia, serif" font-size="26" font-weight="700">MAGEBRAWL</text>`);
     out.push(`    <text x="${minX + 36}" y="${minZ + 72}" font-size="12" letter-spacing="1.5">SCHEMATISCH · EDITIERBAR</text>`);
     out.push(`    <g transform="translate(${maxX - 60} ${minZ + 75})"><path d="M0,-30 11,9 0,1 -11,9Z" fill="#d9dbbd"/><path d="M0,-30V20" stroke="#6f9ba0" stroke-width="2"/><text y="-41" text-anchor="middle" font-size="15">N</text></g>`);
     out.push(`    <g transform="translate(${minX + 40} ${maxZ - 64})"><path d="M0,-6V0H200V-6 M100,0V-6" stroke="#dfd8ba" stroke-width="2" fill="none"/><text y="18" font-size="12">0</text><text x="100" y="18" font-size="12" text-anchor="middle">100</text><text x="200" y="18" font-size="12" text-anchor="end">200 m</text></g>`);

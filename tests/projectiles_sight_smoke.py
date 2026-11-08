@@ -72,7 +72,7 @@ with sync_playwright() as p:
         page.route('**/favicon.ico', lambda route: route.fulfill(status=204))
         page.on('pageerror', lambda error: report['errors'].append(str(error)))
         page.on('console', lambda message: report['errors'].append(message.text) if message.type == 'error' else None)
-        page.goto(BASE + '/nebeljagd.html?inspect=1&mapSource=editor&quality=low', wait_until='domcontentloaded')
+        page.goto(BASE + '/magebrawl.html?inspect=1&mapSource=editor&quality=low', wait_until='domcontentloaded')
         page.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls > 0')
         current = state(page)['combat']
         assert current['effects']['iceModel']['source'].endswith('ice crystal 3d model.glb')

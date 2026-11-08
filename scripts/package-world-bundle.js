@@ -4,15 +4,15 @@ import { resolve } from 'node:path';
 
 /** A small deterministic ZIP, using only Node's built-in modules. */
 export async function packageWorldBundle(directory = resolve('dist')) {
-  const names = ['index.html', 'teacher.html', 'lobby.html', 'nebeljagd.html', 'map-editor.html', 'editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
+  const names = ['index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'nebeljagd.html', 'map-editor.html', 'editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
   const entries = await Promise.all(names.map(async name => ({ name, bytes: await readFile(resolve(directory, name)) })));
-  entries.push({ name: 'Anleitung.txt', bytes: Buffer.from(`NEBELJAGD – SPIELWELT UND EDITOR
+  entries.push({ name: 'Anleitung.txt', bytes: Buffer.from(`MAGEBRAWL – SPIELWELT UND EDITOR
 
 1. Dieses ZIP vollständig in einen Ordner entpacken.
 2. index.html öffnet den gemeinsamen Einstieg. Der Klassenbetrieb mit Login
-   und Zugangscodes benötigt den Nebeljagd-Server; siehe docs/classroom.md
+   und Zugangscodes benötigt den Magebrawl-Server; siehe docs/classroom.md
    im Repository. Eine HTML-Datei allein stellt keinen gemeinsamen Server bereit.
-   nebeljagd.html lässt sich weiterhin direkt als Einzelspiel öffnen.
+   magebrawl.html lässt sich weiterhin direkt als Einzelspiel öffnen.
 3. map-editor.html im Browser öffnen: Weltobjekte anlegen und verändern.
    editor.html ist der feste Online-Einstieg. In einer lokalen ZIP-Kopie bietet
    er den Offline-Editor an; diese Kopie aktualisiert sich nicht automatisch.
@@ -75,6 +75,6 @@ und Teams sind noch nicht implementiert.
   const end = Buffer.alloc(22), directoryBytes = Buffer.concat(central);
   end.writeUInt32LE(0x06054b50); end.writeUInt16LE(entries.length, 8); end.writeUInt16LE(entries.length, 10);
   end.writeUInt32LE(directoryBytes.length, 12); end.writeUInt32LE(offset, 16);
-  await writeFile(resolve(directory, 'nebeljagd-welt-und-editor.zip'), Buffer.concat([...files, directoryBytes, end]));
-  console.log('Offline bundle: dist/nebeljagd-welt-und-editor.zip');
+  await writeFile(resolve(directory, 'magebrawl-welt-und-editor.zip'), Buffer.concat([...files, directoryBytes, end]));
+  console.log('Offline bundle: dist/magebrawl-welt-und-editor.zip');
 }

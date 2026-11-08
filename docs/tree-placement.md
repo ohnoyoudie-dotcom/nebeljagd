@@ -1,4 +1,4 @@
-# Nebeljagd: Dein Baum 1 – transparente Blätter repariert
+# Magebrawl: Dein Baum 1 – transparente Blätter repariert
 
 Die FBX-Exporte `Tree1.fbx` und `Tree1(1).fbx` sind identisch. Beide enthalten echte Baumgeometrie, aber **die Blatt-UVs und Texturtransparenz wurden beim FBX-Export nicht mitgeliefert**. Das erklärt die grünen Dreiecke im Spiel.
 

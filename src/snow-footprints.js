@@ -127,7 +127,7 @@ export function createSnowFootprints(root, world) {
       }
     `,
   });
-  material.name = 'Nebeljagd · verdichtete Fußmulden im Schnee';
+  material.name = 'Magebrawl · verdichtete Fußmulden im Schnee';
 
   const mesh = new THREE.InstancedMesh(geometry, material, MAX_FOOTPRINTS);
   mesh.name = 'Schneespuren';
@@ -143,7 +143,7 @@ export function createSnowFootprints(root, world) {
     color: '#f4f9fa', transparent: true, opacity: .82, depthWrite: false,
     depthTest: true, toneMapped: false,
   });
-  particleMaterial.name = 'Nebeljagd · kurze Pulverschnee-Partikel';
+  particleMaterial.name = 'Magebrawl · kurze Pulverschnee-Partikel';
   const particleMesh = new THREE.InstancedMesh(particleGeometry, particleMaterial, MAX_STEP_PARTICLES);
   particleMesh.name = 'Pulverschnee beim Auftreten';
   particleMesh.count = 0;

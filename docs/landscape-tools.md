@@ -21,7 +21,7 @@ Rei-Laubbäume, Sträucher und Blumen werden wiederverwendet. Die hochgeladene
 `grassGN3_3_v2_Rei.glb` enthält keine verwendbaren Grashalme; die sieben Graslooks
 verwenden deshalb vorhandene prozedurale Halmgeometrie, Höhen und Farben.
 Zusätzlich bleibt das echte GLB-Versteckgras aus dem bereits vorhandenen
-Nebeljagd-Umwelt-Kit auswählbar. Die Blumenwiese ergänzt vorhandene Rei-Blüten. Es wurden keine neuen Provider-Assets
+Magebrawl-Umwelt-Kit auswählbar. Die Blumenwiese ergänzt vorhandene Rei-Blüten. Es wurden keine neuen Provider-Assets
 angefordert und keine Blender-Shader als Laufzeitvoraussetzung eingeführt.
 
 Die zwölf Modelle unter `Blender/nebeljagd_umwelt_kit_v1/assets/` sind ebenfalls

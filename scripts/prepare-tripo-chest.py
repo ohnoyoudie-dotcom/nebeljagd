@@ -180,7 +180,7 @@ def main():
     destination=OUT/'runtime/chest.glb'
     bpy.ops.export_scene.gltf(filepath=str(destination),export_format='GLB',use_selection=True,export_yup=True,export_materials='EXPORT',export_texcoords=True,export_normals=True,export_animations=False,export_cameras=False,export_lights=False,export_image_format='AUTO')
     runtime=inspect(destination)
-    report={'asset':'Nebeljagd Tripo chest','source':original,'runtime':runtime,'tool':'Blender '+bpy.app.version_string,
+    report={'asset':'Magebrawl Tripo chest','source':original,'runtime':runtime,'tool':'Blender '+bpy.app.version_string,
       'normalization':{'widthMeters':WIDTH,'uniformScale':scale,'gltfDimensions':[WIDTH,(high[2]-low[2])*scale,(high[1]-low[1])*scale], 'axes':'glTF +Y up, +Z front; bottom at 0', 'gltfHinge':[0,SEAM,-HINGE[1]],'openAngleRadians':-1.9},
       'textures':textures,'sourcePreserved':inspect(SOURCE)['sha256']==original['sha256'],
       'preparation':'Positional weld at 0.01mm and UV-preserving collapse reduction, 1024px original PBR maps, measured horizontal lid seam at 0.57m, separate rear hinge, dark wooden cavity liner and sealed lid underside.',
