@@ -1,0 +1,183 @@
+{
+  "status": "passed",
+  "buildId": "5b2b297077c4",
+  "sourceCommit": "32ae5f64fef46788072c037de537642e82b8ac6d",
+  "unitTests": {
+    "passed": 553,
+    "failed": 0
+  },
+  "assetVerification": "passed",
+  "mapVerification": "passed",
+  "fullFeatureRun": {
+    "buildId": "46d3a4ca9bb6",
+    "sourceCommit": "13142a1d73d4eecc30eb7504e46060a8c0a60a47",
+    "checks": [
+      "All requested path themes use broken borders; native crossings and painted unions remain open",
+      "Only qa-tree-a fades for the local player and restores after actual walking away",
+      "Only qa-tree-b fades for the local player and restores after actual walking away",
+      "Real hiding uses white translucent fill and a strong contour in both qualities, then restores original materials",
+      "Restart restores local visuals, preserves authored objects and produces no shader/browser/network errors"
+    ],
+    "screenshots": 16,
+    "report": "test-results/path-canopy-concealment-full-46d3a4ca9bb6/report.json"
+  },
+  "integratedBrowser": {
+    "browser": "154.0.8037.57",
+    "stencil": true,
+    "checks": [
+      "All requested path themes use broken borders; native crossings and painted unions remain open",
+      "Only qa-tree-a fades for the local player and restores after actual walking away",
+      "Real hiding uses white translucent fill and a strong contour in both qualities, then restores original materials",
+      "Restart restores local visuals, preserves authored objects and produces no shader/browser/network errors"
+    ],
+    "borders": {
+      "count": 368,
+      "gapCount": 134,
+      "byStyle": {
+        "cobble": {
+          "count": 104,
+          "minWidth": 0.17595637728001748,
+          "maxWidth": 0.5208545161626534,
+          "minLength": 0.2556392210002005,
+          "maxLength": 0.9392397534628585,
+          "shapeVariants": 3
+        },
+        "earth": {
+          "count": 68,
+          "minWidth": 0.12449000790456921,
+          "maxWidth": 0.34994871238322955,
+          "minLength": 0.1707844105496718,
+          "maxLength": 0.5673298867114909,
+          "shapeVariants": 3
+        },
+        "forest": {
+          "count": 23,
+          "minWidth": 0.12077486949048762,
+          "maxWidth": 0.336671637154941,
+          "minLength": 0.1945406351800782,
+          "maxLength": 0.5570784711546679,
+          "shapeVariants": 3
+        },
+        "stone": {
+          "count": 75,
+          "minWidth": 0.11442191381836893,
+          "maxWidth": 0.31825661624083296,
+          "minLength": 0.13306780905885746,
+          "maxLength": 0.48708340850034176,
+          "shapeVariants": 2
+        },
+        "sand": {
+          "count": 43,
+          "minWidth": 0.15037784515796374,
+          "maxWidth": 0.4403510380798298,
+          "minLength": 0.23270849876285232,
+          "maxLength": 0.7700850568574197,
+          "shapeVariants": 3
+        },
+        "snow": {
+          "count": 29,
+          "minWidth": 0.17995956963539356,
+          "maxWidth": 0.34861178854676833,
+          "minLength": 0.19178692249059254,
+          "maxLength": 0.5561012099199898,
+          "shapeVariants": 2
+        },
+        "mud": {
+          "count": 26,
+          "minWidth": 0.13429355791220587,
+          "maxWidth": 0.37744314220060915,
+          "minLength": 0.2015112218956613,
+          "maxLength": 0.5983932682725213,
+          "shapeVariants": 2
+        }
+      },
+      "style": "broken-thematic-verges",
+      "placement": "outer-contour-only"
+    },
+    "concealment": {
+      "normal": {
+        "style": "white-hidden-rim-v1",
+        "active": false,
+        "blend": 0,
+        "bodyOpacity": 1,
+        "fillOpacity": 0,
+        "outlineOpacity": 0,
+        "color": "#ffffff",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 2.2,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0.045,
+        "materialsRestored": true
+      },
+      "hidden": {
+        "style": "white-hidden-rim-v1",
+        "active": true,
+        "blend": 1,
+        "bodyOpacity": 0.24,
+        "fillOpacity": 0.24,
+        "outlineOpacity": 0.98,
+        "color": "#ffffff",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 2.2,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0,
+        "materialsRestored": false
+      },
+      "restored": {
+        "style": "white-hidden-rim-v1",
+        "active": false,
+        "blend": 0,
+        "bodyOpacity": 1,
+        "fillOpacity": 0,
+        "outlineOpacity": 0,
+        "color": "#ffffff",
+        "outline": "stencil-contour",
+        "outlineWidthPixels": 2.2,
+        "localOnly": true,
+        "depthTest": false,
+        "snowClipped": false,
+        "baselineOpacity": 0.045,
+        "materialsRestored": true
+      }
+    },
+    "errors": [],
+    "unexpectedRequests": [],
+    "retry": {
+      "initialResult": "Movement wait timed out at 45 seconds after path and canopy checks passed.",
+      "recoveryResult": "Same generated file, real keyboard exit x>=28 and unchanged 45-second timeout passed; materials restored and restart passed.",
+      "observedRecoveryHighExitWallSeconds": 33.35,
+      "cause": "Software rendering was slow; the first attempt lacked state evidence, so its exact cause is not established.",
+      "initialReport": "test-results/path-canopy-concealment-integrated-failed-attempt1/report.json",
+      "recoveryReport": "test-results/path-canopy-concealment-recovery/report.json"
+    },
+    "limits": "Actual Chromium/SwiftShader rendering and inputs; no hardware performance claim."
+  },
+  "preservedConcurrentChange": "9ae11c48215076cc96d6300fd6e2bd88e2301559",
+  "runtimeDiffSinceFullFeatureRun": [
+    "src/impact-sparks.js",
+    "src/special-weapons.js"
+  ],
+  "artifacts": {
+    "magebrawl.html": {
+      "bytes": 91911975,
+      "sha256": "68cb6ed3f4755151d69bab69d769322827dc66f27c02b8ee7c8688f16e58d294"
+    },
+    "map-editor.html": {
+      "bytes": 61648776,
+      "sha256": "915542af993653bed981683eade44d3b0e176932067a6c71c5b30ef35dc74ae8"
+    },
+    "worldmap.json": {
+      "bytes": 56916,
+      "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
+    },
+    "magebrawl-welt-und-editor.zip": {
+      "bytes": 100388990,
+      "sha256": "fbd8277139a5665479e4f56dd1f8547fbd6266a805f12ce90aca852f5bd7717a"
+    }
+  },
+  "originalMapUnchanged": true
+}

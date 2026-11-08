@@ -17,14 +17,15 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5232').rstrip('/')
-SUCCESSOR = os.environ.get('NEBELJAGD_QA_SUCCESSOR') == '1'
+RECOVERY = os.environ.get('NEBELJAGD_QA_RECOVERY') == '1'
+SUCCESSOR = os.environ.get('NEBELJAGD_QA_SUCCESSOR') == '1' or RECOVERY
 OUT = Path(os.environ.get('NEBELJAGD_QA_OUT', ROOT / ('test-results/path-canopy-concealment-integrated'
     if SUCCESSOR else 'test-results/path-canopy-concealment')))
 OUT.mkdir(parents=True, exist_ok=True)
 RELEASE = Path(os.environ.get('NEBELJAGD_RELEASE_DIR', ROOT / 'welt'))
 MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
 REPORT = {'status': 'running', 'checks': [], 'screenshots': [], 'errors': [], 'unexpectedRequests': [],
-          'mode': 'compact-successor' if SUCCESSOR else 'full',
+          'mode': 'concealment-recovery' if RECOVERY else 'compact-successor' if SUCCESSOR else 'full',
           'limits': 'Actual Chromium/SwiftShader rendering and inputs; no hardware performance claim.'}
 
 
@@ -130,6 +131,30 @@ def appearance(page):
     return state(page)['character']['concealmentAppearance']
 
 
+def start_progress_observer(page):
+    progress = []
+    def record(value):
+        progress.append(value)
+        (OUT/'movement-progress.json').write_text(json.dumps(progress[-160:],indent=2)+'\n')
+        if len(progress) % 5 == 0:
+            print('PROGRESS', json.dumps(value), flush=True)
+    page.expose_function('__recordQaProgress', record)
+    page.evaluate('''()=>{
+      let lastElapsed=-1,lastWall=-Infinity;
+      function sample(wall){
+        const s=nebeljagdTestState();
+        if(s.elapsed-lastElapsed>=.25||wall-lastWall>=2000){
+          lastElapsed=s.elapsed;lastWall=wall;
+          window.__recordQaProgress({wallMs:wall,elapsed:s.elapsed,phase:s.phase,position:s.position,
+            moving:s.moving,quality:s.quality,hidden:s.hiddenInGrass,appearance:s.character.concealmentAppearance,
+            frameMs:s.rendering.frameMs,calls:s.rendering.calls});
+        }
+        requestAnimationFrame(sample);
+      }
+      requestAnimationFrame(sample);
+    }''')
+
+
 try:
     testmap = fixture()
     digest = hashlib.sha256()
@@ -160,58 +185,62 @@ try:
             assert REPORT['webglContext']['stencil'] is True
             assert state(page)['world']['source'] == 'editor'
             assert state(page)['world']['objects'] == testmap['objects']
+            if RECOVERY:
+                start_progress_observer(page)
             page.locator('#startBtn').click()
 
-            stage('irregular themed borders and clear native/painted crossings')
-            wait(page, 'nebeljagdTestState().world.stats.terrainPaint.queuedChunks===0')
-            borders = state(page)['world']['stats']['terrainArt']['borderStones']
-            assert borders['style'] == 'broken-thematic-verges' and borders['placement'] == 'outer-contour-only'
-            assert 0 < borders['count'] <= borders['maximum'] and borders['gapCount'] > 0
-            assert {'cobble','earth','forest','sand','stone','mud','snow'}.issubset(borders['byStyle']), borders['byStyle']
-            assert all(s['count'] > 0 for s in borders['byStyle'].values())
-            assert any(s['minWidth'] < s['maxWidth'] and s['shapeVariants'] > 1 for s in borders['byStyle'].values())
-            assert borders['suppressed']['crossing'] > 0
-            assert any(g['length'] > .3 for g in borders['gaps'])
-            path_views = [('painted-union-crossing',3,-28)] if SUCCESSOR else [
-                ('native-crossing',-22,-23),('painted-union-crossing',3,-28),
-                ('path-themes-north',-28,11),('path-themes-south',-28,32)]
-            for name, x, z in path_views:
-                move(page,x,z);capture(page,name)
-            passed('All requested path themes use broken borders; native crossings and painted unions remain open', borders)
+            original_styles = {identifier: tree['appearance'] for identifier, tree in trees(page).items()}
+            if not RECOVERY:
+                stage('irregular themed borders and clear native/painted crossings')
+                wait(page, 'nebeljagdTestState().world.stats.terrainPaint.queuedChunks===0')
+                borders = state(page)['world']['stats']['terrainArt']['borderStones']
+                assert borders['style'] == 'broken-thematic-verges' and borders['placement'] == 'outer-contour-only'
+                assert 0 < borders['count'] <= borders['maximum'] and borders['gapCount'] > 0
+                assert {'cobble','earth','forest','sand','stone','mud','snow'}.issubset(borders['byStyle']), borders['byStyle']
+                assert all(s['count'] > 0 for s in borders['byStyle'].values())
+                assert any(s['minWidth'] < s['maxWidth'] and s['shapeVariants'] > 1 for s in borders['byStyle'].values())
+                assert borders['suppressed']['crossing'] > 0
+                assert any(g['length'] > .3 for g in borders['gaps'])
+                path_views = [('painted-union-crossing',3,-28)] if SUCCESSOR else [
+                    ('native-crossing',-22,-23),('painted-union-crossing',3,-28),
+                    ('path-themes-north',-28,11),('path-themes-south',-28,32)]
+                for name, x, z in path_views:
+                    move(page,x,z);capture(page,name)
+                passed('All requested path themes use broken borders; native crossings and painted unions remain open', borders)
 
-            baseline_trees = trees(page)
-            original_styles = {identifier: tree['appearance'] for identifier, tree in baseline_trees.items()}
-            for identifier in (['qa-tree-a'] if SUCCESSOR else ['qa-tree-a','qa-tree-b']):
-                stage(f'real entry and exit under {identifier}')
-                tree = trees(page)[identifier]; footprint = tree['canopy']['footprint']
-                cx, cz = footprint['center']; rx, rz = footprint['radiusX'], footprint['radiusZ']
-                line_z = cz + (1 if cz >= tree['z'] else -1) * rz * .45
-                move(page,cx-rx-2,line_z)
-                wait(page, 'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
-                if identifier == 'qa-tree-a' and not SUCCESSOR:
-                    capture(page,'canopy-before-entering',1.4)
-                walk_until(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx)
-                wait(page, 'id=>nebeljagdTestState().world.trees.find(t=>t.id===id).canopy.opacity<.10',identifier)
-                under = trees(page)
-                assert under[identifier]['canopy']['underCanopy']
-                other = 'qa-tree-b' if identifier == 'qa-tree-a' else 'qa-tree-a'
-                assert under[other]['canopy']['opacity'] > .99
-                assert {k:v['appearance'] for k,v in under.items()} == original_styles
-                assert all(t['canopy']['barkOpacity'] == 1 for t in under.values())
-                canopy_stats = state(page)['world']['stats']['canopyFade']
-                assert canopy_stats['localPlayerOnly'] and canopy_stats['trunkMaterialsOpaque']
-                assert canopy_stats['affectedTrees'] >= 1 and canopy_stats['activeBatches'] >= 1
-                capture(page,f'{identifier}-local-canopy',1.4)
-                if identifier == 'qa-tree-a':
-                    quality(page,'high');capture(page,'canopy-high-quality',1.4);quality(page,'low')
-                else:
-                    resume(page)
-                    wait(page,'nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.blend>.95')
-                    capture(page,'white-hidden-character-under-canopy',1.6)
-                walk_until(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx+rx+5)
-                wait(page, 'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
-                passed(f'Only {identifier} fades for the local player and restores after actual walking away',
-                    {'under': {key:value['canopy'] for key,value in under.items()}, 'restored': trees(page)[identifier]['canopy']})
+                baseline_trees = trees(page)
+                original_styles = {identifier: tree['appearance'] for identifier, tree in baseline_trees.items()}
+                for identifier in (['qa-tree-a'] if SUCCESSOR else ['qa-tree-a','qa-tree-b']):
+                    stage(f'real entry and exit under {identifier}')
+                    tree = trees(page)[identifier]; footprint = tree['canopy']['footprint']
+                    cx, cz = footprint['center']; rx, rz = footprint['radiusX'], footprint['radiusZ']
+                    line_z = cz + (1 if cz >= tree['z'] else -1) * rz * .45
+                    move(page,cx-rx-2,line_z)
+                    wait(page, 'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
+                    if identifier == 'qa-tree-a' and not SUCCESSOR:
+                        capture(page,'canopy-before-entering',1.4)
+                    walk_until(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx)
+                    wait(page, 'id=>nebeljagdTestState().world.trees.find(t=>t.id===id).canopy.opacity<.10',identifier)
+                    under = trees(page)
+                    assert under[identifier]['canopy']['underCanopy']
+                    other = 'qa-tree-b' if identifier == 'qa-tree-a' else 'qa-tree-a'
+                    assert under[other]['canopy']['opacity'] > .99
+                    assert {k:v['appearance'] for k,v in under.items()} == original_styles
+                    assert all(t['canopy']['barkOpacity'] == 1 for t in under.values())
+                    canopy_stats = state(page)['world']['stats']['canopyFade']
+                    assert canopy_stats['localPlayerOnly'] and canopy_stats['trunkMaterialsOpaque']
+                    assert canopy_stats['affectedTrees'] >= 1 and canopy_stats['activeBatches'] >= 1
+                    capture(page,f'{identifier}-local-canopy',1.4)
+                    if identifier == 'qa-tree-a':
+                        quality(page,'high');capture(page,'canopy-high-quality',1.4);quality(page,'low')
+                    else:
+                        resume(page)
+                        wait(page,'nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.blend>.95')
+                        capture(page,'white-hidden-character-under-canopy',1.6)
+                    walk_until(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx+rx+5)
+                    wait(page, 'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
+                    passed(f'Only {identifier} fades for the local player and restores after actual walking away',
+                        {'under': {key:value['canopy'] for key,value in under.items()}, 'restored': trees(page)[identifier]['canopy']})
 
             stage('real tall-grass entry produces translucent white body and strong outline')
             move(page,16,18)
@@ -260,8 +289,12 @@ try:
         except BaseException:
             if 'page' in locals() and not page.is_closed():
                 try:
-                    page.screenshot(path=str(OUT/'failure.png'))
-                    (OUT/'failure-state.json').write_text(json.dumps(state(page),indent=2))
+                    snapshot = page.wait_for_function('()=>nebeljagdTestState()', timeout=5000).json_value()
+                    (OUT/'failure-state.json').write_text(json.dumps(snapshot,indent=2))
+                except Exception:
+                    pass
+                try:
+                    page.screenshot(path=str(OUT/'failure.png'), timeout=5000)
                 except Exception:
                     pass
             raise
