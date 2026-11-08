@@ -1,0 +1,126 @@
+{
+  "status": "passed",
+  "buildId": "60a2f143b86a",
+  "sourceCommit": "ab36b03b6b236c521e5ceaefa87e945919af356c",
+  "unitTests": {
+    "passed": 536,
+    "failed": 0
+  },
+  "assetVerification": "passed",
+  "mapVerification": "passed",
+  "generatedBrowser": {
+    "script": "tests/snow_tree_variation_smoke.py",
+    "browser": "154.0.8037.57",
+    "checks": [
+      "All four biomes apply distinct foliage/frost and stable per-tree bark variation",
+      "Reload preserves every tree appearance signature and authored placement",
+      "More than twelve seconds of real walking retain recent prints while older prints fade by age",
+      "Real rolls delay ground contact, form rounded separated patches, and coexist with walking tracks",
+      "Every observed disappearing stamp reached its lifetime; mixed load exceeds the old 96-slot limit with no eviction",
+      "Restart clears tracks, preserves tree styles and leaves the authored map untouched; no browser/shader/network errors"
+    ],
+    "errors": [],
+    "unexpectedRequests": [],
+    "walkingSeconds": 12.916666666666902,
+    "snowLifetime": {
+      "samples": 333,
+      "peakCount": 125,
+      "prematureRemovals": [],
+      "fadeIncreases": [],
+      "fadedTracks": 228,
+      "removals": 222,
+      "minimumRemovalAge": 10.000000000000064,
+      "maximumRemovalAge": 10.149999999999554
+    },
+    "rolls": [
+      {
+        "firstVisibleDelaySeconds": 0.26666666666667993,
+        "contactPatches": 5,
+        "gapsMeters": [
+          0.29883564808555096,
+          0.1593197954685457,
+          0.2635624080506749,
+          0.17865397748313683
+        ]
+      },
+      {
+        "firstVisibleDelaySeconds": 0.19999999999998863,
+        "contactPatches": 5,
+        "gapsMeters": [
+          0.19744067329185766,
+          0.15195989081301375,
+          0.24078296837855362,
+          0.22313762118112201
+        ]
+      },
+      {
+        "firstVisibleDelaySeconds": 0.19999999999998863,
+        "contactPatches": 5,
+        "gapsMeters": [
+          0.36050576790265043,
+          0.23564103246259016,
+          0.2470670667482775,
+          0.2974831463668677
+        ]
+      },
+      {
+        "firstVisibleDelaySeconds": 0.19999999999998863,
+        "contactPatches": 5,
+        "gapsMeters": [
+          0.16275163541438786,
+          0.28204104968103794,
+          0.2275233173288873,
+          0.2421639156550377
+        ]
+      }
+    ],
+    "skippedAdmissions": 0,
+    "trees": {
+      "count": 12,
+      "biomes": [
+        "meadow",
+        "snow",
+        "dunes",
+        "marsh"
+      ],
+      "reloadStable": true,
+      "restartStable": true,
+      "qualityModesRendered": [
+        "low",
+        "high"
+      ]
+    },
+    "screenshots": [
+      "test-results/snow-tree-variation/trees-meadow.png",
+      "test-results/snow-tree-variation/trees-snow.png",
+      "test-results/snow-tree-variation/trees-snow-high-quality.png",
+      "test-results/snow-tree-variation/trees-dunes.png",
+      "test-results/snow-tree-variation/trees-marsh.png",
+      "test-results/snow-tree-variation/long-walk-initial-trail.png",
+      "test-results/snow-tree-variation/long-walk-age-fading-trail.png",
+      "test-results/snow-tree-variation/roll-delayed-rounded-contact-patches.png",
+      "test-results/snow-tree-variation/mixed-walking-rolling-trails.png",
+      "test-results/snow-tree-variation/snow-trails-near-natural-expiry.png"
+    ],
+    "limits": "Chromium/SwiftShader functional and visual checks, not hardware performance measurements."
+  },
+  "artifacts": {
+    "magebrawl.html": {
+      "bytes": 91896376,
+      "sha256": "ba033474b0189f33e07eee9ea7b577d8af020f16978fe8386329ca8ba08067f4"
+    },
+    "map-editor.html": {
+      "bytes": 61644035,
+      "sha256": "7a025e0ed7b4056169caa653ab434d2b93d6263a6b071214d5f4a2596884b7a3"
+    },
+    "worldmap.json": {
+      "bytes": 56916,
+      "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
+    },
+    "magebrawl-welt-und-editor.zip": {
+      "bytes": 100383006,
+      "sha256": "0ffcde3c0db4ab3c05d9fb5fbec485dd6a846a9e6ff912259331b49d9294d50a"
+    }
+  },
+  "originalMapUnchanged": true
+}
