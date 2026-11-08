@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createPoisonVisuals } from './poison-visuals.js';
+import { createImpactSparks } from './impact-sparks.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
   poisonRange: 12, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
@@ -51,6 +52,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   let moon = null, aim = null;
   const orbs = [], clouds = [];
   const canSee = p => !isVisible || isVisible(p);
+  const moonImpacts = createImpactSparks(scene, canSee);
   const poisonVisuals = createPoisonVisuals(scene, SPECIAL_RULES.cloudRadius, canSee);
   const ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
   const hit = (target, payload) => { const result = combat?.hit(target, payload); if (result) onDamage(result); };
@@ -83,7 +85,9 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     if (moon) return false;
     moon = { mode: blocked ? 'returning' : 'outbound', distance: 0, age: 0, direction, payload: { ...payload, sourceId: ownerId },
       outboundHits: new Set(), returnHits: new Set() };
-    moonMesh.position.copy(blocked?.point ?? origin); moonMesh.visible = true; return true;
+    moonMesh.position.copy(blocked?.point ?? origin); moonMesh.visible = true;
+    if (blocked) moonImpacts.emit(blocked.point, blocked.normal, direction);
+    return true;
   }
   function pierce(start, end, hits, payload) {
     // Query every target separately, preserving swept vertical/radial hit rules.
@@ -111,6 +115,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   }
   function update(dt, position, time) {
     if (!(dt > 0)) return;
+    moonImpacts.update(dt);
     poisonVisuals.update(dt);
     if (aim) aimAt(position, aim.target);
     if (moon) {
@@ -120,7 +125,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
         const step = Math.min(SPECIAL_RULES.moonSpeed * dt, SPECIAL_RULES.moonRange - moon.distance);
         end.x += Math.sin(moon.direction) * step; end.z += Math.cos(moon.direction) * step;
         const wall = world?.traceProjectile?.(start, end, .15);
-        if (wall) end.copy(wall.point);
+        if (wall) { end.copy(wall.point); moonImpacts.emit(wall.point, wall.normal, moon.direction); }
         pierce(start, end, moon.outboundHits, moon.payload);
         moon.distance += start.distanceTo(end);
         if (wall || moon.distance >= SPECIAL_RULES.moonRange - 1e-6) moon.mode = 'returning';
@@ -172,12 +177,14 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     }
   }
   function reset() {
+    moonImpacts.reset();
     cancelAim(); moon = null; moonMesh.visible = false;
     for (const list of [orbs, clouds]) for (let i = list.length - 1; i >= 0; i--) retire(list, i);
   }
   return { beginAim, aimAt, cancelAim, releasePoison, launchMoon, update, reset,
     get moonBusy() { return Boolean(moon); }, get aiming() { return Boolean(aim); },
     get telemetry() { return { aiming: Boolean(aim), target: aim ? { ...aim.target } : null,
+      moonImpacts: moonImpacts.telemetry,
       moonModel: moonProjectilePrototype ? { ...moonProjectilePrototype.userData, imported: true } : { imported: false },
       moonVisible: moonMesh.visible,
       moon: moon ? { mode: moon.mode, distance: moon.distance, position: { ...moonMesh.position }, outboundHits: [...moon.outboundHits], returnHits: [...moon.returnHits] } : null,
@@ -186,5 +193,5 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       poisonFlights: orbs.map(o => ({ position: { ...o.mesh.position }, origin: { ...o.origin }, target: { ...o.target },
         age: o.age, duration: o.duration, arcHeight: SPECIAL_RULES.poisonArcHeight })),
       clouds: clouds.map(c => ({ remaining: c.remaining, position: { ...c.mesh.position }, radius: SPECIAL_RULES.cloudRadius })) }; },
-    dispose() { reset(); poisonVisuals.dispose(); roots.forEach(r => r.removeFromParent()); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); } };
+    dispose() { reset(); moonImpacts.dispose(); poisonVisuals.dispose(); roots.forEach(r => r.removeFromParent()); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); } };
 }
