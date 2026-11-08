@@ -63,6 +63,7 @@ jobs:
             sleep 1
           done
       - name: Verify uploaded weapon models, pickup, swaps and attacks
+        # Full graphical regression is available on manual dispatch.
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
         if: github.event_name == 'workflow_dispatch'
@@ -71,6 +72,10 @@ jobs:
           NEBELJAGD_QA_OUT: test-results/tripo-weapons
           NEBELJAGD_BUNDLED_CHROMIUM: '1'
         run: python tests/tripo_weapon_editor_smoke.py
+      - name: Verify textured chest, weighted loot, sword and editor
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/chest_loot_browser_smoke.py
       - name: Verify uploaded fireball, shader, sparks and smoke
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.

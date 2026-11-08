@@ -156,15 +156,15 @@ test('both imported staffs follow the palm socket through motion and cast from t
 
 test('variant replacement and reset dispose only instance resources, preserving templates and other pickups', () => {
   const { weapons, actor, tripoPrototypes } = setup([
-    placement('sword', 'kit-tripo-sword'), placement('sword', 'steel', { position: [4, 0] }),
+    placement('iceStaff', 'kit-tripo-crystal-staff'), placement('iceStaff', 'frost', { position: [4, 0] }),
   ]);
-  const template = meshes(tripoPrototypes['kit-tripo-sword'])[0];
+  const template = meshes(tripoPrototypes['kit-tripo-crystal-staff'])[0];
   let sharedGeometryDisposed = 0, sharedMaterialDisposed = 0, sharedTextureDisposed = 0;
   template.geometry.addEventListener('dispose', () => sharedGeometryDisposed++);
   template.material.addEventListener('dispose', () => sharedMaterialDisposed++);
   template.material.map.addEventListener('dispose', () => sharedTextureDisposed++);
   weapons.interact(actor.position);
-  const held = actor.children.find(group => group.userData.weaponType === 'sword');
+  const held = actor.children.find(group => group.userData.weaponType === 'iceStaff');
   const heldMaterial = meshes(held)[0].material;
   let heldDisposed = 0; heldMaterial.addEventListener('dispose', () => heldDisposed++);
   const dropped = weapons.addDrop({ ...weapons.equippedItem, position: [8, 0] }, { pop: false });

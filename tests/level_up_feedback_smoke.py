@@ -209,7 +209,7 @@ try:
             hits=math.ceil(target['health']/equipped['weapon']['damage'])
             for index in range(hits-1):
                 struck=attack(page)
-                assert struck['combat']['swordCombo']['index']==index+1,struck['combat']['swordCombo']
+                assert struck['combat']['swordCombo']['index']==index%3+1,struck['combat']['swordCombo']
                 assert state(page)['effect']['emitted']==0 and state(page)['level']==1
                 print(f'Progress: nonlethal hit {index+1}/{hits}',flush=True)
             # Capture the actual renderer at four stages of the same victory.
@@ -242,7 +242,7 @@ try:
               };requestAnimationFrame(capture);
             }''')
             struck=attack(page)
-            assert struck['combat']['swordCombo']['index']==3,struck['combat']['swordCombo']
+            assert struck['combat']['swordCombo']['index']==(hits-1)%3+1,struck['combat']['swordCombo']
             print('Progress: final blow landed; capture four stages of the actual effect',flush=True)
             page.wait_for_function('window.__levelFeedbackFrames.length===4&&Boolean(window.__levelHudPulse)',polling=25,timeout=90000)
             frames=page.evaluate('window.__levelFeedbackFrames')

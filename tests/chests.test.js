@@ -13,6 +13,7 @@ test('a chest opens once, animates its hinge and releases deterministic gold plu
   const drops = [];
   const scene = new THREE.Scene();
   const chests = createChests(scene, { placements: [placement], heightAt: ground, world: openWorld,
+    rollRarity: () => 'rare',
     onDrop: (item, options) => drops.push({ item, options }) });
   assert.equal(chests.nearest(new THREE.Vector3(10, 12, 24)), null);
   assert.equal(chests.nearest(opener).id, placement.id);
@@ -95,12 +96,13 @@ test('drop placement avoids water and walls and chest loot spans all weapon fami
   }
   const weapons = new Set(), tiers = new Set();
   for (let index = 0; index < 40; index++) {
-    const loot = chestLoot(`chest-${index}`, index);
-    assert.deepEqual(loot, chestLoot(`chest-${index}`, index));
+    const tier = ['common', 'uncommon', 'rare', 'epic', 'legendary'][index % 5];
+    const loot = chestLoot(`chest-${index}`, tier);
+    assert.deepEqual(loot, chestLoot(`chest-${index}`, tier));
     weapons.add(loot[2].type); tiers.add(loot[2].rarity);
     assert.ok(loot[0].amount + loot[1].amount > 10);
   }
   assert.deepEqual([...weapons].sort(), ['bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff'].sort(),
     'all four existing weapon families and both new staffs occur in deterministic chest loot');
-  assert.deepEqual([...tiers].sort(), ['normal', 'common', 'uncommon', 'rare', 'legendary'].sort());
+  assert.deepEqual([...tiers].sort(), ['common', 'uncommon', 'rare', 'epic', 'legendary'].sort());
 });

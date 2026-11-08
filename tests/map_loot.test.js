@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createPickups } from '../src/pickups.js';
 import { createWeapons } from '../src/weapons.js';
+import { swordPrototype } from './helpers/weapon-prototypes.js';
 
 const objects = [
   { id: 'map-heart', name: 'Bergherz', kind: 'heart', variant: 'healing', position: [210, -240], rotation: .6, scale: 1.5 },
@@ -17,7 +18,7 @@ test('map loot is authoritative, preserves placement transforms and never adds l
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
   const snapshot = JSON.stringify(objects);
   const pickups = createPickups(scene, { placements: objects, heightAt });
-  const weapons = createWeapons(scene, actor, { worldRadius: 900, heightAt }, null, { placements: objects, heightAt });
+  const weapons = createWeapons(scene, actor, { worldRadius: 900, heightAt }, null, { placements: objects, heightAt, tripoPrototypes: swordPrototype() });
   assert.deepEqual(pickups.items.map(item => item.id), ['map-heart'], 'legacy diamonds no longer spawn as currency');
   assert.deepEqual(weapons.items.map(item => item.id), ['map-bow', 'map-sword']);
   for (const item of [...pickups.items, ...weapons.items]) {
@@ -56,7 +57,7 @@ test('map hearts collect on their edited coordinates, respect full health and pa
 
 test('map weapon pickup uses edited world coordinates and nearby visibility preserves its state', () => {
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
-  const weapons = createWeapons(scene, actor, { worldRadius: 900, heightAt }, null, { placements: objects, heightAt });
+  const weapons = createWeapons(scene, actor, { worldRadius: 900, heightAt }, null, { placements: objects, heightAt, tripoPrototypes: swordPrototype() });
   const bowPosition = new THREE.Vector3(220, heightAt(220, -240), -240);
   assert.equal(weapons.nearest(new THREE.Vector3(-4, 0, 11)), null, 'old bow position is no longer loot');
   weapons.update(.016, 0, new THREE.Vector3(0, 0, 0));

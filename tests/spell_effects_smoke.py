@@ -291,7 +291,7 @@ def run(url):
                 editor.locator('#editor-tool-objects-place').click()
                 editor.locator('#palette-kind').select_option(kind)
                 editor.locator('#palette-variant').select_option(variant)
-                editor.locator('#palette-rarity').select_option('rare')
+                editor.locator('#palette-rarity').select_option('common')
                 editor.locator('#add-object-center').click()
                 for field, value in [('feature-x', position[0]), ('feature-z', position[1]),
                                      ('object-rotation', 0), ('object-scale', 1)]:

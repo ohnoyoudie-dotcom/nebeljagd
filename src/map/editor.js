@@ -1,4 +1,4 @@
-import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
+import { WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint, pointInPolygon } from './model.js';
 import { renderWorldmapSvg, barrierSvg } from './render.js';
@@ -483,11 +483,11 @@ function renderList() {
     if (type === 'path') swatch.style.backgroundColor = '#beaa7d';
     if (type === 'object') {
       swatch.classList.add(`swatch-${item.kind}`);
-      if (WEAPON_TYPES.includes(item.kind)) swatch.style.backgroundColor = (RARITIES[item.rarity] ?? RARITIES.common).color;
+      if (WEAPON_TYPES.includes(item.kind)) swatch.style.background = 'linear-gradient(90deg, #f1eee3, #66d780, #5aa5ff, #bd78f5, #ffad44)';
     }
     const label = document.createElement('span'); label.className = 'feature-label'; label.textContent = item.name;
     const kindLabel = document.createElement('span'); kindLabel.className = 'feature-type';
-    kindLabel.textContent = type === 'object' ? getObjectDefinition(item.kind).label + (WEAPON_TYPES.includes(item.kind) ? ` · ${(RARITIES[item.rarity] ?? RARITIES.common).label}` : '') : kindNames[type];
+    kindLabel.textContent = type === 'object' ? getObjectDefinition(item.kind).label + (WEAPON_TYPES.includes(item.kind) ? ' · zufällige Seltenheit' : '') : kindNames[type];
     button.append(swatch, label, kindLabel);
     button.addEventListener('click', () => select(type, item.id));
     list.append(button);
@@ -526,7 +526,7 @@ function renderProperties() {
     fillVariants($('object-variant'), feature.kind, feature.variant);
     renderAssetPreview('object', feature.kind, feature.variant);
     $('object-rarity-property').hidden = !WEAPON_TYPES.includes(feature.kind);
-    $('object-rarity').value = feature.rarity ?? 'common';
+    $('object-rarity').value = 'common';
     updateRarityHint();
     $('object-rotation').value = Math.round(feature.rotation * 180 / Math.PI * 100) / 100;
     $('object-scale').value = feature.scale;
@@ -569,7 +569,7 @@ function applyProperties(event) {
     if (selection.type === 'spawn') { feature.radius = Number($('feature-radius').value); feature.capacity = Number($('feature-capacity').value); }
     if (selection.type === 'object') {
       feature.variant = $('object-variant').value;
-      if (WEAPON_TYPES.includes(feature.kind)) feature.rarity = $('object-rarity').value;
+      // Preserve legacy map fields; live loot rolls its rarity each round.
       feature.rotation = Number($('object-rotation').value) * Math.PI / 180;
       feature.scale = Number($('object-scale').value);
       if (isHeightAdjustable(feature)) {
@@ -1232,8 +1232,8 @@ function renderAssetPreview(prefix, kind, variant) {
 function updateRarityHint() {
   const feature = selectedFeature();
   if (!feature || !WEAPON_TYPES.includes(feature.kind)) return;
-  const stats = weaponStats(feature.kind, $('object-rarity').value);
-  $('object-rarity-hint').textContent = `${stats.damage} Schaden pro Treffer${stats.burn ? ` · zusätzlich ${Math.round(stats.burn.damagePerSecond * stats.burn.duration)} Brandschaden` : stats.slow ? ' · 50 % Verlangsamung' : ''}`;
+  const low = weaponStats(feature.kind, 'common'), high = weaponStats(feature.kind, 'legendary');
+  $('object-rarity-hint').textContent = `${low.damage}–${high.damage} Schaden pro Treffer. Pro Runde: Weiß 55 %, Grün 27 %, Blau 12 %, Violett 5 %, Gold 1 %. Position und Modell bleiben fest.${low.burn || low.poison ? ' Auch der Elementarschaden steigt mit der Seltenheit.' : ''}`;
 }
 function updatePaletteRarity() {
   $('palette-rarity-property').hidden = !WEAPON_TYPES.includes($('palette-kind').value);
@@ -1242,9 +1242,9 @@ function updatePaletteRarity() {
 function preparePalette() {
   $('palette-kind').replaceChildren(); $('palette-rarity').replaceChildren(); $('object-rarity').replaceChildren();
   $('object-kind-filter').innerHTML = '<option value="all">Alle Objektarten</option>';
-  for (const rarity of Object.values(RARITIES)) for (const select of [$('palette-rarity'), $('object-rarity')]) {
-    const option = document.createElement('option'); option.value = rarity.id;
-    option.textContent = `${rarity.label} · ×${rarity.multiplier}`; select.append(option);
+  for (const select of [$('palette-rarity'), $('object-rarity')]) {
+    const option = document.createElement('option'); option.value = 'common';
+    option.textContent = 'Zufällig je Runde · Weiß bis Gold'; select.append(option);
   }
   $('palette-rarity').value = 'common';
   for (const [select, catalog] of [[$('palette-kind'), PLACEMENT_OBJECT_CATALOG], [$('object-kind-filter'), OBJECT_CATALOG]]) {

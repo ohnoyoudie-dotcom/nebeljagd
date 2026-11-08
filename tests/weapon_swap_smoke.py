@@ -196,14 +196,14 @@ def run(url):
                 editor.locator('#editor-tool-objects-place').click()
                 editor.locator('#palette-kind').select_option(kind)
                 editor.locator('#palette-variant').select_option(variant)
-                editor.locator('#palette-rarity').select_option(rarity)
+                editor.locator('#palette-rarity').select_option('common')
                 editor.locator('#add-object-center').click()
                 for field, value in [('feature-x', position[0]), ('feature-z', position[1]),
                                      ('object-rotation', (index + 1) * 30), ('object-scale', 1.2)]:
                     editor.locator('#' + field).fill(str(value))
                 editor.locator('#properties-form button[type=submit]').click()
                 obj = editor.evaluate('nebeljagdMapTestState().map.objects.at(-1)')
-                assert obj['kind'] == kind and obj['variant'] == variant and obj['rarity'] == rarity
+                assert obj['kind'] == kind and obj['variant'] == variant and obj['rarity'] == 'common'
                 objects.append(obj)
             edited = editor.evaluate('nebeljagdMapTestState().map')
             assert edited['objects'][:-3] == BASE['objects']
@@ -234,6 +234,7 @@ def run(url):
                    {'navigation': REPORT['editorPlayNavigation'], 'version': 'swap-check'})
             game.locator('#startBtn').click()
 
+            objects = [{**obj, 'rarity': next(d['rarity'] for d in state(game)['weaponDrops'] if d['id']==obj['id'])} for obj in objects]
             sword, fire_staff, ice_staff = objects
             stage('Pick up the first weapon automatically')
             inspect_at(game, sword['position'])
@@ -288,7 +289,9 @@ def run(url):
             for obj in edited['objects']:
                 if obj['id'] not in expected_ids:
                     continue
-                assert_ground(reset, obj, obj['position'])
+                rolled = next(d['rarity'] for d in reset['weaponDrops'] if d['id']==obj['id'])
+                assert rolled in ['common', 'uncommon', 'rare', 'epic', 'legendary']
+                assert_ground(reset, {**obj, 'rarity': rolled}, obj['position'])
             passed('Restart returns every authored weapon to its original placement with no duplicate drops')
             assert not REPORT['errors'], REPORT['errors']
         except BaseException:

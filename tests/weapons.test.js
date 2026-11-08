@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createWeapons } from '../src/weapons.js';
+import { swordPrototype } from './helpers/weapon-prototypes.js';
 
 function setup(type, offset = 1.5) {
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
@@ -17,7 +18,7 @@ function setup(type, offset = 1.5) {
       return { type: 'house', point: { x: start.x + (end.x - start.x) * t,
         y: start.y + (end.y - start.y) * t, z: wallZ }, normal: { x: 0, z: -1 } };
     } };
-  const weapons = createWeapons(scene, actor, world);
+  const weapons = createWeapons(scene, actor, world, null, { tripoPrototypes: swordPrototype() });
   assert.equal(weapons.interact(position).type, type);
   return { weapons, position, traces, wallZ };
 }

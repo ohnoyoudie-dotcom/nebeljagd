@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
 import { createWeapons, DEFAULT_WEAPON_VARIANTS, TRIPO_WEAPON_VARIANTS } from '../src/weapons.js';
+import { swordPrototype } from './helpers/weapon-prototypes.js';
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../src/loot-tiers.js';
 
 function setup(type = 'bow', rarity = 'common', { wallZ = null, targetZ = 4, visible = () => true } = {}) {
@@ -88,7 +89,7 @@ test('a breakable crate can take damage through its own solid collider', () => {
     height: 1, maxHealth: 100, destructible: true });
   const world = { heightAt: () => 0, traceProjectile: () => ({ type: 'crate',
     point: { x: 0, y: .5, z: .9 }, collider: { objectId: 'wooden-crate' } }) };
-  const weapons = createWeapons(scene, actor, world, null, { combat,
+  const weapons = createWeapons(scene, actor, world, null, { combat, tripoPrototypes: swordPrototype(),
     placements: [{ id: 'test-sword', kind: 'sword', rarity: 'common', position: [0, 0] }] });
   weapons.interact(actor.position); weapons.attack(actor.position, 0);
   for (let time = 0; time < .9; time += .04) weapons.update(.04, time, actor.position);

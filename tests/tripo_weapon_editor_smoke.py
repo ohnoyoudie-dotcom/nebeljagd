@@ -135,10 +135,10 @@ def assert_equipped(page, obj):
     current = game_state(page)
     held, item = current['combat']['heldModel'], current['equippedItem']
     assert item['variant'] == obj['variant'] and item['model'] == 'tripo', item
-    assert item['rarity'] == obj['rarity'], item
+    assert item['rarity'] == next(d['rarity'] for d in current['weaponDrops'] if d['id'] == obj['id']), item
     assert held['type'] == obj['kind'] and held['variant'] == obj['variant'], held
     assert held['model'] == 'tripo' and held['meshCount'] > 0 and held['visible'], held
-    expect(page.locator('#weaponStatus')).to_have_attribute('data-rarity', obj['rarity'])
+    expect(page.locator('#weaponStatus')).to_have_attribute('data-rarity', item['rarity'])
     if obj['variant'] == 'kit-tripo-ornate-bow':
         expect(page.locator('#weaponName')).to_have_text('Verzierter Bogen')
     assert next(d for d in current['weaponDrops'] if d['id'] == obj['id'])['collected']
@@ -213,14 +213,14 @@ try:
             editor.locator('#editor-tool-objects-place').click()
             editor.locator('#palette-kind').select_option(kind)
             editor.locator('#palette-variant').select_option(variant)
-            editor.locator('#palette-rarity').select_option(rarity)
+            editor.locator('#palette-rarity').select_option('common')
             editor.locator('#add-object-center').click()
             for field, value in [('feature-x', position[0]), ('feature-z', position[1]),
                                  ('object-rotation', (index + 1) * 30), ('object-scale', 1.2)]:
                 editor.locator('#' + field).fill(str(value))
             editor.locator('#properties-form button[type=submit]').click()
             obj = editor_state(editor)['map']['objects'][-1]
-            assert obj['kind'] == kind and obj['variant'] == variant and obj['rarity'] == rarity
+            assert obj['kind'] == kind and obj['variant'] == variant and obj['rarity'] == 'common'
             objects.append(obj)
         edited = editor_state(editor)['map']
         assert edited['objects'][:-len(WEAPONS)] == BASE['objects']
@@ -247,7 +247,7 @@ try:
         for obj in objects:
             drop = next(d for d in initial['weaponDrops'] if d['id'] == obj['id'])
             assert drop['model'] == 'tripo' and drop['variant'] == obj['variant'], drop
-            assert drop['rarity'] == obj['rarity'] and not drop['collected'], drop
+            assert drop['rarity'] in ['common', 'uncommon', 'rare', 'epic', 'legendary'] and not drop['collected'], drop
         passed('The real Spielen action transfers exact objects to the sibling game and loads the requested GLB drops',
                {'url': game.url, 'drops': initial['weaponDrops'], 'character': initial['character']})
         # The unchanged first launch above proves the user-facing handoff. Load
@@ -265,7 +265,7 @@ try:
         inspect(game, *first['position'])
         equipped = assert_equipped(game, first)
         capture(game, 'held-sword')
-        passed('The first Tripo sword auto-equips with its real held model and chosen rarity', equipped)
+        passed('The first Tripo sword auto-equips with its real held model and rolled rarity', equipped)
         for obj in objects[1:]:
             REPORT['stage'] = 'swap to ' + obj['variant']
             previous = game_state(game)['equippedWeapon']

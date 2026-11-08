@@ -4,6 +4,7 @@ export const RARITIES = Object.freeze({
   common: Object.freeze({ id: 'common', label: 'Gewöhnlich', color: '#f1eee3', multiplier: 1 }),
   uncommon: Object.freeze({ id: 'uncommon', label: 'Ungewöhnlich', color: '#66d780', multiplier: 1.25 }),
   rare: Object.freeze({ id: 'rare', label: 'Selten', color: '#5aa5ff', multiplier: 1.6 }),
+  epic: Object.freeze({ id: 'epic', label: 'Episch', color: '#bd78f5', multiplier: 1.9 }),
   legendary: Object.freeze({ id: 'legendary', label: 'Legendär', color: '#ffad44', multiplier: 2.15 }),
 });
 
@@ -14,8 +15,21 @@ const RARITY_GLOW = Object.freeze({
   common: Object.freeze({ body: .23, accent: .8, halo: .22 }),
   uncommon: Object.freeze({ body: .31, accent: 1, halo: .28 }),
   rare: Object.freeze({ body: .42, accent: 1.2, halo: .34 }),
+  epic: Object.freeze({ body: .50, accent: 1.35, halo: .38 }),
   legendary: Object.freeze({ body: .58, accent: 1.5, halo: .42 }),
 });
+
+// Legacy gray "normal" remains readable in saved maps, but new rounds use
+// these five tiers. A roll belongs to the item, never to a pickup interaction.
+export const LOOT_RARITY_WEIGHTS = Object.freeze({ common: 55, uncommon: 27, rare: 12, epic: 5, legendary: 1 });
+export function rollLootRarity(random = Math.random) {
+  let roll = Math.min(1 - Number.EPSILON, Math.max(0, random())) * 100;
+  for (const [tier, weight] of Object.entries(LOOT_RARITY_WEIGHTS)) {
+    if (roll < weight) return tier;
+    roll -= weight;
+  }
+  return 'common';
+}
 
 export function rarityVisual(rarity = 'common') {
   const tier = RARITIES[rarity] ?? RARITIES.common;

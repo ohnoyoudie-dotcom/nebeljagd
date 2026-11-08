@@ -5,6 +5,7 @@ import { createWeapons } from '../src/weapons.js';
 import { createCombat } from '../src/combat.js';
 import { weaponStats } from '../src/loot-tiers.js';
 import { createSwordPose, sampleSwordPose } from '../src/sword-motion.js';
+import { swordPrototype } from './helpers/weapon-prototypes.js';
 
 function setup(t, { targetZ = 1.6, health = 1000, wall = false, concealed = false } = {}) {
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
@@ -15,10 +16,12 @@ function setup(t, { targetZ = 1.6, health = 1000, wall = false, concealed = fals
   const world = { heightAt: () => 0, traceProjectile(start, end) {
     return wall && end.z > .8 ? { type: 'wall', point: { x: 0, y: 1, z: .8 } } : null;
   } };
-  const weapons = createWeapons(scene, actor, world, null, { combat, placements: [
+  const weapons = createWeapons(scene, actor, world, null, { combat, tripoPrototypes: swordPrototype(), placements: [
     { id: 'sword', kind: 'sword', rarity: 'common', position: [0, 0] },
     { id: 'bow', kind: 'bow', rarity: 'common', position: [4, 0] },
   ] });
+  assert.ok(Object.values(weapons.telemetry.heldPose.swordTip).every(Number.isFinite),
+    'the lazy imported sword has finite telemetry before its first pickup');
   weapons.interact(actor.position); t.after(() => weapons.dispose());
   let time = 0;
   const advance = seconds => {
@@ -137,13 +140,17 @@ test('trail anchors follow the transformed physical blade and exclude the grip',
   actor.position.set(5, 2, -4); actor.rotation.y = .8; actor.scale.setScalar(1.3);
   attack(); advance(.28);
   const held = actor.children.find(child => child.userData.weaponType === 'sword');
-  const expectedTip = scene.worldToLocal(held.localToWorld(new THREE.Vector3(0, 1.13, 0)));
-  const expectedBase = scene.worldToLocal(held.localToWorld(new THREE.Vector3(0, .35, 0)));
+  assert.equal(held.userData.model, 'tripo');
+  assert.equal(held.userData.variant, 'kit-tripo-sword');
+  const measuredTip = new THREE.Vector3().fromArray(held.userData.weaponTipPoint);
+  const expectedTip = scene.worldToLocal(held.localToWorld(measuredTip.clone()));
+  const expectedBase = scene.worldToLocal(held.localToWorld(measuredTip.clone().multiplyScalar(.27)));
   const anchors = weapons.telemetry.swordBlade;
   const vector = p => new THREE.Vector3(p.x, p.y, p.z);
   assert.ok(vector(anchors.tip).distanceTo(expectedTip) < 1e-10);
   assert.ok(vector(anchors.base).distanceTo(expectedBase) < 1e-10);
   assert.ok(vector(weapons.telemetry.swordTrail.latestTip).distanceTo(expectedTip) < 1e-10);
   assert.ok(vector(weapons.telemetry.swordTrail.latestBase).distanceTo(expectedBase) < 1e-10);
-  assert.ok(expectedBase.distanceTo(scene.worldToLocal(held.getWorldPosition(new THREE.Vector3()))) > .3);
+  assert.ok(expectedBase.distanceTo(scene.worldToLocal(held.getWorldPosition(new THREE.Vector3()))) > .2,
+    'the imported blade begins beyond the hand and crossguard');
 });
