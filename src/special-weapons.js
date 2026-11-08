@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createPoisonVisuals } from './poison-visuals.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
   poisonRange: 12, cloudRadius: 2.4, cloudDuration: 3 });
@@ -8,13 +9,11 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   const roots = [], geometries = new Set(), materials = new Set();
   const geometry = value => (geometries.add(value), value);
   const material = value => (materials.add(value), value);
-  const green = material(new THREE.MeshBasicMaterial({ color: '#79d849', transparent: true, opacity: .3, depthWrite: false }));
   const silver = material(new THREE.MeshStandardMaterial({ color: '#ede1ff', emissive: '#a378da', emissiveIntensity: .8, metalness: .55, roughness: .25 }));
-  const sphere = geometry(new THREE.IcosahedronGeometry(1, 1));
   const ringGeometry = geometry(new THREE.RingGeometry(SPECIAL_RULES.cloudRadius - .07, SPECIAL_RULES.cloudRadius, 48));
-  const ringMaterial = material(new THREE.MeshBasicMaterial({ color: '#b4ff69', side: THREE.DoubleSide, transparent: true, opacity: .85, depthWrite: false }));
+  const ringMaterial = material(new THREE.MeshBasicMaterial({ color: '#91ab53', side: THREE.DoubleSide, transparent: true, opacity: .22, depthWrite: false }));
   function root(object) { roots.push(object); scene.add(object); return object; }
-  const targetMaterial = material(ringMaterial.clone()); targetMaterial.depthTest = false; targetMaterial.color.set('#e4ffa1');
+  const targetMaterial = material(ringMaterial.clone()); targetMaterial.depthTest = false; targetMaterial.color.set('#e4ffa1'); targetMaterial.opacity = .85;
   const targetRing = root(new THREE.Mesh(ringGeometry, targetMaterial)); targetRing.renderOrder = 30;
   targetRing.name = 'Giftwolke · Zielbereich'; targetRing.rotation.x = -Math.PI / 2; targetRing.visible = false;
   const shape = new THREE.Shape();
@@ -26,6 +25,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   let moon = null, aim = null;
   const orbs = [], clouds = [];
   const canSee = p => !isVisible || isVisible(p);
+  const poisonVisuals = createPoisonVisuals(scene, SPECIAL_RULES.cloudRadius, canSee);
   const ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
   const hit = (target, payload) => { const result = combat?.hit(target, payload); if (result) onDamage(result); };
   function aimAt(position, point) {
@@ -46,9 +46,9 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   function releasePoison(origin, payload, blocked = null) {
     if (!aim) return false;
     if (blocked) { cloudAt(blocked.point, { ...payload, sourceId: ownerId }); cancelAim(); return true; }
-    const orb = root(new THREE.Mesh(sphere, green)); orb.name = 'Giftstab · Zielprojektil'; orb.scale.setScalar(.22);
-    orb.position.copy(origin);
-    orbs.push({ mesh: orb, origin: origin.clone(), target: aim.target.clone(), age: 0,
+    const visual = poisonVisuals.createProjectile(origin);
+    visual.group.visible = canSee(origin);
+    orbs.push({ mesh: visual.group, visual, origin: origin.clone(), target: aim.target.clone(), age: 0,
       duration: Math.max(.25, origin.distanceTo(aim.target) / 14), payload: { ...payload, sourceId: ownerId } });
     cancelAim(); return true;
   }
@@ -69,17 +69,22 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   }
   function cloudAt(point, payload) {
     const mesh = root(new THREE.Group()); mesh.name = 'Giftwolke · 3 Sekunden'; mesh.position.copy(point); mesh.position.y = ground(point);
-    for (let i = 0; i < 7; i++) {
-      const puff = new THREE.Mesh(sphere, green), angle = i * 2.39996;
-      puff.position.set(Math.sin(angle) * (i ? 1.3 : 0), .5 + i % 3 * .18, Math.cos(angle) * (i ? 1.3 : 0));
-      puff.scale.set(1.1, .65, 1.1); mesh.add(puff);
-    }
+    mesh.visible = canSee(mesh.position);
+    const volume = poisonVisuals.createCloud(mesh);
     const boundary = new THREE.Mesh(ringGeometry, ringMaterial); boundary.rotation.x = -Math.PI / 2; boundary.position.y = .07; mesh.add(boundary);
-    clouds.push({ mesh, remaining: SPECIAL_RULES.cloudDuration, payload });
+    clouds.push({ mesh, volume, remaining: SPECIAL_RULES.cloudDuration, payload });
   }
-  function retire(list, index) { const item = list[index]; item.mesh.removeFromParent(); roots.splice(roots.indexOf(item.mesh), 1); list.splice(index, 1); }
+  function retire(list, index) {
+    const item = list[index];
+    if (item.visual) poisonVisuals.removeProjectile(item.visual);
+    if (item.volume) poisonVisuals.removeCloud(item.volume);
+    item.mesh.removeFromParent();
+    const rootIndex = roots.indexOf(item.mesh); if (rootIndex >= 0) roots.splice(rootIndex, 1);
+    list.splice(index, 1);
+  }
   function update(dt, position, time) {
     if (!(dt > 0)) return;
+    poisonVisuals.update(dt);
     if (aim) aimAt(position, aim.target);
     if (moon) {
       moon.age += dt;
@@ -107,13 +112,13 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       const t = Math.min(1, orb.age / orb.duration), end = orb.origin.clone().lerp(orb.target, t);
       end.y += Math.sin(t * Math.PI) * 2;
       const wall = world?.traceProjectile?.(start, end, .12);
-      orb.mesh.position.copy(wall?.point ?? end); orb.mesh.visible = canSee(orb.mesh.position);
+      poisonVisuals.moveProjectile(orb.visual, start, wall?.point ?? end, orb.age);
       if (wall || t >= 1) { cloudAt(orb.mesh.position, orb.payload); retire(orbs, i); }
     }
     for (let i = clouds.length - 1; i >= 0; i--) {
       const cloud = clouds[i], active = Math.min(dt, cloud.remaining); cloud.remaining -= dt;
       cloud.mesh.visible = canSee(cloud.mesh.position);
-      cloud.mesh.children.slice(0, 7).forEach((puff, index) => { puff.position.y = .65 + Math.sin(time * 2 + index) * .15; });
+      poisonVisuals.updateCloud(cloud.volume, SPECIAL_RULES.cloudDuration - cloud.remaining, cloud.remaining);
       for (const target of combat?.targets?.values() ?? []) {
         if (!target.alive || target.targetable === false || target.id === ownerId || target.destructible) continue;
         const point = target.position;
@@ -133,6 +138,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     get moonBusy() { return Boolean(moon); }, get aiming() { return Boolean(aim); },
     get telemetry() { return { aiming: Boolean(aim), target: aim ? { ...aim.target } : null,
       moon: moon ? { mode: moon.mode, distance: moon.distance, position: { ...moonMesh.position }, outboundHits: [...moon.outboundHits], returnHits: [...moon.returnHits] } : null,
+      visuals: poisonVisuals.telemetry,
       poisonProjectiles: orbs.length, clouds: clouds.map(c => ({ remaining: c.remaining, position: { ...c.mesh.position }, radius: SPECIAL_RULES.cloudRadius })) }; },
-    dispose() { reset(); roots.forEach(r => r.removeFromParent()); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); } };
+    dispose() { reset(); poisonVisuals.dispose(); roots.forEach(r => r.removeFromParent()); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); } };
 }

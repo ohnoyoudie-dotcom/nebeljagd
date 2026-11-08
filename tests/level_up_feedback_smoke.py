@@ -1,4 +1,4 @@
-"""Check gold level badges and the one-shot celebration after a real kill.
+"""Check the refined gold celebration and its timing after a real kill.
 
 Run after building with NEBELJAGD_URL pointing at standalone files. Only an
 imported fixture changes; no production map or progression values are patched.
@@ -18,7 +18,7 @@ from playwright.sync_api import sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 URL=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:5232').rstrip('/')
 RELEASE=Path(os.environ.get('NEBELJAGD_RELEASE_DIR',ROOT/'welt'))
-OUT=Path(os.environ.get('NEBELJAGD_QA_OUT','/tmp/nebeljagd-level-up-direct-feedback-qa'))
+OUT=Path(os.environ.get('NEBELJAGD_QA_OUT','/tmp/nebeljagd-level-up-refined-feedback-qa'))
 OUT.mkdir(parents=True,exist_ok=True)
 BASE=json.loads((ROOT/'worldmap.json').read_text())
 MAP_HASH=hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()
@@ -118,30 +118,46 @@ try:
                 attack(page)
                 assert state(page)['effect']['emitted']==0 and state(page)['level']==1
                 print(f'Progress: nonlethal hit {index+1}/{hits}',flush=True)
-            # Observe the real number pulse and capture the actual renderer
-            # while its level effect is active. No CSS opacity or timers change.
+            # Capture the actual renderer at four stages of the same victory.
+            # Simulation and CSS timing remain untouched; slow software WebGL
+            # does not turn a real-time screenshot delay into a false expiry.
             page.evaluate('''()=>{const l=document.querySelector('#playerLevel');
-              window.__levelHudPulse=null;window.__levelFeedbackVisible=null;window.__levelFeedbackFrame=null;
+              window.__levelHudPulse=null;window.__levelFeedbackFrames=[];
               const observer=new MutationObserver(()=>{
                 if(!l.classList.contains('is-leveling'))return;
                 window.__levelHudPulse={label:l.textContent,pulsing:true};observer.disconnect();
               });observer.observe(l,{attributes:true,childList:true,subtree:true});
+              const stages=[{name:'early',age:.16},{name:'peak',age:.45},{name:'settling',age:.9},{name:'fade',age:1.3}];
               const capture=()=>{const s=nebeljagdTestState();
-                if(s.level!==2||!s.levelUpEffect.active||s.levelUpEffect.remaining>1.25){requestAnimationFrame(capture);return;}
+                const stage=stages[window.__levelFeedbackFrames.length];
+                if(!stage)return;
+                if(s.level!==2||!s.levelUpEffect.active||s.levelUpEffect.age<stage.age){requestAnimationFrame(capture);return;}
                 const b=document.querySelector('#healthBar');
-                window.__levelFeedbackVisible={level:s.level,health:s.health,maxHealth:s.maxHealth,effect:s.levelUpEffect,
+                const evidence={stage:stage.name,requestedAge:stage.age,
+                  level:s.level,health:s.health,maxHealth:s.maxHealth,effect:s.levelUpEffect,
                   bar:s.healthBars.find(x=>x.id==='player'),width:b.getBoundingClientRect().width,
                   left:b.getBoundingClientRect().left,labelRight:l.getBoundingClientRect().right,label:l.textContent,
                   noticeAbsent:document.querySelector('#levelUpNotice')===null};
-                window.__levelFeedbackFrame=nebeljagdCaptureFrame();
+                window.__levelFeedbackFrames.push({evidence,image:nebeljagdCaptureFrame()});
+                if(window.__levelFeedbackFrames.length<stages.length)requestAnimationFrame(capture);
               };requestAnimationFrame(capture);
             }''')
             attack(page)
-            print('Progress: final blow landed; capture actual effect',flush=True)
-            page.wait_for_function('Boolean(window.__levelFeedbackFrame)&&Boolean(window.__levelHudPulse)',polling=25,timeout=20000)
-            shot=OUT/'actual-kill-gold-level-up.png'
-            shot.write_bytes(base64.b64decode(page.evaluate('window.__levelFeedbackFrame').split(',',1)[1]));REPORT['screenshots'].append(str(shot))
-            visible=page.evaluate('window.__levelFeedbackVisible')
+            print('Progress: final blow landed; capture four stages of the actual effect',flush=True)
+            page.wait_for_function('window.__levelFeedbackFrames.length===4&&Boolean(window.__levelHudPulse)',polling=25,timeout=90000)
+            frames=page.evaluate('window.__levelFeedbackFrames')
+            REPORT['sequence']=[]
+            for frame in frames:
+                evidence=frame['evidence'];effect=evidence['effect']
+                assert evidence['requestedAge']<=effect['age']<evidence['requestedAge']+.15,evidence
+                assert effect['active'] and effect['emitted']==1 and effect['depthTested'],effect
+                assert evidence['noticeAbsent'] and abs(evidence['width']-initial_ui['width'])<.01
+                shot=OUT/f"actual-kill-{evidence['stage']}.png"
+                shot.write_bytes(base64.b64decode(frame['image'].split(',',1)[1]))
+                REPORT['screenshots'].append(str(shot));REPORT['sequence'].append(evidence)
+            gallery=''.join(f'<figure><div class="detail"><img src="actual-kill-{entry["stage"]}.png"></div><figcaption>{entry["stage"]}: {entry["effect"]["age"]:.2f} s · 2× detail</figcaption></figure>' for entry in REPORT['sequence'])
+            (OUT/'sequence.html').write_text('<!doctype html><meta charset="utf-8"><title>Level-up: actual rendered sequence</title><style>body{margin:16px;background:#14251e;color:#f0dfb4;font:16px sans-serif}main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}figure{margin:0}.detail{aspect-ratio:4/3;overflow:hidden}img{width:100%;display:block;transform:scale(2);transform-origin:50% 54%}figcaption{padding:8px 0}</style><main>'+gallery+'</main>')
+            visible=REPORT['sequence'][1]
             assert (visible['level'],visible['health'],visible['maxHealth'])==(2,97,125),visible
             assert abs(visible['width']-initial_ui['width'])<.01 and visible['labelRight']<=visible['left']
             assert visible['label']=='2' and visible['bar']['level']==2 and abs(visible['bar']['barWidth']-1.805)<.0001
@@ -149,17 +165,21 @@ try:
             visible['hudPulse']=page.evaluate('window.__levelHudPulse')
             assert visible['hudPulse']=={'label':'2','pulsing':True}
             assert visible['effect']['active'] and visible['effect']['emitted']==1 and visible['effect']['level']==2
-            assert visible['effect']['particleCount']==36 and visible['effect']['reducedMotion'] is False
-            assert visible['effect']['ringCount']==2 and visible['effect']['beamVisible']
-            assert 1.0<=visible['effect']['remaining']<=1.25,visible['effect']
+            assert visible['effect']['style']=='woven-gold'
+            assert visible['effect']['particleCount']==22 and visible['effect']['reducedMotion'] is False
+            assert visible['effect']['haloVisible'] and visible['effect']['ribbonVisible']
+            assert visible['effect']['lightIntensity']>0 and visible['effect']['depthTested']
+            assert visible['effect'].get('ringCount',0)==0 and not visible['effect'].get('beamVisible',False)
             assert visible['bar']['levelPulse']['active'] and visible['bar']['levelPulse']['remaining']>0
-            assert visible['bar']['levelPulse']['scale']>1 and visible['bar']['levelPulse']['glow']>0
+            assert 1<visible['bar']['levelPulse']['scale']<=1.21 and visible['bar']['levelPulse']['glow']>0
             assert visible['bar']['levelBounds']['right']<-0.95
-            passed('A real victory adds 25 HP and celebrates on the figure and level number without a text popup or wider health bars',visible)
+            passed('A real victory adds 25 HP with a restrained gold effect, a single number swell and unchanged health-bar width',visible)
+            assert len({round(frame['effect']['age'],2) for frame in REPORT['sequence']})==4
+            passed('Four actual renderer frames cover appearance, peak, settling and fade of one celebration',REPORT['sequence'])
             page.wait_for_function('!nebeljagdTestState().levelUpEffect.active&&!document.querySelector("#playerLevel").classList.contains("is-leveling")')
             ended=state(page)
             assert ended['effect']['emitted']==1 and ended['effect']['particleCount']==0 and ended['effect']['remaining']==0
-            assert ended['effect']['ringCount']==0 and not ended['effect']['beamVisible']
+            assert not ended['effect']['haloVisible'] and not ended['effect']['ribbonVisible'] and ended['effect']['lightIntensity']==0
             ended_bar=next(b for b in ended['bars'] if b['id']=='player')
             assert not ended_bar['levelPulse']['active'] and ended_bar['levelPulse']['remaining']==0
             assert ended_bar['levelPulse']['scale']==1 and ended_bar['levelPulse']['glow']==0
@@ -171,7 +191,7 @@ try:
             restarted=state(page)
             assert (restarted['level'],restarted['health'],restarted['maxHealth'])==(1,72,100)
             assert restarted['effect']['emitted']==0 and not restarted['effect']['active'] and restarted['effect']['particleCount']==0
-            assert restarted['effect']['ringCount']==0 and not restarted['effect']['beamVisible']
+            assert not restarted['effect']['haloVisible'] and not restarted['effect']['ribbonVisible'] and restarted['effect']['lightIntensity']==0
             restarted_bar=next(b for b in restarted['bars'] if b['id']=='player')
             assert not restarted_bar['levelPulse']['active'] and restarted_bar['levelPulse']['scale']==1
             assert restarted_bar['levelPulse']['remaining']==0 and restarted_bar['levelPulse']['glow']==0
@@ -179,6 +199,19 @@ try:
             passed('Restart clears the celebration and restores the initial level and health',restarted['effect'])
             assert not REPORT['errors'],REPORT['errors']
             assert not REPORT['unexpectedRequests'],REPORT['unexpectedRequests']
+            gallery_page=context.new_page()
+            gallery_page.set_viewport_size({'width':1280,'height':1000})
+            # Managed Chromium disables file:// navigation. Render these
+            # already captured images in memory, without new URL requests.
+            gallery_document=(OUT/'sequence.html').read_text()
+            for frame in frames:
+                gallery_document=gallery_document.replace(f'actual-kill-{frame["evidence"]["stage"]}.png',frame['image'])
+            gallery_page.set_content(gallery_document,wait_until='load')
+            gallery_page.wait_for_function('Array.from(document.images).every(image=>image.complete&&image.naturalWidth>0)')
+            gallery_page.screenshot(path=str(OUT/'sequence.png'),full_page=True)
+            REPORT['contactSheet']=str(OUT/'sequence.png')
+            REPORT['contactSheetNote']='Browser layout of four 2× detail crops. The individual PNGs retain each complete, untouched renderer frame.'
+            gallery_page.close()
         except BaseException:
             try:page.screenshot(path=str(OUT/'failure.png'))
             except Exception:pass

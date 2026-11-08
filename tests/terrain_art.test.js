@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { terrainPalette, cobbleCells } from '../src/terrain-art.js';
 
-test('woodland colours become greener while non-green biomes and authored variations remain distinct', () => {
+test('woodland colours are muted while non-green biomes and authored variations remain distinct', () => {
   const source = new THREE.Color('#80a66a');
   const meadow = terrainPalette('meadow', '#80a66a');
   assert.ok(meadow.g / meadow.r > source.g / source.r);

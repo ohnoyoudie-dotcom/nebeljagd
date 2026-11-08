@@ -64,7 +64,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   const terrainArtwork = createTerrainArtwork();
   const groundTexture = terrainArtwork.ground;
   const groundMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, map: groundTexture,
-    bumpMap: groundTexture, bumpScale: .018, roughness: .98, side: THREE.DoubleSide });
+    bumpMap: groundTexture, bumpScale: .007, roughness: .98, side: THREE.DoubleSide });
   const snowWeightAt = (x, z) => spatial.biomeWeightsAt(x, z).find(item => item.biome === 'snow')?.weight ?? 0;
   const boundsHaveSnow = bounds => {
     for (let ix = 0; ix < 3; ix++) for (let iz = 0; iz < 3; iz++) {
@@ -138,8 +138,8 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   const pathTexture = terrainArtwork.earth;
   const pathMaterials = {
-    main: new THREE.MeshStandardMaterial({ color: '#ffffff', map: terrainArtwork.paving, bumpMap: terrainArtwork.pavingBump, bumpScale: .075, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
-    trail: new THREE.MeshStandardMaterial({ color: '#bec2a5', map: pathTexture, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
+    main: new THREE.MeshStandardMaterial({ color: '#ffffff', map: terrainArtwork.paving, bumpMap: terrainArtwork.pavingBump, bumpScale: .035, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
+    trail: new THREE.MeshStandardMaterial({ color: '#c3b395', map: pathTexture, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
   };
   for (const [kind, material] of Object.entries(pathMaterials)) {
     material.onBeforeCompile = shader => {
@@ -148,12 +148,16 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       shader.fragmentShader = `uniform sampler2D uPathEarth; varying float vPathAcross;\n${shader.fragmentShader}`;
       if (kind === 'main') shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
         #include <map_fragment>
-        float pavingCore = smoothstep(.10, .22, min(vPathAcross, 1. - vPathAcross));
-        diffuseColor.rgb = mix(texture2D(uPathEarth, vMapUv).rgb, diffuseColor.rgb, pavingCore);
+        float vergeDistance = min(vPathAcross, 1. - vPathAcross);
+        float vergeVariation = .008 * sin(vMapUv.x * 11. + vMapUv.y * 6.)
+          + .006 * sin(vMapUv.y * 17. - vMapUv.x * 9.);
+        float pavingCore = smoothstep(.075, .155, vergeDistance + vergeVariation);
+        vec3 earthyVerge = texture2D(uPathEarth, vMapUv).rgb * vec3(.95, .92, .87);
+        diffuseColor.rgb = mix(earthyVerge, diffuseColor.rgb, pavingCore);
       `);
-      shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', 'diffuseColor.a *= smoothstep(0., .13, min(vPathAcross, 1. - vPathAcross));\n#include <alphatest_fragment>');
+      shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', 'diffuseColor.a *= smoothstep(.003, .06, min(vPathAcross, 1. - vPathAcross));\n#include <alphatest_fragment>');
     };
-    material.customProgramCacheKey = () => `painted-path-${kind}-1`;
+    material.customProgramCacheKey = () => `painted-path-${kind}-2-natural-verge`;
   }
   const pathChunks = new Map();
   for (const path of map.paths.filter(p => p.kind !== 'bridge')) for (let segment = 1; segment < path.points.length; segment++) {

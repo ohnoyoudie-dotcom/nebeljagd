@@ -29,16 +29,33 @@ export const VEGETATION_TYPES = freeze([
   vegetationType('flowers', 'Blumenwiese', 'short', { color: '#7c9c59', density: .75, heightVariation: .25 }),
 ]);
 export const TERRAIN_TYPES = freeze([
-  { id: 'meadow', label: 'Grüne Wiese', color: '#4e854b', variation: .18 },
-  { id: 'forest', label: 'Dunkler Waldboden', color: '#3c5741', variation: .2 },
-  { id: 'earth', label: 'Erde', color: '#8b7757', variation: .17 },
-  { id: 'sand', label: 'Sand', color: '#c9ad70', variation: .12 },
-  { id: 'mud', label: 'Schlamm', color: '#655c45', variation: .15 },
-  { id: 'stone', label: 'Stein', color: '#899184', variation: .15 },
-  { id: 'rock', label: 'Fels', color: '#61685e', variation: .23 },
+  { id: 'meadow', label: 'Wiese · Naturgrün', color: '#527149', variation: .09 },
+  { id: 'forest', label: 'Waldboden · Moosgrün', color: '#425942', variation: .11 },
+  { id: 'earth', label: 'Erde · Waldbraun', color: '#836f56', variation: .10 },
+  { id: 'sand', label: 'Sand', color: '#c3ac7b', variation: .10 },
+  { id: 'mud', label: 'Schlamm', color: '#685e49', variation: .12 },
+  { id: 'stone', label: 'Stein', color: '#96988e', variation: .10 },
+  { id: 'rock', label: 'Fels', color: '#65695f', variation: .15 },
   { id: 'snow', label: 'Schnee', color: '#dce7e8', variation: .08 },
-  { id: 'cobble', label: 'Gepflasterter Weg', color: '#a0a38d', variation: .14 },
+  { id: 'cobble', label: 'Steinpflaster · Hellgrau', color: '#a8a69d', variation: .09 },
 ]);
+/** Way brushes store ordinary terrain stamps: existing export, undo and
+ * offline play keep the exact painted surface without a second map format. */
+export const PATH_BRUSH_PRESETS = freeze([
+  { id: 'earth', label: 'Erdweg · Wiese / Dorf', type: 'earth', color: '#99815b' },
+  { id: 'forest', label: 'Waldpfad · Laub und Erde', type: 'forest', color: '#74634a' },
+  { id: 'sand', label: 'Sandweg · Strand', type: 'sand', color: '#d7bd88' },
+  { id: 'desert', label: 'Wüstenpfad · Ocker', type: 'sand', color: '#b58b55' },
+  { id: 'snow', label: 'Festgetretener Schnee', type: 'snow', color: '#aabdc8' },
+  { id: 'gravel', label: 'Kiesweg · Fels / Heide', type: 'stone', color: '#a7a08c' },
+  { id: 'marsh', label: 'Schlammpfad · Moor', type: 'mud', color: '#81705b' },
+  { id: 'cobble', label: 'Steinpflaster', type: 'cobble', color: '#a0a38d' },
+]);
+export function pathBrushSettings(id) {
+  const preset = PATH_BRUSH_PRESETS.find(item => item.id === id) ?? PATH_BRUSH_PRESETS[0];
+  return { ...terrainSettings(preset.type), color: preset.color, hardness: .55, strength: 1, variation: .25 };
+}
+
 const typeById = new Map(VEGETATION_TYPES.map(type => [type.id, type]));
 const terrainById = new Map(TERRAIN_TYPES.map(type => [type.id, type]));
 const scatter = (density, entries, extras = {}) => ({ density, minDistance: 3,
@@ -88,7 +105,7 @@ export function vegetationSettings(object) {
 }
 export function terrainSettings(type = 'meadow') {
   const value = terrainById.get(type) ?? terrainById.get('meadow');
-  return { type: value.id, color: value.color, hardness: .3, strength: .8, variation: value.variation };
+  return { type: value.id, color: value.color, hardness: .65, strength: .9, variation: value.variation };
 }
 export function biomePreset(id) { const value = BIOME_PRESETS.find(item => item.id === id); return value ? clone(value) : null; }
 
