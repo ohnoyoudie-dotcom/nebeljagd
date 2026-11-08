@@ -921,15 +921,159 @@
       "rarity": "common"
     },
     {
-      "id": "object-tree-mw756m4n-1",
+      "id": "object-tree-mw76d4jx-1",
       "name": "Baum",
       "kind": "tree",
       "variant": "kit-user-tree1",
       "position": [
-        22,
-        -50.9
+        23.1,
+        -53.1
       ],
-      "rotation": 2.171127186085906,
+      "rotation": 4.1216159181027905,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76eaip-2",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        31,
+        -45.1
+      ],
+      "rotation": 6.25764646000496,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76eb5b-3",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        11.6,
+        -37
+      ],
+      "rotation": 3.938437217367932,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ebgm-4",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        30.2,
+        -22.2
+      ],
+      "rotation": 6.258619100216961,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ebqh-5",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        42,
+        -38.5
+      ],
+      "rotation": 2.445010273029076,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ec6z-6",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        43.3,
+        -71.5
+      ],
+      "rotation": 2.2483574681183787,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ecgo-7",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        -5.4,
+        -70.2
+      ],
+      "rotation": 4.973752036933892,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ed0c-8",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        17.5,
+        -67.2
+      ],
+      "rotation": 2.7782569448690317,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ed8y-9",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        -6.8,
+        -38.4
+      ],
+      "rotation": 5.434226262457778,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76edy2-a",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        54.5,
+        -51.7
+      ],
+      "rotation": 6.28056843165286,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76ee9e-b",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        7.4,
+        -20.8
+      ],
+      "rotation": 3.3366031129871603,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76eesh-c",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        44.7,
+        -24.7
+      ],
+      "rotation": 1.826204672570852,
+      "scale": 1
+    },
+    {
+      "id": "object-tree-mw76efir-d",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        52.7,
+        -29.5
+      ],
+      "rotation": 3.7352982807933377,
       "scale": 1
     }
   ],
