@@ -54,7 +54,7 @@ with sync_playwright() as pw:
         page.wait_for_function('nebeljagdTestState().pickups.filter(p=>p.type==="gold" && !p.collected && p.flight===0).length===2')
         opened = state()
         coins = [p for p in opened['pickups'] if p['type']=='gold']
-        assert all(c['coin']['model']=='symmetric-gold-coin' and c['coin']['diameter']>=1 for c in coins), coins
+        assert all(c['coin']['model']=='symmetric-gold-coin' and .49<c['coin']['diameter']<.52 and c['coin']['emblem']=='wizard-hat' and c['coin']['emblemSides']==2 for c in coins), coins
         rotation = coins[0]['coin']['rotation']
         page.wait_for_function('r=>nebeljagdTestState().pickups.find(p=>p.type==="gold").coin.rotation<r-.12', arg=rotation)
         drop = next(d for d in opened['weaponDrops'] if d['id'].endswith('-weapon'))
@@ -72,7 +72,7 @@ with sync_playwright() as pw:
             page.wait_for_function('id=>nebeljagdTestState().pickups.find(p=>p.id===id).collected', arg=coin['id'])
         assert state()['gold']==sum(c['amount'] for c in coins)
         expect(page.locator('#goldCount')).to_have_text(str(state()['gold']))
-        checks.append('Real chest drops two large symmetric gold coins: slow clockwise turn, pause freezes rotation, collection awards exact gold')
+        checks.append('Real chest drops two small symmetric wizard-hat gold coins: slow clockwise turn, pause freezes rotation, collection awards exact gold')
         page.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z})', drop)
         page.wait_for_function('nebeljagdTestState().equippedItem?.type==="sword"')
         equipped = state()['equippedItem']

@@ -76,6 +76,10 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/chest_loot_browser_smoke.py
+      - name: Verify bow direction changes and hand alignment with keyboard and touch
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/bow_alignment_smoke.py
       - name: Verify barrel and crate scattering in the generated game
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
@@ -210,6 +214,7 @@ jobs:
             test-results/projectiles-sight
             test-results/projectile-barriers
             test-results/woodland-details
+            test-results/bow-alignment
             test-results/natural-details
             test-results/moon-projectile
             assets/characters/adventurer-inspection.json

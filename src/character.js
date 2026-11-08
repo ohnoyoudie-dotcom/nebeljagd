@@ -121,7 +121,7 @@ export async function createCharacter(scene) {
       findBone([`mixamorig${label}Leg`, `${label}Leg`, `Shin${suffix}`]),
       findBone([`mixamorig${label}Foot`, `${label}Foot`, `Foot${suffix}`])]];
   }));
-  const combatPose = createCombatPoseController(group, { chest, hips: findBone(['mixamorigHips', 'Hips']), arms: armBones, legs: legBones });
+  const combatPose = createCombatPoseController(group, { chest, hips: findBone(['mixamorigHips', 'Hips']), arms: armBones, legs: legBones, gripSockets });
   const restoreAnimatedPose = () => combatPose.restore();
   function setCombatState(next) {
     restoreAnimatedPose();

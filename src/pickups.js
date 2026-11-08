@@ -80,7 +80,7 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
     floating.add(visual);
     const glint = new THREE.Mesh(sparkleGeo, sparkleMat);
     glint.position.set(-0.20, 0.20, 0.14);
-    if (definition.type === 'gold') glint.position.set(-.29, .28, .23);
+    if (definition.type === 'gold') glint.position.set(-.145, .14, .115);
     floating.add(glint);
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = -Math.PI / 2;
@@ -89,6 +89,7 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
     const halo = new THREE.Mesh(haloGeo, definition.type === 'gold' ? goldHaloMat : haloMat);
     halo.rotation.x = -Math.PI / 2;
     halo.position.y = 0.038;
+    if (definition.type === 'gold') halo.scale.setScalar(.65);
     group.add(halo);
     scene.add(group);
     const item = { ...definition, groundY, group, floating, visual, glint, ring, halo,
@@ -180,7 +181,7 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
       if (!item.group.visible) continue;
       const animationTime = item.type === 'gold' ? item.coinTime : time;
       if (item.type === 'gold') {
-        item.floating.position.y = 1.02 + Math.sin(animationTime * 1.5 + item.phase) * .06;
+        item.floating.position.y = .72 + Math.sin(animationTime * 1.5 + item.phase) * .06;
         // Negative yaw is clockwise viewed from above. About 20 s per turn;
         // the fixed tilt presents a round face to the game's overhead camera.
         item.visual.rotation.y = -animationTime * GOLD_COIN_STYLE.radiansPerSecond;
@@ -190,8 +191,8 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
         item.visual.rotation.z = Math.sin(time * 1.7 + item.phase) * 0.08;
       }
       item.ring.visible = item.halo.visible = item.flight <= 0;
-      item.glint.scale.setScalar(0.6 + Math.pow(Math.max(0, Math.sin(animationTime * 3 + item.phase)), 6) * 1.3);
-      item.ring.scale.setScalar(1 + Math.sin(animationTime * 2 + item.phase) * 0.045);
+      item.glint.scale.setScalar((item.type === 'gold' ? .55 : 1) * (0.6 + Math.pow(Math.max(0, Math.sin(animationTime * 3 + item.phase)), 6) * 1.3));
+      item.ring.scale.setScalar((item.type === 'gold' ? .65 : 1) * (1 + Math.sin(animationTime * 2 + item.phase) * 0.045));
       const available = item.type !== 'heart' || remainingHealth < maxHealth;
       const nearCollector = Boolean(playerPosition && Math.hypot(playerPosition.x - item.x, playerPosition.z - item.z) < 1.15);
       const clearReach = !nearCollector || !world?.traceProjectile || !world.traceProjectile(

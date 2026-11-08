@@ -21,6 +21,7 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
 export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
   poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
+const WOOD_BOW_DRAW = .18;
 export function resolveWeaponVariant(type, variant) {
   return type === 'sword' && (!variant || variant === 'steel') ? 'kit-tripo-sword' : variant ?? DEFAULT_VARIANTS[type];
 }
@@ -29,7 +30,7 @@ export function resolveWeaponVariant(type, variant) {
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
   fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82 });
 export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
-export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * .88])));
+export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * (type === 'bow' ? 1.18 : .88)])));
 
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
@@ -424,21 +425,27 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
   let committedBowDirection = 0;
   let bowHolding = false, bowHoldAge = 0, bowReleaseDraw = 0;
+  function trackBowAim(direction = characterGroup.rotation.y) {
+    committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
+    // Turn the complete bow stance, including both hands. A separately turning
+    // bow would sweep its string through the torso during a sharp direction change.
+    characterGroup.rotation.y = committedBowDirection;
+  }
   function alignNockedArrow() {
-  const aim = attackAge >= 0 ? committedBowDirection : characterGroup.rotation.y;
-  const relative = aim - characterGroup.rotation.y;
-  heldBow.rotation.y = Math.PI / 2 + relative;
-  heldBow.updateMatrix();
-  const rig = heldBow.userData.bowRig;
-  const nock = rig ? rig.lower.clone().lerp(rig.upper,.5) : new THREE.Vector3(.02,0,0);
-  nock.x += bowDraw * (rig?.drawDistance ?? .31);
-  nock.applyMatrix4(heldBow.matrix);
-  // The flying arrow is scene-owned; keep the held arrow the same world size.
-  nockedArrow.scale.set(1/characterGroup.scale.x,1/characterGroup.scale.y,1/characterGroup.scale.z);
-  nockedArrow.rotation.set(0,relative,0);
-  const tail = new THREE.Vector3(0,0,-ARROW_LENGTH / 2).multiply(nockedArrow.scale).applyEuler(nockedArrow.rotation);
-  nockedArrow.position.copy(nock).sub(tail);
-}
+    const aim = bowHolding ? committedBowDirection : characterGroup.rotation.y;
+    const relative = aim - characterGroup.rotation.y;
+    heldBow.rotation.y = Math.PI / 2 + relative;
+    heldBow.updateMatrix();
+    const rig = heldBow.userData.bowRig;
+    const nock = rig ? rig.lower.clone().lerp(rig.upper,.5) : new THREE.Vector3(.02,0,0);
+    nock.x += bowDraw * (rig?.drawDistance ?? WOOD_BOW_DRAW);
+    nock.applyMatrix4(heldBow.matrix);
+    // The flying arrow is scene-owned; keep the held arrow the same world size.
+    nockedArrow.scale.set(1/characterGroup.scale.x,1/characterGroup.scale.y,1/characterGroup.scale.z);
+    nockedArrow.rotation.set(0,relative,0);
+    const tail = new THREE.Vector3(0,0,-ARROW_LENGTH / 2).multiply(nockedArrow.scale).applyEuler(nockedArrow.rotation);
+    nockedArrow.position.copy(nock).sub(tail);
+  }
 
 
   const nockedArrow = makeArrow(false);
@@ -480,6 +487,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const swordPose = createSwordPose();
   const up = new THREE.Vector3(0, 1, 0);
   const leftHand = new THREE.Vector3(), rightHand = new THREE.Vector3();
+  const bowStringOffset = new THREE.Vector3();
   const combatPose = { weapon: null, phase: 'idle', leftHand, rightHand, chestTwist: 0 };
   let equippedType = null, equippedItem = null, equippedPickup = null;
   let cooldown = 0, attackAge = -1, attackDuration = 0;
@@ -558,9 +566,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (!specials.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
-    // Keep the requested direction fixed while the body finishes turning.
     committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
     bowHolding = equippedType === 'bow'; bowHoldAge = 0; bowReleaseDraw = 0;
+    if (bowHolding) trackBowAim(direction);
     attackAge = 0; shotReleased = false;
     attackDuration = equippedItem.cooldown;
     cooldown = bowHolding ? 0 : attackDuration;
@@ -586,14 +594,23 @@ export function createWeapons(scene, characterGroup, world, character = null,
     combatPose.leftHand = leftHand;
     combatPose.leftHandWeight = 1; combatPose.castWeight = 0;
     combatPose.swordWeight = 0; combatPose.swordLead = 1; combatPose.chestLean = 0;
+    combatPose.bowStringOffset = null;
     if (equippedType === 'bow') {
       bowDraw = bowHolding ? ease(0, .35, bowHoldAge) : attackAge < 0 ? 0 : bowReleaseDraw * (1 - ease(.23, .36, attackAge));
-      leftHand.set(.34, 1.43, .40);
-      rightHand.set(.34, 1.43, .34 - bowDraw * .22);
-      combatPose.chestTwist = -.08 - bowDraw * .07;
+      // +X is the avatar's left. Keep the arrow beside the right shoulder,
+      // with the left arm extended forward and the right elbow outside the ribs.
+      leftHand.set(-.28, 1.42, .52);
+      const rig = heldBow.userData.bowRig;
+      const offset = rig ? bowStringOffset.copy(rig.lower).lerp(rig.upper, .5)
+        : bowStringOffset.set(.41, 0, 0);
+      offset.x += bowDraw * (rig?.drawDistance ?? WOOD_BOW_DRAW);
+      offset.multiply(heldBow.scale).applyAxisAngle(THREE.Object3D.DEFAULT_UP, Math.PI / 2);
+      combatPose.bowStringOffset = offset;
+      rightHand.copy(leftHand).add(offset);
+      combatPose.chestTwist = -.6;
       character?.setCombatState?.(combatPose);
       const imported = heldBow.userData.model === 'tripo';
-      if (imported && character?.getGripPosition) character.getGripPosition('left', hand);
+      if (character?.getGripPosition) character.getGripPosition('left', hand);
       else if (character?.getHandPosition) character.getHandPosition('left', hand);
       else hand.copy(leftHand);
       heldBow.position.copy(hand);
@@ -601,7 +618,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       heldBow.rotation.set(attackAge >= .23 && attackAge < .40 ? Math.sin((attackAge - .23) * 38) * .035 : 0, Math.PI / 2, 0);
       if (heldBow.userData.bowString) {
         const stringPositions = heldBow.userData.bowString.geometry.attributes.position;
-        stringPositions.setX(1, .02 + bowDraw * .31); stringPositions.needsUpdate = true;
+        stringPositions.setX(1, .02 + bowDraw * WOOD_BOW_DRAW); stringPositions.needsUpdate = true;
       }
       for (const deformation of heldBow.userData.bowStringDeformations ?? []) {
         const { positions, rest, weights, displacement } = deformation;
@@ -613,15 +630,6 @@ export function createWeapons(scene, characterGroup, world, character = null,
         }
         positions.needsUpdate = true;
       }
-      if (imported) {
-        const rig = heldBow.userData.bowRig;
-        const rest = rig ? rig.lower.clone().lerp(rig.upper, .5) : new THREE.Vector3();
-        if (rig) rest.x += bowDraw * rig.drawDistance;
-        heldBow.updateMatrix();
-        nockedArrow.position.copy(rest).applyMatrix4(heldBow.matrix);
-        nockedArrow.position.z += .34;
-      } else nockedArrow.position.set(hand.x, hand.y, heldBow.position.z + .34 - (.02 + bowDraw * .31) * heldBow.scale.x);
-      nockedArrow.rotation.set(0, 0, 0);
       alignNockedArrow();
     } else if (equippedType === 'sword') {
       bowDraw = 0;
@@ -753,9 +761,10 @@ export function createWeapons(scene, characterGroup, world, character = null,
     specials.cancelAim();
     if (bowHolding) { bowHolding = false; bowHoldAge = 0; attackAge = -1; attackPhase = 'idle'; shotReleased = true; applyHeldPose(); }
   }
-  function releaseAttack(position) {
+  function releaseAttack(position, direction = characterGroup.rotation.y) {
     if (bowHolding) {
       if (!position || equippedType !== 'bow' || characterGroup.userData.rolling) { cancelAim(); return false; }
+      trackBowAim(direction);
       bowReleaseDraw = bowDraw; bowHolding = false;
       attackAge = .23; attackPhase = 'release'; shotReleased = true;
       cooldown = equippedItem.cooldown;
@@ -835,7 +844,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
   }
 
-  function update(dt, time, position = characterGroup.position) {
+  function update(dt, time, position = characterGroup.position, direction = characterGroup.rotation.y) {
     const delta = Math.max(0, Math.min(.25, Number.isFinite(dt) ? dt : 0));
     cooldown = Math.max(0, cooldown - delta);
     swordComboRemaining = Math.max(0, swordComboRemaining - delta);
@@ -870,7 +879,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (swordIndex >= 0) clearSwordCombo();
     }
     if (attackAge >= 0) {
-      if (bowHolding) { bowHoldAge += delta; attackAge = Math.min(.22, bowHoldAge); }
+      if (bowHolding) { trackBowAim(direction); bowHoldAge += delta; attackAge = Math.min(.22, bowHoldAge); }
       else attackAge += delta;
       if (equippedType === 'bow') attackPhase = attackAge < .23 ? 'draw' : attackAge < .36 ? 'release' : 'recover';
       else if (equippedType.endsWith('Staff')) attackPhase = attackAge < .25 ? 'channel' : attackAge < .4 ? 'release' : 'recover';
@@ -1040,6 +1049,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
       const actualHand = side => character?.getHandPosition
         ? point(character.getHandPosition(side, new THREE.Vector3())) : null;
       const hands = { left: actualHand('left'), right: actualHand('right') };
+      let bowAlignment = null;
+      if (equippedType === 'bow') {
+        const tail = nockedArrow.localToWorld(new THREE.Vector3(0, 0, -ARROW_LENGTH / 2));
+        characterGroup.worldToLocal(tail);
+        const palm = character?.getGripPosition?.('right', new THREE.Vector3()) ?? rightHand;
+        bowAlignment = { direction: committedBowDirection, nock: point(tail), drawPalm: point(palm), error: tail.distanceTo(palm) };
+      }
       let heldGrip = null;
       if (equippedType?.endsWith('Staff') || equippedType === 'bow' && held.userData.model === 'tripo') {
         const side = equippedType === 'bow' ? 'left' : 'right';
@@ -1053,7 +1069,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
-      return { attackPhase, bowDraw, bowHolding, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
+      return { attackPhase, bowDraw, bowHolding, bowAlignment, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         swordCombo: { index: swordIndex + 1, pattern: SWORD_PATTERNS[swordIndex] ?? null, swingId: swordSwingId,
           active: equippedType === 'sword' && attackAge >= 0, progress: equippedType === 'sword' && attackAge >= 0 ? Math.min(1, attackAge / attackDuration) : 0,
           remaining: swordComboRemaining },
@@ -1070,7 +1086,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           groundPresentationScale: GROUND_WEAPON_SCALE[equippedType],
           stringVertices: (held.userData.bowStringDeformations ?? []).reduce((total, part) => total + part.count, 0) } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,
-        arrows: arrows.filter(arrow => arrow.life > 0).map(arrow => ({ mode: arrow.mode, position: point(arrow.group.position) })),
+        arrows: arrows.filter(arrow => arrow.life > 0).map(arrow => ({ mode: arrow.mode, direction: arrow.direction, position: point(arrow.group.position) })),
         arrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0).length,
         lootAuras: items.filter(item => !item.collected).map(item => ({ id: item.id, visible: item.group.visible, ...item.aura.inspect() })),
         arrowModel: projectilePrototypes.arrow ? { ...projectilePrototypes.arrow.userData } : null,

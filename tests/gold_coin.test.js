@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { createGoldCoinGeometry, GOLD_COIN_STYLE } from '../src/gold-coin.js';
 import { createPickups } from '../src/pickups.js';
 
-test('the solid coin has matching geometry, normals and colour on both blank faces', () => {
+test('the solid coin has matching geometry, normals and colour on both hat-stamped faces', () => {
   const geometry = createGoldCoinGeometry();
   const p=geometry.attributes.position,n=geometry.attributes.normal,c=geometry.attributes.color;
   const key = values => values.map(v=>Math.abs(v)<.000001?'0.00000':v.toFixed(5)).join(',');
@@ -16,8 +16,9 @@ test('the solid coin has matching geometry, normals and colour on both blank fac
   for(const vertex of mirrored)assert.ok(vertices.has(vertex),'each face vertex has an identical mirrored reverse');
   const size=geometry.boundingBox.getSize(new THREE.Vector3());
   assert.ok(Math.abs(size.x-size.y)<1e-6,'round face');
-  assert.ok(size.x>.8 && size.z>.1 && size.z<.16,'readable diameter and a solid thin edge');
-  assert.ok(geometry.index.count/3<2000,'bounded geometry without extra coin stacks');
+  assert.ok(Math.abs(size.x-.42)<1e-6 && size.z>.065 && size.z<.08,'half-sized disc with a solid thin edge');
+  assert.ok([...Array(p.count).keys()].some(i=>Math.abs(p.getX(i))<.12 && p.getY(i)>.10 && p.getZ(i)>.03),'raised hat tip on the face');
+  assert.ok(p.count/3<2500,'bounded geometry without extra coin stacks');
   geometry.dispose();
 });
 
@@ -29,14 +30,16 @@ test('one shared coin per gold drop turns slowly clockwise and freezes while pau
   assert.equal(coin.visual.geometry,second.visual.geometry);
   assert.equal(coin.visual.material,second.visual.material);
   assert.equal(coin.floating.children.length,2,'one coin and one small glint');
-  assert.ok(GOLD_COIN_STYLE.radius*2*coin.floating.scale.x>=1,'larger than the old overlapping discs');
+  assert.ok(Math.abs(GOLD_COIN_STYLE.radius*2*coin.floating.scale.x-.504)<1e-6,'coin diameter is half the previous size');
+  assert.equal(coin.visual.userData.coin.emblem,'wizard-hat');
+  assert.equal(coin.visual.userData.coin.emblemSides,2);
   pickups.update(0,0,viewer,options);
   const camera=new THREE.OrthographicCamera(-2,2,2,-2,.1,100);
   camera.position.set(0,29,18);camera.lookAt(0,0,0);camera.updateMatrixWorld(true);
   const projectedEdge = () => {
     scene.updateMatrixWorld(true);
     const centre=coin.visual.localToWorld(new THREE.Vector3()).project(camera);
-    return coin.visual.localToWorld(new THREE.Vector3(.42,0,0)).project(camera).sub(centre);
+    return coin.visual.localToWorld(new THREE.Vector3(GOLD_COIN_STYLE.radius,0,0)).project(camera).sub(centre);
   };
   const before=projectedEdge();
   pickups.update(.25,.25,viewer,options);

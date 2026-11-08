@@ -20,8 +20,8 @@ for (const variant of ['wood', 'kit-tripo-ornate-bow']) test(`arrow nock, direct
   weapons.update(.1,.1,actor.position);
   actor.updateWorldMatrix(true,true);
   const rig = bow.userData.bowRig;
-  const nock = rig ? rig.lower.clone().lerp(rig.upper,.5) : new THREE.Vector3(.02,0,0);
-  nock.x += weapons.telemetry.bowDraw * (rig?.drawDistance ?? .31);
+  const nock = rig ? rig.lower.clone().lerp(rig.upper,.5) : new THREE.Vector3().fromBufferAttribute(bow.userData.bowString.geometry.attributes.position,1);
+  if(rig)nock.x += weapons.telemetry.bowDraw * rig.drawDistance;
   bow.localToWorld(nock);
   const tail=loaded.localToWorld(new THREE.Vector3(0,0,-ARROW_LENGTH / 2));
   assert.ok(tail.distanceTo(nock)<1e-6,'arrow tail touches animated string');
@@ -29,13 +29,18 @@ for (const variant of ['wood', 'kit-tripo-ornate-bow']) test(`arrow nock, direct
   assert.ok(Math.abs(tip.distanceTo(tail)-ARROW_LENGTH)<1e-6,'same physical length on bow and in flight');
   const forward=new THREE.Vector3(Math.sin(aim),0,Math.cos(aim));
   assert.ok(tip.clone().sub(tail).normalize().dot(forward)> .999999);
-  actor.rotation.y=.6; // rotate during draw; committed aim must remain fixed
+  actor.rotation.y=.6; // Changing movement while holding must change the live aim.
   weapons.update(.14,.24,actor.position);
   for(let i=0;i<100;i++) weapons.update(.05,.24+i*.05,actor.position);
   assert.equal(weapons.telemetry.shotsFired,0,'holding indefinitely never fires');
   assert.equal(weapons.telemetry.bowDraw,1);
   assert.equal(weapons.attack(actor.position,aim),null,'repeat presses do not restart the draw');
-  assert.equal(weapons.releaseAttack(actor.position),true);
+  actor.updateWorldMatrix(true,true);
+  const currentHeading=loaded.getWorldDirection(new THREE.Vector3());
+  assert.ok(currentHeading.dot(new THREE.Vector3(Math.sin(.6),0,Math.cos(.6)))>.999999,'held arrow follows the new heading');
+  const releasedDirection=-1.4; // Release can arrive before the next animation frame.
+  forward.set(Math.sin(releasedDirection),0,Math.cos(releasedDirection));
+  assert.equal(weapons.releaseAttack(actor.position,releasedDirection),true);
   assert.equal(weapons.releaseAttack(actor.position),false,'one release fires exactly once');
   const flying=scene.children.find(part=>part.name==='Fliegender Pfeil'&&part.visible);
   assert.ok(flying); assert.equal(flying.userData.trail,undefined);
@@ -46,6 +51,11 @@ for (const variant of ['wood', 'kit-tripo-ornate-bow']) test(`arrow nock, direct
   const motion=flying.position.clone().sub(previous);
   assert.ok(motion.clone().normalize().dot(forward)>.999999);
   assert.ok(Math.abs(motion.y)<1e-9);
+  actor.rotation.y=.9;
+  weapons.update(.1,.39,actor.position);
+  actor.updateWorldMatrix(true,true);
+  assert.ok(loaded.getWorldDirection(new THREE.Vector3()).dot(new THREE.Vector3(Math.sin(.9),0,Math.cos(.9)))>.999999,'held bow also follows the body during recovery');
+  assert.ok(new THREE.Vector3(0,0,1).applyQuaternion(flying.quaternion).dot(forward)>.999999,'turning after release never steers the flying arrow');
   weapons.dispose();
 });
 
@@ -77,7 +87,7 @@ for (const reason of ['cancel', 'roll', 'swap', 'reset']) test(`held bow cancels
   weapons.interact(actor.position);weapons.attack(actor.position,0);
   weapons.update(.5,.5,actor.position);
   assert.equal(weapons.bowHolding,true);
-  assert.ok(pose.rightHand.x>.3 && pose.leftHand.x>.3,'both hands keep the string beside the torso');
+  assert.ok(pose.rightHand.x<-.15 && pose.leftHand.x<-.15,'bow and draw hand share the right shoulder line');
   assert.ok(pose.rightHand.z<pose.leftHand.z,'draw hand pulls toward the shoulder');
   if(reason==='cancel')weapons.cancelAim();
   if(reason==='roll'){actor.userData.rolling=true;weapons.update(.016,.516,actor.position);actor.userData.rolling=false;}

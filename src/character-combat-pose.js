@@ -3,7 +3,7 @@ import * as THREE from 'three';
 const weight = (value, fallback = 0) => THREE.MathUtils.clamp(Number.isFinite(value) ? value : fallback, 0, 1);
 
 /** Layer a reversible combat pose over the current authored animation. */
-export function createCombatPoseController(group, { chest, hips, arms, legs }) {
+export function createCombatPoseController(group, { chest, hips, arms, legs, gripSockets }) {
   const bones = new Set([chest, hips, ...Object.values(arms).flat(), ...Object.values(legs).flat()].filter(Boolean));
   const animated = new Map([...bones].map(bone => [bone, { rotation: bone.quaternion.clone(), position: bone.position.clone() }]));
   let applied = false, castWeight = 0, swordWeight = 0, stanceWeight = 0;
@@ -15,6 +15,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
   const worldRotation = new THREE.Quaternion(), parentInverse = new THREE.Quaternion(), correction = new THREE.Quaternion();
   const originalUpper = new THREE.Quaternion(), originalLower = new THREE.Quaternion();
   const hipsPoint = new THREE.Vector3();
+  const grip = new THREE.Vector3(), wrist = new THREE.Vector3(), wristTarget = new THREE.Vector3(), stringTarget = new THREE.Vector3();
   const feet = Object.entries(legs).map(([side, chain]) => ({ side, chain,
     target: new THREE.Vector3(), orientation: new THREE.Quaternion() }));
 
@@ -64,6 +65,18 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
   const armPoles = { left: new THREE.Vector3(.7, -.55, -.12), right: new THREE.Vector3(-.7, -.55, -.12) };
   const kneePoles = { left: new THREE.Vector3(.3, 0, 1), right: new THREE.Vector3(-.1, 0, 1) };
 
+  function solveGrip(side, target) {
+    // The palm is ahead of the wrist and rotates with the IK chain. Correct
+    // that offset instead of placing the wrist (and therefore the whole hand)
+    // directly on the bowstring. Reuse all vectors in this short solve.
+    for (let pass = 0; pass < 4; pass++) {
+      localPosition(arms[side][2], wrist);
+      gripSockets[side].getPosition(group, grip);
+      wristTarget.copy(target).sub(grip).add(wrist);
+      solve(arms[side], wristTarget, armPoles[side]);
+    }
+  }
+
   function apply(next, { walkWeight = 0 } = {}) {
     restore();
     if (!next) return;
@@ -99,8 +112,14 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
       chest.rotation.y += Number.isFinite(next.chestTwist) ? next.chestTwist : 0;
       chest.rotation.x += Number.isFinite(next.chestLean) ? THREE.MathUtils.clamp(next.chestLean, -.2, .2) : 0;
     }
-    solve(arms.left, next.leftHand, armPoles.left, weight(next.leftHandWeight, 1));
-    solve(arms.right, next.rightHand, armPoles.right);
+    if (next.weapon === 'bow' && next.bowStringOffset && gripSockets?.left && gripSockets?.right) {
+      solveGrip('left', next.leftHand);
+      gripSockets.left.getPosition(group, stringTarget).add(next.bowStringOffset);
+      solveGrip('right', stringTarget);
+    } else {
+      solve(arms.left, next.leftHand, armPoles.left, weight(next.leftHandWeight, 1));
+      solve(arms.right, next.rightHand, armPoles.right);
+    }
     group.updateWorldMatrix(true, true);
   }
   function inspect() {
@@ -111,6 +130,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
     };
     return { castWeight, swordWeight, stanceWeight,
       leftArm: { shoulder: point(arms.left[0]), elbow: point(arms.left[1]), hand: point(arms.left[2]) },
+      rightArm: { shoulder: point(arms.right[0]), elbow: point(arms.right[1]), hand: point(arms.right[2]) },
       feet: { left: point(legs.left[2]), right: point(legs.right[2]) }, hips: point(hips) };
   }
   return { apply, restore, inspect };

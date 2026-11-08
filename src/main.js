@@ -314,7 +314,7 @@ function moveAttackAim(event, relative = false) {
   weapons.aimAt(player, point);
 }
 function releaseWeapon() {
-  if (state.phase === 'playing') weapons.releaseAttack(player);
+  if (state.phase === 'playing') weapons.releaseAttack(player, state.direction);
   else weapons.cancelAim();
   aimDrag = null;
 }
@@ -606,7 +606,7 @@ function frame(now) {
   practiceActors.appendFootprintSources?.(footprintSources);
   snowFootprints.update(state.elapsed, footprintSources);
   chests.update(playDelta, time, player);
-  weapons.update(playDelta, time, player);
+  weapons.update(playDelta, time, player, state.direction);
   if (state.phase === 'playing') {
     const automaticPickup = weapons.tryAutoPickup(player);
     if (automaticPickup) { ui.toast(automaticPickup.message, 'success'); updateUI(); }

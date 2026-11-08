@@ -2,14 +2,14 @@
 
 Goldbeute verwendet eine einzelne direkt im Code erzeugte Münze statt vier
 überlappender Scheiben. Ein gespiegeltes Rotationsprofil bildet zwei identische,
-glatte Seiten mit einer schmalen Nut und einem abgerundeten Goldrand. Die Farben
-sind ebenfalls gespiegelt. Texturen, Schrift, Prägungen und externe Modelle sind
-nicht erforderlich. Geometrie und Material werden zwischen allen Münzen geteilt.
+Seiten mit einem kleinen erhabenen Zauberhut, einer schmalen Nut und einem
+abgerundeten Goldrand. Hut und Farben sind gespiegelt. Externe Modelle und
+Texturen sind nicht erforderlich. Geometrie und Material werden zwischen allen Münzen geteilt.
 
-Die sichtbare Münze hat bei normaler Größe etwa einen Meter Durchmesser und ist
+Die sichtbare Münze hat bei normaler Größe etwa 0,50 Meter Durchmesser (halb so groß wie zuvor) und ist
 zur Spielkamera geneigt. Sie dreht sich im Uhrzeigersinn mit 0,32 Radiant pro
 Sekunde, also ungefähr einer Umdrehung in 20 Sekunden. Leichtes Schweben und ein
-kleiner Lichtreflex bleiben erhalten; Rotation und Schweben halten bei Pause an.
+kleiner Lichtreflex bleiben erhalten; Bodenschein und Lichtreflex sind ebenfalls kleiner; Rotation und Schweben halten bei Pause an.
 Die Goldmenge, der Auswurf aus Truhen, das Einsammeln und die Regeln für Sicht
 und Hindernisse bleiben erhalten. Der bisherige rosa Bodenschein ist bei Gold
 nun goldfarben.

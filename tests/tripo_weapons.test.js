@@ -102,7 +102,7 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
     assert.equal(weapons.telemetry.heldModel.variant, variant);
     assert.equal(weapons.telemetry.heldModel.meshCount, 1);
     const held = actor.children.find(group => group.userData.weaponType === kind && group.visible);
-    assert.ok(Math.abs(held.scale.x / weapons.items[index].visual.scale.x - .88/1.2)<1e-10, 'the hand model stays smaller without changing the authored item');
+    assert.ok(Math.abs(held.scale.x / weapons.items[index].visual.scale.x - (kind === 'bow' ? 1.18 : .88)/1.2)<1e-10, 'held bow fits the arrow while other weapons retain their smaller hand scale');
     near(held.position, hand, 'model grip stays at the animated hand');
     actor.updateWorldMatrix(true, true);
     near(held.children[0].children[0].getWorldPosition(new THREE.Vector3()),
