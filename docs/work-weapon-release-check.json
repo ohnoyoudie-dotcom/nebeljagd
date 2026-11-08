@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "buildId": "68f6ad288c79",
+  "mapSha256": "07b1310c4dcbebc42978f5e4fc750b0c9ebcff12172c33389ef63634271f8c44",
+  "nodeTests": 431,
+  "onlineEditorChecks": 8,
+  "weaponBrowserChecks": 14,
+  "assetVerification": "passed",
+  "mapCheck": "passed",
+  "productionBuild": "passed",
+  "releaseHashes": "passed",
+  "zipIntegrity": "passed",
+  "weaponChecks": [
+    "All six Tripo weapon models can be placed without changing the authored map or existing objects",
+    "The real Spielen action transfers exact objects to the sibling game and loads the requested GLB drops",
+    "The first Tripo sword auto-equips with its real held model and chosen rarity",
+    "Manual swap preserves the Tripo variant and held model: fireStaff",
+    "Manual swap preserves the Tripo variant and held model: iceStaff",
+    "Manual swap preserves the Tripo variant and held model: poisonStaff",
+    "Manual swap preserves the Tripo variant and held model: moonStaff",
+    "Manual swap preserves the Tripo variant and held model: bow",
+    "Restart retains the GLB and normal attacks work: sword",
+    "Restart retains the GLB and normal attacks work: fireStaff",
+    "Restart retains the GLB and normal attacks work: iceStaff",
+    "Restart retains the GLB and normal attacks work: poisonStaff",
+    "Restart retains the GLB and normal attacks work: moonStaff",
+    "Restart retains the GLB and normal attacks work: bow"
+  ],
+  "browser": {
+    "channel": "chromium",
+    "version": "154.0.8037.57",
+    "playwright": "1.62.0",
+    "executable": "/usr/bin/chromium"
+  },
+  "errors": [],
+  "sourceMapUnchangedDuringBrowserTest": "07b1310c4dcbebc42978f5e4fc750b0c9ebcff12172c33389ef63634271f8c44",
+  "publicationTarget": "work",
+  "publicPagesUpdated": false,
+  "limits": "Local Chromium/SwiftShader checks on generated files; no public deployment or hardware performance claim."
+}

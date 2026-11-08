@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
-import { createWeapons } from '../src/weapons.js';
+import { createWeapons, DEFAULT_WEAPON_VARIANTS, TRIPO_WEAPON_VARIANTS } from '../src/weapons.js';
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../src/loot-tiers.js';
 
 function setup(type = 'bow', rarity = 'common', { wallZ = null, targetZ = 4, visible = () => true } = {}) {
@@ -18,6 +18,13 @@ function setup(type = 'bow', rarity = 'common', { wallZ = null, targetZ = 4, vis
     } };
   const weapons = createWeapons(scene, actor, world, null, {
     combat, isVisible: visible, placements: [{ id: 'weapon', kind: type, rarity, position: [0, 0] }],
+    tripoPrototypes: Object.fromEntries(Object.values(DEFAULT_WEAPON_VARIANTS)
+      .filter(variant => TRIPO_WEAPON_VARIANTS[variant]).map(variant => {
+        const prototype = new THREE.Group();
+        const geometry = new THREE.BoxGeometry(.1, 1.7, .1); geometry.translate(0, .5, 0);
+        prototype.add(new THREE.Mesh(geometry, new THREE.MeshStandardMaterial()));
+        return [variant, prototype];
+      })),
   });
   return { scene, actor, combat, target, weapons };
 }
@@ -26,6 +33,7 @@ function attackOnce(instance, seconds = .9) {
   const { actor, weapons } = instance;
   weapons.interact(actor.position);
   weapons.attack(actor.position, 0);
+  if (weapons.equipped === 'poisonStaff') { weapons.aimAt(actor.position, instance.target.position); weapons.releaseAttack(actor.position); seconds = 4.1; }
   for (let time = 0; time < seconds; time += .04) weapons.update(.04, time, actor.position);
 }
 
@@ -36,9 +44,10 @@ test('all five tiers increase the actual damage dealt for each weapon', () => {
       const instance = setup(type, rarity, { targetZ: type === 'sword' ? 1.6 : 4 });
       attackOnce(instance);
       const damage = 1000 - instance.target.health;
-      assert.equal(damage, weaponStats(type, rarity).damage, `${type}/${rarity} real hit`);
+      assert.ok(Math.abs(damage - weaponStats(type, rarity).damage) < 1e-6, `${type}/${rarity} real hit`);
       assert.ok(damage > previous, `${type}/${rarity} increases damage`);
-      assert.equal(instance.weapons.telemetry.damageHits, 1, 'single swing/projectile hits only once');
+      if (type === 'poisonStaff') assert.ok(instance.weapons.telemetry.damageHits > 1, 'cloud applies damage while inside');
+      else assert.equal(instance.weapons.telemetry.damageHits, 1, 'single outbound shot hits only once');
       assert.equal(instance.weapons.equippedItem.rarity, rarity);
       previous = damage;
     }

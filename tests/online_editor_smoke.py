@@ -101,11 +101,18 @@ def run(directory: Path) -> None:
 
             page.goto(base + '/map-editor.html')
             ready(page)
-            expect(page.locator('#editor-start-dialog')).to_be_visible()
-            page.locator('#start-restore-draft').click()
             expect(page.locator('#editor-start-dialog')).not_to_be_visible()
             assert state(page)['map']['name'] == draft['name']
-            passed('Direct editor visit offers project or draft without silently overwriting')
+            expect(page.locator('#save-status')).to_contain_text('Automatisch im Browser gespeichert')
+            passed('Direct editor visit automatically resumes the last browser draft')
+
+            with page.expect_download() as saved_json:
+                page.locator('#export-json').click()
+            saved_json_path = out / 'auto-resumed.json'
+            saved_json.value.save_as(saved_json_path)
+            assert json.loads(saved_json_path.read_text())['name'] == draft['name']
+            saved_json_path.unlink()
+            passed('Automatically resumed map remains exportable as a normal JSON file')
 
             with page.expect_download() as download:
                 page.locator('#export-editor').evaluate('(button) => button.click()')

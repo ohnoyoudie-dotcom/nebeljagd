@@ -100,5 +100,7 @@ test('drop placement avoids water and walls and chest loot spans all weapon fami
     weapons.add(loot[2].type); tiers.add(loot[2].rarity);
     assert.ok(loot[0].amount + loot[1].amount > 10);
   }
-  assert.equal(weapons.size, 4); assert.equal(tiers.size, 5);
+  assert.deepEqual([...weapons].sort(), ['bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff'].sort(),
+    'all four existing weapon families and both new staffs occur in deterministic chest loot');
+  assert.deepEqual([...tiers].sort(), ['normal', 'common', 'uncommon', 'rare', 'legendary'].sort());
 });

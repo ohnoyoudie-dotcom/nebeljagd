@@ -11,8 +11,15 @@ const points = list => list.map(([x, z]) => `${number(x)},${number(z)}`).join(' 
 const ringPath = list => `M${list.map(([x, z]) => `${number(x)},${number(z)}`).join('L')}Z`;
 const feature = (type, id) => `id="feature-${type}-${escape(id)}" data-feature-type="${type}" data-feature-id="${escape(id)}"`;
 const biomePattern = { snow: 'mountain', forest: 'forest', meadow: 'meadow', heath: 'heath', marsh: 'marsh', volcanic: 'ash', dunes: 'dune' };
-const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8 };
-const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, wagon: 1.7, barrel: .65, well: 1.5, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5 };
+const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8, poisonStaff: 8, moonStaff: 8 };
+const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, wagon: 1.7, barrel: .65, well: 1.5, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5, poisonStaff: 1.5, moonStaff: 1.5 };
+
+// Add these definitions only when their models are actually placed, keeping
+// previously authored SVGs byte-identical when their map has no new weapons.
+const extraWeaponSymbols = {
+  poisonStaff: '<g id="world-object-poisonStaff"><path d="M-.6,1.5 .5,-.85" stroke="#80764b" stroke-width=".4"/><path d="M.5,-1.9Q-.35,-1 .05,-.6Q.5,-.15 .95,-.6Q1.35,-1 .5,-1.9Z" fill="#7cd76b" stroke="#2b763f" stroke-width=".18"/></g>',
+  moonStaff: '<g id="world-object-moonStaff"><path d="M-.6,1.5 .5,-.85" stroke="#a29bb1" stroke-width=".4"/><path d="M.9,-1.9A.78,.78 0 1 0 1,-.5A.65,.65 0 0 1 .9,-1.9Z" fill="#dce0ff" stroke="#8277bc" stroke-width=".16"/></g>',
+};
 
 // Symbols use the same metre scale and +z/front direction as the 3D assets.
 // Reusing a symbol preserves every independently editable placement without
@@ -182,6 +189,8 @@ export function renderWorldmapSvg(map, options = {}) {
     '    <pattern id="world-pattern-ash" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M8,57 30,22 54,57Z M69,88 84,59 105,88Z" fill="#514e4b" opacity=".22"/><path d="M31,24 26,41 37,47 29,57" fill="none" stroke="#ce976a" stroke-width="2" opacity=".55"/></pattern>',
     '    <pattern id="world-pattern-dune" width="115" height="95" patternUnits="userSpaceOnUse"><path d="M9,35Q28,14 50,35 M60,80Q82,57 106,80" fill="none" stroke="#a78651" stroke-width="2" opacity=".35"/></pattern>',
     ...objectSymbols.map(symbol => `    ${symbol}`),
+    ...Object.entries(extraWeaponSymbols).filter(([kind]) => (map.objects ?? []).some(item => item.kind === kind))
+      .map(([, symbol]) => `    ${symbol}`),
     ...terrain.map(stamp => `    <radialGradient id="world-terrain-${escape(stamp.id)}"><stop offset="0" stop-color="${escape(stamp.color)}" stop-opacity="${number(stamp.strength)}"/><stop offset="${number(stamp.hardness * 100)}%" stop-color="${escape(stamp.color)}" stop-opacity="${number(stamp.strength)}"/><stop offset="100%" stop-color="${escape(stamp.color)}" stop-opacity="${stamp.hardness >= .999 ? number(stamp.strength) : 0}"/></radialGradient>`),
     ...paintedBiomes.map(stamp => {
       const color = biomePreset(stamp.presetId)?.terrain?.color ?? '#78a866';

@@ -828,6 +828,84 @@
           0.1692465841770172
         ]
       }
+    },
+    {
+      "kind": "bow",
+      "variant": "kit-tripo-ornate-bow",
+      "label": "Verzierter Bogen · Tripo",
+      "file": "assets/catalog/bow-kit-tripo-ornate-bow.webp",
+      "bytes": 5510,
+      "sha256": "e5f97e85c77b521ed899bc625c0c2e0f419ff54b4a424ac86a4d9fe5f8ec759e",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-extra-weapons/previews/ornate-bow-runtime.png",
+      "model": "assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb",
+      "modelSha256": "54b0ceebb3a5c36a71c5d7f39ec41aa30ec95ccd3de4e5d6588dcb13db5b7bde",
+      "originalSourceSha256": "61848a77f3b07e88abf42b405f258afa52dc07abf3d73863651d74b17ac0f864",
+      "generator": "scripts/prepare-tripo-extra-weapons.py; Pillow thumbnail composition",
+      "modelBounds": {
+        "min": [
+          -0.08203355222940445,
+          -0.6749061942100525,
+          -0.0838485062122345
+        ],
+        "max": [
+          0.16401560604572296,
+          0.6752323508262634,
+          0.08101020753383636
+        ]
+      }
+    },
+    {
+      "kind": "poisonStaff",
+      "variant": "kit-tripo-poison-staff",
+      "label": "Giftstab · Tripo",
+      "file": "assets/catalog/poisonStaff-kit-tripo-poison-staff.webp",
+      "bytes": 4908,
+      "sha256": "03a43ca5a9626e072f1beb0e11a8ffa9e859efa672a2f22ba6b7b4dca05e5507",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-extra-weapons/previews/poison-staff-runtime.png",
+      "model": "assets/imported/tripo-extra-weapons/runtime/poison-staff.glb",
+      "modelSha256": "cfc2fb3ff8ccc8c8899adfb2f4ad49467351e655542dc81c124201101e148204",
+      "originalSourceSha256": "54bf2419f40955b396c86f27385e2df648997f56696c04a28feb2fcbbc944326",
+      "generator": "scripts/prepare-tripo-extra-weapons.py; Pillow thumbnail composition",
+      "modelBounds": {
+        "min": [
+          -0.2954077124595642,
+          -0.3489536941051483,
+          -0.16742296516895294
+        ],
+        "max": [
+          0.1497163027524948,
+          1.35103178024292,
+          0.16671235859394073
+        ]
+      }
+    },
+    {
+      "kind": "moonStaff",
+      "variant": "kit-tripo-moon-staff",
+      "label": "Mondstab · Tripo",
+      "file": "assets/catalog/moonStaff-kit-tripo-moon-staff.webp",
+      "bytes": 4778,
+      "sha256": "6f9f6b0f11f9c5405c9e9b8b04e77bbb151eef133ebe6eff5eb9666f50c74bd3",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-extra-weapons/previews/moon-staff-runtime.png",
+      "model": "assets/imported/tripo-extra-weapons/runtime/moon-staff.glb",
+      "modelSha256": "43c0633b9af2ec69255b50e6fba40246b5d0f01272dab7653a2a7cb8e04ab991",
+      "originalSourceSha256": "208c0124ee05518b8bf7f8b46f300ed203135b01a0b091ee3e0a6099c1c68ca1",
+      "generator": "scripts/prepare-tripo-extra-weapons.py; Pillow thumbnail composition",
+      "modelBounds": {
+        "min": [
+          -0.251026451587677,
+          -0.35241323709487915,
+          -0.07398073375225067
+        ],
+        "max": [
+          0.23468033969402313,
+          1.3476234674453735,
+          0.12875086069107056
+        ]
+      }
     }
   ],
   "errors": []

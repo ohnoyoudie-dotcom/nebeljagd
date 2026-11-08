@@ -11,11 +11,17 @@ Eine feste Internetadresse für die Klasse ist mit der vorbereiteten
 [Render-Einrichtung](docs/hosting.md) möglich. Die Vorlage liegt in
 [`render.yaml`](render.yaml); ein Hosting-Dienst wurde noch nicht angelegt.
 
-Die neuen Waffenmodelle (Fantasieschwert, Kristallstab und Lavakristallstab)
+Die Waffenmodelle (Fantasieschwert, Kristallstab, Lavakristallstab,
+Giftstab, Mondstab und verzierter Bogen)
 sind im Editor platzierbar und werden im Spiel mit angepasstem Griff gehalten.
 Bedienung, Aufbereitung und Prüfungen: [Waffenmodelle](docs/tripo-weapons-integration.md).
+Die drei zusätzlichen Inbox-Modelle samt Gift-, Mond- und Bogenangriffen:
+[Giftstab, Mondstab und verzierter Bogen](docs/extra-tripo-weapons.md).
 Beim Wechsel mit **E** liegt die bisherige Waffe wieder an der Fundstelle
 der neuen und kann erneut aufgenommen werden: [Waffenwechsel](docs/weapon-swap.md).
+Der Feuerstab verwendet das hochgeladene **fiery flame**-Modell als Feuerball,
+mit animiertem Leuchten, Funken und einer kleinen Rauchspur:
+[Modell und Prüfungen](docs/tripo-fireball.md).
 Feuer und Eis besitzen eigene Lade-, Abschuss-, Flug- und Treffereffekte:
 [Zaubereffekte mit fließenden Schweifen und verfeinerten Materialien](docs/spell-effects-v2.md).
 Beide Stäbe sitzen an einem mitbewegten Griffpunkt in der Handfläche:
@@ -37,15 +43,20 @@ nur ein Unterwerkzeug: etwa **Landschaft / Gras / Bodenfarbe** oder
 **Einzeln / Mauern & Zäune / Verteilen**. Die Hauptaktionen passen auf Desktop
 und Tablet ohne Scrollen; Feineinstellungen sind aufklappbar. Anleitung:
 [`docs/compact-editor.md`](docs/compact-editor.md).
-Die aktuelle Browser-Vorschau ist unter
-[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
-und [Spielen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/) erreichbar.
-Auf `main` enthält dafür nur `preview/` diese veröffentlichte Spiel- und
-Editor-Ausgabe. Die neue Schüler- und Lehrkraft-Anmeldung ist dort noch nicht
-veröffentlicht; sie benötigt den oben beschriebenen Schulserver.
-Der feste Editor-Einstieg prüft bei jedem Öffnen den veröffentlichten Stand.
-Er bietet die aktuelle Projektkarte oder den eigenen lokalen Entwurf an und
-zeigt die Build-Version. Details: [Online-Editor und Aktualisierung](docs/online-editor.md).
+Den aktuellen geprüften Stand kannst du über den festen
+[Editor-Weblink](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+öffnen und mit **Spielen** direkt testen. Die Entwicklung bleibt auf `work`;
+der Veröffentlichungsworkflow aktualisiert nach erfolgreichen Tests ausschließlich
+die fertigen Browserdateien in `main/preview`. Andere Dateien auf `main` bleiben
+unverändert. Der feste Einstieg zeigt die veröffentlichte Build-Version an.
+Details: [Editor und Veröffentlichung](docs/online-editor.md).
+
+Der Giftstab wird durch Halten, Zielen und Loslassen bedient und erzeugt eine
+Giftwolke für drei Sekunden. Die Mondsichel durchdringt Gegner und kehrt nach
+Mauerkontakt oder zwölf Metern zurück; sie trifft auf beiden Flugwegen und
+sperrt weitere Angriffe bis zur Rückkehr. Der Bogen verschießt einen 3D-Pfeil
+mit Holzschaft, Metallspitze und drei Federn.
+
 Der aktuelle erzeugte Browserstand liegt zentral unter [`welt/`](welt/):
 [`welt/map-editor.html`](welt/map-editor.html) ist der Editor und
 [`welt/nebeljagd.html`](welt/nebeljagd.html) das Spiel.
@@ -59,8 +70,9 @@ Eingänge und feste Wand-/Möbelkollisionen. Anleitung und Aufbereitung:
 [`docs/tripo-tavern-integration.md`](docs/tripo-tavern-integration.md).
 Die Objektauswahl enthält ausschließlich freigegebene Tripo-Modelle:
 Wirtshaus, **Wohnhaus 2**, drei Felsenvarianten, Holzwagen, Holzfass,
-Steinbrunnen, Schatztruhe und die drei neuen Waffen: **Schwert, Feuerstab
-(Lavastab) und Eisstab (Kristallstab)**. Die Waffen stehen unter **Objekte →
+Steinbrunnen, Schatztruhe und sechs Waffen: **Schwert, Feuerstab
+(Lavastab), Eisstab (Kristallstab), Giftstab, Mondstab und verzierter Bogen**.
+Die Waffen stehen unter **Objekte →
 Einzeln** bei der jeweiligen Objektart; ihr Modell trägt den Zusatz **Tripo**.
 Seltenheit wählen, **Auf Karte setzen** aktivieren und auf die Karte klicken.
 Import und Spielverhalten: [`docs/tripo-weapons-integration.md`](docs/tripo-weapons-integration.md).

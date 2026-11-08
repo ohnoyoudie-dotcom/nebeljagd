@@ -1,17 +1,21 @@
 import * as THREE from 'three';
 import { createElementMaterial, setElementMaterial } from './spell-effect-materials.js';
+import { createFireballMaterial } from './fireball-material.js';
 
 const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
 const ELEMENTS = {
   fireStaff: { core: '#fff3bf', glow: '#ff681c', spark: '#ffb52d', edge: '#ff360d' },
   iceStaff: { core: '#edffff', glow: '#45bfff', spark: '#8ceeff', edge: '#358de5' },
+  poisonStaff: { core: '#e2f7b3', glow: '#65c84a', spark: '#b3e976', edge: '#398d3b' },
+  moonStaff: { core: '#fbf4ff', glow: '#bca1ef', spark: '#e5d6ff', edge: '#8862c4' },
 };
 const finite = value => Number.isFinite(value) ? value : 0;
 const valid = point => point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
-const typeOf = type => type === 'iceStaff' ? 'iceStaff' : 'fireStaff';
+const typeOf = type => Object.hasOwn(ELEMENTS, type) ? type : 'fireStaff';
+const crystalline = type => type === 'iceStaff' || type === 'moonStaff';
 
 /** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
-export function createSpellEffects(scene, { isVisible = null } = {}) {
+export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null } = {}) {
   const roots = [], geometries = new Set(), materials = new Set(), projectiles = [];
   const clock = { value: 0 };
   const ownGeometry = geometry => (geometries.add(geometry), geometry);
@@ -42,6 +46,23 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
     return new THREE.Sprite(ownMaterial(new THREE.SpriteMaterial({ map: glowTexture, color,
       transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: true })));
   }
+  const smoke = Array.from({ length: 64 }, () => {
+    const sprite = addRoot(new THREE.Sprite(ownMaterial(new THREE.SpriteMaterial({
+      map: glowTexture, color: '#796b60', transparent: true, opacity: 0,
+      blending: THREE.NormalBlending, depthWrite: false, depthTest: true,
+    }))));
+    sprite.name = 'Feuerball · Rauchspur'; sprite.visible = false;
+    return { sprite, life: 0, duration: .5, size: .18, seed: 0 };
+  });
+  let smokeCursor = 0;
+  function emitSmoke(point, impact = false) {
+    const entry = smoke[smokeCursor++ % smoke.length];
+    entry.duration = entry.life = (impact ? .95 : .65) + smokeCursor % 4 * .06;
+    entry.seed = smokeCursor; entry.size = (impact ? .48 : .30) + smokeCursor % 3 * .05;
+    entry.opacity = impact ? .34 : .26;
+    entry.sprite.position.copy(point); entry.sprite.scale.setScalar(entry.size);
+    entry.sprite.material.opacity = entry.opacity; entry.sprite.visible = canSee(point);
+  }
   function mesh(parent, geometry, material, x = 0, y = 0, z = 0) {
     const part = new THREE.Mesh(geometry, material);
     part.position.set(x, y, z); parent.add(part); return part;
@@ -71,6 +92,19 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
   const crystalMaterial = ownMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .19,
     metalness: .12, emissive: '#145a7b', emissiveIntensity: .20, transparent: true, opacity: .87,
     depthWrite: false, flatShading: true }));
+  // A fixed material set per element avoids recoloring a fire projectile when
+  // its owner swaps to another staff while that earlier shot is still flying.
+  const projectileMaterials = {
+    fireStaff: { core: fireCore, tip: fireTip, body: fireBody },
+    iceStaff: { core: iceCore, tip: iceTip, body: iceBody, crystal: crystalMaterial },
+    poisonStaff: { core: solid(ELEMENTS.poisonStaff.core), tip: additive(ELEMENTS.poisonStaff.spark, .65),
+      body: elementMaterial('body', { type: 'poisonStaff', opacity: .78 }) },
+    moonStaff: { core: solid(ELEMENTS.moonStaff.core), tip: additive(ELEMENTS.moonStaff.spark, .65),
+      body: elementMaterial('body', { type: 'moonStaff', opacity: .42 }),
+      crystal: ownMaterial(new THREE.MeshStandardMaterial({ color: '#dfc8ff', roughness: .19,
+        metalness: .12, emissive: '#654891', emissiveIntensity: .24, transparent: true,
+        opacity: .87, depthWrite: false, flatShading: true })) },
+  };
 
   function makeTrail() {
     const count = HISTORY * 8, positions = new Float32Array(count * 3);
@@ -96,14 +130,29 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
     const fire = new THREE.Group(), ice = new THREE.Group(); group.add(fire, ice);
     fire.name = 'Glutkern und turbulente Flammenzungen'; ice.name = 'Facettenkristall mit Frostnebel';
     const hotCore = mesh(fire, sphere, fireCore, 0, 0, .07); hotCore.scale.set(.065, .065, .15);
+    const fireModel = fireProjectilePrototype?.clone(true) ?? null;
+    if (fireModel) {
+      fireModel.name = 'Feuerball · hochgeladenes Modell';
+      fireModel.traverse(part => {
+        if (!part.isMesh) return;
+        const prepare = source => ownMaterial(createFireballMaterial(source, clock));
+        part.material = Array.isArray(part.material) ? part.material.map(prepare) : prepare(part.material);
+        part.castShadow = false; part.receiveShadow = false;
+      });
+      fire.add(fireModel);
+    }
+    const fireTongues = [], iceMists = [];
     for (let i = 0; i < 2; i++) {
       const tongue = mesh(fire, plumeGeometry, fireBody, 0, 0, -.40);
       tongue.scale.set(.92, 1, 1.65); tongue.rotation.z = i * Math.PI / 2;
+      fireTongues.push(tongue);
       const mist = mesh(ice, plumeGeometry, iceBody, 0, 0, -.44);
       mist.scale.set(.72, 1, 1.45); mist.rotation.z = i * Math.PI / 2;
+      iceMists.push(mist);
     }
-    mesh(ice, crystalGeometry, crystalMaterial);
-    mesh(ice, octahedron, iceCore, 0, 0, .10).scale.set(.042, .042, .39);
+    const crystal = mesh(ice, crystalGeometry, crystalMaterial);
+    const coldCore = mesh(ice, octahedron, iceCore, 0, 0, .10);
+    coldCore.scale.set(.042, .042, .39);
     const iceFins = [];
     for (let i = 0; i < 3; i++) {
       const angle = i * Math.PI * 2 / 3;
@@ -115,7 +164,9 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
       part.position.set(i ? -.13 : .14, i ? -.10 : .08, .12 + i * .12); ice.add(part); return part;
     });
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
-    const visual = { group, fire, ice, hotCore, iceFins, glints, halo, active: false,
+    const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
+    haze.scale.setScalar(1.85); group.add(haze);
+    const visual = { group, fire, ice, haze, hotCore, fireModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -160,7 +211,7 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
       let visible = ageA < 1 && ageB < 1 && Math.hypot(dx, by - ay, dz) > .0001 && canSee(pointA) && canSee(pointB);
       if (visible) { pointA.add(pointB).multiplyScalar(.5); visible = canSee(pointA); }
       if (visible) visual.visibleTrailSegments++;
-      const radius = visual.type === 'fireStaff' ? .25 : .22;
+      const radius = crystalline(visual.type) ? .22 : .25;
       const taperA = 1 - segment / visual.historyCount, taperB = 1 - (segment + 1) / visual.historyCount;
       const widthA = radius * (.06 + (1 - ageA) * taperA * .94), widthB = radius * (.06 + (1 - ageB) * taperB * .94);
       const nx = horizontal > .00001 ? -dz / horizontal : 1, nz = horizontal > .00001 ? dx / horizontal : 0;
@@ -195,8 +246,8 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
   });
   function burst(type, point, direction, kind, normal) {
     const entry = bursts[burstCursor++ % BURSTS], palette = ELEMENTS[type];
-    entry.life = entry.duration = kind === 'muzzle' ? .30 : .64;
-    Object.assign(entry, { type, kind, size: kind === 'muzzle' ? .52 : 1.05,
+    entry.life = entry.duration = kind === 'muzzle' ? .30 : type === 'fireStaff' ? .85 : .64;
+    Object.assign(entry, { type, kind, size: kind === 'muzzle' ? .52 : type === 'fireStaff' ? 1.55 : 1.05,
       x: point.x, y: point.y, z: point.z, connectorCount: 0 });
     entry.group.position.set(0, 0, 0); entry.group.visible = true;
     entry.halo.position.copy(point); entry.ring.position.copy(point); entry.cloud.position.copy(point); entry.rays.position.copy(point);
@@ -222,13 +273,26 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
     if (disposed || !valid(position)) return end(visual);
     type = typeOf(type); direction = finite(direction);
     Object.assign(visual, { type, direction, active: true, historyCount: 0, sampleDistance: 0,
-      sparkDistance: 0, headBirth: clock.value, trailRemaining: 0, visibleTrailSegments: 0 });
+      sparkDistance: 0, smokeDistance: 0, headBirth: clock.value, trailRemaining: 0, visibleTrailSegments: 0 });
     visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
-    visual.group.scale.setScalar(1); visual.fire.visible = type === 'fireStaff'; visual.ice.visible = type === 'iceStaff';
+    const appearance = projectileMaterials[type];
+    visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type); visual.ice.visible = crystalline(type);
+    if (visual.fireModel) visual.fireModel.visible = type === 'fireStaff';
+    visual.haze.visible = type === 'fireStaff';
+    visual.hotCore.visible = !(visual.fireModel && type === 'fireStaff');
+    if (crystalline(type)) {
+      visual.coldCore.material = appearance.core; visual.crystal.material = appearance.crystal;
+      for (const part of visual.iceMists) part.material = appearance.body;
+      for (const part of visual.iceFins) part.material = appearance.tip;
+      for (const part of visual.glints) part.material.color.set(ELEMENTS[type].core);
+    } else {
+      visual.hotCore.material = appearance.core;
+      for (const part of visual.fireTongues) part.material = appearance.body;
+    }
     visual.halo.material.color.set(ELEMENTS[type].glow); visual.group.visible = canSee(position);
     setElementMaterial(visual.trail.material, type); visual.trail.visible = false;
     remember(visual, position.x, position.y, position.z, clock.value);
-    emitted[type].launches++;
+    (emitted[type] ??= { launches: 0, impacts: 0 }).launches++;
   }
   function end(visual) {
     if (visual.active) visual.trailRemaining = visual.historyCount > 1 ? TRAIL_RELEASE : 0;
@@ -241,6 +305,15 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
     visual.headBirth = clock.value + delta;
     const distance = Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z);
     if (distance < .00001) return;
+    if (visual.type === 'fireStaff') {
+      const total = visual.smokeDistance + distance, spacing = .38;
+      const count = Math.min(16, Math.floor(total / spacing));
+      for (let i = 0; i < count; i++) {
+        const t = THREE.MathUtils.clamp((spacing - visual.smokeDistance + i * spacing) / distance, 0, 1);
+        pointA.copy(from).lerp(to, t); emitSmoke(pointA);
+      }
+      visual.smokeDistance = total % spacing;
+    }
     const historyTotal = visual.sampleDistance + distance, sampleCount = Math.floor(historyTotal / SAMPLE_DISTANCE);
     for (let i = Math.max(0, sampleCount - HISTORY); i < sampleCount; i++) {
       const t = THREE.MathUtils.clamp((SAMPLE_DISTANCE - visual.sampleDistance + i * SAMPLE_DISTANCE) / distance, 0, 1);
@@ -248,14 +321,14 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
         THREE.MathUtils.lerp(from.z, to.z, t), clock.value + delta * t);
     }
     visual.sampleDistance = historyTotal % SAMPLE_DISTANCE;
-    const total = visual.sparkDistance + distance, spacing = visual.type === 'fireStaff' ? .62 : .80;
+    const total = visual.sparkDistance + distance, spacing = crystalline(visual.type) ? .80 : .62;
     const count = Math.min(8, Math.floor(total / spacing)); visual.sparkDistance = total % spacing;
     for (let i = 0; i < count; i++) {
       const t = (i + .5) / count, angle = (particleCursor + i) * 2.39996;
       const x = THREE.MathUtils.lerp(from.x, to.x, t), y = THREE.MathUtils.lerp(from.y, to.y, t), z = THREE.MathUtils.lerp(from.z, to.z, t);
       pointA.set(x, y, z); if (!canSee(pointA)) continue;
       particle(visual.type, x, y, z, Math.sin(angle) * .55, .12 + Math.cos(angle) * .42,
-        Math.cos(angle) * .55, visual.type === 'fireStaff' ? .042 : .055, .31 + (i % 3) * .045);
+        Math.cos(angle) * .55, crystalline(visual.type) ? .055 : .042, .31 + (i % 3) * .045);
     }
   }
   function channel(type, position, direction = 0, progress = 0) {
@@ -294,19 +367,34 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
   function impact(type, point, normal = null, direction = 0) {
     if (disposed || !valid(point)) return;
     type = typeOf(type); direction = finite(direction);
-    burst(type, point, direction, 'impact', normal); emitted[type].impacts++;
+    burst(type, point, direction, 'impact', normal); (emitted[type] ??= { launches: 0, impacts: 0 }).impacts++;
     latestImpact = { type, point: { x: point.x, y: point.y, z: point.z } };
-    for (let i = 0; i < 22; i++) {
-      const angle = i * 2.39996, spread = 1.2 + i % 4 * .35;
+    if (type === 'fireStaff') for (let i = 0; i < 10; i++) {
+      pointA.set(point.x + Math.sin(i * 2.4) * .12, point.y + (i % 3) * .09, point.z + Math.cos(i * 2.4) * .24);
+      pointA.addScaledVector(normalVector, .12); emitSmoke(pointA, true);
+    }
+    for (let i = 0; i < (type === 'fireStaff' ? 38 : 22); i++) {
+      const angle = i * 2.39996, spread = (type === 'fireStaff' ? 2.0 : 1.2) + i % 4 * .35;
       particle(type, point.x, point.y, point.z, Math.sin(angle) * spread + finite(normal?.x) * .8,
         .6 + i % 5 * .24, Math.cos(angle) * spread + finite(normal?.z) * .8,
-        type === 'fireStaff' ? .07 + i % 3 * .02 : .08 + i % 3 * .025, .38 + i % 4 * .075);
+        crystalline(type) ? .08 + i % 3 * .025 : .07 + i % 3 * .02, .38 + i % 4 * .075);
     }
   }
 
   function update(delta, time) {
     if (disposed) return;
     delta = Math.max(0, Math.min(.25, finite(delta))); clock.value += delta; time = clock.value;
+    for (const entry of smoke) {
+      entry.life = Math.max(0, entry.life - delta);
+      entry.sprite.visible = entry.life > 0 && canSee(entry.sprite.position);
+      if (!entry.life) continue;
+      const age = 1 - entry.life / entry.duration;
+      entry.sprite.position.y += delta * .28;
+      entry.sprite.position.x += Math.sin(entry.seed * 2.4) * delta * .08;
+      entry.sprite.material.rotation += delta * .15;
+      entry.sprite.scale.setScalar(entry.size * (1 + age * 2.0));
+      entry.sprite.material.opacity = entry.opacity * (1 - age) ** 1.35;
+    }
     visibleParticles = 0; let particlesChanged = false;
     for (let index = 0; index < PARTICLES; index++) {
       const entry = particles[index];
@@ -314,14 +402,14 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
       if (entry.life > 0) {
         entry.life = Math.max(0, entry.life - delta);
         entry.x += entry.vx * delta; entry.y += entry.vy * delta; entry.z += entry.vz * delta;
-        entry.vy += (entry.type === 'fireStaff' ? .4 : -2.8) * delta;
+        entry.vy += (crystalline(entry.type) ? -2.8 : .4) * delta;
       }
       const visible = entry.life > 0 && canSee(entry), fade = Math.max(0, entry.life / entry.duration);
       if (visible || entry.rendered) {
         transform.position.set(entry.x, entry.y, entry.z);
         transform.rotation.set(entry.seed + time * 3, entry.seed + time * 2, entry.seed);
         const size = visible ? entry.size * Math.sqrt(fade) : 0;
-        transform.scale.set(size, size * (entry.type === 'iceStaff' ? 2.7 : 1.5), size * (entry.type === 'iceStaff' ? .5 : 1));
+        transform.scale.set(size, size * (crystalline(entry.type) ? 2.7 : 1.5), size * (crystalline(entry.type) ? .5 : 1));
         transform.updateMatrix(); particleMesh.setMatrixAt(index, transform.matrix);
         scratchColor.set(ELEMENTS[entry.type].spark).multiplyScalar(fade);
         particleMesh.setColorAt(index, scratchColor); particlesChanged = true;
@@ -336,14 +424,14 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
       const age = entry.duration - entry.life, t = age / entry.duration, visible = canSee(entry);
       entry.halo.visible = entry.ring.visible = visible;
       entry.cloud.visible = visible && entry.kind === 'impact';
-      entry.rays.visible = visible && entry.type === 'iceStaff' && entry.kind === 'impact' && t < .65;
+      entry.rays.visible = visible && (crystalline(entry.type) || entry.type === 'fireStaff') && entry.kind === 'impact' && t < .65;
       entry.halo.scale.setScalar(entry.size * (.9 + t * 2.0));
-      entry.halo.material.opacity = (1 - t) ** 1.8 * .42;
+      entry.halo.material.opacity = (1 - t) ** 1.8 * (entry.type === 'fireStaff' && entry.kind === 'impact' ? .85 : .42);
       entry.ring.scale.setScalar(entry.size * (.7 + t * 3.0));
       entry.ring.material.uniforms.uOpacity.value = (1 - t) ** 1.2 * .75;
       entry.cloud.scale.setScalar(entry.size * (1.0 + t * 2.6));
-      entry.cloud.position.y = entry.y + t * (entry.type === 'fireStaff' ? .35 : .10);
-      entry.cloud.material.uniforms.uOpacity.value = Math.sin(t * Math.PI) * (entry.type === 'fireStaff' ? .42 : .52);
+      entry.cloud.position.y = entry.y + t * (crystalline(entry.type) ? .10 : .35);
+      entry.cloud.material.uniforms.uOpacity.value = Math.sin(t * Math.PI) * (crystalline(entry.type) ? .52 : entry.type === 'fireStaff' ? .70 : .42);
       entry.rays.scale.setScalar(entry.size * (.8 + t * 2.5));
       entry.rays.material.uniforms.uOpacity.value = Math.max(0, 1 - t / .65) * .68;
       entry.connectorMaterial.opacity = Math.max(0, 1 - age / .16) * .45;
@@ -359,9 +447,9 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
       chargeRing.scale.setScalar(radius * 2.8); chargeRing.rotation.set(0, 0, time * 2);
       chargeChips.forEach((part, index) => {
         const angle = time * 8 + index * Math.PI / 3;
-        part.material = chargeType === 'fireStaff' ? fireTip : iceTip;
+        part.material = projectileMaterials[chargeType].tip;
         part.position.set(Math.sin(angle) * radius, Math.cos(angle) * radius, Math.sin(angle * 2) * .08);
-        part.scale.set(.035, chargeType === 'iceStaff' ? .09 : .045, .035);
+        part.scale.set(.035, crystalline(chargeType) ? .09 : .045, .035);
         part.rotation.set(0, angle, angle);
       });
     }
@@ -372,7 +460,9 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
         visual.fire.scale.set(pulse, pulse, 1); visual.fire.rotation.z = Math.sin(time * 6) * .10;
         visual.hotCore.scale.set(.065 * pulse, .065 * pulse, .15);
         visual.ice.rotation.z = time * 1.5;
-        visual.halo.scale.setScalar((visual.type === 'fireStaff' ? 1.10 : 1.0) * pulse);
+        visual.haze.scale.setScalar(1.85 * pulse);
+        visual.haze.material.opacity = .20 + Math.sin(time * 11) * .025;
+        visual.halo.scale.setScalar((crystalline(visual.type) ? 1.0 : 1.10) * pulse);
         visual.glints.forEach((part, index) => { part.material.opacity = .25 + Math.max(0, Math.sin(time * 4 + index * 2.1)) ** 6 * .45; });
       }
       updateTrail(visual, delta);
@@ -386,6 +476,8 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
     for (const entry of particles) { entry.life = 0; entry.rendered = true; }
     for (const entry of bursts) { entry.life = 0; entry.group.visible = false; }
     chargeActive = false; charge.visible = false; particleMesh.visible = false; visibleParticles = 0;
+    for (const entry of smoke) { entry.life = 0; entry.sprite.visible = false; entry.sprite.material.opacity = 0; }
+    smokeCursor = 0;
     particleCursor = burstCursor = 0; latestImpact = null; clock.value = 0;
     for (const counters of Object.values(emitted)) counters.launches = counters.impacts = 0;
   }
@@ -406,8 +498,14 @@ export function createSpellEffects(scene, { isVisible = null } = {}) {
       return { activeProjectiles: projectiles.filter(v => v.active).length,
         visibleProjectiles: projectiles.filter(v => v.active && v.group.visible).length,
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
+        activeSmoke: smoke.filter(p => p.life > 0).length,
+        visibleSmoke: smoke.filter(p => p.sprite.visible).length,
+        importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,
+        fireModel: fireProjectilePrototype ? { name: fireProjectilePrototype.name,
+          triangles: fireProjectilePrototype.userData.triangles,
+          nominalLength: fireProjectilePrototype.userData.nominalLength } : null,
         activeBursts: bursts.filter(b => b.life > 0).length, channelActive: chargeActive, channelVisible: charge.visible,
-        emitted: { fireStaff: { ...emitted.fireStaff }, iceStaff: { ...emitted.iceStaff } },
+        emitted: Object.fromEntries(Object.entries(emitted).map(([type, counters]) => [type, { ...counters }])),
         latestImpact: latestImpact ? { type: latestImpact.type, point: { ...latestImpact.point } } : null,
         bursts: bursts.filter(b => b.life > 0).map(b => ({ kind: b.kind, type: b.type,
           visible: b.halo.visible || b.ring.visible || b.cloud.visible || b.rays.visible || b.connectors.some(p => p.visible), position: { x: b.x, y: b.y, z: b.z } })),

@@ -1,4 +1,4 @@
-"""Exercise the three Tripo weapons through the delivered editor and game.
+"""Exercise all six Tripo weapons through the delivered editor and game.
 
 NEBELJAGD_URL=http://127.0.0.1:5208 python tests/tripo_weapon_editor_smoke.py
 The URL may include /preview. Run after building the standalone files. Only the
@@ -8,11 +8,13 @@ the existing inspect hook; placement, pickup, swapping, attacks and reset use UI
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import math
 import os
 from pathlib import Path
 import shutil
+import traceback
 from urllib.parse import urlsplit
 from urllib.request import urlopen
 
@@ -28,8 +30,13 @@ WEAPONS = [
     ('sword', 'kit-tripo-sword', 'rare', [36, -54]),
     ('fireStaff', 'kit-tripo-lava-staff', 'uncommon', [44, -54]),
     ('iceStaff', 'kit-tripo-crystal-staff', 'legendary', [52, -54]),
+    ('poisonStaff', 'kit-tripo-poison-staff', 'rare', [60, -54]),
+    ('moonStaff', 'kit-tripo-moon-staff', 'common', [68, -54]),
+    ('bow', 'kit-tripo-ornate-bow', 'uncommon', [76, -54]),
 ]
-REPORT = {'status': 'running', 'url': URL, 'checks': [], 'errors': [],
+WEAPON_KINDS = {entry[0] for entry in WEAPONS}
+EXPECTED_DROPS = sum(obj['kind'] in WEAPON_KINDS for obj in BASE['objects']) + len(WEAPONS)
+REPORT = {'status': 'running', 'stage': 'launch browser', 'url': URL, 'checks': [], 'errors': [],
           'unexpectedRequests': [], 'screenshots': [], 'documents': [],
           'limits': 'Actual standalone HTML in Chromium/SwiftShader over local HTTP; no physical-device performance or public-host HTTP claim.'}
 
@@ -46,6 +53,20 @@ def monitor(page):
             if message.type == 'error' else None)
 
 
+def browser_budget():
+    """Safe runner diagnostics; no process arguments, environment or secrets."""
+    result = {}
+    for name in ('memory.max', 'memory.current', 'memory.events'):
+        path = Path('/sys/fs/cgroup') / name
+        if path.is_file():
+            result[name] = path.read_text().strip()
+    path = Path('/proc/meminfo')
+    if path.is_file():
+        result['hostMemory'] = [line for line in path.read_text().splitlines()
+                                if line.startswith(('MemTotal:', 'MemAvailable:'))]
+    return result
+
+
 def record_document(path, local_name):
     # The standalone HTML exceeds Chromium's response-body inspector cache.
     # Hash the HTTP response as a stream and compare it with the delivered file.
@@ -57,7 +78,9 @@ def record_document(path, local_name):
             digest.update(chunk)
             size += len(chunk)
     expected = ROOT / 'welt' / local_name
-    assert digest.hexdigest() == hashlib.sha256(expected.read_bytes()).hexdigest()
+    expected_hash = hashlib.sha256(expected.read_bytes()).hexdigest()
+    assert digest.hexdigest() == expected_hash, {
+        'document': path, 'servedSha256': digest.hexdigest(), 'deliveredSha256': expected_hash}
     REPORT['documents'].append({'url': URL + '/' + path, 'sha256': digest.hexdigest(), 'bytes': size,
                                 'matchesDeliveredFile': str(expected.relative_to(ROOT))})
 
@@ -116,6 +139,8 @@ def assert_equipped(page, obj):
     assert held['type'] == obj['kind'] and held['variant'] == obj['variant'], held
     assert held['model'] == 'tripo' and held['meshCount'] > 0 and held['visible'], held
     expect(page.locator('#weaponStatus')).to_have_attribute('data-rarity', obj['rarity'])
+    if obj['variant'] == 'kit-tripo-ornate-bow':
+        expect(page.locator('#weaponName')).to_have_text('Verzierter Bogen')
     assert next(d for d in current['weaponDrops'] if d['id'] == obj['id'])['collected']
     return {'item': item, 'held': held}
 
@@ -129,7 +154,13 @@ def attack_target(page, identifier, distance):
     }''', {'id': identifier, 'distance': distance, 'alongX': along_x})
     wait_sim(page, .12)
     before = game_state(page)['combat']['damageHits']
-    page.keyboard.press('f')
+    if game_state(page)['equippedWeapon'] == 'poisonStaff':
+        page.keyboard.down('f')
+        point = page.evaluate('id=>nebeljagdProjectPoint(nebeljagdTestState().practiceActors.find(a=>a.id===id).position)', identifier)
+        page.mouse.move(point['x'], point['y'])
+        page.keyboard.up('f')
+    else:
+        page.keyboard.press('f')
     page.wait_for_function('n=>nebeljagdTestState().combat.damageHits>n', arg=before)
     wait_sim(page, .12)
     after = game_state(page)
@@ -140,9 +171,18 @@ def attack_target(page, identifier, distance):
 
 
 try:
+    REPORT['budgetBefore'] = browser_budget()
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or shutil.which('chromium'), headless=True,
+        # CI uses the browser from its pinned Playwright installation. A moving
+        # runner-image Chromium must not silently override that tested toolchain.
+        executable = os.environ.get('CHROMIUM_EXECUTABLE')
+        if not executable and os.environ.get('NEBELJAGD_BUNDLED_CHROMIUM') != '1':
+            executable = shutil.which('chromium')
+        browser = p.chromium.launch(channel='chromium', executable_path=executable, headless=True,
             args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+        REPORT['browser'] = {'channel': 'chromium', 'version': browser.version,
+                             'playwright': importlib.metadata.version('playwright'),
+                             'executable': executable or p.chromium.executable_path}
         context = browser.new_context(viewport={'width': 1280, 'height': 900}, accept_downloads=True)
         context.on('page', monitor)
         context.add_init_script('''
@@ -159,6 +199,7 @@ try:
                 REPORT['unexpectedRequests'].append(request.url)
 
         context.on('request', resource)
+        REPORT['stage'] = 'open generated editor and verify its project map'
         editor = context.new_page()
         response = editor.goto(URL + '/map-editor.html', wait_until='domcontentloaded')
         assert response.status == 200
@@ -167,6 +208,7 @@ try:
         assert editor_state(editor)['map'] == BASE
         objects = []
         for index, (kind, variant, rarity, position) in enumerate(WEAPONS):
+            REPORT['stage'] = 'place ' + variant
             editor.locator('#editor-tab-objects').click()
             editor.locator('#editor-tool-objects-place').click()
             editor.locator('#palette-kind').select_option(kind)
@@ -181,11 +223,16 @@ try:
             assert obj['kind'] == kind and obj['variant'] == variant and obj['rarity'] == rarity
             objects.append(obj)
         edited = editor_state(editor)['map']
-        assert edited['objects'][:-3] == BASE['objects']
+        assert edited['objects'][:-len(WEAPONS)] == BASE['objects']
         assert {k: v for k, v in edited.items() if k != 'objects'} == {k: v for k, v in BASE.items() if k != 'objects'}
-        capture(editor, 'editor-three-weapons')
-        passed('Three new Tripo weapons can be added without changing the existing map or objects', objects)
+        capture(editor, 'editor-six-weapons')
+        passed('All six Tripo weapon models can be placed without changing the authored map or existing objects', objects)
 
+        REPORT['stage'] = 'open Spielen popup and verify exact map/model handoff'
+        REPORT['editorHeap'] = editor.evaluate('''() => performance.memory ? {
+            used:performance.memory.usedJSHeapSize,total:performance.memory.totalJSHeapSize,
+            limit:performance.memory.jsHeapSizeLimit} : null''')
+        REPORT['budgetBeforePopup'] = browser_budget()
         with editor.expect_popup() as popup:
             editor.locator('#playtest-world').click()
         game = popup.value
@@ -196,12 +243,12 @@ try:
         record_document('nebeljagd.html', 'nebeljagd.html')
         initial = game_state(game)
         assert initial['world']['source'] == 'editor' and initial['world']['objects'] == edited['objects']
-        assert len(initial['weaponDrops']) == 3
+        assert len(initial['weaponDrops']) == EXPECTED_DROPS
         for obj in objects:
             drop = next(d for d in initial['weaponDrops'] if d['id'] == obj['id'])
             assert drop['model'] == 'tripo' and drop['variant'] == obj['variant'], drop
             assert drop['rarity'] == obj['rarity'] and not drop['collected'], drop
-        passed('The real Spielen action transfers exact objects to the sibling game and loads all three GLB drops',
+        passed('The real Spielen action transfers exact objects to the sibling game and loads the requested GLB drops',
                {'url': game.url, 'drops': initial['weaponDrops'], 'character': initial['character']})
         # The unchanged first launch above proves the user-facing handoff. Load
         # its stored draft again with the existing explicit inspection mode for
@@ -211,14 +258,16 @@ try:
         assert game_state(game)['world']['objects'] == edited['objects']
         game.locator('#startBtn').click()
         inspect(game, 44, -49)
-        capture(game, 'three-ground-models')
+        capture(game, 'six-ground-models')
 
         first = objects[0]
+        REPORT['stage'] = 'auto-pickup ' + first['variant']
         inspect(game, *first['position'])
         equipped = assert_equipped(game, first)
         capture(game, 'held-sword')
         passed('The first Tripo sword auto-equips with its real held model and chosen rarity', equipped)
         for obj in objects[1:]:
+            REPORT['stage'] = 'swap to ' + obj['variant']
             previous = game_state(game)['equippedWeapon']
             inspect(game, *obj['position'])
             assert game_state(game)['equippedWeapon'] == previous
@@ -227,9 +276,11 @@ try:
             capture(game, 'held-' + obj['kind'])
             passed('Manual swap preserves the Tripo variant and held model: ' + obj['kind'], equipped)
 
-        for obj, target, distance in zip(objects, ['practice-2', 'practice-3', 'practice-1'], [1.3, 3, 3]):
+        targets = ['practice-2', 'practice-3', 'practice-1', 'practice-3', 'practice-1', 'practice-2']
+        for obj, target, distance in zip(objects, targets, [1.3, 3, 3, 3, 3, 3]):
+            REPORT['stage'] = 'reset, pickup and attack with ' + obj['variant']
             restored = reset(game)
-            assert len(restored['weaponDrops']) == 3
+            assert len(restored['weaponDrops']) == EXPECTED_DROPS
             assert all(d['model'] == 'tripo' for d in restored['weaponDrops'])
             inspect(game, *obj['position'])
             equipped = assert_equipped(game, obj)
@@ -247,6 +298,20 @@ try:
                 slowed = next(a for a in game_state(game)['practiceActors'] if a['id'] == target)
                 assert slowed['slowRemaining'] > 0 and slowed['speedMultiplier'] == .5, slowed
                 evidence['continuedSlow'] = slowed
+            if obj['kind'] == 'poisonStaff':
+                assert actor['poisonRemaining'] > 0, actor
+                wait_sim(game, .7)
+                poisoned = next(a for a in game_state(game)['practiceActors'] if a['id'] == target)
+                assert poisoned['health'] < actor['health'] - 1, poisoned
+                evidence['continuedPoison'] = poisoned
+            if obj['kind'] == 'moonStaff':
+                assert not actor['burnRemaining'] and not actor['poisonRemaining'] and not actor['slowRemaining'], actor
+            if obj['kind'] == 'bow':
+                assert equipped['held']['stringVertices'] > 0, equipped
+            if obj['kind'] in {'poisonStaff', 'moonStaff', 'bow'}:
+                grip = after['combat']['heldGrip']
+                assert grip and grip['error'] < .025, grip
+                evidence['grip'] = grip
             passed('Restart retains the GLB and normal attacks work: ' + obj['kind'], evidence)
 
         assert not REPORT['errors'], REPORT['errors']
@@ -255,15 +320,33 @@ try:
     assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == MAP_HASH
     REPORT['sourceMapUnchanged'] = MAP_HASH
     REPORT['status'] = 'passed'
+    REPORT['stage'] = 'complete'
 except BaseException as error:
     REPORT['status'] = 'failed'
     REPORT['failure'] = str(error)
+    REPORT['exceptionType'] = type(error).__name__
+    REPORT['traceback'] = traceback.format_exc()
     try:
         capture(game if 'game' in globals() else editor, 'failure')
     except Exception:
         pass
     raise
 finally:
+    REPORT['budgetAfter'] = browser_budget()
     (OUT / 'report.json').write_text(json.dumps(REPORT, ensure_ascii=False, indent=2) + '\n')
+    if os.environ.get('GITHUB_STEP_SUMMARY'):
+        diagnostic = {key: REPORT.get(key) for key in
+                      ('status', 'stage', 'exceptionType', 'failure', 'traceback', 'errors', 'unexpectedRequests',
+                       'browser', 'editorHeap', 'budgetBefore', 'budgetBeforePopup', 'budgetAfter')}
+        diagnostic['passedChecks'] = [check['name'] for check in REPORT['checks']]
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+            summary.write('### Uploaded weapon browser check\n\n```json\n' +
+                          json.dumps(diagnostic, ensure_ascii=False, indent=2) + '\n```\n')
+        if REPORT['status'] == 'failed':
+            # Public repository annotations remain readable where raw logs and
+            # job summaries require a web login. Preserve the actual failure.
+            message = json.dumps(diagnostic, ensure_ascii=False)
+            message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+            print('::error title=Uploaded weapon browser check::' + message, flush=True)
     print(json.dumps({'status': REPORT['status'], 'checks': len(REPORT['checks']),
                      'errors': REPORT['errors'], 'failure': REPORT.get('failure')}, ensure_ascii=False), flush=True)

@@ -27,18 +27,27 @@ export const WEAPON_DEFINITIONS = Object.freeze({
   sword: Object.freeze({ type: 'sword', label: 'Eisenschwert', damage: 27, cooldown: .58, range: 2.35, effect: null }),
   fireStaff: Object.freeze({ type: 'fireStaff', label: 'Feuerstab', damage: 16, cooldown: .8, range: 23, effect: 'burn' }),
   iceStaff: Object.freeze({ type: 'iceStaff', label: 'Eisstab', damage: 19, cooldown: .85, range: 23, effect: 'slow' }),
+  poisonStaff: Object.freeze({ type: 'poisonStaff', label: 'Giftstab', damage: 14, cooldown: .85, range: 12, effect: 'poison' }),
+  moonStaff: Object.freeze({ type: 'moonStaff', label: 'Mondstab', damage: 22, cooldown: .85, range: 12, effect: null }),
 });
 export const WEAPON_TYPES = Object.freeze(Object.keys(WEAPON_DEFINITIONS));
+export const STAFF_TYPES = Object.freeze(WEAPON_TYPES.filter(type => type.endsWith('Staff')));
 
-export function weaponStats(type, rarity = 'common') {
+const VARIANT_LABELS = Object.freeze({
+  'kit-tripo-ornate-bow': Object.freeze({ type: 'bow', label: 'Verzierter Bogen' }),
+});
+
+export function weaponStats(type, rarity = 'common', variant = null) {
   const definition = WEAPON_DEFINITIONS[type];
   if (!definition) throw new Error(`Unbekannte Waffe: ${type}`);
   const tier = RARITIES[rarity] ?? RARITIES.common;
+  const label = VARIANT_LABELS[variant]?.type === type ? VARIANT_LABELS[variant].label : definition.label;
   return {
-    ...definition, rarity: tier.id, rarityLabel: tier.label, color: tier.color,
-    name: `${definition.label} · ${tier.label}`,
+    ...definition, label, rarity: tier.id, rarityLabel: tier.label, color: tier.color,
+    name: `${label} · ${tier.label}`,
     damage: Math.round(definition.damage * tier.multiplier),
     burn: type === 'fireStaff' ? { duration: 3, damagePerSecond: 4 * tier.multiplier } : null,
     slow: type === 'iceStaff' ? { duration: 2.5, multiplier: .5 } : null,
+    poison: type === 'poisonStaff' ? { duration: 3, damagePerSecond: 5 * tier.multiplier } : null,
   };
 }

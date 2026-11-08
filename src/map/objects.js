@@ -2,13 +2,15 @@ import { WEAPON_TYPES } from '../loot-tiers.js';
 import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
 import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
+import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
   { kind: 'tree', label: 'Baum', defaultVariant: 'oak', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'oak', label: 'Eiche' }, { id: 'birch', label: 'Birke' }, { id: 'pine', label: 'Kiefer' }, { id: 'rei-tree01', label: 'Rei-Laubbaum 1' }, { id: 'rei-tree02', label: 'Rei-Laubbaum 2' },
+    variants: [{ id: 'oak', label: 'Eiche', retired: true }, { id: 'birch', label: 'Birke', retired: true }, { id: 'pine', label: 'Kiefer', retired: true }, { id: 'rei-tree01', label: 'Rei-Laubbaum 1', retired: true }, { id: 'rei-tree02', label: 'Rei-Laubbaum 2', retired: true },
       { id: 'kit-pine-high', label: 'Große Kiefer · GLB' }, { id: 'kit-pine-young', label: 'Junge Kiefer · GLB' },
-      { id: 'kit-oak-green', label: 'Grüne Eiche · GLB' }, { id: 'kit-oak-autumn', label: 'Herbsteiche · GLB' }] },
+      { id: 'kit-oak-green', label: 'Grüne Eiche · GLB' }, { id: 'kit-oak-autumn', label: 'Herbsteiche · GLB' },
+      { id: 'kit-user-tree1', label: 'Dein Baum 1 · eigener FBX-Export', footprintRadius: .45 }] },
   { kind: 'house', label: 'Haus', defaultVariant: 'kit-tripo-tavern', defaultScale: 1, footprintRadius: 14.5,
     variants: [{ id: 'herbal', label: 'Kräuterhaus', footprintRadius: 11, retired: true }, { id: 'inn', label: 'Waldgasthaus', footprintRadius: 11, retired: true }, { id: 'hunter', label: 'Jägerhaus', footprintRadius: 11, retired: true },
       { id: 'kit-timber', label: 'Fachwerkhaus · GLB', footprintRadius: 11, retired: true }, { id: 'kit-taverne', label: 'Taverne · GLB', footprintRadius: 14.5, retired: true },
@@ -45,13 +47,17 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'chest', label: 'Holztruhe', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .85,
     variants: [{ id: 'wood', label: 'Holztruhe mit Gold und Beute' }, { id: 'kit-tripo-chest', label: 'Schatztruhe · Tripo' }] },
   { kind: 'bow', label: 'Bogen', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'wood', label: 'Holzbogen' }] },
+    variants: [{ id: 'wood', label: 'Holzbogen' }, { id: 'kit-tripo-ornate-bow', label: 'Verzierter Bogen · Tripo' }] },
   { kind: 'sword', label: 'Schwert', defaultVariant: 'steel', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'steel', label: 'Stahlschwert' }, { id: 'kit-tripo-sword', label: 'Schwert · Tripo' }] },
   { kind: 'fireStaff', label: 'Feuerstab', defaultVariant: 'ember', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'ember', label: 'Glutstab · Verbrennung' }, { id: 'kit-tripo-lava-staff', label: 'Feuerstab (Lavastab) · Tripo' }] },
   { kind: 'iceStaff', label: 'Eisstab', defaultVariant: 'frost', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'frost', label: 'Froststab · Verlangsamung' }, { id: 'kit-tripo-crystal-staff', label: 'Eisstab (Kristallstab) · Tripo' }] },
+  { kind: 'poisonStaff', label: 'Giftstab', defaultVariant: 'kit-tripo-poison-staff', defaultScale: 1, footprintRadius: .65,
+    variants: [{ id: 'kit-tripo-poison-staff', label: 'Giftstab · Tripo' }] },
+  { kind: 'moonStaff', label: 'Mondstab', defaultVariant: 'kit-tripo-moon-staff', defaultScale: 1, footprintRadius: .65,
+    variants: [{ id: 'kit-tripo-moon-staff', label: 'Mondstab · Tripo' }] },
   // Dimensions follow the already committed environment-kit collision hints.
   // Model placement stays explicit; adding a catalogue item never adds scenery.
   { kind: 'wall', label: 'Mauer', defaultVariant: 'kit-stone', defaultScale: 1,
@@ -79,14 +85,17 @@ export const OBJECT_CATALOG = Object.freeze([
  * render saved maps until the user deliberately applies the cleanup action. */
 export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(definition => !definition.retired));
 
-/** Only approved Tripo models belong in the individual object palette.
- * Runtime loot, grass painting and barrier drawing keep their own catalogues. */
+/** Only approved models are placeable. Previous GLB trees remain readable in
+ * saved maps, but are not offered in the editor until a valid replacement exists. */
 const placementAssetIds = new Set([
+  // Old GLB trees are excluded; the user's real GLB is included only if installed.
+  ...(USER_TREE1_AVAILABLE ? ['tree:kit-user-tree1'] : []),
   'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
   'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
+  'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff',
 ]);
 export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.flatMap(definition => {
   const variants = definition.variants.filter(variant => !variant.retired && placementAssetIds.has(variant.assetId));

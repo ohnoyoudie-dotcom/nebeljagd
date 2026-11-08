@@ -21,7 +21,7 @@ export function groundGrassSettings(map = {}) {
   const number = (value, fallback, min, max) => Number.isFinite(value) ? THREE.MathUtils.clamp(value, min, max) : fallback;
   const explicitType = typeof source.type === 'string';
   return {
-    enabled: explicitType ? source.type === 'rei-grass' : source.enabled !== false,
+    enabled: explicitType ? source.type === 'rei-grass' : source.enabled === true,
     height: number(source.height, .82, .25, 1.6),
     density: number(source.density, 8.8, 2, 16),
     color: /^#[\da-f]{6}$/i.test(source.color ?? '') ? source.color : '#4b7331',

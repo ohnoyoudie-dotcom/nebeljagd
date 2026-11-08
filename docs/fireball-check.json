@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "nodeTests": 441,
+  "fireballBrowserChecks": [
+    "The generated game preloads the real uploaded flame browser model within budget",
+    "The imported 3D flame renders with its shader, sparks and short smoke trail; pause freezes flight",
+    "Actual fireball hits preserve damage and burn while emitting one fire impact and fading smoke",
+    "Restart clears the pooled smoke and ice retains its own projectile without fire geometry or smoke"
+  ],
+  "onlineEditorChecks": 8,
+  "sourceHash": "48be7b6326161097ac628d6d52cede7a3c1f202a3e7a3309741d4144ece02f65",
+  "model": {
+    "name": "Fiery flame · Tripo-Feuerball",
+    "triangles": 6000,
+    "nominalLength": 0.75
+  },
+  "assetVerification": "passed",
+  "productionBuild": "passed",
+  "testedBuildId": "9ebf380a0287",
+  "errors": [],
+  "limits": "Generated HTML in local Chromium/SwiftShader; no physical-device performance claim."
+}

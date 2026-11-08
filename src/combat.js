@@ -12,6 +12,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
       ...definition, radius: Math.max(.05, finite(definition.radius, .45)), maxHealth,
       health: clamp(finite(definition.health, maxHealth), 0, maxHealth),
       burnRemaining: 0, burnDamagePerSecond: 0, burnSourceId: undefined, slowRemaining: 0, slowFactor: 1,
+      poisonRemaining: 0, poisonDamagePerSecond: 0, poisonSourceId: undefined,
       hitFlash: 0,
       get alive() { return this.health > 0; },
       get speedMultiplier() { return this.slowRemaining > 0 ? this.slowFactor : 1; },
@@ -40,6 +41,19 @@ export function createCombat({ onHit, onDefeat } = {}) {
         target.burnDamagePerSecond = Math.max(target.burnDamagePerSecond, damagePerSecond);
       }
     }
+    if (payload.poison && target.alive) {
+      const duration = Math.max(0, finite(payload.poison.duration, 0));
+      const damagePerSecond = Math.max(0, finite(payload.poison.damagePerSecond, 0));
+      if (duration > 0 && damagePerSecond > 0) {
+        // Poison has its own caster and timing; applying fire cannot claim it,
+        // and a weak refresh cannot steal an existing stronger poison's kill.
+        if (!target.poisonRemaining || damagePerSecond >= target.poisonDamagePerSecond) {
+          target.poisonSourceId = payload.sourceId;
+        }
+        target.poisonRemaining = Math.max(target.poisonRemaining, duration);
+        target.poisonDamagePerSecond = Math.max(target.poisonDamagePerSecond, damagePerSecond);
+      }
+    }
     if (payload.slow && target.alive) {
       target.slowRemaining = Math.max(target.slowRemaining, Math.max(0, finite(payload.slow.duration, 0)));
       target.slowFactor = Math.min(target.slowFactor, clamp(finite(payload.slow.multiplier, 1), .1, 1));
@@ -49,6 +63,8 @@ export function createCombat({ onHit, onDefeat } = {}) {
     if (result.killed) {
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = 0;
       target.burnSourceId = undefined;
+      target.poisonRemaining = target.poisonDamagePerSecond = 0;
+      target.poisonSourceId = undefined;
       target.slowFactor = 1;
     }
     onHit?.(result, target);
@@ -65,11 +81,17 @@ export function createCombat({ onHit, onDefeat } = {}) {
         hit(target, { damage: Math.min(delta, target.burnRemaining) * target.burnDamagePerSecond,
           sourceId: target.burnSourceId, type: 'burn' });
       }
+      if (target.alive && target.poisonRemaining > 0) {
+        hit(target, { damage: Math.min(delta, target.poisonRemaining) * target.poisonDamagePerSecond,
+          sourceId: target.poisonSourceId, type: 'poison' });
+      }
       target.burnRemaining = Math.max(0, target.burnRemaining - delta);
+      target.poisonRemaining = Math.max(0, target.poisonRemaining - delta);
       target.slowRemaining = Math.max(0, target.slowRemaining - delta);
       if (!target.burnRemaining) { target.burnDamagePerSecond = 0; target.burnSourceId = undefined; }
+      if (!target.poisonRemaining) { target.poisonDamagePerSecond = 0; target.poisonSourceId = undefined; }
       if (!target.slowRemaining) target.slowFactor = 1;
-      if (!target.alive) { target.burnRemaining = target.slowRemaining = 0; target.slowFactor = 1; }
+      if (!target.alive) { target.burnRemaining = target.poisonRemaining = target.slowRemaining = 0; target.slowFactor = 1; }
     }
   }
 
@@ -78,18 +100,20 @@ export function createCombat({ onHit, onDefeat } = {}) {
       target.health = target.initialHealth;
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = target.hitFlash = 0;
       target.burnSourceId = undefined;
+      target.poisonRemaining = target.poisonDamagePerSecond = 0;
+      target.poisonSourceId = undefined;
       target.slowFactor = 1;
     }
   }
 
-  function traceSegment(start, end, radius = 0, excludeId) {
+  function traceSegment(start, end, radius = 0, excludeId, ignoredTargets = null) {
     const dx = end.x - start.x, dz = end.z - start.z, distanceSquared = dx * dx + dz * dz;
     const startY = start.y ?? 0, dy = (end.y ?? 0) - startY;
     const projectileRadius = Math.max(0, finite(radius, 0));
     const epsilon = 1e-9;
     let nearest = null;
     for (const target of targets.values()) {
-      if (!target.alive || target.id === excludeId || target.targetable === false) continue;
+      if (!target.alive || target.id === excludeId || target.targetable === false || ignoredTargets?.has(target.id)) continue;
       const tx = start.x - target.position.x, tz = start.z - target.position.z;
       const reach = target.radius + projectileRadius;
       const c = tx * tx + tz * tz - reach * reach;

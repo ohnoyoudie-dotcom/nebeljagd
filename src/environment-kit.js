@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
+import { isTreeFoliagePart, USER_TREE_WIND_RESPONSE } from './map/tree-wind.js';
+import { USER_TREE1_URL } from './map/user-tree-asset.js';
 import { shouldOmitTavernDetail, TAVERN_DRESSING } from './map/tavern-dressing.js';
 import { createBarrierModelParts } from './barrier-models.js';
 import pineHigh from '../Blender/nebeljagd_umwelt_kit_v1/assets/pine_high.glb?url&inline';
@@ -31,6 +33,7 @@ import woodCrate from '../Blender/nebeljagd_umwelt_kit_v1/assets/crate_wood.glb?
 const urls = {
   'tree:kit-pine-high': pineHigh, 'tree:kit-pine-young': pineYoung,
   'tree:kit-oak-green': oakGreen, 'tree:kit-oak-autumn': oakAutumn,
+  ...(USER_TREE1_URL ? { 'tree:kit-user-tree1': USER_TREE1_URL } : {}),
   'house:kit-taverne': tavern,
   'house:kit-tripo-tavern': tripoTavern,
   'house:kit-tripo-castle': tripoCastle,
@@ -198,15 +201,29 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
       // Geometry/materials are loaded once per variant, then shared by the
       // scenery renderer's chunked instances, including destructible barrels.
       const parts = [], materials = new Map();
-      const copyMaterial = source => {
-        if (!materials.has(source.uuid)) materials.set(source.uuid, source.clone());
-        return materials.get(source.uuid);
+      const copyMaterial = (source, leaf) => {
+        // A material reused for bark must not inherit leaf movement.
+        const key = `${source.uuid}:${leaf ? 'wind' : 'solid'}`;
+        if (!materials.has(key)) {
+          const material = source.clone();
+          if (leaf && wind) {
+            // Shared shader-based wind; no CPU per-leaf animation or extra draw call.
+            // Keep imported alpha-cutout, double-sided shading, and original UVs.
+            wind.apply(material, { height: definition.targetHeight ?? definition.height,
+              response: USER_TREE_WIND_RESPONSE, interactionResponse: 0, replaceLegacySway: false });
+          }
+          materials.set(key, material);
+        }
+        return materials.get(key);
       };
       gltf.scene.traverse(mesh => {
         if (!mesh.isMesh) return;
         const geometry = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld).applyMatrix4(transform);
         geometry.computeBoundingBox(); geometry.computeBoundingSphere();
-        const material = Array.isArray(mesh.material) ? mesh.material.map(copyMaterial) : copyMaterial(mesh.material);
+        const leaf = isTreeFoliagePart(kind, mesh);
+        const material = Array.isArray(mesh.material)
+          ? mesh.material.map(source => copyMaterial(source, leaf))
+          : copyMaterial(mesh.material, leaf);
         parts.push({ geometry, material, castShadow: true, interior: false, frontFacade: false, vegetationTint: false });
       });
       gltf.scene.traverse(mesh => {

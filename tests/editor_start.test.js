@@ -22,11 +22,21 @@ test('an explicit draft choice resumes that map instead of the project or snapsh
   assert.equal(plan.pendingDraft, null);
 });
 
-test('a direct online visit offers a choice before restoring different work', () => {
+test('a direct online visit automatically resumes the last valid browser draft', () => {
+  const before = JSON.stringify({ project, draft });
   const plan = planEditorStart({ project, draft });
+  assert.equal(plan.map, draft);
+  assert.equal(plan.source, 'draft');
+  assert.equal(plan.pendingDraft, null);
+  assert.equal(plan.offerChoice, false);
+  assert.equal(JSON.stringify({ project, draft }), before);
+});
+
+test('a first visit without a browser draft opens the project map', () => {
+  const plan = planEditorStart({ project });
   assert.equal(plan.map, project);
-  assert.equal(plan.pendingDraft, draft);
-  assert.equal(plan.offerChoice, true);
+  assert.equal(plan.source, 'project');
+  assert.equal(plan.offerChoice, false);
 });
 
 test('an exported editor opens its embedded map without asking to replace it', () => {

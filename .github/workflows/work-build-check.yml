@@ -27,6 +27,22 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Install corrected user tree with embedded leaf alpha texture
+        run: |
+          set -euo pipefail
+          MODEL=assets/imported/user-trees/runtime/tree1.glb
+          SHA=c8c125554459d89352f23a1d9377899b145617fd589abe36cdbf7d228820c92c
+          mkdir -p "$(dirname "$MODEL")"
+          if [ ! -f "$MODEL" ] || [ "$(sha256sum "$MODEL" | cut -d' ' -f1)" != "$SHA" ]; then
+            # Verified artist asset, reconstructed from the owner's packed
+            # Blender leaf mask. Replace only this single GLB, never worldmap.
+            curl --fail --location --retry 4 --retry-delay 2 --max-time 90 \
+              'https://d2ol7oe51mr4n9.cloudfront.net/user_3LFTEwt5x5adTPmiXDny0NDloGO/bc9c2f53-9993-41bf-95a1-88163d47d7f3.glb' --output "$MODEL.tmp"
+            printf '%s  %s\n' "$SHA" "$MODEL.tmp" | sha256sum --check
+            mv "$MODEL.tmp" "$MODEL"
+          fi
+          printf '%s  %s\n' "$SHA" "$MODEL" | sha256sum --check
+          echo "Tree1 leaf-mask GLB validated: $(wc -c < "$MODEL") bytes"
       - name: Install and run unit tests
         run: |
           npm ci
@@ -36,9 +52,9 @@ jobs:
         run: npm run build
       - name: Install browser smoke dependencies
         run: |
-          python -m pip install --quiet playwright
+          python -m pip install --quiet playwright==1.63.0
           python -m playwright install --with-deps chromium
-      - name: Verify meadow, vision and shadow runtime
+      - name: Start the generated browser preview
         run: |
           npm run preview -- --port 4174 >/tmp/nebeljagd-preview.log 2>&1 &
           echo $! >/tmp/nebeljagd-preview.pid
@@ -46,13 +62,50 @@ jobs:
             curl -fsS http://127.0.0.1:4174/nebeljagd.html >/dev/null && break
             sleep 1
           done
+      - name: Verify uploaded weapon models, pickup, swaps and attacks
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+          NEBELJAGD_QA_OUT: test-results/tripo-weapons
+          NEBELJAGD_BUNDLED_CHROMIUM: '1'
+        run: python tests/tripo_weapon_editor_smoke.py
+      - name: Verify uploaded fireball, shader, sparks and smoke
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/fireball_browser_smoke.py
+      - name: Verify targeted hold, release and return controls
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
+        run: python tests/special_weapon_controls_smoke.py
+      - name: Verify meadow, vision and shadow runtime
+        # Full graphical regression is available on manual dispatch. Ordinary
+        # editor pushes still run all unit/asset/build and focused browser checks.
+        if: github.event_name == 'workflow_dispatch'
+        run: |
           python tests/work_meadow_vision_smoke.py
           python tests/avatar_smoke.py
           python tests/avatar_preview_smoke.py
       - name: Verify classroom login, practice lobby and current editor
+        # Classroom end-to-end game simulation is verified on explicit full runs;
+        # editor pushes instead run the dedicated online editor and tree checks.
+        if: github.event_name == 'workflow_dispatch'
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
+      - name: Verify removed tree palette and preserved saved GLB trees in editor and game
+        run: |
+          python -m http.server 4175 --bind 127.0.0.1 >/tmp/nebeljagd-tree.log 2>&1 &
+          for i in {1..40}; do
+            curl -fsS http://127.0.0.1:4175/welt/map-editor.html >/dev/null && break
+            sleep 1
+          done
+          python tests/tree_placement_smoke.py
       - name: Publish verified build to welt
         id: save-work
         env:
@@ -67,7 +120,8 @@ jobs:
           # npm run build already synchronizes the complete portal and editor.
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add welt
+          # Publish the exact verified binary alongside the matching browser build.
+          git add welt assets/imported/user-trees/runtime/tree1.glb
           if ! git diff --cached --quiet; then
             git commit -m 'build: publish verified work editor and game'
             git push origin HEAD:work
@@ -105,6 +159,14 @@ jobs:
         # Token-authored pushes do not trigger the normal automatic Pages build.
         # Use the existing branch-Pages API explicitly; never change site config.
         run: node scripts/request-pages-build.js
+      - name: Upload the verified work browser package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nebeljagd-work-browser
+          path: |
+            welt/nebeljagd-welt-und-editor.zip
+            welt/release.json
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -115,6 +177,8 @@ jobs:
             test-results/avatar-preview
             test-results/classroom
             test-results/online-editor
+            test-results/tripo-weapons
+            test-results/fireball
             assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

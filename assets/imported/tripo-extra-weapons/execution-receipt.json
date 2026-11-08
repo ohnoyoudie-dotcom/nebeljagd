@@ -1,0 +1,29 @@
+{
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-extra-weapons.py -- --execute",
+  "sources": [
+    {
+      "path": "assets/inbox/Poison staff 3d model.glb",
+      "sha256": "54bf2419f40955b396c86f27385e2df648997f56696c04a28feb2fcbbc944326",
+      "bytes": 69561624,
+      "triangles": 1936200
+    },
+    {
+      "path": "assets/inbox/Moon staff 3d model.glb",
+      "sha256": "208c0124ee05518b8bf7f8b46f300ed203135b01a0b091ee3e0a6099c1c68ca1",
+      "bytes": 69029528,
+      "triangles": 1949367
+    },
+    {
+      "path": "assets/inbox/ornate bow 3d model.glb",
+      "sha256": "61848a77f3b07e88abf42b405f258afa52dc07abf3d73863651d74b17ac0f864",
+      "bytes": 67113544,
+      "triangles": 1918430
+    }
+  ],
+  "destination": "/workspace/nebeljagd/assets/imported/tripo-extra-weapons",
+  "status": "static-validation-and-previews-complete",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "existingWeaponAssetsUnchanged": true,
+  "gpuImportPassed": null
+}

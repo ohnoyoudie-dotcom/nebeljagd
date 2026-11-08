@@ -16,6 +16,7 @@ import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
 import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
+import { createPlacementRotationControl } from './placement-rotation.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -65,6 +66,8 @@ let toastTimer;
 let restoredDraft = startup.pendingDraft;
 let unreadableDraftPending = Boolean(storedDraftText && !validStoredDraft);
 let storageAvailable = startupStorageAvailable;
+// A browser draft is only 'saved' once this exact document is in localStorage.
+let browserDraftCurrent = startup.source === 'draft' && Boolean(validStoredDraft);
 let view = initialView();
 let zoneTime = 0;
 let listLimit = 50;
@@ -130,7 +133,7 @@ if (!retiredSceneryBanner) {
   const label = document.createElement('span'); label.id = 'retired-scenery-note';
   const button = document.createElement('button');
   button.id = 'remove-retired-scenery'; button.className = 'button small';
-  button.textContent = 'Auf Tripo-Objekte bereinigen';
+  button.textContent = 'Veraltete Objekte entfernen';
   retiredSceneryBanner.append(label, button);
   retiredBuildingsBanner.after(retiredSceneryBanner);
 }
@@ -151,7 +154,7 @@ function updateRetiredSceneryBanner() {
   retiredSceneryBanner.hidden = !result.totalRemoved;
   $('retired-scenery-summary').textContent = `${result.totalRemoved} ältere Platzierungen im Entwurf · Details`;
   $('retired-scenery-note').textContent = retiredSceneryBanner.hidden ? ''
-    : `Bereinigung: ${result.removedObjects.length} alte Objektplatzierungen (Nicht-Tripo oder kleines Schloss) und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
+    : `Bereinigung: ${result.removedObjects.length} veraltete Objektplatzierungen und ${result.removedBarriers.length} alte Strecken entfernen. Dazu zählen auch ältere Beutemodelle und Grasobjekte. Bereits gesetzte GLB-Bäume und aktuelle Tripo-Modelle einschließlich Schwert und Zauberstäben, gezeichnete Mauern/Zäune und Bodenflächen bleiben erhalten. Mit „Zurück“ rückgängig machen.`;
 }
 
 function initialView() {
@@ -187,20 +190,24 @@ function updateWarnings(result = validate(map)) {
 const directFileSaveSupported = () => typeof window.showSaveFilePicker === 'function';
 function updateSaveStatus({ saved = false } = {}) {
   if (restoredDraft !== null || unreadableDraftPending) {
-    $('save-status').textContent = mapFileHandle ? `Voriger Entwurf wartet · ${mapFileHandle.name}` : 'Voriger Entwurf wartet · Strg+S';
+    $('save-status').textContent = 'Anderer Browser-Entwurf geschützt · zuerst wiederherstellen oder sichern';
     return;
   }
   if (saved && mapFileHandle) {
-    $('save-status').textContent = `Gespeichert · ${mapFileHandle.name}`;
+    $('save-status').textContent = `JSON gespeichert · ${mapFileHandle.name}`;
     return;
   }
   if (mapFileHandle) {
-    $('save-status').textContent = `Ungespeicherte Änderungen · ${mapFileHandle.name} · Strg+S`;
+    $('save-status').textContent = browserDraftCurrent
+      ? `Im Browser gespeichert · JSON-Datei ${mapFileHandle.name} noch nicht aktualisiert`
+      : `JSON-Datei ${mapFileHandle.name} noch nicht aktualisiert · Strg+S`;
     return;
   }
-  $('save-status').textContent = directFileSaveSupported()
-    ? 'Ungespeicherte Änderungen · Strg+S wählt worldmap.json'
-    : 'Lokal gesichert · Browser-Download nötig';
+  $('save-status').textContent = browserDraftCurrent
+    ? 'Automatisch im Browser gespeichert · JSON-Sicherung empfohlen'
+    : storageAvailable
+      ? 'Karte geöffnet · Änderungen werden automatisch im Browser gespeichert'
+      : 'Browserspeicher nicht verfügbar · bitte als JSON sichern';
 }
 function saveDraft() {
   if (restoredDraft !== null || unreadableDraftPending) {
@@ -211,9 +218,11 @@ function saveDraft() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
     storageAvailable = true;
+    browserDraftCurrent = true;
     updateSaveStatus();
   } catch {
     storageAvailable = false;
+    browserDraftCurrent = false;
     updateSaveStatus();
   }
 }
@@ -1242,7 +1251,10 @@ function addObjectAt(point) {
   if (!isLandPoint(map, position)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
   const kind = $('palette-kind').value;
   if (!isObjectPlaceable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
-  const added = makeWorldObject(kind, position, {variant: $('palette-variant').value, rarity: $('palette-rarity').value});
+  const added = makeWorldObject(kind, position, {
+    variant: $('palette-variant').value, rarity: $('palette-rarity').value,
+    rotation: placementRotationControl.nextRotation(kind),
+  });
   if (!canPaintGrass(position, map, objectFootprint(added))) return toast('Bitte genug Abstand zum Ufer halten: Das ganze Objekt muss auf Land stehen.', true);
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
     layers.showObjects = true; $('layer-objects').checked = true;
@@ -1296,6 +1308,7 @@ window.addEventListener('message', event => {
   playtestWindows.delete(event.source);
 });
 preparePalette();
+const placementRotationControl = createPlacementRotationControl(document);
 landscapePanel = createLandscapePanel({ getMap: () => map, getMode: () => mode, setMode, commit, toast,
   getPosition: () => selectedFeature()?.position ?? hoverPoint ?? map.gameplay.spawnPosition ?? map.zone.center,
   refreshCursor: () => updatePlacementPreview(),
@@ -1435,7 +1448,7 @@ window.nebeljagdMapTestState = () => ({
   landscape: landscapePanel?.state(),
   dirty: JSON.stringify(map) !== JSON.stringify(initialSnapshot),
   viewBox: [view.x, view.y, view.width, view.height], view: { ...view }, zoom: (map.bounds.maxX - map.bounds.minX) / view.width,
-  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
+  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value, randomRotation: placementRotationControl.isEnabled($('palette-kind').value)}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
 });
 renderAll();
 if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();

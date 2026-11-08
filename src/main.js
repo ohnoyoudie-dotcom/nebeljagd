@@ -4,6 +4,7 @@ import './lobby.css';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
 import { createGeneratedWorld } from './generated-world.js';
+import { isIPadDevice, initialGraphicsQuality, graphicsSettings } from './graphics-quality.js';
 import defaultMap from '../worldmap.json';
 import { zoneAt as mapZoneAt, getWorldmapStats } from './map/model.js';
 import { loadRuntimeWorldmap, importRuntimeWorldmap } from './map/runtime-document.js';
@@ -12,6 +13,7 @@ import { createPickups } from './pickups.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
+import { loadFireballModel } from './fireball-model.js';
 import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
@@ -32,17 +34,21 @@ const lobbySession = lobbyMode ? await requireLobbySession() : null;
 if (lobbyMode) { document.body.dataset.mode = 'lobby'; document.title = 'Nebeljagd · Übungswiese'; }
 const startingHealth = lobbyMode ? MAX_HEALTH : START_HEALTH;
 const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+const iPad = isIPadDevice(navigator);
 const requestedQuality = new URLSearchParams(location.search).get('quality');
+const deviceProfile = { iPad, coarsePointer, devicePixelRatio: window.devicePixelRatio || 1 };
 const state = {
   phase: 'ready', ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0,
   gold: 0, inDanger: false, moving: false, distance: 0, snowWeight: 0,
   rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
-  quality: requestedQuality === 'low' || (requestedQuality !== 'high' && coarsePointer) ? 'low' : 'high',
+  quality: initialGraphicsQuality({ requestedQuality, coarsePointer, iPad }),
 };
 const keys = new Set();
 const stick = new THREE.Vector2();
 let ready = false;
 let inputPointer = null;
+let aimDrag = null;
+let canvasAttackPointer = null;
 const frameSamples = [];
 
 const ui = createUI({
@@ -58,7 +64,10 @@ const ui = createUI({
   onResume: () => { if (state.phase === 'paused') setPhase('playing'); },
   onRestart: () => { if (ready) reset(); },
   onDash: () => roll(),
-  onAttack: () => attackWeapon(),
+  onAttack: event => { attackWeapon(); beginAimDrag(event); },
+  onAttackMove: event => moveAttackAim(event, true),
+  onAttackRelease: () => releaseWeapon(),
+  onAttackCancel: () => { aimDrag = null; weapons?.cancelAim(); },
   onInteract: () => interactWeapon(),
   onQualityChange: (quality) => setQuality(quality),
 });
@@ -166,7 +175,7 @@ for (const object of world.destructibles ?? []) {
 const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
-    tripoPrototypes: await loadTripoWeapons(world.map.objects) });
+    tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {
@@ -197,7 +206,7 @@ function clearInput() {
 
 function setPhase(phase) {
   state.phase = phase;
-  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); }
+  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); weapons.cancelAim(); aimDrag = null; canvasAttackPointer = null; }
   clearInput();
   state.moving = false;
   ui.setPhase(phase);
@@ -225,12 +234,12 @@ function reset() {
 
 function setQuality(quality) {
   state.quality = quality === 'low' ? 'low' : 'high';
-  const high = state.quality === 'high';
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, high ? 1.75 : 1.15));
+  const profile = graphicsSettings(state.quality, deviceProfile);
+  renderer.setPixelRatio(profile.pixelRatio);
   world.setQuality?.(state.quality);
-  const size = high ? 4096 : 2048;
-  sun.shadow.blurSamples = high ? 24 : 14;
-  sun.shadow.radius = high ? 3 : 2;
+  const size = profile.shadowMapSize;
+  sun.shadow.blurSamples = profile.shadowBlurSamples;
+  sun.shadow.radius = profile.shadowRadius;
   if (sun.shadow.mapSize.x !== size) {
     sun.shadow.mapSize.set(size, size);
     sun.shadow.map?.dispose(); sun.shadow.map = null;
@@ -277,6 +286,31 @@ function attackWeapon() {
   if (state.phase !== 'playing') return;
   const result = weapons.attack(player, state.direction);
   if (!result && !weapons.equipped) ui.toast('Heb zuerst eine Waffe mit E auf oder öffne eine Truhe.');
+}
+
+function groundPointer(event) {
+  if (!event || !Number.isFinite(event.clientX)) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1,
+    1 - (event.clientY - rect.top) / rect.height * 2), camera);
+  const point = ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -player.y * visualScale), new THREE.Vector3());
+  return point ? world.root.worldToLocal(point) : null;
+}
+function beginAimDrag(event) {
+  const target = weapons.telemetry.special.target, start = groundPointer(event);
+  aimDrag = target && start ? { start, target } : null;
+}
+function moveAttackAim(event, relative = false) {
+  if (state.phase !== 'playing' || !weapons.telemetry.special.aiming) return;
+  const point = groundPointer(event); if (!point) return;
+  if (relative && aimDrag) point.sub(aimDrag.start).add(new THREE.Vector3(aimDrag.target.x, aimDrag.target.y, aimDrag.target.z));
+  weapons.aimAt(player, point);
+}
+function releaseWeapon() {
+  if (state.phase === 'playing') weapons.releaseAttack(player);
+  else weapons.cancelAim();
+  aimDrag = null;
 }
 
 function simulate(dt) {
@@ -360,7 +394,18 @@ window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyE' && !event.repeat) interactWeapon();
   if (event.code === 'KeyF' && !event.repeat) attackWeapon();
 });
-window.addEventListener('keyup', (event) => keys.delete(event.code));
+window.addEventListener('keyup', event => { keys.delete(event.code); if (event.code === 'KeyF') releaseWeapon(); });
+window.addEventListener('pointermove', event => { if (keys.has('KeyF')) moveAttackAim(event); });
+renderer.domElement.addEventListener('pointerdown', event => {
+  if (event.button !== 0 || state.phase !== 'playing' || canvasAttackPointer !== null) return;
+  event.preventDefault(); canvasAttackPointer = event.pointerId; renderer.domElement.setPointerCapture(event.pointerId);
+  attackWeapon(); moveAttackAim(event);
+});
+renderer.domElement.addEventListener('pointermove', event => { if (canvasAttackPointer === event.pointerId) moveAttackAim(event); });
+renderer.domElement.addEventListener('pointerup', event => { if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; releaseWeapon(); } });
+for (const name of ['pointercancel', 'lostpointercapture']) renderer.domElement.addEventListener(name, event => {
+  if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; aimDrag = null; weapons.cancelAim(); }
+});
 window.addEventListener('blur', () => {
   clearInput();
   if (state.phase === 'playing') setPhase('paused');
@@ -440,10 +485,17 @@ window.nebeljagdTestState = () => ({
   shadows: { type: renderer.shadowMap.type === THREE.VSMShadowMap ? 'VSM' : renderer.shadowMap.type,
     mapSize: sun.shadow.mapSize.x, bias: sun.shadow.bias, normalBias: sun.shadow.normalBias,
     radius: sun.shadow.radius, blurSamples: sun.shadow.blurSamples },
+  graphicsProfile: { iPad, coarsePointer, quality: state.quality, pixelRatio: renderer.getPixelRatio(),
+    settings: graphicsSettings(state.quality, deviceProfile) },
 });
 
 // Explicit capture mode for reproducible local QA, absent from normal player sessions.
 if (new URLSearchParams(location.search).has('inspect')) {
+  window.nebeljagdProjectPoint = ({x, z}) => {
+    const point = world.root.localToWorld(new THREE.Vector3(x, world.heightAt(x, z), z)).project(camera);
+    const rect = renderer.domElement.getBoundingClientRect();
+    return {x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2};
+  };
   window.nebeljagdInspectCamera = ({ zoom = 1 } = {}) => {
     camera.zoom = THREE.MathUtils.clamp(Number.isFinite(zoom) ? zoom : 1, 1, 4);
     camera.updateProjectionMatrix();

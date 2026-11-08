@@ -159,7 +159,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       }
       pivot.rotation.z = THREE.MathUtils.lerp(pivot.rotation.z, target.alive ? 0 : Math.PI * .47, 1 - Math.exp(-delta * 8));
       pivot.position.y = target.alive ? Math.sin(actor.phase * 2) * .025 : -.02;
-      actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : target.slowRemaining > 0 ? '#1b5b83' : '#000000');
+      actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
       actor.flames.visible = target.alive && target.burnRemaining > 0;
       actor.frost.visible = target.alive && target.slowRemaining > 0;
       actor.flames.children.forEach((flame, i) => {
@@ -199,7 +199,8 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       actor.group.position.copy(actor.origin); actor.pivot.rotation.set(0, 0, 0); actor.pivot.position.y = 0;
       actor.direction = 1; actor.phase = 0; actor.travelled = 0;
       actor.grassDirX = actor.axis.x; actor.grassDirZ = actor.axis.z; actor.grassStrength = 0;
-      target.health = target.initialHealth; target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = target.hitFlash = 0; target.slowFactor = 1;
+      target.health = target.initialHealth; target.burnRemaining = target.burnDamagePerSecond = target.poisonRemaining = target.poisonDamagePerSecond = target.slowRemaining = target.hitFlash = 0; target.slowFactor = 1;
+      delete target.poisonSourceId;
     }
   }
 
@@ -235,7 +236,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     root, update, reset, resolvePlayerMovement, appendGrassInteractors, appendFootprintSources,
     inspect: () => actors.map(({ id, target, group, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
-      alive: target.alive, visible, burnRemaining: target.burnRemaining, slowRemaining: target.slowRemaining,
+      alive: target.alive, visible, burnRemaining: target.burnRemaining, poisonRemaining: target.poisonRemaining, slowRemaining: target.slowRemaining,
       speedMultiplier: target.speedMultiplier, baseSpeed: speed, travelled })),
     dispose() {
       for (const actor of actors) { combat.removeTarget(actor.id); healthBars?.remove(actor.id); }

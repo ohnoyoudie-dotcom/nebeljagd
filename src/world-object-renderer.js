@@ -17,6 +17,7 @@ import { getBarrierHeight, getBarrierHeightScale, isHeightAdjustable } from './m
 import { loadEnvironmentKit } from './environment-kit.js';
 import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { grassBiomeProfile } from './meadow-ground.js';
+import { WEAPON_TYPES } from './loot-tiers.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
 import bushUrl from '../assets/imported/rei/runtime/bush.glb?url&inline';
@@ -341,7 +342,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     structures.push(entry); return entry;
   }
   for (const object of map.objects ?? []) {
-    if (['heart', 'crystal', 'bow', 'sword'].includes(object.kind)) continue;
+    if (['heart', 'crystal'].includes(object.kind) || WEAPON_TYPES.includes(object.kind)) continue;
     const [x, z] = object.position, scale = object.scale, variant = object.variant;
     const kit = kitModels.get(`${object.kind}:${variant}`);
     chunkFor(x, z).count++;

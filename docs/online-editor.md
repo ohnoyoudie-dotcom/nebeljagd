@@ -34,43 +34,26 @@ alle Dateien außerhalb von `preview/` auf `main` bleiben erhalten.
 
 Der Workflow **Work build and visual checks** testet den auslösenden
 Quellcommit auf `work`, baut das Paket und prüft die erzeugten Browserdateien.
-Danach übernimmt er den Build nach `work/welt` und ausschließlich die geprüfte
-Vorschau nach `main/preview`. Ein zwischenzeitlich geänderter `work`-Stand
-blockiert eine veraltete Veröffentlichung. Konflikte auf `main` führen zum
-Abbruch; der Workflow setzt oder überschreibt keine fremden Commits.
-Jeder Push auf `work` startet einen Nachfolger, auch eine reine
-Dokumentationsänderung. So lässt die Prüfung auf neuere Commits keinen
-Editorstand ohne nachfolgenden Veröffentlichungslauf liegen. Die vom normalen
-Workflow-Token erzeugten Build-Commits lösen selbst keinen neuen Lauf aus.
+Danach übernimmt er den Build nach `work/welt` und die dazu passende Vorschau
+nach `main/preview`. Diese Aktualisierung der Webvorschau wurde ausdrücklich
+freigegeben. Andere Dateien auf `main` bleiben erhalten. Vor jedem Push wird
+geprüft, dass kein neuerer Entwicklungsstand vorliegt; es gibt keinen Force-Push.
+Anschließend fordert der Workflow den bestehenden Pages-Build für genau den
+veröffentlichten Commit an und prüft dessen Ergebnis. Ein erfolgreicher Push
+allein bestätigt noch keine erfolgreiche Bereitstellung.
 
-Ein Push mit dem Workflow-Token löst keinen normalen automatischen Pages-Build
-aus. Deshalb fordert der Workflow anschließend den bestehenden Pages-Build
-ausdrücklich über die GitHub-API an und wartet auf **genau den gerade
-veröffentlichten Commit**. Ein älterer erfolgreicher Build gilt nicht als
-Nachweis. Veröffentlichungen auf GitHub und deren tatsächliche Bereitstellung
-bleiben unterscheidbare Schritte.
-Vorübergehende Lesefehler werden begrenzt wiederholt. Ein ersetzter oder
-abgebrochener Pages-Versuch beendet die Prüfung nicht vorzeitig, wenn noch
-ein Nachfolger für denselben Commit erfolgreich werden kann. Ohne Bestätigung
-innerhalb des festen Zeitfensters bleibt die Bereitstellung unbestätigt;
-Zugriffs- und Konfigurationsfehler werden sofort gemeldet.
-
-Voraussetzungen sind die bestehende GitHub-Pages-Konfiguration mit Quelle
-**main / Repository-Stamm**, Schreibrechte des normalen Workflow-Tokens für
-Repository-Inhalte und Pages sowie erlaubte Bot-Pushes auf beide Branches.
-Es sind keine neuen Geheimnisse und kein zusätzlicher Hosting-Dienst nötig.
-Bei einer anderen Pages-Quelle oder geschützten Branches meldet der Workflow
-den konkreten Fehler; er ändert diese Einstellungen nicht selbstständig.
-Ein bereits auf **GitHub Actions** umgestelltes Pages-Projekt muss stattdessen
-seinen dafür eingerichteten Deployment-Workflow verwenden.
+Das geprüfte ZIP und die Versionsdatei stehen außerdem sieben Tage als
+Actions-Artefakt **nebeljagd-work-browser** bereit. Die
+[Offline-Kopie aus work](https://github.com/ohnoyoudie-dotcom/nebeljagd/raw/refs/heads/work/welt/nebeljagd-welt-und-editor.zip)
+bleibt zum Herunterladen verfügbar.
 
 ## Eigene Kartenänderungen
 
 **Speichern** sichert weiterhin eine JSON-Datei auf dem Gerät. Es lädt weder
 Karten auf GitHub hoch noch speichert es geräteübergreifend. Für eine neue
 gemeinsame Projektkarte muss die gewünschte JSON-Datei als `worldmap.json` auf
-`work` übernommen werden. Nach erfolgreichen Prüfungen veröffentlicht derselbe
-Ablauf diese Karte zusammen mit dem passenden Editor und Spiel.
+`work` übernommen werden. Nach erfolgreichen Prüfungen speichert derselbe
+Ablauf diese Karte zusammen mit dem passenden Editor und Spiel auf `work`.
 
 Lokale HTML-Kopien und ZIP-Pakete bleiben feste Offline-Stände. Ein geöffneter
 Editor tauscht während der Bearbeitung keinen Code oder Kartenstand aus.
