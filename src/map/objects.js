@@ -50,7 +50,7 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'bow', label: 'Bogen', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'wood', label: 'Holzbogen' }, { id: 'kit-tripo-ornate-bow', label: 'Verzierter Bogen · Tripo' }] },
   { kind: 'sword', label: 'Schwert', defaultVariant: 'steel', defaultScale: 1, footprintRadius: .65,
-    variants: [{ id: 'steel', label: 'Stahlschwert' }, { id: 'kit-tripo-sword', label: 'Schwert · Tripo' }] },
+    variants: [{ id: 'steel', label: 'Schwert · Tripo (alter Karteneintrag)', retired: true }, { id: 'kit-tripo-sword', label: 'Schwert · Tripo' }] },
   { kind: 'fireStaff', label: 'Feuerstab', defaultVariant: 'ember', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'ember', label: 'Glutstab · Verbrennung' }, { id: 'kit-tripo-lava-staff', label: 'Feuerstab (Lavastab) · Tripo' }] },
   { kind: 'iceStaff', label: 'Eisstab', defaultVariant: 'frost', defaultScale: 1, footprintRadius: .65,

@@ -58,7 +58,7 @@ export const ASSET_CATALOG = Object.freeze([
   project('heart', 'healing', 'Heilendes Herz', ['src/pickups.js'], 'Vorhandenes Herzmodell zum Wiederherstellen von Leben.'),
   project('chest', 'wood', 'Holztruhe mit Gold und Beute', ['src/chests.js'], 'Holztruhe mit Klappdeckel; wirft Gold und Ausrüstung aus.'),
   project('bow', 'wood', 'Holzbogen', ['src/weapons.js'], 'Holzbogen mit Sehne und Pfeil; Leuchtfarbe folgt der Seltenheit.'),
-  project('sword', 'steel', 'Stahlschwert', ['src/weapons.js'], 'Vorhandenes Schwertmodell; Leuchtfarbe folgt der Seltenheit.'),
+  project('sword', 'steel', 'Schwert · alter Karteneintrag', ['src/weapons.js'], 'Wird im Spiel durch das neue Tripo-Schwert ersetzt. Neue Platzierungen verwenden direkt Schwert · Tripo.'),
   project('fireStaff', 'ember', 'Glutstab · Verbrennung', ['src/weapons.js'], 'Feuerstab mit Glutspitze; verursacht Brandschaden.'),
   project('iceStaff', 'frost', 'Froststab · Verlangsamung', ['src/weapons.js'], 'Eisstab mit Frostspitze; verlangsamt getroffene Ziele.'),
   kit('tree', 'kit-pine-high', 'Große Kiefer · GLB', 'pine_high', 'Hohe Kiefer aus dem bereits eingebundenen Nebeljagd-Umwelt-Kit.'),

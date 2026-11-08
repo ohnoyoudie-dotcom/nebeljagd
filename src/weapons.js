@@ -11,9 +11,12 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-moon-staff': 'moonStaff',
   'kit-tripo-ornate-bow': 'bow',
 });
-export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'steel', fireStaff: 'ember', iceStaff: 'frost',
+export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
   poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
+export function resolveWeaponVariant(type, variant) {
+  return type === 'sword' && (!variant || variant === 'steel') ? 'kit-tripo-sword' : variant ?? DEFAULT_VARIANTS[type];
+}
 // Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
@@ -24,14 +27,14 @@ export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
   { placements, heightAt = world?.heightAt, viewDistance = 100, combat = null, ownerId = 'player', isVisible = null,
-    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {} } = {}) {
+    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {}, rollRarity = null } = {}) {
   function assertPrototype(type, variant) {
     const modelType = TRIPO_WEAPON_VARIANTS[variant];
     if (!modelType) return;
     if (modelType !== type) throw new Error(`Die Waffenvariante ${variant} passt nicht zu ${type}.`);
     if (!tripoPrototypes[variant]?.isObject3D) throw new Error(`Die Tripo-Waffe ${variant} muss vor dem Platzieren geladen werden.`);
   }
-  for (const definition of placements ?? []) assertPrototype(definition.kind, definition.variant);
+  for (const definition of placements ?? []) assertPrototype(definition.kind, resolveWeaponVariant(definition.kind, definition.variant));
   const baseMaterials = new Set();
   const material = (color, extra = {}) => {
     const result = new THREE.MeshStandardMaterial({ color, roughness: 0.72, flatShading: true, ...extra });
@@ -43,7 +46,6 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const leather = material('#47392c');
   const brass = material('#e6bd68', { metalness: 0.5, roughness: 0.35 });
   const steel = material('#d7e8ee', { metalness: 0.66, roughness: 0.26 });
-  const steelDark = material('#83aab3', { metalness: 0.58, roughness: 0.34 });
   const string = material('#eee4be', { emissive: '#7e8b68', emissiveIntensity: 0.2 });
   const gem = material('#8df3d6', { emissive: '#22b8a2', emissiveIntensity: 0.8 });
 
@@ -81,21 +83,6 @@ export function createWeapons(scene, characterGroup, world, character = null,
       addMesh(group, box(0.075, 0.11, 0.09), darkWood, -0.18, side * 0.53, 0);
     }
     addMesh(group, new THREE.OctahedronGeometry(0.055), gem, -0.39, 0.01, 0.09);
-    return group;
-  }
-
-  function makeSword() {
-    const group = new THREE.Group();
-    group.name = 'Eisenschwert';
-    addMesh(group, new THREE.CylinderGeometry(0.047, 0.055, 0.37, 6), leather, 0, -0.26, 0);
-    addMesh(group, new THREE.OctahedronGeometry(0.105), brass, 0, -0.48, 0);
-    const guard = addMesh(group, box(0.43, 0.075, 0.12), brass, 0, -0.045, 0);
-    guard.rotation.z = -0.04;
-    addMesh(group, box(0.12, 0.11, 0.12), steelDark, 0, 0.04, 0);
-    const blade = addMesh(group, new THREE.CylinderGeometry(0, 0.118, 0.78, 4), steel, 0, 0.48, 0);
-    blade.rotation.y = Math.PI / 4;
-    addMesh(group, box(0.029, 0.57, 0.012), steelDark, 0, 0.35, 0.092);
-    addMesh(group, new THREE.OctahedronGeometry(0.065), gem, 0, -0.055, 0.09);
     return group;
   }
 
@@ -160,6 +147,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function makeWeapon(type, variant = DEFAULT_VARIANTS[type], { held = false } = {}) {
+    variant = resolveWeaponVariant(type, variant);
     assertPrototype(type, variant);
     let group;
     if (TRIPO_WEAPON_VARIANTS[variant]) {
@@ -187,7 +175,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (held && type === 'bow') prepareImportedBowString(group, model, tripoPrototypes[variant].userData.bowRig);
       if (!held) model.position.sub(bounds.getCenter(new THREE.Vector3()));
       group.name = tripoPrototypes[variant].name;
-    } else group = type === 'bow' ? makeBow() : type === 'sword' ? makeSword() : makeStaff(type);
+    } else group = type === 'bow' ? makeBow() : makeStaff(type);
     Object.assign(group.userData, { weaponType: type, variant, model: TRIPO_WEAPON_VARIANTS[variant] ? 'tripo' : 'procedural' });
     return group;
   }
@@ -262,8 +250,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function addDrop(definition, { pop = true, initial = false } = {}) {
     const type = definition.type ?? definition.kind;
     if (!WEAPON_TYPES.includes(type)) return null;
-    const variant = definition.variant ?? DEFAULT_VARIANTS[type];
-    let stats = weaponStats(type, definition.rarity, variant);
+    const variant = resolveWeaponVariant(type, definition.variant);
+    const rarity = initial && rollRarity ? rollRarity() : definition.rarity;
+    let stats = weaponStats(type, rarity, variant);
     const generic = weaponStats(type, definition.rarity);
     const defaultNames = new Set([stats.label, stats.name, generic.label, generic.name,
       type === 'bow' ? 'Bogen' : type === 'sword' ? 'Schwert' : generic.label]);
@@ -323,10 +312,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   heldBow.visible = false;
   characterGroup.add(heldBow);
   const heldSword = new THREE.Group();
-  const swordVisual = makeWeapon('sword');
-  swordVisual.position.y = .26; // The hand is on the grip, below the crossguard.
-  heldSword.add(swordVisual);
-  Object.assign(heldSword.userData, { weaponType: 'sword', variant: 'steel', model: 'procedural', weaponTipY: 1.13 });
+  // Install the shared imported model only when a sword is equipped.
+  Object.assign(heldSword.userData, { weaponType: 'sword', variant: null });
   heldSword.position.set(-.22, 1.20, .42);
   heldSword.scale.setScalar(1.10 * HELD_WEAPON_SCALE.sword);
   heldSword.visible = false;
@@ -918,7 +905,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (particlesChanged) impactMesh.instanceMatrix.needsUpdate = true;
   }
 
-  function reset() {
+  function reset({ reroll = true } = {}) {
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     for (const held of Object.values(heldByType)) held.visible = false;
@@ -931,7 +918,19 @@ export function createWeapons(scene, characterGroup, world, character = null,
         disposeWeaponVisual(item.visual);
         item.ringMaterial.dispose(); item.halo.material.dispose();
       }
-      else returnToGround(item, item.initialPlacement);
+      else {
+        if (reroll && rollRarity) {
+          const stats = weaponStats(item.type, rollRarity(), item.variant);
+          Object.assign(item, stats, { label: item.label, name: `${item.label} · ${stats.rarityLabel}` });
+          item.group.name = `${item.name} auf dem Boden`;
+          item.glow = rarityVisual(item.rarity);
+          item.glowingMaterials = applyTier(item.visual, item.rarity);
+          item.ringMaterial.color.set(item.color);
+          item.halo.material.color.set(item.color);
+          item.halo.material.opacity = item.glow.halo;
+        }
+        returnToGround(item, item.initialPlacement);
+      }
     }
     for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
     spellEffects.reset();
@@ -949,7 +948,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function dispose() {
     if (disposed) return;
     disposed = true;
-    reset();
+    reset({ reroll: false });
     spellEffects.dispose();
     specials.dispose();
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,

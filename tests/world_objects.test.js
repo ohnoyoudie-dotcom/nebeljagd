@@ -137,7 +137,7 @@ test('chests replace crystals and every weapon tier survives authoring and expor
     assert.ok(svg.includes(`stroke="${rarity.color}"`));
   }
   for (const type of ['chest', 'fireStaff', 'iceStaff']) assert.ok(svg.includes(`href="#world-object-${type}"`));
-  for (const rarity of ['epic', '__proto__', ['rare'], {}, null]) {
+  for (const rarity of ['mythic', '__proto__', ['rare'], {}, null]) {
     const invalid = structuredClone(roundtrip); invalid.objects[0].rarity = rarity;
     assert.equal(validateWorldmap(invalid).valid, false);
   }
