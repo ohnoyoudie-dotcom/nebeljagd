@@ -7,6 +7,7 @@ import { preparePlayerGeometry } from './player-model.js';
 import { createHandGripSocket } from './hand-grip.js';
 import { createCombatPoseController } from './character-combat-pose.js';
 import { createCharacterGlow } from './character-glow.js';
+import { applyCharacterSnowClip, createCharacterConcealment } from './character-concealment.js';
 
 const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
 
@@ -61,26 +62,7 @@ export async function createCharacter(scene) {
     const clone = mat => {
       const own = mat.clone();
       own.forceSinglePass = true;
-      const originalCompile = own.onBeforeCompile;
-      const originalKey = own.customProgramCacheKey?.bind(own);
-      own.onBeforeCompile = shader => {
-        originalCompile?.(shader);
-        shader.uniforms.uCharacterSnowClipHeight = snowClipHeight;
-        shader.uniforms.uCharacterSnowClipStrength = snowClipStrength;
-        shader.vertexShader = `varying vec3 vCharacterSnowWorld;
-${shader.vertexShader}`.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
-          vCharacterSnowWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
-        shader.fragmentShader = `uniform float uCharacterSnowClipHeight;
-uniform float uCharacterSnowClipStrength;
-varying vec3 vCharacterSnowWorld;
-${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
-          if (uCharacterSnowClipStrength > .01) {
-            float snowEdge = sin(vCharacterSnowWorld.x * 17.3 + vCharacterSnowWorld.z * 11.7) * .010
-              + sin(vCharacterSnowWorld.x * 31.1 - vCharacterSnowWorld.z * 23.9) * .005;
-            if (vCharacterSnowWorld.y < uCharacterSnowClipHeight + snowEdge) discard;
-          }`);
-      };
-      own.customProgramCacheKey = () => `${originalKey?.() ?? ''}|nebeljagd-character-snow-clip-v1`;
+      applyCharacterSnowClip(own, snowClipHeight, snowClipStrength);
       materials.set(own, { transparent: own.transparent, opacity: own.opacity, depthWrite: own.depthWrite });
       return own;
     };
@@ -91,29 +73,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     levelGlow.set(strength);
     if (group.userData.characterAsset) group.userData.characterAsset.levelUpGlow = levelGlow.strength;
   }
-  // A faint local-only read-through keeps the traveller legible under a canopy or
-  // in poison mist. These draws reuse the original skin and bone matrices.
-  const silhouetteMaterial = new THREE.MeshBasicMaterial({
-    color: '#b0cbbb', transparent: true, opacity: 0.045,
-    depthTest: false, depthWrite: false, toneMapped: false,
-    side: THREE.FrontSide,
-  });
-  for (const original of meshes) {
-    if (!original.isSkinnedMesh) continue;
-    const silhouette = new THREE.SkinnedMesh(original.geometry, silhouetteMaterial);
-    silhouette.name = `${original.name} · local silhouette`;
-    silhouette.position.copy(original.position);
-    silhouette.quaternion.copy(original.quaternion);
-    silhouette.scale.copy(original.scale);
-    silhouette.bindMode = original.bindMode;
-    silhouette.bind(original.skeleton, original.bindMatrix);
-    silhouette.bindMatrixInverse.copy(original.bindMatrixInverse);
-    silhouette.frustumCulled = false;
-    silhouette.castShadow = silhouette.receiveShadow = false;
-    silhouette.renderOrder = 6;
-    silhouette.userData.localSilhouette = true;
-    original.parent.add(silhouette);
-  }
+  const concealmentAppearance = createCharacterConcealment({ meshes, materials, snowClipHeight, snowClipStrength });
   scene.add(group);
 
   let dead = false, concealed = false, opacity = 1, snowSink = 0;
@@ -175,6 +135,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   model.traverse(node => { if (node.isBone) bones.add(node); });
   group.userData.characterAsset = {
     levelUpGlow: 0,
+    concealmentAppearance: concealmentAppearance.inspect(),
     name: 'Nebeljäger Tripo', source: PLAYER_MODEL_SOURCE,
     format: 'GLB', skinned: meshes.some(mesh => mesh.isSkinnedMesh), joints: bones.size,
     clips: gltf.animations.map(clip => clip.name), normalizedHeight: targetHeight,
@@ -233,26 +194,11 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     }
     if (neck && !moving && !dead && !animator.rolling) neck.rotation.z += Math.sin(time * .75) * .008;
 
-    // Gameplay visibility remains independent from the local transparent silhouette.
-    // Opaque grass naturally occludes portions of the body through depth testing.
-    const target = concealed ? 0.45 : 1;
-    opacity = THREE.MathUtils.lerp(opacity, target, 1 - Math.exp(-delta * 8));
-    if (Math.abs(opacity - target) < 0.002) opacity = target;
-    const translucent = opacity < 0.995;
-    for (const [material, original] of materials) {
-      const transparent = original.transparent || translucent;
-      if (material.transparent !== transparent) {
-        material.transparent = transparent;
-        material.needsUpdate = true;
-      }
-      material.opacity = original.opacity * opacity;
-      material.depthWrite = original.depthWrite && !translucent;
-    }
-    for (const mesh of meshes) mesh.castShadow = !concealed;
-    const silhouetteTarget = snowClip > .08 ? 0 : concealed ? 0.06 : inDanger ? 0.14 : 0.045;
-    silhouetteMaterial.opacity = THREE.MathUtils.lerp(silhouetteMaterial.opacity,
-      silhouetteTarget, 1 - Math.exp(-delta * 6));
-    group.userData.localSilhouetteOpacity = silhouetteMaterial.opacity;
+    // The white read-through belongs only to this local avatar. The gameplay
+    // concealment flag and opponents' visibility stay independent of its fade.
+    const appearance = concealmentAppearance.update(delta, { concealed: concealed && !dead, inDanger, snowClipped: snowClip > .08 });
+    opacity = appearance.bodyOpacity;
+    group.userData.localSilhouetteOpacity = appearance.baselineOpacity + appearance.fillOpacity;
     group.userData.concealmentOpacity = opacity;
   }
 
@@ -260,6 +206,9 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     group, update, setLevelUpGlow, inspectLevelUpGlow: levelGlow.inspect,
     resetMotion(direction = group.rotation.y) {
       setLevelUpGlow(0);
+      concealed = false; opacity = 1; concealmentAppearance.reset();
+      group.userData.hiddenFromOtherPlayers = false;
+      group.userData.concealmentOpacity = 1; group.userData.localSilhouetteOpacity = .045;
       restoreAnimatedPose(); animator.reset();
       locomotion.reset(); attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
       if (Number.isFinite(direction)) group.rotation.y = direction;

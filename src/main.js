@@ -76,7 +76,7 @@ const ui = createUI({
 
 let renderer;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#game'), antialias: true, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#game'), antialias: true, stencil: true, powerPreference: 'high-performance' });
 } catch (error) {
   ui.showError('Diese Welt benötigt WebGL 2. Bitte öffne sie in einem aktuellen Browser mit aktivierter Grafikbeschleunigung.');
   throw error;
@@ -224,6 +224,7 @@ function reset() {
     distance: 0, moving: false, actualSpeed: 0, snowWeight: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
+  world.resetCanopyFade?.();
   cameraFocus.copy(player).multiplyScalar(visualScale);
   pickups.reset(); weapons.reset(); chests.reset(); combat.reset(); practiceActors.reset(); snowFootprints.reset(); world.resetDestructibles?.(); character.setConcealed(false);
   damageFeedback.reset();

@@ -15,13 +15,16 @@ vollständiger Starrkörperlöser. Es entstehen keine zusätzlichen Hindernisse.
 Geometrien werden pro Ursprungsmodell wiederverwendet; nur die unabhängig
 verblassenden Materialien gehören den einzelnen Resten.
 
-Gemalte Steinwege erhalten eine Reihe kantiger, abgeflachter Randsteine auf der
-gemeinsamen Außenkontur. Überlappende Pinselstriche erzeugen keine inneren Reihen;
-späteres Übermalen mit Gras entfernt die darunterliegende Begrenzung. Gezeichnete
-Hauptwege erhalten ebenfalls zwei Randreihen, Kreuzungen bleiben frei. Brücken
-und schmale Trampelpfade behalten ihre bisherige Darstellung. Steine werden in
-räumlichen Instanzgruppen gezeichnet und auf höchstens 6.000 begrenzt. Die Mitte
-des Wegs bleibt Erde, ohne zufällig verteilte Steintextur.
+Gemalte Wege erhalten lockere Gruppen unterschiedlich großer Randsteine auf der
+gemeinsamen Außenkontur. Freie Abschnitte, versetzte Lagen und verschiedene
+Steinformen brechen die bisher durchgehende Reihe auf. Erd-, Wald-, Sand-,
+Schnee-, Kies- und Schlammpfade verwenden zum Belag passende Farben und Größen.
+Die Zufallsverteilung bleibt beim Neuladen stabil. Überlappende Pinselstriche
+erzeugen keine inneren Reihen; späteres Übermalen mit Gras entfernt die
+darunterliegende Begrenzung. Gezeichnete Hauptwege und Trampelpfade erhalten
+entsprechende lockere Säume, Kreuzungen und Brücken bleiben frei. Steine werden
+in räumlichen Instanzgruppen gezeichnet und auf höchstens 6.000 begrenzt.
+Die Mitte des Naturwegs mit Randsteinen bleibt Erde.
 
 Die Rollspur im Schnee beginnt nach dem Absprung und zeichnet unregelmäßige
 Bodenkontakte mit weichen Lücken. Ungleiche Pulverschultern und kleine

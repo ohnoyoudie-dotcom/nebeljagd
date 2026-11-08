@@ -1,6 +1,6 @@
 {
-  "buildId": "c9a3151c9446",
-  "builtAt": "2026-11-08T19:34:03.673Z",
+  "buildId": "110f2035492c",
+  "builtAt": "2026-11-08T19:42:48.515Z",
   "sourceCommit": null,
   "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
   "sourceBaseCommit": null,
@@ -8,35 +8,35 @@
   "files": {
     "index.html": {
       "bytes": 23437,
-      "sha256": "a0559d07d6b144c2a891c61e312e415fb23cfac03ae31682c71026a8f209107e"
+      "sha256": "9eecb087f4b21dd8204e904fd5885bf457b3431d158b5c9f3c0fb2b45e4ae30f"
     },
     "teacher.html": {
       "bytes": 21135,
-      "sha256": "65974b3fb2c9d65a82ce7bc82613c898509e191e0035ebb3e36495005c098d5e"
+      "sha256": "ca185081e0f7fd25fcd9878a0892bfe89670cb6c6cd643f39cb02652670a7756"
     },
     "lobby.html": {
       "bytes": 1833,
-      "sha256": "f4430b87a5bb406541531c881b9d8d9014a6cbe75520bd074dd1d8c3ef605ac5"
+      "sha256": "1676b9964977fe5286cc6f4989e65cce747af2b88e49bd9ca1296f79beebd3e5"
     },
     "magebrawl.html": {
-      "bytes": 91899074,
-      "sha256": "b54477b2c128b45f226fd3e0fb3b22058bd91e72e0c5e79c29bfcb6421669591"
+      "bytes": 91912483,
+      "sha256": "dbf68ce80a8daf0f3a24306daa7ddf154025959f4f2b2a00c43b9405bd306366"
     },
     "nebeljagd.html": {
       "bytes": 746,
-      "sha256": "7322f72aa80aee480fef274fbbabb3a3cab2abdfb6ac686b6ea653786ee0c1f5"
+      "sha256": "c88dee06557ba8b51bcc0a6c48fcaec2b7e3400363edc5ba99e69d0c3b6f6e2b"
     },
     "map-editor.html": {
-      "bytes": 61644545,
-      "sha256": "331be63c7fd44bce2a9acb6614f11d5be971cfd54cc9f70fc0510de9628dbd52"
+      "bytes": 61649286,
+      "sha256": "ec0eb58fa5fcd183462c3487c6b237fad8871dad5589f007ce2c1e0ba7849600"
     },
     "editor.html": {
       "bytes": 7925,
-      "sha256": "c65aa3c251a6dc247d0b205148a0c7d14f49fca6d8ad6d1351609413fc5ff4a9"
+      "sha256": "368c67e589313e321a785b0aeee007cc2395541c2cdeb5f8c9b53b5496fd03ba"
     },
     "avatar-preview.html": {
       "bytes": 14841706,
-      "sha256": "4a168de5a849269a7dfc16ab761df45856ee4bbcdadf45d4a170d87c9d3292c2"
+      "sha256": "5ea8d1c0fd0c7a1eadb233602d9d6d720cc4799ed3c065c7a4ec1d843266d896"
     },
     "worldmap.json": {
       "bytes": 56916,
@@ -51,8 +51,8 @@
       "sha256": "357f83d39a51cd5b67fa76be183d1ec7702bdfa931cc12dea61cac3be3e2e4e2"
     },
     "magebrawl-welt-und-editor.zip": {
-      "bytes": 100383791,
-      "sha256": "39b87182748072d8628f0c4ddfa4fb875d8898bf77f1438ff5b4e533378f102b"
+      "bytes": 100389197,
+      "sha256": "94f5cd586efe424bb063e0bf686cb94804c3ceff64437e6a807b27331f25384a"
     }
   }
 }

@@ -133,13 +133,14 @@ try:
 
         grass = state(page)['world']['grassPatches'][0]
         inspect(page, grass['x'], grass['z'])
-        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .45) < .015')
+        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .24) < .015')
         hidden = state(page)
         assert hidden['hiddenFromOtherPlayers'] is True
+        assert hidden['character']['concealmentAppearance']['style'] == 'white-hidden-rim-v1'
         capture(page, 'village-grass.png')
         inspect(page, -8, 8)
         page.wait_for_function('!window.nebeljagdTestState().hiddenInGrass && window.nebeljagdTestState().character.opacity > .995')
-        passed('Tall grass fades local character to 45%; gameplay concealment is independent and restores on exit')
+        passed('Tall grass shows a translucent white local character; gameplay concealment stays independent and restores on exit')
 
         house_evidence = []
         for name, x, z, hw, hd in [(h['name'], h['x'], h['z'], h['halfWidth'], h['halfDepth']) for h in state(page)['houses']]:

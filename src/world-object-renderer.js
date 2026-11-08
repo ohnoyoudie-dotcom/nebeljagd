@@ -21,6 +21,7 @@ import { createGroundGrassExclusion, grassBiomeProfile } from './meadow-ground.j
 import { WEAPON_TYPES } from './loot-tiers.js';
 import { createDestructionDebris } from './destruction-debris.js';
 import { sampleTreeAppearance, applyTreeAppearance, createTreeInstancePart } from './tree-appearance.js';
+import { TREE_CANOPY_STYLE, isTreeFoliage, canFadeTreeCanopy, treeCanopyBounds, createTreeCanopy, updateTreeCanopy, applyTreeCanopy, createTreeCanopyMaterial, writeTreeCanopyOpacity } from './tree-canopy.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
 import bushUrl from '../assets/imported/rei/runtime/bush.glb?url&inline';
@@ -167,6 +168,7 @@ function disposeScenery(groups, prototypes, hosts = [], extraGeometries = []) {
   for (const parts of prototypes.values()) for (const part of parts) {
     geometries.add(part.geometry); if (part.lowGeometry) geometries.add(part.lowGeometry);
     for (const material of Array.isArray(part.material) ? part.material : [part.material]) materials.add(material);
+    if (part.canopyMaterial) for (const material of Array.isArray(part.canopyMaterial) ? part.canopyMaterial : [part.canopyMaterial]) materials.add(material);
   }
   for (const material of materials) for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
   geometries.forEach(geometry => geometry.dispose()); materials.forEach(material => material.dispose()); textures.forEach(value => value.dispose());
@@ -534,20 +536,35 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     if (variant.startsWith('rei-') || kit) importedAssets.placements.push({ id: object.id, kind: object.kind, variant, x, z, y: groundHeightAt(x, z), scale });
   }
-  const instanced = [], treeGeometries = new Set();
+  const instanced = [], treeGeometries = new Set(), canopyBatches = [], canopies = new Map(), canopyMaterials = new Map();
   const appearances = new Map((map.objects ?? []).filter(object => object.kind === 'tree')
     .map(object => [object, sampleTreeAppearance(object, { biomeAt, biomeWeightsAt })]));
   const appearancesById = new Map([...appearances].map(([object, appearance]) => [object.id, appearance]));
   for (const tree of trees) tree.appearance = appearancesById.get(tree.id);
   for (const [key, parts] of prototypes) if (key.startsWith('tree:')) for (const part of parts) {
-    const foliage = part.treePart === 'foliage' || part.foliage || part.kitFoliage;
+    const foliage = isTreeFoliage(part);
     for (const material of Array.isArray(part.material) ? part.material : [part.material]) applyTreeAppearance(material, { foliage });
+    if (canFadeTreeCanopy(part)) {
+      const fadeMaterial = material => {
+        if (!canopyMaterials.has(material)) {
+          canopyMaterials.set(material, createTreeCanopyMaterial(material));
+          applyTreeCanopy(material);
+        }
+        return canopyMaterials.get(material);
+      };
+      part.canopyMaterial = Array.isArray(part.material) ? part.material.map(fadeMaterial) : fadeMaterial(part.material);
+    }
   }
   for (const batch of batches.values()) {
     const parts = prototypes.get(batch.key);
     if (!parts) continue;
     const treeBatch = batch.key.startsWith('tree:');
     const treeStyles = treeBatch ? batch.placements.map(placement => appearances.get(placement.object)) : null;
+    const crownBounds = treeBatch ? treeCanopyBounds(parts) : null;
+    const batchCanopies = treeBatch ? batch.placements.map(placement => {
+      if (!canopies.has(placement.object.id)) canopies.set(placement.object.id, createTreeCanopy(crownBounds, placement));
+      return canopies.get(placement.object.id);
+    }) : null;
     for (const sourcePart of parts) {
       const part = treeBatch ? createTreeInstancePart(sourcePart, treeStyles, treeGeometries) : sourcePart;
       const mesh = new THREE.InstancedMesh(mode === 'low' && part.lowGeometry ? part.lowGeometry : part.geometry, part.material, batch.placements.length);
@@ -574,7 +591,31 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
       mesh.instanceMatrix.needsUpdate = true; if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
       mesh.computeBoundingBox(); mesh.computeBoundingSphere(); batch.chunk.group.add(mesh); instanced.push({ mesh, part, chunk: batch.chunk, grass: batch.key.startsWith('grass:'), tallGrass: batch.key.startsWith('grass:tall') || batch.key.startsWith('grass:kit-tall') });
+      if (treeBatch && part.canopyMaterial) {
+        const fade = new THREE.InstancedMesh(mesh.geometry, part.canopyMaterial, mesh.count);
+        fade.name = `${mesh.name} · durchsichtige Baumkrone`;
+        fade.instanceMatrix = mesh.instanceMatrix; fade.instanceColor = mesh.instanceColor;
+        fade.boundingBox = mesh.boundingBox; fade.boundingSphere = mesh.boundingSphere;
+        fade.receiveShadow = mesh.receiveShadow; fade.castShadow = false; fade.visible = false;
+        fade.userData.visionBlockerSurface = true;
+        batch.chunk.group.add(fade);
+        canopyBatches.push({ mesh, fade, part, canopies: batchCanopies });
+      }
     }
+  }
+  for (const tree of trees) tree.canopy = canopies.get(tree.id) ?? null;
+  function updateCanopyBatches() {
+    for (const entry of canopyBatches) {
+      writeTreeCanopyOpacity(entry.part, entry.canopies);
+      entry.fade.geometry = entry.mesh.geometry;
+      entry.fade.visible = entry.mesh.visible && entry.canopies.some(canopy => canopy && canopy.opacity < TREE_CANOPY_STYLE.opaqueThreshold);
+    }
+  }
+  function resetCanopyFade() {
+    for (const canopy of canopies.values()) if (canopy) {
+      canopy.opacity = canopy.targetOpacity = 1; canopy.underCanopy = false;
+    }
+    updateCanopyBatches();
   }
   const collisionIndex = createCollisionIndex(circles, walls, 8);
   const localPoint = { x: 0, y: 0, z: 0 };
@@ -679,6 +720,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
       lastCull = time; lastPlayer.copy(player);
     }
+    for (const canopy of canopies.values()) if (canopy) updateTreeCanopy(canopy, player, dt);
+    updateCanopyBatches();
     shelter = null;
     for (const structure of structures) {
       if (!structure.house) continue;
@@ -691,12 +734,18 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   }
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
-  return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
+  return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, resetCanopyFade, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
     setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
     dispose() { debris.dispose(); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene], treeGeometries); },
     get shelter() { return shelter; },
-    get stats() { return { debris: debris.stats, totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
+    get stats() { return { debris: debris.stats, canopyFade: { localPlayerOnly: true, minimumOpacity: TREE_CANOPY_STYLE.minimumOpacity,
+        enterSeconds: TREE_CANOPY_STYLE.enterSeconds, leaveSeconds: TREE_CANOPY_STYLE.leaveSeconds,
+        affectedTrees: [...canopies.values()].filter(canopy => canopy && canopy.opacity < TREE_CANOPY_STYLE.opaqueThreshold).length,
+        activeBatches: canopyBatches.filter(entry => entry.fade.visible && entry.fade.parent.visible).length,
+        trunkMaterialsOpaque: [...prototypes].filter(([key]) => key.startsWith('tree:')).every(([, parts]) => parts.filter(part => !canFadeTreeCanopy(part))
+          .every(part => (Array.isArray(part.material) ? part.material : [part.material]).every(material => !material.transparent && material.opacity === 1))) },
+      totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
         sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: HIDING_GRASS_STYLE.stalksPerInstance,
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,
