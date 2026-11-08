@@ -36,9 +36,18 @@ test('explicit cleanup removes every disallowed placement and preserves approved
   assert.equal(removeNonTripoObjects(result.map).map, result.map, 'repeat is a no-op');
 });
 
-test('shipped map is already clean and missing optional collections are not invented', () => {
+test('saved project preserves authored grass on import and only explicit cleanup removes it', () => {
   const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
-  assert.equal(removeNonTripoObjects(map).totalRemoved, 0);
+  const before = structuredClone(map);
+  assert.deepEqual(normalizeWorldmap(map), before, 'restored user placements survive normal loading');
+  const cleanup = removeNonTripoObjects(map);
+  assert.deepEqual(cleanup.removedObjects, map.objects.filter(object => object.kind === 'grass'));
+  assert.deepEqual(cleanup.removedBarriers, []);
+  assert.deepEqual(map, before, 'previewing optional cleanup cannot change the authored project');
+  assert.deepEqual(cleanup.map.landscape, before.landscape, 'painted ground and biomes are never discarded');
+});
+
+test('cleanup does not invent missing optional collections', () => {
   const empty = { name: 'Empty draft' };
   assert.equal(removeNonTripoObjects(empty).map, empty);
 });

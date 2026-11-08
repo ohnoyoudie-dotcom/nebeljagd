@@ -1,34 +1,42 @@
-# Nebeljagd · Spielwelt und Editor
+# Nebeljagd · fertiges Browserpaket
 
-- [Spiel öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/)
-- [Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/map-editor.html)
-- [ZIP herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/welt/nebeljagd-welt-und-editor.zip)
+[Aktuellen Online-Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+· [Spiel öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd.html)
+· [Offline-Paket herunterladen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/nebeljagd-welt-und-editor.zip)
 
-Aktuell: wieder dichtes, hohes Versteckgras mit helleren Spitzen, sattere
-Grünflächen, unregelmäßige graue Steinwege und weichere Schatten nach der
-Bildreferenz. Vier bewachsene Felskanten und Felskuppen nahe Auenwacht bieten
-Deckung und blockieren Bewegung, Rollen und Pfeile. Sie sind im Editor unter
-„Bewachsene Erhöhung“ verschiebbar, drehbar, skalierbar und neu platzierbar.
-Alle 26 Modellvarianten haben echte Vorschaubilder.
+Dieser Ordner ist die automatisch erzeugte Ausgabe. `npm run build` baut Spiel,
+Editor und Kartenkopien zusammen und aktualisiert ihre Prüfsummen in `release.json`.
 
-Im Editor „Radiergummi aktivieren“, Radius und „Alle Objekte“ oder
-„Nur Grasflächen“ wählen. Über die Mittelpunkte ziehen, um ganze Objekte zu
-entfernen. Ein Strich lässt sich mit einem Rückgängig-Schritt wiederherstellen.
-Küste, Regionen und Wege bleiben erhalten. Maus und Touch funktionieren.
-Der Graspinsel malt weiterhin bearbeitbare Versteckflächen. „In 3D testen“
-übernimmt den Entwurf ins Spiel. Änderungen weiterhin als JSON speichern.
+## Wo Kartenänderungen hingehören
 
-WASD/Pfeile bewegen, Leertaste rollen, E die Waffe wechseln oder Truhen öffnen,
-F angreifen. Ohne Waffe wird der nächste erreichbare Fund beim Darüberlaufen
-automatisch aufgenommen. Auf Touch-Geräten Joystick und Aktionstasten verwenden.
-Offene Häuser, 48 Truhen, Gold, vier Waffentypen, heller Sichtnebel,
-Schadenszahlen, Lebensbalken und die große Minikarte bleiben enthalten.
-Drei beschriftete Übungsgegner machen die Kampfeffekte testbar.
+Die **maßgebliche Projektkarte ist `worldmap.json` im Hauptordner**, eine Ebene
+über diesem Ordner. Im Editor mit „JSON speichern“ exportieren und die gewünschte
+Datei dort übernehmen. Änderungen nur an `welt/worldmap.json` werden beim
+nächsten Build wieder durch die Projektquelle ersetzt.
 
-Neue Figur mit eigener Vorwärtsrolle, Multiplayer (Teams oder Alle gegen alle),
-Shops und Lernstationen sind vorgemerkt, noch nicht Teil dieses Browserstands.
+Ein automatisch gespeicherter Browserentwurf gehört zum jeweiligen Browser.
+Er wird nicht automatisch auf GitHub hochgeladen. Der feste Online-Einstieg
+bietet die veröffentlichte Projektkarte und das Fortsetzen des eigenen Entwurfs an.
 
-Für die lokale Nutzung ZIP entpacken und beide HTML-Dateien im selben Ordner
-lassen. Die Dateien enthalten ihre Browser-Modelle und benötigen zum Spielen
-keine externen Grafikdienste. Dies ist ein erzeugter Browser-Build, kein
-vollständiges Quellcodearchiv. Prüfsummen stehen in release.json.
+## Inhalt
+
+| Datei | Zweck |
+| --- | --- |
+| `editor.html` | Fester Online-Einstieg mit Versionsprüfung |
+| `map-editor.html` | Vollständiger Karteneditor; auch im Offline-Paket |
+| `nebeljagd.html` | Einzelspieler-Spiel |
+| `index.html`, `teacher.html`, `lobby.html` | Klassenportal, Lehrkraft und Übungswiese; Anmeldung benötigt den Nebeljagd-Server |
+| `avatar-preview.html` | Figuren- und Animationsvorschau |
+| `worldmap.json` | Erzeugte Kopie der Projektkarte |
+| `worldmap.svg` | Grafische Kartenansicht |
+| `worldmap.schema.json` | Regeln für Kartendateien |
+| `release.json` | Build-Version und Prüfsummen |
+| `nebeljagd-welt-und-editor.zip` | Fertiges Offline-Paket |
+
+Offline das ZIP vollständig entpacken und Editor und Spiel im selben Ordner
+lassen. Ein heruntergeladenes Paket bleibt ein fester Stand. Für die aktuelle
+Online-Version den Editor-Link oben verwenden; die ältere Webadresse unter
+`/welt/` wird durch den aktuellen Veröffentlichungsablauf nicht aktualisiert.
+
+Weitere Hinweise: [Editor und Veröffentlichung](../docs/online-editor.md),
+[Klassenbetrieb](../docs/classroom.md), [wiederhergestellte Karte](../docs/map-recovery.md).

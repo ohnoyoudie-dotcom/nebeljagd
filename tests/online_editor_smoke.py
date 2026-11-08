@@ -68,7 +68,7 @@ def run(directory: Path) -> None:
             query = parse_qs(urlsplit(page.url).query)
             assert query['v'] == [release['files']['map-editor.html']['sha256']]
             assert query['start'] == ['project']
-            assert state(page)['map']['objects'] == project['objects']
+            assert state(page)['map'] == project, 'Project handoff preserves the complete map, including painted terrain and biomes'
             expect(page.locator('#editor-build-version')).to_contain_text(release['buildId'])
             expect(page.locator('#editor-map-source')).to_contain_text('Projektkarte')
             page.set_viewport_size({'width': 390, 'height': 844})
