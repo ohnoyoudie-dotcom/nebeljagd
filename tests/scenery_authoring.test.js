@@ -43,8 +43,8 @@ test('individual placement only offers approved Tripo assets; old trees remain l
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
     'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
-    'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff'];
-  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff']);
+    'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff'];
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'starStaff']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {
     assert.equal(isObjectPlaceable(definition.kind), true);

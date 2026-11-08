@@ -28,13 +28,19 @@ for (const [path, expected] of Object.entries(preserved)) {
   assert.ok(bytes.length < 700000);
   const gltf = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
   const parts = gltf.meshes.flatMap(m => m.primitives);
-  assert.equal(parts.reduce((sum, p) => sum + gltf.accessors[p.indices].count / 3, 0), 6992);
+  const treeTriangles = parts.reduce((sum, p) => sum + gltf.accessors[p.indices].count / 3, 0);
+  assert.equal(treeTriangles, report.runtime.triangles, 'Tree geometry matches its inspection');
+  assert.ok(treeTriangles > 6992 && treeTriangles <= 16000, 'Rounded trunk and cupped leaves stay within 16k triangles');
+  for (const part of parts) {
+    assert.notEqual(part.attributes.NORMAL, undefined, 'Tree parts retain smooth normals');
+    assert.notEqual(part.attributes.COLOR_0, undefined, 'Bark and foliage both carry color variation');
+  }
   assert.ok(gltf.buffers.every(b => !b.uri) && gltf.images.every(i => !i.uri && i.bufferView !== undefined));
   const leaves = parts.find(p => gltf.materials[p.material].alphaMode === 'MASK');
   assert.ok(leaves && leaves.attributes.TEXCOORD_0 !== undefined && leaves.attributes.COLOR_0 !== undefined);
   assert.ok(gltf.materials[leaves.material].doubleSided && gltf.materials[leaves.material].pbrMetallicRoughness.baseColorTexture);
   assert.ok(Math.abs(Math.max(...parts.map(p => gltf.accessors[p.attributes.POSITION].max[1])) - 7.8036928) < .0001);
-  console.log(JSON.stringify({ status: 'passed', package: 'user-tree-woodland', sourcePreserved: true, triangles: 6992, bytes: bytes.length }));
+  console.log(JSON.stringify({ status: 'passed', package: 'user-tree-woodland', sourcePreserved: true, triangles: treeTriangles, bytes: bytes.length }));
 }
 const bytes = await readFile('assets/characters/adventurer.glb');
 assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
@@ -123,7 +129,7 @@ console.log(JSON.stringify({ importedSources: sourceRecord.originals.length, ver
 
 // User-supplied Tripo uploads stay untouched. Prepared packages carry a closed
 // file roster so browser builds cannot silently use a different derivative.
-for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons', 'tripo-extra-weapons', 'tripo-projectiles']) {
+for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons', 'tripo-extra-weapons', 'tripo-projectiles', 'tripo-star-moon']) {
   const root = `assets/imported/${name}/`;
   const manifest = JSON.parse(await readFile(root + 'runtime-manifest.json', 'utf8'));
   const sources = manifest.sources ?? [manifest.source];
@@ -149,10 +155,11 @@ for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle'
 // Weapon uploads contain nearly two million triangles each. Validate the
 // actual prepared GLBs, rather than trusting their inspection reports, before
 // embedding them in the offline browser build.
-const weaponBytes = { 'tripo-weapons': 0, 'tripo-extra-weapons': 0 };
+const weaponBytes = { 'tripo-weapons': 0, 'tripo-extra-weapons': 0, 'tripo-star-moon': 0 };
 for (const [packageName, name, length] of [
   ['tripo-weapons', 'sword', 1.25], ['tripo-weapons', 'lava-staff', 1.7], ['tripo-weapons', 'crystal-staff', 1.7],
   ['tripo-extra-weapons', 'poison-staff', 1.7], ['tripo-extra-weapons', 'moon-staff', 1.7], ['tripo-extra-weapons', 'ornate-bow', 1.35],
+  ['tripo-star-moon', 'star-staff', 1.7],
 ]) {
   const path = `assets/imported/${packageName}/runtime/${name}.glb`;
   const bytes = await readFile(path);
@@ -186,6 +193,31 @@ for (const [packageName, name, length] of [
 }
 assert.ok(weaponBytes['tripo-weapons'] <= 4 * 1024 * 1024, 'Original weapon browser payload must stay within 4 MiB');
 assert.ok(weaponBytes['tripo-extra-weapons'] <= 4.5 * 1024 * 1024, 'Additional weapon browser payload must stay within 4.5 MiB');
+
+// The actual uploaded crescent replaces the temporary procedural projectile.
+{
+  const path = 'assets/imported/tripo-star-moon/runtime/moon-crescent.glb';
+  const bytes = await readFile(path);
+  assert.equal(bytes.toString('ascii', 0, 4), 'glTF', path);
+  assert.equal(bytes.readUInt32LE(4), 2, path);
+  assert.equal(bytes.readUInt32LE(8), bytes.length, path);
+  const model = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
+  assert.ok(model.buffers?.length && model.buffers.every(buffer => !buffer.uri), 'Moon: embedded buffers');
+  assert.ok(model.images?.length && model.images.every(image => !image.uri && image.bufferView !== undefined), 'Moon: embedded textures');
+  assert.ok(!(model.extensionsRequired ?? []).some(name => /draco|meshopt|basisu/i.test(name)), 'Moon: no external decoder');
+  assert.ok(model.materials?.length && model.materials.every(material => material.normalTexture
+    && material.pbrMetallicRoughness?.baseColorTexture && material.pbrMetallicRoughness.metallicRoughnessTexture), 'Moon: original PBR channels');
+  let triangles = 0;
+  for (const mesh of model.meshes) for (const part of mesh.primitives) {
+    assert.ok(part.mode === undefined || part.mode === 4, 'Moon: triangle primitives');
+    for (const attribute of ['POSITION', 'NORMAL', 'TEXCOORD_0']) assert.notEqual(part.attributes[attribute], undefined, `Moon: ${attribute}`);
+    triangles += (part.indices === undefined ? model.accessors[part.attributes.POSITION].count : model.accessors[part.indices].count) / 3;
+  }
+  assert.ok(triangles > 0 && triangles <= 6010, `Moon: 6k triangle budget (${triangles})`);
+  assert.ok(bytes.length <= 1024 * 1024, 'Moon: compact projectile file');
+  assert.ok(bytes.length + weaponBytes['tripo-star-moon'] <= 2 * 1024 * 1024, 'Star and moon: combined browser payload below 2 MiB');
+  console.log(JSON.stringify({ status: 'passed', projectile: 'moon-crescent', bytes: bytes.length, triangles, sourceUnchanged: true }));
+}
 
 // The uploaded fire stays untouched; only the inspected small derivative ships.
 {

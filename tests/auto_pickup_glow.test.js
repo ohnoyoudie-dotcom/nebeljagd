@@ -18,6 +18,7 @@ const IMPORTED_WEAPONS = [
   { kind: 'sword', variant: 'kit-tripo-sword' },
   { kind: 'poisonStaff', variant: 'kit-tripo-poison-staff' },
   { kind: 'moonStaff', variant: 'kit-tripo-moon-staff' },
+  { kind: 'starStaff', variant: 'kit-tripo-star-staff' },
   { kind: 'bow', variant: 'kit-tripo-ornate-bow' },
 ];
 
@@ -101,7 +102,8 @@ test('manual swaps return the previous weapon at the new pickup without loss or 
   assert.equal(bow.rarity, 'legendary');
   weapons.update(.016, 0, actor.position);
   assert.equal(bow.group.visible, true, 'the next animation frame must keep the drop visible');
-  assert.equal(bow.ring.visible, true); assert.equal(bow.halo.visible, true);
+  assert.equal(bow.ring.visible, true); assert.equal(bow.halo.visible, false);
+  assert.equal(bow.aura.inspect().visible, true, 'the new layered aura returns with the actual dropped weapon');
   assert.equal(weapons.tryAutoPickup(actor.position), null, 'a deliberate swap must not bounce back automatically');
   for (let i = 0; i < 20; i++) {
     assert.equal(weapons.interact(actor.position).id, i % 2 ? 'sword' : 'bow');

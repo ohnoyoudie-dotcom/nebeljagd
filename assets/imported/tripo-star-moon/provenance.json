@@ -1,0 +1,22 @@
+{
+  "package": "nebeljagd-tripo-star-moon",
+  "version": 1,
+  "canonicalGameDevPackage": false,
+  "pipeline": "Existing local Blender pipeline; optional game-dev CLI unavailable.",
+  "sourceOrigin": "User supplied Tripo originals and explicitly requested this project integration.",
+  "provider": {
+    "name": "Tripo (original user files)",
+    "invokedByThisTask": false,
+    "jobId": null,
+    "originalPrompt": null,
+    "commercialLicenseReceipt": null
+  },
+  "preparation": {
+    "script": "scripts/prepare-tripo-star-moon.py",
+    "scriptSha256": "ea5f1eedbb2065c7b064d50f6f1634d23c690bd8df499d5d41817e34e1ee6af3",
+    "helper": "scripts/prepare-tripo-weapons.py",
+    "helperSha256": "d7015743865da8bb30ffd06b862aea1b10cea60179a4c536cb67a0df5fc4810d"
+  },
+  "licenseStatus": "User-provided project assets; no new license accepted or independent commercial rights certification.",
+  "evidenceBoundary": "Source/output hashes, static inspection and actual Blender PBR renders. Game/WebGL and artistic approval assessed separately."
+}

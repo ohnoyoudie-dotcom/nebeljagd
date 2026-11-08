@@ -19,6 +19,7 @@ const icon = (name, className = '') => {
     iceStaff: '<path d="m5 22 9-14M14 1v12M8 4l12 6M8 10l12-6M11 2l3 2 3-2m-6 10 3-2 3 2"/>',
     poisonStaff: '<path d="m5 22 9-13m-5 6 4 2M14 2c-1 3-5 5-5 8a5 5 0 0 0 10 0c0-3-4-5-5-8Z"/><path d="M12 10h.01M16 10h.01m-4 3 2 1 2-1"/>',
     moonStaff: '<path d="m5 22 9-13m-5 6 4 2M18 2a6 6 0 1 0 4 9 6 6 0 0 1-4-9Z"/><path d="m8 3 .5 1.5L10 5l-1.5.5L8 7l-.5-1.5L6 5l1.5-.5Z"/>',
+    starStaff: '<path d="m5 22 9-12m-5 6 3 2M15 1l1.7 4.6 4.8.3-3.7 3 1.2 4.7-4-2.7-4 2.7 1.2-4.7-3.7-3 4.8-.3Z"/>',
     heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
     fog: '<path d="M4 7h9m3 0h4M2 12h20M5 17h6m3 0h5"/><path d="m10 3 2-2 2 2"/>',
     arrow: '<path d="M4 12h15m-6-6 6 6-6 6"/>',
@@ -494,7 +495,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
       const effectDetail = { fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
-        poisonStaff: ' · Halten, zielen, loslassen', moonStaff: ' · Sichel kehrt zurück' }[weaponType] || '';
+        poisonStaff: ' · Halten, zielen, loslassen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz' }[weaponType] || '';
       weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
@@ -503,7 +504,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
       const attackLabel = { bow: 'Mit dem Bogen schießen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
-        poisonStaff: 'Halten, Giftwolke zielen und loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück' }[weaponType];
+        poisonStaff: 'Halten, Giftwolke zielen und loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
       lastWeaponType = weaponKey;
     }

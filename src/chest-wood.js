@@ -17,10 +17,10 @@ export function createChestWoodMaterial() {
     if (v < .028 || v > .976) shade *= .39;
     else if (v < .057) shade += .14;
     const i = (y * width + x) * 4;
-    data[i] = Math.min(255, 139 * shade); data[i + 1] = Math.min(255, 91 * shade); data[i + 2] = Math.min(255, 48 * shade); data[i + 3] = 255;
+    data[i] = Math.min(255, 106 * shade); data[i + 1] = Math.min(255, 66 * shade); data[i + 2] = Math.min(255, 35 * shade); data[i + 3] = 255;
   }
   const map = new THREE.DataTexture(data, width, height, THREE.RGBAFormat);
-  map.name = 'Walnut planks · grain and knots'; map.colorSpace = THREE.SRGBColorSpace;
+  map.name = 'Dark walnut planks · grain and knots'; map.colorSpace = THREE.SRGBColorSpace;
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
   map.magFilter = THREE.LinearFilter; map.minFilter = THREE.LinearMipmapLinearFilter;
   map.generateMipmaps = true; map.anisotropy = 4; map.needsUpdate = true;

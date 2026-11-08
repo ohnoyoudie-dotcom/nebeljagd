@@ -9,20 +9,20 @@
     "reader": "Blender 5.2 source preserved; Blender 4.3 styles the verified runtime GLB"
   },
   "runtime": {
-    "bytes": 674448,
-    "sha256": "f5ead137ff875e762153204962d6e49e7247c5e7df8377cce4fc50c901918047",
-    "triangles": 6992,
+    "bytes": 557124,
+    "sha256": "6d29f06ae00ad8cc615cb93e492ae2847d78bc238c44078bf5ef42d3c17ad397",
+    "triangles": 15788,
     "bounds": [
       {
         "min": [
-          -1.7855297327041626,
+          -1.7853941917419434,
           0,
-          -1.221674919128418
+          -1.2212883234024048
         ],
         "max": [
-          1.7547698020935059,
+          1.754665493965149,
           6.128049850463867,
-          0.9875543117523193
+          0.9873659014701843
         ]
       },
       {
@@ -54,12 +54,6 @@
       {
         "name": "Tree1 \u00b7 Bark",
         "pbrMetallicRoughness": {
-          "baseColorFactor": [
-            0.16202937066555023,
-            0.08437620848417282,
-            0.04373503103852272,
-            1
-          ],
           "metallicFactor": 0,
           "roughnessFactor": 0.9599999785423279
         }
@@ -67,12 +61,6 @@
       {
         "name": "Tree1 \u00b7 Inner branches",
         "pbrMetallicRoughness": {
-          "baseColorFactor": [
-            0.09758734703063965,
-            0.05448027700185776,
-            0.028426039963960648,
-            1
-          ],
           "metallicFactor": 0,
           "roughnessFactor": 0.9599999785423279
         }
@@ -92,16 +80,53 @@
       }
     ],
     "images": 1,
+    "meshParts": [
+      {
+        "name": "Tree1 \u00b7 Stamm",
+        "triangles": 9300,
+        "attributes": {
+          "POSITION": 4903,
+          "NORMAL": 4903,
+          "COLOR_0": 4903
+        }
+      },
+      {
+        "name": "Tree1 \u00b7 \u00c4ste",
+        "triangles": 1712,
+        "attributes": {
+          "POSITION": 884,
+          "NORMAL": 884,
+          "COLOR_0": 884
+        }
+      },
+      {
+        "name": "Tree1 \u00b7 ausgeschnittene Bl\u00e4tter \u00b7 curved leaves",
+        "triangles": 4776,
+        "attributes": {
+          "POSITION": 5970,
+          "NORMAL": 5970,
+          "TEXCOORD_0": 5970,
+          "COLOR_0": 5970
+        }
+      }
+    ],
     "embedded": true
   },
-  "command": "blender -b -t 3 --python scripts/style-user-tree.py -- --execute",
+  "command": "blender -b -t 3 --python scripts/style-user-tree.py -- --execute --output /tmp/nebeljagd-rounded-tree-final",
   "sourcePreserved": true,
   "providerInvoked": false,
   "canonicalGameDevPackage": false,
   "changes": [
     "shorter lateral branches, coherent asymmetric crown",
-    "layered woodland leaf palette",
-    "matte walnut bark"
+    "cupped leaf surfaces with smooth lighting and preserved original alpha mask",
+    "rounded trunk silhouette and smooth normals",
+    "baked warm/cool bark grain, mottling and darker roots"
   ],
-  "rights": "User-supplied project tree; existing original Blender leaf mask retained."
+  "rights": "User-supplied project tree; existing original Blender leaf mask retained.",
+  "leafRgbaPreserved": true,
+  "comparison": {
+    "method": "Blender4.3.2/Cycles64 CPU samples; exact before/afterGLB, identical light/camera, no image changes",
+    "directory": "/tmp/nebeljagd-tree-rounded-review",
+    "beforeSha256": "f5ead137ff875e762153204962d6e49e7247c5e7df8377cce4fc50c901918047"
+  }
 }

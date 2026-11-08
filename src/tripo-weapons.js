@@ -5,6 +5,8 @@ import lavaStaffUrl from '../assets/imported/tripo-weapons/runtime/lava-staff.gl
 import crystalStaffUrl from '../assets/imported/tripo-weapons/runtime/crystal-staff.glb?url&inline';
 import poisonStaffUrl from '../assets/imported/tripo-extra-weapons/runtime/poison-staff.glb?url&inline';
 import moonStaffUrl from '../assets/imported/tripo-extra-weapons/runtime/moon-staff.glb?url&inline';
+import starStaffUrl from '../assets/imported/tripo-star-moon/runtime/star-staff.glb?url&inline';
+import starStaffInspection from '../assets/imported/tripo-star-moon/inspections/star-staff.json' with { type: 'json' };
 import ornateBowUrl from '../assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb?url&inline';
 import ornateBowInspection from '../assets/imported/tripo-extra-weapons/inspections/ornate-bow.json' with { type: 'json' };
 import poisonStaffInspection from '../assets/imported/tripo-extra-weapons/inspections/poison-staff.json' with { type: 'json' };
@@ -16,6 +18,8 @@ const SOURCES = {
   'kit-tripo-lava-staff': { url: lavaStaffUrl, name: 'Lavastab · Tripo' },
   'kit-tripo-crystal-staff': { url: crystalStaffUrl, name: 'Kristallstab · Tripo' },
   'kit-tripo-poison-staff': { url: poisonStaffUrl, name: 'Giftstab · Tripo', tip: poisonStaffInspection.normalization.tipPoint },
+  'kit-tripo-star-staff': { url: starStaffUrl, name: 'Sternstab · Tripo', tip: starStaffInspection.normalization.tipPoint,
+    source: 'assets/inbox/arcane star staff 3d model.glb' },
   'kit-tripo-moon-staff': { url: moonStaffUrl, name: 'Mondstab · Tripo', tip: moonStaffInspection.normalization.tipPoint },
   'kit-tripo-ornate-bow': { url: ornateBowUrl, name: 'Verzierter Bogen · Tripo' },
 };
@@ -37,6 +41,7 @@ export async function loadTripoWeapons(placements = []) {
       throw new Error(`Die Tripo-Waffe ${variant} enthält keinen gültigen Griffursprung.`);
     }
     scene.name = SOURCES[variant].name;
+    if (SOURCES[variant].source) scene.userData.weaponSource = SOURCES[variant].source;
     if (SOURCES[variant].tip) scene.userData.weaponTipPoint = [...SOURCES[variant].tip];
     if (variant === 'kit-tripo-ornate-bow') {
       const rig = ornateBowInspection.normalization.bowRig;

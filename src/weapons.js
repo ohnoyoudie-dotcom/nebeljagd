@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
+import { createLootGlow } from './loot-glow.js';
 import { createSwordEffects } from './sword-effects.js';
 import { createSwordPose, sampleSwordPose, SWORD_PATTERNS, SWORD_COMBO_GRACE,
   SWORD_STRIKE_START, SWORD_STRIKE_END } from './sword-motion.js';
@@ -12,10 +13,11 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-crystal-staff': 'iceStaff',
   'kit-tripo-poison-staff': 'poisonStaff',
   'kit-tripo-moon-staff': 'moonStaff',
+  'kit-tripo-star-staff': 'starStaff',
   'kit-tripo-ornate-bow': 'bow',
 });
 export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
-  poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff' });
+  poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
 export function resolveWeaponVariant(type, variant) {
   return type === 'sword' && (!variant || variant === 'steel') ? 'kit-tripo-sword' : variant ?? DEFAULT_VARIANTS[type];
@@ -23,7 +25,7 @@ export function resolveWeaponVariant(type, variant) {
 // Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
-  fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82 });
+  fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82 });
 export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
 export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * .88])));
 
@@ -93,7 +95,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const iceCore = material('#e2fbff', { emissive: '#53cfff', emissiveIntensity: 1.5 });
   const poisonCore = material('#c3fda3', { emissive: '#5bbf37', emissiveIntensity: 1.5 });
   const moonCore = material('#eee6ff', { emissive: '#ac8bff', emissiveIntensity: 1.5 });
-  const staffCores = { fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore };
+  const starCore = material('#fff0b8', { emissive: '#6ebfe3', emissiveIntensity: 1.4 });
+  const staffCores = { fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore };
   function makeStaff(type) {
     const group = new THREE.Group();
     group.name = weaponStats(type).label;
@@ -172,6 +175,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       group.add(model);
       const bounds = new THREE.Box3().setFromObject(model);
       group.userData.weaponTipY = bounds.max.y;
+      group.userData.weaponSource = tripoPrototypes[variant].userData.weaponSource ?? null;
       const measuredTip = tripoPrototypes[variant].userData.weaponTipPoint;
       group.userData.weaponTipPoint = Array.isArray(measuredTip) && measuredTip.length === 3 && measuredTip.every(Number.isFinite)
         ? [...measuredTip] : [0, bounds.max.y, 0];
@@ -282,7 +286,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     floating.add(visual);
     group.add(floating);
     const ringMaterial = new THREE.MeshBasicMaterial({
-      color: stats.color, transparent: true, opacity: .75,
+      color: stats.color, transparent: true, opacity: .3,
       side: THREE.DoubleSide, depthWrite: false,
     });
     const ring = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -293,7 +297,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
     }));
     halo.rotation.x = -Math.PI / 2; halo.position.y = .035;
-    group.add(halo); scene.add(group);
+    // The layered aura replaces this legacy diagnostic halo; never stack two
+    // broad ground glows. Keep its palette data for existing item inspectors.
+    halo.visible = false; group.add(halo); scene.add(group);
     const item = { ...definition, ...stats, id: definition.id ?? `drop-weapon-${++dropSerial}`,
       type, variant, model: visual.userData.model, x, z, phase: items.length * 1.7, groundY, group, floating, visual, ring,
       initialPlacement: { x, z, groundY },
@@ -301,6 +307,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       origin: definition.origin ?? [x, z] };
     if (pop) { ring.visible = halo.visible = false; group.position.set(item.origin[0], heightAt?.(...item.origin) ?? groundY, item.origin[1]); }
     item.halo = halo;
+    item.aura = createLootGlow(group, { rarity: stats.rarity, radius: 1.15, height: .68, phase: item.phase });
+    item.aura.setVisible(!pop);
     items.push(item);
     return item;
   }
@@ -497,7 +505,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     item.group.visible = true;
     item.floating.position.set(0, .75, 0);
     item.floating.rotation.set(0, 0, 0);
-    item.ring.visible = item.halo.visible = true;
+    item.ring.visible = true; item.halo.visible = false;
   }
 
   function equip(item, automatic = false) {
@@ -723,7 +731,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype, iceProjectilePrototype: projectilePrototypes.ice });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
-  }, isVisible);
+  }, isVisible, { moonProjectilePrototype: projectilePrototypes.moon });
   const staffTip = new THREE.Vector3();
   function releaseAttack(position) {
     if (!specials.aiming || equippedType !== 'poisonStaff' || characterGroup.userData.rolling) { specials.cancelAim(); return false; }
@@ -817,12 +825,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
         item.group.position.set(THREE.MathUtils.lerp(item.origin[0], item.x, easeOut), THREE.MathUtils.lerp(originY, item.groundY, easeOut), THREE.MathUtils.lerp(item.origin[1], item.z, easeOut));
         item.floating.position.y = .72 + Math.sin(t * Math.PI) * 1.8;
         item.floating.rotation.z = Math.sin(t * Math.PI) * 1.1;
-        item.ring.visible = item.halo.visible = t >= 1;
+        item.ring.visible = t >= 1;
       } else { item.floating.position.y = .72 + wave * .11; item.floating.rotation.z = 0; }
       item.floating.rotation.y = Math.sin(time * .6 + item.phase) * .32;
-      item.ring.scale.setScalar(1 + wave * .065); item.ringMaterial.opacity = .6 + (wave + 1) * .11;
+      item.ring.scale.setScalar(1 + wave * .065); item.ringMaterial.opacity = .26 + (wave + 1) * .035;
       item.halo.scale.setScalar(1 + wave * .075);
       item.halo.material.opacity = item.glow.halo * (.9 + wave * .1);
+      item.aura.setVisible(item.popAge >= 1); item.aura.update(time);
       for (const entry of item.glowingMaterials) entry.material.emissiveIntensity = entry.strength * (1 + wave * .08);
       item.group.visible = (!position || (position.x - item.x) ** 2 + (position.z - item.z) ** 2 <= viewDistance ** 2)
         && (revealSceneryThroughFog || !isVisible || isVisible(item.group.position));
@@ -935,7 +944,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (item.dynamic) {
         scene.remove(item.group); items.splice(i, 1);
         disposeWeaponVisual(item.visual);
-        item.ringMaterial.dispose(); item.halo.material.dispose();
+        item.ringMaterial.dispose(); item.halo.material.dispose(); item.aura.dispose();
       }
       else {
         if (reroll && rollRarity) {
@@ -943,6 +952,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           Object.assign(item, stats, { label: item.label, name: `${item.label} · ${stats.rarityLabel}` });
           item.group.name = `${item.name} auf dem Boden`;
           item.glow = rarityVisual(item.rarity);
+          item.aura.setRarity(item.rarity);
           item.glowingMaterials = applyTier(item.visual, item.rarity);
           item.ringMaterial.color.set(item.color);
           item.halo.material.color.set(item.color);
@@ -971,6 +981,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     spellEffects.dispose();
     specials.dispose();
     swordEffects.dispose();
+    items.forEach(item => item.aura.dispose());
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
       ...arrows.map(arrow => arrow.group), impactMesh];
     const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry, arrowTrailGeometry]), materials = new Set(baseMaterials);
@@ -1025,11 +1036,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
           visible: spell.group.visible, position: { x: spell.group.position.x, y: spell.group.position.y, z: spell.group.position.z } })),
         heldModel: held ? { type: equippedType, variant: held.userData.variant, model: held.userData.model,
+          source: held.userData.weaponSource ?? null,
           visible: held.visible, meshCount, presentationScale: HELD_WEAPON_SCALE[equippedType],
           groundPresentationScale: GROUND_WEAPON_SCALE[equippedType],
           stringVertices: (held.userData.bowStringDeformations ?? []).reduce((total, part) => total + part.count, 0) } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,
         arrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0).length,
+        lootAuras: items.filter(item => !item.collected).map(item => ({ id: item.id, visible: item.group.visible, ...item.aura.inspect() })),
         arrowModel: projectilePrototypes.arrow ? { ...projectilePrototypes.arrow.userData } : null,
         importedArrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0 && arrow.group.userData.projectileSource).length,
         heldPose: { bow: { x: heldBow.position.x, y: heldBow.position.y, z: heldBow.position.z },

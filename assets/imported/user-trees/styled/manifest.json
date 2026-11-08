@@ -2,18 +2,18 @@
   "files": [
     {
       "path": "inspection.json",
-      "bytes": 2843,
-      "sha256": "028a5e8dbf9f1c4b06152ea5d31d8b2ea569bd46d1af71fd3dc70d4a23af4f26"
+      "bytes": 3703,
+      "sha256": "506f19d0bd1e20c2f6d4e8dd8b699155dce0c510152ffb5168fc85dd3c955aff"
     },
     {
       "path": "preview.png",
-      "bytes": 568076,
-      "sha256": "fd9adbdaa6c9e6decd5dbb6812ec734f163ec4d98c8c3afa9719fe8756e5ee45"
+      "bytes": 553426,
+      "sha256": "7f9fcc00548278b6f5cb53720863293357f033ef8e52e106ca1190297db8146e"
     },
     {
       "path": "tree1-woodland.glb",
-      "bytes": 674448,
-      "sha256": "f5ead137ff875e762153204962d6e49e7247c5e7df8377cce4fc50c901918047"
+      "bytes": 557124,
+      "sha256": "6d29f06ae00ad8cc615cb93e492ae2847d78bc238c44078bf5ef42d3c17ad397"
     }
   ]
 }

@@ -1,0 +1,230 @@
+{
+  "id": "moon-crescent",
+  "label": "Verzierte Mondsichel · Tripo",
+  "source": {
+    "path": "assets/inbox/crescent moon prop 3d model.glb",
+    "bytes": 62235820,
+    "sha256": "45d3e2ddcb987144a1faa1cf7aeea24c9f9eb94c708576feb7d9e0ddfaa79551",
+    "triangles": 1912266,
+    "vertices": 977621,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ],
+    "bounds": [
+      {
+        "min": [
+          -0.4594879150390625,
+          0.0,
+          -0.11937713623046875
+        ],
+        "max": [
+          0.4594879150390625,
+          0.97882080078125,
+          0.11937713623046875
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-star-moon/runtime/moon-crescent.glb",
+    "bytes": 613004,
+    "sha256": "1ee674b856c2c742b9b39438bb17edaa565864e438aed97f21207813599a9a8e",
+    "triangles": 6000,
+    "vertices": 4612,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ],
+    "bounds": [
+      {
+        "min": [
+          -0.563389778137207,
+          -0.6000170707702637,
+          -0.14646117389202118
+        ],
+        "max": [
+          0.5621480941772461,
+          0.6004369854927063,
+          0.14636410772800446
+        ]
+      }
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.4594879150390625,
+        -0.11937713623046875,
+        0.0
+      ],
+      [
+        0.4594879150390625,
+        0.11937713623046875,
+        0.97882080078125
+      ]
+    ],
+    "sourceCenterGltf": [
+      0.0,
+      0.489410400390625,
+      -0.0
+    ],
+    "uniformScale": 1.2259650230407715,
+    "normalizationMode": "centered-source-axes-preserved",
+    "axes": "glTF XY silhouette plane, front +Z; centered origin; apply -PI/2 around X to lay horizontal",
+    "silhouettePlane": "XY",
+    "frontAxis": "+Z",
+    "centerPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.2,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.5633161067962646,
+        -0.6000000238418579,
+        -0.14635218679904938
+      ],
+      [
+        0.5633161067962646,
+        0.6000000238418579,
+        0.14635218679904938
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -0.563389778137207,
+        -0.6000170707702637,
+        -0.14646117389202118
+      ],
+      [
+        0.5621480941772461,
+        0.6004369854927063,
+        0.14636410772800446
+      ]
+    ],
+    "tipPoint": [
+      0.05662590637803078,
+      0.6004369854927063,
+      -0.0032849160488694906
+    ],
+    "dimensions": [
+      1.1255378723144531,
+      1.20045405626297,
+      0.29282528162002563
+    ]
+  },
+  "textures": [
+    {
+      "name": "crescent_moon_prop_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ],
+      "limit": 512
+    },
+    {
+      "name": "crescent_moon_prop_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ],
+      "limit": 512,
+      "method": "Tangent-normal bake from original source sculpt and its original normal map"
+    },
+    {
+      "name": "crescent_moon_prop_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ],
+      "limit": 512
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 4.8e-05,
+    "before": {
+      "vertices": 977621,
+      "faces": 1912266
+    },
+    "after": {
+      "vertices": 956130,
+      "faces": 1912264
+    }
+  },
+  "policy": {
+    "id": "moon-crescent",
+    "source": "crescent moon prop 3d model.glb",
+    "sha256": "45d3e2ddcb987144a1faa1cf7aeea24c9f9eb94c708576feb7d9e0ddfaa79551",
+    "label": "Verzierte Mondsichel · Tripo",
+    "length": 1.2,
+    "triangles": 6000,
+    "textureLimit": 512,
+    "normalLimit": 512
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialChannels": true,
+    "preservedEmbeddedImages": true,
+    "embeddedOnly": true,
+    "noDecoderDependencies": true,
+    "textureBudgetPassed": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-star-moon.py -- --only moon-crescent",
+  "blenderVersion": "4.3.2",
+  "normalBake": {
+    "sourceSha256": "45d3e2ddcb987144a1faa1cf7aeea24c9f9eb94c708576feb7d9e0ddfaa79551",
+    "normalSpace": "TANGENT",
+    "resolution": [
+      512,
+      512
+    ],
+    "cageExtrusionMetres": 0.03,
+    "maxRayDistanceMetres": 0.1,
+    "paddingPixels": 4,
+    "method": "Cycles selected original sculpt to active simplified mesh; source materials retained",
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-star-moon.py -- --bake-moon"
+  }
+}

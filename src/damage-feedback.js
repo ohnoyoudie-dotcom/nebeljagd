@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const GLYPHS = '0123456789.-';
 const COLORS = { burn: '#ffc179', poison: '#b7e883', zone: '#ddceff', fireStaff: '#ffd19c', iceStaff: '#bbf0ff',
-  poisonStaff: '#b7e883', moonStaff: '#e5d4ff', bow: '#fff5d3', sword: '#ffe3a6' };
+  poisonStaff: '#b7e883', moonStaff: '#e5d4ff', starStaff: '#fff0b6', bow: '#fff5d3', sword: '#ffe3a6' };
 const copyPosition = value => ({ x: value.x, y: value.y ?? 0, z: value.z });
 const finiteDamage = amount => Number.isFinite(amount) && amount > 0;
 

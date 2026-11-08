@@ -6,6 +6,8 @@ const LIFETIME = 10;
 const STEP_DISTANCE = .62;
 const MAX_STEP_PARTICLES = 72;
 const PARTICLES_PER_STEP = 5;
+const ROLL_TRACK_WIDTH = 1.0;
+const ROLL_CAP_LENGTH = .46;
 
 function snowVisualOffset(x, z, snowWeight = 1) {
   const drift = Math.sin(x * .21 + Math.sin(z * .13) * 1.7) * Math.cos(z * .18 - x * .07);
@@ -32,10 +34,12 @@ export function createSnowFootprints(root, world) {
   const kinds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   const caps = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   const rollDistances = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS * 2), 2);
+  const rollBounds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS * 2), 2);
   geometry.setAttribute('instanceFade', fades);
   geometry.setAttribute('instanceTrackKind', kinds);
   geometry.setAttribute('instanceTrackCaps', caps);
   geometry.setAttribute('instanceRollDistance', rollDistances);
+  geometry.setAttribute('instanceRollBounds', rollBounds);
 
   const material = new THREE.ShaderMaterial({
     transparent: true,
@@ -44,24 +48,24 @@ export function createSnowFootprints(root, world) {
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
-    uniforms: { uTrackColor: { value: new THREE.Color('#cfdadd') } },
+    uniforms: { uTrackColor: { value: new THREE.Color('#cfdadd') }, uRollCapLength: { value: ROLL_CAP_LENGTH } },
     vertexShader: `
       attribute float instanceFade;
       attribute float instanceTrackKind;
-      attribute float instanceTrackCaps;
       attribute vec2 instanceRollDistance;
+      attribute vec2 instanceRollBounds;
       varying vec2 vTrackUv;
       varying float vTrackFade;
       varying float vTrackKind;
-      varying float vTrackCaps;
       varying vec2 vTrackWorld;
       varying float vRollDistance;
+      varying vec2 vRollBounds;
       void main() {
         vTrackUv = uv;
         vTrackFade = instanceFade;
         vTrackKind = instanceTrackKind;
-        vTrackCaps = instanceTrackCaps;
         vRollDistance = instanceRollDistance.x + uv.y * instanceRollDistance.y;
+        vRollBounds = instanceRollBounds;
         vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
         vTrackWorld = worldPosition.xz;
         gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -69,12 +73,13 @@ export function createSnowFootprints(root, world) {
     `,
     fragmentShader: `
       uniform vec3 uTrackColor;
+      uniform float uRollCapLength;
       varying vec2 vTrackUv;
       varying float vTrackFade;
       varying float vTrackKind;
-      varying float vTrackCaps;
       varying vec2 vTrackWorld;
       varying float vRollDistance;
+      varying vec2 vRollBounds;
       float ellipse(vec2 p, vec2 center, vec2 scale) {
         float d = length((p-center)/scale);
         return 1.0-smoothstep(.72,1.0,d);
@@ -90,15 +95,19 @@ export function createSnowFootprints(root, world) {
           float width = .82 + sin(along*4.2+1.4)*.09 + sin(along*9.6)*.045;
           float signedAcross = (p.x-.5)*2. - sway;
           float edge = abs(signedAcross)/width + sin(along*17.+signedAcross*8.)*.045;
+          // The rounded ends span several segments. Every segment reads the
+          // same roll bounds, so increasing width never creates blunt seams.
+          float capLength = min(uRollCapLength, max(.001,(vRollBounds.y-vRollBounds.x)*.5));
+          float toEnd = min(along-vRollBounds.x, vRollBounds.y-along);
+          float cap = max(0.,1.-toEnd/capLength);
+          edge = length(vec2(max(0.,edge),cap));
           float body = 1.-smoothstep(.54,.97,edge);
           float clumps = .55 + .45*sin(along*6.7+signedAcross*11.+sin(along*3.1));
           float shoulder = exp(-pow((edge-.79)/.13,2.)) * (.35+.65*clumps);
-          float ends = (mod(vTrackCaps,2.)>.5 ? smoothstep(0.,.6,p.y) : 1.)
-            * (vTrackCaps>1.5 ? 1.-smoothstep(.4,1.,p.y) : 1.);
           float pressure = .68 + .32*pow(.5+.5*sin(along*5.3+sin(along*1.9)),2.);
           float scrape = exp(-pow((signedAcross-.17*sin(along*3.8))/.11,2.)) * (.5+.5*sin(along*13.));
           float scuff = .93 + .07*clumps - scrape*.055;
-          float alpha = (body*.34*pressure + shoulder*.065) * ends * vTrackFade;
+          float alpha = (body*.34*pressure + shoulder*.065) * vTrackFade;
           if (alpha < .008) discard;
           gl_FragColor = vec4(mix(uTrackColor*.94*scuff,vec3(.96,.98,.99),shoulder*.54),alpha);
           return;
@@ -201,12 +210,16 @@ export function createSnowFootprints(root, world) {
       trackLength=Math.hypot(trackLength,end-start);
     }
 
+    const rollGroup = rolling ? tracker?.lastRoll?.rollGroup
+      ?? { start: source.rollDistance ?? 0, end: 0 } : null;
+    if (rollGroup) rollGroup.end = (source.rollDistance ?? 0) + (source.segmentLength ?? 0);
     const print = {
       x, z, y,
       direction, born: time, rolling, pitch,
       rollDistance: source.rollDistance ?? 0, rollLength: source.segmentLength ?? 0,
+      rollGroup,
       startCap: rolling && !tracker?.lastRoll, endCap: rolling,
-      width: rolling ? .76 / .38 : 1,
+      width: rolling ? ROLL_TRACK_WIDTH / .38 : 1,
       length: rolling ? trackLength / .64 : 1,
       rotationJitter: rolling ? 0 : (hash(seed, 103) - .5) * .080,
       scale: rolling ? 1 : (.92 + Math.min(.18, Math.max(0, (source.speed ?? 0) / 8) * .18))
@@ -309,6 +322,7 @@ export function createSnowFootprints(root, world) {
       kinds.setX(write, print.rolling ? 1 : 0);
       caps.setX(write, (print.startCap ? 1 : 0)+(print.endCap ? 2 : 0));
       rollDistances.setXY(write, print.rollDistance, print.rollLength);
+      rollBounds.setXY(write, print.rollGroup?.start ?? 0, print.rollGroup?.end ?? 0);
       write++;
     }
     prints.length = write;
@@ -320,6 +334,7 @@ export function createSnowFootprints(root, world) {
       kinds.needsUpdate = true;
       caps.needsUpdate = true;
       rollDistances.needsUpdate = true;
+      rollBounds.needsUpdate = true;
     }
     return activeParticles;
   }
@@ -344,7 +359,8 @@ export function createSnowFootprints(root, world) {
         bySource: Object.fromEntries([...trackers].map(([id,t])=>[id,{footprintsCreated:t.footprintsCreated,rollSegmentsCreated:t.rollSegmentsCreated}])),
         activeFootprints: prints.filter(print => !print.rolling).length,
         activeRollSegments: prints.filter(print => print.rolling).length,
-        rollTrackWidthMeters: .76, rollStyle: 'irregular-body-furrow',
+        rollTrackWidthMeters: ROLL_TRACK_WIDTH, rollStyle: 'irregular-body-furrow',
+        rollEndStyle: 'rounded-powder-caps', rollCapLengthMeters: ROLL_CAP_LENGTH,
         continuousRollDistance: true, asymmetricPowderShoulders: true,
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
         stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,

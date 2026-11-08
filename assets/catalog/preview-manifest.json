@@ -906,6 +906,32 @@
           0.12875086069107056
         ]
       }
+    },
+    {
+      "kind": "starStaff",
+      "variant": "kit-tripo-star-staff",
+      "label": "Sternstab · Tripo",
+      "file": "assets/catalog/starStaff-kit-tripo-star-staff.webp",
+      "bytes": 5214,
+      "sha256": "7c8287994dac403bdaa8099141f346ef0c6b7bd5e57260951a0428a74bcf2d41",
+      "method": "Blender 4.3.2 Cycles PBR render of the actual prepared model, 24 samples; transparent 640x640 render downscaled to 192x192 and centered on a 256x192 canvas.",
+      "source": "assets/imported/tripo-star-moon/previews/star-staff-runtime.png",
+      "model": "assets/imported/tripo-star-moon/runtime/star-staff.glb",
+      "modelSha256": "40198c7e45fec93f98a6dff21315655d4ef8ebe0cee24c4bf1afb7795981a444",
+      "originalSourceSha256": "145a934ab4dfcb477f24c3981fafc1ea12619b56d3c4f024bdfe26191790bf1e",
+      "generator": "scripts/prepare-tripo-star-moon.py; Pillow thumbnail composition",
+      "modelBounds": {
+        "min": [
+          -0.3088615834712982,
+          -0.34814468026161194,
+          -0.1118762195110321
+        ],
+        "max": [
+          0.2650700807571411,
+          1.352433443069458,
+          0.1164017841219902
+        ]
+      }
     }
   ],
   "errors": []

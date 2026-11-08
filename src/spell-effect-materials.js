@@ -5,6 +5,7 @@ const COLORS = {
   iceStaff: ['#14578d', '#36b9e0', '#c2f4ff'],
   poisonStaff: ['#153c21', '#47ae45', '#c6ef83'],
   moonStaff: ['#44316c', '#aa8bdb', '#f1e8ff'],
+  starStaff: ['#284b78', '#6bc7ed', '#fff3b8'],
 };
 const MODES = { body: 0, trail: 1, shock: 2, cloud: 3, rays: 4, charge: 5 };
 
@@ -109,7 +110,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
 
 export function setElementMaterial(material, type) {
   const colors = COLORS[type] ?? COLORS.fireStaff;
-  material.uniforms.uIce.value = type === 'iceStaff' || type === 'moonStaff' ? 1 : 0;
+  material.uniforms.uIce.value = type === 'iceStaff' || type === 'moonStaff' || type === 'starStaff' ? 1 : 0;
   material.uniforms.uCloudTint.value = type === 'fireStaff' ? 0 : 1;
   material.uniforms.uDark.value.set(colors[0]); material.uniforms.uMid.value.set(colors[1]);
   material.uniforms.uLight.value.set(colors[2]);

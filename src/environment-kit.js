@@ -206,6 +206,9 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
         const key = `${source.uuid}:${leaf ? 'wind' : 'solid'}`;
         if (!materials.has(key)) {
           const material = source.clone();
+          // The game renderer uses MSAA: coverage smooths the imported leaf
+          // cutouts without turning opaque foliage into transparent cards.
+          if (leaf && material.alphaTest > 0) material.alphaToCoverage = true;
           if (leaf && wind) {
             // Shared shader-based wind; no CPU per-leaf animation or extra draw call.
             // Keep imported alpha-cutout, double-sided shading, and original UVs.

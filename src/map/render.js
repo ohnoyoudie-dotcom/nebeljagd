@@ -11,12 +11,13 @@ const points = list => list.map(([x, z]) => `${number(x)},${number(z)}`).join(' 
 const ringPath = list => `M${list.map(([x, z]) => `${number(x)},${number(z)}`).join('L')}Z`;
 const feature = (type, id) => `id="feature-${type}-${escape(id)}" data-feature-type="${type}" data-feature-id="${escape(id)}"`;
 const biomePattern = { snow: 'mountain', forest: 'forest', meadow: 'meadow', heath: 'heath', marsh: 'marsh', volcanic: 'ash', dunes: 'dune' };
-const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8, poisonStaff: 8, moonStaff: 8 };
-const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, wagon: 1.7, barrel: .65, well: 1.5, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5, poisonStaff: 1.5, moonStaff: 1.5 };
+const objectLayerOrder = { grass: 0, flower: 1, rock: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8, poisonStaff: 8, moonStaff: 8, starStaff: 8 };
+const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, wagon: 1.7, barrel: .65, well: 1.5, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5, poisonStaff: 1.5, moonStaff: 1.5, starStaff: 1.5 };
 
 // Add these definitions only when their models are actually placed, keeping
 // previously authored SVGs byte-identical when their map has no new weapons.
 const extraWeaponSymbols = {
+  starStaff: '<g id="world-object-starStaff"><path d="M-.6,1.5 .5,-.85" stroke="#a79c78" stroke-width=".4"/><path d="M.5,-2l.24.58.62.04-.48.4.15.6-.53-.34-.53.34.15-.6-.48-.4.62-.04Z" fill="#fff0b6" stroke="#75bddb" stroke-width=".15"/></g>',
   poisonStaff: '<g id="world-object-poisonStaff"><path d="M-.6,1.5 .5,-.85" stroke="#80764b" stroke-width=".4"/><path d="M.5,-1.9Q-.35,-1 .05,-.6Q.5,-.15 .95,-.6Q1.35,-1 .5,-1.9Z" fill="#7cd76b" stroke="#2b763f" stroke-width=".18"/></g>',
   moonStaff: '<g id="world-object-moonStaff"><path d="M-.6,1.5 .5,-.85" stroke="#a29bb1" stroke-width=".4"/><path d="M.9,-1.9A.78,.78 0 1 0 1,-.5A.65,.65 0 0 1 .9,-1.9Z" fill="#dce0ff" stroke="#8277bc" stroke-width=".16"/></g>',
 };

@@ -528,7 +528,8 @@
             "crate",
             "wagon",
             "barrel",
-            "well"
+            "well",
+            "starStaff"
           ]
         },
         "variant": {
@@ -1003,6 +1004,27 @@
         },
         {
           "if": {
+            "properties": {
+              "kind": {
+                "const": "starStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-star-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
             "required": [
               "rarity"
             ]
@@ -1016,7 +1038,8 @@
                   "fireStaff",
                   "iceStaff",
                   "poisonStaff",
-                  "moonStaff"
+                  "moonStaff",
+                  "starStaff"
                 ]
               }
             }

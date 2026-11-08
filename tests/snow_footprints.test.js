@@ -72,9 +72,12 @@ test('rolling leaves a continuous body-width furrow without soles, then walking 
   for(let i=0;i<mesh.count;i++) {
     mesh.getMatrixAt(i,matrix);
     assert.ok(Math.abs(matrix.elements[12])<1e-6,'roll stays centred instead of alternating left/right feet');
-    assert.ok(Math.abs(matrix.elements[0])*.38>.70,'track is wider than a boot');
+    assert.ok(Math.abs(matrix.elements[0])*.38>.95,'the body groove is noticeably wider than the old .76 m track');
     assert.equal(mesh.geometry.attributes.instanceTrackKind.getX(i),1);
     const distances=mesh.geometry.attributes.instanceRollDistance;
+    const bounds=mesh.geometry.attributes.instanceRollBounds;
+    assert.ok(Math.abs(bounds.getX(i))<1e-6 && Math.abs(bounds.getY(i)-1.6)<1e-6,
+      'all connected segments share the full roll bounds, allowing a round cap to span several segments');
     assert.ok(distances.getY(i)>0);
     if(i>0)assert.ok(Math.abs(distances.getX(i)-distances.getX(i-1)-distances.getY(i-1))<1e-6,
       'irregular scuff pattern continues across frame and segment boundaries');
@@ -91,6 +94,29 @@ test('rolling leaves a continuous body-width furrow without soles, then walking 
   const dry=createSnowFootprints(new THREE.Group(),world(false));
   dry.update(0,[sample(0)]);dry.update(.2,[sample(2)]);
   assert.equal(dry.inspect().rollSegmentsCreated,0);dry.dispose();
+});
+
+test('rounded roll bounds stop at snow gaps and never join a later roll',()=>{
+  const root=new THREE.Group(),tracks=createSnowFootprints(root,{
+    ...world(true),biomeWeightsAt:(x,z)=>[{biome:z>=.9&&z<1.7?'meadow':'snow',weight:1}],
+  });
+  const sample=(z,rolling=true)=>({id:'player',x:0,z,moving:true,rolling});
+  tracks.update(0,[sample(0)]);tracks.update(.1,[sample(.8)]);
+  tracks.update(.2,[sample(1.6)]);tracks.update(.3,[sample(2.4)]);
+  const mesh=root.children.find(m=>m.name==='Schneespuren');
+  const distances=mesh.geometry.attributes.instanceRollDistance,bounds=mesh.geometry.attributes.instanceRollBounds;
+  const firstEnd=bounds.getY(0);
+  assert.ok(firstEnd<.9,'first rounded run ends before the snow gap');
+  const firstNew=Array.from({length:mesh.count},(_,i)=>i).find(i=>distances.getX(i)>1.6);
+  assert.notEqual(firstNew,undefined);
+  assert.ok(bounds.getX(firstNew)>1.6 && bounds.getY(firstNew)>2.3,
+    'the second rounded run begins only where snow returns');
+  tracks.update(.4,[sample(2.4,false)]);tracks.update(.5,[sample(2.4)]);
+  tracks.update(.6,[sample(3.2)]);
+  assert.equal(bounds.getY(0),firstEnd,'a later roll cannot lengthen a completed run');
+  assert.ok(bounds.getX(mesh.count-1)<1e-6 && Math.abs(bounds.getY(mesh.count-1)-.8)<1e-6,
+    'new roll uses its own rounded start and end');
+  tracks.reset();assert.equal(tracks.inspect().activeRollSegments,0);tracks.dispose();
 });
 
 test('adjoining roll segments share their edge height on sloped snow without bright gaps',()=>{

@@ -264,3 +264,5 @@
 .swatch-poisonStaff{background:#79bd70}.swatch-moonStaff{background:#b2a5d4}
 
 .online-map-status{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;padding:8px 20px;background:#edf3e8;color:#244734;font-size:12px;border-bottom:1px solid #d5dfcc}.online-map-status>span{flex:1 1 230px}.online-map-status a{color:inherit}.github-map-dialog{max-height:88vh;overflow:auto}.github-map-dialog ol{padding-left:22px;font-size:14px;line-height:1.6}.github-map-dialog a{color:#245842}.github-map-dialog input[type=password]{box-sizing:border-box;width:100%;padding:10px;margin:5px 0 14px}.github-map-dialog .github-remember{display:flex;align-items:center;gap:8px;font-size:13px}.github-map-dialog input[type=checkbox]{width:auto;margin:0}#github-map-error{color:#943b21}#github-map-disconnect{margin-top:8px}@media(max-width:720px){.online-map-status{padding:7px 12px;font-size:11px}.github-map-dialog{padding:20px}.github-map-dialog h2{font-size:22px}}
+
+.swatch-starStaff{background:#e9dca7}

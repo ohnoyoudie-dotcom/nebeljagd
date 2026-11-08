@@ -1,0 +1,229 @@
+{
+  "id": "star-staff",
+  "label": "Sternstab · Tripo",
+  "source": {
+    "path": "assets/inbox/arcane star staff 3d model.glb",
+    "bytes": 69182408,
+    "sha256": "145a934ab4dfcb477f24c3981fafc1ea12619b56d3c4f024bdfe26191790bf1e",
+    "triangles": 1955880,
+    "vertices": 1000004,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ],
+    "bounds": [
+      {
+        "min": [
+          -0.16710662841796875,
+          0.0,
+          -0.06626129150390625
+        ],
+        "max": [
+          0.16710662841796875,
+          0.9808349609375,
+          0.06626129150390625
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-star-moon/runtime/star-staff.glb",
+    "bytes": 881048,
+    "sha256": "40198c7e45fec93f98a6dff21315655d4ef8ebe0cee24c4bf1afb7795981a444",
+    "triangles": 11999,
+    "vertices": 8249,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "materialChannels": [
+      {
+        "baseColorTexture": true,
+        "metallicRoughnessTexture": true,
+        "normalTexture": true
+      }
+    ],
+    "bounds": [
+      {
+        "min": [
+          -0.3088615834712982,
+          -0.34814468026161194,
+          -0.1118762195110321
+        ],
+        "max": [
+          0.2650700807571411,
+          1.352433443069458,
+          0.1164017841219902
+        ]
+      }
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.16710662841796875,
+        -0.06626129150390625,
+        0.0
+      ],
+      [
+        0.16710662841796875,
+        0.06626129150390625,
+        0.9808349609375
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.07689663767814636,
+      0.1999969482421875,
+      0.001242675818502903
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.13619975745677948,
+      0.9906731247901917,
+      -0.004040388390421867
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9976655840873718,
+      0.002024921355769038,
+      -0.06825923174619675,
+      0.0
+    ],
+    "uniformScale": 1.7197179807042,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.3085792660713196,
+        -0.34749850630760193,
+        -0.11181776970624924
+      ],
+      [
+        0.26497897505760193,
+        1.3525015115737915,
+        0.11616519093513489
+      ]
+    ],
+    "gltfBounds": [
+      [
+        -0.3088615834712982,
+        -0.34814468026161194,
+        -0.1118762195110321
+      ],
+      [
+        0.2650700807571411,
+        1.352433443069458,
+        0.1164017841219902
+      ]
+    ],
+    "tipPoint": [
+      -0.01732037030160427,
+      1.352433443069458,
+      0.025661470368504524
+    ],
+    "dimensions": [
+      0.5739316642284393,
+      1.70057812333107,
+      0.2282780036330223
+    ]
+  },
+  "textures": [
+    {
+      "name": "arcane_star_staff_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        768,
+        768
+      ],
+      "limit": 768
+    },
+    {
+      "name": "arcane_star_staff_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ],
+      "limit": 512
+    },
+    {
+      "name": "arcane_star_staff_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        768,
+        768
+      ],
+      "limit": 768
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 6.8e-05,
+    "before": {
+      "vertices": 1000004,
+      "faces": 1955880
+    },
+    "after": {
+      "vertices": 977784,
+      "faces": 1955570
+    }
+  },
+  "policy": {
+    "id": "star-staff",
+    "source": "arcane star staff 3d model.glb",
+    "sha256": "145a934ab4dfcb477f24c3981fafc1ea12619b56d3c4f024bdfe26191790bf1e",
+    "label": "Sternstab · Tripo",
+    "length": 1.7,
+    "triangles": 12000,
+    "gripHeight": 0.2,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "textureLimit": 768,
+    "normalLimit": 512
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialChannels": true,
+    "preservedEmbeddedImages": true,
+    "embeddedOnly": true,
+    "noDecoderDependencies": true,
+    "textureBudgetPassed": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-star-moon.py -- --only star-staff",
+  "blenderVersion": "4.3.2"
+}

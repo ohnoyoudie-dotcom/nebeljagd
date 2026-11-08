@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import iceUrl from '../assets/imported/tripo-projectiles/runtime/ice-crystal.glb?url&inline';
 import arrowUrl from '../assets/imported/tripo-projectiles/runtime/feathered-arrow.glb?url&inline';
+import moonUrl from '../assets/imported/tripo-star-moon/runtime/moon-crescent.glb?url&inline';
 
 // Both uploads point diagonally up/right in their source XY plane. Rotate that
 // measured tail-to-tip axis to gameplay +Z, then size the actual oriented mesh.
@@ -10,6 +11,9 @@ const definitions = {
     name: 'Eiskristall · hochgeladenes Projektil', forward: [.982, .614, 0], length: .95 },
   arrow: { url: arrowUrl, source: 'feathered spear 3d model.glb', runtime: 'feathered-arrow.glb',
     name: 'Federpfeil · hochgeladenes Projektil', forward: [.978, .655, 0], length: 1.05 },
+  moon: { url: moonUrl, source: 'crescent moon prop 3d model.glb', runtime: 'moon-crescent.glb',
+    name: 'Verzierte Silbersichel · hochgeladenes Mondprojektil', plane: 'XY', length: 1.20,
+    package: 'tripo-star-moon' },
 };
 
 export async function loadProjectileModels() {
@@ -24,15 +28,17 @@ export async function loadProjectileModels() {
     });
     if (!(triangles > 0 && triangles <= 6000)) throw new Error(`Ungültiges Geometriebudget für ${key}.`);
     const oriented = new THREE.Group(); oriented.add(scene);
-    oriented.quaternion.setFromUnitVectors(new THREE.Vector3(...definition.forward).normalize(), new THREE.Vector3(0, 0, 1));
+    if (definition.forward) oriented.quaternion.setFromUnitVectors(new THREE.Vector3(...definition.forward).normalize(), new THREE.Vector3(0, 0, 1));
     const bounds = new THREE.Box3().setFromObject(oriented, true);
     const size = bounds.getSize(new THREE.Vector3());
-    if (!(size.z > 0) || !Number.isFinite(size.z)) throw new Error(`Ungültige Projektilabmessungen für ${key}.`);
+    const length = definition.plane === 'XY' ? size.y : size.z;
+    if (!(length > 0) || !Number.isFinite(length)) throw new Error(`Ungültige Projektilabmessungen für ${key}.`);
     oriented.position.sub(bounds.getCenter(new THREE.Vector3()));
     const prototype = new THREE.Group(); prototype.add(oriented);
-    prototype.name = definition.name; prototype.scale.setScalar(definition.length / size.z);
-    prototype.userData = { triangles, nominalLength: definition.length, forwardAxis: '+Z',
-      source: `assets/inbox/${definition.source}`, runtime: `assets/imported/tripo-projectiles/runtime/${definition.runtime}` };
+    prototype.name = definition.name; prototype.scale.setScalar(definition.length / length);
+    prototype.userData = { triangles, nominalLength: definition.length, forwardAxis: definition.plane ? null : '+Z',
+      ...(definition.plane ? { silhouettePlane: definition.plane } : {}),
+      source: `assets/inbox/${definition.source}`, runtime: `assets/imported/${definition.package ?? 'tripo-projectiles'}/runtime/${definition.runtime}` };
     return [key, prototype];
   })));
 }

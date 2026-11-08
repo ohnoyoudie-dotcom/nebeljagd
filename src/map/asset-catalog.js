@@ -116,6 +116,8 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein aufbereiteter Giftstab. Giftgeschosse verursachen Schaden über Zeit; die Seltenheit ist frei wählbar.', 'tripo-extra-weapons'),
   tripo('moonStaff', 'kit-tripo-moon-staff', 'Mondstab · Tripo', 'moon-staff', 'Moon staff 3d model',
     'Dein aufbereiteter Mondstab. Verschießt Mondmagie mit direktem Schaden; die Seltenheit ist frei wählbar.', 'tripo-extra-weapons'),
+  tripo('starStaff', 'kit-tripo-star-staff', 'Sternstab · Tripo', 'star-staff', 'arcane star staff 3d model',
+    'Dein texturierter Sternstab. Verschießt einen geraden Sternenblitz mit funkelnder Lichtspur.', 'tripo-star-moon'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
 const byId = new Map(ASSET_CATALOG.map(asset => [asset.id, asset]));

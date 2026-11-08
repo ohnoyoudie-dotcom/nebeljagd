@@ -1,0 +1,94 @@
+{
+  "name": "nebeljagd-tripo-star-moon",
+  "version": 1,
+  "kind": "source-preserving-local-project-package",
+  "canonicalGameDevPackage": false,
+  "sources": [
+    {
+      "path": "assets/inbox/arcane star staff 3d model.glb",
+      "sha256": "145a934ab4dfcb477f24c3981fafc1ea12619b56d3c4f024bdfe26191790bf1e"
+    },
+    {
+      "path": "assets/inbox/crescent moon prop 3d model.glb",
+      "sha256": "45d3e2ddcb987144a1faa1cf7aeea24c9f9eb94c708576feb7d9e0ddfaa79551"
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1207,
+      "sha256": "1fd5eb007283214d8dc8c8b4990004c23c5ad7ac5cdf31aed8bada561089471a"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 12099,
+      "sha256": "36836d472762e3250195fc5e96538d999c28a4623047cd78c1310bb063211160"
+    },
+    {
+      "path": "inspections/moon-crescent.json",
+      "bytes": 5295,
+      "sha256": "70dbccf6f64096a9782ed2aff17ebf0542317aeb1db10994954a03730c454381"
+    },
+    {
+      "path": "inspections/star-staff.json",
+      "bytes": 4945,
+      "sha256": "22b2b1adf4600a61f1072c32bb03e473449649dd6f151618f7f5a13df28fd77c"
+    },
+    {
+      "path": "previews/comparison.png",
+      "bytes": 562680,
+      "sha256": "eca171a1c32dc00f6f5c29a6d6a736a294d3e11c028c94877e23ba3c782edc9e"
+    },
+    {
+      "path": "previews/moon-crescent-runtime.png",
+      "bytes": 414889,
+      "sha256": "02aecc0b13ee3ccf7ad6547c529a0d903c0237a90156f070143195d900cbf2e4"
+    },
+    {
+      "path": "previews/moon-crescent-source.png",
+      "bytes": 416916,
+      "sha256": "4e3240d046ffcbb007d321b8d4d3cd0acbd6f3967a8dfeb7fdc4087badab1c51"
+    },
+    {
+      "path": "previews/moon-crescent.webp",
+      "bytes": 8914,
+      "sha256": "b0dd6142d586905637e9a597501b01858dac867208ad69216763077cee3b2448"
+    },
+    {
+      "path": "previews/star-staff-runtime.png",
+      "bytes": 291724,
+      "sha256": "1323f538f239d9fdabd90ea2a9c9735861c886b7fbb8057a7e948ba52f84a40f"
+    },
+    {
+      "path": "previews/star-staff-source.png",
+      "bytes": 294201,
+      "sha256": "c3ab175f6baad5ce058ef2170e91d60d4322ee265a20b52b978a1c5d2d828f6e"
+    },
+    {
+      "path": "previews/star-staff.webp",
+      "bytes": 5214,
+      "sha256": "7c8287994dac403bdaa8099141f346ef0c6b7bd5e57260951a0428a74bcf2d41"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 1040,
+      "sha256": "c13dbe165316d418cf31388a80eab66a14aebf60298dda5274bc4fc488a0edae"
+    },
+    {
+      "path": "runtime/moon-crescent.glb",
+      "bytes": 613004,
+      "sha256": "1ee674b856c2c742b9b39438bb17edaa565864e438aed97f21207813599a9a8e"
+    },
+    {
+      "path": "runtime/star-staff.glb",
+      "bytes": 881048,
+      "sha256": "40198c7e45fec93f98a6dff21315655d4ef8ebe0cee24c4bf1afb7795981a444"
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "staticPoliciesPassed": true,
+    "combinedRuntimeBudgetPassed": true
+  },
+  "licenseStatus": "User-provided project assets; no new license accepted or independent commercial rights certification."
+}

@@ -8,11 +8,12 @@ const ELEMENTS = {
   iceStaff: { core: '#edffff', glow: '#45bfff', spark: '#8ceeff', edge: '#358de5' },
   poisonStaff: { core: '#e2f7b3', glow: '#65c84a', spark: '#b3e976', edge: '#398d3b' },
   moonStaff: { core: '#fbf4ff', glow: '#bca1ef', spark: '#e5d6ff', edge: '#8862c4' },
+  starStaff: { core: '#fff4c5', glow: '#75c9ed', spark: '#fff0b4', edge: '#477fc3' },
 };
 const finite = value => Number.isFinite(value) ? value : 0;
 const valid = point => point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
 const typeOf = type => Object.hasOwn(ELEMENTS, type) ? type : 'fireStaff';
-const crystalline = type => type === 'iceStaff' || type === 'moonStaff';
+const crystalline = type => type === 'iceStaff' || type === 'moonStaff' || type === 'starStaff';
 
 /** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
 export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null, iceProjectilePrototype = null } = {}) {
@@ -104,7 +105,22 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       crystal: ownMaterial(new THREE.MeshStandardMaterial({ color: '#dfc8ff', roughness: .19,
         metalness: .12, emissive: '#654891', emissiveIntensity: .24, transparent: true,
         opacity: .87, depthWrite: false, flatShading: true })) },
+    starStaff: { core: solid(ELEMENTS.starStaff.core), tip: additive(ELEMENTS.starStaff.spark, .7),
+      body: elementMaterial('body', { type: 'starStaff', opacity: .42 }),
+      crystal: solid(ELEMENTS.starStaff.core) },
   };
+  const starShape = new THREE.Shape();
+  for (let i = 0; i < 10; i++) {
+    const angle = Math.PI / 2 + i * Math.PI / 5, radius = i % 2 ? .105 : .31;
+    if (i === 0) starShape.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+    else starShape.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+  }
+  starShape.closePath();
+  const starGeometry = ownGeometry(new THREE.ExtrudeGeometry(starShape, { depth: .035,
+    bevelEnabled: true, bevelSize: .012, bevelThickness: .012, bevelSegments: 1, steps: 1 }));
+  starGeometry.translate(0, 0, -.0175);
+  const starMaterial = ownMaterial(new THREE.MeshStandardMaterial({ color: '#ffe8a0', emissive: '#eac56b',
+    emissiveIntensity: .65, metalness: .35, roughness: .26 }));
 
   function makeTrail() {
     const count = HISTORY * 8, positions = new Float32Array(count * 3);
@@ -127,7 +143,11 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function createProjectile() {
     if (disposed) throw new Error('Disposed spell effects cannot create projectiles.');
     const group = addRoot(new THREE.Group()); group.name = 'Zauberprojektil'; group.visible = false;
-    const fire = new THREE.Group(), ice = new THREE.Group(); group.add(fire, ice);
+    const fire = new THREE.Group(), ice = new THREE.Group(), star = new THREE.Group(); group.add(fire, ice, star);
+    star.name = 'Sternstab · rotierender Sternenblitz'; star.visible = false;
+    mesh(star, starGeometry, starMaterial);
+    mesh(star, starGeometry, starMaterial).rotation.y = Math.PI / 2;
+    mesh(star, octahedron, projectileMaterials.starStaff.core).scale.setScalar(.12);
     fire.name = 'Glutkern und turbulente Flammenzungen'; ice.name = 'Facettenkristall mit Frostnebel';
     const hotCore = mesh(fire, sphere, fireCore, 0, 0, .07); hotCore.scale.set(.065, .065, .15);
     const fireModel = fireProjectilePrototype?.clone(true) ?? null;
@@ -179,7 +199,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, fire, ice, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, fire, ice, star, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -289,7 +309,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       sparkDistance: 0, smokeDistance: 0, headBirth: clock.value, trailRemaining: 0, visibleTrailSegments: 0 });
     visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
     const appearance = projectileMaterials[type];
-    visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type); visual.ice.visible = crystalline(type);
+    visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type);
+    visual.ice.visible = crystalline(type) && type !== 'starStaff'; visual.star.visible = type === 'starStaff';
     if (visual.fireModel) visual.fireModel.visible = type === 'fireStaff';
     const importedIce = Boolean(visual.iceModel && type === 'iceStaff');
     if (visual.iceModel) visual.iceModel.visible = importedIce;
@@ -477,6 +498,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         visual.fire.scale.set(pulse, pulse, 1); visual.fire.rotation.z = Math.sin(time * 6) * .10;
         visual.hotCore.scale.set(.065 * pulse, .065 * pulse, .15);
         visual.ice.rotation.z = time * 1.5;
+        visual.star.rotation.z = time * 8; visual.star.rotation.y = time * 2;
         visual.haze.scale.setScalar(1.85 * pulse);
         visual.haze.material.opacity = .20 + Math.sin(time * 11) * .025;
         visual.halo.scale.setScalar((crystalline(visual.type) ? 1.0 : 1.10) * pulse);
@@ -519,6 +541,9 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
         importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,
         importedIceProjectiles: projectiles.filter(p => p.active && p.type === 'iceStaff' && p.iceModel).length,
+        starProjectiles: projectiles.filter(p => p.active && p.type === 'starStaff').length,
+        visibleStarProjectiles: projectiles.filter(p => p.active && p.type === 'starStaff' && p.group.visible).length,
+        starProjectileStyle: 'gold-star-blue-trail',
         iceModel: iceProjectilePrototype ? { ...iceProjectilePrototype.userData } : null,
         fireModel: fireProjectilePrototype ? { name: fireProjectilePrototype.name,
           triangles: fireProjectilePrototype.userData.triangles,
