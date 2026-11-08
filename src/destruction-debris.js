@@ -21,7 +21,7 @@ export function fractureGeometry(source, kind = 'barrel') {
     groups.get(key).push(i, i + 1, i + 2);
   }
   const fragments = [];
-  for (const indices of groups.values()) {
+  for (const [sector, indices] of groups) {
     const piece = new THREE.BufferGeometry();
     for (const [name, attribute] of Object.entries(geometry.attributes)) {
       const values = new Float32Array(indices.length * attribute.itemSize);
@@ -34,7 +34,12 @@ export function fractureGeometry(source, kind = 'barrel') {
     const pivot = piece.boundingBox.getCenter(new THREE.Vector3());
     piece.translate(-pivot.x, -pivot.y, -pivot.z);
     piece.computeBoundingBox(); piece.computeBoundingSphere();
-    fragments.push({ geometry: piece, pivot });
+    // The curved outer face of a stave should face upward when it settles.
+    // Lids already lie in the horizontal plane and must not turn onto an edge.
+    const restNormal = kind === 'barrel' && sector < 12
+      ? new THREE.Vector3(pivot.x - center.x, 0, pivot.z - center.z).normalize()
+      : new THREE.Vector3(0, 1, 0);
+    fragments.push({ geometry: piece, pivot, restNormal });
   }
   geometry.dispose();
   return fragments;
@@ -71,8 +76,9 @@ export function createDestructionDebris(root, heightAt) {
         mesh.castShadow = mesh.receiveShadow = true; group.add(mesh);
         const seed = ++serial, angle = Math.atan2(mesh.position.z - item.z, mesh.position.x - item.x) + (random(seed, 1) - .5) * .6;
         const speed = (.65 + random(seed, 2) * 1.2) * item.scale;
-        const targetRotation = orientation.clone().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(
-          (random(seed, 3) < .5 ? -1 : 1) * Math.PI / 2, random(seed, 4) * Math.PI * 2, (random(seed, 5) - .5) * .35)));
+        const up = new THREE.Vector3(0, 1, 0);
+        const targetRotation = new THREE.Quaternion().setFromUnitVectors(fragment.restNormal.clone().applyQuaternion(orientation), up)
+          .multiply(orientation).premultiply(new THREE.Quaternion().setFromAxisAngle(up, random(seed, 4) * Math.PI * 2));
         pieces.push({ mesh, age: 0, settled: false, bounces: 0, seed,
           velocity: new THREE.Vector3(Math.cos(angle) * speed, 1.6 + random(seed, 6) * 1.4, Math.sin(angle) * speed),
           targetRotation });

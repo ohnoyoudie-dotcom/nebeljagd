@@ -20,14 +20,21 @@ fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e
 fixture['name'] = 'Wald und Bruchstücke · QA'
 fixture['objects'] = []
 fixture['paths'] = []
-fixture['landscape'] = {'version':1,'terrain':[],'heights':[],'waters':[]}
-fixture['landscape']['terrain'] = [dict(id=f'path-{i}',type='cobble',position=[-5+i*.35,5+i*.8],radius=2.5,strength=1,hardness=.65,seed=1) for i in range(16)]
+fixture['landscape'] = {'version':1,'terrain':[]}
+fixture['landscape']['terrain'] = [dict(id=f'path-{i}',name='Prüfweg',type='cobble',color='#938460',variation=.12,position=[-5+i*.35,5+i*.8],radius=2.5,strength=1,hardness=.65,seed=1) for i in range(16)]
 fixture['gameplay']['spawnPosition'] = [0,0]
 for kind, variant, x, z in [('sword','kit-tripo-sword',0,0),('barrel','kit-tripo-barrel',0,5),('crate','kit-wood',6,5),
         ('tree','kit-user-tree1',-8,8),('tree','kit-user-tree1',7,13),('tree','kit-user-tree1',-7,20)]:
     fixture['objects'].append(dict(id=f'{kind}-{x}-{z}',name=kind,kind=kind,variant=variant,position=[x,z],rotation=x*.12,scale=1,
         **({'rarity':'common'} if kind=='sword' else {})))
+validation = subprocess.run(['node','--input-type=module','-e',
+    "import {validateWorldmap} from './src/map/model.js';let data='';for await(const chunk of process.stdin)data+=chunk;const result=validateWorldmap(JSON.parse(data));if(!result.valid)throw new Error(result.errors.join('; '));"],
+    input=json.dumps(fixture),text=True,cwd=ROOT)
+assert validation.returncode==0,'Invalid temporary QA document'
 report = {'status':'running','checks':[],'errors':[]}
+
+def browser_error(message):
+    report['errors'].append(message);print('BROWSER ERROR',message,flush=True)
 
 def state(p): return p.evaluate('nebeljagdTestState()')
 def capture(p, name):
@@ -45,12 +52,12 @@ with sync_playwright() as pw:
     b=pw.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE','/usr/bin/chromium'),headless=True,
         args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
     try:
-        ctx=b.new_context(viewport={'width':1100,'height':850})
+        ctx=b.new_context(viewport={'width':900,'height':700})
         ctx.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');')
         p=ctx.new_page();p.set_default_timeout(180000)
         p.route('**/favicon.ico',lambda route:route.fulfill(status=204))
-        p.on('pageerror',lambda e:report['errors'].append(str(e)))
-        p.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' else None)
+        p.on('pageerror',lambda e:browser_error(str(e)))
+        p.on('console',lambda m:browser_error(m.text) if m.type=='error' else None)
         p.goto(BASE+'/nebeljagd.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded')
         print('STAGE waiting for generated world',flush=True)
         p.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')

@@ -11,7 +11,8 @@ test('fractures preserve every original triangle and UV without changing the pro
     assert.ok(pieces.length >= 8 && pieces.length <= 14);
     assert.equal(pieces.reduce((s, p) => s + p.geometry.attributes.position.count, 0), source.index.count);
     const original = source.toNonIndexed(), restored = [];
-    for (const { geometry, pivot } of pieces) {
+    for (const { geometry, pivot, restNormal } of pieces) {
+      assert.ok(Math.abs(restNormal.length()-1)<1e-8);
       const p = geometry.attributes.position, uv = geometry.attributes.uv;
       assert.equal(p.count, uv.count);
       for (let i = 0; i < p.count; i++) restored.push([p.getX(i)+pivot.x,p.getY(i)+pivot.y,p.getZ(i)+pivot.z,uv.getX(i),uv.getY(i)].map(n=>n.toFixed(5)).join(','));
@@ -41,6 +42,10 @@ test('fragments settle on terrain, pause, fade gradually, and expire without dis
   for(let i=0;i<180;i++)debris.update(1/60);
   assert.equal(debris.stats.settled,initial); assert.equal(debris.stats.averageOpacity,1);
   const group=s.root.children[0], positions=group.children.map(m=>m.position.clone());
+  const fragments=fractureGeometry(s.geometry,'barrel');
+  group.children.forEach((m,i)=>assert.ok(fragments[i].restNormal.clone().applyQuaternion(m.quaternion).y>.999,
+    'stave faces and lids rest upward, never balanced on an edge'));
+  fragments.forEach(p=>p.geometry.dispose());
   group.children.forEach(m=>{assert.equal(m.material.map,s.texture);assert.notEqual(m.material,s.material);assert.ok(m.position.y>=floor(m.position.x,m.position.z));});
   for(let i=0;i<30;i++)debris.update(0);
   assert.deepEqual(group.children.map(m=>m.position),positions);
