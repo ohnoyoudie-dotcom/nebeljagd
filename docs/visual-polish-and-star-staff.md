@@ -3,9 +3,9 @@
 Das innere Holz der geöffneten Truhe verwendet dunklere warme Brauntöne. Die
 Textur der Außenflächen bleibt Teil des ursprünglichen Tripo-Modells.
 
-Die Schneerollspur ist jetzt 1,00 statt 0,76 m breit. Ihre weichen runden Enden
-reichen über mehrere Segmente; dadurch entstehen auch auf Hängen keine
-abgehackten Übergänge zwischen den einzelnen Streckenstücken. Schuhabdrücke
+Die Schneerollspur ist jetzt 1,00 statt 0,76 m breit. Nach dem Absprung beginnt
+sie verzögert und besteht aus unregelmäßigen Bodenkontakten mit runden Enden.
+Die Druckstellen folgen auch auf Hängen der Oberfläche. Schuhabdrücke
 bleiben dem Gehen vorbehalten. Pause und Neustart behandeln beide Spurenarten
 wie bisher.
 

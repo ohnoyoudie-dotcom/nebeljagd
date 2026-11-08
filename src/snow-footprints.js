@@ -1,6 +1,6 @@
 import * as THREE from 'three';
+import { ROLL_SPEED } from './rules.js';
 
-const MAX_FOOTPRINTS = 96;
 const FADE_START = 6;
 const LIFETIME = 10;
 const STEP_DISTANCE = .62;
@@ -8,6 +8,18 @@ const MAX_STEP_PARTICLES = 72;
 const PARTICLES_PER_STEP = 5;
 const ROLL_TRACK_WIDTH = 1.0;
 const ROLL_CAP_LENGTH = .46;
+const ROLL_SEGMENT_LENGTH = .28;
+const ROLL_CONTACT_DELAY = .14;
+const ROLL_AIRBORNE_DISTANCE = .9;
+const MIN_CONTACT_LENGTH = .58;
+const MIN_CONTACT_GAP = .15;
+const CAPACITY_SOURCES = 12;
+// A whole ten-second lifetime for twelve uninterrupted full-speed rollers,
+// including one short closing segment per contact patch. Normal footsteps and
+// actual roll cooldowns need much less. Capacity never removes a live mark.
+const MAX_SOURCE_RATE = ROLL_SPEED * (1 / ROLL_SEGMENT_LENGTH + 1 / (MIN_CONTACT_LENGTH + MIN_CONTACT_GAP));
+const MAX_FOOTPRINTS = CAPACITY_SOURCES * (Math.ceil(LIFETIME * MAX_SOURCE_RATE) + 4);
+const MAX_TRACKERS = 64;
 
 function snowVisualOffset(x, z, snowWeight = 1) {
   const drift = Math.sin(x * .21 + Math.sin(z * .13) * 1.7) * Math.cos(z * .18 - x * .07);
@@ -34,7 +46,8 @@ export function createSnowFootprints(root, world) {
   const kinds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   const caps = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS), 1);
   const rollDistances = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS * 2), 2);
-  const rollBounds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS * 2), 2);
+  const rollBounds = new THREE.InstancedBufferAttribute(new Float32Array(MAX_FOOTPRINTS * 4), 4);
+  for (const attribute of [fades, kinds, caps, rollDistances, rollBounds]) attribute.setUsage(THREE.DynamicDrawUsage);
   geometry.setAttribute('instanceFade', fades);
   geometry.setAttribute('instanceTrackKind', kinds);
   geometry.setAttribute('instanceTrackCaps', caps);
@@ -53,13 +66,13 @@ export function createSnowFootprints(root, world) {
       attribute float instanceFade;
       attribute float instanceTrackKind;
       attribute vec2 instanceRollDistance;
-      attribute vec2 instanceRollBounds;
+      attribute vec4 instanceRollBounds;
       varying vec2 vTrackUv;
       varying float vTrackFade;
       varying float vTrackKind;
       varying vec2 vTrackWorld;
       varying float vRollDistance;
-      varying vec2 vRollBounds;
+      varying vec4 vRollBounds;
       void main() {
         vTrackUv = uv;
         vTrackFade = instanceFade;
@@ -79,7 +92,7 @@ export function createSnowFootprints(root, world) {
       varying float vTrackKind;
       varying vec2 vTrackWorld;
       varying float vRollDistance;
-      varying vec2 vRollBounds;
+      varying vec4 vRollBounds;
       float ellipse(vec2 p, vec2 center, vec2 scale) {
         float d = length((p-center)/scale);
         return 1.0-smoothstep(.72,1.0,d);
@@ -91,8 +104,9 @@ export function createSnowFootprints(root, world) {
           // Uneven shoulder/body contact produces a wandering, broken scuff,
           // while the supporting geometry keeps matching edges on slopes.
           float along = vRollDistance;
-          float sway = sin(along*2.7)*.105 + sin(along*7.1+.8)*.042;
-          float width = .82 + sin(along*4.2+1.4)*.09 + sin(along*9.6)*.045;
+          float phase = vRollBounds.z;
+          float sway = sin(along*2.7+phase)*.22 + sin(along*7.1+.8+phase)*.065;
+          float width = min(.97-abs(sway), .82 + sin(along*4.2+1.4+phase)*.10 + sin(along*9.6+phase)*.045);
           float signedAcross = (p.x-.5)*2. - sway;
           float edge = abs(signedAcross)/width + sin(along*17.+signedAcross*8.)*.045;
           // The rounded ends span several segments. Every segment reads the
@@ -102,9 +116,9 @@ export function createSnowFootprints(root, world) {
           float cap = max(0.,1.-toEnd/capLength);
           edge = length(vec2(max(0.,edge),cap));
           float body = 1.-smoothstep(.54,.97,edge);
-          float clumps = .55 + .45*sin(along*6.7+signedAcross*11.+sin(along*3.1));
+          float clumps = .55 + .45*sin(along*6.7+signedAcross*11.+sin(along*3.1)+phase);
           float shoulder = exp(-pow((edge-.79)/.13,2.)) * (.35+.65*clumps);
-          float pressure = .68 + .32*pow(.5+.5*sin(along*5.3+sin(along*1.9)),2.);
+          float pressure = (.54 + .46*pow(.5+.5*sin(along*5.3+sin(along*1.9)+phase),2.)) * vRollBounds.w;
           float scrape = exp(-pow((signedAcross-.17*sin(along*3.8))/.11,2.)) * (.5+.5*sin(along*13.));
           float scuff = .93 + .07*clumps - scrape*.055;
           float alpha = (body*.34*pressure + shoulder*.065) * vTrackFade;
@@ -132,6 +146,7 @@ export function createSnowFootprints(root, world) {
   const mesh = new THREE.InstancedMesh(geometry, material, MAX_FOOTPRINTS);
   mesh.name = 'Schneespuren';
   mesh.count = 0;
+  mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   mesh.frustumCulled = false;
   mesh.renderOrder = 4;
   root.add(mesh);
@@ -158,6 +173,7 @@ export function createSnowFootprints(root, world) {
   const trackers = new Map();
   const transform = new THREE.Object3D();
   let created = 0, footprintsCreated = 0, rollSegmentsCreated = 0, particleBursts = 0, lastAverageFade = 0;
+  let lastUpdateTime = 0, expiredCount = 0, capacitySkipped = 0, sourceCapacitySkipped = 0, contactSerial = 0;
 
   function spawnParticles(x, y, z, direction, side, speed, time) {
     const forwardX = Math.sin(direction), forwardZ = Math.cos(direction);
@@ -200,6 +216,11 @@ export function createSnowFootprints(root, world) {
     const tracker=trackers.get(source.id ?? 'player');
     const snowWeight = snowWeightAt(world, x, z);
     if (snowWeight < .62) { if (tracker) tracker.lastRoll=null; return false; }
+    if (prints.length >= MAX_FOOTPRINTS) {
+      capacitySkipped++;
+      if (tracker) { tracker.capacitySkipped++; tracker.lastRoll = null; }
+      return false;
+    }
     const surfaceY=(px,pz)=>(world.snowSurfaceAt?.(px,pz)
       ?? (world.heightAt(px,pz)+snowVisualOffset(px,pz,snowWeightAt(world,px,pz))))+.008;
     let y=surfaceY(x,z),pitch=0,trackLength=source.segmentLength;
@@ -210,15 +231,17 @@ export function createSnowFootprints(root, world) {
       trackLength=Math.hypot(trackLength,end-start);
     }
 
-    const rollGroup = rolling ? tracker?.lastRoll?.rollGroup
-      ?? { start: source.rollDistance ?? 0, end: 0 } : null;
-    if (rollGroup) rollGroup.end = (source.rollDistance ?? 0) + (source.segmentLength ?? 0);
+    const previousRoll = tracker?.lastRoll?.contactId === source.contact?.id ? tracker.lastRoll : null;
+    const rollGroup = rolling ? previousRoll?.rollGroup
+      ?? { start: source.rollDistance ?? 0, end: 0, phase: source.contact?.phase ?? 0, pressure: source.contact?.pressure ?? 1 } : null;
+    if (rollGroup) rollGroup.end = (source.rollDistance ?? 0) + (source.rollLength ?? source.segmentLength ?? 0);
     const print = {
+      id: created + 1, sourceId: source.id ?? 'player', contactId: source.contact?.id ?? null,
       x, z, y,
       direction, born: time, rolling, pitch,
-      rollDistance: source.rollDistance ?? 0, rollLength: source.segmentLength ?? 0,
+      rollDistance: source.rollDistance ?? 0, rollLength: source.rollLength ?? source.segmentLength ?? 0,
       rollGroup,
-      startCap: rolling && !tracker?.lastRoll, endCap: rolling,
+      startCap: rolling && !previousRoll, endCap: rolling,
       width: rolling ? ROLL_TRACK_WIDTH / .38 : 1,
       length: rolling ? trackLength / .64 : 1,
       rotationJitter: rolling ? 0 : (hash(seed, 103) - .5) * .080,
@@ -228,11 +251,10 @@ export function createSnowFootprints(root, world) {
       snowWeight,
     };
     if (rolling && tracker) {
-      if (tracker.lastRoll) tracker.lastRoll.endCap=false;
+      if (previousRoll) previousRoll.endCap=false;
       tracker.lastRoll=print;
     }
     prints.push(print);
-    if (prints.length > MAX_FOOTPRINTS) prints.shift();
     created++;
     if (rolling) rollSegmentsCreated++; else footprintsCreated++;
     if (tracker) tracker[rolling ? 'rollSegmentsCreated' : 'footprintsCreated']++;
@@ -240,42 +262,107 @@ export function createSnowFootprints(root, world) {
     return true;
   }
 
+  function nextContact(tracker, start) {
+    const index = tracker.contactIndex++, seed = tracker.seed + tracker.rollNumber * 31;
+    const length = MIN_CONTACT_LENGTH + hash(seed, index * 7 + 1) * .56;
+    return { id: ++contactSerial, start, end: start + length,
+      nextStart: start + length + MIN_CONTACT_GAP + hash(seed, index * 7 + 2) * .23,
+      phase: hash(seed, index * 7 + 3) * Math.PI * 2,
+      pressure: .78 + hash(seed, index * 7 + 4) * .22 };
+  }
+
+  function beginRoll(tracker, time) {
+    tracker.rollStartedAt = time; tracker.rollDistance = 0; tracker.rollNumber++;
+    tracker.delayDistance = tracker.landingDistance = null;
+    tracker.rollAnchor = tracker.contact = tracker.lastRoll = null;
+    tracker.contactIndex = 0;
+  }
+
+  function emitRollSegment(source, tracker, end, time) {
+    const start = tracker.rollAnchor, dx = end.x - start.x, dz = end.z - start.z;
+    const length = Math.hypot(dx, dz);
+    if (length > .001) add({ ...source, rolling: true,
+      x: (start.x + end.x) / 2, z: (start.z + end.z) / 2,
+      direction: Math.atan2(dx, dz), segmentLength: length,
+      rollDistance: start.distance, rollLength: end.distance - start.distance, contact: tracker.contact }, time);
+    tracker.rollAnchor = end;
+  }
+
+  function finishRoll(source, tracker, time) {
+    const existingContact = tracker.lastRoll?.contactId === tracker.contact?.id;
+    // A roll ending just as the next contact starts should not stamp a thin
+    // transverse sliver. Established patches still keep their short soft tail.
+    const minimumTail = existingContact ? .025 : .20;
+    if (tracker.rollAnchor && tracker.contact && tracker.rollDistance - tracker.rollAnchor.distance > minimumTail) {
+      emitRollSegment(source, tracker, { x: tracker.lastX, z: tracker.lastZ, distance: tracker.rollDistance }, time);
+    }
+    tracker.rollAnchor = tracker.contact = tracker.lastRoll = null;
+  }
+
+  function sampleRoll(source, tracker, time) {
+    const dx = source.x - tracker.lastX, dz = source.z - tracker.lastZ;
+    const distance = Math.hypot(dx, dz), from = tracker.rollDistance, to = from + distance;
+    if (distance > 5) { beginRoll(tracker, time); return; }
+    if (tracker.delayDistance === null && time >= tracker.rollStartedAt + ROLL_CONTACT_DELAY) {
+      const fraction = THREE.MathUtils.clamp((tracker.rollStartedAt + ROLL_CONTACT_DELAY - tracker.lastTime) / (time - tracker.lastTime), 0, 1);
+      tracker.delayDistance = from + distance * fraction;
+    }
+    if (tracker.landingDistance === null && tracker.delayDistance !== null && to >= ROLL_AIRBORNE_DISTANCE) {
+      tracker.landingDistance = Math.max(ROLL_AIRBORNE_DISTANCE, tracker.delayDistance);
+      tracker.contact = nextContact(tracker, tracker.landingDistance);
+    }
+    const pointAt = travel => {
+      const amount = distance > .00001 ? THREE.MathUtils.clamp((travel - from) / distance, 0, 1) : 0;
+      return { x: tracker.lastX + dx * amount, z: tracker.lastZ + dz * amount, distance: travel };
+    };
+    // Resample by travelled distance, retaining the un-emitted remainder. A
+    // high frame rate cannot split .29 m into two wasteful .145 m instances.
+    while (tracker.contact && tracker.contact.start <= to) {
+      tracker.rollAnchor ??= pointAt(tracker.contact.start);
+      const next = Math.min(tracker.rollAnchor.distance + ROLL_SEGMENT_LENGTH, tracker.contact.end);
+      if (next > to + 1e-8) break;
+      emitRollSegment(source, tracker, pointAt(next), time);
+      if (next >= tracker.contact.end - 1e-8) {
+        tracker.contact = nextContact(tracker, tracker.contact.nextStart);
+        tracker.rollAnchor = tracker.lastRoll = null;
+      }
+    }
+    tracker.rollDistance = to;
+  }
+
   function sampleSource(source, time) {
     if (!source || !Number.isFinite(source.x) || !Number.isFinite(source.z)) return;
     const id = source.id ?? 'player';
     let tracker = trackers.get(id);
     if (!tracker) {
-      tracker = { x: source.x, z: source.z, side: -1, initialized: false, rolling: Boolean(source.rolling), rollDistance: 0, footprintsCreated: 0, rollSegmentsCreated: 0 };
+      if (trackers.size >= MAX_TRACKERS) { sourceCapacitySkipped++; return; }
+      let seed = 0; for (const letter of String(id)) seed = (seed * 31 + letter.charCodeAt(0)) >>> 0;
+      tracker = { x: source.x, z: source.z, lastX: source.x, lastZ: source.z, lastTime: time,
+        seed, side: -1, initialized: false, rolling: Boolean(source.rolling), rollNumber: 0,
+        rollDistance: 0, footprintsCreated: 0, rollSegmentsCreated: 0, capacitySkipped: 0 };
       trackers.set(id, tracker);
     }
     if (!tracker.initialized) {
       tracker.x = source.x; tracker.z = source.z; tracker.initialized = true;
+      if (tracker.rolling) beginRoll(tracker, time);
       return;
     }
-    if (!source.moving || tracker.rolling !== Boolean(source.rolling)) {
-      tracker.x = source.x; tracker.z = source.z; tracker.rolling = Boolean(source.rolling);
-      tracker.lastRoll=null; tracker.rollDistance=0;
-      return;
+    if (time <= tracker.lastTime) return; // Pausing must not restart a half-finished roll.
+    const rolling = Boolean(source.rolling), changed = rolling !== tracker.rolling;
+    if (changed) {
+      if (tracker.rolling) finishRoll(source, tracker, time);
+      if (rolling) beginRoll(tracker, tracker.lastTime);
+      else { tracker.x = source.x; tracker.z = source.z; }
+      tracker.rolling = rolling;
     }
-    const distance = Math.hypot(source.x - tracker.x, source.z - tracker.z);
-    if (source.rolling) {
-      if (distance < .18) return;
-      if (distance <= 5) {
-        const dx = source.x-tracker.x, dz = source.z-tracker.z;
-        const steps = Math.min(20,Math.ceil(distance/.28)), direction = Math.atan2(dx,dz);
-        for (let i=0;i<steps;i++) add({ ...source,
-          x:tracker.x+dx*(i+.5)/steps, z:tracker.z+dz*(i+.5)/steps,
-          direction, segmentLength: distance/steps, rollDistance: tracker.rollDistance + distance*i/steps },time);
-        tracker.rollDistance += distance;
-      } else { tracker.lastRoll=null; tracker.rollDistance=0; }
-      tracker.x=source.x; tracker.z=source.z;
-      return;
+    if (rolling) sampleRoll(source, tracker, time);
+    else if (!source.moving) { tracker.x = source.x; tracker.z = source.z; }
+    else if (!changed && Math.hypot(source.x - tracker.x, source.z - tracker.z) >= (source.stepDistance ?? STEP_DISTANCE)) {
+      tracker.side *= -1;
+      add({ ...source, side: tracker.side }, time);
+      tracker.x = source.x; tracker.z = source.z;
     }
-    if (distance < (source.stepDistance ?? STEP_DISTANCE)) return;
-    tracker.side *= -1;
-    add({ ...source, side: tracker.side }, time);
-    // Always advance the tracker so entering snow never emits accumulated steps.
-    tracker.x = source.x; tracker.z = source.z;
+    tracker.lastX = source.x; tracker.lastZ = source.z; tracker.lastTime = time;
   }
 
   function updateParticles(time) {
@@ -303,13 +390,23 @@ export function createSnowFootprints(root, world) {
   }
 
   function update(time, sources = []) {
+    if (!Number.isFinite(time)) return particles.length;
+    lastUpdateTime = time;
+    // Reclaim only marks whose own fade has completed, before admitting new
+    // ones. Other actors and dense roll contacts never erase a visible sole.
+    let retained = 0;
+    for (const print of prints) {
+      if (time - print.born >= LIFETIME) { expiredCount++; continue; }
+      prints[retained++] = print;
+    }
+    prints.length = retained;
+    for (const [id, tracker] of trackers) if (time - tracker.lastTime > LIFETIME + 1) trackers.delete(id);
     for (const source of sources) sampleSource(source, time);
     const activeParticles = updateParticles(time);
 
     let write = 0, fadeTotal = 0;
     for (let read = 0; read < prints.length; read++) {
       const print = prints[read], age = time - print.born;
-      if (age >= LIFETIME) continue;
       if (write !== read) prints[write] = print;
       const fade = age <= FADE_START ? 1 : Math.max(0, 1 - (age - FADE_START) / (LIFETIME - FADE_START));
       transform.position.set(print.x, print.y, print.z);
@@ -322,19 +419,19 @@ export function createSnowFootprints(root, world) {
       kinds.setX(write, print.rolling ? 1 : 0);
       caps.setX(write, (print.startCap ? 1 : 0)+(print.endCap ? 2 : 0));
       rollDistances.setXY(write, print.rollDistance, print.rollLength);
-      rollBounds.setXY(write, print.rollGroup?.start ?? 0, print.rollGroup?.end ?? 0);
+      rollBounds.setXYZW(write, print.rollGroup?.start ?? 0, print.rollGroup?.end ?? 0,
+        print.rollGroup?.phase ?? 0, print.rollGroup?.pressure ?? 1);
       write++;
     }
     prints.length = write;
     lastAverageFade = write ? fadeTotal / write : 0;
     mesh.count = write;
     if (write) {
-      mesh.instanceMatrix.needsUpdate = true;
-      fades.needsUpdate = true;
-      kinds.needsUpdate = true;
-      caps.needsUpdate = true;
-      rollDistances.needsUpdate = true;
-      rollBounds.needsUpdate = true;
+      // Capacity is conservative; upload only the occupied part of each pool.
+      for (const attribute of [mesh.instanceMatrix, fades, kinds, caps, rollDistances, rollBounds]) {
+        attribute.clearUpdateRanges(); attribute.addUpdateRange(0, write * attribute.itemSize);
+        attribute.needsUpdate = true;
+      }
     }
     return activeParticles;
   }
@@ -342,6 +439,7 @@ export function createSnowFootprints(root, world) {
   function reset() {
     prints.length = 0; particles.length = 0; trackers.clear();
     mesh.count = 0; particleMesh.count = 0; lastAverageFade = 0;
+    lastUpdateTime = expiredCount = capacitySkipped = sourceCapacitySkipped = 0;
   }
 
   return {
@@ -355,12 +453,24 @@ export function createSnowFootprints(root, world) {
       const now = prints.length ? Math.max(...prints.map(print => print.born)) : 0;
       return {
         count: prints.length, maximum: MAX_FOOTPRINTS, created,
+        capacityBudgetSources: CAPACITY_SOURCES, capacityMaximumSourceRate: MAX_SOURCE_RATE,
+        capacityPolicy: 'expire-before-admission-no-live-eviction', capacitySkipped, sourceCapacitySkipped, expiredCount,
+        oldestActiveAgeSeconds: prints.length ? Math.max(...prints.map(print => lastUpdateTime - print.born)) : 0,
+        activeTracks: prints.map((print, index) => ({ id: print.id, sourceId: print.sourceId,
+          kind: print.rolling ? 'roll' : 'foot', born: print.born, age: lastUpdateTime - print.born, fade: fades.getX(index),
+          x: print.x, z: print.z, rollDistance: print.rollDistance, rollLength: print.rollLength,
+          contactStart: print.rollGroup?.start ?? null, contactEnd: print.rollGroup?.end ?? null })),
         footprintsCreated, rollSegmentsCreated,
-        bySource: Object.fromEntries([...trackers].map(([id,t])=>[id,{footprintsCreated:t.footprintsCreated,rollSegmentsCreated:t.rollSegmentsCreated}])),
+        bySource: Object.fromEntries([...trackers].map(([id,t])=>[id,{footprintsCreated:t.footprintsCreated,rollSegmentsCreated:t.rollSegmentsCreated,
+          capacitySkipped:t.capacitySkipped, rollStartedAt:t.rollStartedAt ?? null, rollLandingDistance:t.landingDistance ?? null}])),
         activeFootprints: prints.filter(print => !print.rolling).length,
         activeRollSegments: prints.filter(print => print.rolling).length,
-        rollTrackWidthMeters: ROLL_TRACK_WIDTH, rollStyle: 'irregular-body-furrow',
+        rollTrackWidthMeters: ROLL_TRACK_WIDTH, rollStyle: 'interrupted-body-contact-patches',
         rollEndStyle: 'rounded-powder-caps', rollCapLengthMeters: ROLL_CAP_LENGTH,
+        rollContactDelaySeconds: ROLL_CONTACT_DELAY, rollMinimumAirborneMeters: ROLL_AIRBORNE_DISTANCE,
+        rollSampleSpacingMeters: ROLL_SEGMENT_LENGTH,
+        rollContactLengthMeters: [MIN_CONTACT_LENGTH, MIN_CONTACT_LENGTH + .56],
+        rollContactGapMeters: [MIN_CONTACT_GAP, MIN_CONTACT_GAP + .23],
         continuousRollDistance: true, asymmetricPowderShoulders: true,
         fadeStartSeconds: FADE_START, lifetimeSeconds: LIFETIME,
         stepDistance: STEP_DISTANCE, snowThreshold: .62, averageFade: lastAverageFade,

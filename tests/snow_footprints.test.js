@@ -58,76 +58,177 @@ test('footprints are not emitted outside snow', () => {
   footprints.dispose();
 });
 
-test('rolling leaves a continuous body-width furrow without soles, then walking resumes normal steps', () => {
-  const root=new THREE.Group(), tracks=createSnowFootprints(root,world(true));
-  const sample=(z,rolling=true)=>({id:'player',x:0,z,direction:0,moving:true,speed:rolling?9:4,rolling});
-  tracks.update(0,[sample(0)]);
-  tracks.update(.1,[sample(.8)]);
-  tracks.update(.2,[sample(1.6)]);
-  const roll=tracks.inspect();
-  assert.equal(roll.footprintsCreated,0);
-  assert.ok(roll.activeRollSegments>=6,'long frame steps are filled with adjoining track segments');
-  assert.equal(roll.singleInstancedDraw,true,'roll and foot marks share the bounded pool');
-  const mesh=root.children.find(m=>m.name==='Schneespuren'),matrix=new THREE.Matrix4();
-  for(let i=0;i<mesh.count;i++) {
-    mesh.getMatrixAt(i,matrix);
-    assert.ok(Math.abs(matrix.elements[12])<1e-6,'roll stays centred instead of alternating left/right feet');
-    assert.ok(Math.abs(matrix.elements[0])*.38>.95,'the body groove is noticeably wider than the old .76 m track');
-    assert.equal(mesh.geometry.attributes.instanceTrackKind.getX(i),1);
-    const distances=mesh.geometry.attributes.instanceRollDistance;
-    const bounds=mesh.geometry.attributes.instanceRollBounds;
-    assert.ok(Math.abs(bounds.getX(i))<1e-6 && Math.abs(bounds.getY(i)-1.6)<1e-6,
-      'all connected segments share the full roll bounds, allowing a round cap to span several segments');
-    assert.ok(distances.getY(i)>0);
-    if(i>0)assert.ok(Math.abs(distances.getX(i)-distances.getX(i-1)-distances.getY(i-1))<1e-6,
-      'irregular scuff pattern continues across frame and segment boundaries');
-    assert.equal(mesh.geometry.attributes.instanceTrackCaps.getX(i),i===0?1:i===mesh.count-1?2:0,
-      'only the beginning and end fade; interior segments do not create transverse bands');
+function rollRun(tracks, { rate = 60, startTime = 0, startZ = 0, duration = .72 } = {}) {
+  const sample = (time, rolling = true) => ({ id: 'player', x: 0, z: startZ + 8.8 * Math.min(time, duration),
+    direction: 0, moving: true, rolling, speed: rolling ? 8.8 : 4 });
+  tracks.update(startTime, [sample(0)]);
+  for (let frame = 1; frame < duration * rate; frame++) tracks.update(startTime + frame / rate, [sample(frame / rate)]);
+  tracks.update(startTime + duration, [sample(duration)]);
+  tracks.update(startTime + duration + .01, [sample(duration, false)]);
+  return tracks.inspect();
+}
+
+test('rolling begins after the airborne phase and leaves separate rounded body contacts without soles', () => {
+  const root = new THREE.Group(), tracks = createSnowFootprints(root, world(true));
+  tracks.update(0, [{ id: 'player', x: 0, z: 0, moving: true, rolling: true }]);
+  tracks.update(.10, [{ id: 'player', x: 0, z: .88, moving: true, rolling: true }]);
+  assert.equal(tracks.inspect().activeRollSegments, 0, 'airborne start cannot paint the snow');
+  tracks.reset();
+  const roll = rollRun(tracks);
+  assert.equal(roll.footprintsCreated, 0);
+  assert.ok(roll.activeRollSegments >= 8 && roll.activeRollSegments < 32);
+  assert.equal(roll.singleInstancedDraw, true);
+  const intervals = [...new Map(roll.activeTracks.map(track => [track.contactStart, [track.contactStart, track.contactEnd]])).values()];
+  assert.ok(intervals.length >= 3, 'shoulder, back and recovery leave distinct contact patches');
+  assert.ok(intervals.every(([start,end]) => end - start >= .20), 'ending a roll cannot stamp a thin isolated stripe');
+  assert.ok(intervals[0][0] >= .9 && roll.activeTracks.every(track => track.born >= .14));
+  for (let i = 1; i < intervals.length; i++) assert.ok(intervals[i][0] - intervals[i-1][1] >= .149,
+    'there are real unpainted gaps between the contact geometries');
+  const mesh = root.children.find(part => part.name === 'Schneespuren'), matrix = new THREE.Matrix4();
+  const bounds = mesh.geometry.attributes.instanceRollBounds;
+  for (let i = 0; i < mesh.count; i++) {
+    mesh.getMatrixAt(i, matrix);
+    assert.ok(Math.abs(matrix.elements[12]) < 1e-6);
+    assert.ok(Math.abs(matrix.elements[0]) * .38 > .95, 'wide body contacts are retained');
+    const first = i === 0 || bounds.getX(i) !== bounds.getX(i-1);
+    const last = i === mesh.count-1 || bounds.getX(i) !== bounds.getX(i+1);
+    assert.equal(mesh.geometry.attributes.instanceTrackCaps.getX(i), Number(first) + Number(last) * 2);
   }
-  tracks.update(.3,[sample(1.7,false)]);
-  assert.equal(tracks.inspect().footprintsCreated,0,'transition never adds a trailing sole to the roll');
-  tracks.update(.5,[sample(2.4,false)]);
-  assert.equal(tracks.inspect().footprintsCreated,1);
-  assert.equal(tracks.inspect().activeRollSegments,roll.activeRollSegments);
-  tracks.update(11,[]);assert.equal(tracks.inspect().count,0);
+  tracks.update(1, [{ id: 'player', x: 0, z: 7.1, moving: true, rolling: false, speed: 4 }]);
+  assert.equal(tracks.inspect().footprintsCreated, 1, 'walking resumes ordinary soles');
+  assert.equal(tracks.inspect().activeRollSegments, roll.activeRollSegments);
   tracks.dispose();
-  const dry=createSnowFootprints(new THREE.Group(),world(false));
-  dry.update(0,[sample(0)]);dry.update(.2,[sample(2)]);
-  assert.equal(dry.inspect().rollSegmentsCreated,0);dry.dispose();
 });
 
-test('rounded roll bounds stop at snow gaps and never join a later roll',()=>{
-  const root=new THREE.Group(),tracks=createSnowFootprints(root,{
-    ...world(true),biomeWeightsAt:(x,z)=>[{biome:z>=.9&&z<1.7?'meadow':'snow',weight:1}],
-  });
-  const sample=(z,rolling=true)=>({id:'player',x:0,z,moving:true,rolling});
-  tracks.update(0,[sample(0)]);tracks.update(.1,[sample(.8)]);
-  tracks.update(.2,[sample(1.6)]);tracks.update(.3,[sample(2.4)]);
-  const mesh=root.children.find(m=>m.name==='Schneespuren');
-  const distances=mesh.geometry.attributes.instanceRollDistance,bounds=mesh.geometry.attributes.instanceRollBounds;
-  const firstEnd=bounds.getY(0);
-  assert.ok(firstEnd<.9,'first rounded run ends before the snow gap');
-  const firstNew=Array.from({length:mesh.count},(_,i)=>i).find(i=>distances.getX(i)>1.6);
-  assert.notEqual(firstNew,undefined);
-  assert.ok(bounds.getX(firstNew)>1.6 && bounds.getY(firstNew)>2.3,
-    'the second rounded run begins only where snow returns');
-  tracks.update(.4,[sample(2.4,false)]);tracks.update(.5,[sample(2.4)]);
-  tracks.update(.6,[sample(3.2)]);
-  assert.equal(bounds.getY(0),firstEnd,'a later roll cannot lengthen a completed run');
-  assert.ok(bounds.getX(mesh.count-1)<1e-6 && Math.abs(bounds.getY(mesh.count-1)-.8)<1e-6,
-    'new roll uses its own rounded start and end');
-  tracks.reset();assert.equal(tracks.inspect().activeRollSegments,0);tracks.dispose();
-});
-
-test('adjoining roll segments share their edge height on sloped snow without bright gaps',()=>{
-  const root=new THREE.Group(),tracks=createSnowFootprints(root,{...world(true),snowSurfaceAt:(x,z)=>2+z*.15+Math.sin(z)*.05});
-  tracks.update(0,[{id:'player',x:0,z:0,moving:true,rolling:true}]);
-  tracks.update(.1,[{id:'player',x:0,z:1,moving:true,rolling:true}]);
-  const mesh=root.children.find(m=>m.name==='Schneespuren'),a=new THREE.Matrix4(),b=new THREE.Matrix4();
-  for(let i=1;i<mesh.count;i++) {
-    mesh.getMatrixAt(i-1,a);mesh.getMatrixAt(i,b);
-    for(const x of [-.19,.19])assert.ok(new THREE.Vector3(x,0,-.32).applyMatrix4(a)
-      .distanceTo(new THREE.Vector3(x,0,.32).applyMatrix4(b))<1e-6);
+test('contact placement, lengths and profile seeds do not change with rendering frame rate', () => {
+  function capture(rate) {
+    const root = new THREE.Group(), tracks = createSnowFootprints(root, world(true));
+    const state = rollRun(tracks, { rate });
+    const bounds = root.children.find(part => part.name === 'Schneespuren').geometry.attributes.instanceRollBounds;
+    const result = state.activeTracks.map((track, index) => [track.x, track.z, track.rollDistance, track.rollLength,
+      track.contactStart, track.contactEnd, bounds.getZ(index), bounds.getW(index)]);
+    tracks.dispose(); return result;
   }
+  const expected = capture(60);
+  for (const rate of [20, 30, 144]) {
+    const actual = capture(rate); assert.equal(actual.length, expected.length, `same segment count at ${rate} fps`);
+    actual.forEach((values, index) => values.forEach((value, component) =>
+      assert.ok(Math.abs(value - expected[index][component]) < 1e-6, `stable patch at ${rate} fps`)));
+  }
+});
+
+test('snow gaps and later rolls cannot extend an earlier contact patch', () => {
+  const root = new THREE.Group(), tracks = createSnowFootprints(root, {
+    ...world(true), biomeWeightsAt: (x,z) => [{ biome: z >= 1.8 && z < 3.4 ? 'meadow' : 'snow', weight: 1 }],
+  });
+  const first = rollRun(tracks);
+  assert.ok(first.activeTracks.length > 0);
+  assert.ok(first.activeTracks.every(track => track.z < 1.8 || track.z >= 3.4));
+  const firstContact = first.activeTracks[0];
+  assert.ok(firstContact.contactEnd < 1.9);
+  rollRun(tracks, { startTime: 1, startZ: 6.4 });
+  const after = tracks.inspect();
+  assert.equal(after.activeTracks.find(track => track.id === firstContact.id).contactEnd, firstContact.contactEnd);
+  assert.ok(after.activeTracks.some(track => track.z > 7.5 && track.rollDistance < 2),
+    'a later roll starts a new local travel coordinate after its own jump');
+  tracks.reset(); assert.equal(tracks.inspect().activeRollSegments, 0); tracks.dispose();
+});
+
+test('adjoining contact segments share edge heights on slopes; gaps remain intentionally open', () => {
+  const root = new THREE.Group(), tracks = createSnowFootprints(root, {
+    ...world(true), snowSurfaceAt: (x,z) => 2 + z * .15 + Math.sin(z) * .05,
+  });
+  rollRun(tracks);
+  const mesh = root.children.find(part => part.name === 'Schneespuren');
+  const bounds = mesh.geometry.attributes.instanceRollBounds;
+  const a = new THREE.Matrix4(), b = new THREE.Matrix4(); let seams = 0;
+  for (let i = 1; i < mesh.count; i++) {
+    if (bounds.getX(i) !== bounds.getX(i-1)) continue;
+    mesh.getMatrixAt(i-1,a); mesh.getMatrixAt(i,b);
+    for (const x of [-.19,.19]) assert.ok(new THREE.Vector3(x,0,-.32).applyMatrix4(a)
+      .distanceTo(new THREE.Vector3(x,0,.32).applyMatrix4(b)) < 1e-6);
+    seams++;
+  }
+  assert.ok(seams > 4, 'test actually compares contact seams'); tracks.dispose();
+});
+
+test('thirty seconds of running preserve each mark until its own age-based fade finishes', () => {
+  const tracks = createSnowFootprints(new THREE.Group(), world(true));
+  let previous = new Map(), peak = 0, checkedFades = 0;
+  for (let frame = 0; frame <= 36 * 60; frame++) {
+    const time = frame / 60;
+    tracks.update(time, [{ id: 'player', x: 0, z: 5.6 * time, moving: true, speed: 5.6, stepDistance: .58 }]);
+    if (frame % 6) continue;
+    const state = tracks.inspect(), current = new Map(state.activeTracks.map(track => [track.id, track]));
+    for (const [id, before] of previous) {
+      const after = current.get(id);
+      if (!after) assert.ok(time - before.born >= 10 - 1e-8, 'running cannot evict a live mark');
+      else { assert.ok(after.fade <= before.fade + 1e-6); if (after.age > 6) checkedFades++; }
+    }
+    previous = current; peak = Math.max(peak, state.count);
+    assert.equal(state.capacitySkipped, 0);
+  }
+  assert.ok(peak >= 80 && checkedFades > 100);
+  assert.ok(tracks.inspect().expiredCount > 100);
+  tracks.dispose();
+});
+
+test('four simultaneous sources with repeated rolls keep opaque and fading trails beyond the old 96-slot limit', () => {
+  const tracks = createSnowFootprints(new THREE.Group(), world(true));
+  let position = 0, previous = new Map(), peak = 0;
+  for (let frame = 0; frame <= 22 * 60; frame++) {
+    const time = frame / 60, rolling = time % 2.5 < .72;
+    if (frame) position += (rolling ? 8.8 : 5.6) / 60;
+    tracks.update(time, [{ id: 'player', x: 0, z: position, moving: true, rolling, speed: rolling ? 8.8 : 5.6, stepDistance: .58 },
+      ...[1,2,3].map(id => ({ id: `practice-${id}`, x: id * 2, z: time * 2.4, moving: true, speed: 2.4, stepDistance: .68 }))]);
+    if (frame % 6) continue;
+    const state = tracks.inspect(), current = new Map(state.activeTracks.map(track => [track.id,track]));
+    for (const [id, before] of previous) {
+      const after = current.get(id);
+      if (!after) assert.ok(time - before.born >= 10 - 1e-8, 'other actors and roll patches cannot erase a live sole');
+      else assert.ok(after.fade <= before.fade + 1e-6);
+    }
+    previous = current; peak = Math.max(peak, state.count);
+    assert.equal(state.capacitySkipped, 0); assert.equal(state.sourceCapacitySkipped, 0);
+  }
+  assert.ok(peak > 180 && tracks.inspect().activeRollSegments > 0);
+  const beforePause = tracks.inspect();
+  tracks.update(22, [{ id: 'player', x: 0, z: position, moving: false, rolling: false }]);
+  assert.deepEqual(tracks.inspect(), beforePause, 'a frozen game clock changes neither fade nor contact history');
+  tracks.update(32.1, []); assert.equal(tracks.inspect().count, 0);
+  tracks.reset(); assert.equal(tracks.inspect().capacitySkipped, 0); tracks.dispose();
+});
+
+test('overload rejects new marks instead of cutting old trails, then expired slots are reclaimed before admission', () => {
+  const tracks = createSnowFootprints(new THREE.Group(), world(true));
+  const sources = frame => Array.from({ length: 40 }, (_,index) => ({ id: `load-${index}`, x: index * 2,
+    z: frame * .7, moving: true, speed: 35, stepDistance: .58 }));
+  tracks.update(0, sources(0)); tracks.update(.02, sources(1));
+  const first = tracks.inspect().activeTracks[0];
+  for (let frame = 2; frame <= 225; frame++) tracks.update(frame * .02, sources(frame));
+  const full = tracks.inspect();
+  assert.equal(full.count, full.maximum); assert.ok(full.capacitySkipped > 0);
+  const retained = full.activeTracks.find(track => track.id === first.id);
+  assert.ok(retained && retained.age < 6); assert.equal(retained.fade, first.fade, 'an opaque mark survives overload unchanged');
+  tracks.update(10.021, sources(226));
+  const recycled = tracks.inspect();
+  assert.equal(recycled.capacitySkipped, full.capacitySkipped, 'expired slots were freed before new marks were sampled');
+  assert.ok(recycled.expiredCount >= 40); assert.equal(recycled.count, recycled.maximum);
+  assert.ok(!recycled.activeTracks.some(track => track.id === first.id));
+  tracks.dispose();
+});
+
+test('the derived pool covers twelve continuous full-speed roll sources for their entire lifetime', () => {
+  const tracks = createSnowFootprints(new THREE.Group(), world(true));
+  for (let frame = 0; frame <= 599; frame++) {
+    const time = frame / 60;
+    tracks.update(time, Array.from({ length: 12 }, (_,index) => ({ id: `rolling-${index}`,
+      x: index * 2, z: time * 8.8, moving: true, rolling: true, speed: 8.8 })));
+  }
+  const state = tracks.inspect();
+  assert.equal(state.capacitySkipped, 0); assert.equal(state.sourceCapacitySkipped, 0);
+  assert.ok(state.count > 2000 && state.count < state.maximum);
+  assert.equal(state.count, state.created, 'no mark has yet reached ten seconds, so none may be removed');
+  assert.equal(state.expiredCount, 0);
   tracks.dispose();
 });

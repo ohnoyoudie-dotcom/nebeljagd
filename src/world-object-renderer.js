@@ -20,6 +20,7 @@ import { isLandPoint } from './map/model.js';
 import { createGroundGrassExclusion, grassBiomeProfile } from './meadow-ground.js';
 import { WEAPON_TYPES } from './loot-tiers.js';
 import { createDestructionDebris } from './destruction-debris.js';
+import { sampleTreeAppearance, applyTreeAppearance, createTreeInstancePart } from './tree-appearance.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
 import bushUrl from '../assets/imported/rei/runtime/bush.glb?url&inline';
@@ -155,8 +156,8 @@ function createFlowerPrototypes(flowers, material) {
   return result;
 }
 
-function disposeScenery(groups, prototypes, hosts = []) {
-  const geometries = new Set(), materials = new Set(), textures = new Set();
+function disposeScenery(groups, prototypes, hosts = [], extraGeometries = []) {
+  const geometries = new Set(extraGeometries), materials = new Set(), textures = new Set();
   function collect(object) {
     if (object.geometry) geometries.add(object.geometry);
     for (const material of Array.isArray(object.material) ? object.material : object.material ? [object.material] : []) materials.add(material);
@@ -245,7 +246,7 @@ async function createGrassPreview(root, { map, groundHeightAt = () => 0, colorAt
 
 /** Explicit object records are the only source of world props. Blades and flowers
  * within one editable patch are instanced details of that asset, not hidden map entries. */
-export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, biomeAt = () => null, quality = 'high', chunkSize = 64, previewOnly = false }) {
+export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, biomeAt = () => null, biomeWeightsAt, quality = 'high', chunkSize = 64, previewOnly = false }) {
   if (previewOnly) return createGrassPreview(root, { map, groundHeightAt, colorAt, quality });
   const authoredObjectCount = map.objects?.length ?? 0;
   const barrierCount = map.barriers?.length ?? 0;
@@ -264,6 +265,9 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const timeUniform = { value: 0 }, playerUniform = { value: new THREE.Vector3(30, 0, -42) };
   const barkMap = texture('bark'), foliageMap = texture('foliage');
   const bark = new THREE.MeshStandardMaterial({ map: barkMap, bumpMap: barkMap, bumpScale: .04, color: '#c4b18f', roughness: .95 });
+  // The original bark is also used by bushes. Only trees receive instance
+  // appearance attributes, so their hook needs a separate material owner.
+  const treeBark = bark.clone();
   const foliage = wind.apply(new THREE.MeshStandardMaterial({ map: foliageMap, color: '#d7dfbd', roughness: .92 }), { response: .65, height: 5.8 });
   const bushFoliage = wind.apply(new THREE.MeshStandardMaterial({ map: texture('bush-leaf'), color: '#d7dfbd', roughness: .92 }), { response: .5, height: 1.1 });
   const importedFlowerMat = wind.apply(new THREE.MeshStandardMaterial({ color: '#fff', vertexColors: true, side: THREE.DoubleSide, roughness: .92, forceSinglePass: true }), { response: .3, height: .55 });
@@ -277,14 +281,15 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   for (const [i, variant] of ['oak', 'birch', 'pine'].entries()) {
     const [trunk, near, far] = vegetation.group.children.slice(i * 3, i * 3 + 3);
     wind.apply(near.material, { response: .65, height: variant === 'pine' ? 7.2 : 6.8 });
-    prototypes.set(`tree:${variant}`, [{ geometry: trunk.geometry, material: trunk.material, castShadow: true }, { geometry: near.geometry, lowGeometry: far.geometry, material: near.material, castShadow: true, foliage: true }]);
+    prototypes.set(`tree:${variant}`, [{ geometry: trunk.geometry, material: trunk.material, castShadow: true, treePart: 'bark' }, { geometry: near.geometry, lowGeometry: far.geometry, material: near.material, castShadow: true, foliage: true, treePart: 'foliage' }]);
   }
   const importedAssets = { loaded: true, loadedGLBs: 5 + [...kitModels.values()].filter(model => !model.procedural).length, trees: 0, bushes: 0, flowers: 0, beds: 0, placements: [], sources: ['Rei_treeLeavesGN.glb', 'Rei_treeLeavesGN_samples.glb', 'Rei_flowersGN_sample.blend', 'grassGN3_3_v2_Rei.glb', ...[...kitModels.values()].map(model => model.procedural ? 'src/barrier-models.js' : `${model.asset}.glb`)], grassSourceContainsBlades: false,
     environmentKit: [...kitModels.values()].map(model => ({ id: model.id, asset: model.asset, procedural: Boolean(model.procedural), targetHeight: model.targetHeight, height: model.height, parts: model.parts.length,
       roofRemoved: model.roofRemoved, reducedDressing: model.reducedDressing, omittedDetailMeshes: model.omittedDetailMeshes })) };
   const stems = new Map();
   for (const [variant, gltf, nativeHeight, stem] of [['rei-tree01', tree01, 5.8, [.1719965339, 0, .1021305472]], ['rei-tree02', tree02, 5.2, [-.074421525, 0, .008194566]], ['rei-bush', bush, 1.1, null]]) {
-    const model = normalizedParts(gltf.scene, nativeHeight, mesh => /leaf|leaves|foliage|crown/i.test(`${mesh.name} ${mesh.material?.name}`) ? (stem ? foliage : bushFoliage) : bark);
+    const model = normalizedParts(gltf.scene, nativeHeight, mesh => /leaf|leaves|foliage|crown/i.test(`${mesh.name} ${mesh.material?.name}`) ? (stem ? foliage : bushFoliage) : stem ? treeBark : bark);
+    if (stem) for (const part of model.parts) part.treePart = part.material === foliage ? 'foliage' : 'bark';
     prototypes.set(`${stem ? 'tree' : 'bush'}:${variant}`, model.parts);
     if (stem) stems.set(variant, new THREE.Vector3(...stem).sub(model.offset).multiplyScalar(model.scale));
   }
@@ -529,11 +534,22 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     if (variant.startsWith('rei-') || kit) importedAssets.placements.push({ id: object.id, kind: object.kind, variant, x, z, y: groundHeightAt(x, z), scale });
   }
-  const instanced = [];
+  const instanced = [], treeGeometries = new Set();
+  const appearances = new Map((map.objects ?? []).filter(object => object.kind === 'tree')
+    .map(object => [object, sampleTreeAppearance(object, { biomeAt, biomeWeightsAt })]));
+  const appearancesById = new Map([...appearances].map(([object, appearance]) => [object.id, appearance]));
+  for (const tree of trees) tree.appearance = appearancesById.get(tree.id);
+  for (const [key, parts] of prototypes) if (key.startsWith('tree:')) for (const part of parts) {
+    const foliage = part.treePart === 'foliage' || part.foliage || part.kitFoliage;
+    for (const material of Array.isArray(part.material) ? part.material : [part.material]) applyTreeAppearance(material, { foliage });
+  }
   for (const batch of batches.values()) {
     const parts = prototypes.get(batch.key);
     if (!parts) continue;
-    for (const part of parts) {
+    const treeBatch = batch.key.startsWith('tree:');
+    const treeStyles = treeBatch ? batch.placements.map(placement => appearances.get(placement.object)) : null;
+    for (const sourcePart of parts) {
+      const part = treeBatch ? createTreeInstancePart(sourcePart, treeStyles, treeGeometries) : sourcePart;
       const mesh = new THREE.InstancedMesh(mode === 'low' && part.lowGeometry ? part.lowGeometry : part.geometry, part.material, batch.placements.length);
       mesh.name = `${batch.key} · ${batch.chunk.id}`; mesh.castShadow = part.castShadow; mesh.receiveShadow = true;
       mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence):/.test(batch.key);
@@ -548,7 +564,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
             destructible.mesh = mesh; destructible.instanceIndex = i; destructible.originalMatrix = originalMatrix;
           }
         }
-        if (part.foliage) { tempColor.set('#a0b481'); mesh.setColorAt(i, tempColor); }
+        if (part.foliage && !treeBatch) { tempColor.set('#a0b481'); mesh.setColorAt(i, tempColor); }
         if (p.color && part.vegetationTint !== false) { tempColor.fromArray(p.color); mesh.setColorAt(i, tempColor); }
         else if (batch.key === 'grass:tall') {
           const variation = (Math.sin(p.x * 12.9898 + p.z * 78.233) * 43758.5453) % 1;
@@ -678,7 +694,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
     setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
-    dispose() { debris.dispose(); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
+    dispose() { debris.dispose(); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene], treeGeometries); },
     get shelter() { return shelter; },
     get stats() { return { debris: debris.stats, totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
         sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: HIDING_GRASS_STYLE.stalksPerInstance,

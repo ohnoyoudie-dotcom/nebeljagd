@@ -227,7 +227,8 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
         const material = Array.isArray(mesh.material)
           ? mesh.material.map(source => copyMaterial(source, leaf))
           : copyMaterial(mesh.material, leaf);
-        parts.push({ geometry, material, castShadow: true, interior: false, frontFacade: false, vegetationTint: false });
+        parts.push({ geometry, material, castShadow: true, interior: false, frontFacade: false, vegetationTint: false,
+          treePart: kind === 'tree' ? leaf ? 'foliage' : 'bark' : undefined });
       });
       gltf.scene.traverse(mesh => {
         if (!mesh.isMesh) return;
@@ -285,7 +286,7 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
       const source = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld);
       const geometry = kind === 'house' ? openHouseGeometry(source, mesh.name) : source;
       if (geometry) {
-        const group = kind === 'tree' && /needle|leaves/.test(mesh.name) ? 'foliage' : kind === 'grass' ? (/flower/.test(mesh.name) ? 'blossom' : 'grass') : 'body';
+        const group = isTreeFoliagePart(kind, mesh) ? 'foliage' : kind === 'grass' ? (/flower/.test(mesh.name) ? 'blossom' : 'grass') : 'body';
         add(group, geometry, mesh.material.color);
       }
       if (geometry && geometry !== source) geometry.dispose(); source.dispose();
@@ -313,7 +314,8 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
       const material = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, roughness: .95, side: THREE.DoubleSide, forceSinglePass: true });
       if (wind && ['foliage', 'grass', 'blossom'].includes(group)) wind.apply(material, { height: definition.height, response: group === 'grass' ? 1 : group === 'blossom' ? .3 : .65 });
       parts.push({ geometry, lowGeometry: group === 'grass' ? removeMirroredFaces(geometry) : undefined,
-        material, castShadow: !['grass', 'blossom'].includes(group), kitFoliage: group === 'foliage', interior: group === 'interior', vegetationTint: group !== 'blossom' });
+        material, castShadow: !['grass', 'blossom'].includes(group), kitFoliage: group === 'foliage', interior: group === 'interior', vegetationTint: group !== 'blossom',
+        treePart: kind === 'tree' ? group === 'foliage' ? 'foliage' : 'bark' : undefined });
     }
     gltf.scene.traverse(mesh => {
       if (!mesh.isMesh) return;

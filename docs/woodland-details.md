@@ -20,10 +20,12 @@ und schmale Trampelpfade behalten ihre bisherige Darstellung. Steine werden in
 räumlichen Instanzgruppen gezeichnet und auf höchstens 6.000 begrenzt. Die Mitte
 des Wegs bleibt Erde, ohne zufällig verteilte Steintextur.
 
-Die Rollspur im Schnee variiert ihre Mitte, Breite und Druckstellen entlang der
-zurückgelegten Strecke. Ungleiche Pulverschultern und kleine Schürfstellen brechen
-die gerade Kontur auf. Der Verlauf bleibt über Bild- und Segmentgrenzen hinweg
-zusammenhängend, auch auf Hängen. Rollen erzeugt weiterhin keine Schuhabdrücke.
+Die Rollspur im Schnee beginnt nach dem Absprung und zeichnet unregelmäßige
+Bodenkontakte mit weichen Lücken. Ungleiche Pulverschultern und kleine
+Schürfstellen brechen die Kontur auf. Das Muster bleibt über Bild- und
+Segmentgrenzen hinweg stabil, auch auf Hängen. Rollen erzeugt weiterhin keine
+Schuhabdrücke. Die Lebensdauer vorhandener Spuren hängt von ihrem Alter ab;
+neue Abdrücke verdrängen keine noch sichtbaren alten Spuren.
 
 `kit-user-tree1` verwendet eine separate Waldversion des bereits reparierten
 Baumexports: kompaktere seitliche Äste, leicht asymmetrische Krone, abgestufte
