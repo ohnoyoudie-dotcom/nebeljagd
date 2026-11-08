@@ -106,6 +106,8 @@ export function createTreeInstancePart(part, appearances, ownedGeometries = new 
     const geometry = source.clone();
     geometry.setAttribute('aTreeColor', new THREE.InstancedBufferAttribute(colors.slice(), 3));
     geometry.setAttribute('aTreeData', new THREE.InstancedBufferAttribute(data.slice(), 2));
+    if (foliage || part.canopyCore) geometry.setAttribute('aTreeCanopyOpacity',
+      new THREE.InstancedBufferAttribute(new Float32Array(appearances.length).fill(1), 1).setUsage(THREE.DynamicDrawUsage));
     ownedGeometries.add(geometry); return geometry;
   };
   const geometry = clone(part.geometry);

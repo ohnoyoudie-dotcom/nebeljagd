@@ -213,9 +213,10 @@ try:
 
         grass = state(page)['world']['grassPatches'][0]
         inspect(page, grass['x'], grass['z'])
-        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .45) < .015')
+        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .24) < .015')
         capture(page, 'combat-grass-current.png')
-        check('Relocated irregular grass patch preserves 45% local concealment', {
+        assert state(page)['character']['concealmentAppearance']['style'] == 'white-hidden-rim-v1'
+        check('Relocated irregular grass patch shows the white local concealment style', {
             'patch': grass, 'opacity': state(page)['character']['opacity']})
         inspect(page, 0, -14, 0)
         capture(page, 'combat-clearing-current.png')

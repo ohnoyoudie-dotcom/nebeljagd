@@ -274,6 +274,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     trees: objects.trees, grassPatches: objects.grassPatches, houses: objects.houses, destructibles: objects.destructibles,
     projectileObstacles: objects.projectileObstacles, importedAssets: objects.importedAssets,
     concealmentAt: objects.concealmentAt,
+    resetCanopyFade: objects.resetCanopyFade,
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
     setDebrisVisibility: objects.setDebrisVisibility,
     update,

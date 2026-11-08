@@ -228,6 +228,9 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
           ? mesh.material.map(source => copyMaterial(source, leaf))
           : copyMaterial(mesh.material, leaf);
         parts.push({ geometry, material, castShadow: true, interior: false, frontFacade: false, vegetationTint: false,
+          // This authored part contains the solid inner crown masses. The real
+          // trunk and slim branches live in “Stamm” and must remain opaque.
+          canopyCore: key === 'tree:kit-user-tree1' && /(?:^|[·_\s])Äste(?:$|[_\s])/i.test(mesh.name),
           treePart: kind === 'tree' ? leaf ? 'foliage' : 'bark' : undefined });
       });
       gltf.scene.traverse(mesh => {

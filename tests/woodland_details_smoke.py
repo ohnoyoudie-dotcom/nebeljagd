@@ -71,9 +71,15 @@ with sync_playwright() as pw:
         p.locator('#pauseBtn').click();capture(p,'woodland-path')
         current=state(p)
         assert current['world']['treeCount']==3
-        assert current['world']['stats']['terrainArt']['borderStones']['count']>40
-        assert current['world']['stats']['terrainArt']['borderStones']['placement']=='outer-contour-only'
-        passed('Prepared trees and shared exterior path borders load in the generated game')
+        border=current['world']['stats']['terrainArt']['borderStones']
+        assert border['count']>15
+        assert border['placement']=='outer-contour-only'
+        assert border['style']=='broken-thematic-verges' and border['gapCount']>=3
+        assert any(gap['length']>1 for gap in border['gaps'])
+        assert border['byStyle']['cobble']['count']==border['count']
+        assert border['byStyle']['cobble']['shapeVariants']==3
+        assert border['byStyle']['cobble']['maxLength']>border['byStyle']['cobble']['minLength']*2
+        passed('Prepared trees and shared exterior path borders load with broken, varied stone clusters')
         p.keyboard.press('Escape')
         # Real sword swings, rather than a test-only destruction hook.
         for _ in range(4):
