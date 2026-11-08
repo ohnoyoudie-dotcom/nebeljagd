@@ -15,6 +15,8 @@ fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',
     "import {createLobbyMap} from './src/lobby-map.js';console.log(JSON.stringify(createLobbyMap()))"],cwd=ROOT))
 fixture['name']='Hochgeladene Mondsichel · QA';fixture['paths']=[]
 fixture['objects']=[dict(id='moon-staff',name='Mondstab',kind='moonStaff',variant='kit-tripo-moon-staff',position=[0,-14],rotation=0,scale=1,rarity='common')]
+for kind,variant,x,scale in [('wall','kit-stone',-18,1),('barrel','kit-tripo-barrel',-30,2)]:
+    fixture['objects'].append(dict(id='impact-'+kind,name=kind,kind=kind,variant=variant,position=[x,-5],rotation=0,scale=scale))
 report={'status':'running','errors':[],'checks':[]}
 def state(p):return p.evaluate('nebeljagdTestState()')
 def capture(p,name):
@@ -55,11 +57,34 @@ with sync_playwright() as pw:
         after=state(p);victim=next(t for t in after['practiceActors'] if t['id']==target['id'])
         assert after['combat']['damageHits']==2
         assert abs(victim['health']-(target['health']-2*before['equippedItem']['damage']))<.01
+        assert after['combat']['special']['moonImpacts']['bursts']==0,'piercing a character is not an obstacle ricochet'
+        for kind,x in [('wall',-18),('barrel',-30)]:
+            p.evaluate('x=>nebeljagdInspect({x,z:-9,direction:0})',x)
+            p.wait_for_function('nebeljagdTestState().attackCooldown===0')
+            count=state(p)['combat']['special']['moonImpacts']['bursts']
+            p.keyboard.press('f')
+            pause_when(p,f's.combat.special.moonImpacts.bursts>{count} && s.combat.special.moonImpacts.visible>0')
+            impact=state(p)['combat']['special']['moonImpacts']
+            assert state(p)['combat']['special']['moon']['mode']=='returning'
+            assert impact['active']==10 and impact['visible']>0
+            assert abs(impact['lastImpact']['position']['x']-x)<.8
+            assert impact['lastImpact']['normal']['z']<-.9
+            contact_time=state(p)['elapsed']
+            p.keyboard.press('Escape')
+            pause_when(p,f's.elapsed>{contact_time+.07} && s.combat.special.moonImpacts.active>0')
+            impact=state(p)['combat']['special']['moonImpacts']
+            capture(p,'crescent-'+kind+'-sparks')
+            p.wait_for_timeout(250);assert state(p)['combat']['special']['moonImpacts']==impact
+            p.keyboard.press('Escape')
+            p.wait_for_function('!nebeljagdTestState().combat.special.moon && nebeljagdTestState().combat.special.moonImpacts.active===0')
+            assert state(p)['combat']['special']['moonImpacts']['bursts']==count+1
+            print('PASS one visible, paused and naturally expiring spark burst at '+kind,flush=True)
         p.locator('#pauseBtn').click();p.locator('#restartBtn').click()
         assert state(p)['combat']['special']['moon'] is None
+        assert state(p)['combat']['special']['moonImpacts']['bursts']==0
         assert not report['errors'],report['errors']
         assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original
-        report.update(status='passed',model=model,checks=['Uploaded PBR crescent renders in flight and return','Pause freezes flight; a second cast remains locked','Outbound and returning crescent each damage the target once','Restart clears the projectile; original map preserved'])
+        report.update(status='passed',model=model,checks=['Uploaded PBR crescent renders in flight and return','Pause freezes flight; a second cast remains locked','Outbound and returning crescent each damage the target once','Wall and solid prop contacts each emit one visible spark burst; pause and expiry verified','Restart clears the projectile and sparks; original map preserved'])
         for check in report['checks']:print('PASS',check,flush=True)
     except Exception as error:
         report.update(status='failed',failure=str(error))
