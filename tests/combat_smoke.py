@@ -215,7 +215,7 @@ try:
 
         grass = state(page)['world']['grassPatches'][0]
         inspect(page, grass['x'], grass['z'])
-        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .58) < .015')
+        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .40) < .015')
         capture(page, 'combat-grass-current.png')
         assert state(page)['character']['concealmentAppearance']['style'] == 'textured-hidden-character-v3'
         check('Relocated irregular grass patch shows the white local concealment style', {

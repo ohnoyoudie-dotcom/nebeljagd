@@ -1,6 +1,6 @@
 import { ARROW_LENGTH } from './arrow-alignment.js';
 import * as THREE from 'three';
-import { traceRangedProjectile } from './projectile-collision.js';
+import { traceRangedProjectile, traceCombatProjectile, colliderBlocksTarget, aimBowAtDestructible } from './projectile-collision.js';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
@@ -425,6 +425,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
   let committedBowDirection = 0;
   let bowHolding = false, bowHoldAge = 0, bowReleaseDraw = 0;
+  let bowAim = null;
   function trackBowAim(direction = characterGroup.rotation.y) {
     committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
     // Turn the complete bow stance, including both hands. A separately turning
@@ -442,7 +443,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     nock.applyMatrix4(heldBow.matrix);
     // The flying arrow is scene-owned; keep the held arrow the same world size.
     nockedArrow.scale.set(1/characterGroup.scale.x,1/characterGroup.scale.y,1/characterGroup.scale.z);
-    nockedArrow.rotation.set(0,relative,0);
+    nockedArrow.rotation.set(bowAim?.pitch ?? 0,relative,0,'YXZ');
     const tail = new THREE.Vector3(0,0,-ARROW_LENGTH / 2).multiply(nockedArrow.scale).applyEuler(nockedArrow.rotation);
     nockedArrow.position.copy(nock).sub(tail);
   }
@@ -487,7 +488,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const swordPose = createSwordPose();
   const up = new THREE.Vector3(0, 1, 0);
   const leftHand = new THREE.Vector3(), rightHand = new THREE.Vector3();
-  const bowStringOffset = new THREE.Vector3();
+  const bowStringOffset = new THREE.Vector3(), bowAimOrigin = new THREE.Vector3();
+  const bowPitchAxis = new THREE.Vector3(1, 0, 0);
   const combatPose = { weapon: null, phase: 'idle', leftHand, rightHand, chestTwist: 0 };
   let equippedType = null, equippedItem = null, equippedPickup = null;
   let cooldown = 0, attackAge = -1, attackDuration = 0;
@@ -605,6 +607,17 @@ export function createWeapons(scene, characterGroup, world, character = null,
         : bowStringOffset.set(.41, 0, 0);
       offset.x += bowDraw * (rig?.drawDistance ?? WOOD_BOW_DRAW);
       offset.multiply(heldBow.scale).applyAxisAngle(THREE.Object3D.DEFAULT_UP, Math.PI / 2);
+      // Choose elevation before solving either palm. The exact same rotated
+      // string offset drives right-hand IK and the bow, so aiming at a low prop
+      // cannot detach the draw hand from its string after the pose was solved.
+      bowAimOrigin.copy(leftHand).add(offset);
+      characterGroup.updateWorldMatrix(true, false); scene.updateWorldMatrix(true, false);
+      scene.worldToLocal(characterGroup.localToWorld(bowAimOrigin));
+      const aim = bowHolding ? committedBowDirection : characterGroup.rotation.y;
+      bowAim = aimBowAtDestructible(world, combat, bowAimOrigin, aim, 18 * 1.35, ownerId, isVisible);
+      const recoil = attackAge >= .23 && attackAge < .40 ? Math.sin((attackAge - .23) * 38) * .035 : 0;
+      const bowPitch = (bowAim?.pitch ?? 0) + recoil;
+      offset.applyAxisAngle(bowPitchAxis, bowPitch);
       combatPose.bowStringOffset = offset;
       rightHand.copy(leftHand).add(offset);
       combatPose.chestTwist = -.6;
@@ -614,8 +627,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       else if (character?.getHandPosition) character.getHandPosition('left', hand);
       else hand.copy(leftHand);
       heldBow.position.copy(hand);
-      if (!imported) heldBow.position.z -= .39 * heldBow.scale.x;
-      heldBow.rotation.set(attackAge >= .23 && attackAge < .40 ? Math.sin((attackAge - .23) * 38) * .035 : 0, Math.PI / 2, 0);
+      if (!imported) heldBow.position.add(bowAimOrigin.set(0, 0, -.39 * heldBow.scale.x).applyAxisAngle(bowPitchAxis, bowPitch));
+      heldBow.rotation.set(bowPitch, Math.PI / 2, 0);
       if (heldBow.userData.bowString) {
         const stringPositions = heldBow.userData.bowString.geometry.attributes.position;
         stringPositions.setX(1, .02 + bowDraw * WOOD_BOW_DRAW); stringPositions.needsUpdate = true;
@@ -694,8 +707,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const nx = hit.normal?.x ?? -Math.sin(arrow.direction), nz = hit.normal?.z ?? -Math.cos(arrow.direction);
     const length = Math.hypot(nx, nz) || 1, normalX = nx / length, normalZ = nz / length;
     const dot = arrow.vx * normalX + arrow.vz * normalZ;
-    arrow.group.position.set(hit.point.x - Math.sin(arrow.direction) * (ARROW_LENGTH / 2) + normalX * .025,
-      hit.point.y ?? arrow.group.position.y, hit.point.z - Math.cos(arrow.direction) * (ARROW_LENGTH / 2) + normalZ * .025);
+    forward.set(arrow.vx, arrow.vy, arrow.vz).normalize();
+    arrow.group.position.set(hit.point.x, hit.point.y ?? arrow.group.position.y, hit.point.z).addScaledVector(forward, -ARROW_LENGTH / 2);
+    arrow.group.position.x += normalX * .025; arrow.group.position.z += normalZ * .025;
     arrow.vx = (arrow.vx - 2 * dot * normalX) * .22;
     arrow.vz = (arrow.vz - 2 * dot * normalZ) * .22;
     arrow.vy = 1.35;
@@ -720,10 +734,11 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const arrow = arrows.find(entry => entry.life <= 0) ?? arrows[0];
     const angle = committedBowDirection;
     arrow.mode = 'flying'; arrow.life = 1.35; arrow.direction = angle; arrow.payload = { ...equippedItem, sourceId: ownerId };
-    arrow.vx = Math.sin(angle) * 18; arrow.vz = Math.cos(angle) * 18; arrow.vy = 0;
-    arrow.group.position.copy(launchCenter); arrow.group.rotation.set(0, angle, 0); arrow.group.visible = true;
+    const pitch = bowAim?.pitch ?? 0;
+    forward.set(Math.sin(angle) * Math.cos(pitch), -Math.sin(pitch), Math.cos(angle) * Math.cos(pitch));
+    arrow.vx = forward.x * 18; arrow.vy = forward.y * 18; arrow.vz = forward.z * 18;
+    arrow.group.position.copy(launchCenter); arrow.group.rotation.set(pitch, angle, 0, 'YXZ'); arrow.group.visible = true;
     if (arrow.group.userData.trail) arrow.group.userData.trail.visible = true;
-    forward.set(Math.sin(angle), 0, Math.cos(angle));
     launchOrigin.set(position.x, launchCenter.y, position.z);
     tipAfter.copy(launchCenter).addScaledVector(forward, ARROW_LENGTH / 2);
     // Trace from the body before using the forward muzzle, so a close wall cannot
@@ -735,20 +750,15 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   let damageHits = 0, lastDamage = null;
-  const blocksTarget = (collider, target) => collider?.objectId === target.id || collider?.destructibleId === target.id;
+  const blocksTarget = colliderBlocksTarget;
   function firstHit(start, end, radius) {
-    const terrain = traceRangedProjectile(world, start, end, radius);
-    const entity = combat?.traceSegment(start, end, radius, ownerId);
-    if (!entity) return terrain;
-    if (!terrain) return entity;
-    if (entity.target.destructible && blocksTarget(terrain.collider, entity.target)) return entity;
-    const distance = Math.hypot(end.x - start.x, end.z - start.z);
-    const terrainT = distance > 1e-8 ? Math.hypot(terrain.point.x - start.x, terrain.point.z - start.z) / distance : 0;
-    return entity.t < terrainT - .0001 ? entity : terrain;
+    return traceCombatProjectile(world, combat, start, end, radius, ownerId);
   }
   function hitTarget(projectile, collision) {
-    lastDamage = combat.hit(collision.target, projectile.payload); damageHits++;
+    lastDamage = combat.hit(collision.target, projectile.payload);
+    if (lastDamage) damageHits++;
     if (projectile.visual) spellImpact(projectile, collision);
+    else if (collision.target.destructible && lastDamage && !lastDamage.killed) impact(projectile, collision);
     else { projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false; }
   }
 
@@ -938,13 +948,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
         arrow.life = 0; arrow.mode = 'inactive'; arrow.group.visible = false; continue;
       }
       if (arrow.mode === 'flying') {
-        forward.set(Math.sin(arrow.direction), 0, Math.cos(arrow.direction));
+        forward.set(arrow.vx, arrow.vy, arrow.vz).normalize();
         tipBefore.copy(arrow.group.position).addScaledVector(forward, ARROW_LENGTH / 2);
-        tipAfter.copy(tipBefore); tipAfter.x += arrow.vx * delta; tipAfter.z += arrow.vz * delta;
+        tipAfter.copy(tipBefore); tipAfter.x += arrow.vx * delta; tipAfter.y += arrow.vy * delta; tipAfter.z += arrow.vz * delta;
         const hit = firstHit(tipBefore, tipAfter, .055);
         if (hit?.target) hitTarget(arrow, hit);
         else if (hit) impact(arrow, hit);
-        else { arrow.group.position.x += arrow.vx * delta; arrow.group.position.z += arrow.vz * delta; }
+        else { arrow.group.position.x += arrow.vx * delta; arrow.group.position.y += arrow.vy * delta; arrow.group.position.z += arrow.vz * delta; }
       } else {
         arrow.vy -= delta * 8.5;
         arrow.group.position.x += arrow.vx * delta; arrow.group.position.y += arrow.vy * delta; arrow.group.position.z += arrow.vz * delta;
@@ -970,7 +980,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function reset({ reroll = true } = {}) {
-    bowHolding = false; bowHoldAge = 0;
+    bowHolding = false; bowHoldAge = 0; bowAim = null;
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     for (const held of Object.values(heldByType)) held.visible = false;
@@ -1069,7 +1079,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
-      return { attackPhase, bowDraw, bowHolding, bowAlignment, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
+      return { attackPhase, bowDraw, bowHolding, bowAlignment, bowAim: bowAim ? { ...bowAim } : null, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         swordCombo: { index: swordIndex + 1, pattern: SWORD_PATTERNS[swordIndex] ?? null, swingId: swordSwingId,
           active: equippedType === 'sword' && attackAge >= 0, progress: equippedType === 'sword' && attackAge >= 0 ? Math.min(1, attackAge / attackDuration) : 0,
           remaining: swordComboRemaining },

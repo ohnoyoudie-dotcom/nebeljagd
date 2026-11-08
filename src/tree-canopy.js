@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
-export const TREE_CANOPY_STYLE = Object.freeze({ minimumOpacity: .045, enterSeconds: .22, leaveSeconds: .32, opaqueThreshold: .999 });
+export const TREE_CANOPY_STYLE = Object.freeze({ minimumOpacity: .045, enterSeconds: .06, leaveSeconds: .32,
+  fullFadeRadius: .94, outerFadeRadius: 1.18, opaqueThreshold: .999 });
 const smooth = value => { const t = THREE.MathUtils.clamp(value, 0, 1); return t * t * (3 - 2 * t); };
 export const isTreeFoliage = part => Boolean(part.treePart === 'foliage' || part.foliage || part.kitFoliage);
 export const canFadeTreeCanopy = part => isTreeFoliage(part) || part.canopyCore === true;
@@ -30,7 +31,11 @@ export function updateTreeCanopy(canopy, player, dt) {
   const footprint = canopy.footprint, dx = player.x - footprint.center[0], dz = player.z - footprint.center[1];
   const cos = Math.cos(footprint.rotation), sin = Math.sin(footprint.rotation);
   const distance = Math.hypot((cos * dx - sin * dz) / footprint.radiusX, (sin * dx + cos * dz) / footprint.radiusZ);
-  const coverage = player.y + .9 < footprint.maxY ? 1 - smooth((distance - .78) / .28) : 0;
+  // Start at the crown's edge before a fast-moving player disappears beneath
+  // it; reach full coverage just inside, without delaying the slower restore.
+  const coverage = player.y + .9 < footprint.maxY
+    ? 1 - smooth((distance - TREE_CANOPY_STYLE.fullFadeRadius)
+      / (TREE_CANOPY_STYLE.outerFadeRadius - TREE_CANOPY_STYLE.fullFadeRadius)) : 0;
   canopy.underCanopy = coverage > .01;
   canopy.targetOpacity = TREE_CANOPY_STYLE.minimumOpacity + (1 - coverage) * (1 - TREE_CANOPY_STYLE.minimumOpacity);
   const duration = canopy.targetOpacity < canopy.opacity ? TREE_CANOPY_STYLE.enterSeconds : TREE_CANOPY_STYLE.leaveSeconds;

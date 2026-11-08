@@ -206,10 +206,10 @@ try:
             hidden = state(page); visual = hidden['character']['concealmentAppearance']; under = trees(page)
             assert hidden['hiddenFromOtherPlayers'] and hidden['concealment'] > .01
             assert visual['style'] == 'textured-hidden-character-v3'
-            assert visual['active'] and visual['localOnly'] and visual['color'] == '#cbd8d0'
-            assert visual['outline'] == 'stencil-contour' and visual['outlineWidthPixels'] == 1.4
-            assert .575 <= visual['bodyOpacity'] < .59 and .065 < visual['fillOpacity'] < .075
-            assert .41 < visual['outlineOpacity'] < .43 and not visual['materialsRestored']
+            assert visual['active'] and visual['localOnly'] and visual['color'] == '#e3ebe5'
+            assert visual['outline'] == 'stencil-contour' and visual['outlineWidthPixels'] == 1.5
+            assert .395 <= visual['bodyOpacity'] < .415 and .29 < visual['fillOpacity'] < .305
+            assert .54 < visual['outlineOpacity'] < .56 and not visual['materialsRestored']
             assert .04 <= under['qa-local-tree']['canopy']['opacity'] < .055
             assert under['qa-other-tree']['canopy']['opacity'] > .99
             assert all(t['canopy']['barkOpacity'] == 1 for t in under.values())

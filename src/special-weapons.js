@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { traceRangedProjectile } from './projectile-collision.js';
+import { traceRangedProjectile, colliderTarget, colliderBlocksTarget } from './projectile-collision.js';
 import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
 
@@ -87,10 +87,14 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     moon = { mode: blocked ? 'returning' : 'outbound', distance: 0, age: 0, direction, payload: { ...payload, sourceId: ownerId },
       outboundHits: new Set(), returnHits: new Set() };
     moonMesh.position.copy(blocked?.point ?? origin); moonMesh.visible = true;
-    if (blocked) moonImpacts.emit(blocked.point, blocked.normal, direction);
+    if (blocked) {
+      moonImpacts.emit(blocked.point, blocked.normal, direction);
+      const target = colliderTarget(combat, blocked.collider, ownerId);
+      if (target) { moon.outboundHits.add(target.id); hit(target, moon.payload); }
+    }
     return true;
   }
-  function pierce(start, end, hits, payload) {
+  function pierce(start, end, hits, payload, solidHit = null) {
     // Query every target separately, preserving swept vertical/radial hit rules.
     const ignored = new Set(hits);
     for (let i = 0; i < (combat?.targets?.size ?? 0); i++) {
@@ -98,6 +102,8 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       if (!collision) break;
       ignored.add(collision.target.id); hits.add(collision.target.id); hit(collision.target, payload);
     }
+    const target = colliderTarget(combat, solidHit?.collider, ownerId);
+    if (target && !hits.has(target.id)) { hits.add(target.id); hit(target, payload); }
   }
   function cloudAt(point, payload, firstUpdateDelta = null) {
     const mesh = root(new THREE.Group()); mesh.name = 'Giftwolke · 3 Sekunden'; mesh.position.copy(point); mesh.position.y = ground(point);
@@ -127,14 +133,14 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
         end.x += Math.sin(moon.direction) * step; end.z += Math.cos(moon.direction) * step;
         const wall = traceRangedProjectile(world, start, end, .15);
         if (wall) { end.copy(wall.point); moonImpacts.emit(wall.point, wall.normal, moon.direction); }
-        pierce(start, end, moon.outboundHits, moon.payload);
+        pierce(start, end, moon.outboundHits, moon.payload, wall);
         moon.distance += start.distanceTo(end);
         if (wall || moon.distance >= SPECIAL_RULES.moonRange - 1e-6) moon.mode = 'returning';
       } else {
         const hand = new THREE.Vector3(position.x, position.y + 1.4, position.z);
         const step = Math.min(SPECIAL_RULES.returnSpeed * dt, start.distanceTo(hand));
         end.addScaledVector(hand.clone().sub(start).normalize(), step);
-        pierce(start, end, moon.returnHits, moon.payload);
+        pierce(start, end, moon.returnHits, moon.payload, traceRangedProjectile(world, start, end, .15));
         if (end.distanceTo(hand) < .25) { moon = null; moonMesh.visible = false; }
       }
       moonMesh.position.copy(end); moonMesh.rotation[moonProjectilePrototype ? 'y' : 'z'] += dt * 12;
@@ -167,10 +173,11 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       cloud.mesh.visible = canSee(cloud.mesh.position);
       poisonVisuals.updateCloud(cloud.volume, SPECIAL_RULES.cloudDuration - cloud.remaining, cloud.remaining);
       for (const target of combat?.targets?.values() ?? []) {
-        if (!target.alive || target.targetable === false || target.id === ownerId || target.destructible) continue;
+        if (!target.alive || target.targetable === false || target.id === ownerId) continue;
         const point = target.position;
         if (Math.hypot(point.x - cloud.mesh.position.x, point.z - cloud.mesh.position.z) > SPECIAL_RULES.cloudRadius + target.radius || Math.abs((point.y ?? 0) - cloud.mesh.position.y) > 2) continue;
-        if (world?.traceProjectile?.({ x: cloud.mesh.position.x, y: cloud.mesh.position.y + .6, z: cloud.mesh.position.z }, { x: point.x, y: (point.y ?? 0) + .6, z: point.z }, .03)) continue;
+        const blocker = world?.traceProjectile?.({ x: cloud.mesh.position.x, y: cloud.mesh.position.y + .6, z: cloud.mesh.position.z }, { x: point.x, y: (point.y ?? 0) + .6, z: point.z }, .03);
+        if (blocker && !(target.destructible && colliderBlocksTarget(blocker.collider, target))) continue;
         hit(target, { ...cloud.payload, damage: cloud.payload.damage * active / SPECIAL_RULES.cloudDuration,
           poison: { duration: .25, damagePerSecond: cloud.payload.poison?.damagePerSecond ?? 5 } });
       }

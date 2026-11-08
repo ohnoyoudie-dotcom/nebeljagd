@@ -4,7 +4,10 @@ Fässer und Holzkisten zerbrechen beim tödlichen Treffer in Teile ihrer eigenen
 Modelloberfläche. UVs, Holztexturen und Metallbänder bleiben erhalten. Die Teile
 fliegen nach außen und oben, wirbeln durch die Luft und prallen kurz vom Boden ab.
 Erst danach legen sie sich flach auf die Geländeoberfläche. Der Impuls streut
-zwischen den Teilen und skaliert gemäßigt mit der Objektgröße; bei normaler Größe
+zwischen den Teilen und skaliert gemäßigt mit der Objektgröße. Fässer verwenden
+etwas geringere Fluggeschwindigkeiten, Höhen und Rotationen. Jeder Bruch erhält
+eine neue Zufallsverteilung, auch nach einem Neustart; während Pause und Flug
+werden die Bahnen nicht neu ausgewürfelt. Bei normaler Größe
 landen die Reste einige Meter um das zerstörte Objekt herum. Sie bleiben sechs
 Spielsekunden sichtbar und verblassen bis Sekunde zehn. Pause hält die Bewegung und Lebensdauer an;
 Neustart entfernt alle Reste. Die vorhandenen Regeln für Schaden und Kollision

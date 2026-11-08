@@ -25,7 +25,7 @@ test('only the local crown fades smoothly, stays stable while paused, and return
   const first = createTreeCanopy(bounds(), placement()), second = createTreeCanopy(bounds(), placement(40));
   const player = { x: 14, y: 3, z: 20 };
   updateTreeCanopy(first, player, 1 / 60);
-  assert.ok(first.opacity > .9 && first.opacity < 1);
+  assert.ok(first.opacity > TREE_CANOPY_STYLE.minimumOpacity && first.opacity < 1);
   assert.equal(first.targetOpacity, TREE_CANOPY_STYLE.minimumOpacity);
   assert.equal(first.underCanopy, true);
   const paused = first.opacity; updateTreeCanopy(first, player, 0); assert.equal(first.opacity, paused);
@@ -41,11 +41,39 @@ test('only the local crown fades smoothly, stays stable while paused, and return
 
 test('the crown edge has a gradual target instead of flickering between on and off', () => {
   const state = createTreeCanopy(bounds(), placement()), { center, radiusX } = state.footprint;
-  updateTreeCanopy(state, { x: center[0] + radiusX * .92, y: 3, z: center[1] }, 0);
+  updateTreeCanopy(state, { x: center[0] + radiusX * 1.06, y: 3, z: center[1] }, 0);
   const middle = state.targetOpacity;
   assert.ok(middle > .3 && middle < .8);
-  updateTreeCanopy(state, { x: center[0] + radiusX * .92001, y: 3, z: center[1] }, 0);
+  updateTreeCanopy(state, { x: center[0] + radiusX * 1.06001, y: 3, z: center[1] }, 0);
   assert.ok(Math.abs(state.targetOpacity - middle) < .001);
+});
+
+test('a brief fast crossing reveals the player before the centre and restores smoothly after leaving', () => {
+  // A two-metre crown is crossed in only .25s at 8m/s. Waiting for a settled
+  // standing pose would miss the visibility regression this route exercises.
+  const smallCrown = new THREE.Box3(new THREE.Vector3(-1, 2, -1), new THREE.Vector3(1, 4, 1));
+  const centreOpacities = [];
+  for (const fps of [30, 60, 120]) {
+    const state = createTreeCanopy(smallCrown, { x: 0, y: 0, z: 0, rotation: 0, scale: [1, 1, 1] });
+    updateTreeCanopy(state, { x: -1, y: 0, z: 0 }, 0);
+    assert.ok(state.targetOpacity < .25, 'the crown edge must already request useful visibility');
+    let atCentre = null, minimum = 1;
+    for (let frame = 0; frame <= Math.round(.4 * fps); frame++) {
+      const x = -1.6 + 8 * frame / fps;
+      updateTreeCanopy(state, { x, y: 0, z: 0 }, 1 / fps);
+      if (x >= 0 && atCentre === null) atCentre = state.opacity;
+      minimum = Math.min(minimum, state.opacity);
+    }
+    assert.ok(atCentre < .18, `${fps} FPS: a brief traversal is still obscured at the centre (${atCentre})`);
+    assert.ok(minimum < .10, `${fps} FPS: the canopy never became substantially transparent`);
+    centreOpacities.push(atCentre);
+    const afterCrossing = state.opacity;
+    updateTreeCanopy(state, { x: 4, y: 0, z: 0 }, 1 / fps);
+    assert.ok(state.opacity > afterCrossing && state.opacity < 1, 'leaving must fade back rather than pop');
+    for (let frame = 0; frame < fps * 3; frame++) updateTreeCanopy(state, { x: 4, y: 0, z: 0 }, 1 / fps);
+    assert.equal(state.opacity, 1);
+  }
+  assert.ok(Math.max(...centreOpacities) - Math.min(...centreOpacities) < .025, 'brief visibility is stable across frame rates');
 });
 
 test('fading writes only the affected leaf instance into both owned LODs and does not repeatedly upload unchanged attributes', () => {

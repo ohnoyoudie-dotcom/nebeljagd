@@ -9,6 +9,9 @@ import { createHandGripSocket } from '../src/hand-grip.js';
 import { preparePlayerGeometry } from '../src/player-model.js';
 import { createWeapons } from '../src/weapons.js';
 import { ARROW_LENGTH } from '../src/arrow-alignment.js';
+import { createCombat } from '../src/combat.js';
+import { createCollisionIndex } from '../src/collision.js';
+import { TRIPO_PROP_DEFINITIONS } from '../src/map/tripo-prop-definitions.js';
 
 const bytes = await readFile(new URL('../assets/characters/nebeljagd_player_base_v1.glb', import.meta.url));
 
@@ -65,4 +68,49 @@ for (const variant of ['wood', 'kit-tripo-ornate-bow']) test(`real avatar keeps 
     }
   }
   weapons.dispose();
+});
+
+test('real drawing palm follows the pitched string while aiming at close and distant low barrels', async () => {
+  const barrel = TRIPO_PROP_DEFINITIONS.find(item => item.kind === 'barrel');
+  for (const variant of ['wood', 'kit-tripo-ornate-bow']) for (const distance of [1.6, 6]) {
+    const { scene, actor, animator, controller, gripSockets, arms, point } = await rig();
+    actor.scale.setScalar(1.2);
+    const loader = new GLTFLoader().register(() => ({ name: 'PitchedBowTextureStub', loadTexture: () => Promise.resolve(new THREE.Texture()) }));
+    const bytes = await readFile(new URL('../assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb', import.meta.url));
+    const { scene: bowPrototype } = await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
+    const inspection = JSON.parse(await readFile(new URL('../assets/imported/tripo-extra-weapons/inspections/ornate-bow.json', import.meta.url)));
+    bowPrototype.userData.bowRig = inspection.normalization.bowRig;
+    const combat = createCombat();
+    const target = combat.addTarget({ id: 'barrel', position: { x: 0, y: 0, z: distance },
+      radius: barrel.destructible.radius, height: barrel.height, maxHealth: 60, destructible: true });
+    const index = createCollisionIndex([], barrel.walls.map(body => ({ ...body, objectId: 'barrel',
+      minZ: body.minZ + distance, maxZ: body.maxZ + distance })));
+    const world = { heightAt: () => 0, worldRadius: 100,
+      traceProjectile: (a, b, r, accepts) => index.traceSegment(a, b, r, accepts) };
+    const character = { setCombatState: pose => controller.apply(pose),
+      getGripPosition: (side, result) => gripSockets[side].getPosition(actor, result),
+      getHandPosition: (side, result) => result.copy(point(arms[side][2])) };
+    const weapons = createWeapons(scene, actor, world, character, { combat,
+      placements: [{ id: 'bow', kind: 'bow', variant, rarity: 'common', position: [0, 0] }],
+      tripoPrototypes: { 'kit-tripo-ornate-bow': bowPrototype } });
+    try {
+      weapons.interact(actor.position); weapons.attack(actor.position, 0);
+      for (let frame = 0; frame < 16; frame++) {
+        controller.restore(); animator.update(.04, { walkWeight: frame > 8 ? 1 : 0, playbackSpeed: 1 });
+        weapons.update(.04, frame * .04, actor.position, frame > 8 ? .025 : 0);
+        actor.updateWorldMatrix(true, true);
+        const state = weapons.telemetry;
+        assert.equal(state.bowAim?.targetId, 'barrel', `${variant} at ${distance}m stays physically aimed`);
+        assert.ok(state.bowAim.pitch > 0);
+        const palm = gripSockets.right.getPosition(actor);
+        const tail = actor.worldToLocal(actor.getObjectByName('Aufgelegter Pfeil').localToWorld(new THREE.Vector3(0, 0, -ARROW_LENGTH / 2)));
+        assert.ok(palm.distanceTo(tail) < .025, `${variant} at ${distance}m: tilted string remains in the real palm (${palm.distanceTo(tail)})`);
+        assert.ok(state.bowAlignment.error < .025);
+        if (variant !== 'wood') assert.ok(state.heldGrip.error < 1e-7, 'the other hand retains its fixed bow grip');
+      }
+      weapons.releaseAttack(actor.position, .025);
+      for (let frame = 0; frame < 80; frame++) weapons.update(1 / 60, 1 + frame / 60, actor.position, .025);
+      assert.equal(target.health, 38, 'one actual arrow from the pitched palm pose hits the normal barrel');
+    } finally { weapons.dispose(); }
+  }
 });

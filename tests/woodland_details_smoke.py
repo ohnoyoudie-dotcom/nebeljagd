@@ -100,7 +100,7 @@ with sync_playwright() as pw:
         frozen=state(p)['world']['stats']['debris'];p.wait_for_timeout(1200)
         assert state(p)['world']['stats']['debris']==frozen
         assert frozen['averageOpacity']==1
-        assert frozen['farthestTravel']>2
+        assert frozen['farthestTravel']>1.5
         passed('Sword breaks the barrel into original textured pieces; settled pieces remain and pause correctly')
         p.keyboard.press('Escape')
         pause_when(p,'s.world.stats.debris.averageOpacity<.6 && s.world.stats.debris.active>0')

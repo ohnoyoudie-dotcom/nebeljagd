@@ -6,7 +6,9 @@ import { createCharacterGlow } from '../src/character-glow.js';
 
 function fixture({ textured = false } = {}) {
   const group = new THREE.Group(), geometry = new THREE.BoxGeometry(.4, 1.8, .3);
-  const material = new THREE.MeshStandardMaterial({ map: textured ? new THREE.DataTexture(new Uint8Array([80,40,20,255]),1,1) : null, color: '#805c39', emissive: '#020306', opacity: .9 });
+  const material = new THREE.MeshStandardMaterial({ map: textured ? new THREE.DataTexture(new Uint8Array([80,40,20,255]),1,1) : null,
+    alphaMap: textured ? new THREE.DataTexture(new Uint8Array([255,120,255,255]),1,1) : null,
+    alphaTest: textured ? .2 : 0, color: '#805c39', emissive: '#020306', opacity: .9 });
   const bone = new THREE.Bone(), skeleton = new THREE.Skeleton([bone]);
   const mesh = new THREE.SkinnedMesh(geometry, material);
   mesh.add(bone); mesh.bind(skeleton); mesh.castShadow = true; group.add(mesh);
@@ -26,11 +28,11 @@ test('concealment smoothly softens only the local presentation and restores orig
   const color = material.color.clone(), emissive = material.emissive.clone();
   const first = effect.update(1 / 60, { concealed: true });
   assert.ok(first.blend > 0 && first.blend < 1);
-  assert.ok(first.bodyOpacity > .58 && first.bodyOpacity < 1);
+  assert.ok(first.bodyOpacity > .40 && first.bodyOpacity < 1);
   const hidden = settle(effect, true);
-  assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .58) < 1e-10);
-  assert.equal(hidden.fillOpacity, .45); assert.equal(hidden.outlineOpacity, .42);
-  assert.equal(hidden.color, '#cbd8d0'); assert.equal(hidden.localOnly, true);
+  assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .40) < 1e-10);
+  assert.equal(hidden.fillOpacity, .30); assert.equal(hidden.outlineOpacity, .55);
+  assert.equal(hidden.color, '#e3ebe5'); assert.equal(hidden.localOnly, true);
   assert.equal(material.transparent, true); assert.equal(material.depthWrite, false);
   assert.equal(mesh.castShadow, false);
   assert.ok(material.color.equals(color) && material.emissive.equals(emissive), 'source colours are never overwritten');
@@ -101,7 +103,10 @@ test('read-through fill retains the real colour map without owning or bleaching 
  assert.ok(fill.material.color.equals(material.color));
  assert.ok(material.map?.isTexture);
  assert.equal(fill.material.map,material.map);
- let textureDisposed=0;material.map.addEventListener('dispose',()=>textureDisposed++);
+ assert.equal(fill.material.alphaMap,material.alphaMap);
+ assert.equal(fill.material.alphaTest,material.alphaTest);
+ let textureDisposed=0;
+ for(const texture of [material.map,material.alphaMap])texture.addEventListener('dispose',()=>textureDisposed++);
  assert.notEqual(fill.material,material);
  let disposed=0;fill.material.addEventListener('dispose',()=>disposed++);
  effect.dispose();assert.equal(disposed,1);assert.equal(textureDisposed,0);

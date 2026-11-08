@@ -253,8 +253,8 @@ try:
             hidden = state(page); visual = appearance(page)
             assert hidden['concealment'] > .01 and hidden['hiddenFromOtherPlayers']
             assert visual['style'] == 'textured-hidden-character-v3' and visual['active'] and visual['localOnly']
-            assert visual['color'] == '#cbd8d0' and visual['outline'] == 'stencil-contour'
-            assert .55 < visual['bodyOpacity'] < .65 and .4 < visual['fillOpacity'] < .5 and .4 < visual['outlineOpacity'] < .5
+            assert visual['color'] == '#e3ebe5' and visual['outline'] == 'stencil-contour'
+            assert .395 < visual['bodyOpacity'] < .415 and .29 < visual['fillOpacity'] < .305 and .54 < visual['outlineOpacity'] < .56
             assert not visual['depthTest'] and not visual['materialsRestored']
             capture(page,'soft-hidden-character-default',1)
             if not SUCCESSOR:
