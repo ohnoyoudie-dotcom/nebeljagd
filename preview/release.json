@@ -1,25 +1,29 @@
 {
-  "buildId": "6b9a939d4d7d",
-  "builtAt": "2026-11-08T14:44:39.434Z",
-  "sourceCommit": "c50a6d925ebf8ce828c7b2ab1e2fa8be67e86777",
+  "buildId": "a94994fa0971",
+  "builtAt": "2026-11-08T15:13:49.026Z",
+  "sourceCommit": "6a6bf7454086b59bb6664cfbe0f69d6484902a44",
   "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
-  "sourceBaseCommit": "c50a6d925ebf8ce828c7b2ab1e2fa8be67e86777",
+  "sourceBaseCommit": "6a6bf7454086b59bb6664cfbe0f69d6484902a44",
   "files": {
     "editor.html": {
       "bytes": 7963,
-      "sha256": "0cb173cfb02f60d52eba5448ebe445951c83a5404095673cedc90c5699ca523f"
+      "sha256": "7c885f7005c4c09ecd3da4a0570a7202b161bbd2d1448d7e4028ba16fa911e73"
     },
     "map-editor.html": {
-      "bytes": 61787730,
-      "sha256": "8ac281ec4f713ca4633e603dc2668d26eba9d7b89ac6d02f82553b82f7fb6806"
+      "bytes": 61787734,
+      "sha256": "ff0e4087a3eeb7722594ec039051a122b49bfdf392f6da6dd5b526a8929482fd"
+    },
+    "magebrawl.html": {
+      "bytes": 90701704,
+      "sha256": "38005a69ba865410418b727d3f4262e20cc7f82405b36559ec6df65e95bb65f5"
     },
     "nebeljagd.html": {
-      "bytes": 90701731,
-      "sha256": "4a2728f73aa5f17e9e4684aa5961fdb5017d76388546369e38a16d4d41666224"
+      "bytes": 784,
+      "sha256": "bd3ac559404f4142c623f71569aea5433be2a4286e61cc6e38bbd019b92236c0"
     },
     "avatar-preview.html": {
-      "bytes": 14841745,
-      "sha256": "a948b06246f19356404194a7d6e757d4125aaf14fa37433dd4eb5e0576fabf2b"
+      "bytes": 14841744,
+      "sha256": "47949e5f08942051dc3679db2243f2329c6e667016c2e7db124e81f6bd9289d6"
     },
     "worldmap.json": {
       "bytes": 56916,
@@ -27,22 +31,22 @@
     },
     "worldmap.svg": {
       "bytes": 130143,
-      "sha256": "4f43c253a7fcf040e8d7a1ec3c404c255752c22256de792542634763c195cff1"
+      "sha256": "2754d48ed0000b9d8c61268582f9d31597a975e88e0efb51bc0fe661d5dee6d1"
     },
     "worldmap.schema.json": {
       "bytes": 41222,
-      "sha256": "891dcb206c7e3fdfc9926039d777325df28481986c121c1fa12a8b4091d3fcd4"
+      "sha256": "8344c0986605ed19dbe0b897cbff3caaa7ae8a871e6d662c95d5f62d0d76e67e"
     },
-    "nebeljagd-welt-und-editor.zip": {
-      "bytes": 99090511,
-      "sha256": "ca2478b3425dc94cc95b70c6a98ef99a50933a2e188417709ac30a44145ebb30"
+    "magebrawl-welt-und-editor.zip": {
+      "bytes": 99091149,
+      "sha256": "c97f077d54d7cc66366cab5657dbb527417e4d8e1903e9b0ca696f2ac6bc1f21"
     },
     "index.html": {
-      "bytes": 90701731,
-      "sha256": "4a2728f73aa5f17e9e4684aa5961fdb5017d76388546369e38a16d4d41666224"
+      "bytes": 90701704,
+      "sha256": "38005a69ba865410418b727d3f4262e20cc7f82405b36559ec6df65e95bb65f5"
     }
   },
-  "name": "Nebeljagd – aktuelle Spielwelt und Editor",
+  "name": "Magebrawl – aktuelle Spielwelt und Editor",
   "type": "static-game-editor-preview",
   "sourceBranch": "work",
   "loginAvailable": false,
