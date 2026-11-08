@@ -55,7 +55,7 @@ test('poison aiming clamps range, waits for release and clouds damage only reach
   combat.addTarget({ id: 'inside', position: { x: 0, y: 0, z: 6 }, maxHealth: 100 });
   combat.addTarget({ id: 'outside', position: { x: 8, y: 0, z: 6 }, maxHealth: 100 });
   special.releasePoison(origin, { type: 'poisonStaff', damage: 18, poison: { damagePerSecond: 5 } });
-  tick(.6); assert.equal(special.telemetry.clouds.length, 1);
+  tick(.9); assert.equal(special.telemetry.clouds.length, 1);
   const remaining = special.telemetry.clouds[0].remaining;
   assert.ok(remaining > 2.7 && remaining <= 3);
   tick(1); assert.ok(combat.targets.get('inside').health < 100); assert.equal(combat.targets.get('outside').health, 100);
@@ -63,6 +63,49 @@ test('poison aiming clamps range, waits for release and clouds damage only reach
   const health = combat.targets.get('inside').health; tick(2);
   assert.equal(combat.targets.get('inside').health, health); assert.equal(special.telemetry.clouds.length, 0);
   special.dispose();
+});
+
+test('poison flies a high, slow artillery arc, freezes on pause and lands on the aimed terrain', () => {
+  const { special, player, tick } = setup();
+  special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 12 });
+  special.releasePoison(origin, { type: 'poisonStaff', damage: 18 });
+  const flight = special.telemetry.poisonFlights[0];
+  assert.ok(flight.duration > 1.4 && flight.duration < 1.5, '12 m shot takes about 1.42 seconds');
+  tick(flight.duration / 2);
+  const middle = special.telemetry.poisonFlights[0];
+  assert.ok(middle.position.y > 4.7 && middle.position.y < 4.8, 'apex clears ordinary cover');
+  assert.ok(Math.abs(middle.position.z - 6) < 1e-6);
+  special.update(0, player, 100);
+  assert.deepEqual(special.telemetry.poisonFlights[0], middle);
+  tick(flight.duration / 2);
+  assert.equal(special.telemetry.poisonProjectiles, 0);
+  assert.equal(special.telemetry.clouds.length, 1);
+  assert.ok(Math.abs(special.telemetry.clouds[0].position.z - 12) < 1e-6);
+  assert.ok(Math.abs(special.telemetry.clouds[0].remaining - 3) < 1e-6);
+  special.dispose();
+});
+
+test('a long frame sweeps the curved poison path over low cover and into a tall wall without tunnelling', () => {
+  for (const height of [2, 6]) {
+    const { special, player } = setup((start, end) => {
+      if (start.z < 6 && end.z >= 6) {
+        const t = (6 - start.z) / (end.z - start.z);
+        const point = start.clone().lerp(end, t);
+        if (point.y < height) return { point, t };
+      }
+      return null;
+    });
+    special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 12 });
+    special.releasePoison(origin, { type: 'poisonStaff', damage: 18 });
+    const duration = special.telemetry.poisonFlights[0].duration;
+    special.update(duration + .2, player, duration + .2);
+    assert.equal(special.telemetry.poisonProjectiles, 0);
+    const cloud = special.telemetry.clouds[0];
+    assert.ok(Math.abs(cloud.position.z - (height === 2 ? 12 : 6)) < 1e-6);
+    const postImpact = height === 2 ? .2 : duration / 2 + .2;
+    assert.ok(Math.abs(cloud.remaining - (3 - postImpact)) < 1e-6, 'cloud time starts at contact, not at frame start');
+    special.dispose();
+  }
 });
 
 test('cancel and reset discard held aim, flying projectiles and cloud meshes without firing', () => {

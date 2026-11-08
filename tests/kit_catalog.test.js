@@ -9,7 +9,7 @@ import { ensureLandscape, vegetationSettings, BIOME_PRESETS } from '../src/map/l
 import { RARITIES } from '../src/loot-tiers.js';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
-const base = JSON.parse(read('worldmap.json'));
+const base = JSON.parse(read('tests/fixtures/editor-project-worldmap.json'));
 const schema = JSON.parse(read('worldmap.schema.json'));
 const kit = [
   ['tree', 'kit-pine-high', 'pine_high'], ['tree', 'kit-pine-young', 'pine_young'],

@@ -23,8 +23,8 @@ with sync_playwright() as p:
   state=page.evaluate('''()=>{const s=nebeljagdTestState();return {quality:s.quality,hiddenInGrass:s.hiddenInGrass,hiddenFromOtherPlayers:s.hiddenFromOtherPlayers,opacity:s.character.opacity,grass:s.world.stats.grassRendering,patch:s.world.grassPatches.find(p=>p.id==='obj-grass-start'),rendering:s.rendering}}''')
   state['servedHTMLSHA256']=served_hash
   assert state['hiddenInGrass'] and state['hiddenFromOtherPlayers']
-  assert state['grass']['sourceVersion']=='nebeljagd-broadleaf-v2'
-  assert state['patch']['crossedStalkCount']==state['patch']['instanceCount']*7
+  assert state['grass']['sourceVersion']=='nebeljagd-meadow-ears-v3'
+  assert state['patch']['crossedStalkCount']==state['patch']['instanceCount']*14
   assert state['patch']['minBladeHeight']>=1.75
   assert state['patch']['maxBladeHeight']<=2.6
   path=root/f'docs/screenshots/restored-grass-{quality}.png';page.screenshot(path=str(path));shots.append(str(path.relative_to(root)));captures.append(state)

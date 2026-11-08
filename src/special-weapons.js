@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { createPoisonVisuals } from './poison-visuals.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
-  poisonRange: 12, cloudRadius: 2.4, cloudDuration: 3 });
+  poisonRange: 12, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
+  cloudRadius: 2.4, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */
 export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, isVisible) {
@@ -49,7 +50,8 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     const visual = poisonVisuals.createProjectile(origin);
     visual.group.visible = canSee(origin);
     orbs.push({ mesh: visual.group, visual, origin: origin.clone(), target: aim.target.clone(), age: 0,
-      duration: Math.max(.25, origin.distanceTo(aim.target) / 14), payload: { ...payload, sourceId: ownerId } });
+      duration: Math.max(SPECIAL_RULES.poisonMinFlight, origin.distanceTo(aim.target) / SPECIAL_RULES.poisonSpeed),
+      payload: { ...payload, sourceId: ownerId } });
     cancelAim(); return true;
   }
   function launchMoon(origin, direction, payload, blocked = null) {
@@ -67,12 +69,12 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       ignored.add(collision.target.id); hits.add(collision.target.id); hit(collision.target, payload);
     }
   }
-  function cloudAt(point, payload) {
+  function cloudAt(point, payload, firstUpdateDelta = null) {
     const mesh = root(new THREE.Group()); mesh.name = 'Giftwolke · 3 Sekunden'; mesh.position.copy(point); mesh.position.y = ground(point);
     mesh.visible = canSee(mesh.position);
     const volume = poisonVisuals.createCloud(mesh);
     const boundary = new THREE.Mesh(ringGeometry, ringMaterial); boundary.rotation.x = -Math.PI / 2; boundary.position.y = .07; mesh.add(boundary);
-    clouds.push({ mesh, volume, remaining: SPECIAL_RULES.cloudDuration, payload });
+    clouds.push({ mesh, volume, remaining: SPECIAL_RULES.cloudDuration, payload, firstUpdateDelta });
   }
   function retire(list, index) {
     const item = list[index];
@@ -108,15 +110,29 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       if (moon) { moonMesh.visible = canSee(end); if (moon.age > 15) { moon = null; moonMesh.visible = false; } }
     }
     for (let i = orbs.length - 1; i >= 0; i--) {
-      const orb = orbs[i], start = orb.mesh.position.clone(); orb.age += dt;
-      const t = Math.min(1, orb.age / orb.duration), end = orb.origin.clone().lerp(orb.target, t);
-      end.y += Math.sin(t * Math.PI) * 2;
-      const wall = world?.traceProjectile?.(start, end, .12);
-      poisonVisuals.moveProjectile(orb.visual, start, wall?.point ?? end, orb.age);
-      if (wall || t >= 1) { cloudAt(orb.mesh.position, orb.payload); retire(orbs, i); }
+      const orb = orbs[i];
+      let elapsed = 0;
+      // Sweep the curve in short segments, including when a frame crosses the
+      // apex. A single chord would incorrectly hit cover below the high arc.
+      while (elapsed < dt) {
+        const step = Math.min(1 / 60, dt - elapsed, orb.duration - orb.age);
+        const start = orb.mesh.position.clone();
+        const t = Math.min(1, (orb.age + step) / orb.duration);
+        const end = orb.origin.clone().lerp(orb.target, t);
+        end.y += 4 * t * (1 - t) * SPECIAL_RULES.poisonArcHeight;
+        const wall = world?.traceProjectile?.(start, end, .12);
+        const travelled = step * (wall ? THREE.MathUtils.clamp(wall.t ?? 1, 0, 1) : 1);
+        orb.age += travelled; elapsed += travelled;
+        poisonVisuals.moveProjectile(orb.visual, start, wall?.point ?? end, orb.age);
+        if (wall || t >= 1) {
+          cloudAt(orb.mesh.position, orb.payload, Math.max(0, dt - elapsed));
+          retire(orbs, i); break;
+        }
+      }
     }
     for (let i = clouds.length - 1; i >= 0; i--) {
-      const cloud = clouds[i], active = Math.min(dt, cloud.remaining); cloud.remaining -= dt;
+      const cloud = clouds[i], active = Math.min(cloud.firstUpdateDelta ?? dt, cloud.remaining);
+      cloud.firstUpdateDelta = null; cloud.remaining -= active;
       cloud.mesh.visible = canSee(cloud.mesh.position);
       poisonVisuals.updateCloud(cloud.volume, SPECIAL_RULES.cloudDuration - cloud.remaining, cloud.remaining);
       for (const target of combat?.targets?.values() ?? []) {
@@ -139,6 +155,9 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     get telemetry() { return { aiming: Boolean(aim), target: aim ? { ...aim.target } : null,
       moon: moon ? { mode: moon.mode, distance: moon.distance, position: { ...moonMesh.position }, outboundHits: [...moon.outboundHits], returnHits: [...moon.returnHits] } : null,
       visuals: poisonVisuals.telemetry,
-      poisonProjectiles: orbs.length, clouds: clouds.map(c => ({ remaining: c.remaining, position: { ...c.mesh.position }, radius: SPECIAL_RULES.cloudRadius })) }; },
+      poisonProjectiles: orbs.length,
+      poisonFlights: orbs.map(o => ({ position: { ...o.mesh.position }, origin: { ...o.origin }, target: { ...o.target },
+        age: o.age, duration: o.duration, arcHeight: SPECIAL_RULES.poisonArcHeight })),
+      clouds: clouds.map(c => ({ remaining: c.remaining, position: { ...c.mesh.position }, radius: SPECIAL_RULES.cloudRadius })) }; },
     dispose() { reset(); poisonVisuals.dispose(); roots.forEach(r => r.removeFromParent()); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); } };
 }

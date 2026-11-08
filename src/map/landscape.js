@@ -37,7 +37,7 @@ export const TERRAIN_TYPES = freeze([
   { id: 'stone', label: 'Stein', color: '#96988e', variation: .10 },
   { id: 'rock', label: 'Fels', color: '#65695f', variation: .15 },
   { id: 'snow', label: 'Schnee', color: '#dce7e8', variation: .08 },
-  { id: 'cobble', label: 'Steinpflaster · Hellgrau', color: '#a8a69d', variation: .09 },
+  { id: 'cobble', label: 'Naturweg · Randsteine', color: '#99815b', variation: .09 },
 ]);
 /** Way brushes store ordinary terrain stamps: existing export, undo and
  * offline play keep the exact painted surface without a second map format. */
@@ -49,7 +49,7 @@ export const PATH_BRUSH_PRESETS = freeze([
   { id: 'snow', label: 'Festgetretener Schnee', type: 'snow', color: '#aabdc8' },
   { id: 'gravel', label: 'Kiesweg · Fels / Heide', type: 'stone', color: '#a7a08c' },
   { id: 'marsh', label: 'Schlammpfad · Moor', type: 'mud', color: '#81705b' },
-  { id: 'cobble', label: 'Steinpflaster', type: 'cobble', color: '#a0a38d' },
+  { id: 'cobble', label: 'Naturweg · Randsteine', type: 'cobble', color: '#99815b' },
 ]);
 export function pathBrushSettings(id) {
   const preset = PATH_BRUSH_PRESETS.find(item => item.id === id) ?? PATH_BRUSH_PRESETS[0];

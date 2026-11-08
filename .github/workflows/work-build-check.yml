@@ -63,6 +63,7 @@ jobs:
             sleep 1
           done
       - name: Verify uploaded weapon models, pickup, swaps and attacks
+        # Full graphical regression is available on manual dispatch.
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
         if: github.event_name == 'workflow_dispatch'
@@ -71,6 +72,10 @@ jobs:
           NEBELJAGD_QA_OUT: test-results/tripo-weapons
           NEBELJAGD_BUNDLED_CHROMIUM: '1'
         run: python tests/tripo_weapon_editor_smoke.py
+      - name: Verify textured chest, weighted loot, sword and editor
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/chest_loot_browser_smoke.py
       - name: Verify uploaded fireball, shader, sparks and smoke
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
@@ -78,6 +83,18 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/fireball_browser_smoke.py
+      - name: Verify imported projectiles, artillery arc and see-over props
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/projectiles_sight_smoke.py
+      - name: Verify woodland paths, barrel debris and irregular snow rolls
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: |
+          python tests/woodland_details_smoke.py
+          python tests/snow_roll_smoke.py
       - name: Verify targeted hold, release and return controls
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
@@ -98,6 +115,8 @@ jobs:
         run: python tests/classroom_smoke.py
       - name: Verify current editor entry, project map and preserved drafts
         run: python tests/online_editor_smoke.py
+      - name: Verify online map saving, conflict protection and credential-free exports
+        run: python tests/github_map_sync_smoke.py
       - name: Verify removed tree palette and preserved saved GLB trees in editor and game
         run: |
           python -m http.server 4175 --bind 127.0.0.1 >/tmp/nebeljagd-tree.log 2>&1 &
@@ -177,8 +196,12 @@ jobs:
             test-results/avatar-preview
             test-results/classroom
             test-results/online-editor
+            test-results/github-map-sync
             test-results/tripo-weapons
             test-results/fireball
+            test-results/projectiles-sight
+            test-results/woodland-details
+            test-results/natural-details
             assets/characters/adventurer-inspection.json
             /tmp/nebeljagd-preview.log
           retention-days: 3

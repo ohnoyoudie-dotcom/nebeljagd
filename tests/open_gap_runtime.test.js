@@ -6,7 +6,7 @@ import { isLandPoint, pointInPolygon, polygonArea } from '../src/map/model.js';
 import { emitTerrainTriangles } from '../src/terrain-triangulation.js';
 import { ROLL_SPEED } from '../src/rules.js';
 
-const authored = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const authored = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 const interpolate = (a, b, t) => a.map((value, axis) => value + (b[axis] - value) * t);
 const frame = bridge => {
   const a = bridge.points[0], b = bridge.points.at(-1), length = Math.hypot(b[0] - a[0], b[1] - a[1]);

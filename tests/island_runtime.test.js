@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createWorldSpatialModel, triangulateWorldLand } from '../src/generated-spatial.js';
 import { pointInPolygon, polygonArea, outerLandRings, waterBoundaryRings } from '../src/map/model.js';
 
-const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
 // This is the same source triangulation consumed by createGeneratedWorld.
 // Uniform/adaptive refinement has its separate seam tests.

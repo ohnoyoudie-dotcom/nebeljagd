@@ -6,7 +6,7 @@ import { getObjectDefinition, makeWorldObject, normalizeWorldmap } from '../src/
 import { renderWorldmapSvg } from '../src/map/render.js';
 import { getMoundDefinition } from '../src/overgrown-mounds.js';
 
-const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
 const schema = JSON.parse(readFileSync(new URL('../worldmap.schema.json', import.meta.url), 'utf8'));
 const historicalSpawns = JSON.parse(readFileSync(new URL('./fixtures/reference-channel-worldmap.json', import.meta.url), 'utf8')).spawnAreas;
 // Legacy fixtures remain useful for recovery/imports even though these objects

@@ -1,4 +1,4 @@
-import { RARITIES, WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
+import { WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint, pointInPolygon } from './model.js';
 import { renderWorldmapSvg, barrierSvg } from './render.js';
@@ -16,6 +16,7 @@ import { getVariantAsset, getVariantPreviewSvg } from './asset-catalog.js';
 import { removeRetiredBuildings } from './retired-buildings.js';
 import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
+import { createGitHubMapSync, githubSyncAvailable } from './github-map-sync.js';
 import { createPlacementRotationControl } from './placement-rotation.js';
 import './editor.css';
 
@@ -76,6 +77,7 @@ let landscapePanel = null;
 let barrierPanel = null;
 let mapFileHandle = null;
 let persistedMapFileHandle = null;
+let githubSync = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
 const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
 const layers = { showLabels: false, showSpawns: false, showGrid: false, showZone: false, showObjects: true };
@@ -225,6 +227,7 @@ function saveDraft() {
     browserDraftCurrent = false;
     updateSaveStatus();
   }
+  githubSync?.changed();
 }
 function remember(previous) {
   history.push(previous);
@@ -480,11 +483,11 @@ function renderList() {
     if (type === 'path') swatch.style.backgroundColor = '#beaa7d';
     if (type === 'object') {
       swatch.classList.add(`swatch-${item.kind}`);
-      if (WEAPON_TYPES.includes(item.kind)) swatch.style.backgroundColor = (RARITIES[item.rarity] ?? RARITIES.common).color;
+      if (WEAPON_TYPES.includes(item.kind)) swatch.style.background = 'linear-gradient(90deg, #f1eee3, #66d780, #5aa5ff, #bd78f5, #ffad44)';
     }
     const label = document.createElement('span'); label.className = 'feature-label'; label.textContent = item.name;
     const kindLabel = document.createElement('span'); kindLabel.className = 'feature-type';
-    kindLabel.textContent = type === 'object' ? getObjectDefinition(item.kind).label + (WEAPON_TYPES.includes(item.kind) ? ` · ${(RARITIES[item.rarity] ?? RARITIES.common).label}` : '') : kindNames[type];
+    kindLabel.textContent = type === 'object' ? getObjectDefinition(item.kind).label + (WEAPON_TYPES.includes(item.kind) ? ' · zufällige Seltenheit' : '') : kindNames[type];
     button.append(swatch, label, kindLabel);
     button.addEventListener('click', () => select(type, item.id));
     list.append(button);
@@ -523,7 +526,7 @@ function renderProperties() {
     fillVariants($('object-variant'), feature.kind, feature.variant);
     renderAssetPreview('object', feature.kind, feature.variant);
     $('object-rarity-property').hidden = !WEAPON_TYPES.includes(feature.kind);
-    $('object-rarity').value = feature.rarity ?? 'common';
+    $('object-rarity').value = 'common';
     updateRarityHint();
     $('object-rotation').value = Math.round(feature.rotation * 180 / Math.PI * 100) / 100;
     $('object-scale').value = feature.scale;
@@ -566,7 +569,7 @@ function applyProperties(event) {
     if (selection.type === 'spawn') { feature.radius = Number($('feature-radius').value); feature.capacity = Number($('feature-capacity').value); }
     if (selection.type === 'object') {
       feature.variant = $('object-variant').value;
-      if (WEAPON_TYPES.includes(feature.kind)) feature.rarity = $('object-rarity').value;
+      // Preserve legacy map fields; live loot rolls its rarity each round.
       feature.rotation = Number($('object-rotation').value) * Math.PI / 180;
       feature.scale = Number($('object-scale').value);
       if (isHeightAdjustable(feature)) {
@@ -1086,6 +1089,11 @@ async function exportJson() {
     toast(`worldmap.json konnte nicht direkt gespeichert werden: ${error?.message ?? 'Unbekannter Fehler'}`, true);
   }
 }
+function saveCurrentMap() {
+  if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
+  saveDraft();
+  return githubSync ? githubSync.save() : exportJson();
+}
 function exportSvg() {
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   download(renderWorldmapSvg(map, { ...layers, editor: false, zoneRadius: zoneAt(map, zoneTime).radius }), 'worldmap.svg', 'image/svg+xml');
@@ -1096,6 +1104,9 @@ function exportEditor() {
   if (externalScript) return toast('Für eine eigenständige HTML-Kopie bitte die gebaute map-editor.html öffnen. JSON und SVG lassen sich hier bereits speichern.', true);
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   const doc = document.documentElement.cloneNode(true);
+  // Runtime account settings and credentials never belong to an exported file.
+  doc.querySelectorAll('[data-github-sync-ui]').forEach(element => element.remove());
+  doc.querySelector('#export-json').disabled = false;
   const snapshot = doc.querySelector('#map-snapshot');
   snapshot.textContent = JSON.stringify(map).replace(/</g, '\\u003c');
   // Rebuild transient UI on next open; no stale user inputs or validation messages.
@@ -1221,8 +1232,8 @@ function renderAssetPreview(prefix, kind, variant) {
 function updateRarityHint() {
   const feature = selectedFeature();
   if (!feature || !WEAPON_TYPES.includes(feature.kind)) return;
-  const stats = weaponStats(feature.kind, $('object-rarity').value);
-  $('object-rarity-hint').textContent = `${stats.damage} Schaden pro Treffer${stats.burn ? ` · zusätzlich ${Math.round(stats.burn.damagePerSecond * stats.burn.duration)} Brandschaden` : stats.slow ? ' · 50 % Verlangsamung' : ''}`;
+  const low = weaponStats(feature.kind, 'common'), high = weaponStats(feature.kind, 'legendary');
+  $('object-rarity-hint').textContent = `${low.damage}–${high.damage} Schaden pro Treffer. Pro Runde: Weiß 55 %, Grün 27 %, Blau 12 %, Violett 5 %, Gold 1 %. Position und Modell bleiben fest.${low.burn || low.poison ? ' Auch der Elementarschaden steigt mit der Seltenheit.' : ''}`;
 }
 function updatePaletteRarity() {
   $('palette-rarity-property').hidden = !WEAPON_TYPES.includes($('palette-kind').value);
@@ -1231,9 +1242,9 @@ function updatePaletteRarity() {
 function preparePalette() {
   $('palette-kind').replaceChildren(); $('palette-rarity').replaceChildren(); $('object-rarity').replaceChildren();
   $('object-kind-filter').innerHTML = '<option value="all">Alle Objektarten</option>';
-  for (const rarity of Object.values(RARITIES)) for (const select of [$('palette-rarity'), $('object-rarity')]) {
-    const option = document.createElement('option'); option.value = rarity.id;
-    option.textContent = `${rarity.label} · ×${rarity.multiplier}`; select.append(option);
+  for (const select of [$('palette-rarity'), $('object-rarity')]) {
+    const option = document.createElement('option'); option.value = 'common';
+    option.textContent = 'Zufällig je Runde · Weiß bis Gold'; select.append(option);
   }
   $('palette-rarity').value = 'common';
   for (const [select, catalog] of [[$('palette-kind'), PLACEMENT_OBJECT_CATALOG], [$('object-kind-filter'), OBJECT_CATALOG]]) {
@@ -1349,7 +1360,12 @@ for (const [id, key] of [['layer-objects', 'showObjects'], ['layer-labels', 'sho
 $('zone-time').addEventListener('input', event => { zoneTime = Number(event.target.value); renderMap(); });
 $('import-json').addEventListener('click', () => { void openJson(); });
 $('json-file-input').addEventListener('change', importJson);
-$('export-json').addEventListener('click', () => { void exportJson(); }); $('export-svg').addEventListener('click', exportSvg); $('export-editor').addEventListener('click', exportEditor);
+$('export-json').addEventListener('click', () => { void saveCurrentMap(); }); $('export-svg').addEventListener('click', exportSvg); $('export-editor').addEventListener('click', exportEditor);
+const downloadJsonButton = $('download-json') ?? document.createElement('button');
+downloadJsonButton.id = 'download-json'; downloadJsonButton.className = 'button quiet';
+downloadJsonButton.textContent = 'Karte als JSON sichern';
+downloadJsonButton.addEventListener('click', () => { void exportJson(); });
+$('export-svg').before(downloadJsonButton);
 $('reset-map').addEventListener('click', () => { $('reset-confirm').hidden = !$('reset-confirm').hidden; });
 $('reset-confirm-yes').addEventListener('click', resetMap); $('reset-confirm-no').addEventListener('click', () => { $('reset-confirm').hidden = true; });
 $('map-viewport').addEventListener('pointerdown', pointerDown);
@@ -1366,8 +1382,12 @@ $('map-viewport').addEventListener('wheel', event => {
 }, { passive: false });
 document.addEventListener('keydown', event => {
   if ($('editor-start-dialog').open) return;
+  if ($('github-map-dialog')?.open) {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') event.preventDefault();
+    return;
+  }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
-    event.preventDefault(); void exportJson(); return;
+    event.preventDefault(); void saveCurrentMap(); return;
   }
   const editing = event.target.closest?.('input,textarea,select,[contenteditable=true]');
   if (editing) return;
@@ -1454,3 +1474,22 @@ renderAll();
 if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();
 if (startup.offerChoice) startDialog.showModal();
 if (startup.missingDraft) toast('Kein passender Entwurf in diesem Browser gefunden. Die Projektkarte wurde geöffnet; eine gespeicherte JSON-Datei kannst du über „Öffnen“ laden.', true);
+if (!embeddedSnapshot && githubSyncAvailable(new URL(location.href))) {
+  githubSync = createGitHubMapSync({
+    getMap: () => clone(map), project: projectMap, canSave: () => !pointer && validate(map).valid,
+    download, notify: toast,
+    getProtectedDraft: () => restoredDraft ? JSON.stringify(restoredDraft, null, 2) + '\n' : unreadableDraftPending ? storedDraftText : null,
+    onSaved() {
+      // Explicit online saving preserves any protected older draft separately,
+      // then makes the current editor document the map resumed on the next visit.
+      restoredDraft = null; unreadableDraftPending = false;
+      updatePendingDraftBanner(); if (!pointer) saveDraft();
+    },
+    applyRemote(candidate) {
+      const previous = clone(map);
+      map = clone(candidate); selection = null; view = initialView(); zoneTime = 0; $('zone-time').value = 0;
+      mapSource = 'online'; mapSourceBase = JSON.stringify(map);
+      remember(previous); renderAll();
+    },
+  });
+}

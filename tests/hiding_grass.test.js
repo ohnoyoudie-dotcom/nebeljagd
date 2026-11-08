@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createHidingGrassGeometry, hidingGrassDetail, HIDING_GRASS_STYLE } from '../src/hiding-grass.js';
 
-test('broad curved rosette leaves have rooted bases, folded tips and a bounded triangle budget', () => {
+test('fine curved blades and taller ears have rooted bases and a bounded triangle budget', () => {
   const geometry = createHidingGrassGeometry();
-  assert.equal(geometry.userData.sourceVersion, 'nebeljagd-broadleaf-v2');
-  assert.equal(geometry.userData.leavesPerTuft, 7);
+  assert.equal(geometry.userData.sourceVersion, 'nebeljagd-meadow-ears-v3');
+  assert.equal(geometry.userData.leavesPerTuft, 14);
   assert.ok(geometry.index.count / 3 * HIDING_GRASS_STYLE.instanceDensity < 64 * 20 / (Math.PI * .72),
-    'broader leaves use fewer total triangles per square metre than the old spike field');
+    'fine leaves and ears use fewer total triangles per square metre than the old spike field');
   const p = geometry.attributes.position, c = geometry.attributes.color;
   let roots = 0, tips = 0, rootLight = 0, tipLight = 0;
   for (let i = 0; i < p.count; i++) {
@@ -22,7 +22,9 @@ test('broad curved rosette leaves have rooted bases, folded tips and a bounded t
   assert.ok(geometry.boundingBox.max.x - geometry.boundingBox.min.x > .5,
     'outward leaves give the rosette a broad silhouette');
   assert.equal(geometry.boundingBox.min.y, 0);
-  assert.equal(geometry.boundingBox.max.y, 1);
+  assert.ok(geometry.boundingBox.max.y > 1.25 && geometry.boundingBox.max.y < 1.4, 'ears rise above the leaf canopy');
+  assert.equal(geometry.attributes.uv.count,p.count);
+  assert.equal(geometry.attributes.aBladeKind.count,p.count);
   geometry.dispose();
 });
 

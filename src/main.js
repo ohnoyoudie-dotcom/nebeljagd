@@ -10,10 +10,12 @@ import { zoneAt as mapZoneAt, getWorldmapStats } from './map/model.js';
 import { loadRuntimeWorldmap, importRuntimeWorldmap } from './map/runtime-document.js';
 import { createCharacter } from './character.js';
 import { createPickups } from './pickups.js';
+import { rollLootRarity } from './loot-tiers.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
 import { loadFireballModel } from './fireball-model.js';
+import { loadProjectileModels } from './projectile-models.js';
 import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
@@ -138,10 +140,11 @@ player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.sp
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
+world.setDebrisVisibility?.(isVisible);
 const healthBars = createHealthBars(world.root);
 healthBars.add('player', { position: player, health: state.health, maxHealth: state.maxHealth,
   level: state.level, local: true, height: 2.9 });
-const levelUpEffect = createLevelUpEffect(world.root);
+const levelUpEffect = createLevelUpEffect(world.root, { onGlow: character.setLevelUpGlow });
 const damageFeedback = createDamageFeedback(world.root, {
   isVisible: (position, options = {}) => vision.isVisible(position, {
     ...options, concealed: options.concealed ?? world.concealmentAt(position.x, position.z) > .01,
@@ -175,7 +178,9 @@ for (const object of world.destructibles ?? []) {
 const pickups = createPickups(world.root, { placements: world.map.objects, heightAt: world.heightAt, isVisible, world, revealSceneryThroughFog: false });
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
-    tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel() });
+    rollRarity: rollLootRarity,
+    tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel(),
+    projectilePrototypes: await loadProjectileModels() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {
@@ -457,7 +462,7 @@ window.nebeljagdTestState = () => ({
   snowFootprints: snowFootprints.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
   levelUpEffect: levelUpEffect.inspect(),
-  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid }) => ({ id, x, z, opened, variant, model, lidRotation: lid.rotation.x, visible: group.visible })),
+  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid, texturedInteriorSurfaces }) => ({ id, x, z, opened, variant, model, texturedInteriorSurfaces, lidRotation: lid.rotation.x, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
     destructibles: world.destructibles?.map(({ id, name, kind, x, z, health, maxHealth, destroyed }) => ({ id, name, kind, x, z, health, maxHealth, destroyed })) ?? [],
@@ -469,6 +474,7 @@ window.nebeljagdTestState = () => ({
   weaponDrops: weapons.items.map(({ id, type, variant, model, rarity, x, z, collected, group }) => ({ id, type, variant, model, rarity, x, z, collected, visible: group.visible })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
+    levelUpGlowMaterials: character.inspectLevelUpGlow(),
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
     snowSinkMeters: character.group.userData.snowSinkMeters ?? 0,
     snowClipStrength: character.group.userData.snowClipStrength ?? 0,
@@ -547,7 +553,7 @@ function frame(now) {
   const dt = Math.min(0.1, frameMs / 1000);
   previousTime = now; time += dt; accumulator += dt;
   while (accumulator >= 1 / 60) { simulate(1 / 60); accumulator -= 1 / 60; }
-  world.update(dt, time, player, currentZone.radius);
+  world.update(dt, time, player, currentZone.radius, state.phase === 'playing' ? dt : 0);
   vision.update(player, time);
   state.shelter = world.shelter;
   state.hiddenInGrass = world.concealmentAt(player.x, player.z) > 0.01;
@@ -591,7 +597,7 @@ function frame(now) {
   footprintSources.push({
     id: 'player', x: player.x, z: player.z, direction: state.direction,
     moving: state.phase === 'playing' && state.moving, speed: state.actualSpeed || 0,
-    stepDistance: state.rollRemaining > 0 ? .78 : .58, lateral: .105,
+    rolling: state.rollRemaining > 0, stepDistance: .58, lateral: .105,
   });
   practiceActors.appendFootprintSources?.(footprintSources);
   snowFootprints.update(state.elapsed, footprintSources);

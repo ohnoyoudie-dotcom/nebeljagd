@@ -7,7 +7,7 @@ import { removeNonTripoObjects } from '../src/map/tripo-object-cleanup.js';
 import { validateWorldmap } from '../src/map/model.js';
 
 test('explicit cleanup removes every disallowed placement and preserves approved GLB trees, current Tripo models and drawn routes', () => {
-  const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+  const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
   const objects = OBJECT_CATALOG.flatMap(item => item.variants.map(variant => makeWorldObject(item.kind, [30, -42], {
     id: `${item.kind}-${variant.id}`, variant: variant.id, name: `Custom ${variant.id}`, scale: 1.3, rotation: .4,
   })));
@@ -37,7 +37,7 @@ test('explicit cleanup removes every disallowed placement and preserves approved
 });
 
 test('saved project preserves authored grass on import and only explicit cleanup removes it', () => {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
   const before = structuredClone(map);
   assert.deepEqual(normalizeWorldmap(map), before, 'restored user placements survive normal loading');
   const cleanup = removeNonTripoObjects(map);

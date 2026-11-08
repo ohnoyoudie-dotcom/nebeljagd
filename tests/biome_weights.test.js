@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createWorldSpatialModel } from '../src/generated-spatial.js';
 
-const base = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
 // A stable meadow background isolates paint blending from authored map biomes.
 base.regions = [{ id: 'blend-meadow', name: 'Testwiese', biome: 'meadow', color: '#80a66a',
   points: [[-600,-720],[600,-720],[600,720],[-600,720]], label: [0,0] }];

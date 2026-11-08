@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createWeapons } from '../src/weapons.js';
+import { swordPrototype } from './helpers/weapon-prototypes.js';
 import { createChests } from '../src/chests.js';
 import { createPickups } from '../src/pickups.js';
 import { RARITIES, WEAPON_TYPES, rarityVisual } from '../src/loot-tiers.js';
@@ -9,11 +10,12 @@ import { RARITIES, WEAPON_TYPES, rarityVisual } from '../src/loot-tiers.js';
 function setup(placements = [{ id: 'bow', kind: 'bow', rarity: 'common', position: [0, 0] }], options = {}) {
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
   const world = { heightAt: () => 0, traceProjectile: () => null, ...options.world };
-  return { scene, actor, weapons: createWeapons(scene, actor, world, null, { placements, ...options }) };
+  return { scene, actor, weapons: createWeapons(scene, actor, world, null, { placements, tripoPrototypes: swordPrototype(), ...options }) };
 }
 
-const PROCEDURAL_WEAPON_TYPES = ['bow', 'sword', 'fireStaff', 'iceStaff'];
+const PROCEDURAL_WEAPON_TYPES = ['bow', 'fireStaff', 'iceStaff'];
 const IMPORTED_WEAPONS = [
+  { kind: 'sword', variant: 'kit-tripo-sword' },
   { kind: 'poisonStaff', variant: 'kit-tripo-poison-staff' },
   { kind: 'moonStaff', variant: 'kit-tripo-moon-staff' },
   { kind: 'bow', variant: 'kit-tripo-ornate-bow' },

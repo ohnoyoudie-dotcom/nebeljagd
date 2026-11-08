@@ -56,7 +56,7 @@ test('legacy flower-meadow grass becomes ordinary meadow with all authored param
 });
 
 test('retired scenery is absent from the authoring palette while authored maps and legacy imports remain valid', () => {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
   assert.equal(AUTHORING_OBJECT_CATALOG.some(isRetiredScenery), false);
   assert.deepEqual(normalizeWorldmap(map), map, 'loading the map never silently removes later user placements');
   const clean = { ...map, objects: [obj('grass', 'tall'), obj('chest', 'kit-tripo-chest'), obj('house', 'kit-tripo-tavern')] };

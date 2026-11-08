@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createWeapons } from '../src/weapons.js';
+import { swordPrototype } from './helpers/weapon-prototypes.js';
 
 const staffTypes = ['fireStaff', 'iceStaff'];
 
@@ -26,7 +27,7 @@ function setup() {
   const placements = ['fireStaff', 'iceStaff', 'bow', 'sword'].map((kind, index) =>
     ({ id: kind, kind, position: [index * 4, 0] }));
   const world = { worldRadius: 1000, heightAt: () => 0, traceProjectile: () => null };
-  const weapons = createWeapons(scene, actor, world, character, { placements });
+  const weapons = createWeapons(scene, actor, world, character, { placements, tripoPrototypes: swordPrototype() });
   return { actor, weapons, poses, get pose() { return latest; },
     equip(kind) {
       const item = weapons.items.find(item => item.type === kind && !item.collected);

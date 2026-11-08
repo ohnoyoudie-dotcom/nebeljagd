@@ -133,7 +133,7 @@ def place(page, kind, variant=None, position=None, rarity=None):
     page.locator('#editor-tool-objects-place').click()
     page.locator('#palette-kind').select_option(kind)
     if variant: page.locator('#palette-variant').select_option(variant)
-    if rarity: page.locator('#palette-rarity').select_option(rarity)
+    if rarity: page.locator('#palette-rarity').select_option('common')
     before = len(state(page)['map']['objects'])
     page.locator('#add-object-center').click()
     page.wait_for_function('n=>nebeljagdMapTestState().map.objects.length===n', arg=before+1)
@@ -227,10 +227,10 @@ try:
         placed_weapons = []
         for i, (kind, variant, rarity) in enumerate(TRIPO_WEAPONS):
             obj = place(page, kind, variant, [-65 + i * 22, -25], rarity=rarity)
-            assert obj['variant'] == variant and obj['rarity'] == rarity, obj
+            assert obj['variant'] == variant and obj['rarity'] == 'common', obj
             expect(page.locator('#palette-rarity-property')).to_be_visible()
             expect(page.locator('#object-rarity-property')).to_be_visible()
-            assert page.locator('#object-rarity').input_value() == rarity
+            assert page.locator('#object-rarity').input_value() == 'common'
             assert page.locator('#palette-preview-image image').get_attribute('href').startswith('data:image/webp;base64,')
             rotation, scale = 35 + i * 15, 1.1 + i * .2
             page.locator('#object-rotation').fill(str(rotation))
@@ -239,10 +239,10 @@ try:
             transformed = state(page)['map']['objects'][-1]
             assert math.isclose(transformed['rotation'], math.radians(rotation))
             assert math.isclose(transformed['scale'], scale)
-            page.locator('#object-rarity').select_option('normal')
+            page.locator('#object-scale').fill(str(scale + .1))
             page.locator('.apply-properties').click()
             obj = state(page)['map']['objects'][-1]
-            assert obj['variant'] == variant and obj['rarity'] == 'normal'
+            assert obj['variant'] == variant and abs(obj['scale'] - scale - .1) < .00001
             page.locator('#undo').click()
             assert state(page)['map']['objects'][-1] == transformed
             placed_weapons.append(state(page)['map']['objects'][-1])

@@ -30,11 +30,11 @@ test('trees and rocks cast sight shadows but distant and low objects do not', ()
   assert.equal(sight.distanceAtAngle(0), 4);
 });
 
-test('destroyed crates stop hiding what is behind them after the next sight update', () => {
-  const crate = { minX: 4, maxX: 4.8, minZ: -.4, maxZ: .4, minY: 0, maxY: 1, type: 'crate' };
-  const sight = createSightModel({ obstacles: [crate] });
+test('destroyed tall blockers stop hiding what is behind them after the next sight update', () => {
+  const blocker = { minX: 4, maxX: 4.8, minZ: -.4, maxZ: .4, minY: 0, maxY: 3, type: 'wall' };
+  const sight = createSightModel({ obstacles: [blocker] });
   assert.equal(sight.isVisible({ x: 8, z: 0 }), false);
-  crate.destroyed = true;
+  blocker.destroyed = true;
   sight.update({ x: 0, y: 0, z: 0 });
   assert.equal(sight.isVisible({ x: 8, z: 0 }), true);
 });
@@ -60,8 +60,8 @@ test('freestanding walls and fences hide actors and shade the ground only from 2
   }
 });
 
-test('legacy wall colliders use physical height, while house partitions and crates retain existing sight rules', () => {
-  for (const [type, height, blocked] of [['wall', 1.5, false], ['wall', 2, true], ['fence', 1, false], ['fence', 2, true], ['house-wall', 1.5, true], ['crate', 1, true], ['rock', 1.5, true]]) {
+test('legacy walls use physical height; house partitions still hide actors, crates allow sight', () => {
+  for (const [type, height, blocked] of [['wall', 1.5, false], ['wall', 2, true], ['fence', 1, false], ['fence', 2, true], ['house-wall', 1.5, true], ['crate', 1, false], ['rock', 1.5, true]]) {
     const body = { type, minX: 4, maxX: 4.6, minZ: -1, maxZ: 1, minY: 20, maxY: 20 + height };
     const sight = createSightModel({ obstacles: [body] });
     sight.update({ x: 0, y: 20, z: 0 });
@@ -71,6 +71,24 @@ test('legacy wall colliders use physical height, while house partitions and crat
     minY: 0, maxY: 3, barrierHeight: 3 }] });
   sight.update({ x: 0, y: 5, z: 0 });
   assert.equal(sight.isVisible({ x: 8, z: 0 }), true, 'observer far above the wall still sees over it');
+});
+
+test('props and every well part allow actors and the scenery contour through while retaining physical collision', () => {
+  for (const [type, objectKind] of [['wagon', 'wagon'], ['wagon-shaft', 'wagon'], ['barrel', 'barrel'],
+    ['well-post', 'well'], ['well-roof', 'well'], ['well', 'well'], ['crate', 'crate'], ['chest', 'chest']]) {
+    for (const ground of [0, 24]) {
+      const body = { type, objectKind, minX: 4, maxX: 5, minZ: -1, maxZ: 1, minY: ground, maxY: ground + 4 };
+      const original = { ...body }, sight = createSightModel({ obstacles: [body] });
+      sight.update({ x: 0, y: ground, z: 0 });
+      assert.equal(sight.isVisible({ x: 8, z: 0 }), true, type);
+      assert.equal(sight.distances[0], 18, `${type} no ground shadow`);
+      const collision = createCollisionIndex([], [body]), position = { x: 4.5, y: ground, z: 0 };
+      collision.resolve(position, .42);
+      assert.ok(Math.abs(position.x - 4.5) + Math.abs(position.z) > .4, `${type} still solid`);
+      assert.ok(collision.traceSegment({ x: 0, y: ground + 1, z: 0 }, { x: 8, y: ground + 1, z: 0 }), `${type} still stops shots`);
+      assert.deepEqual(body, original);
+    }
+  }
 });
 
 test('a house doorway admits sight while adjacent walls conceal its rooms', () => {

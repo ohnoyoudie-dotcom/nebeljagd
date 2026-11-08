@@ -8,6 +8,34 @@ for (const [path, expected] of Object.entries(preserved)) {
   const bytes = await readFile(path);
   assert.equal(createHash('sha256').update(bytes).digest('hex'), expected, `Preserved version changed: ${path}`);
 }
+
+// Separate derivative of the user's repaired tree; preserve both source files.
+{
+  const root = 'assets/imported/user-trees/styled/';
+  const manifest = JSON.parse(await readFile(root + 'manifest.json', 'utf8'));
+  assert.deepEqual((await readdir(root)).filter(p => p !== 'manifest.json').sort(), manifest.files.map(f => f.path).sort());
+  for (const file of manifest.files) {
+    assert.ok(!file.path.includes('/') && !file.path.includes('..'));
+    const bytes = await readFile(root + file.path);
+    assert.equal(bytes.length, file.bytes); assert.equal(createHash('sha256').update(bytes).digest('hex'), file.sha256);
+  }
+  const report = JSON.parse(await readFile(root + 'inspection.json', 'utf8'));
+  for (const source of [report.source, report.authoringSource]) {
+    assert.equal(createHash('sha256').update(await readFile(source.path)).digest('hex'), source.sha256, source.path);
+  }
+  const bytes = await readFile(root + 'tree1-woodland.glb');
+  assert.equal(bytes.toString('ascii', 0, 4), 'glTF'); assert.equal(bytes.readUInt32LE(8), bytes.length);
+  assert.ok(bytes.length < 700000);
+  const gltf = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
+  const parts = gltf.meshes.flatMap(m => m.primitives);
+  assert.equal(parts.reduce((sum, p) => sum + gltf.accessors[p.indices].count / 3, 0), 6992);
+  assert.ok(gltf.buffers.every(b => !b.uri) && gltf.images.every(i => !i.uri && i.bufferView !== undefined));
+  const leaves = parts.find(p => gltf.materials[p.material].alphaMode === 'MASK');
+  assert.ok(leaves && leaves.attributes.TEXCOORD_0 !== undefined && leaves.attributes.COLOR_0 !== undefined);
+  assert.ok(gltf.materials[leaves.material].doubleSided && gltf.materials[leaves.material].pbrMetallicRoughness.baseColorTexture);
+  assert.ok(Math.abs(Math.max(...parts.map(p => gltf.accessors[p.attributes.POSITION].max[1])) - 7.8036928) < .0001);
+  console.log(JSON.stringify({ status: 'passed', package: 'user-tree-woodland', sourcePreserved: true, triangles: 6992, bytes: bytes.length }));
+}
 const bytes = await readFile('assets/characters/adventurer.glb');
 assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
 assert.equal(bytes.readUInt32LE(4), 2);
@@ -95,7 +123,7 @@ console.log(JSON.stringify({ importedSources: sourceRecord.originals.length, ver
 
 // User-supplied Tripo uploads stay untouched. Prepared packages carry a closed
 // file roster so browser builds cannot silently use a different derivative.
-for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons', 'tripo-extra-weapons']) {
+for (const name of ['tripo-tavern', 'tripo-props', 'tripo-chest', 'tripo-castle', 'tripo-wall', 'tripo-houses', 'tripo-weapons', 'tripo-extra-weapons', 'tripo-projectiles']) {
   const root = `assets/imported/${name}/`;
   const manifest = JSON.parse(await readFile(root + 'runtime-manifest.json', 'utf8'));
   const sources = manifest.sources ?? [manifest.source];

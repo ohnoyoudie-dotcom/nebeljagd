@@ -6,7 +6,7 @@ const weight = (value, fallback = 0) => THREE.MathUtils.clamp(Number.isFinite(va
 export function createCombatPoseController(group, { chest, hips, arms, legs }) {
   const bones = new Set([chest, hips, ...Object.values(arms).flat(), ...Object.values(legs).flat()].filter(Boolean));
   const animated = new Map([...bones].map(bone => [bone, { rotation: bone.quaternion.clone(), position: bone.position.clone() }]));
-  let applied = false, castWeight = 0, stanceWeight = 0;
+  let applied = false, castWeight = 0, swordWeight = 0, stanceWeight = 0;
   const start = new THREE.Vector3(), middle = new THREE.Vector3(), finish = new THREE.Vector3();
   const targetPoint = new THREE.Vector3(), reach = new THREE.Vector3(), bend = new THREE.Vector3();
   const preferredBend = new THREE.Vector3(), elbow = new THREE.Vector3();
@@ -25,7 +25,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
     if (applied) for (const [bone, original] of animated) {
       bone.quaternion.copy(original.rotation); bone.position.copy(original.position);
     }
-    applied = false; castWeight = stanceWeight = 0;
+    applied = false; castWeight = swordWeight = stanceWeight = 0;
   }
   function aimBone(bone, child, target) {
     group.updateWorldMatrix(true, true);
@@ -72,18 +72,21 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
     }
     applied = true;
     castWeight = weight(next.castWeight);
-    stanceWeight = castWeight * (1 - THREE.MathUtils.smoothstep(weight(walkWeight), 0, .25));
+    swordWeight = weight(next.swordWeight);
+    stanceWeight = Math.max(castWeight, swordWeight) * (1 - THREE.MathUtils.smoothstep(weight(walkWeight), 0, .25));
     if (stanceWeight > 0 && hips && feet.every(({ chain }) => chain.every(Boolean))) {
       group.updateWorldMatrix(true, true);
       for (const foot of feet) {
         localPosition(foot.chain[2], foot.target);
         foot.chain[2].getWorldQuaternion(foot.orientation);
-        foot.target.x += (foot.side === 'left' ? .045 : -.055) * stanceWeight;
-        foot.target.z += (foot.side === 'left' ? .075 : -.075) * stanceWeight;
+        const side = foot.side === 'left' ? 1 : -1;
+        foot.target.x += (side > 0 ? .045 : -.055) * stanceWeight;
+        const lead = swordWeight > 0 && next.swordLead === -1 ? -1 : 1;
+        foot.target.z += side * (.075 + swordWeight * .035) * lead * stanceWeight;
       }
       // The source idle has almost straight knees. A small weight shift gives
       // both legs room to widen without lifting their soles off the ground.
-      localPosition(hips, hipsPoint); hipsPoint.y -= .025 * stanceWeight;
+      localPosition(hips, hipsPoint); hipsPoint.y -= (.025 + swordWeight * .02) * stanceWeight;
       group.localToWorld(hipsPoint); hips.parent.worldToLocal(hipsPoint); hips.position.copy(hipsPoint);
       for (const foot of feet) {
         solve(foot.chain, foot.target, kneePoles[foot.side], 1, stanceWeight, .000001);
@@ -92,7 +95,10 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
         ankle.quaternion.copy(parentInverse.multiply(foot.orientation));
       }
     }
-    if (chest) chest.rotation.y += Number.isFinite(next.chestTwist) ? next.chestTwist : 0;
+    if (chest) {
+      chest.rotation.y += Number.isFinite(next.chestTwist) ? next.chestTwist : 0;
+      chest.rotation.x += Number.isFinite(next.chestLean) ? THREE.MathUtils.clamp(next.chestLean, -.2, .2) : 0;
+    }
     solve(arms.left, next.leftHand, armPoles.left, weight(next.leftHandWeight, 1));
     solve(arms.right, next.rightHand, armPoles.right);
     group.updateWorldMatrix(true, true);
@@ -103,7 +109,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
       if (!bone) return null;
       const p = localPosition(bone, new THREE.Vector3()); return { x: p.x, y: p.y, z: p.z };
     };
-    return { castWeight, stanceWeight,
+    return { castWeight, swordWeight, stanceWeight,
       leftArm: { shoulder: point(arms.left[0]), elbow: point(arms.left[1]), hand: point(arms.left[2]) },
       feet: { left: point(legs.left[2]), right: point(legs.right[2]) }, hips: point(hips) };
   }

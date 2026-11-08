@@ -1,5 +1,9 @@
 import { BARRIER_SIGHT_HEIGHT } from './map/barrier-height.js';
 
+// These props provide physical cover without hiding actors, loot or the ground.
+// objectKind also covers a well's separately named posts and roof colliders.
+const SEE_OVER_PROPS = new Set(['well', 'wagon', 'barrel', 'crate', 'chest']);
+
 /** 2D tactical line of sight. Static blocker cells make the cost local to the
  * observer, independent of island size. Walls keep their rotated corner shape. */
 export function createSightModel({ obstacles = [], radius = 18, samples = 512, cellSize = 16 } = {}) {
@@ -12,6 +16,7 @@ export function createSightModel({ obstacles = [], radius = 18, samples = 512, c
     ? [body.x - body.radius, body.x + body.radius, body.z - body.radius, body.z + body.radius]
     : [body.minX, body.maxX, body.minZ, body.maxZ];
   for (const body of obstacles) {
+    if (SEE_OVER_PROPS.has(body.objectKind) || SEE_OVER_PROPS.has(body.type)) continue;
     const b = bounds(body);
     if (!b.every(Number.isFinite)) continue;
     for (let x = Math.floor(b[0] / cellSize); x <= Math.floor(b[1] / cellSize); x++) {
@@ -61,7 +66,7 @@ export function createSightModel({ obstacles = [], radius = 18, samples = 512, c
     }
     // Low freestanding walls remain physical obstacles but allow sight over
     // them. This shared filter drives both actor/loot visibility and the soft
-    // scenery shadow. House walls and other environmental blockers keep their
+    // scenery shadow. House walls and other tall environmental blockers keep their
     // own existing behavior. Use authored physical height, not world altitude.
     nearby = [...candidates].filter(body => {
       if (body.destroyed) return false;

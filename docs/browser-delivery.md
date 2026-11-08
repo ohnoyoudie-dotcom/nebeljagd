@@ -11,7 +11,34 @@ Projektkarte und eigenem lokalen Entwurf wählen. Der geprüfte Build wird auf
 Die Versionslinks in den folgenden historischen Berichten dokumentieren deren
 damalige Veröffentlichung, sie wählen keine historische Karte aus.
 
-## Größerer weicher Levelaufstieg in der Spielwelt
+## Körperlicht und drei Schwertschläge
+
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+und **Spielen** wählen. Die Figur leuchtet beim Aufstieg kurz golden auf;
+aus ihrer Mitte brechen Lichtspuren nach außen und oben aus. Das Schwert
+wechselt bei aufeinanderfolgenden Angriffen zwischen diagonalem Hieb,
+Gegenschlag und Schlag von oben. Die Lichtspur folgt der echten Klinge,
+mit feiner heller Kante und kurzen Funken bei bestätigten Treffern.
+
+Geprüfte Quelle: `efd60a025e608cfd8dfba0219749c7438481142b`, Build
+`fffaee4b0730`. 515 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild
+sind bestanden. Die aktuelle Projektkarte bleibt bytegleich erhalten
+(SHA-256 `a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3`).
+Die gleichzeitig eingegangenen Änderungen an Truhen, zufälligen
+Beutestufen und der ausschließlichen Verwendung des Tripo-Schwerts sind
+übernommen, ebenso die aktuellen Wald-, Bruchstück- und Rollspurenänderungen.
+Die neue Schlagfolge ändert weder den Schaden der jeweiligen
+Beutestufe noch Reichweite, Abklingzeit, Projektilregeln oder Lebensbalken. [Schwertdetails](sword-combat-feedback.md).
+
+Acht Prüfabläufe in der erzeugten Spieldatei sind bestanden: drei echte
+Schläge samt Abklingzeit, ein echter Kill mit vier Animationsphasen, Körperglanz
+und vollständige Materialrücksetzung, +25 LP bei fester Balkenbreite,
+blockierter Treffer mit freiem Kontrolltreffer sowie Ablauf und Neustart.
+Keine Browser-/Shaderfehler oder zusätzlichen Ressourcenanfragen.
+[Prüfbericht](sword-burst-check.json) · [Aufstiegsbilder](level-up-burst-sequence.png) ·
+[Schwertbilder](sword-combo-sequence.png).
+
+## Vorheriger größerer weicher Levelaufstieg in der Spielwelt
 
 [Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
 und **Spielen** wählen. Der Aufstieg folgt einem kurzen Aufbau, einem warmen

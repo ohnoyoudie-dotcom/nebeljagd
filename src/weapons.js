@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
+import { createSwordEffects } from './sword-effects.js';
+import { createSwordPose, sampleSwordPose, SWORD_PATTERNS, SWORD_COMBO_GRACE,
+  SWORD_STRIKE_START, SWORD_STRIKE_END } from './sword-motion.js';
 
 export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-sword': 'sword',
@@ -11,25 +14,30 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-moon-staff': 'moonStaff',
   'kit-tripo-ornate-bow': 'bow',
 });
-export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'steel', fireStaff: 'ember', iceStaff: 'frost',
+export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
   poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
-// Shared presentation size for ground/editor models and equipped weapons.
+export function resolveWeaponVariant(type, variant) {
+  return type === 'sword' && (!variant || variant === 'steel') ? 'kit-tripo-sword' : variant ?? DEFAULT_VARIANTS[type];
+}
+// Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
   fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82 });
+export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
+export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * .88])));
 
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
   { placements, heightAt = world?.heightAt, viewDistance = 100, combat = null, ownerId = 'player', isVisible = null,
-    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null } = {}) {
+    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {}, rollRarity = null } = {}) {
   function assertPrototype(type, variant) {
     const modelType = TRIPO_WEAPON_VARIANTS[variant];
     if (!modelType) return;
     if (modelType !== type) throw new Error(`Die Waffenvariante ${variant} passt nicht zu ${type}.`);
     if (!tripoPrototypes[variant]?.isObject3D) throw new Error(`Die Tripo-Waffe ${variant} muss vor dem Platzieren geladen werden.`);
   }
-  for (const definition of placements ?? []) assertPrototype(definition.kind, definition.variant);
+  for (const definition of placements ?? []) assertPrototype(definition.kind, resolveWeaponVariant(definition.kind, definition.variant));
   const baseMaterials = new Set();
   const material = (color, extra = {}) => {
     const result = new THREE.MeshStandardMaterial({ color, roughness: 0.72, flatShading: true, ...extra });
@@ -41,7 +49,6 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const leather = material('#47392c');
   const brass = material('#e6bd68', { metalness: 0.5, roughness: 0.35 });
   const steel = material('#d7e8ee', { metalness: 0.66, roughness: 0.26 });
-  const steelDark = material('#83aab3', { metalness: 0.58, roughness: 0.34 });
   const string = material('#eee4be', { emissive: '#7e8b68', emissiveIntensity: 0.2 });
   const gem = material('#8df3d6', { emissive: '#22b8a2', emissiveIntensity: 0.8 });
 
@@ -79,21 +86,6 @@ export function createWeapons(scene, characterGroup, world, character = null,
       addMesh(group, box(0.075, 0.11, 0.09), darkWood, -0.18, side * 0.53, 0);
     }
     addMesh(group, new THREE.OctahedronGeometry(0.055), gem, -0.39, 0.01, 0.09);
-    return group;
-  }
-
-  function makeSword() {
-    const group = new THREE.Group();
-    group.name = 'Eisenschwert';
-    addMesh(group, new THREE.CylinderGeometry(0.047, 0.055, 0.37, 6), leather, 0, -0.26, 0);
-    addMesh(group, new THREE.OctahedronGeometry(0.105), brass, 0, -0.48, 0);
-    const guard = addMesh(group, box(0.43, 0.075, 0.12), brass, 0, -0.045, 0);
-    guard.rotation.z = -0.04;
-    addMesh(group, box(0.12, 0.11, 0.12), steelDark, 0, 0.04, 0);
-    const blade = addMesh(group, new THREE.CylinderGeometry(0, 0.118, 0.78, 4), steel, 0, 0.48, 0);
-    blade.rotation.y = Math.PI / 4;
-    addMesh(group, box(0.029, 0.57, 0.012), steelDark, 0, 0.35, 0.092);
-    addMesh(group, new THREE.OctahedronGeometry(0.065), gem, 0, -0.055, 0.09);
     return group;
   }
 
@@ -158,6 +150,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function makeWeapon(type, variant = DEFAULT_VARIANTS[type], { held = false } = {}) {
+    variant = resolveWeaponVariant(type, variant);
     assertPrototype(type, variant);
     let group;
     if (TRIPO_WEAPON_VARIANTS[variant]) {
@@ -185,7 +178,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (held && type === 'bow') prepareImportedBowString(group, model, tripoPrototypes[variant].userData.bowRig);
       if (!held) model.position.sub(bounds.getCenter(new THREE.Vector3()));
       group.name = tripoPrototypes[variant].name;
-    } else group = type === 'bow' ? makeBow() : type === 'sword' ? makeSword() : makeStaff(type);
+    } else group = type === 'bow' ? makeBow() : makeStaff(type);
     Object.assign(group.userData, { weaponType: type, variant, model: TRIPO_WEAPON_VARIANTS[variant] ? 'tripo' : 'procedural' });
     return group;
   }
@@ -260,8 +253,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function addDrop(definition, { pop = true, initial = false } = {}) {
     const type = definition.type ?? definition.kind;
     if (!WEAPON_TYPES.includes(type)) return null;
-    const variant = definition.variant ?? DEFAULT_VARIANTS[type];
-    let stats = weaponStats(type, definition.rarity, variant);
+    const variant = resolveWeaponVariant(type, definition.variant);
+    const rarity = initial && rollRarity ? rollRarity() : definition.rarity;
+    let stats = weaponStats(type, rarity, variant);
     const generic = weaponStats(type, definition.rarity);
     const defaultNames = new Set([stats.label, stats.name, generic.label, generic.name,
       type === 'bow' ? 'Bogen' : type === 'sword' ? 'Schwert' : generic.label]);
@@ -271,7 +265,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const x = definition.position?.[0] ?? definition.x, z = definition.position?.[1] ?? definition.z;
     if (!Number.isFinite(x) || !Number.isFinite(z)) return null;
     const visual = makeWeapon(type, variant);
-    visual.scale.setScalar(WEAPON_PRESENTATION_SCALE[type]);
+    visual.scale.setScalar(GROUND_WEAPON_SCALE[type]);
     const groundY = heightAt?.(x, z) ?? 0;
     const group = new THREE.Group();
     group.name = `${stats.name} auf dem Boden`;
@@ -317,16 +311,14 @@ export function createWeapons(scene, characterGroup, world, character = null,
   Object.assign(heldBow.userData, bowVisual.userData);
   heldBow.position.set(.17, 1.30, .13);
   heldBow.rotation.set(0, Math.PI / 2, 0);
-  heldBow.scale.setScalar(.78 * WEAPON_PRESENTATION_SCALE.bow);
+  heldBow.scale.setScalar(.78 * HELD_WEAPON_SCALE.bow);
   heldBow.visible = false;
   characterGroup.add(heldBow);
   const heldSword = new THREE.Group();
-  const swordVisual = makeWeapon('sword');
-  swordVisual.position.y = .26; // The hand is on the grip, below the crossguard.
-  heldSword.add(swordVisual);
-  Object.assign(heldSword.userData, { weaponType: 'sword', variant: 'steel', model: 'procedural', weaponTipY: 1.13 });
+  // Install the shared imported model only when a sword is equipped.
+  Object.assign(heldSword.userData, { weaponType: 'sword', variant: null });
   heldSword.position.set(-.22, 1.20, .42);
-  heldSword.scale.setScalar(1.10 * WEAPON_PRESENTATION_SCALE.sword);
+  heldSword.scale.setScalar(1.10 * HELD_WEAPON_SCALE.sword);
   heldSword.visible = false;
   characterGroup.add(heldSword);
   const heldStaffs = Object.fromEntries(STAFF_TYPES.map(type => [type, new THREE.Group()]));
@@ -375,7 +367,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     const imported = visual.userData.model === 'tripo';
     const baseScale = imported ? 1 : type === 'bow' ? .78 : type === 'sword' ? 1.10 : 1;
-    held.scale.setScalar(baseScale * WEAPON_PRESENTATION_SCALE[type]);
+    held.scale.setScalar(baseScale * HELD_WEAPON_SCALE[type]);
     if (type === 'sword') visual.position.y = imported ? 0 : .26;
     held.add(visual);
     delete held.userData.bowString;
@@ -401,14 +393,26 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const arrowTrailGeometry = new THREE.ConeGeometry(0.085, 0.8, 5);
   function makeArrow(trailVisible = true) {
     const group = new THREE.Group();
-    const shaft = addMesh(group, arrowShaftGeometry, arrowWood);
-    shaft.rotation.x = Math.PI / 2;
-    const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, 0.43);
-    head.rotation.x = Math.PI / 2;
-    shaft.name = 'Pfeil · Holzschaft'; head.name = 'Pfeil · Metallspitze';
-    for (let i = 0; i < 3; i++) {
-      const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
-      feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
+    if (projectilePrototypes.arrow) {
+      const model = projectilePrototypes.arrow.clone(true);
+      model.traverse(part => {
+        if (!part.isMesh) return;
+        part.userData.sharedWeaponGeometry = true;
+        part.userData.ownsWeaponMaterial = true;
+        part.material = Array.isArray(part.material) ? part.material.map(m => m.clone()) : part.material.clone();
+      });
+      group.add(model);
+      group.userData.projectileSource = model.userData.source;
+    } else {
+      const shaft = addMesh(group, arrowShaftGeometry, arrowWood);
+      shaft.rotation.x = Math.PI / 2;
+      const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, 0.43);
+      head.rotation.x = Math.PI / 2;
+      shaft.name = 'Pfeil · Holzschaft'; head.name = 'Pfeil · Metallspitze';
+      for (let i = 0; i < 3; i++) {
+        const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
+        feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
+      }
     }
     if (trailVisible) {
       const trail = addMesh(group, arrowTrailGeometry, arrowGlow, 0, 0, -0.83);
@@ -431,24 +435,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     return { group, life: 0, mode: 'inactive', direction: 0, vx: 0, vy: 0, vz: 0 };
   });
 
-  const slashMaterial = new THREE.MeshBasicMaterial({
-    color: '#fff2ba', transparent: true, opacity: 0,
-    side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
-  });
-  const slashPoints = [], slashIndices = [];
-  for (let i = 0; i <= 28; i++) {
-    const angle = -1.12 + i / 28 * 2.24;
-    for (const radius of [.91, 1.09]) slashPoints.push(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
-    if (i < 28) { const a = i * 2; slashIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
-  }
-  const slashGeometry = new THREE.BufferGeometry();
-  slashGeometry.setAttribute('position', new THREE.Float32BufferAttribute(slashPoints, 3));
-  slashGeometry.setIndex(slashIndices);
-  const slash = new THREE.Mesh(slashGeometry, slashMaterial);
-  slash.name = 'Schwertschwung';
-  slash.position.set(0, 1.25, .06);
-  slash.visible = false;
-  characterGroup.add(slash);
+  const swordEffects = createSwordEffects(scene, { isVisible });
 
   const impactCapacity = 32;
   const impactParticles = Array.from({ length: impactCapacity }, () => ({
@@ -469,12 +456,15 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const launchCenter = new THREE.Vector3(), launchOrigin = new THREE.Vector3();
   const forward = new THREE.Vector3(), hand = new THREE.Vector3();
   const bladeDirection = new THREE.Vector3(), bladeTip = new THREE.Vector3();
+  const swordBase = new THREE.Vector3(), swordTip = new THREE.Vector3(), swordContact = new THREE.Vector3();
+  const swordPose = createSwordPose();
   const up = new THREE.Vector3(0, 1, 0);
   const leftHand = new THREE.Vector3(), rightHand = new THREE.Vector3();
   const combatPose = { weapon: null, phase: 'idle', leftHand, rightHand, chestTwist: 0 };
   let equippedType = null, equippedItem = null, equippedPickup = null;
   let cooldown = 0, attackAge = -1, attackDuration = 0;
   let shotReleased = false, bowDraw = 0, swordSweep = 0;
+  let swordIndex = -1, swordComboRemaining = 0, swordSwingId = 0;
   let attackPhase = 'idle', shotCount = 0, impactCount = 0, lastImpact = null, particleCursor = 0;
   let lastSpellLaunch = null;
   const pickupRadius = 1.85;
@@ -525,7 +515,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       id: item.id, variant: item.variant, model: item.model,
       rotation: item.rotation ?? 0, scale: item.scale ?? 1 };
     applyTier(held, equippedItem.rarity);
-    slashMaterial.color.set(equippedItem.color);
+    clearSwordCombo();
     cooldown = 0; attackAge = -1; attackPhase = 'idle';
     spellEffects.channel(null);
     applyHeldPose();
@@ -551,6 +541,12 @@ export function createWeapons(scene, characterGroup, world, character = null,
     attackAge = 0; shotReleased = false;
     attackDuration = equippedItem.cooldown;
     cooldown = attackDuration;
+    if (equippedType === 'sword') {
+      swordIndex = swordComboRemaining > 0 ? (swordIndex + 1) % SWORD_PATTERNS.length : 0;
+      swordComboRemaining = attackDuration + SWORD_COMBO_GRACE;
+      swordSwingId++;
+      swordEffects.beginSwing({ color: equippedItem.color, pattern: SWORD_PATTERNS[swordIndex] });
+    }
     attackPhase = equippedType === 'bow' ? 'draw' : equippedType === 'sword' ? 'windup' : 'channel';
     applyHeldPose();
     return { type: equippedType, message: equippedType === 'bow' ? 'Bogensehne gespannt' : equippedType === 'sword' ? 'Schwertschlag' : 'Zauber gewirkt' };
@@ -562,11 +558,11 @@ export function createWeapons(scene, characterGroup, world, character = null,
     heldSword.visible = equippedType === 'sword' && !rolling;
     for (const [type, held] of Object.entries(heldStaffs)) held.visible = equippedType === type && !rolling;
     nockedArrow.visible = equippedType === 'bow' && !rolling && (attackAge < 0 || attackAge < .23 || attackAge > .51);
-    slash.visible = false;
     if (!equippedType || rolling) { character?.setCombatState?.(null); return; }
     combatPose.weapon = equippedType; combatPose.phase = attackPhase;
     combatPose.leftHand = leftHand;
     combatPose.leftHandWeight = 1; combatPose.castWeight = 0;
+    combatPose.swordWeight = 0; combatPose.swordLead = 1; combatPose.chestLean = 0;
     if (equippedType === 'bow') {
       bowDraw = attackAge < 0 ? 0 : attackAge < .23 ? ease(0, .23, attackAge) : 1 - ease(.23, .36, attackAge);
       leftHand.set(.06, 1.34, .40);
@@ -606,24 +602,16 @@ export function createWeapons(scene, characterGroup, world, character = null,
     } else if (equippedType === 'sword') {
       bowDraw = 0;
       const progress = attackAge < 0 ? 0 : attackAge / attackDuration;
-      const windup = attackAge < 0 ? 0 : ease(0, .24, progress);
-      const strike = attackAge < 0 ? 0 : ease(.24, .66, progress);
-      const recover = attackAge < 0 ? 0 : ease(.70, 1, progress);
-      swordSweep = attackAge < 0 ? -.12 : THREE.MathUtils.lerp(-1.12 * windup, 1.17, strike) * (1 - recover) - .12 * recover;
-      rightHand.set(THREE.MathUtils.lerp(-.22, -.38 + strike * .72, 1 - recover),
-        1.22 + Math.sin(progress * Math.PI) * .09,
-        .40 + Math.sin(progress * Math.PI) * .15);
-      leftHand.set(.24, 1.25, .22 + strike * .05);
-      combatPose.chestTwist = -.16 * windup + strike * .29 - recover * .13;
+      sampleSwordPose(swordIndex, progress, attackAge >= 0, swordPose);
+      rightHand.copy(swordPose.rightHand); leftHand.copy(swordPose.leftHand);
+      combatPose.chestTwist = swordPose.chestTwist; combatPose.chestLean = swordPose.chestLean;
+      combatPose.swordWeight = swordPose.swordWeight; combatPose.swordLead = swordPose.swordLead;
       character?.setCombatState?.(combatPose);
       if (character?.getHandPosition) character.getHandPosition('right', hand); else hand.copy(rightHand);
       heldSword.position.copy(hand);
-      bladeDirection.set(Math.sin(swordSweep), attackAge < 0 ? .38 : .20 + recover * .18, Math.cos(swordSweep)).normalize();
+      bladeDirection.copy(swordPose.bladeDirection);
+      swordSweep = Math.atan2(bladeDirection.x, bladeDirection.z);
       heldSword.quaternion.setFromUnitVectors(up, bladeDirection);
-      const inStrike = attackAge >= 0 && progress > .24 && progress < .72;
-      slash.visible = inStrike;
-      slash.scale.setScalar(1.26);
-      slashMaterial.opacity = inStrike ? Math.sin((progress - .24) / .48 * Math.PI) * .32 : 0;
     } else {
       bowDraw = swordSweep = 0;
       const pulse = attackAge >= 0 ? Math.sin(Math.min(1, attackAge / .45) * Math.PI) : 0;
@@ -655,6 +643,19 @@ export function createWeapons(scene, characterGroup, world, character = null,
       const aimWeight = attackAge >= .16 && !shotReleased ? 1 : castWeight;
       staff.rotation.set(THREE.MathUtils.lerp(.28 + pulse * .5, aimedPitch, aimWeight), 0, cant);
     }
+  }
+
+  function clearSwordCombo() {
+    swordIndex = -1; swordComboRemaining = 0; swordEffects.clear();
+  }
+
+  function measureSwordBlade() {
+    characterGroup.updateWorldMatrix(true, true); scene.updateWorldMatrix(true, false);
+    swordTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY, 0]);
+    // Start beyond the crossguard, so neither the hand nor grip emits a ribbon.
+    swordBase.copy(swordTip).multiplyScalar(heldSword.userData.model === 'tripo' ? .27 : .35 / 1.13);
+    heldSword.localToWorld(swordBase); heldSword.localToWorld(swordTip);
+    scene.worldToLocal(swordBase); scene.worldToLocal(swordTip);
   }
 
   function impact(arrow, hit) {
@@ -719,7 +720,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     else { projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false; }
   }
 
-  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype });
+  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype, iceProjectilePrototype: projectilePrototypes.ice });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
   }, isVisible);
@@ -801,6 +802,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function update(dt, time, position = characterGroup.position) {
     const delta = Math.max(0, Math.min(.25, Number.isFinite(dt) ? dt : 0));
     cooldown = Math.max(0, cooldown - delta);
+    swordComboRemaining = Math.max(0, swordComboRemaining - delta);
+    if (swordComboRemaining === 0 && attackAge < 0) swordIndex = -1;
+    swordEffects.update(delta);
     if (characterGroup.userData.rolling) specials.cancelAim();
     specials.update(delta, position, time);
     for (const item of items) {
@@ -823,8 +827,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
       item.group.visible = (!position || (position.x - item.x) ** 2 + (position.z - item.z) ** 2 <= viewDistance ** 2)
         && (revealSceneryThroughFog || !isVisible || isVisible(item.group.position));
     }
-    if (characterGroup.userData.rolling && attackAge >= 0) {
-      attackAge = -1; attackPhase = 'idle'; shotReleased = true;
+    if (characterGroup.userData.rolling) {
+      if (attackAge >= 0) { attackAge = -1; attackPhase = 'idle'; shotReleased = true; }
+      if (swordIndex >= 0) clearSwordCombo();
     }
     if (attackAge >= 0) {
       attackAge += delta;
@@ -832,10 +837,15 @@ export function createWeapons(scene, characterGroup, world, character = null,
       else if (equippedType.endsWith('Staff')) attackPhase = attackAge < .25 ? 'channel' : attackAge < .4 ? 'release' : 'recover';
       else {
         const p = attackAge / attackDuration;
-        attackPhase = p < .24 ? 'windup' : p < .66 ? 'strike' : 'follow-through';
+        attackPhase = p < SWORD_STRIKE_START ? 'windup' : p < SWORD_STRIKE_END ? 'strike' : 'follow-through';
       }
     }
     applyHeldPose();
+    const opacity = characterGroup.userData.concealmentOpacity ?? 1;
+    const swordProgress = attackAge < 0 ? 0 : attackAge / attackDuration;
+    if (heldSword.visible) measureSwordBlade();
+    swordEffects.sample({ base: swordBase, tip: swordTip, opacity,
+      active: heldSword.visible && attackAge >= 0 && swordProgress >= SWORD_STRIKE_START && swordProgress <= SWORD_STRIKE_END });
     if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
       spellEffects.channel(equippedType, getStaffTip(staffTip), characterGroup.rotation.y, attackAge / .25);
     } else spellEffects.channel(null);
@@ -852,12 +862,22 @@ export function createWeapons(scene, characterGroup, world, character = null,
         const end = { x: target.position.x, y: target.position.y + 1.1, z: target.position.z };
         const blocker = world?.traceProjectile?.(start, end, .06);
         if (!blocker || blocksTarget(blocker.collider, target)) {
-          lastDamage = combat.hit(target, { ...equippedItem, sourceId: ownerId }); damageHits++;
+          lastDamage = combat.hit(target, { ...equippedItem, sourceId: ownerId });
+          if (lastDamage) {
+            damageHits++;
+            const concealed = target.concealed || (world?.concealmentAt?.(end.x, end.z) ?? 0) > .01;
+            if (!concealed && (!isVisible || isVisible(end))) {
+              const reach = Math.hypot(end.x - start.x, end.z - start.z) || 1;
+              const inset = Math.min(target.radius ?? .3, reach * .5);
+              swordContact.set(end.x + (start.x - end.x) / reach * inset, end.y,
+                end.z + (start.z - end.z) / reach * inset);
+              swordEffects.impact({ point: swordContact, color: equippedItem.color });
+            }
+          }
         }
       }
     }
     if (attackAge >= attackDuration && attackAge >= 0) { attackAge = -1; attackPhase = 'idle'; }
-    const opacity = characterGroup.userData.concealmentOpacity ?? 1;
     for (const mat of heldMaterials) {
       const translucent = opacity < .995;
       const appearance = heldAppearance.get(mat);
@@ -904,12 +924,12 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (particlesChanged) impactMesh.instanceMatrix.needsUpdate = true;
   }
 
-  function reset() {
+  function reset({ reroll = true } = {}) {
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     for (const held of Object.values(heldByType)) held.visible = false;
-    slash.visible = nockedArrow.visible = false;
-    slashMaterial.opacity = 0; character?.setCombatState?.(null);
+    nockedArrow.visible = false;
+    clearSwordCombo(); swordEffects.reset(); swordSwingId = 0; character?.setCombatState?.(null);
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
       if (item.dynamic) {
@@ -917,7 +937,19 @@ export function createWeapons(scene, characterGroup, world, character = null,
         disposeWeaponVisual(item.visual);
         item.ringMaterial.dispose(); item.halo.material.dispose();
       }
-      else returnToGround(item, item.initialPlacement);
+      else {
+        if (reroll && rollRarity) {
+          const stats = weaponStats(item.type, rollRarity(), item.variant);
+          Object.assign(item, stats, { label: item.label, name: `${item.label} · ${stats.rarityLabel}` });
+          item.group.name = `${item.name} auf dem Boden`;
+          item.glow = rarityVisual(item.rarity);
+          item.glowingMaterials = applyTier(item.visual, item.rarity);
+          item.ringMaterial.color.set(item.color);
+          item.halo.material.color.set(item.color);
+          item.halo.material.opacity = item.glow.halo;
+        }
+        returnToGround(item, item.initialPlacement);
+      }
     }
     for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
     spellEffects.reset();
@@ -935,12 +967,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function dispose() {
     if (disposed) return;
     disposed = true;
-    reset();
+    reset({ reroll: false });
     spellEffects.dispose();
     specials.dispose();
+    swordEffects.dispose();
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
-      ...arrows.map(arrow => arrow.group), slash, impactMesh];
-    const geometries = new Set([ringGeometry, haloGeometry]), materials = new Set(baseMaterials);
+      ...arrows.map(arrow => arrow.group), impactMesh];
+    const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry, arrowTrailGeometry]), materials = new Set(baseMaterials);
     for (const root of roots) {
       root.traverse(part => {
         if (!part.isMesh && !part.isLine) return;
@@ -960,7 +993,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
     get attackCooldown() { return specials.moonBusy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
-      bladeTip.set(0, heldSword.userData.weaponTipY, 0).applyQuaternion(heldSword.quaternion).multiplyScalar(heldSword.scale.y).add(heldSword.position);
+      bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
+        .multiply(heldSword.scale).applyQuaternion(heldSword.quaternion).add(heldSword.position);
       const held = heldByType[equippedType];
       const point = vector => ({ x: vector.x, y: vector.y, z: vector.z });
       const actualHand = side => character?.getHandPosition
@@ -980,6 +1014,10 @@ export function createWeapons(scene, characterGroup, world, character = null,
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
       return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
+        swordCombo: { index: swordIndex + 1, pattern: SWORD_PATTERNS[swordIndex] ?? null, swingId: swordSwingId,
+          active: equippedType === 'sword' && attackAge >= 0, progress: equippedType === 'sword' && attackAge >= 0 ? Math.min(1, attackAge / attackDuration) : 0,
+          remaining: swordComboRemaining },
+        swordTrail: swordEffects.inspect(), swordBlade: { base: point(swordBase), tip: point(swordTip) },
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
         effects: spellEffects.telemetry, special: specials.telemetry, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,
@@ -987,10 +1025,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
           visible: spell.group.visible, position: { x: spell.group.position.x, y: spell.group.position.y, z: spell.group.position.z } })),
         heldModel: held ? { type: equippedType, variant: held.userData.variant, model: held.userData.model,
-          visible: held.visible, meshCount, presentationScale: WEAPON_PRESENTATION_SCALE[equippedType],
+          visible: held.visible, meshCount, presentationScale: HELD_WEAPON_SCALE[equippedType],
+          groundPresentationScale: GROUND_WEAPON_SCALE[equippedType],
           stringVertices: (held.userData.bowStringDeformations ?? []).reduce((total, part) => total + part.count, 0) } : null,
         arrowsActive: arrows.filter(arrow => arrow.life > 0).length,
         arrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0).length,
+        arrowModel: projectilePrototypes.arrow ? { ...projectilePrototypes.arrow.userData } : null,
+        importedArrowsFlying: arrows.filter(arrow => arrow.mode === 'flying' && arrow.life > 0 && arrow.group.userData.projectileSource).length,
         heldPose: { bow: { x: heldBow.position.x, y: heldBow.position.y, z: heldBow.position.z },
           sword: { x: heldSword.position.x, y: heldSword.position.y, z: heldSword.position.z },
           swordTip: { x: bladeTip.x, y: bladeTip.y, z: bladeTip.z } } };

@@ -139,7 +139,7 @@ def run(base: str, report_path: Path) -> None:
             game.evaluate('(point) => window.nebeljagdInspect({x:point[0],z:point[1]})', staff['position'])
             game.wait_for_function('window.nebeljagdTestState().equippedWeapon === "fireStaff"', timeout=15000)
             equipped = game.evaluate('window.nebeljagdTestState().equippedItem')
-            assert equipped['rarity'] == staff.get('rarity', 'common'), equipped
+            assert equipped['rarity'] in ['common', 'uncommon', 'rare', 'epic', 'legendary'], equipped
             assert equipped['damage'] > 0 and equipped['burn']['damagePerSecond'] > 0, equipped
             expect(game.locator('#weaponTier')).to_have_text(equipped['rarityLabel'].upper())
             report['hostedStaffPickup'] = {
@@ -205,14 +205,14 @@ def run(base: str, report_path: Path) -> None:
             editor.locator('#add-object-center').click()
             editor.wait_for_function('(count) => window.nebeljagdMapTestState().map.objects.length === count', arg=expected_total + 1)
             editor.locator('#palette-kind').select_option('iceStaff')
-            editor.locator('#palette-rarity').select_option('legendary')
+            editor.locator('#palette-rarity').select_option('common')
             editor.locator('#add-object-center').click()
             editor.wait_for_function('(count) => window.nebeljagdMapTestState().map.objects.length === count', arg=expected_total + 2)
             edited_map = editor.evaluate('window.nebeljagdMapTestState().map')
             added = edited_map['objects'][-2:]
             assert added[0]['kind'] == 'chest', added
-            assert added[1]['kind'] == 'iceStaff' and added[1]['rarity'] == 'legendary', added
-            expect(editor.locator('#object-rarity')).to_have_value('legendary')
+            assert added[1]['kind'] == 'iceStaff' and added[1]['rarity'] == 'common', added
+            expect(editor.locator('#object-rarity')).to_have_value('common')
             with editor.expect_popup(timeout=30000) as popup_info:
                 editor.locator('#playtest-world').click()
             popup = popup_info.value

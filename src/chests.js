@@ -1,15 +1,16 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { RARITIES, WEAPON_TYPES } from './loot-tiers.js';
+import { RARITIES, WEAPON_TYPES, rollLootRarity } from './loot-tiers.js';
+import { createChestWoodMaterial } from './chest-wood.js';
 
 const TIERS = Object.keys(RARITIES);
 const TYPES = WEAPON_TYPES;
 function hash(text) { let value = 2166136261; for (const c of text) value = Math.imul(value ^ c.charCodeAt(0), 16777619); return value >>> 0; }
 
-/** Stable contents: reopening/reloading the same map cannot reroll a chest. */
-export function chestLoot(id, index = 0, rarity = null) {
+/** Contents are rolled once per round and kept until the chest is opened. */
+export function chestLoot(id, rarity = rollLootRarity()) {
   const seed = hash(id);
-  const tier = TIERS.includes(rarity) ? rarity : TIERS[index % TIERS.length];
+  const tier = TIERS.includes(rarity) ? rarity : 'common';
   const type = TYPES[seed % TYPES.length];
   const gold = 12 + seed % 14 + TIERS.indexOf(tier) * 7;
   return [
@@ -46,12 +47,12 @@ export function chestDropPosition(chest, opener, world, index = 0) {
 /** Shared wooden treasure chest asset; only the hinge is animated per instance. */
 function chestPrototype() {
   const root = new THREE.Group();
-  const wood = new THREE.MeshStandardMaterial({ color: '#89592f', roughness: .86 });
-  const lightWood = new THREE.MeshStandardMaterial({ color: '#a87742', roughness: .8 });
+  const wood = createChestWoodMaterial();
+  const lightWood = wood.clone(); lightWood.color.set('#ead0a8');
   const dark = new THREE.MeshStandardMaterial({ color: '#30251e', roughness: .88 });
   const band = new THREE.MeshStandardMaterial({ color: '#bd9653', metalness: .65, roughness: .36 });
   const iron = new THREE.MeshStandardMaterial({ color: '#4d514b', metalness: .72, roughness: .4 });
-  const inside = new THREE.MeshStandardMaterial({ color: '#d1a13d', emissive: '#db8b21', emissiveIntensity: .75, roughness: .45, metalness: .6 });
+  const inside = wood;
   function box(parent, size, position, mat) {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), mat); mesh.position.set(...position);
     mesh.castShadow = true; mesh.receiveShadow = true; parent.add(mesh); return mesh;
@@ -74,15 +75,11 @@ function chestPrototype() {
   const latch = box(lid, [.23, .27, .1], [0, -.08, 1.08], band);
   box(lid, [.055, .09, .025], [0, -.095, 1.14], dark);
   latch.name = 'chest-lock';
-  const halo = new THREE.Mesh(new THREE.CircleGeometry(1.2, 32), new THREE.MeshBasicMaterial({
-    color: '#e7b34e', transparent: true, opacity: .09, depthWrite: false, side: THREE.DoubleSide,
-  }));
-  halo.rotation.x = -Math.PI / 2; halo.position.y = .02; halo.name = 'chest-halo'; root.add(halo);
   // Keep each chest at a handful of draw calls, even though it has many planks.
   for (const parent of [root, lid]) {
     const batches = new Map();
     for (const mesh of [...parent.children]) {
-      if (!mesh.isMesh || mesh === halo) continue;
+      if (!mesh.isMesh) continue;
       mesh.updateMatrix();
       const geometry = mesh.geometry.clone().applyMatrix4(mesh.matrix);
       if (!batches.has(mesh.material)) batches.set(mesh.material, []);
@@ -100,7 +97,7 @@ function chestPrototype() {
 
 export function createChests(scene, { placements = [], heightAt = () => 0, world = null,
   isVisible = () => true, onDrop = () => {}, viewDistance = 75, revealSceneryThroughFog = false,
-  tripoPrototype = null } = {}) {
+  tripoPrototype = null, rollRarity = rollLootRarity } = {}) {
   if (placements.some(object => object.kind === 'chest' && object.variant === 'kit-tripo-chest') && !tripoPrototype) {
     throw new Error('Die Tripo-Truhe muss vor dem Platzieren geladen werden.');
   }
@@ -111,11 +108,14 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
     const group = (isTripo ? tripoPrototype : prototype).clone(true); group.name = definition.name || 'Holztruhe';
     group.position.set(x, groundY, z); group.rotation.y = definition.rotation ?? 0;
     group.scale.setScalar(definition.scale ?? 1); group.userData.worldObjectId = definition.id; scene.add(group);
+    let texturedInteriorSurfaces = 0;
+    group.traverse(node => { if (node.userData.texturedChestInterior) texturedInteriorSurfaces++; });
     return { id: definition.id, name: definition.name || 'Holztruhe', type: 'chest', kind: 'chest',
       x, z, groundY, scale: definition.scale ?? 1, rarity: definition.rarity, group,
-      variant: definition.variant ?? 'wood', model: isTripo ? 'tripo' : 'procedural',
-      lid: group.getObjectByName('chest-lid'), halo: group.getObjectByName('chest-halo'),
-      opened: false, elapsed: 0, dropped: false, opener: null, index };
+      variant: definition.variant ?? 'wood', model: isTripo ? 'tripo' : 'procedural', texturedInteriorSurfaces,
+      lid: group.getObjectByName('chest-lid'),
+      opened: false, elapsed: 0, dropped: false, opener: null, index,
+      contents: chestLoot(definition.id, rollRarity()) };
   });
 
   const visiblePoint = item => ({ x: item.x, y: item.groundY + .55, z: item.z });
@@ -144,16 +144,13 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
         item.elapsed += Math.max(0, dt);
         const progress = Math.min(1, item.elapsed / .55);
         item.lid.rotation.x = -1.9 * (1 - Math.pow(1 - progress, 3));
-        item.halo.visible = false;
         if (!item.dropped && item.elapsed >= .23) {
           item.dropped = true;
-          const contents = chestLoot(item.id, item.index, item.rarity);
+          const contents = item.contents;
           contents.forEach((drop, index) => onDrop({ ...drop,
             position: chestDropPosition(item, item.opener, world ?? { heightAt }, index),
             origin: [item.x, item.z], sourceChest: item.id }, { pop: true }));
         }
-      } else {
-        item.halo.scale.setScalar(.95 + Math.sin(time * 1.6 + item.index) * .04);
       }
     }
   }
@@ -161,7 +158,7 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
     items, nearest, interact, open: interact, update,
     get openedCount() { return items.filter(item => item.opened).length; },
     reset() { for (const item of items) { item.opened = false; item.elapsed = 0; item.dropped = false;
-      item.opener = null; item.lid.rotation.x = 0; item.halo.visible = true; } },
+      item.opener = null; item.lid.rotation.x = 0; item.contents = chestLoot(item.id, rollRarity()); } },
     dispose() {
       for (const item of items) scene.remove(item.group);
       const geometries = new Set(), materials = new Set(), textures = new Set();

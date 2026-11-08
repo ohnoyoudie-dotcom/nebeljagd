@@ -84,14 +84,14 @@ test('well canopy stops high arrows without blocking walking under its outside o
   assert.equal(projectiles.traceSegment(scaledPoint(-2, .8, 1.1), scaledPoint(2, .8, 1.1), .03), null, 'space below the enlarged roof remains clear above the basin');
 });
 
-test('barrel collisions and sight obstruction disappear after destruction and return on reset', () => {
+test('barrel collisions disappear after destruction and return on reset, with sight always clear', () => {
   const barrel = definition('barrel');
   assert.equal(barrel.destructible.health, 60);
   const walls = structuredClone(barrel.walls);
   const index = createCollisionIndex([], walls);
   const sight = createSightModel({ obstacles: walls, radius: 12 });
   sight.update(point(-3, 0, 0));
-  assert.equal(sight.isVisible(point(3, 0, 0)), false);
+  assert.equal(sight.isVisible(point(3, 0, 0)), true);
   assert.ok(index.traceSegment(point(-3, 0), point(3, 0), .06));
   assert.ok(index.traceSegment(point(.55, -2, 1.15), point(.55, 2, 1.15), .03), 'new barrel edge and height stop a shot outside the former small collider');
   assert.ok(barrel.destructible.radius > .59, 'melee target also reaches the enlarged barrel');
@@ -103,7 +103,7 @@ test('barrel collisions and sight obstruction disappear after destruction and re
   assert.deepEqual(cleared, point(0, 0));
   for (const body of walls) body.destroyed = false;
   sight.update(point(-3, 0, 0));
-  assert.equal(sight.isVisible(point(3, 0, 0)), false);
+  assert.equal(sight.isVisible(point(3, 0, 0)), true);
   assert.ok(index.traceSegment(point(-3, 0), point(3, 0), .06));
 });
 

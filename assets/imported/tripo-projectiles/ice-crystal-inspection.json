@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/ice crystal 3d model.glb",
+  "original": {
+    "bytes": 66024876,
+    "sha256": "bd13db83001f5dfaa286180cf31b073b26fcb4504b4be6e0c101c4603b4e8c42",
+    "triangles": 1974580,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.490753173828125,
+          0.0,
+          -0.1849212646484375
+        ],
+        "max": [
+          0.490753173828125,
+          0.6144104599952698,
+          0.1849212646484375
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 568852,
+    "sha256": "f38ddd35dc1974eb8acc52183e7f1c7e69ceb26653e97096fde0f3fb9de9b0ae",
+    "triangles": 6000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4908307194709778,
+          -0.00017368268163409084,
+          -0.18578961491584778
+        ],
+        "max": [
+          0.4908250868320465,
+          0.6151695251464844,
+          0.1850079596042633
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "ice_crystal_3d_model_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "ice_crystal_3d_model_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "ice_crystal_3d_model_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        512,
+        512
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-tripo-projectiles.py -- --execute",
+  "sourceAxisPreserved": true,
+  "preview": "Prepared derivative, front view with source +X to image right.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent license certification."
+}

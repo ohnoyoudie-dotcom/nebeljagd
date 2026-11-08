@@ -18,7 +18,7 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const variant = 'kit-tripo-house-02';
 const house = getEnvironmentKitDefinition('house', variant);
 // Asset contracts use an explicit dry rectangle independently of the project coastline.
-const base = json('worldmap.json');
+const base = json('tests/fixtures/editor-project-worldmap.json');
 const { minX, minZ, maxX, maxZ } = base.bounds;
 base.island = { ...base.island, points: [[minX, minZ], [maxX, minZ], [maxX, maxZ], [minX, maxZ]] };
 base.islets = []; base.waterAreas = []; base.paths = []; base.rivers = [];

@@ -6,7 +6,7 @@ import { getObjectFootprintRadius } from '../src/map/objects.js';
 import { createLandscapePlacementGuard, createVegetationStroke, createScatterStroke, createTerrainStroke, createBiomeStroke } from '../src/map/landscape-brush.js';
 
 function fixture() {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
   map.island.points = [[-100, -100], [100, -100], [100, 100], [-100, 100]];
   map.regions = [{ id: 'brush-region', name: 'Wiese', biome: 'meadow', color: '#5a8844', points: map.island.points, label: [-60, 0] }];
   map.waterAreas = [{ id: 'brush-water', name: 'Gewässer', points: [[-20, -20], [20, -20], [20, 20], [-20, 20]] }];

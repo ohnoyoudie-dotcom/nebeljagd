@@ -3,10 +3,11 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { validateWorldmap, landBoundaryRings } from './map/model.js';
 import { createRiverWater } from './water.js';
 import { createWorldObjectRenderer } from './world-object-renderer.js';
-import { createTerrainArtwork } from './terrain-art.js';
+import { createTerrainArtwork, pathVergeOffset } from './terrain-art.js';
 import { createTerrainPaintMaterial, TERRAIN_PAINT_BUDGET } from './terrain-paint-renderer.js';
 import { createMeadowGround } from './meadow-ground.js';
 import { createSnowCover } from './snow-cover.js';
+import { createPathBorderStones } from './path-border-stones.js';
 import { emitTerrainTriangles } from './terrain-triangulation.js';
 
 import { createWorldSpatialModel, triangulateWorldLand, SEA_LEVEL } from './generated-spatial.js';
@@ -86,7 +87,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     const painted = spatial.terrainPaint.overlapping(bounds).length > 0;
     const snow = boundsHaveSnow(bounds);
     const paint = painted || snow
-      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt, terrainArtwork.soilDetail)
+      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt, terrainArtwork.soilDetail, terrainArtwork.stoneCenters)
       : null;
     const mesh = new THREE.Mesh(geometry, paint?.material ?? groundMaterial); mesh.name = `Geländeabschnitt ${chunk.key}`; mesh.receiveShadow = true; root.add(mesh);
     terrainChunks.push({ mesh, x: chunk.x, z: chunk.z, paint });
@@ -138,46 +139,40 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   const pathTexture = terrainArtwork.earth;
   const pathMaterials = {
-    main: new THREE.MeshStandardMaterial({ color: '#ffffff', map: terrainArtwork.paving, bumpMap: terrainArtwork.pavingBump, bumpScale: .035, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
+    main: new THREE.MeshStandardMaterial({ color: '#ffffff', map: terrainArtwork.earth, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
     trail: new THREE.MeshStandardMaterial({ color: '#c3b395', map: pathTexture, roughness: 1, side: THREE.DoubleSide, transparent: true, alphaTest: .01, depthWrite: false }),
   };
   for (const [kind, material] of Object.entries(pathMaterials)) {
     material.onBeforeCompile = shader => {
-      shader.uniforms.uPathEarth = { value: terrainArtwork.earth };
       shader.vertexShader = `attribute float aPathAcross; varying float vPathAcross;\n${shader.vertexShader}`.replace('#include <begin_vertex>', '#include <begin_vertex>\nvPathAcross = aPathAcross;');
-      shader.fragmentShader = `uniform sampler2D uPathEarth; varying float vPathAcross;\n${shader.fragmentShader}`;
-      if (kind === 'main') shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
-        #include <map_fragment>
-        float vergeDistance = min(vPathAcross, 1. - vPathAcross);
-        float vergeVariation = .008 * sin(vMapUv.x * 11. + vMapUv.y * 6.)
-          + .006 * sin(vMapUv.y * 17. - vMapUv.x * 9.);
-        float pavingCore = smoothstep(.075, .155, vergeDistance + vergeVariation);
-        vec3 earthyVerge = texture2D(uPathEarth, vMapUv).rgb * vec3(.95, .92, .87);
-        diffuseColor.rgb = mix(earthyVerge, diffuseColor.rgb, pavingCore);
-      `);
+      shader.fragmentShader = `varying float vPathAcross;\n${shader.fragmentShader}`;
       shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', 'diffuseColor.a *= smoothstep(.003, .06, min(vPathAcross, 1. - vPathAcross));\n#include <alphatest_fragment>');
     };
-    material.customProgramCacheKey = () => `painted-path-${kind}-2-natural-verge`;
+    material.customProgramCacheKey = () => `painted-path-${kind}-5-clear-earth-center`;
   }
   const pathChunks = new Map();
   for (const path of map.paths.filter(p => p.kind !== 'bridge')) for (let segment = 1; segment < path.points.length; segment++) {
     const a = path.points[segment - 1], b = path.points[segment], dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz), steps = Math.max(1, Math.ceil(length / 2));
-    const nx = dz / length * path.width / 2, nz = -dx / length * path.width / 2;
+    const [nx0,nz0]=pathVergeOffset(path.points,segment-1,path.width);
+    const [nx1,nz1]=pathVergeOffset(path.points,segment,path.width);
     for (let step = 0; step < steps; step++) {
       const t1 = step / steps, t2 = (step + 1) / steps;
       const x = a[0] + dx * (t1 + t2) / 2, z = a[1] + dz * (t1 + t2) / 2, key = `${Math.floor(x / CHUNK)},${Math.floor(z / CHUNK)}:${path.kind}`;
-      if (!pathChunks.has(key)) pathChunks.set(key, { x: (Math.floor(x / CHUNK) + .5) * CHUNK, z: (Math.floor(z / CHUNK) + .5) * CHUNK, kind: path.kind, positions: [], uv: [], across: [] });
+      if (!pathChunks.has(key)) pathChunks.set(key, { x: (Math.floor(x / CHUNK) + .5) * CHUNK, z: (Math.floor(z / CHUNK) + .5) * CHUNK, kind: path.kind, positions: [], uv: [], across: [], acrossGradient: [] });
       const chunk = pathChunks.get(key);
-      const row = [[a[0] + dx * t1 + nx, a[1] + dz * t1 + nz], [a[0] + dx * t1 - nx, a[1] + dz * t1 - nz], [a[0] + dx * t2 + nx, a[1] + dz * t2 + nz], [a[0] + dx * t2 - nx, a[1] + dz * t2 - nz]];
-      for (const index of [0, 2, 1, 1, 2, 3]) { const [px, pz] = row[index]; chunk.positions.push(px, surfaceHeightAt(px, pz) + .055, pz); chunk.uv.push(px / 3.5, pz / 3.5); chunk.across.push(index % 2); }
+      const nearX=nx0+(nx1-nx0)*t1,nearZ=nz0+(nz1-nz0)*t1,farX=nx0+(nx1-nx0)*t2,farZ=nz0+(nz1-nz0)*t2;
+      const row = [[a[0] + dx * t1 + nearX, a[1] + dz * t1 + nearZ], [a[0] + dx * t1 - nearX, a[1] + dz * t1 - nearZ], [a[0] + dx * t2 + farX, a[1] + dz * t2 + farZ], [a[0] + dx * t2 - farX, a[1] + dz * t2 - farZ]];
+      for (const index of [0, 2, 1, 1, 2, 3]) { const [px, pz] = row[index]; chunk.positions.push(px, surfaceHeightAt(px, pz) + .055, pz); chunk.uv.push(px / 3.5, pz / 3.5); chunk.across.push(index % 2); chunk.acrossGradient.push(-dz/length/path.width, dx/length/path.width); }
     }
   }
   const routeChunks = [];
   for (const chunk of pathChunks.values()) {
-    const geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.Float32BufferAttribute(chunk.positions, 3)); geometry.setAttribute('uv', new THREE.Float32BufferAttribute(chunk.uv, 2)); geometry.setAttribute('aPathAcross', new THREE.Float32BufferAttribute(chunk.across, 1)); geometry.computeVertexNormals();
+    const geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.Float32BufferAttribute(chunk.positions, 3)); geometry.setAttribute('uv', new THREE.Float32BufferAttribute(chunk.uv, 2)); geometry.setAttribute('aPathAcross', new THREE.Float32BufferAttribute(chunk.across, 1)); geometry.setAttribute('aPathAcrossGradient', new THREE.Float32BufferAttribute(chunk.acrossGradient, 2)); geometry.computeVertexNormals();
     const mesh = new THREE.Mesh(geometry, pathMaterials[chunk.kind]); mesh.name = 'Wegenetz · räumlicher Abschnitt'; mesh.receiveShadow = true; root.add(mesh); routeChunks.push({ ...chunk, mesh });
   }
   const bridgeMaterial = new THREE.MeshStandardMaterial({ color: '#827057', map: pathTexture, roughness: .91 });
+  const borderStones = createPathBorderStones(root, map, surfaceHeightAt,
+    (x, z) => spatial.isLand(x, z) && !spatial.isWater(x, z), spatial.terrainPaint);
   const bridgeMeshes = [];
   for (const path of map.paths.filter(p => p.kind === 'bridge')) {
     const pieces = [], transform = new THREE.Object3D();
@@ -237,8 +232,9 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     objects.resolveMovement(position, radius);
     return spatial.resolveWaterMovement(position, radius);
   }
-  function update(dt, time, player, zoneRadius = map.zone.initialRadius) {
-    timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(dt, time, player, zoneRadius); meadowGround.update(time, player); snowCover.update(time, player);
+  function update(dt, time, player, zoneRadius = map.zone.initialRadius, simulationDelta = dt) {
+    timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(simulationDelta, time, player, zoneRadius); meadowGround.update(time, player); snowCover.update(time, player);
+    borderStones.update(player, mode === 'low' ? 90 : 125);
     for (const water of waterMeshes) water.setZoneRadius(zoneRadius);
     if (time - lastCull > .3 || Math.hypot(player.x - lastCullX, player.z - lastCullZ) > 3) {
       const range = mode === 'low' ? 90 : 125; visibleTerrainChunks = 0;
@@ -278,12 +274,13 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     projectileObstacles: objects.projectileObstacles, importedAssets: objects.importedAssets,
     concealmentAt: objects.concealmentAt,
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
+    setDebrisVisibility: objects.setDebrisVisibility,
     update,
     setGrassInteractors(values) { meadowGround.setInteractors(values); objects.setGrassInteractors?.(values); },
     setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); snowCover.setQuality(mode); lastCull = -Infinity; },
     get shelter() { return objects.shelter; },
     get stats() { return { source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
-      terrainTriangles: triangles.length, generationMs, terrainArt: { ground: 'painted-woodland', mainPaths: 'irregular-grey-cobbles', trailPaths: 'earth', stoneTextureSize: 512, pathWidthFromMap: true },
+      terrainTriangles: triangles.length, generationMs, terrainArt: { ground: 'painted-woodland', mainPaths: 'earth-with-sculpted-border-stones', trailPaths: 'earth', stoneTextureSize: 512, pathWidthFromMap: true, borderStones: borderStones.stats },
       terrainPaint: { stamps: spatial.terrainPaint.length, affectedChunks: terrainChunks.filter(c => c.paint).length,
         residentChunks: terrainChunks.filter(c => c.paint?.stats.resident).length,
         textureBytes: terrainChunks.reduce((sum, c) => sum + (c.paint?.stats.bytes ?? 0), 0),
@@ -299,6 +296,6 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         snowVisualDepthMeters: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.snowVisualDepthMeters ?? 0)),
         maximumTextureSize: mode === 'low' ? 256 : 512, changesCollisionHeight: false },
       cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, meadowGround: meadowGround.inspect(), snowCover: snowCover.inspect(), ...objects.stats }; },
-    dispose() { meadowGround.dispose(); snowCover.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
+    dispose() { meadowGround.dispose(); snowCover.dispose(); borderStones.dispose(); objects.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
   };
 }

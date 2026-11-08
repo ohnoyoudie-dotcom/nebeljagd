@@ -4,10 +4,11 @@
  * the try/catch only applies when this module runs unbundled under Node. */
 let userTreeUrls = {};
 try {
-  userTreeUrls = import.meta.glob('../../assets/imported/user-trees/runtime/*.glb',
+  userTreeUrls = import.meta.glob(['../../assets/imported/user-trees/runtime/*.glb', '../../assets/imported/user-trees/styled/*.glb'],
     { query: '?url&inline', import: 'default', eager: true });
 } catch {
   // Plain Node tests (outside Vite) do not have the import.meta.glob macro.
 }
-export const USER_TREE1_URL = userTreeUrls['../../assets/imported/user-trees/runtime/tree1.glb'] ?? null;
+export const USER_TREE1_URL = userTreeUrls['../../assets/imported/user-trees/styled/tree1-woodland.glb']
+  ?? userTreeUrls['../../assets/imported/user-trees/runtime/tree1.glb'] ?? null;
 export const USER_TREE1_AVAILABLE = Boolean(USER_TREE1_URL);

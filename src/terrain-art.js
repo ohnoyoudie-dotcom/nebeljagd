@@ -21,6 +21,16 @@ const randomSource = seed => () => {
   return (seed >>> 0) / 4294967296;
 };
 
+/** Shared join offset closes the inner wedge between two path segments. */
+export function pathVergeOffset(points, index, width) {
+  const normal=(a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],length=Math.hypot(dx,dz)||1;return [dz/length,-dx/length];};
+  const before=normal(points[Math.max(0,index-1)],points[index===0?1:index]);
+  const after=normal(points[index===points.length-1?index-1:index],points[Math.min(points.length-1,index+1)]);
+  const dot=before[0]*after[0]+before[1]*after[1];
+  if(dot<-.5)return after.map(v=>v*width/2);
+  return [(before[0]+after[0])*width/(2*(1+dot)),(before[1]+after[1])*width/(2*(1+dot))];
+}
+
 /** One seamless repeated patch of irregular paving. Polygon data is kept pure
  * so the artwork can be checked without starting a renderer. */
 export function cobbleCells(seed = 71402, grid = 5) {
@@ -73,8 +83,9 @@ let cached;
  * stones. No additional world meshes or downloaded textures are required. */
 export function createTerrainArtwork() {
   if (cached) return cached;
-  const size = 512, ground = canvas(size), earth = canvas(size), paving = canvas(size), relief = canvas(size);
+  const size = 512, ground = canvas(size), earth = canvas(size), paving = canvas(size), relief = canvas(size), centers = canvas(size);
   const g = ground.getContext('2d'), e = earth.getContext('2d'), p = paving.getContext('2d'), h = relief.getContext('2d');
+  const centerContext = centers.getContext('2d');
   const random = randomSource(21112);
   g.fillStyle = '#eef0e8'; g.fillRect(0, 0, size, size);
   e.fillStyle = '#786650'; e.fillRect(0, 0, size, size);
@@ -105,8 +116,14 @@ export function createTerrainArtwork() {
     e.fillStyle = i % 4 ? '#30281f19' : '#dbc5a021';
     e.beginPath(); e.ellipse(x, y, .4 + random() * 2.1, .4 + random() * 1.4, random() * 6, 0, Math.PI * 2); e.fill();
   }
-  p.drawImage(earth, 0, 0);
-  p.fillStyle='#a49a8055'; p.fillRect(0,0,size,size);
+  // Short worn strokes and grit in the earth; the separate transparent atlas
+  // lets path shaders place individual stones only along their irregular verge.
+  for(let i=0;i<190;i++) {
+    const x=random()*size,y=random()*size;
+    e.strokeStyle=i%3?'#e0c99c15':'#51473018';e.lineWidth=.6+random()*1.4;
+    e.beginPath();e.moveTo(x,y);e.lineTo(x+2+random()*5,y+5+random()*18);e.stroke();
+  }
+  p.clearRect(0,0,size,size);
   h.fillStyle = '#404040'; h.fillRect(0, 0, size, size);
   const trace = (ctx, points, ox, oy, shift = 0) => {
     ctx.beginPath();
@@ -120,17 +137,20 @@ export function createTerrainArtwork() {
     }
     ctx.closePath();
   };
-  for (const cell of cobbleCells(71402, 8)) for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
-    if (cell.tint < .82) continue;
-    p.globalAlpha=.58;
-    trace(p, cell.points, ox, oy, 1); p.fillStyle = '#6f685b40'; p.fill();
-    const value = Math.round(156 * cell.tint);
+  for (const cell of cobbleCells(71402, 7)) for (const ox of [-size, 0, size]) for (const oy of [-size, 0, size]) {
+    if (cell.tint < .85) continue;
+    const points=cell.points.map(([x,y])=>[cell.cx+(x-cell.cx)*.68,cell.cy+(y-cell.cy)*.68]);
+    trace(p, points, ox, oy, 2); p.fillStyle = '#514b3d55'; p.fill();
+    const value = Math.round(170 * cell.tint);
     const gradient = p.createLinearGradient(0, cell.cy * size + oy - 35, 0, cell.cy * size + oy + 35);
     gradient.addColorStop(0, `rgb(${value + 12},${value + 14},${value + 11})`);
     gradient.addColorStop(1, `rgb(${value - 8},${value - 6},${value - 8})`);
-    trace(p, cell.points, ox, oy); p.fillStyle = gradient; p.fill();
-    p.globalAlpha=1;
-    trace(h, cell.points, ox, oy); h.fillStyle = '#c0c0c0'; h.fill();
+    trace(p, points, ox, oy); p.fillStyle = gradient; p.fill();
+    trace(centerContext,points,ox,oy);
+    centerContext.fillStyle=`rgb(${Math.round(cell.cx*255)},${Math.round(cell.cy*255)},0)`;
+    centerContext.fill();
+    p.strokeStyle='#d7d0b73c';p.lineWidth=1.3;p.stroke();
+    trace(h, points, ox, oy); h.fillStyle = '#c0c0c0'; h.fill();
     h.strokeStyle = '#858585'; h.lineWidth = 2.5; h.stroke();
   }
   const soil = canvas(size), sc = soil.getContext('2d');
@@ -140,9 +160,11 @@ export function createTerrainArtwork() {
     samples.data[i]=samples.data[i+1]=samples.data[i+2]=value;
   }
   sc.putImageData(samples,0,0);
-  cached = { soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false) };
+  cached = { soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false), stoneCenters: texture(centers,false) };
+  cached.stoneCenters.minFilter=cached.stoneCenters.magFilter=THREE.NearestFilter;
+  cached.stoneCenters.generateMipmaps=false;
   cached.ground.name = 'Nebeljagd · gemalter Naturboden ohne Grashalme';
-  cached.paving.name = 'Nebeljagd · unregelmäßiges graues Steinpflaster';
+  cached.paving.name = 'Nebeljagd · einzelne verwitterte Randsteine';
   cached.earth.name = 'Nebeljagd · erdiger Wegsaum';
   return cached;
 }

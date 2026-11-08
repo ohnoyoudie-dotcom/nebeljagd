@@ -54,7 +54,7 @@ with sync_playwright() as p:
         page.wait_for_function('nebeljagdTestState().equippedWeapon==="poisonStaff"')
         page.evaluate('nebeljagdInspectCamera({zoom:1.6})')
         page.locator('#pauseBtn').click(); capture(page,'proportions')
-        if not BASELINE: assert state(page)['combat']['heldModel']['presentationScale']==.82
+        if not BASELINE: assert state(page)['combat']['heldModel']['presentationScale']==.82*.88
         passed('Actual props and held imported staff render together at the gameplay camera')
         page.keyboard.press('Escape')
         point = page.evaluate('nebeljagdProjectPoint({x:0,z:-18.5})')

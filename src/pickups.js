@@ -68,6 +68,7 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
     group.scale.setScalar(definition.scale ?? 1);
     if (Array.isArray(placements)) group.userData.worldObjectId = definition.id;
     const floating = new THREE.Group();
+    floating.scale.setScalar(1.2);
     group.add(floating);
     const visual = new THREE.Mesh(definition.type === 'heart' ? hearts : coins,
       definition.type === 'heart' ? heartMat : goldMat);

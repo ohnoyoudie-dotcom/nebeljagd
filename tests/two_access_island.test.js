@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { isLandPoint, pointInPolygon, landBoundaryRings, outerLandRings, distanceToSegment, validateWorldmap } from '../src/map/model.js';
 import { createWorldSpatialModel, triangulateWorldLand } from '../src/generated-spatial.js';
 
-const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 const spatial = createWorldSpatialModel(map);
 const boundarySegments = landBoundaryRings(map).flatMap(ring => ring.map((a, i) => [a, ring[(i + 1) % ring.length]]));
 const gates = [

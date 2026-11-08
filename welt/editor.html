@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <script id="editor-build-info" type="application/json">{"buildId":"05bf1665e7f8","builtAt":"2026-11-08T11:16:03.401Z","sourceCommit":"8a1282792cf08703ecb59604924820d4d475ec24","mapSha256":"a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"}</script>
+    <script id="editor-build-info" type="application/json">{"buildId":"fffaee4b0730","builtAt":"2026-11-08T14:26:51.391Z","sourceCommit":"efd60a025e608cfd8dfba0219749c7438481142b","mapSha256":"a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"}</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#173c32">
@@ -22,14 +22,14 @@
   <main>
     <div class="eyebrow">Nebeljagd · Kartenatelier</div>
     <h1>Deine Insel. Der aktuelle Editor.</h1>
-    <p>Diese Adresse bleibt gleich. Beim Öffnen prüfen wir den zuletzt veröffentlichten Stand von Editor und Projektkarte.</p>
+    <p>Diese Adresse bleibt gleich. Wir prüfen den aktuellen Editor und öffnen deine zuletzt gespeicherte Karte automatisch.</p>
     <div class="version" role="status" aria-live="polite"><strong id="version">Aktuellen Stand prüfen …</strong><span id="release-time"></span></div>
     <p id="error" role="alert" hidden></p>
     <div class="actions">
       <button id="open-project" disabled>Aktuelle Projektkarte öffnen<small>Die Karte aus derselben Veröffentlichung wie der Editor.</small></button>
       <button id="open-draft" class="secondary" disabled>Eigenen Entwurf fortsetzen<small id="draft-note">Gespeicherte Entwürfe werden in diesem Browser gesucht.</small></button>
     </div>
-    <p class="note">Dein Entwurf bleibt auf diesem Gerät. „Speichern“ sichert deine Karte als JSON-Datei und lädt sie nicht ins Internet hoch.</p>
+    <p class="note">Dein Entwurf bleibt auf diesem Gerät erhalten. Mit der einmaligen GitHub-Verbindung im Editor sichert „Speichern“ deine Karte direkt online und startet die Veröffentlichung.</p>
     <button id="retry" type="button">Auf Updates prüfen</button>
     <p id="offline" class="note" hidden>Diese Datei ist eine Offline-Kopie. <a href="./map-editor.html">Mitgelieferten Editor öffnen</a>. Online-Updates erhältst du über die feste Webadresse.</p>
     <noscript><p>Bitte JavaScript aktivieren, um den aktuellen Editor zu öffnen.</p></noscript>
@@ -40,6 +40,7 @@
       const draftKey = 'nebeljagd.worldmap.v1';
       let currentRelease = null;
       let requestSequence = 0;
+      const automatic = new URLSearchParams(location.search).get('choose') !== '1';
       function inspectDraft() {
         byId('open-draft').disabled = true;
         try {
@@ -90,6 +91,7 @@
           byId('release-time').textContent = Number.isNaN(date.getTime()) ? '' : 'Erstellt am ' + new Intl.DateTimeFormat('de-DE', {dateStyle: 'medium', timeStyle: 'short'}).format(date);
           byId('open-project').disabled = false;
           inspectDraft();
+          if (automatic) openEditor(byId('open-draft').disabled ? 'project' : 'draft', true);
         } catch (error) {
           if (sequence !== requestSequence) return;
           byId('version').textContent = 'Aktueller Stand nicht bestätigt';
@@ -99,12 +101,12 @@
           clearTimeout(timeout);
         }
       }
-      function openEditor(start) {
+      function openEditor(start, replace = false) {
         if (!currentRelease) return;
         const url = new URL('./map-editor.html', location.href);
         url.searchParams.set('v', currentRelease.files['map-editor.html'].sha256);
         url.searchParams.set('start', start);
-        location.assign(url.href);
+        if (replace) location.replace(url.href); else location.assign(url.href);
       }
       byId('open-project').addEventListener('click', () => openEditor('project'));
       byId('open-draft').addEventListener('click', () => openEditor('draft'));

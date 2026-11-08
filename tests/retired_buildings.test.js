@@ -50,14 +50,14 @@ test('cleanup removes only unambiguously orphaned generated house stock chests',
 });
 
 test('default project map contains no retired buildings or their stock chests', () => {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
   assert.equal(map.objects.some(isRetiredBuilding), false);
   assert.equal(removeRetiredBuildings(map).totalRemoved, 0);
   assert.equal(validateWorldmap(map).valid, true);
 });
 
 test('legacy buildings remain valid when explicitly imported for recovery', () => {
-  const map = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url), 'utf8'));
+  const map = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url), 'utf8'));
   map.objects = [object('old-import-house', 'house', 'herbal', [30, -60])];
   assert.equal(validateWorldmap(map).valid, true);
   assert.equal(isRetiredBuilding(map.objects[0]), true);

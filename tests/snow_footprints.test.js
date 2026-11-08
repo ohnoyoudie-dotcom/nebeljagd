@@ -57,3 +57,51 @@ test('footprints are not emitted outside snow', () => {
   assert.equal(footprints.weightAt(0, 0), 0);
   footprints.dispose();
 });
+
+test('rolling leaves a continuous body-width furrow without soles, then walking resumes normal steps', () => {
+  const root=new THREE.Group(), tracks=createSnowFootprints(root,world(true));
+  const sample=(z,rolling=true)=>({id:'player',x:0,z,direction:0,moving:true,speed:rolling?9:4,rolling});
+  tracks.update(0,[sample(0)]);
+  tracks.update(.1,[sample(.8)]);
+  tracks.update(.2,[sample(1.6)]);
+  const roll=tracks.inspect();
+  assert.equal(roll.footprintsCreated,0);
+  assert.ok(roll.activeRollSegments>=6,'long frame steps are filled with adjoining track segments');
+  assert.equal(roll.singleInstancedDraw,true,'roll and foot marks share the bounded pool');
+  const mesh=root.children.find(m=>m.name==='Schneespuren'),matrix=new THREE.Matrix4();
+  for(let i=0;i<mesh.count;i++) {
+    mesh.getMatrixAt(i,matrix);
+    assert.ok(Math.abs(matrix.elements[12])<1e-6,'roll stays centred instead of alternating left/right feet');
+    assert.ok(Math.abs(matrix.elements[0])*.38>.70,'track is wider than a boot');
+    assert.equal(mesh.geometry.attributes.instanceTrackKind.getX(i),1);
+    const distances=mesh.geometry.attributes.instanceRollDistance;
+    assert.ok(distances.getY(i)>0);
+    if(i>0)assert.ok(Math.abs(distances.getX(i)-distances.getX(i-1)-distances.getY(i-1))<1e-6,
+      'irregular scuff pattern continues across frame and segment boundaries');
+    assert.equal(mesh.geometry.attributes.instanceTrackCaps.getX(i),i===0?1:i===mesh.count-1?2:0,
+      'only the beginning and end fade; interior segments do not create transverse bands');
+  }
+  tracks.update(.3,[sample(1.7,false)]);
+  assert.equal(tracks.inspect().footprintsCreated,0,'transition never adds a trailing sole to the roll');
+  tracks.update(.5,[sample(2.4,false)]);
+  assert.equal(tracks.inspect().footprintsCreated,1);
+  assert.equal(tracks.inspect().activeRollSegments,roll.activeRollSegments);
+  tracks.update(11,[]);assert.equal(tracks.inspect().count,0);
+  tracks.dispose();
+  const dry=createSnowFootprints(new THREE.Group(),world(false));
+  dry.update(0,[sample(0)]);dry.update(.2,[sample(2)]);
+  assert.equal(dry.inspect().rollSegmentsCreated,0);dry.dispose();
+});
+
+test('adjoining roll segments share their edge height on sloped snow without bright gaps',()=>{
+  const root=new THREE.Group(),tracks=createSnowFootprints(root,{...world(true),snowSurfaceAt:(x,z)=>2+z*.15+Math.sin(z)*.05});
+  tracks.update(0,[{id:'player',x:0,z:0,moving:true,rolling:true}]);
+  tracks.update(.1,[{id:'player',x:0,z:1,moving:true,rolling:true}]);
+  const mesh=root.children.find(m=>m.name==='Schneespuren'),a=new THREE.Matrix4(),b=new THREE.Matrix4();
+  for(let i=1;i<mesh.count;i++) {
+    mesh.getMatrixAt(i-1,a);mesh.getMatrixAt(i,b);
+    for(const x of [-.19,.19])assert.ok(new THREE.Vector3(x,0,-.32).applyMatrix4(a)
+      .distanceTo(new THREE.Vector3(x,0,.32).applyMatrix4(b))<1e-6);
+  }
+  tracks.dispose();
+});

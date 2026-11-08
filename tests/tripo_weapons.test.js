@@ -64,8 +64,8 @@ test('placed Tripo pickups keep authored transforms and original PBR textures wi
     assert.equal(item.ringMaterial.color.getHexString(), new THREE.Color(rarityVisual(item.rarity).color).getHexString());
     assert.deepEqual(item.group.position.toArray(), [item.x, 2.5, item.z]);
     assert.equal(item.group.rotation.y, .9); assert.equal(item.group.scale.x, 1.4);
-    assert.equal(item.visual.scale.x, item.type === 'sword' ? .8 : item.type === 'bow' ? .88 : .82,
-      'weapon presentation shrinks independently of the authored placement scale');
+    assert.equal(item.visual.scale.x, (item.type === 'sword' ? .8 : item.type === 'bow' ? .88 : .82) * 1.2,
+      'weapon presentation enlarges independently of the authored placement scale');
     item.group.updateMatrixWorld(true);
     const center = new THREE.Box3().setFromObject(item.visual).getCenter(new THREE.Vector3());
     near(center, new THREE.Vector3(item.x, 2.5 + .75 * 1.4, item.z), 'ground preview centers the weapon above its halo');
@@ -102,7 +102,7 @@ test('automatic pickup, manual swapping, inventory drops and reset preserve the 
     assert.equal(weapons.telemetry.heldModel.variant, variant);
     assert.equal(weapons.telemetry.heldModel.meshCount, 1);
     const held = actor.children.find(group => group.userData.weaponType === kind && group.visible);
-    assert.equal(held.scale.x, weapons.items[index].visual.scale.x, 'pickup and held model share the same presentation size');
+    assert.ok(Math.abs(held.scale.x / weapons.items[index].visual.scale.x - .88/1.2)<1e-10, 'the hand model stays smaller without changing the authored item');
     near(held.position, hand, 'model grip stays at the animated hand');
     actor.updateWorldMatrix(true, true);
     near(held.children[0].children[0].getWorldPosition(new THREE.Vector3()),
@@ -156,15 +156,15 @@ test('both imported staffs follow the palm socket through motion and cast from t
 
 test('variant replacement and reset dispose only instance resources, preserving templates and other pickups', () => {
   const { weapons, actor, tripoPrototypes } = setup([
-    placement('sword', 'kit-tripo-sword'), placement('sword', 'steel', { position: [4, 0] }),
+    placement('iceStaff', 'kit-tripo-crystal-staff'), placement('iceStaff', 'frost', { position: [4, 0] }),
   ]);
-  const template = meshes(tripoPrototypes['kit-tripo-sword'])[0];
+  const template = meshes(tripoPrototypes['kit-tripo-crystal-staff'])[0];
   let sharedGeometryDisposed = 0, sharedMaterialDisposed = 0, sharedTextureDisposed = 0;
   template.geometry.addEventListener('dispose', () => sharedGeometryDisposed++);
   template.material.addEventListener('dispose', () => sharedMaterialDisposed++);
   template.material.map.addEventListener('dispose', () => sharedTextureDisposed++);
   weapons.interact(actor.position);
-  const held = actor.children.find(group => group.userData.weaponType === 'sword');
+  const held = actor.children.find(group => group.userData.weaponType === 'iceStaff');
   const heldMaterial = meshes(held)[0].material;
   let heldDisposed = 0; heldMaterial.addEventListener('dispose', () => heldDisposed++);
   const dropped = weapons.addDrop({ ...weapons.equippedItem, position: [8, 0] }, { pop: false });

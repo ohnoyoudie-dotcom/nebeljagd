@@ -7,7 +7,7 @@ import { createCollisionIndex } from './collision.js';
 import { collisionStructureBounds, structureContainsPoint, structureIntersectsSegment } from './map/structure-bounds.js';
 import { houseFloorFactorAt } from './map/house-floor.js';
 import { createWeatheredStone } from './stone-art.js';
-import { createHidingGrassGeometry, hidingGrassDetail, HIDING_GRASS_STYLE } from './hiding-grass.js';
+import { createHidingGrassGeometry, hidingGrassDetail, HIDING_GRASS_STYLE, applyGrassSurface } from './hiding-grass.js';
 import { createMoundPrototype } from './overgrown-mounds.js';
 import { createVegetationWind } from './vegetation-wind.js';
 import { buildVegetationPatch, buildKitGrassPatch, vegetationInstanceTint, vegetationTint, MAX_GRASS_INSTANCES, MAX_KIT_GRASS_INSTANCES } from './vegetation-patches.js';
@@ -19,6 +19,7 @@ import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { isLandPoint } from './map/model.js';
 import { createGroundGrassExclusion, grassBiomeProfile } from './meadow-ground.js';
 import { WEAPON_TYPES } from './loot-tiers.js';
+import { createDestructionDebris } from './destruction-debris.js';
 import tree01Url from '../assets/imported/rei/runtime/tree01.glb?url&inline';
 import tree02Url from '../assets/imported/rei/runtime/tree02.glb?url&inline';
 import bushUrl from '../assets/imported/rei/runtime/bush.glb?url&inline';
@@ -40,6 +41,21 @@ function texture(kind) {
     ctx.fillStyle = ['#c8ca8d55', '#233c2f55', '#9b9e7255'][i % 3];
     if (kind === 'bark') ctx.fillRect(r() * 128, r() * 128, .5 + r(), 7 + r() * 22);
     else { ctx.beginPath(); ctx.ellipse(r() * 128, r() * 128, .8 + r() * 3, .7 + r() * 1.2, r() * 6, 0, Math.PI * 2); ctx.fill(); }
+  }
+  if (kind === 'bush-leaf') {
+    // Painted pointed leaves with a midrib, over the supplied bush silhouette.
+    for (let i=0;i<95;i++) {
+      ctx.save();ctx.translate(r()*128,r()*128);ctx.rotate(r()*Math.PI*2);
+      const length=7+r()*9,width=3+r()*3;
+      ctx.fillStyle=['#8d9e65','#708b52','#4c6c40','#9da772'][i%4];
+      ctx.beginPath();ctx.moveTo(0,-length);
+      ctx.bezierCurveTo(width,-length*.5,width,length*.45,0,length);
+      ctx.bezierCurveTo(-width,length*.4,-width,-length*.5,0,-length);ctx.fill();
+      ctx.strokeStyle='#c2c69b65';ctx.lineWidth=.6;
+      ctx.beginPath();ctx.moveTo(0,-length*.85);ctx.lineTo(0,length*.9);
+      for(const side of [-1,1])for(let y=-length*.4;y<length*.6;y+=length*.35){ctx.moveTo(0,y);ctx.lineTo(side*width*.68,y-length*.24);}
+      ctx.stroke();ctx.restore();
+    }
   }
   if (kind === 'soil') {
     ctx.globalCompositeOperation = 'destination-in';
@@ -85,6 +101,7 @@ function createGrassPrototypes(wind) {
     const material = wind.apply(new THREE.MeshStandardMaterial({ color: variant === 'tall' ? '#ffffff' : '#759552',
       vertexColors: variant === 'tall', side: THREE.DoubleSide, roughness: 1, forceSinglePass: true }),
       { interactionResponse: variant === 'tall' ? 1.15 : .9 });
+    if (variant === 'tall') applyGrassSurface(material);
     result.set(`grass:${variant}`, [{ geometry: variant === 'tall' ? tallGrassGeo : grassGeo,
       lowGeometry: variant === 'tall' ? tallGrassLowGeo : undefined, material, castShadow: false }]);
   }
@@ -109,6 +126,7 @@ function createGrassPrototypes(wind) {
     const tallMaterial = wind.apply(new THREE.MeshStandardMaterial({
       color: '#ffffff', vertexColors: true, side: THREE.DoubleSide, roughness: 1, forceSinglePass: true,
     }), { interactionResponse: 1.15 });
+    applyGrassSurface(tallMaterial);
     result.set(`grass:short:${biome}`, [{ geometry: grassGeo, material: shortMaterial, castShadow: false }]);
     result.set(`grass:tall:${biome}`, [{ geometry: tallGeo, lowGeometry: tallLowGeo, material: tallMaterial, castShadow: false }]);
   }
@@ -237,6 +255,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const barrierObjects = new Set((map.objects ?? []).slice(authoredObjectCount));
   const barrierSegmentCount = barrierObjects.size;
   let mode = quality, shelter = null;
+  const debris = createDestructionDebris(root, groundHeightAt);
+  let debrisVisible = null;
   const wind = createVegetationWind(map);
   const kitModels = await loadEnvironmentKit(map, { wind });
   const loader = new GLTFLoader();
@@ -245,7 +265,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   const barkMap = texture('bark'), foliageMap = texture('foliage');
   const bark = new THREE.MeshStandardMaterial({ map: barkMap, bumpMap: barkMap, bumpScale: .04, color: '#c4b18f', roughness: .95 });
   const foliage = wind.apply(new THREE.MeshStandardMaterial({ map: foliageMap, color: '#d7dfbd', roughness: .92 }), { response: .65, height: 5.8 });
-  const bushFoliage = wind.apply(new THREE.MeshStandardMaterial({ map: foliageMap, color: '#d7dfbd', roughness: .92 }), { response: .5, height: 1.1 });
+  const bushFoliage = wind.apply(new THREE.MeshStandardMaterial({ map: texture('bush-leaf'), color: '#d7dfbd', roughness: .92 }), { response: .5, height: 1.1 });
   const importedFlowerMat = wind.apply(new THREE.MeshStandardMaterial({ color: '#fff', vertexColors: true, side: THREE.DoubleSide, roughness: .92, forceSinglePass: true }), { response: .3, height: .55 });
   const soil = new THREE.MeshStandardMaterial({ map: texture('soil'), color: '#c2b487', transparent: true, alphaTest: .04, depthWrite: false, side: THREE.DoubleSide, roughness: 1 });
   const prototypes = new Map();
@@ -327,7 +347,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const local = { ...body, type: body.type ?? (house ? 'house-wall' : object.kind), minY: body.minY ?? 0, maxY: body.maxY ?? (house ? 4.2 : 3.6) };
       const corners = [[body.minX, body.minZ], [body.maxX, body.minZ], [body.maxX, body.maxZ], [body.minX, body.maxZ]].map(([a, b]) => toWorld({ x: a, z: b }));
       const worldBody = { id: `${object.id}-wall-${index}`, objectId: object.id, destructibleId: local.furnitureId ? `${object.id}-furniture-${local.furnitureId}` : undefined,
-        type: local.type, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
+        type: local.type, objectKind: object.kind, minX: Math.min(...corners.map(p => p.x)), maxX: Math.max(...corners.map(p => p.x)), minZ: Math.min(...corners.map(p => p.z)), maxZ: Math.max(...corners.map(p => p.z)),
         minY: y + local.minY * scale, maxY: y + local.maxY * scale, rotation, oriented: true, corners,
         ...(isHeightAdjustable(object) ? { barrierHeight: getBarrierHeight(object) } : {}) };
       if (!local.movementOnly) projectileObstacles.push(worldBody);
@@ -516,7 +536,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const part of parts) {
       const mesh = new THREE.InstancedMesh(mode === 'low' && part.lowGeometry ? part.lowGeometry : part.geometry, part.material, batch.placements.length);
       mesh.name = `${batch.key} · ${batch.chunk.id}`; mesh.castShadow = part.castShadow; mesh.receiveShadow = true;
-      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence|wagon|barrel|well):/.test(batch.key);
+      mesh.userData.visionBlockerSurface = /^(tree|rock|mound|ruin|wall|fence):/.test(batch.key);
       for (let i = 0; i < batch.placements.length; i++) {
         const p = batch.placements[i]; matrix.position.set(p.x, p.y + (batch.key === 'bed:soil' ? .04 : .01), p.z); matrix.rotation.set(0, p.rotation, 0); matrix.scale.set(...p.scale); matrix.updateMatrix(); mesh.setMatrixAt(i, matrix.matrix);
         if (p.object.kind === 'crate' || kitModels.get(batch.key)?.destructible) {
@@ -566,6 +586,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function destroyDestructible(id) {
     const item = destructibles.find(candidate => candidate.id === id);
     if (!item || item.destroyed) return false;
+    debris.burst(item);
     item.destroyed = true; item.health = 0;
     for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = true; body.worldBody.destroyed = true; }
     if (item.group) item.group.visible = false;
@@ -578,6 +599,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     return true;
   }
   function resetDestructibles() {
+    debris.reset();
     for (const item of destructibles) {
       item.destroyed = false; item.health = item.maxHealth;
       for (const body of item.bodies ?? item.structure.bodies) { body.destroyed = false; body.worldBody.destroyed = false; }
@@ -623,6 +645,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   }
   let visibleChunks = 0, lastCull = -Infinity, lastPlayer = new THREE.Vector3(Infinity, 0, Infinity);
   function update(dt, time, player) {
+    debris.update(dt, debrisVisible);
     timeUniform.value = time; playerUniform.value.copy(player); vegetation.update(time, player); wind.update(time);
     if (time - lastCull > .3 || lastPlayer.distanceToSquared(player) > 9) {
       visibleChunks = 0;
@@ -653,10 +676,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
   return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
+    setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
-    dispose() { disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
+    dispose() { debris.dispose(); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene]); },
     get shelter() { return shelter; },
-    get stats() { return { totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
+    get stats() { return { debris: debris.stats, totalObjects: (map.objects ?? []).length, authoredObjectCount, barrierCount, barrierSegmentCount, chunks: chunks.size, visibleChunks, instanceBatches: instanced.length, treeCount: trees.length, houseCount: houses.length, moundCount: structures.filter(structure => structure.object.kind === 'mound').length, grassPatchCount: grassPatches.length, grassRendering: { tallHeight: [...HIDING_GRASS_STYLE.height], shortHeight: [.22, .42], bendsAwayFromPlayer: wind.stats.interactors > 0,
         sourceVersion: HIDING_GRASS_STYLE.sourceVersion, crossedStalksPerInstance: HIDING_GRASS_STYLE.stalksPerInstance,
         totalInstances: grassInstanceCount, maximumInstances: MAX_GRASS_INSTANCES, budgetUnitsUsed: grassBudgetUsed,
         kitInstances: kitGrassInstanceCount, maximumKitInstances: MAX_KIT_GRASS_INSTANCES,

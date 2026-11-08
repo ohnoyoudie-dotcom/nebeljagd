@@ -6,6 +6,7 @@ import { createAvatarAnimator } from './avatar-animation.js';
 import { preparePlayerGeometry } from './player-model.js';
 import { createHandGripSocket } from './hand-grip.js';
 import { createCombatPoseController } from './character-combat-pose.js';
+import { createCharacterGlow } from './character-glow.js';
 
 const PLAYER_MODEL_SOURCE = 'assets/characters/nebeljagd_player_base_v1.glb';
 
@@ -85,6 +86,11 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
     };
     part.material = Array.isArray(part.material) ? part.material.map(clone) : clone(part.material);
   });
+  const levelGlow = createCharacterGlow(materials.keys());
+  function setLevelUpGlow(strength = 0) {
+    levelGlow.set(strength);
+    if (group.userData.characterAsset) group.userData.characterAsset.levelUpGlow = levelGlow.strength;
+  }
   // A faint local-only read-through keeps the traveller legible under a canopy or
   // in poison mist. These draws reuse the original skin and bone matrices.
   const silhouetteMaterial = new THREE.MeshBasicMaterial({
@@ -168,6 +174,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   const bones = new Set();
   model.traverse(node => { if (node.isBone) bones.add(node); });
   group.userData.characterAsset = {
+    levelUpGlow: 0,
     name: 'Nebeljäger Tripo', source: PLAYER_MODEL_SOURCE,
     format: 'GLB', skinned: meshes.some(mesh => mesh.isSkinnedMesh), joints: bones.size,
     clips: gltf.animations.map(clip => clip.name), normalizedHeight: targetHeight,
@@ -250,8 +257,9 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
   }
 
   return {
-    group, update,
+    group, update, setLevelUpGlow, inspectLevelUpGlow: levelGlow.inspect,
     resetMotion(direction = group.rotation.y) {
+      setLevelUpGlow(0);
       restoreAnimatedPose(); animator.reset();
       locomotion.reset(); attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
       if (Number.isFinite(direction)) group.rotation.y = direction;
@@ -289,6 +297,7 @@ ${shader.fragmentShader}`.replace('#include <clipping_planes_fragment>', `#inclu
       const next = Boolean(value);
       if (dead === next) return;
       dead = next; restoreAnimatedPose(); animator.stopRoll(); group.userData.rolling = false;
+      if (dead) setLevelUpGlow(0);
       if (!dead) { presentationPivot.rotation.x = 0; presentationPivot.position.y = pelvisHeight; model.scale.copy(unitScale); locomotion.reset(); }
     },
     setConcealed(value) {

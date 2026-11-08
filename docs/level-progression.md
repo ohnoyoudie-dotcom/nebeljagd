@@ -20,16 +20,16 @@ zugänglichen Beschriftungen folgen dem tatsächlichen Wert.
 
 Die Levelzahl sitzt in einer goldenen Plakette mit abgesetztem Rand. Beim
 Aufstieg schwillt sie einmal sanft auf 1,18-fache Größe an und klingt wieder ab.
-Ein weicher goldener Lichtimpuls, ein dünner aufsteigender Lichtfaden und kleine,
-zeitlich versetzte Lichtpunkte begleiten die Figur. Das Licht hellt auch Boden
-und Grashalme kurz auf; Gras, Figur und Hindernisse verdecken die Partikel und
-den Lichtfaden räumlich korrekt. Die Bewegung reicht jetzt 35 Prozent weiter
-nach außen und 40 Prozent höher; die Lichtpunkte sind ebenfalls 35 Prozent
-größer. Farben und weicher Ablauf bleiben erhalten. Harte helle Ringe, kantige Funken und die
-zylindrische Lichtsäule sind entfernt. Es erscheint weiterhin kein Textfenster.
+Die Figur selbst leuchtet kurz golden auf. Aus ihrer Körpermitte brechen
+36 weiche Lichtspuren nach außen und oben aus, bremsen ab und verglühen.
+Ein kurzer Lichtschein um den Körper und auf dem Boden verbindet den Ausbruch
+mit der Umgebung. Gras, Figur und Hindernisse verdecken die Partikel räumlich
+korrekt. Die ursprünglichen Materialien, Texturen und Sichtbarkeiten bleiben
+erhalten; nach dem Aufleuchten werden ihre Emissionswerte exakt zurückgesetzt.
+Es erscheint weiterhin kein Textfenster.
 Die Rückmeldung klingt nach etwa 1,6 Sekunden ab. Bei reduzierten Animationen
-bleiben ein ruhiger Lichtschein und eine Aufhellung der Zahl ohne Vergrößerung
-oder aufsteigende Partikel. Pause und Neustart räumen die Rückmeldung auf.
+bleiben ein ruhiger, schwächerer Körperglanz und eine Aufhellung der Zahl ohne
+Vergrößerung oder ausbrechende Partikel. Pause und Neustart räumen die Rückmeldung auf.
 
 Der tödliche Treffer zählt für seinen Verursacher. Das gilt auch für einen
 Gegner, der durch nachwirkenden Brandschaden stirbt. Ein bereits besiegtes Ziel

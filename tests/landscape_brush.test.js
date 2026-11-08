@@ -7,7 +7,7 @@ import { BIOME_PRESETS, vegetationSettings, getLandscape } from '../src/map/land
 import { validateWorldmap } from '../src/map/model.js';
 import { ENVIRONMENT_KIT_DEFINITIONS, getEnvironmentKitDefinition } from '../src/map/environment-kit-definitions.js';
 
-const original = JSON.parse(readFileSync(new URL('../worldmap.json', import.meta.url)));
+const original = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 function fixture(objects = []) {
   const map = structuredClone(original);
   map.island.points = [[-220, -220], [220, -220], [220, 220], [-220, 220]];
