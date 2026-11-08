@@ -1,12 +1,12 @@
 {
   "status": "passed",
-  "buildId": "e6622b05f723",
-  "sourceCommit": "9d798d987b1759039db41b7780f530de69681aa6",
+  "buildId": "bce5ae98074e",
+  "sourceCommit": "82f6a1e4f185346e2d60a7cdfe347a09b4a76181",
   "unitTests": {
-    "passed": 559,
+    "passed": 565,
     "failed": 0
   },
-  "assetVerification": "passed",
+  "assetVerification": "passed; original assets unchanged",
   "mapVerification": "passed",
   "mapUnchangedSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
   "generatedGame": {
@@ -14,7 +14,7 @@
     "stencil": true,
     "checks": [
       "All seven saved .55/1/radius2.5 path styles now have borders with singletons and small/large clusters",
-      "Only the local crown fades further; softer white hiding compiles in Low/High and restores after walking out",
+      "Only the local crown fades further; subtle textured hiding compiles in Low/High and restores after walking out",
       "Active hiding resets cleanly; original map and objects remain unchanged; no shader/browser/network errors"
     ],
     "savedPathRenderedCounts": {
@@ -26,10 +26,10 @@
       "mud": 19,
       "cobble": 19
     },
-    "screenshots": 7,
+    "screenshots": 3,
     "errors": [],
     "unexpectedRequests": [],
-    "report": "test-results/path-refinement/report.json",
+    "report": "test-results/path-refinement-integrated/report.json",
     "limits": "Actual generated Chromium/SwiftShader render and keyboard input; no hardware performance claim.",
     "borders": {
       "count": 286,
@@ -53,7 +53,7 @@
     "visibility": {
       "under": {
         "qa-local-tree": {
-          "opacity": 0.05415150005710529,
+          "opacity": 0.05348252967126458,
           "targetOpacity": 0.045,
           "underCanopy": true,
           "barkOpacity": 1,
@@ -88,15 +88,15 @@
         }
       },
       "hidden": {
-        "style": "white-hidden-rim-v1",
+        "style": "soft-textured-concealment-v2",
         "active": true,
         "blend": 1,
-        "bodyOpacity": 0.21999999999999997,
-        "fillOpacity": 0.12,
-        "outlineOpacity": 0.62,
-        "color": "#ffffff",
+        "bodyOpacity": 0.58,
+        "fillOpacity": 0.07,
+        "outlineOpacity": 0.42,
+        "color": "#cbd8d0",
         "outline": "stencil-contour",
-        "outlineWidthPixels": 1.6,
+        "outlineWidthPixels": 1.4,
         "localOnly": true,
         "depthTest": false,
         "snowClipped": false,
@@ -104,15 +104,15 @@
         "materialsRestored": false
       },
       "restored": {
-        "style": "white-hidden-rim-v1",
+        "style": "soft-textured-concealment-v2",
         "active": false,
         "blend": 0,
         "bodyOpacity": 1,
         "fillOpacity": 0,
         "outlineOpacity": 0,
-        "color": "#ffffff",
+        "color": "#cbd8d0",
         "outline": "stencil-contour",
-        "outlineWidthPixels": 1.6,
+        "outlineWidthPixels": 1.4,
         "localOnly": true,
         "depthTest": false,
         "snowClipped": false,
@@ -121,7 +121,18 @@
       }
     }
   },
-  "generatedEditor": {
+  "fullPathVisuals": {
+    "buildId": "acd409e09c53",
+    "report": "test-results/path-refinement-acd409e09c53/report.json",
+    "screenshots": 7,
+    "runtimeChangesSince": [
+      "src/gold-coin.js",
+      "src/main.js: pickup inspection only",
+      "src/pickups.js"
+    ]
+  },
+  "generatedEditorLauncher": {
+    "buildId": "acd409e09c53",
     "checks": [
       "Fresh launcher opens matching editor and project map with visible version",
       "Stable bookmark automatically resumes the complete own draft in the current editor",
@@ -137,22 +148,49 @@
     "errors": [],
     "report": "test-results/online-editor/report.json"
   },
+  "finalCoinChestAndEditor": {
+    "buildId": "bce5ae98074e",
+    "checks": [
+      "Real chest drops two large symmetric gold coins: slow clockwise turn, pause freezes rotation, collection awards exact gold",
+      "Real chest GLB: textured floor/walls/lid; new sword drop; keyboard opening and touch swap preserve tier/damage",
+      "Restart rerolls tiers, restores exact locations and removes chest drops",
+      "Generated editor offers only new sword, explains random tiers/damage and preserves all existing map content"
+    ],
+    "errors": [],
+    "report": "test-results/chest-loot/report.json"
+  },
+  "preservedBowChecks": {
+    "buildId": "acd409e09c53",
+    "gameSha256": "f04b8bf76da578c28c2291d8f1daec2e5866b5e4e57cd7c682357daa95c0c36f",
+    "checks": [
+      "keyboard: held full draw without firing; hands and bow stay beside the torso",
+      "keyboard: real ornate bow picked up and one visible physical arrow fired",
+      "touch: held full draw without firing; hands and bow stay beside the torso",
+      "touch: real ornate bow picked up and one visible physical arrow fired"
+    ],
+    "errors": [],
+    "runtimeUnchangedSinceCheck": true
+  },
+  "preservedConcurrentCommits": [
+    "d6d689fad134717b4b8dceac296bed941f9dc849",
+    "7ae48fe834cf731761b229ae3ad45e983a7d1f37"
+  ],
   "files": {
     "magebrawl.html": {
-      "bytes": 91914288,
-      "sha256": "8856ce1918b2e90eeaa3b1c2a6533ff3e4ab519deb3e54ee3c92951f394e60c6"
+      "bytes": 91917177,
+      "sha256": "2185b1d0e5f0e3a93e71b39594a0594acbcbae0249ca3ea4b12edbddef4dca7f"
     },
     "map-editor.html": {
       "bytes": 61649325,
-      "sha256": "9113d53159fab9122d90c87fca2987db034e19ac5977b119c34a9b527b5087ab"
+      "sha256": "55b426add267e72c832c4e90464859b6ceb6ae0fa478f72793418b887cb2189d"
     },
     "worldmap.json": {
       "bytes": 56916,
       "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
     },
     "magebrawl-welt-und-editor.zip": {
-      "bytes": 100389949,
-      "sha256": "b3087e37e36ba4b617a63f3e101b7203d98028b1650a9fadf30cbe39f337a82a"
+      "bytes": 100390330,
+      "sha256": "210c9bb7471bcf859dd64ade51d8b403277354a85c5cb5215379a1ffe71e72d1"
     }
   }
 }
