@@ -11,7 +11,28 @@ Projektkarte und eigenem lokalen Entwurf wählen. Der geprüfte Build wird auf
 Die Versionslinks in den folgenden historischen Berichten dokumentieren deren
 damalige Veröffentlichung, sie wählen keine historische Karte aus.
 
-## Levelaufstieg direkt an Figur und Zahl
+## Weicher Levelaufstieg in der Spielwelt
+
+[Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
+und **Spielen** wählen. Der Aufstieg folgt einem kurzen Aufbau, einem warmen
+Lichtimpuls und einem ruhigen Ausklingen: weiches Bodenlicht, ein dünner
+aufsteigender Goldfaden und 22 kleine Lichtpunkte mit versetztem Timing.
+Gras, Figur und Hindernisse verdecken die Effekte räumlich korrekt; ein kleines
+lokales Licht hellt die unmittelbare Umgebung auf. Die Levelzahl schwillt
+einmal auf 1,18-fache Größe an. Es erscheint kein Textfenster.
+
+Geprüfte Quelle: `a9b1a4a19bee7137fa8e1d4742fa8c8d2dbf2883`, Build
+`4e5b70483d58`. 470 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild sind
+bestanden. Der Browsercheck erfasst vier Phasen nach einem echten Gegner-Kill
+und prüft +25 Lebenspunkte, konstante Balkenbreite, Ablauf und Neustart.
+Desktop-, Touch- und Reduced-Motion-Anzeigen wurden zusätzlich geprüft.
+Die aktuellen Bodenfarben, Biompinsel, Waffen-/Modellproportionen und
+Giftnebel-Effekte sind dabei erhalten.
+[Prüfbericht](level-up-refined-check.json) ·
+[Spielaufnahme](level-up-refined-game.png) ·
+[Vier Animationsphasen](level-up-refined-sequence.png).
+
+## Vorherige Rückmeldung direkt an Figur und Zahl
 
 [Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
 und **Spielen** wählen. Beim Levelaufstieg erscheinen zwei goldene Wellen,

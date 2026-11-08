@@ -82,10 +82,18 @@ Ablauf und Neustart bestanden ohne Browserfehler. Desktop-/Touch-HUD, erneutes
 Auslösen und reduzierte Bewegung wurden separat geprüft.
 [Effekt-Prüfbericht](level-up-feedback-check.json) · [Spielaufnahme](level-up-feedback-game.png).
 
-Die überarbeitete Rückmeldung ohne Textfenster wurde mit **409 Node-Tests**,
+Die erste Rückmeldung ohne Textfenster wurde mit **409 Node-Tests**,
 Asset-/Kartenprüfung und Produktionsbuild geprüft. Der aktuelle Browsercheck
 verifiziert einen echten Kill, beide Wellen, Lichtschein, 36 Funken und den
 Zahlenpuls bei unveränderter Balkenbreite sowie Ablauf und Neustart. Die
 Darstellung wurde auch im Desktop-/Touch-HUD und mit reduzierter Bewegung
 geprüft. [Aktueller Effekt-Prüfbericht](level-up-direct-feedback-check.json) ·
-[Aktuelle Spielaufnahme](level-up-direct-feedback-game.png).
+[Damals geprüfte Spielaufnahme](level-up-direct-feedback-game.png).
+
+Die weichere Fassung mit Goldfaden und versetzten Lichtpunkten wurde im
+erzeugten Browser-Spiel in vier Phasen eines echten Aufstiegs geprüft.
+**470 Node-Tests**, Asset-/Kartenprüfung und Build sind bestanden; +25 LP,
+unveränderte Balkenbreite, Ablauf und Neustart bleiben korrekt. Die neue
+Zahlenanimation wurde auch auf schmalem Bildschirm und mit reduzierter
+Bewegung geprüft. [Aktueller Prüfbericht](level-up-refined-check.json) ·
+[Vier tatsächliche Spielbilder](level-up-refined-sequence.png).
