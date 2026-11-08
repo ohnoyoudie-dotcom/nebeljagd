@@ -1,3 +1,4 @@
+import { ARROW_LENGTH } from './arrow-alignment.js';
 import * as THREE from 'three';
 import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tiers.js';
 import { createSpellEffects } from './spell-effects.js';
@@ -392,8 +393,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
 
   const arrowWood = material('#b77740');
   const arrowFeather = material('#ffedbf', { side: THREE.DoubleSide });
-  const arrowShaftGeometry = new THREE.CylinderGeometry(0.026, 0.03, 0.69, 5);
-  const arrowHeadGeometry = new THREE.ConeGeometry(0.085, 0.23, 5);
+  const arrowShaftGeometry = new THREE.CylinderGeometry(.043, .05, ARROW_LENGTH - .23, 5);
+  const arrowHeadGeometry = new THREE.ConeGeometry(.10, .23, 5);
   const arrowFeatherGeometry = box(0.15, 0.024, 0.2);
   function makeArrow() {
     const group = new THREE.Group();
@@ -408,19 +409,20 @@ export function createWeapons(scene, characterGroup, world, character = null,
       group.add(model);
       group.userData.projectileSource = model.userData.source;
     } else {
-      const shaft = addMesh(group, arrowShaftGeometry, arrowWood);
+      const shaft = addMesh(group, arrowShaftGeometry, arrowWood, 0, 0, -.115);
       shaft.rotation.x = Math.PI / 2;
-      const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, 0.43);
+      const head = addMesh(group, arrowHeadGeometry, steel, 0, 0, ARROW_LENGTH / 2 - .115);
       head.rotation.x = Math.PI / 2;
       shaft.name = 'Pfeil · Holzschaft'; head.name = 'Pfeil · Metallspitze';
       for (let i = 0; i < 3; i++) {
-        const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -0.34);
+        const feather = addMesh(group, arrowFeatherGeometry, arrowFeather, 0, 0, -ARROW_LENGTH / 2 + .12);
         feather.name = 'Pfeil · Feder'; feather.rotation.z = i * Math.PI * 2 / 3;
       }
     }
     return group;
   }
   let committedBowDirection = 0;
+  let bowHolding = false, bowHoldAge = 0, bowReleaseDraw = 0;
   function alignNockedArrow() {
   const aim = attackAge >= 0 ? committedBowDirection : characterGroup.rotation.y;
   const relative = aim - characterGroup.rotation.y;
@@ -433,7 +435,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   // The flying arrow is scene-owned; keep the held arrow the same world size.
   nockedArrow.scale.set(1/characterGroup.scale.x,1/characterGroup.scale.y,1/characterGroup.scale.z);
   nockedArrow.rotation.set(0,relative,0);
-  const tail = new THREE.Vector3(0,0,-.43).multiply(nockedArrow.scale).applyEuler(nockedArrow.rotation);
+  const tail = new THREE.Vector3(0,0,-ARROW_LENGTH / 2).multiply(nockedArrow.scale).applyEuler(nockedArrow.rotation);
   nockedArrow.position.copy(nock).sub(tail);
 }
 
@@ -532,6 +534,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     equippedItem = { ...weaponStats(item.type, item.rarity, item.variant), label: item.label, name: item.name,
       id: item.id, variant: item.variant, model: item.model,
       rotation: item.rotation ?? 0, scale: item.scale ?? 1 };
+    bowHolding = false; bowHoldAge = 0;
     applyTier(held, equippedItem.rarity);
     clearSwordCombo();
     cooldown = 0; attackAge = -1; attackPhase = 'idle';
@@ -549,16 +552,17 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function attack(position, direction) {
-    if (!equippedType || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
+    if (!equippedType || bowHolding || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
     if (equippedType === 'poisonStaff') {
       if (!specials.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
     // Keep the requested direction fixed while the body finishes turning.
     committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
+    bowHolding = equippedType === 'bow'; bowHoldAge = 0; bowReleaseDraw = 0;
     attackAge = 0; shotReleased = false;
     attackDuration = equippedItem.cooldown;
-    cooldown = attackDuration;
+    cooldown = bowHolding ? 0 : attackDuration;
     if (equippedType === 'sword') {
       swordIndex = swordComboRemaining > 0 ? (swordIndex + 1) % SWORD_PATTERNS.length : 0;
       swordComboRemaining = attackDuration + SWORD_COMBO_GRACE;
@@ -582,9 +586,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     combatPose.leftHandWeight = 1; combatPose.castWeight = 0;
     combatPose.swordWeight = 0; combatPose.swordLead = 1; combatPose.chestLean = 0;
     if (equippedType === 'bow') {
-      bowDraw = attackAge < 0 ? 0 : attackAge < .23 ? ease(0, .23, attackAge) : 1 - ease(.23, .36, attackAge);
-      leftHand.set(.06, 1.34, .40);
-      rightHand.set(.04, 1.35, .08 - bowDraw * .24);
+      bowDraw = bowHolding ? ease(0, .35, bowHoldAge) : attackAge < 0 ? 0 : bowReleaseDraw * (1 - ease(.23, .36, attackAge));
+      leftHand.set(.34, 1.43, .40);
+      rightHand.set(.34, 1.43, .34 - bowDraw * .22);
       combatPose.chestTwist = -.08 - bowDraw * .07;
       character?.setCombatState?.(combatPose);
       const imported = heldBow.userData.model === 'tripo';
@@ -681,8 +685,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const nx = hit.normal?.x ?? -Math.sin(arrow.direction), nz = hit.normal?.z ?? -Math.cos(arrow.direction);
     const length = Math.hypot(nx, nz) || 1, normalX = nx / length, normalZ = nz / length;
     const dot = arrow.vx * normalX + arrow.vz * normalZ;
-    arrow.group.position.set(hit.point.x - Math.sin(arrow.direction) * .43 + normalX * .025,
-      hit.point.y ?? arrow.group.position.y, hit.point.z - Math.cos(arrow.direction) * .43 + normalZ * .025);
+    arrow.group.position.set(hit.point.x - Math.sin(arrow.direction) * (ARROW_LENGTH / 2) + normalX * .025,
+      hit.point.y ?? arrow.group.position.y, hit.point.z - Math.cos(arrow.direction) * (ARROW_LENGTH / 2) + normalZ * .025);
     arrow.vx = (arrow.vx - 2 * dot * normalX) * .22;
     arrow.vz = (arrow.vz - 2 * dot * normalZ) * .22;
     arrow.vy = 1.35;
@@ -712,7 +716,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (arrow.group.userData.trail) arrow.group.userData.trail.visible = true;
     forward.set(Math.sin(angle), 0, Math.cos(angle));
     launchOrigin.set(position.x, launchCenter.y, position.z);
-    tipAfter.copy(launchCenter).addScaledVector(forward, .43);
+    tipAfter.copy(launchCenter).addScaledVector(forward, ARROW_LENGTH / 2);
     // Trace from the body before using the forward muzzle, so a close wall cannot
     // be skipped by spawning the projectile on its far side.
     const immediate = firstHit(launchOrigin, tipAfter, .055);
@@ -744,7 +748,19 @@ export function createWeapons(scene, characterGroup, world, character = null,
     lastDamage = result; damageHits++;
   }, isVisible, { moonProjectilePrototype: projectilePrototypes.moon });
   const staffTip = new THREE.Vector3();
+  function cancelAim() {
+    specials.cancelAim();
+    if (bowHolding) { bowHolding = false; bowHoldAge = 0; attackAge = -1; attackPhase = 'idle'; shotReleased = true; applyHeldPose(); }
+  }
   function releaseAttack(position) {
+    if (bowHolding) {
+      if (!position || equippedType !== 'bow' || characterGroup.userData.rolling) { cancelAim(); return false; }
+      bowReleaseDraw = bowDraw; bowHolding = false;
+      attackAge = .23; attackPhase = 'release'; shotReleased = true;
+      cooldown = equippedItem.cooldown;
+      applyHeldPose(); releaseArrow(position);
+      return true;
+    }
     if (!specials.aiming || equippedType !== 'poisonStaff' || characterGroup.userData.rolling) { specials.cancelAim(); return false; }
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
@@ -824,7 +840,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     swordComboRemaining = Math.max(0, swordComboRemaining - delta);
     if (swordComboRemaining === 0 && attackAge < 0) swordIndex = -1;
     swordEffects.update(delta);
-    if (characterGroup.userData.rolling) specials.cancelAim();
+    if (characterGroup.userData.rolling) cancelAim();
     specials.update(delta, position, time);
     for (const item of items) {
       if (item.collected) continue;
@@ -853,7 +869,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (swordIndex >= 0) clearSwordCombo();
     }
     if (attackAge >= 0) {
-      attackAge += delta;
+      if (bowHolding) { bowHoldAge += delta; attackAge = Math.min(.22, bowHoldAge); }
+      else attackAge += delta;
       if (equippedType === 'bow') attackPhase = attackAge < .23 ? 'draw' : attackAge < .36 ? 'release' : 'recover';
       else if (equippedType.endsWith('Staff')) attackPhase = attackAge < .25 ? 'channel' : attackAge < .4 ? 'release' : 'recover';
       else {
@@ -870,9 +887,6 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
       spellEffects.channel(equippedType, getStaffTip(staffTip), characterGroup.rotation.y, attackAge / .25);
     } else spellEffects.channel(null);
-    if (equippedType === 'bow' && attackAge >= .23 && !shotReleased) {
-      shotReleased = true; releaseArrow(position);
-    }
     if (equippedType?.endsWith('Staff') && attackAge >= .25 && !shotReleased) {
       shotReleased = true; releaseSpell(position);
     }
@@ -915,7 +929,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
       if (arrow.mode === 'flying') {
         forward.set(Math.sin(arrow.direction), 0, Math.cos(arrow.direction));
-        tipBefore.copy(arrow.group.position).addScaledVector(forward, .43);
+        tipBefore.copy(arrow.group.position).addScaledVector(forward, ARROW_LENGTH / 2);
         tipAfter.copy(tipBefore); tipAfter.x += arrow.vx * delta; tipAfter.z += arrow.vz * delta;
         const hit = firstHit(tipBefore, tipAfter, .055);
         if (hit?.target) hitTarget(arrow, hit);
@@ -946,6 +960,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function reset({ reroll = true } = {}) {
+    bowHolding = false; bowHoldAge = 0;
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     for (const held of Object.values(heldByType)) held.visible = false;
@@ -1014,6 +1029,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     items,
     get equipped() { return equippedType; },
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
+    get bowHolding() { return bowHolding; },
     get attackCooldown() { return specials.moonBusy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
@@ -1036,7 +1052,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
-      return { attackPhase, bowDraw, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
+      return { attackPhase, bowDraw, bowHolding, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         swordCombo: { index: swordIndex + 1, pattern: SWORD_PATTERNS[swordIndex] ?? null, swingId: swordSwingId,
           active: equippedType === 'sword' && attackAge >= 0, progress: equippedType === 'sword' && attackAge >= 0 ? Math.min(1, attackAge / attackDuration) : 0,
           remaining: swordComboRemaining },
@@ -1062,7 +1078,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           swordTip: { x: bladeTip.x, y: bladeTip.y, z: bladeTip.z } } };
     },
     nearest, interact, tryAutoPickup, attack, releaseAttack,
-    aimAt: (position, point) => specials.aimAt(position, point), cancelAim: () => specials.cancelAim(),
+    aimAt: (position, point) => specials.aimAt(position, point), cancelAim,
     update, reset, addDrop, dispose,
   };
 }

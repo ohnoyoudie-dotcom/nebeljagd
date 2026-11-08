@@ -206,6 +206,7 @@ test('Tripo sword and staffs retain real melee, ranged damage, burn and slow beh
     const target = combat.addTarget({ id: 'target', position: { x: 0, y: 0, z: kind === 'sword' ? 1.6 : 4 }, radius: .65, maxHealth: 500 });
     const { weapons, actor } = setup([placement(kind, variant, { rarity: 'legendary' })], { combat });
     weapons.interact(actor.position); weapons.attack(actor.position, 0);
+    if (kind === 'bow') weapons.releaseAttack(actor.position);
     if (kind === 'poisonStaff') { weapons.aimAt(actor.position, target.position); weapons.releaseAttack(actor.position); }
     const tips = [];
     for (let i = 0; i < (kind === 'poisonStaff' ? 110 : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }

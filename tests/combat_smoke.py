@@ -105,12 +105,13 @@ try:
         inspect(page, -8, 8, 0)
         collect(page)
         shots_before = state(page)['combat']['shotsFired']
-        page.keyboard.press('f')
+        page.keyboard.down('f')
         page.wait_for_function("window.nebeljagdTestState().combat.attackPhase === 'draw' && window.nebeljagdTestState().combat.bowDraw > .05")
         draw = state(page)['combat']
         assert draw['shotsFired'] == shots_before, draw
         assert -.12 < draw['heldPose']['bow']['z'] < 1.0 and .7 < draw['heldPose']['bow']['y'] < 1.9, draw
-        frozen_capture(page, 'combat-bow-draw.png')
+        capture(page, 'combat-bow-draw.png')
+        page.keyboard.up('f')
         page.wait_for_function('n => window.nebeljagdTestState().combat.shotsFired === n + 1', arg=shots_before)
         page.wait_for_function('window.nebeljagdTestState().attackCooldown === 0')
         bow_samples = samples(page)
@@ -122,8 +123,9 @@ try:
 
         inspect(page, -8, 8, 0)
         shots_before = state(page)['combat']['shotsFired']
-        page.keyboard.press('f')
+        page.keyboard.down('f')
         page.keyboard.press('Space')
+        page.keyboard.up('f')
         page.wait_for_function('window.nebeljagdTestState().rollCooldown > 0')
         page.wait_for_function('window.nebeljagdTestState().rollRemaining === 0 && window.nebeljagdTestState().attackCooldown === 0')
         cancelled = state(page)['combat']
