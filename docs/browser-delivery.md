@@ -11,7 +11,7 @@ Projektkarte und eigenem lokalen Entwurf wählen. Der geprüfte Build wird auf
 Die Versionslinks in den folgenden historischen Berichten dokumentieren deren
 damalige Veröffentlichung, sie wählen keine historische Karte aus.
 
-## Weicher Levelaufstieg in der Spielwelt
+## Größerer weicher Levelaufstieg in der Spielwelt
 
 [Aktuellen Editor öffnen](https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html)
 und **Spielen** wählen. Der Aufstieg folgt einem kurzen Aufbau, einem warmen
@@ -20,17 +20,19 @@ aufsteigender Goldfaden und 22 kleine Lichtpunkte mit versetztem Timing.
 Gras, Figur und Hindernisse verdecken die Effekte räumlich korrekt; ein kleines
 lokales Licht hellt die unmittelbare Umgebung auf. Die Levelzahl schwillt
 einmal auf 1,18-fache Größe an. Es erscheint kein Textfenster.
+Lichtfaden und Partikel steigen 40 Prozent höher; der Effekt breitet sich
+35 Prozent weiter aus. Die Lichtpunkte selbst sind ebenfalls 35 Prozent
+größer. Der warme Farbton und das weiche Timing sind erhalten.
 
-Geprüfte Quelle: `a9b1a4a19bee7137fa8e1d4742fa8c8d2dbf2883`, Build
-`4e5b70483d58`. 470 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild sind
+Geprüfte Quelle: `75c9c0106523c0cfe8e2fb6951b88f7817a97b7d`, Build
+`7a0086a758c3`. 470 Node-Tests, Asset-/Kartenprüfung und Produktionsbuild sind
 bestanden. Der Browsercheck erfasst vier Phasen nach einem echten Gegner-Kill
 und prüft +25 Lebenspunkte, konstante Balkenbreite, Ablauf und Neustart.
 Desktop-, Touch- und Reduced-Motion-Anzeigen wurden zusätzlich geprüft.
 Die aktuellen Bodenfarben, Biompinsel, Waffen-/Modellproportionen und
 Giftnebel-Effekte sind dabei erhalten.
-[Prüfbericht](level-up-refined-check.json) ·
-[Spielaufnahme](level-up-refined-game.png) ·
-[Vier Animationsphasen](level-up-refined-sequence.png).
+[Prüfbericht](level-up-larger-check.json) ·
+[Vier Animationsphasen](level-up-larger-sequence.png).
 
 ## Vorherige Rückmeldung direkt an Figur und Zahl
 
