@@ -49,7 +49,8 @@ def pause_when(p, expression):
     p.wait_for_function('nebeljagdTestState().phase==="paused"')
 
 with sync_playwright() as pw:
-    b=pw.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE','/usr/bin/chromium'),headless=True,
+    executable=os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else pw.chromium.executable_path)
+    b=pw.chromium.launch(executable_path=executable,headless=True,
         args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
     try:
         ctx=b.new_context(viewport={'width':900,'height':700})
