@@ -133,10 +133,10 @@ try:
 
         grass = state(page)['world']['grassPatches'][0]
         inspect(page, grass['x'], grass['z'])
-        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .22) < .015')
+        page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .58) < .015')
         hidden = state(page)
         assert hidden['hiddenFromOtherPlayers'] is True
-        assert hidden['character']['concealmentAppearance']['style'] == 'white-hidden-rim-v1'
+        assert hidden['character']['concealmentAppearance']['style'] == 'soft-textured-concealment-v2'
         capture(page, 'village-grass.png')
         inspect(page, -8, 8)
         page.wait_for_function('!window.nebeljagdTestState().hiddenInGrass && window.nebeljagdTestState().character.opacity > .995')

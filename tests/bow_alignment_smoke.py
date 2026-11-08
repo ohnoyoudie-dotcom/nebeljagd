@@ -25,15 +25,28 @@ with sync_playwright() as p:
    label='touch' if touch else 'keyboard'
    page.screenshot(path=str(OUT/(label+'-nocked.png')))
    page.evaluate('''() => {window.__arrowFrame=null;const sample=()=>{if(nebeljagdTestState().combat.arrowsFlying>0){window.__arrowFrame=nebeljagdCaptureFrame();return;}requestAnimationFrame(sample);};requestAnimationFrame(sample);}''')
-   if touch:page.locator('#attackBtn').tap()
-   else:page.keyboard.press('f')
+   if touch:
+    box=page.locator('#attackBtn').bounding_box()
+    session=context.new_cdp_session(page)
+    session.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':box['x']+box['width']/2,'y':box['y']+box['height']/2}]})
+   else:page.keyboard.down('f')
+   page.wait_for_function('nebeljagdTestState().combat.bowDraw===1')
+   started=page.evaluate('nebeljagdTestState().elapsed')
+   page.wait_for_function('t=>nebeljagdTestState().elapsed>t+1',arg=started)
+   held=page.evaluate('nebeljagdTestState().combat')
+   assert held['shotsFired']==0 and held['bowHolding'] and held['bowDraw']==1,held
+   assert held['hands']['right']['x']>.3 and held['heldPose']['bow']['x']>.2,held['hands']
+   report['checks'].append(label+': held full draw without firing; hands and bow stay beside the torso')
+   page.screenshot(path=str(OUT/(label+'-drawn.png')))
+   if touch:session.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
+   else:page.keyboard.up('f')
    page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
    page.wait_for_function('window.__arrowFrame')
    (OUT/(label+'-flight.png')).write_bytes(base64.b64decode(page.evaluate('window.__arrowFrame').split(',',1)[1]))
    state=page.evaluate('nebeljagdTestState()')
    assert state['combat']['shotsFired']==1,state['combat']
    assert state['combat']['arrowModel']['source'].endswith('feathered spear 3d model.glb')
-   assert state['combat']['arrowModel']['nominalLength']==.86
+   assert state['combat']['arrowModel']['nominalLength']==1.05
    report['checks'].append(label+': real ornate bow picked up and one visible physical arrow fired')
    context.close()
   assert not report['errors'],report['errors'];report['passed']=True

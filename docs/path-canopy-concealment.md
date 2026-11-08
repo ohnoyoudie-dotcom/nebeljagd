@@ -17,9 +17,10 @@ Stämme, Blattmasken, Windbewegung und die individuellen Biomfarben bleiben Teil
 der vorhandenen Baumdarstellung. Die Aufhellung ist eine lokale Sichthilfe;
 die Regeln für Hindernisse und die Sichtbarkeit anderer Figuren bleiben bestehen.
 
-In Versteckgras wird die eigene Figur weiß durchscheinend mit einer sanften,
-schmalen weißen Kontur dargestellt. Die weiße Füllung ist zurückgenommen,
-damit der Zustand sichtbar bleibt, ohne die Figur grell leuchten zu lassen.
+In Versteckgras wird die eigene Figur durchscheinend mit einer sanften,
+schmalen hellen Kontur dargestellt. Die weiße Füllung ist zurückgenommen,
+die ursprünglichen Kleidungsfarben bleiben erkennbar. So bleibt der Zustand
+sichtbar, ohne die Figur grell leuchten zu lassen.
 Der Übergang und die Rückkehr zur normalen Darstellung
 sind weich. Die Kontur folgt dem animierten Körper und berücksichtigt die
 Schneeoberfläche. Die bestehende Spielregel, ob eine Figur verborgen ist, steuert

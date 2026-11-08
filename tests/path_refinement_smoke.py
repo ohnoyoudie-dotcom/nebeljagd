@@ -187,7 +187,7 @@ try:
                 move(page,x,z);capture(page,name)
             passed('All seven saved .55/1/radius2.5 path styles now have borders with singletons and small/large clusters', border)
 
-            stage('real local canopy and tall-grass entry; softer white indication')
+            stage('real local canopy and tall-grass entry; subtle textured hiding indication')
             original = {k: t['appearance'] for k,t in trees(page).items()}
             tree = trees(page)['qa-local-tree']; crown = tree['canopy']['footprint']
             cx,cz = crown['center']; rx,rz = crown['radiusX'],crown['radiusZ']
@@ -200,10 +200,11 @@ try:
               s.character.concealmentAppearance.blend>.99&&s.world.trees.find(t=>t.id==='qa-local-tree').canopy.opacity<.055}''')
             hidden = state(page); visual = hidden['character']['concealmentAppearance']; under = trees(page)
             assert hidden['hiddenFromOtherPlayers'] and hidden['concealment'] > .01
-            assert visual['active'] and visual['localOnly'] and visual['color'] == '#ffffff'
-            assert visual['outline'] == 'stencil-contour' and visual['outlineWidthPixels'] == 1.6
-            assert .21 <= visual['bodyOpacity'] < .24 and .115 < visual['fillOpacity'] < .125
-            assert .61 < visual['outlineOpacity'] < .63 and not visual['materialsRestored']
+            assert visual['style'] == 'soft-textured-concealment-v2'
+            assert visual['active'] and visual['localOnly'] and visual['color'] == '#cbd8d0'
+            assert visual['outline'] == 'stencil-contour' and visual['outlineWidthPixels'] == 1.4
+            assert .575 <= visual['bodyOpacity'] < .59 and .065 < visual['fillOpacity'] < .075
+            assert .41 < visual['outlineOpacity'] < .43 and not visual['materialsRestored']
             assert .04 <= under['qa-local-tree']['canopy']['opacity'] < .055
             assert under['qa-other-tree']['canopy']['opacity'] > .99
             assert all(t['canopy']['barkOpacity'] == 1 for t in under.values())
@@ -217,7 +218,7 @@ try:
             restored = state(page)['character']['concealmentAppearance']
             assert restored['bodyOpacity'] == 1 and restored['fillOpacity'] == 0 and restored['outlineOpacity'] == 0
             capture(page,'restored-after-real-exit',1.5)
-            passed('Only the local crown fades further; softer white hiding compiles in Low/High and restores after walking out',
+            passed('Only the local crown fades further; subtle textured hiding compiles in Low/High and restores after walking out',
                    {'under':{k:t['canopy'] for k,t in under.items()},'hidden':visual,'restored':restored})
 
             stage('restart while hidden restores canopy and original character materials')

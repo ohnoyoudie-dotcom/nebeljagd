@@ -21,16 +21,16 @@ function settle(effect, concealed, options = {}) {
   return effect.inspect();
 }
 
-test('concealment smoothly whitens only the local presentation and restores original material state exactly', () => {
+test('concealment smoothly softens only the local presentation and restores original material state exactly', () => {
   const { material, mesh, effect } = fixture();
   const color = material.color.clone(), emissive = material.emissive.clone();
   const first = effect.update(1 / 60, { concealed: true });
   assert.ok(first.blend > 0 && first.blend < 1);
-  assert.ok(first.bodyOpacity > .22 && first.bodyOpacity < 1);
+  assert.ok(first.bodyOpacity > .58 && first.bodyOpacity < 1);
   const hidden = settle(effect, true);
-  assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .22) < 1e-10);
-  assert.equal(hidden.fillOpacity, .12); assert.equal(hidden.outlineOpacity, .62);
-  assert.equal(hidden.color, '#ffffff'); assert.equal(hidden.localOnly, true);
+  assert.equal(hidden.blend, 1); assert.ok(Math.abs(hidden.bodyOpacity - .58) < 1e-10);
+  assert.equal(hidden.fillOpacity, .07); assert.equal(hidden.outlineOpacity, .42);
+  assert.equal(hidden.color, '#cbd8d0'); assert.equal(hidden.localOnly, true);
   assert.equal(material.transparent, true); assert.equal(material.depthWrite, false);
   assert.equal(mesh.castShadow, false);
   assert.ok(material.color.equals(color) && material.emissive.equals(emissive), 'source colours are never overwritten');

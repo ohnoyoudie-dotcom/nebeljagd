@@ -34,6 +34,7 @@ function attackOnce(instance, seconds = .9) {
   const { actor, weapons } = instance;
   weapons.interact(actor.position);
   weapons.attack(actor.position, 0);
+  if (weapons.equipped === 'bow') weapons.releaseAttack(actor.position);
   if (weapons.equipped === 'poisonStaff') { weapons.aimAt(actor.position, instance.target.position); weapons.releaseAttack(actor.position); seconds = 4.1; }
   for (let time = 0; time < seconds; time += .04) weapons.update(.04, time, actor.position);
 }

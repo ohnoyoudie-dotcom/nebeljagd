@@ -103,7 +103,7 @@ def walk_until(page, key, expression, arg=None):
     resume(page)
     page.keyboard.down(key)
     try:
-        wait(page, expression, arg, timeout=45000)
+        wait(page, expression, arg, timeout=180000 if RECOVERY else 45000)
     finally:
         page.keyboard.up(key)
 
@@ -236,13 +236,13 @@ try:
                     else:
                         resume(page)
                         wait(page,'nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.blend>.95')
-                        capture(page,'white-hidden-character-under-canopy',1.6)
+                        capture(page,'soft-hidden-character-under-canopy',1.6)
                     walk_until(page,'KeyD','x=>nebeljagdTestState().position.x>=x',cx+rx+5)
                     wait(page, 'nebeljagdTestState().world.trees.every(t=>t.canopy.opacity>.99)')
                     passed(f'Only {identifier} fades for the local player and restores after actual walking away',
                         {'under': {key:value['canopy'] for key,value in under.items()}, 'restored': trees(page)[identifier]['canopy']})
 
-            stage('real tall-grass entry produces translucent white body and strong outline')
+            stage('real tall-grass entry preserves character colours with a soft outline')
             move(page,16,18)
             wait(page,'!nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.materialsRestored')
             normal = appearance(page)
@@ -252,20 +252,20 @@ try:
             wait(page,'nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.blend>.98')
             hidden = state(page); visual = appearance(page)
             assert hidden['concealment'] > .01 and hidden['hiddenFromOtherPlayers']
-            assert visual['style'] == 'white-hidden-rim-v1' and visual['active'] and visual['localOnly']
-            assert visual['color'] == '#ffffff' and visual['outline'] == 'stencil-contour'
-            assert visual['bodyOpacity'] < .3 and .11 < visual['fillOpacity'] < .13 and .6 < visual['outlineOpacity'] < .64
+            assert visual['style'] == 'soft-textured-concealment-v2' and visual['active'] and visual['localOnly']
+            assert visual['color'] == '#cbd8d0' and visual['outline'] == 'stencil-contour'
+            assert .55 < visual['bodyOpacity'] < .65 and .05 < visual['fillOpacity'] < .1 and .4 < visual['outlineOpacity'] < .5
             assert not visual['depthTest'] and not visual['materialsRestored']
-            capture(page,'white-hidden-character-default',1)
+            capture(page,'soft-hidden-character-default',1)
             if not SUCCESSOR:
-                capture(page,'white-hidden-character-low',1.8)
-            quality(page,'high');capture(page,'white-hidden-character-high',1.8)
+                capture(page,'soft-hidden-character-low',1.8)
+            quality(page,'high');capture(page,'soft-hidden-character-high',1.8)
             walk_until(page,'KeyD','nebeljagdTestState().position.x>=28')
             wait(page,'!nebeljagdTestState().hiddenInGrass&&nebeljagdTestState().character.concealmentAppearance.materialsRestored')
             restored = appearance(page)
             assert restored['bodyOpacity'] > .99 and restored['fillOpacity'] < .01 and restored['outlineOpacity'] < .01
             capture(page,'character-restored-after-grass',1.8)
-            passed('Real hiding uses white translucent fill and a strong contour in both qualities, then restores original materials',
+            passed('Real hiding uses a textured translucent body and a soft contour in both qualities, then restores original materials',
                 {'normal':normal,'hidden':visual,'restored':restored})
 
             stage('high-quality path shaders and restart restoration')

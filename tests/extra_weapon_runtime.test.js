@@ -104,6 +104,7 @@ test('ornate bow animates its actual baked string only on the held clone and rel
   assert.ok(stringMesh.geometry.attributes.position.getX(2)>.20,'middle of the original string is drawn back');
   assert.equal(stringMesh.geometry.attributes.position.getX(0),prototypeString.attributes.position.getX(0),'limb endpoint remains fixed');
   assert.deepEqual(Array.from(prototypeString.attributes.position.array),source,'template and ground pickup keep their original positions');
+  weapons.releaseAttack(actor.position);
   tick(weapons,1);
   assert.equal(weapons.telemetry.shotsFired,1);
   const arrow = actor.parent.getObjectByName('Fliegender Pfeil');
