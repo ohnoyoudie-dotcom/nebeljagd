@@ -1,3 +1,4 @@
+import { freshPlaytestUrl } from './playtest-url.js';
 import { WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint, pointInPolygon } from './model.js';
@@ -1296,19 +1297,18 @@ function duplicateObject() {
   if (original.vegetation) added.vegetation = clone(original.vegetation);
   if (commit(candidate => { candidate.objects.push(added); }, 'Objekt dupliziert. Die Kopie lässt sich unabhängig verschieben.')) select('object', added.id);
 }
-function playtestWorld() {
+async function playtestWorld() {
   if (pointer || !validate(map).valid) return toast('Bitte die laufende Änderung zuerst abschließen.', true);
   const snapshot = clone(map);
   let stored = false;
   try { localStorage.setItem(PLAYTEST_KEY, JSON.stringify(snapshot)); stored = true; } catch { /* Popup handshake also works without storage. */ }
   if (!['http:', 'https:', 'file:'].includes(location.protocol)) return toast('JSON speichern und im Spiel laden, oder den Editor als HTML-Datei im Browser öffnen.', true);
-  const gamePath = import.meta.env?.DEV ? './game.html' : './magebrawl.html';
-  const url = new URL(`${gamePath}?mapSource=editor`, location.href);
-  const version = new URLSearchParams(location.search).get('v');
-  if (version) url.searchParams.set('v', version);
-  const popup = window.open(url.href, '_blank');
+  const popup = window.open('about:blank', '_blank');
   if (!popup) return toast('Der Browser hat das neue Fenster blockiert. Pop-ups für diesen Editor erlauben oder JSON im Spiel laden.', true);
+  const url = await freshPlaytestUrl(location.href, { development: Boolean(import.meta.env?.DEV) });
+  if (popup.closed) return;
   playtestWindows.set(popup, {map: snapshot, origin: location.origin});
+  popup.location.replace(url.href);
   setTimeout(() => playtestWindows.delete(popup), 30_000);
   toast(location.protocol === 'file:' ? '3D-Test geöffnet. Die magebrawl.html muss neben dieser Editor-Datei liegen.' : stored ? '3D-Welt mit diesem Kartenstand geöffnet.' : '3D-Welt erhält diesen Kartenstand direkt vom Editor.');
 }

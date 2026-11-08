@@ -588,9 +588,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     combatPose.swordWeight = 0; combatPose.swordLead = 1; combatPose.chestLean = 0;
     if (equippedType === 'bow') {
       bowDraw = bowHolding ? ease(0, .35, bowHoldAge) : attackAge < 0 ? 0 : bowReleaseDraw * (1 - ease(.23, .36, attackAge));
-      leftHand.set(.34, 1.43, .40);
-      rightHand.set(.34, 1.43, .34 - bowDraw * .22);
-      combatPose.chestTwist = -.08 - bowDraw * .07;
+      leftHand.set(.36, 1.43, .42);
+      rightHand.set(.24, 1.43, .42 - bowDraw * .22);
+      combatPose.chestTwist = .18 + bowDraw * .17;
       character?.setCombatState?.(combatPose);
       const imported = heldBow.userData.model === 'tripo';
       if (imported && character?.getGripPosition) character.getGripPosition('left', hand);

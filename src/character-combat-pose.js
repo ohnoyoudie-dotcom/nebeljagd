@@ -62,6 +62,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
     group.updateWorldMatrix(true, true);
   }
   const armPoles = { left: new THREE.Vector3(.7, -.55, -.12), right: new THREE.Vector3(-.7, -.55, -.12) };
+  const bowDrawPole = new THREE.Vector3(-.7, .15, .9);
   const kneePoles = { left: new THREE.Vector3(.3, 0, 1), right: new THREE.Vector3(-.1, 0, 1) };
 
   function apply(next, { walkWeight = 0 } = {}) {
@@ -100,7 +101,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
       chest.rotation.x += Number.isFinite(next.chestLean) ? THREE.MathUtils.clamp(next.chestLean, -.2, .2) : 0;
     }
     solve(arms.left, next.leftHand, armPoles.left, weight(next.leftHandWeight, 1));
-    solve(arms.right, next.rightHand, armPoles.right);
+    solve(arms.right, next.rightHand, next.weapon === 'bow' ? bowDrawPole : armPoles.right);
     group.updateWorldMatrix(true, true);
   }
   function inspect() {
@@ -111,6 +112,7 @@ export function createCombatPoseController(group, { chest, hips, arms, legs }) {
     };
     return { castWeight, swordWeight, stanceWeight,
       leftArm: { shoulder: point(arms.left[0]), elbow: point(arms.left[1]), hand: point(arms.left[2]) },
+      rightArm: { shoulder: point(arms.right[0]), elbow: point(arms.right[1]), hand: point(arms.right[2]) },
       feet: { left: point(legs.left[2]), right: point(legs.right[2]) }, hips: point(hips) };
   }
   return { apply, restore, inspect };

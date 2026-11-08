@@ -136,7 +136,7 @@ try:
         page.wait_for_function('window.nebeljagdTestState().hiddenInGrass && Math.abs(window.nebeljagdTestState().character.opacity - .58) < .015')
         hidden = state(page)
         assert hidden['hiddenFromOtherPlayers'] is True
-        assert hidden['character']['concealmentAppearance']['style'] == 'soft-textured-concealment-v2'
+        assert hidden['character']['concealmentAppearance']['style'] == 'textured-hidden-character-v3'
         capture(page, 'village-grass.png')
         inspect(page, -8, 8)
         page.wait_for_function('!window.nebeljagdTestState().hiddenInGrass && window.nebeljagdTestState().character.opacity > .995')

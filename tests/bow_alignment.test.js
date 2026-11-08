@@ -77,7 +77,7 @@ for (const reason of ['cancel', 'roll', 'swap', 'reset']) test(`held bow cancels
   weapons.interact(actor.position);weapons.attack(actor.position,0);
   weapons.update(.5,.5,actor.position);
   assert.equal(weapons.bowHolding,true);
-  assert.ok(pose.rightHand.x>.3 && pose.leftHand.x>.3,'both hands keep the string beside the torso');
+  assert.ok(pose.rightHand.x>.22 && pose.leftHand.x>.3,'both hands keep the string beside the torso');
   assert.ok(pose.rightHand.z<pose.leftHand.z,'draw hand pulls toward the shoulder');
   if(reason==='cancel')weapons.cancelAim();
   if(reason==='roll'){actor.userData.rolling=true;weapons.update(.016,.516,actor.position);actor.userData.rolling=false;}
