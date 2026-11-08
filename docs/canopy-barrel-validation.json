@@ -1,0 +1,468 @@
+{
+  "status": "passed",
+  "buildId": "145bedcbdb54",
+  "sourceCommit": "fde40c6fec7cf33f52c5e3969fa0ef017e61a26f",
+  "gameSha256": "be85fcb9115872f15e2f9f23c92d002a1adf8e5649a63444ee804dc6264f0ce0",
+  "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+  "unitTests": {
+    "passed": 587,
+    "failed": 0
+  },
+  "assetVerification": "passed",
+  "mapCheck": "passed",
+  "authoredMapAndOriginalAssets": "unchanged",
+  "finalGeneratedGame": {
+    "status": "passed",
+    "checks": [
+      {
+        "name": "Sword, bow and staff use shared60HP with real rolled damage; solid wall still blocks shots",
+        "evidence": [
+          {
+            "weapon": "sword",
+            "rarity": "uncommon",
+            "damage": 34,
+            "health": [
+              60,
+              26,
+              0
+            ],
+            "launch": {
+              "kind": "barrel",
+              "fragments": 14,
+              "averageHorizontalSpeed": 3.5218770368660826,
+              "averageUpwardSpeed": 3.1872467933711817,
+              "averageSpinSpeed": 5.012773228147386,
+              "launchSamples": [
+                {
+                  "x": -2.8123260830555386,
+                  "y": 3.1726346053879753,
+                  "z": 2.1657829295868942,
+                  "spin": 5.735326778580202
+                },
+                {
+                  "x": -2.078541241971868,
+                  "y": 2.7209685428420927,
+                  "z": -2.0087183047344976,
+                  "spin": 4.685796320205554
+                },
+                {
+                  "x": -0.9405692329806215,
+                  "y": 3.36990111871055,
+                  "z": 4.024142870297996,
+                  "spin": 5.366583915732917
+                },
+                {
+                  "x": -1.1559442993686853,
+                  "y": 3.615042686129345,
+                  "z": -2.7012296263230713,
+                  "spin": 3.8062997858214658
+                },
+                {
+                  "x": -2.8636200230301934,
+                  "y": 3.5811673062456975,
+                  "z": -2.365113229991253,
+                  "spin": 5.59614573334693
+                },
+                {
+                  "x": 3.3730490187843847,
+                  "y": 2.751200119729037,
+                  "z": 1.5503273142746061,
+                  "spin": 5.483308148599463
+                }
+              ]
+            },
+            "bowAims": []
+          },
+          {
+            "weapon": "bow",
+            "rarity": "common",
+            "damage": 22,
+            "health": [
+              60,
+              38,
+              16,
+              0
+            ],
+            "launch": {
+              "kind": "barrel",
+              "fragments": 14,
+              "averageHorizontalSpeed": 3.2651680163170727,
+              "averageUpwardSpeed": 3.279240687180668,
+              "averageSpinSpeed": 4.962271223092882,
+              "launchSamples": [
+                {
+                  "x": -4.1581461357815686,
+                  "y": 3.1469985264036042,
+                  "z": -1.1854856786377077,
+                  "spin": 4.140533802070422
+                },
+                {
+                  "x": -2.0653872913805142,
+                  "y": 3.0633863404862494,
+                  "z": -1.8957033276132427,
+                  "spin": 4.0615099536807975
+                },
+                {
+                  "x": -2.2164697830927476,
+                  "y": 3.0631753804089383,
+                  "z": 1.3378226854584554,
+                  "spin": 4.506399562291335
+                },
+                {
+                  "x": -2.8635893680479785,
+                  "y": 3.975491456312495,
+                  "z": -1.8948796841736426,
+                  "spin": 7.415278200060129
+                },
+                {
+                  "x": 2.5852538785632917,
+                  "y": 3.0594249076671987,
+                  "z": 0.2983374609435674,
+                  "spin": 3.717497681864188
+                },
+                {
+                  "x": 1.0615553704880853,
+                  "y": 3.9957240240386454,
+                  "z": -3.000456820024624,
+                  "spin": 3.6272961272043176
+                }
+              ]
+            },
+            "bowAims": [
+              {
+                "targetId": "qa-barrel-bow",
+                "distance": 5.779213210437282,
+                "pitch": 0.14818442154898467,
+                "alignmentError": 0.0033886302572779495
+              },
+              {
+                "targetId": "qa-barrel-bow",
+                "distance": 5.779213210437282,
+                "pitch": 0.14818442154898467,
+                "alignmentError": 0.003338497117565676
+              },
+              {
+                "targetId": "qa-barrel-bow",
+                "distance": 5.779213210437282,
+                "pitch": 0.14818442154898467,
+                "alignmentError": 0.003437706610240478
+              }
+            ]
+          },
+          {
+            "weapon": "iceStaff",
+            "rarity": "common",
+            "damage": 19,
+            "health": [
+              60,
+              41,
+              22,
+              3,
+              0
+            ],
+            "launch": {
+              "kind": "barrel",
+              "fragments": 14,
+              "averageHorizontalSpeed": 3.363724308937863,
+              "averageUpwardSpeed": 3.2254422070877125,
+              "averageSpinSpeed": 5.584059357633772,
+              "launchSamples": [
+                {
+                  "x": -2.114498918544976,
+                  "y": 3.7532470161591847,
+                  "z": 1.179132318329712,
+                  "spin": 4.722475527203642
+                },
+                {
+                  "x": -3.358233573748004,
+                  "y": 3.4648989625726245,
+                  "z": -0.08217255670241291,
+                  "spin": 5.461374097052612
+                },
+                {
+                  "x": -1.017632515643636,
+                  "y": 2.725186000169924,
+                  "z": 3.4845019520020823,
+                  "spin": 7.473654987072223
+                },
+                {
+                  "x": -1.3089741756019118,
+                  "y": 3.435881925763533,
+                  "z": -2.3134988782496144,
+                  "spin": 4.818054225972446
+                },
+                {
+                  "x": 1.458453271494819,
+                  "y": 2.7035008226266197,
+                  "z": -3.3638166090820203,
+                  "spin": 4.1473357494105585
+                },
+                {
+                  "x": 4.148167158909212,
+                  "y": 3.3532972393419187,
+                  "z": -0.8979750576333031,
+                  "spin": 3.6178521635883953
+                }
+              ]
+            },
+            "bowAims": []
+          }
+        ]
+      },
+      {
+        "name": "Actual barrel breaks launch calmer textured fragments with different velocities each time",
+        "evidence": [
+          {
+            "kind": "barrel",
+            "fragments": 14,
+            "averageHorizontalSpeed": 3.5218770368660826,
+            "averageUpwardSpeed": 3.1872467933711817,
+            "averageSpinSpeed": 5.012773228147386,
+            "launchSamples": [
+              {
+                "x": -2.8123260830555386,
+                "y": 3.1726346053879753,
+                "z": 2.1657829295868942,
+                "spin": 5.735326778580202
+              },
+              {
+                "x": -2.078541241971868,
+                "y": 2.7209685428420927,
+                "z": -2.0087183047344976,
+                "spin": 4.685796320205554
+              },
+              {
+                "x": -0.9405692329806215,
+                "y": 3.36990111871055,
+                "z": 4.024142870297996,
+                "spin": 5.366583915732917
+              },
+              {
+                "x": -1.1559442993686853,
+                "y": 3.615042686129345,
+                "z": -2.7012296263230713,
+                "spin": 3.8062997858214658
+              },
+              {
+                "x": -2.8636200230301934,
+                "y": 3.5811673062456975,
+                "z": -2.365113229991253,
+                "spin": 5.59614573334693
+              },
+              {
+                "x": 3.3730490187843847,
+                "y": 2.751200119729037,
+                "z": 1.5503273142746061,
+                "spin": 5.483308148599463
+              }
+            ]
+          },
+          {
+            "kind": "barrel",
+            "fragments": 14,
+            "averageHorizontalSpeed": 3.2651680163170727,
+            "averageUpwardSpeed": 3.279240687180668,
+            "averageSpinSpeed": 4.962271223092882,
+            "launchSamples": [
+              {
+                "x": -4.1581461357815686,
+                "y": 3.1469985264036042,
+                "z": -1.1854856786377077,
+                "spin": 4.140533802070422
+              },
+              {
+                "x": -2.0653872913805142,
+                "y": 3.0633863404862494,
+                "z": -1.8957033276132427,
+                "spin": 4.0615099536807975
+              },
+              {
+                "x": -2.2164697830927476,
+                "y": 3.0631753804089383,
+                "z": 1.3378226854584554,
+                "spin": 4.506399562291335
+              },
+              {
+                "x": -2.8635893680479785,
+                "y": 3.975491456312495,
+                "z": -1.8948796841736426,
+                "spin": 7.415278200060129
+              },
+              {
+                "x": 2.5852538785632917,
+                "y": 3.0594249076671987,
+                "z": 0.2983374609435674,
+                "spin": 3.717497681864188
+              },
+              {
+                "x": 1.0615553704880853,
+                "y": 3.9957240240386454,
+                "z": -3.000456820024624,
+                "spin": 3.6272961272043176
+              }
+            ]
+          },
+          {
+            "kind": "barrel",
+            "fragments": 14,
+            "averageHorizontalSpeed": 3.363724308937863,
+            "averageUpwardSpeed": 3.2254422070877125,
+            "averageSpinSpeed": 5.584059357633772,
+            "launchSamples": [
+              {
+                "x": -2.114498918544976,
+                "y": 3.7532470161591847,
+                "z": 1.179132318329712,
+                "spin": 4.722475527203642
+              },
+              {
+                "x": -3.358233573748004,
+                "y": 3.4648989625726245,
+                "z": -0.08217255670241291,
+                "spin": 5.461374097052612
+              },
+              {
+                "x": -1.017632515643636,
+                "y": 2.725186000169924,
+                "z": 3.4845019520020823,
+                "spin": 7.473654987072223
+              },
+              {
+                "x": -1.3089741756019118,
+                "y": 3.435881925763533,
+                "z": -2.3134988782496144,
+                "spin": 4.818054225972446
+              },
+              {
+                "x": 1.458453271494819,
+                "y": 2.7035008226266197,
+                "z": -3.3638166090820203,
+                "spin": 4.1473357494105585
+              },
+              {
+                "x": 4.148167158909212,
+                "y": 3.3532972393419187,
+                "z": -0.8979750576333031,
+                "spin": 3.6178521635883953
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Restart restores props and visuals without changing authored map; no shader/browser/network errors",
+        "evidence": null
+      }
+    ],
+    "screenshots": [
+      "/workspace/nebeljagd/test-results/canopy-barrel-weapons-successor/calmer-barrel-fragments.png"
+    ],
+    "errors": [],
+    "unexpectedRequests": [],
+    "mode": "weapons-successor",
+    "limits": "Actual Chromium/SwiftShader input/rendering, Low weapons-only successor; no hardware performance claim.",
+    "gameSha256": "be85fcb9115872f15e2f9f23c92d002a1adf8e5649a63444ee804dc6264f0ce0",
+    "buildId": "145bedcbdb54",
+    "sourceCommit": "fde40c6fec7cf33f52c5e3969fa0ef017e61a26f",
+    "stage": "restart restores barrels, canopy and character",
+    "canopyConfiguration": {
+      "localPlayerOnly": true,
+      "minimumOpacity": 0.045,
+      "enterSeconds": 0.06,
+      "leaveSeconds": 0.32,
+      "affectedTrees": 0,
+      "activeBatches": 0,
+      "trunkMaterialsOpaque": true
+    },
+    "blockedShot": {
+      "type": "wall",
+      "point": {
+        "x": 27.69969196639622,
+        "y": 3.190434824050098,
+        "z": -0.44267665969508385
+      },
+      "normal": {
+        "x": 0,
+        "z": -1
+      }
+    },
+    "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
+    "browser": "154.0.8037.57"
+  },
+  "unchangedCanopyConcealmentAndDebris": {
+    "browserBuild": "4a774c5385fe",
+    "gameSha256": "a5d43c7af276b2203e9164225993ede584825c7f32b9f0eeef0410c887f66491",
+    "sourceSha256": {
+      "src/tree-canopy.js": "10f3d4164a305cd30a836a4e4d94306cb9877645f8e10431640ac896b287fc6f",
+      "src/character-concealment.js": "11f3605a081d7ff1cefa0c21f0052b2aa63a9057eb7b9d16bb1e96e2f5675d35",
+      "src/destruction-debris.js": "b80570249c75216f541c94328318500a064675f6ea3d249126ca2adca34c5f99"
+    },
+    "movingCanopyAndHiding": {
+      "name": "Crown clears before the moving player reaches center; near-white hiding preserves texture and restores on exit",
+      "evidence": {
+        "sampleCount": 18,
+        "clearDelaySeconds": 0.01666666666666672,
+        "center": {
+          "elapsed": 0.9166666666666679,
+          "x": -20.006506335041127,
+          "z": -26.069590209676555,
+          "moving": true,
+          "opacity": 0.045,
+          "target": 0.045,
+          "otherOpacity": 1,
+          "barkOpacity": 1,
+          "hidden": true,
+          "appearance": {
+            "style": "textured-hidden-character-v3",
+            "active": true,
+            "blend": 0.9979024808715038,
+            "bodyOpacity": 0.4012585114770978,
+            "fillOpacity": 0.2993707442614511,
+            "outlineOpacity": 0.5488463644793271,
+            "color": "#e3ebe5",
+            "outline": "stencil-contour",
+            "outlineWidthPixels": 1.5,
+            "localOnly": true,
+            "depthTest": false,
+            "snowClipped": false,
+            "baselineOpacity": 9.438836078232926e-05,
+            "materialsRestored": false
+          }
+        },
+        "minimumOpacity": 0.045
+      }
+    },
+    "lowAndHighVisualChecks": "passed"
+  },
+  "bowControls": {
+    "browserBuild": "afe915722fad",
+    "sha256": "d4b435f6548f6425dccccae9291dcfcd381a30d97a76d05f596f96c892427e93",
+    "checks": [
+      "keyboard: held full draw without firing; hands and bow stay beside the torso",
+      "keyboard: held left, changed to up, kept full draw, released exactly one arrow upward",
+      "keyboard: real ornate bow picked up and one visible physical arrow fired",
+      "mouse: held full draw without firing; hands and bow stay beside the torso",
+      "mouse: held left, changed to up, kept full draw, released exactly one arrow upward",
+      "mouse: real ornate bow picked up and one visible physical arrow fired",
+      "touch: held full draw without firing; hands and bow stay beside the torso",
+      "touch: held left, changed to up, kept full draw, released exactly one arrow upward",
+      "touch: real ornate bow picked up and one visible physical arrow fired"
+    ],
+    "differenceToFinal": "Only arrow appearance returned to requested length1.05/cross-section1.65; bow pose, live direction controls and grip unchanged. Final successor separately verifies actual downward-bow alignment and damage."
+  },
+  "chestAndEditor": {
+    "browserBuild": "afe915722fad",
+    "status": "passed",
+    "checks": [
+      "real chest loot and coin animation",
+      "keyboard opening and touch swap",
+      "restart preserves locations",
+      "generated editor preserves authored objects"
+    ],
+    "differenceToFinal": "Chest, editor and loot code unchanged."
+  },
+  "publication": {
+    "editorUrl": "https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/editor.html",
+    "exactPagesVerification": "Recorded separately after main push."
+  }
+}
