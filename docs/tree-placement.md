@@ -1,25 +1,13 @@
-# Dein eigener Baum 1 – GLB-Einbindung in Nebeljagd
+# Nebeljagd: Dein Baum 1 – transparente Blätter repariert
 
-Die fünf ursprünglichen GLB-Exporte enthielten nur eine Fläche und keinen Baum. Der neue FBX-Export **Tree1.fbx** enthält 8.140 echte Vertices und 4.598 Polygone mit Stamm, Zweigen und Blättern. Daraus wurde ein korrektes Y-up-GLB (8.704 Dreiecke, 3 Materialien, rund 200 KB) erzeugt, ohne die große Bodenfläche und ohne das ungewöhnliche Blender-Objekt-Offset.
+Die FBX-Exporte `Tree1.fbx` und `Tree1(1).fbx` sind identisch. Beide enthalten echte Baumgeometrie, aber **die Blatt-UVs und Texturtransparenz wurden beim FBX-Export nicht mitgeliefert**. Das erklärt die grünen Dreiecke im Spiel.
 
-Die FBX-Datei enthält die drei Materialnamen `tree_stylizedBark01`, `opaqueShadows`, `leaves04`, aber **keine eingebetteten Texturen** und bei allen drei Materialien nur dieselbe diffuse Grundfarbe. Die GLB-Datei verwendet deshalb vorläufig braune und grüne PBR-Farben. Für eine originalgetreue Texturierung sind die Blender-Texturbilder noch nötig.
+Die Blender-Sicherung `Tree1.blend1` enthält die originalen, gepackten Blattmasken. Daraus wurde die Maske `leavesTexture04.png` wiederhergestellt und den 1.194 Blattflächen mit neuen UV-Koordinaten zugeordnet. Überlappende, versehentlich doppelt exportierte Ast-Geometrie wurde entfernt.
 
-## Einmalige Installation über GitHub Desktop
+Die neue Datei `assets/imported/user-trees/runtime/tree1.glb` hat 3 Materialien, 1 eingebettete Blatttextur, `alphaMode: MASK`, `doubleSided: true`, 7.256 Mesh-Eckpunkte und 6.992 Dreiecke. Sie ist von außen nicht abhängig und bleibt in den Offline-HTMLs verfügbar. SHA-256: `c8c125554459d89352f23a1d9377899b145617fd589abe36cdbf7d228820c92c` (223.816 Bytes).
 
-Kopiere **Tree1_converted.glb** in das vorhandene Projektverzeichnis und benenne die Kopie um in
+Der Prüf- und Buildprozess lädt die korrigierte Datei nur dann aus dem verifizierten Medien-Upload, wenn `tree1.glb` noch fehlt oder noch die alte Version enthält. Er prüft den SHA-256-Wert, bevor der Build gestartet wird. Die fertige Datei wird danach nach `work` eingecheckt und zusammen mit dem aktuellen Editor über `main/preview` veröffentlicht.
 
-```text
-assets/imported/user-trees/runtime/tree1.glb
-```
+Im Editor: **Objekte → Einzeln → Baum → Dein Baum 1** oder **Objekte → Verteilen → Baum**. Bereits gesetzte Objekte behalten ihre Position, Rotation und Skalierung. Die vier älteren Kit-Bäume bleiben aus der neuen Platzierungsauswahl entfernt; bereits gespeicherte alte Baumobjekte bleiben lesbar. `worldmap.json` wird nicht überschrieben.
 
-Die Datei muss **exakt** den SHA-256-Hash `d5f1b1d5ef222b85544d6be5ad320fd4acf2fd2ee979295c6034fce4cc887561` haben.
-
-Der GitHub-Build lädt die bereits hochgeladene GLB-Datei einmalig aus einem temporären Medien-Upload, prüft den SHA-256-Hash und commitet sie zusammen mit dem geprüften Browser-Build auf `work`. Danach kann der Online-Editor `https://ohnoyoudie-dotcom.github.io/nebeljagd/preview/map-editor.html` einbetten. Keine manuelle Änderung der `worldmap.json` erforderlich.
-
-Der GLB-Loader erkennt `tree1.glb` anhand seines Pfads beim nächsten Vite-Build: Bei vorhandener Datei erscheinen **Objekte → Einzeln → Baum → Dein Baum 1** und **Objekte → Verteilen → Baum**. Wenn die Datei fehlt, bleiben diese Optionen aus, statt ein leeres Modell zu zeigen.
-
-Die alten vier GLB-Bäume bleiben für bereits gespeicherte Karten lesbar, sind aber für neue Platzierungen nicht mehr auswählbar. Der neue Baum wird in Weltkoordinaten von 0 bis 7,8 m Höhe gerendert und erhält einen Stamm-Kollisionsradius von 0,45 m. Randomisierte Drehung und JSON-Speicherung nutzen die vorhandene Editorlogik.
-
-## Technische Prüfung
-
-Die Unit-Tests validieren nach Installation Datei-Hash, GLB-Version, 8.140 Vertices, 8.704 Dreiecke, drei Materialien und die vorhandene Krone. Die Editor-Browserprüfung erwartet die neue Baum-Auswahl nur, wenn `tree1.glb` auf GitHub installiert ist. Der Rest der Karte wird nicht überschrieben.
+Die tatsächliche Darstellung wurde zunächst lokal mit einem glTF/GLB-Renderer als Bild überprüft. Zur vollständigen Freigabe müssen auch die GitHub-Browserprüfungen und die GitHub-Pages-Bereitstellung erfolgreich sein.

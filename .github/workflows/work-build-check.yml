@@ -27,20 +27,22 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Import user's already uploaded Tree1 GLB after SHA-256 validation
+      - name: Install corrected user tree with embedded leaf alpha texture
         run: |
           set -euo pipefail
           MODEL=assets/imported/user-trees/runtime/tree1.glb
+          SHA=c8c125554459d89352f23a1d9377899b145617fd589abe36cdbf7d228820c92c
           mkdir -p "$(dirname "$MODEL")"
-          if [ ! -f "$MODEL" ]; then
-            # One-time verified transfer of the user's ChatGPT upload; never
-            # trust the remote bytes unless their SHA-256 matches the original.
+          if [ ! -f "$MODEL" ] || [ "$(sha256sum "$MODEL" | cut -d' ' -f1)" != "$SHA" ]; then
+            # Verified artist asset, reconstructed from the owner's packed
+            # Blender leaf mask. Replace only this single GLB, never worldmap.
             curl --fail --location --retry 4 --retry-delay 2 --max-time 90 \
-              'https://d2ol7oe51mr4n9.cloudfront.net/user_3LFTEwt5x5adTPmiXDny0NDloGO/ef0fed77-3181-4d36-9652-59f693b52a9e.glb' \
-              --output "$MODEL"
+              'https://d2ol7oe51mr4n9.cloudfront.net/user_3LFTEwt5x5adTPmiXDny0NDloGO/bc9c2f53-9993-41bf-95a1-88163d47d7f3.glb' --output "$MODEL.tmp"
+            printf '%s  %s\n' "$SHA" "$MODEL.tmp" | sha256sum --check
+            mv "$MODEL.tmp" "$MODEL"
           fi
-          printf '%s  %s\n' 'd5f1b1d5ef222b85544d6be5ad320fd4acf2fd2ee979295c6034fce4cc887561' "$MODEL" | sha256sum --check
-          echo "Verified real user tree: $(wc -c < "$MODEL") bytes"
+          printf '%s  %s\n' "$SHA" "$MODEL" | sha256sum --check
+          echo "Tree1 leaf-mask GLB validated: $(wc -c < "$MODEL") bytes"
       - name: Install and run unit tests
         run: |
           npm ci
