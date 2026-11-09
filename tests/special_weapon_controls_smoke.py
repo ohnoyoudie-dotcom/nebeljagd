@@ -33,39 +33,66 @@ with sync_playwright() as p:
     browser = p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else p.chromium.executable_path),
         headless=True, args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
     try:
-        for touch in ([True] if os.environ.get('NEBELJAGD_TOUCH_ONLY') == '1' else [False, True]):
+        modes = [False] if os.environ.get('NEBELJAGD_MOUSE_ONLY') == '1' else ([True] if os.environ.get('NEBELJAGD_TOUCH_ONLY') == '1' else [False, True])
+        for touch in modes:
             context = browser.new_context(viewport={'width':960, 'height':720}, has_touch=touch, is_mobile=touch)
             context.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1", '+json.dumps(json.dumps(fixture))+');')
+            context.add_init_script("window.mouseMoves=0;window.addEventListener('pointermove',e=>{if(e.pointerType!=='touch')window.mouseMoves++;});")
             page = context.new_page(); page.set_default_timeout(120000)
             page.on('pageerror', lambda e: (report['errors'].append(str(e)), print('BROWSER ERROR',str(e),flush=True)))
             print('START', 'touch' if touch else 'mouse', flush=True)
             page.goto(BASE+'/magebrawl.html?inspect=1&mapSource=editor&quality=low', wait_until='domcontentloaded')
             page.wait_for_function('window.nebeljagdProjectPoint && window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
-            page.locator('#startBtn').click()
+            if touch: page.locator('#startBtn').click()
+            else:
+                button=page.locator('#startBtn').bounding_box();start_x=button['x']+button['width']/2;start_y=button['y']+button['height']/2
+                clicks=context.new_cdp_session(page)
+                for event in ['mousePressed','mouseReleased']:
+                    clicks.send('Input.dispatchMouseEvent',{'type':event,'x':start_x,'y':start_y,'button':'left','clickCount':1})
             page.evaluate('nebeljagdInspect({x:0,z:-14,direction:0})')
             page.wait_for_function('nebeljagdTestState().equippedWeapon==="poisonStaff"')
-            # Holding does not fire, moving picks a visible ground target, release launches once.
+            if not touch:
+                assert page.evaluate('window.mouseMoves')==0,'the first click supplied the cursor without a preceding move'
+                page.keyboard.down('f');page.wait_for_function('nebeljagdTestState().combat.special.aiming');wait_sim(page,.2)
+                target=state(page)['combat']['special']['target'];player_pos=state(page)['position']
+                pixel=page.evaluate('nebeljagdProjectPoint(nebeljagdTestState().position)')
+                if abs(start_x-pixel['x'])>1: assert (target['x']-player_pos['x'])*(start_x-pixel['x'])>0,target
+                page.keyboard.press('Escape');page.keyboard.up('f');page.keyboard.press('Escape')
+                passed('The first click establishes the mouse aim even without a single mousemove after loading')
+            # Record the initial frames: F must use the existing mouse heading
+            # before any subsequent mouse movement; charge starts at the player.
+            page.evaluate("""() => {window.aimSamples=[];window.recordAim=true;
+              function sample(){if(!window.recordAim)return;const s=nebeljagdTestState(),a=s.combat.special;
+                if(a.aiming)window.aimSamples.push({range:a.aimRange.radius,target:a.target,player:s.position});
+                requestAnimationFrame(sample);}requestAnimationFrame(sample);} """)
             if touch:
                 box = page.locator('#attackBtn').bounding_box()
                 x,y = box['x']+box['width']/2, box['y']+box['height']/2
                 cdp = context.new_cdp_session(page)
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':1}]})
             else:
-                point = page.evaluate('nebeljagdProjectPoint({x:0,z:-8})')
-                page.mouse.move(point['x'],point['y']); page.mouse.down()
+                point = page.evaluate('nebeljagdProjectPoint({x:-10,y:nebeljagdTestState().position.y,z:-14})')
+                page.mouse.move(point['x'],point['y']); page.keyboard.down('f')
             page.wait_for_function('nebeljagdTestState().combat.special.aiming')
             wait_sim(page,.3)
             assert state(page)['combat']['shotsFired']==0
             before = state(page)['combat']['special']['target']
+            first=page.evaluate('window.aimSamples[0]')
+            assert first['range']<1.1, first
+            assert state(page)['combat']['special']['aimRange']['radius']<9
+            if not touch:
+                assert before['x']<-.5 and abs(before['z']+14)<.2, before
+                passed('F starts along the existing mouse position without any new mouse movement or fixed forward snap')
             if touch:
                 joy=page.locator('#joystick').bounding_box()
                 cx,cy=joy['x']+joy['width']/2,joy['y']+joy['height']/2
                 radius=joy['width']*.32
                 player_before=state(page)['position']
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':1},{'x':cx+radius*.25,'y':cy,'id':2}]})
-                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.x-nebeljagdTestState().position.x-3)<.2')
+                page.wait_for_function('nebeljagdTestState().combat.special.target.x>nebeljagdTestState().position.x+.5')
                 near=state(page)['combat']['special']
-                assert near['aimRange']['radius']==12
+                assert near['aimRange']['radius']<12
+                assert abs(near['target']['x']-player_before['x']-near['aimRange']['radius'])<.2
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x,'y':y,'id':1},{'x':cx+radius,'y':cy,'id':2}]})
                 page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.x-nebeljagdTestState().position.x-12)<.2')
                 # Small motion of the holding finger must not reset the left-thumb target.
@@ -73,13 +100,18 @@ with sync_playwright() as p:
                 wait_sim(page,.3)
                 assert abs(state(page)['combat']['special']['target']['x']-state(page)['position']['x']-12)<.2
                 assert abs(state(page)['position']['x']-player_before['x'])<.05
-                passed('Two fingers: attack stays held, left stick selects 3m then 12m without moving a stationary player')
+                passed('Holding grows range to 12m; the left stick only redirects, and holding-finger jitter cannot reset the target')
             else:
                 point=page.evaluate('nebeljagdProjectPoint({x:2,z:-7})');page.mouse.move(point['x'],point['y'])
             page.wait_for_function('old=>Math.hypot(nebeljagdTestState().combat.special.target.x-old.x,nebeljagdTestState().combat.special.target.z-old.z)>.5',arg=before)
+            page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===12')
+            samples=page.evaluate('window.recordAim=false;window.aimSamples')
+            assert all(a['range']<=b['range']+1e-6 for a,b in zip(samples,samples[1:])),samples
+            assert any(1<s['range']<5 for s in samples) and any(5<s['range']<10 for s in samples)
+            (OUT/('touch-charge.json' if touch else 'mouse-charge.json')).write_text(json.dumps(samples,indent=2))
             page.screenshot(path=str(OUT/('touch-aim.png' if touch else 'mouse-aim.png')))
             if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
-            else: page.mouse.up()
+            else: page.keyboard.up('f')
             page.wait_for_function('nebeljagdTestState().combat.shotsFired===1 && !nebeljagdTestState().combat.special.aiming')
             page.wait_for_function('nebeljagdTestState().combat.special.clouds.length===1')
             page.screenshot(path=str(OUT/('touch-cloud.png' if touch else 'mouse-cloud.png')))
@@ -96,7 +128,7 @@ with sync_playwright() as p:
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[left,{'x':x,'y':y,'id':1}]})
                 page.wait_for_function('nebeljagdTestState().combat.special.aiming')
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':cx,'y':cy-radius*.5,'id':2},{'x':x,'y':y,'id':1}]})
-                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.z-nebeljagdTestState().position.z+6)<.2')
+                page.wait_for_function('nebeljagdTestState().combat.special.target.z<nebeljagdTestState().position.z-.5')
                 movement_start=state(page)['position']
                 wait_sim(page,.25)
                 movement_end=state(page)['position']
@@ -105,10 +137,19 @@ with sync_playwright() as p:
                 passed('Moving touch aim retains travel direction while the other thumb redirects the target')
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchCancel','touchPoints':[]})
             else:
-                page.keyboard.down('f');page.wait_for_function('nebeljagdTestState().combat.special.aiming');page.keyboard.press('Escape');page.keyboard.up('f')
+                point=page.evaluate('nebeljagdProjectPoint({x:8,y:nebeljagdTestState().position.y,z:-14})')
+                page.mouse.move(point['x'],point['y']);page.mouse.down()
+                page.wait_for_function('nebeljagdTestState().combat.special.aiming')
+                wait_sim(page,.2)
+                target=state(page)['combat']['special']['target']
+                assert .5<target['x']<6 and abs(target['z']+14)<.2,target
+                passed('Mouse press begins a fresh short charge in the clicked direction')
+                page.keyboard.press('Escape');page.mouse.up()
             assert not state(page)['combat']['special']['aiming']
             assert state(page)['combat']['shotsFired']==1
             passed(('Touch cancel' if touch else 'Pause while aiming')+' cancels without a shot')
+            if os.environ.get('NEBELJAGD_AIM_ONLY') == '1':
+                context.close(); continue
             # Actual attack button/key locks until the visible crescent returns.
             if state(page)['phase']!='playing': page.keyboard.press('Escape')
             page.evaluate('nebeljagdInspect({x:5,z:-14,direction:0})');page.keyboard.press('e')

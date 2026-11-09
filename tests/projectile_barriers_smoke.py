@@ -69,6 +69,11 @@ with sync_playwright() as pw:
                 p.wait_for_function('nebeljagdTestState().attackCooldown===0')
                 p.wait_for_function('()=>{const s=nebeljagdTestState(),o=s.vision.origin,p=s.position;return Math.abs(o.x-p.x)<.01 && Math.abs(o.z-p.z)<.01}')
                 assert p.evaluate('p=>nebeljagdInspectVisibility(p)', dict(x=x, z=-31)) == low, name
+                if weapon == 'poisonStaff':
+                    point=p.evaluate('x=>nebeljagdProjectPoint({x,z:-29})',x)
+                    p.mouse.move(point['x'],point['y'])
+                    p.keyboard.down('f')
+                    p.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===12')
                 p.evaluate('''() => {
                   const before=nebeljagdTestState();
                   const check=window.projectileBarrierCheck={maxZ:-Infinity,done:false,
@@ -83,7 +88,8 @@ with sync_playwright() as pw:
                     else requestAnimationFrame(sample);
                   } requestAnimationFrame(sample);
                 }''')
-                p.keyboard.press('f')
+                if weapon == 'poisonStaff': p.keyboard.up('f')
+                else: p.keyboard.press('f')
                 p.wait_for_function('window.projectileBarrierCheck.done')
                 result = p.evaluate('projectileBarrierCheck')
                 assert result['after']['shotsFired'] == result['beforeShots'] + 1, (weapon, name, 'one shot')

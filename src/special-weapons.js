@@ -4,7 +4,7 @@ import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
-  poisonRange: 12, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
+  poisonRange: 12, poisonChargeSeconds: 1.2, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
   cloudRadius: 2.4, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */
@@ -63,17 +63,23 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   const hit = (target, payload) => { const result = combat?.hit(target, payload); if (result) onDamage(result); };
   function aimAt(position, point) {
     if (!aim || !point || !Number.isFinite(point.x) || !Number.isFinite(point.z)) return;
-    const dx = point.x - position.x, dz = point.z - position.z;
-    const factor = Math.min(1, SPECIAL_RULES.poisonRange / (Math.hypot(dx, dz) || 1));
+    aim.requested.set(point.x, 0, point.z);
+    refreshAim(position);
+  }
+  function refreshAim(position) {
+    const dx = aim.requested.x - position.x, dz = aim.requested.z - position.z;
+    aim.range = SPECIAL_RULES.poisonRange * Math.min(1, aim.age / SPECIAL_RULES.poisonChargeSeconds);
+    const factor = Math.min(1, aim.range / (Math.hypot(dx, dz) || 1));
     aim.target.set(position.x + dx * factor, 0, position.z + dz * factor);
     aim.target.y = ground(aim.target) + .06;
     targetRing.position.copy(aim.target);
     rangeRing.position.set(position.x, ground(position) + .055, position.z);
+    rangeRing.scale.setScalar(Math.max(.001, aim.range / SPECIAL_RULES.poisonRange));
   }
   function beginAim(position, direction) {
     if (aim) return false;
-    aim = { target: new THREE.Vector3() }; targetRing.visible = rangeRing.visible = true;
-    aimAt(position, { x: position.x + Math.sin(direction) * 6, z: position.z + Math.cos(direction) * 6 });
+    aim = { target: new THREE.Vector3(), requested: new THREE.Vector3(), age: 0, range: 0 }; targetRing.visible = rangeRing.visible = true;
+    aimAt(position, { x: position.x + Math.sin(direction) * SPECIAL_RULES.poisonRange, z: position.z + Math.cos(direction) * SPECIAL_RULES.poisonRange });
     return true;
   }
   function cancelAim() { aim = null; targetRing.visible = rangeRing.visible = false; }
@@ -129,7 +135,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     if (!(dt > 0)) return;
     moonImpacts.update(dt);
     poisonVisuals.update(dt);
-    if (aim) aimAt(position, aim.target);
+    if (aim) { aim.age += dt; refreshAim(position); }
     if (moon) {
       moon.age += dt;
       const start = moonMesh.position.clone(), end = start.clone();
@@ -197,7 +203,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   return { beginAim, aimAt, cancelAim, releasePoison, launchMoon, update, reset,
     get moonBusy() { return Boolean(moon); }, get aiming() { return Boolean(aim); },
     get telemetry() { return { aiming: Boolean(aim), target: aim ? { ...aim.target } : null,
-      aimRange: rangeRing.visible ? { radius: SPECIAL_RULES.poisonRange, center: { ...rangeRing.position } } : null,
+      aimRange: aim ? { radius: aim.range, maximum: SPECIAL_RULES.poisonRange, heldSeconds: aim.age, center: { ...rangeRing.position } } : null,
       moonImpacts: moonImpacts.telemetry,
       moonModel: moonProjectilePrototype ? { ...moonProjectilePrototype.userData, imported: true } : { imported: false },
       moonVisible: moonMesh.visible,

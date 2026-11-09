@@ -5,10 +5,13 @@ Modelloberfläche. UVs, Holztexturen und Metallbänder bleiben erhalten. Die Tei
 fliegen nach außen und oben, wirbeln durch die Luft und prallen kurz vom Boden ab.
 Erst danach legen sie sich flach auf die Geländeoberfläche. Der Impuls streut
 zwischen den Teilen und skaliert gemäßigt mit der Objektgröße. Fässer verwenden
-etwas geringere Fluggeschwindigkeiten, Höhen und Rotationen. Jeder Bruch erhält
-eine neue Zufallsverteilung, auch nach einem Neustart; während Pause und Flug
-werden die Bahnen nicht neu ausgewürfelt. Bei normaler Größe
-landen die Reste einige Meter um das zerstörte Objekt herum. Sie bleiben sechs
+geringere Fluggeschwindigkeiten und Höhen. Ihre Bretter lösen sich innerhalb
+von etwa 0,12 bis 0,34 Sekunden zeitversetzt; Reihenfolge und Tempo wechseln
+bei jedem Bruch, auch nach einem Neustart. Unterschiedliches Abprallen und
+Abbremsen verhindert einen gleichmäßigen Rhythmus. Die kleineren Flugimpulse
+halten die Fassreste näher am ursprünglichen Standort. Holzkisten behalten
+ihren bisherigen unmittelbaren Ausbruch. Während Pause und Flug werden die
+Bahnen nicht neu ausgewürfelt. Sie bleiben sechs
 Spielsekunden sichtbar und verblassen bis Sekunde zehn. Pause hält die Bewegung und Lebensdauer an;
 Neustart entfernt alle Reste. Die vorhandenen Regeln für Schaden und Kollision
 bleiben erhalten. Maximal 112 Bruchstücke können gleichzeitig aktiv sein.

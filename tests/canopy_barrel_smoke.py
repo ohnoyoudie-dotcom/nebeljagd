@@ -235,11 +235,11 @@ try:
                 assert prop(page,identifier)['destroyed']
                 launch=state(page)['world']['stats']['debris']['lastBurst'];launches.append(launch)
                 assert launch['kind']=='barrel' and launch['fragments']>=8
-                assert 2.4<=launch['averageHorizontalSpeed']<=4.4
-                assert 2.65<=launch['averageUpwardSpeed']<=4 and 3.5<=launch['averageSpinSpeed']<=7.5
+                assert 1.7<=launch['averageHorizontalSpeed']<=3.2
+                assert 1.9<=launch['averageUpwardSpeed']<=2.95 and 3.5<=launch['averageSpinSpeed']<=7.5
                 for velocity in launch['launchSamples']:
-                    assert 2.4<=math.hypot(velocity['x'],velocity['z'])<=4.4
-                    assert 2.65<=velocity['y']<=4 and 3.5<=velocity['spin']<=7.5
+                    assert 1.7<=math.hypot(velocity['x'],velocity['z'])<=3.2
+                    assert 1.9<=velocity['y']<=2.95 and 3.5<=velocity['spin']<=7.5
                 damage_cases.append({'weapon':kind,'rarity':item['rarity'],'damage':damage,'health':history,'launch':launch,'bowAims':aims})
                 if kind=='sword':
                     wait(page,'window.__debrisFrame',timeout=30000)

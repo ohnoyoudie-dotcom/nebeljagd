@@ -91,7 +91,7 @@ with sync_playwright() as pw:
                 p.wait_for_function('nebeljagdTestState().attackCooldown===0')
         assert state(p)['world']['destructibles'][0]['destroyed']
         assert state(p)['world']['stats']['debris']['active']>=8
-        pause_when(p,'s.world.stats.debris.airborne>=8 && s.world.stats.debris.farthestTravel>1')
+        pause_when(p,'s.world.stats.debris.airborne>=4 && s.world.stats.debris.farthestTravel>.45')
         capture(p,'barrel-burst')
         passed('Barrel fragments fly outward through the air after a real sword hit')
         p.keyboard.press('Escape')
@@ -100,7 +100,7 @@ with sync_playwright() as pw:
         frozen=state(p)['world']['stats']['debris'];p.wait_for_timeout(1200)
         assert state(p)['world']['stats']['debris']==frozen
         assert frozen['averageOpacity']==1
-        assert frozen['farthestTravel']>1.5
+        assert .7<frozen['farthestTravel']<3.5
         passed('Sword breaks the barrel into original textured pieces; settled pieces remain and pause correctly')
         p.keyboard.press('Escape')
         pause_when(p,'s.world.stats.debris.averageOpacity<.6 && s.world.stats.debris.active>0')

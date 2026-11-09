@@ -62,7 +62,8 @@ export function createDestructionDebris(root, heightAt, { random = Math.random }
     // the monotonic sequence also survives reset and never advances on pause.
     const burstSeed = (Math.floor(random() * 4294967296) ^ Math.imul(++bursts, 0x9e3779b9)) >>> 0;
     const barrel = item.kind === 'barrel';
-    const launch = { kind: item.kind, fragments: 0, averageHorizontalSpeed: 0, averageUpwardSpeed: 0, averageSpinSpeed: 0, launchSamples: [] };
+    const releaseSpan = barrel ? .12 + vary(burstSeed, 20) * .20 : 0;
+    const launch = { kind: item.kind, fragments: 0, averageHorizontalSpeed: 0, averageUpwardSpeed: 0, averageSpinSpeed: 0, releaseSpan, launchSamples: [] };
     // Barrels split with a short, readable toss instead of an explosive launch.
     // Retain every original stave/lid; smaller impulses do the visual restraint.
     const impulseScale = Math.sqrt(THREE.MathUtils.clamp(item.scale ?? 1, .25, 4));
@@ -88,19 +89,22 @@ export function createDestructionDebris(root, heightAt, { random = Math.random }
         // Give each its own heading instead of sending all of them along +X.
         const angle = (Math.hypot(dx, dz) < .08 * impulseScale ? vary(seed, 3) * Math.PI * 2 : Math.atan2(dz, dx))
           + (vary(seed, 1) - .5) * (barrel ? 1.15 : .65);
-        const speed = (barrel ? 2.4 + vary(seed, 2) * 2 : 3.2 + vary(seed, 2) * 2.6) * impulseScale;
-        const lift = (barrel ? 2.65 + vary(seed, 6) * 1.35 : 3.2 + vary(seed, 6) * 1.8) * impulseScale;
+        const speed = (barrel ? 1.7 + vary(seed, 2) * 1.5 : 3.2 + vary(seed, 2) * 2.6) * impulseScale;
+        const lift = (barrel ? 1.9 + vary(seed, 6) * 1.05 : 3.2 + vary(seed, 6) * 1.8) * impulseScale;
         const spin = barrel ? 3.5 + vary(seed, 10) * 4 : 5 + vary(seed, 10) * 6;
+        const delay = barrel ? .015 + Math.pow(vary(seed, 11), 1.2) * releaseSpan : 0;
+        const restitution = barrel ? .16 + vary(seed, 12) * .16 : .28;
+        const friction = barrel ? .50 + vary(seed, 13) * .18 : .66;
         const velocity = new THREE.Vector3(Math.cos(angle) * speed, lift, Math.sin(angle) * speed);
         const up = new THREE.Vector3(0, 1, 0);
         const targetRotation = new THREE.Quaternion().setFromUnitVectors(fragment.restNormal.clone().applyQuaternion(orientation), up)
           .multiply(orientation).premultiply(new THREE.Quaternion().setFromAxisAngle(up, vary(seed, 4) * Math.PI * 2));
-        pieces.push({ mesh, origin: mesh.position.clone(), age: 0, settled: false, bounces: 0,
+        pieces.push({ mesh, origin: mesh.position.clone(), age: 0, delay, restitution, friction, settled: false, bounces: 0,
           spinAxis: new THREE.Vector3(vary(seed, 7) - .5, .2 + vary(seed, 8), vary(seed, 9) - .5).normalize(),
           spinSpeed: spin, velocity,
           targetRotation });
         launch.fragments++; launch.averageHorizontalSpeed += speed; launch.averageUpwardSpeed += lift; launch.averageSpinSpeed += spin;
-        if (launch.launchSamples.length < 6) launch.launchSamples.push({ x: velocity.x, y: velocity.y, z: velocity.z, spin });
+        if (launch.launchSamples.length < 6) launch.launchSamples.push({ x: velocity.x, y: velocity.y, z: velocity.z, spin, delay });
       }
     }
     if (launch.fragments) for (const key of ['averageHorizontalSpeed', 'averageUpwardSpeed', 'averageSpinSpeed']) launch[key] /= launch.fragments;
@@ -121,8 +125,11 @@ export function createDestructionDebris(root, heightAt, { random = Math.random }
     for (let i = pieces.length - 1; i >= 0; i--) {
       const piece = pieces[i]; piece.age += dt;
       if (piece.age >= DEBRIS_RULES.lifetime) { remove(piece); pieces.splice(i, 1); continue; }
-      if (!piece.settled) {
-        let left = dt;
+      // Unreleased fragments retain their exact original transform: the barrel
+      // comes apart in a fresh short sequence rather than one simultaneous burst.
+      const activeTime = Math.max(0, Math.min(dt, piece.age - piece.delay));
+      if (!piece.settled && activeTime > 0) {
+        let left = activeTime;
         while (left > 1e-8) {
           const step = Math.min(left, 1 / 60); left -= step;
           piece.velocity.y -= 9.8 * step;
@@ -140,9 +147,9 @@ export function createDestructionDebris(root, heightAt, { random = Math.random }
             // A low board can rotate into the floor while still lifting off.
             // Correct the overlap without killing its upward launch impulse.
             if (piece.velocity.y > 0) continue;
-            piece.velocity.y = Math.abs(piece.velocity.y) * .28;
-            piece.velocity.x *= .66; piece.velocity.z *= .66; piece.bounces++;
-            if (piece.bounces >= 3 || piece.velocity.length() < .25 || piece.age > 2) {
+            piece.velocity.y = Math.abs(piece.velocity.y) * piece.restitution;
+            piece.velocity.x *= piece.friction; piece.velocity.z *= piece.friction; piece.bounces++;
+            if (piece.bounces >= 3 || piece.velocity.length() < .25 || piece.age - piece.delay > 2) {
               piece.mesh.quaternion.copy(piece.targetRotation);
               piece.mesh.position.y = heightAt(piece.mesh.position.x, piece.mesh.position.z) + .015 + bottomHeight(piece);
               piece.velocity.set(0, 0, 0); piece.settled = true; break;
@@ -161,7 +168,8 @@ export function createDestructionDebris(root, heightAt, { random = Math.random }
   function reset() { pieces.forEach(remove); pieces.length = 0; lastBurst = null; }
   return { burst, update, reset,
     get stats() { return { active: pieces.length, settled: pieces.filter(p => p.settled).length,
-      airborne: pieces.filter(p => !p.settled && !p.bounces).length,
+      pending: pieces.filter(p => p.age <= p.delay).length,
+      airborne: pieces.filter(p => p.age > p.delay && !p.settled && !p.bounces).length,
       farthestTravel: pieces.reduce((max, p) => Math.max(max, Math.hypot(p.mesh.position.x - p.origin.x, p.mesh.position.z - p.origin.z)), 0),
       maximum: DEBRIS_RULES.maximum, fadeAfter: DEBRIS_RULES.stay, lifetime: DEBRIS_RULES.lifetime, bursts, lastBurst,
       averageOpacity: pieces.length ? pieces.reduce((s, p) => s + (Array.isArray(p.mesh.material) ? p.mesh.material[0] : p.mesh.material).opacity, 0) / pieces.length : 0,

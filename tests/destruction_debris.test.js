@@ -47,67 +47,61 @@ function disposeScene(s, debris) {
   debris.dispose(); s.mesh.dispose(); s.geometry.dispose(); s.material.dispose(); s.texture.dispose();
 }
 
-test('barrels and crates scatter outward, lift and tumble before landing', () => {
-  for (const kind of ['barrel', 'crate']) {
-    const s=scene(kind), debris=createDestructionDebris(s.root,()=>0,{random:seeded(1742)});
-    debris.burst(s.item);
-    const meshes=s.root.children[0].children, starts=meshes.map(m=>({position:m.position.clone(),rotation:m.quaternion.clone()}));
-    for(let i=0;i<15;i++)debris.update(1/60);
-    assert.equal(debris.stats.airborne,meshes.length,'the burst must launch all pieces, not collapse onto the floor');
-    const quadrants=new Set();
-    meshes.forEach((m,i)=>{
-      const start=starts[i],dx=m.position.x-start.position.x,dz=m.position.z-start.position.z;
-      assert.ok(Math.hypot(dx,dz)>(kind==='barrel'?.5:.65),'pieces visibly separate within a quarter second');
-      assert.ok(m.position.y>start.position.y+(kind==='barrel'?.25:.35),'each piece follows a raised arc');
-      assert.ok(m.quaternion.angleTo(start.rotation)>(kind==='barrel'?.7:1),'pieces tumble in flight');
-      const rx=start.position.x-s.item.x,rz=start.position.z-s.item.z;
-      if(Math.hypot(rx,rz)>.1)assert.ok(dx*rx+dz*rz>0,'outer pieces move away from the prop centre');
-      quadrants.add(`${Math.sign(dx)},${Math.sign(dz)}`);
-    });
-    assert.equal(quadrants.size,4,'scatter surrounds the broken prop');
-    assert.ok(debris.stats.farthestTravel>(kind==='barrel'?.8:1));
-    for(let i=0;i<165;i++)debris.update(1/60);
-    assert.equal(debris.stats.settled,meshes.length);
-    assert.ok(debris.stats.farthestTravel>(kind==='barrel'?1.5:2),'debris lands beyond the old prop footprint');
-    assert.ok(debris.stats.farthestTravel<7,'scatter remains local to the destroyed prop');
-    disposeScene(s,debris);
-  }
+test('barrels separate in staggered stages, keep their original fragments and settle close to the prop', () => {
+  const s=scene(),debris=createDestructionDebris(s.root,()=>0,{random:seeded(1742)});
+  debris.burst(s.item);
+  const meshes=s.root.children[0].children, initial=snapshot(s.root);
+  assert.equal(debris.stats.pending,meshes.length);
+  debris.update(.10);
+  const moved=meshes.filter((mesh,i)=>mesh.position.distanceTo(new THREE.Vector3(...initial[i].position))>.001).length;
+  assert.ok(moved>0 && moved<meshes.length,'some boards fall while the rest still retain the barrel shape');
+  assert.ok(debris.stats.pending>0 && debris.stats.pending<meshes.length);
+  const paused=snapshot(s.root);debris.update(0);assert.deepEqual(snapshot(s.root),paused);
+  for(let i=0;i<180;i++)debris.update(1/60);
+  assert.equal(debris.stats.pending,0);assert.equal(debris.stats.settled,meshes.length);
+  assert.ok(debris.stats.farthestTravel>.7,'the barrel still visibly breaks apart');
+  assert.ok(debris.stats.farthestTravel<3.2,'boards stay in a compact area');
+  assert.equal(meshes.length,initial.length,'all original textured fragments are retained');
+  disposeScene(s,debris);
 });
 
-test('barrel fragments have a calmer launch while crates retain their original speed and tumble', () => {
-  const results = {};
-  for (const kind of ['barrel', 'crate']) {
-    // Keep the sample airborne: a stave rotating into the floor receives an
-    // overlap correction, which must not be mistaken for its launch impulse.
-    const s=scene(kind), debris=createDestructionDebris(s.root,()=>-5,{random:seeded(32041)});
+test('barrels have shorter, varied launches while crates keep their immediate burst', () => {
+  const results={};
+  for(const kind of ['barrel','crate']) {
+    const s=scene(kind),debris=createDestructionDebris(s.root,()=>-5,{random:seeded(32041)});
     debris.burst(s.item);
-    const meshes=s.root.children[0].children, starts=meshes.map(mesh=>({position:mesh.position.clone(),rotation:mesh.quaternion.clone()}));
-    const initial=debris.stats.lastBurst, dt=1/240;
-    debris.update(dt);
-    const speeds=[],spins=[];
-    meshes.forEach((mesh,i)=>{
-      const start=starts[i], speed=Math.hypot(mesh.position.x-start.position.x,mesh.position.z-start.position.z)/dt;
-      const spin=mesh.quaternion.angleTo(start.rotation)/dt;
-      assert.ok(speed >= (kind==='barrel'?2.38:3.18) && speed <= (kind==='barrel'?4.41:5.81),
-        `${kind} horizontal launch remains within its intended strength`);
-      assert.ok(spin >= (kind==='barrel'?3.49:4.99) && spin <= (kind==='barrel'?7.51:11.01),
-        `${kind} flight rotation has its own intensity`);
-      if(start.position.y>.5){
-        const rise=(mesh.position.y-start.position.y)/dt;
-        assert.ok(rise >= (kind==='barrel'?2.60:3.15) && rise <= (kind==='barrel'?4.01:5.01),
-          `${kind} vertical launch remains bounded before gravity slows it`);
-      }
-      speeds.push(speed);spins.push(spin);
-    });
-    const average=values=>values.reduce((sum,value)=>sum+value,0)/values.length;
-    results[kind]={speed:average(speeds),spin:average(spins)};
-    assert.equal(initial.fragments,meshes.length);
-    assert.ok(Math.abs(initial.averageHorizontalSpeed-results[kind].speed)<.02,'telemetry describes the actual mesh launch');
-    assert.ok(Math.abs(initial.averageSpinSpeed-results[kind].spin)<.01);
+    const launch=debris.stats.lastBurst;
+    if(kind==='barrel') {
+      assert.ok(new Set(launch.launchSamples.map(p=>p.delay.toFixed(3))).size>=4);
+      assert.ok(launch.launchSamples.every(p=>p.delay>0 && p.delay<.34));
+      assert.ok(launch.averageHorizontalSpeed>=1.7 && launch.averageHorizontalSpeed<=3.2);
+      assert.ok(launch.averageUpwardSpeed>=1.9 && launch.averageUpwardSpeed<=2.95);
+    } else {
+      assert.ok(launch.launchSamples.every(p=>p.delay===0));
+      assert.ok(launch.averageHorizontalSpeed>=3.2 && launch.averageHorizontalSpeed<=5.8);
+      assert.ok(launch.averageUpwardSpeed>=3.2 && launch.averageUpwardSpeed<=5);
+    }
+    // Measure real motion once all release delays have passed, above a low floor.
+    for(let i=0;i<24;i++)debris.update(1/60);
+    const meshes=s.root.children[0].children, before=meshes.map(m=>m.position.clone());
+    debris.update(1/240);
+    results[kind]=meshes.reduce((sum,m,i)=>sum+Math.hypot(m.position.x-before[i].x,m.position.z-before[i].z)*240,0)/meshes.length;
+    assert.ok(results[kind]>1);
     disposeScene(s,debris);
   }
-  assert.ok(results.barrel.speed < results.crate.speed*.88,'barrels visibly lose some explosive force');
-  assert.ok(results.barrel.spin < results.crate.spin*.85,'barrels also tumble less violently');
+  assert.ok(results.barrel<results.crate*.8,'actual barrel flight is more compact');
+});
+
+test('separate barrels have different release rhythms, including after reset', () => {
+  const s=scene(),debris=createDestructionDebris(s.root,()=>0,{random:seeded(32)});
+  const rhythms=[];
+  for(let i=0;i<3;i++) {
+    debris.burst(s.item);
+    rhythms.push(debris.stats.lastBurst.launchSamples.map(p=>p.delay));
+    debris.reset();
+  }
+  assert.notDeepEqual(rhythms[0],rhythms[1]);assert.notDeepEqual(rhythms[1],rhythms[2]);
+  disposeScene(s,debris);
 });
 
 test('burst randomness is reproducible when injected but changes flight between independent break seeds', () => {

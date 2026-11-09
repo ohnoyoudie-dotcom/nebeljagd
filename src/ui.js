@@ -495,7 +495,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
       const effectDetail = { bow: ' · Drücken zum Schießen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
-        poisonStaff: ' · Halten, zielen, loslassen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz' }[weaponType] || '';
+        poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz' }[weaponType] || '';
       weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
@@ -504,12 +504,12 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
       const attackLabel = { bow: 'Drücken zum Schießen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
-        poisonStaff: 'Angriff halten, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken' }[weaponType];
+        poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
       lastWeaponType = weaponKey;
     }
     $('joystick').classList.toggle('aiming', Boolean(state.touchAiming));
-    $('joystick').setAttribute('aria-label', state.touchAiming ? 'Zielstick: Richtung und Entfernung' : 'Virtueller Bewegungsjoystick');
+    $('joystick').setAttribute('aria-label', state.touchAiming ? 'Zielstick: Richtung; Halten bestimmt die Entfernung' : 'Virtueller Bewegungsjoystick');
     const attackCooldown = Math.max(0, state.attackCooldown ?? 0);
     attackButton.disabled = !WEAPON_TYPES.includes(weaponType) || attackCooldown > 0 || currentPhase !== 'playing';
     attackButton.classList.toggle('on-cooldown', attackCooldown > 0);

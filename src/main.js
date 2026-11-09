@@ -52,6 +52,7 @@ let ready = false;
 let inputPointer = null;
 let aimDrag = null;
 let touchAim = null;
+let mouseAimPointer = null, aimUsesMouse = false;
 let canvasAttackPointer = null;
 const frameSamples = [];
 
@@ -68,10 +69,10 @@ const ui = createUI({
   onResume: () => { if (state.phase === 'paused') setPhase('playing'); },
   onRestart: () => { if (ready) reset(); },
   onDash: () => roll(),
-  onAttack: event => { attackWeapon(); beginAimDrag(event); },
-  onAttackMove: event => moveAttackAim(event, true),
+  onAttack: event => { attackWeapon(event); beginAimDrag(event); },
+  onAttackMove: event => moveAttackAim(event, event.pointerType === 'touch'),
   onAttackRelease: () => releaseWeapon(),
-  onAttackCancel: () => { aimDrag = null; touchAim = null; weapons?.cancelAim(); },
+  onAttackCancel: () => { aimDrag = null; touchAim = null; aimUsesMouse = false; weapons?.cancelAim(); },
   onInteract: () => interactWeapon(),
   onQualityChange: (quality) => setQuality(quality),
 });
@@ -207,7 +208,7 @@ let lastShelter = null;
 let lastConcealment = false;
 
 function clearInput() {
-  keys.clear(); stick.set(0, 0); inputPointer = null; touchAim = null;
+  keys.clear(); stick.set(0, 0); inputPointer = null; touchAim = null; aimUsesMouse = false;
   if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
 }
 
@@ -290,10 +291,17 @@ function interactWeapon() {
   if (result) { ui.toast(result.message, 'success'); updateUI(); }
 }
 
-function attackWeapon() {
+function attackWeapon(event) {
   if (state.phase !== 'playing') return;
   const result = weapons.attack(player, state.direction);
   if (!result && !weapons.equipped) ui.toast('Heb zuerst eine Waffe mit E auf oder öffne eine Truhe.');
+  if (result && weapons.aiming) {
+    aimUsesMouse = event?.pointerType !== 'touch';
+    // Use the current cursor on the first frame, including F presses without
+    // a fresh mouse move and presses on the on-screen attack button.
+    const pointer = Number.isFinite(event?.clientX) ? event : mouseAimPointer;
+    if (pointer && (aimUsesMouse || event?.target === renderer.domElement)) moveAttackAim(pointer);
+  }
 }
 
 function groundPointer(event) {
@@ -306,10 +314,13 @@ function groundPointer(event) {
   return point ? world.root.worldToLocal(point) : null;
 }
 function beginAimDrag(event) {
-  const target = weapons.telemetry.special.target, start = groundPointer(event);
-  aimDrag = target && start ? { start, target } : null;
-  touchAim = target && event?.pointerType === 'touch'
-    ? { stickUsed: false, movement: stick.clone(), offset: new THREE.Vector2(target.x - player.x, target.z - player.z) } : null;
+  aimDrag = null; touchAim = null;
+  if (!weapons.aiming || event?.pointerType !== 'touch') return;
+  const direction = new THREE.Vector2(Math.sin(state.direction), Math.cos(state.direction));
+  touchAim = { stickUsed: false, movement: stick.clone(), direction };
+  const start = groundPointer(event);
+  if (start) aimDrag = { start, target: new THREE.Vector3(player.x + direction.x * SPECIAL_RULES.poisonRange,
+    player.y, player.z + direction.y * SPECIAL_RULES.poisonRange) };
 }
 function moveAttackAim(event, relative = false) {
   if (state.phase !== 'playing' || !weapons.aiming || (relative && touchAim?.stickUsed)) return;
@@ -317,14 +328,14 @@ function moveAttackAim(event, relative = false) {
   if (relative && aimDrag) point.sub(aimDrag.start).add(new THREE.Vector3(aimDrag.target.x, aimDrag.target.y, aimDrag.target.z));
   weapons.aimAt(player, point);
   if (touchAim) {
-    const target = weapons.telemetry.special.target;
-    touchAim.offset.set(target.x - player.x, target.z - player.z);
+    const dx = point.x - player.x, dz = point.z - player.z;
+    if (Math.hypot(dx, dz) > .05) touchAim.direction.set(dx, dz).normalize();
   }
 }
 function releaseWeapon() {
   if (state.phase === 'playing') weapons.releaseAttack(player, state.direction);
   else weapons.cancelAim();
-  aimDrag = null; touchAim = null;
+  aimDrag = null; touchAim = null; aimUsesMouse = false;
 }
 
 function simulate(dt) {
@@ -333,7 +344,7 @@ function simulate(dt) {
   combat.update(dt);
   state.rollCooldown = Math.max(0, state.rollCooldown - dt);
   state.rollRemaining = Math.max(0, state.rollRemaining - dt);
-  if (!weapons.aiming) touchAim = null;
+  if (!weapons.aiming) { touchAim = null; aimUsesMouse = false; }
   const movementStick = touchAim?.movement ?? stick;
   moveDirection.set(
     (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + movementStick.x,
@@ -350,7 +361,9 @@ function simulate(dt) {
   practiceActors.resolvePlayerMovement(player, 0.42);
   world.resolveMovement(player, 0.42);
   player.y = world.heightAt(player.x, player.z);
-  if (touchAim) weapons.aimAt(player, { x: player.x + touchAim.offset.x, z: player.z + touchAim.offset.y });
+  if (touchAim) weapons.aimAt(player, { x: player.x + touchAim.direction.x * SPECIAL_RULES.poisonRange,
+    z: player.z + touchAim.direction.y * SPECIAL_RULES.poisonRange });
+  else if (aimUsesMouse && mouseAimPointer) moveAttackAim(mouseAimPointer);
   const travelled = Math.hypot(player.x - lastPosition.x, player.z - lastPosition.z);
   state.actualSpeed = travelled / dt;
   state.moving = travelled > 0.0005;
@@ -412,11 +425,22 @@ window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyF' && !event.repeat) attackWeapon();
 });
 window.addEventListener('keyup', event => { keys.delete(event.code); if (event.code === 'KeyF') releaseWeapon(); });
-window.addEventListener('pointermove', event => { if (keys.has('KeyF')) moveAttackAim(event); });
+// A click (for example Start) also establishes the cursor position when the
+// pointer has not moved since the document loaded.
+window.addEventListener('pointerdown', event => {
+  if (event.pointerType !== 'touch') mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
+});
+window.addEventListener('pointermove', event => {
+  if (event.pointerType !== 'touch') {
+    mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
+    if (aimUsesMouse) moveAttackAim(mouseAimPointer);
+  }
+});
 renderer.domElement.addEventListener('pointerdown', event => {
   if (event.button !== 0 || state.phase !== 'playing' || canvasAttackPointer !== null) return;
   event.preventDefault(); canvasAttackPointer = event.pointerId; renderer.domElement.setPointerCapture(event.pointerId);
-  attackWeapon(); moveAttackAim(event);
+  if (event.pointerType !== 'touch') mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
+  attackWeapon(event);
 });
 renderer.domElement.addEventListener('pointermove', event => { if (canvasAttackPointer === event.pointerId) moveAttackAim(event); });
 renderer.domElement.addEventListener('pointerup', event => { if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; releaseWeapon(); } });
@@ -440,9 +464,10 @@ function moveStick(event) {
   if (stick.length() > 1) stick.normalize();
   if (touchAim && weapons.aiming) {
     touchAim.stickUsed = true;
-    // The left thumb now controls the whole aiming disk: center = near, rim = max range.
-    touchAim.offset.copy(stick).multiplyScalar(SPECIAL_RULES.poisonRange);
-    weapons.aimAt(player, { x: player.x + touchAim.offset.x, z: player.z + touchAim.offset.y });
+    // Stick chooses direction; hold duration alone controls throw distance.
+    if (stick.length() > .08) touchAim.direction.copy(stick).normalize();
+    weapons.aimAt(player, { x: player.x + touchAim.direction.x * SPECIAL_RULES.poisonRange,
+      z: player.z + touchAim.direction.y * SPECIAL_RULES.poisonRange });
   }
   if (ui.joystickKnob) ui.joystickKnob.style.transform = `translate(-50%, -50%) translate(${stick.x * limit}px, ${stick.y * limit}px)`;
 }

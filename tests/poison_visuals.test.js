@@ -8,7 +8,7 @@ const player = new THREE.Vector3(), origin = new THREE.Vector3(0,1.4,0);
 function setup(visible = () => true) {
   const scene = new THREE.Scene();
   const special = createSpecialWeapons(scene, { heightAt: () => 0 }, null, 'player', () => {}, visible);
-  const fire = () => { special.beginAim(player,0); special.releasePoison(origin,payload); };
+  const fire = () => { special.beginAim(player,0); special.update(1.2,player,0); special.releasePoison(origin,payload); };
   const land = () => { special.beginAim(player,0); special.releasePoison(origin,payload,{point:new THREE.Vector3(0,0,6)}); };
   return { scene, special, fire, land };
 }

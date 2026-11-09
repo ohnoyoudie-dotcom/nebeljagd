@@ -59,7 +59,7 @@ with sync_playwright() as p:
         page.keyboard.press('Escape')
         point = page.evaluate('nebeljagdProjectPoint({x:0,z:-18.5})')
         page.mouse.move(point['x'],point['y']); page.mouse.down()
-        page.wait_for_function('nebeljagdTestState().combat.special.aiming')
+        page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===12')
         release_time = state(page)['elapsed']
         page.mouse.up()
         pause_when(page, f's.combat.special.poisonProjectiles>0 && s.elapsed>{release_time+.12}')

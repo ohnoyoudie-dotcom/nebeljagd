@@ -159,6 +159,7 @@ def attack_target(page, identifier, distance):
         page.keyboard.down('f')
         point = page.evaluate('id=>nebeljagdProjectPoint(nebeljagdTestState().practiceActors.find(a=>a.id===id).position)', identifier)
         page.mouse.move(point['x'], point['y'])
+        page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===12')
         page.keyboard.up('f')
     else:
         page.keyboard.press('f')
