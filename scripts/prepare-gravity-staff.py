@@ -109,6 +109,10 @@ def run():
     if runtime['triangles'] > 12000 or runtime['bytes'] > 1_800_000 or runtime['externalUris'] or runtime['requiredExtensions']:
         DESTINATION.unlink(missing_ok=True)
         raise ValueError('Optimized staff violates offline browser budget: ' + str(runtime))
+    # A real PBR render of the prepared geometry is also the editor thumbnail source.
+    (OUTPUT / 'previews').mkdir(exist_ok=True)
+    base.OUTPUT = OUTPUT
+    base.render(weapon, policy, 'runtime', base.bounds(weapon))
     if sha(SOURCE) != original['sha256']:
         raise ValueError('Original was changed during preparation')
     (OUTPUT / 'inspections').mkdir(exist_ok=True)
