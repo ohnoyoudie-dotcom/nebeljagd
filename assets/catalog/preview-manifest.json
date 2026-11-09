@@ -932,6 +932,32 @@
           0.1164017841219902
         ]
       }
+    },
+    {
+      "kind": "gravityStaff",
+      "variant": "kit-tripo-gravity-staff",
+      "label": "Gravitationsstab · Tripo",
+      "file": "assets/catalog/gravityStaff-kit-tripo-gravity-staff.webp",
+      "bytes": 4194,
+      "sha256": "69ba748b9aea6cf27ce8d2703aa4598293869bd8498c0e70d5e1b06a65b52ab1",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-gravity-staff/previews/gravity-staff-runtime.png",
+      "model": "assets/imported/tripo-gravity-staff/runtime/gravity-staff.glb",
+      "modelSha256": "a6460d628815aee87bed6cafe6cf0a1dcd1bb850f237e1504362c645e8196668",
+      "originalSourceSha256": "7f78aa206c2016db47a75a05a19843d7e7318117970bbb54d90cb0ed592ddd3a",
+      "generator": "scripts/prepare-gravity-staff.py; scripts/register-gravity-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.31465011835098267,
+          -0.34647336602211,
+          -0.24699930846691132
+        ],
+        "max": [
+          0.2393740862607956,
+          1.3542275428771973,
+          0.24949732422828674
+        ]
+      }
     }
   ],
   "errors": []

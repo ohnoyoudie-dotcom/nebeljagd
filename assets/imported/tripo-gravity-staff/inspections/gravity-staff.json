@@ -1,0 +1,143 @@
+{
+  "source": {
+    "path": "assets/inbox/fantasy staff 3d model.glb",
+    "bytes": 64870972,
+    "sha256": "7f78aa206c2016db47a75a05a19843d7e7318117970bbb54d90cb0ed592ddd3a",
+    "triangles": 1909925,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-gravity-staff/runtime/gravity-staff.glb",
+    "bytes": 791196,
+    "sha256": "a6460d628815aee87bed6cafe6cf0a1dcd1bb850f237e1504362c645e8196668",
+    "triangles": 12000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.16004180908203125,
+        -0.1434783935546875,
+        0.0
+      ],
+      [
+        0.16004180908203125,
+        0.1434783935546875,
+        0.983062744140625
+      ]
+    ],
+    "sourceGripPointGltf": [
+      0.022765666246414185,
+      0.1999969482421875,
+      -0.0003089476376771927
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.0016011943807825446,
+      0.9999984502792358,
+      -0.0007933613960631192
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999995827674866,
+      0.0003966808726545423,
+      0.0008005975396372378,
+      -0.0
+    ],
+    "uniformScale": 1.729288211210514,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.31438249349594116,
+        -0.34585317969322205,
+        -0.24670207500457764
+      ],
+      [
+        0.23924757540225983,
+        1.3541468381881714,
+        0.24952805042266846
+      ]
+    ],
+    "tipPoint": [
+      0.0013839233433827758,
+      1.3542275428771973,
+      -0.0028242256958037615
+    ],
+    "gltfBounds": [
+      [
+        -0.31465011835098267,
+        -0.34647336602211,
+        -0.24699930846691132
+      ],
+      [
+        0.2393740862607956,
+        1.3542275428771973,
+        0.24949732422828674
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "fantasy_staff_3d_model_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        768,
+        768
+      ]
+    },
+    {
+      "name": "fantasy_staff_3d_model_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        512,
+        512
+      ]
+    },
+    {
+      "name": "fantasy_staff_3d_model_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        768,
+        768
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "gravity-staff",
+    "length": 1.7,
+    "gripHeight": 0.2,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 12000
+  }
+}

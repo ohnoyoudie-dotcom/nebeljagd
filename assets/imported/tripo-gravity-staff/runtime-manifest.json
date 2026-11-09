@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/fantasy staff 3d model.glb",
+    "bytes": 64870972,
+    "sha256": "7f78aa206c2016db47a75a05a19843d7e7318117970bbb54d90cb0ed592ddd3a",
+    "triangles": 1909925,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/gravity-staff.json",
+      "bytes": 2929,
+      "sha256": "c39e4329084d010fa283ca2d835c6dadf6f517b9a7b8349ad1770660a52e5b0d"
+    },
+    {
+      "path": "previews/gravity-staff-runtime.png",
+      "bytes": 202441,
+      "sha256": "9621c5b563703cfbede71d9b38e9ffb0744707157610364ae625a1cbdfa5bf15"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 367,
+      "sha256": "e6a5d0ff1c766e6960e5b4418417a19fa8c4f70ece9d660e48451711df1f4ae8"
+    },
+    {
+      "path": "runtime/gravity-staff.glb",
+      "bytes": 791196,
+      "sha256": "a6460d628815aee87bed6cafe6cf0a1dcd1bb850f237e1504362c645e8196668"
+    }
+  ]
+}

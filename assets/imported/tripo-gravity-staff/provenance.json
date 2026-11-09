@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/fantasy staff 3d model.glb",
+  "sourceSha256": "7f78aa206c2016db47a75a05a19843d7e7318117970bbb54d90cb0ed592ddd3a",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}
