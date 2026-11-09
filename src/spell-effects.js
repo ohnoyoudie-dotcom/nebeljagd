@@ -9,6 +9,7 @@ const ELEMENTS = {
   poisonStaff: { core: '#e2f7b3', glow: '#65c84a', spark: '#b3e976', edge: '#398d3b' },
   moonStaff: { core: '#fbf4ff', glow: '#bca1ef', spark: '#e5d6ff', edge: '#8862c4' },
   starStaff: { core: '#fff4c5', glow: '#75c9ed', spark: '#fff0b4', edge: '#477fc3' },
+  gravityStaff: { core: '#ead5ff', glow: '#a66bff', spark: '#cf9aff', edge: '#6931bd' },
 };
 const finite = value => Number.isFinite(value) ? value : 0;
 const valid = point => point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);

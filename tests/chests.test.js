@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createChests, chestLoot, chestDropPosition } from '../src/chests.js';
 import { createPickups } from '../src/pickups.js';
+import { WEAPON_TYPES } from '../src/loot-tiers.js';
 
 const placement = { id: 'test-chest', name: 'Testtruhe', kind: 'chest', variant: 'wood', position: [10, 20], scale: 1, rotation: .7 };
 const ground = () => 12;
@@ -102,7 +103,7 @@ test('drop placement avoids water and walls and chest loot spans all weapon fami
     weapons.add(loot[2].type); tiers.add(loot[2].rarity);
     assert.ok(loot[0].amount + loot[1].amount > 10);
   }
-  assert.deepEqual([...weapons].sort(), ['bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'starStaff'].sort(),
+  assert.deepEqual([...weapons].sort(), WEAPON_TYPES.slice().sort(),
     'all seven weapon families occur in deterministic chest loot');
   assert.deepEqual([...tiers].sort(), ['common', 'uncommon', 'rare', 'epic', 'legendary'].sort());
 });

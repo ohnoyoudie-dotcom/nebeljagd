@@ -33,7 +33,7 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.deepEqual(normalizeWorldmap(map), map, 'existing kit imports never silently substitute or drop objects');
   assert.deepEqual(map.objects.slice(0, base.objects.length), base.objects);
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
-  const newWeapons = ['bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff'];
+  const newWeapons = ['bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff', 'gravityStaff:kit-tripo-gravity-staff'];
   const variants = OBJECT_CATALOG.flatMap(def => def.variants);
   assert.equal(variants.length, 56 + newWeapons.length, 'the FBX tree is a distinct new saved-map variant');
   const treeInstalled = ASSET_CATALOG.some(asset => asset.id === 'tree:kit-user-tree1');

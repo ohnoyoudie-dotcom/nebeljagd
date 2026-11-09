@@ -19,6 +19,7 @@ const IMPORTED_WEAPONS = [
   { kind: 'poisonStaff', variant: 'kit-tripo-poison-staff' },
   { kind: 'moonStaff', variant: 'kit-tripo-moon-staff' },
   { kind: 'starStaff', variant: 'kit-tripo-star-staff' },
+  { kind: 'gravityStaff', variant: 'kit-tripo-gravity-staff' },
   { kind: 'bow', variant: 'kit-tripo-ornate-bow' },
 ];
 

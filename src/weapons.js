@@ -790,7 +790,10 @@ export function createWeapons(scene, characterGroup, world, character = null,
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
     getStaffTip(staffTip);
-    if (isGravity) gravity.release(equippedItem);
+    if (isGravity) {
+      gravity.release(equippedItem);
+      spellEffects.fire('gravityStaff', staffTip, characterGroup.rotation.y);
+    }
     else {
       const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .12);
       specials.releasePoison(staffTip, equippedItem, blocked);

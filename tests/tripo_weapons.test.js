@@ -141,7 +141,7 @@ test('both imported staffs follow the palm socket through motion and cast from t
       assert.equal(weapons.telemetry.heldGrip.error, 0);
     }
     weapons.attack(actor.position, actor.rotation.y);
-    if (type === 'poisonStaff') weapons.releaseAttack(actor.position);
+    if (type === 'poisonStaff' || type === 'gravityStaff') weapons.releaseAttack(actor.position);
     else for (let frame = 0; frame < 3; frame++) weapons.update(.1, .4 + frame * .1, actor.position);
     const flash = weapons.telemetry.effects.bursts.find(burst => burst.kind === 'muzzle');
     assert.ok(flash, 'the moved staff still releases a visible cast effect');
@@ -208,8 +208,9 @@ test('Tripo sword and staffs retain real melee, ranged damage, burn and slow beh
     weapons.interact(actor.position); weapons.attack(actor.position, 0);
     if (kind === 'bow') weapons.releaseAttack(actor.position);
     if (kind === 'poisonStaff') { weapons.aimAt(actor.position, target.position); weapons.update(1.2, 0, actor.position); weapons.releaseAttack(actor.position); }
+    if (kind === 'gravityStaff') { weapons.aimAt(actor.position, target.position); weapons.releaseAttack(actor.position); }
     const tips = [];
-    for (let i = 0; i < (kind === 'poisonStaff' ? 110 : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
+    for (let i = 0; i < (kind === 'poisonStaff' ? 110 : kind === 'gravityStaff' ? 50 : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
     const expected = weaponStats(kind, 'legendary');
     assert.ok(Math.abs(target.health - (500 - expected.damage)) < 1e-6, `${variant} deals the tier damage, spread over the cloud lifetime for poison`);
     if (kind === 'poisonStaff') assert.ok(weapons.telemetry.damageHits > 1);
