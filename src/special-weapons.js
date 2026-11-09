@@ -4,7 +4,7 @@ import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
-  poisonRange: 24, poisonChargeSeconds: 1.2, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
+  poisonRange: 20, poisonChargeSeconds: 3, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
   cloudRadius: 4.8, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */

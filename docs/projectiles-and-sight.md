@@ -26,7 +26,7 @@ Pfeilgeschwindigkeit bleiben unverändert.
 Der Giftwurf verwendet jetzt eine parabolische Zusatzhöhe von 4 m anstelle
 des bisherigen 2-m-Sinusbogens. Die Geschwindigkeit zur Berechnung der Flugzeit
 sinkt von 14 auf 8,5 m/s, mit mindestens 0,6 Sekunden Flugzeit. Ein Wurf über die
-volle Reichweite von 24 m dauert ungefähr 2,83 Sekunden. Kurze Kollisionssegmente verfolgen den Bogen auch
+volle Reichweite von 20 m dauert ungefähr 2,36 Sekunden. Kurze Kollisionssegmente verfolgen den Bogen auch
 über einen langen Frame hinweg. Die Wolkenlaufzeit beginnt beim tatsächlichen
 Einschlag; Dauer 3 Sekunden, Radius 4,8 m. Zielkreis, Wolke und Schadensbereich
 decken dieselbe vergrößerte Fläche ab.

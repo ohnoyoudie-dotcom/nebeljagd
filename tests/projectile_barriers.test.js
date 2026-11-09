@@ -7,7 +7,7 @@ import { createSightModel } from '../src/visibility-model.js';
 import { traceRangedProjectile } from '../src/projectile-collision.js';
 import { createWeapons } from '../src/weapons.js';
 import { createCombat } from '../src/combat.js';
-import { createSpecialWeapons } from '../src/special-weapons.js';
+import { createSpecialWeapons, SPECIAL_RULES } from '../src/special-weapons.js';
 
 const prototypes = Object.fromEntries([
   ['tripo-weapons', 'lava-staff'], ['tripo-weapons', 'crystal-staff'],
@@ -81,7 +81,7 @@ test('poison clears low cover at release and descent while high cover still inte
     const weapons = createWeapons(scene, actor, worldFor([wall(height, .6)]), null,
       { tripoPrototypes: prototypes, placements: [{ id: 'poison', kind: 'poisonStaff', position: [0, 0] }] });
     try {
-      weapons.interact(actor.position); weapons.attack(actor.position, 0); weapons.aimAt(actor.position, { x: 0, z: 10 }); weapons.update(1.2, 0, actor.position);
+      weapons.interact(actor.position); weapons.attack(actor.position, 0); weapons.aimAt(actor.position, { x: 0, z: 10 }); weapons.update(SPECIAL_RULES.poisonChargeSeconds, 0, actor.position);
       assert.equal(weapons.releaseAttack(actor.position), true);
       assert.equal(weapons.telemetry.special.poisonProjectiles, height < 2 ? 1 : 0);
     } finally { weapons.dispose(); }
@@ -90,7 +90,7 @@ test('poison clears low cover at release and descent while high cover still inte
     const scene = new THREE.Scene(), player = new THREE.Vector3();
     const special = createSpecialWeapons(scene, worldFor([wall(height, 9.5)]), null, 'player', () => {});
     try {
-      special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 10 }); special.update(1.2, player, 0);
+      special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 10 }); special.update(SPECIAL_RULES.poisonChargeSeconds, player, 0);
       special.releasePoison(new THREE.Vector3(0, 1.4, .8), { type: 'poisonStaff' });
       for (let t = dt; t < 2; t += dt) special.update(dt, player, t);
       const cloud = special.telemetry.clouds[0]; assert.ok(cloud);

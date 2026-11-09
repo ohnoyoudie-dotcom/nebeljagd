@@ -67,8 +67,8 @@ Unbewaffnete Spieler nehmen erreichbare Waffen automatisch auf. **E** wechselt
 die Waffe und legt die bisherige an der Fundstelle ab. **F** greift an:
 
 - Giftstab: Angriff halten und zum Werfen loslassen. Der Reichweitenkreis
-  beginnt beim Spieler und wächst gleichmäßig: 6 m nach 0,3 s, 12 m nach 0,6 s,
-  maximal 24 m nach 1,2 s. Am Computer bestimmt der aktuelle Mauszeiger sofort
+  beginnt beim Spieler und wächst gleichmäßig: 2 m nach 0,3 s, 10 m nach 1,5 s,
+  maximal 20 m nach 3 s. Am Computer bestimmt der aktuelle Mauszeiger sofort
   die Richtung, auch beim Drücken von F ohne weitere Mausbewegung. Liegt die
   Maus näher, bleibt der Einschlag dort und wird nicht überschossen.
   Auf Touch-Geräten steuert der linke Stick die Richtung; die Haltedauer

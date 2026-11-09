@@ -51,9 +51,10 @@ die fertigen Browserdateien in `main/preview`. Andere Dateien auf `main` bleiben
 unverändert. Der feste Einstieg zeigt die veröffentlichte Build-Version an.
 Details: [Editor und Veröffentlichung](docs/online-editor.md).
 
-Der Giftstab wird durch Halten, Zielen und Loslassen bedient und erzeugt eine
-Giftwolke für drei Sekunden. Die Mondsichel durchdringt Gegner und kehrt nach
-Mauerkontakt oder zwölf Metern zurück; sie trifft auf beiden Flugwegen und
+Der Giftstab wird durch Halten, Zielen und Loslassen bedient. Nach drei Sekunden
+Aufladen erreicht er seine maximale Wurfweite von 20 Metern und erzeugt eine
+Giftwolke mit 4,8 Metern Radius für drei Sekunden. Die Mondsichel durchdringt
+Gegner und kehrt nach Mauerkontakt oder zwölf Metern zurück; sie trifft auf beiden Flugwegen und
 sperrt weitere Angriffe bis zur Rückkehr. Der Bogen verschießt einen 3D-Pfeil
 mit Holzschaft, Metallspitze und drei Federn.
 

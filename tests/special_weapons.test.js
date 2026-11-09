@@ -50,9 +50,9 @@ test('poison aiming clamps range, waits for release and clouds damage only reach
   const player = new THREE.Vector3();
   special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 100 });
   assert.equal(special.telemetry.target.z, 0, 'aim starts at the player');
-  tick(.3); assert.ok(Math.abs(special.telemetry.target.z-6)<1e-8);
-  tick(.3); assert.ok(Math.abs(special.telemetry.target.z-12)<1e-8);
-  tick(1.4); assert.equal(special.telemetry.target.z, SPECIAL_RULES.poisonRange); assert.equal(special.telemetry.poisonProjectiles, 0); assert.equal(hits.length, 0);
+  tick(.3); assert.ok(Math.abs(special.telemetry.target.z-2)<1e-8);
+  tick(.3); assert.ok(Math.abs(special.telemetry.target.z-4)<1e-8);
+  tick(2.4); assert.equal(special.telemetry.target.z, 20); assert.equal(special.telemetry.poisonProjectiles, 0); assert.equal(hits.length, 0);
   special.aimAt(player, { x: 0, z: 6 });
   combat.addTarget({ id: 'inside', position: { x: 4.3, y: 0, z: 6 }, maxHealth: 100 });
   combat.addTarget({ id: 'outside', position: { x: 5.5, y: 0, z: 6 }, maxHealth: 100 });
@@ -67,22 +67,23 @@ test('poison aiming clamps range, waits for release and clouds damage only reach
   special.dispose();
 });
 
-test('poison reaches twenty-four metres in a slow artillery arc, freezes on pause and lands on the aimed terrain', () => {
+test('poison reaches twenty metres in a slow artillery arc, freezes on pause and lands on the aimed terrain', () => {
   const { special, player, tick } = setup();
-  special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 24 }); special.update(SPECIAL_RULES.poisonChargeSeconds, player, 0);
+  special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 100 }); special.update(3, player, 0);
   special.releasePoison(origin, { type: 'poisonStaff', damage: 18 });
   const flight = special.telemetry.poisonFlights[0];
-  assert.ok(flight.duration > 2.8 && flight.duration < 2.9, '24 m shot takes about 2.83 seconds');
+  assert.ok(flight.duration > 2.3 && flight.duration < 2.4, '20 m shot takes about 2.36 seconds');
   tick(flight.duration / 2);
   const middle = special.telemetry.poisonFlights[0];
   assert.ok(middle.position.y > 4.7 && middle.position.y < 4.8, 'apex clears ordinary cover');
-  assert.ok(Math.abs(middle.position.z - 12) < 1e-6);
+  assert.ok(Math.abs(middle.position.z - 10) < 1e-6);
   special.update(0, player, 100);
   assert.deepEqual(special.telemetry.poisonFlights[0], middle);
   tick(flight.duration / 2);
   assert.equal(special.telemetry.poisonProjectiles, 0);
   assert.equal(special.telemetry.clouds.length, 1);
-  assert.ok(Math.abs(special.telemetry.clouds[0].position.z - 24) < 1e-6);
+  assert.ok(Math.abs(special.telemetry.clouds[0].position.z - 20) < 1e-6);
+  assert.equal(special.telemetry.clouds[0].radius, 4.8);
   assert.ok(Math.abs(special.telemetry.clouds[0].remaining - 3) < 1e-6);
   special.dispose();
 });
@@ -150,10 +151,10 @@ test('artillery range follows the character, clamps distant targets and disappea
   const range = scene.getObjectByName('Giftstab · maximale Reichweite');
   assert.ok(range.visible);
   assert.equal(special.telemetry.aimRange.radius, 0);
-  player.set(4, 0, -2); tick(1.2);
+  player.set(4, 0, -2); tick(3);
   assert.equal(range.position.x, 4); assert.equal(range.position.z, -2);
   special.aimAt(player, { x: 100, z: 100 });
-  assert.ok(Math.abs(Math.hypot(special.telemetry.target.x-4, special.telemetry.target.z+2)-24)<1e-8);
+  assert.ok(Math.abs(Math.hypot(special.telemetry.target.x-4, special.telemetry.target.z+2)-20)<1e-8);
   special.cancelAim(); assert.equal(range.visible, false);
   special.beginAim(player, 0); special.releasePoison(origin, payload);
   assert.equal(range.visible, false); assert.equal(special.telemetry.aimRange, null);
@@ -162,11 +163,12 @@ test('artillery range follows the character, clamps distant targets and disappea
 
 
 test('hold duration alone controls short and long throws, pause freezes charge and the mouse direction can change', () => {
-  for (const [hold,distance] of [[0,0],[.2,4],[.6,12],[1.2,24],[4,24]]) {
+  for (const [hold,distance] of [[0,0],[.3,2],[1.2,8],[1.5,10],[2.99,20*2.99/3],[3,20],[4,20]]) {
     const { special, player, tick } = setup();
     special.beginAim(player, 0); special.aimAt(player, {x:30,z:0});
     tick(hold);
     assert.ok(Math.abs(special.telemetry.target.x-distance)<1e-7);
+    assert.equal(special.telemetry.aimRange.maximum,20);
     assert.equal(special.telemetry.target.z,0);
     const before=special.telemetry.aimRange;
     special.update(0,player,100);assert.deepEqual(special.telemetry.aimRange,before);
@@ -176,7 +178,7 @@ test('hold duration alone controls short and long throws, pause freezes charge a
     assert.ok(Math.abs(special.telemetry.poisonFlights[0].target.x+distance)<1e-7);
     assert.equal(special.releasePoison(origin,payload),false);
     special.beginAim(player,0);assert.equal(special.telemetry.aimRange.radius,0,'each press starts near again');
-    special.aimAt(player,{x:2,z:0});tick(2);
+    special.aimAt(player,{x:2,z:0});tick(3);
     assert.equal(special.telemetry.target.x,2,'full charge never overshoots a nearby mouse target');
     special.dispose();
   }

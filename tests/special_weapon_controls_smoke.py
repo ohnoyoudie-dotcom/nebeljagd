@@ -91,21 +91,24 @@ with sync_playwright() as p:
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':1},{'x':cx+radius*.25,'y':cy,'id':2}]})
                 page.wait_for_function('nebeljagdTestState().combat.special.target.x>nebeljagdTestState().position.x+.5')
                 near=state(page)['combat']['special']
-                assert near['aimRange']['radius']<24
+                assert near['aimRange']['radius']<20
                 assert abs(near['target']['x']-player_before['x']-near['aimRange']['radius'])<.2
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x,'y':y,'id':1},{'x':cx+radius,'y':cy,'id':2}]})
-                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.x-nebeljagdTestState().position.x-24)<.2')
+                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.x-nebeljagdTestState().position.x-20)<.2')
                 # Small motion of the holding finger must not reset the left-thumb target.
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x+3,'y':y+2,'id':1},{'x':cx+radius,'y':cy,'id':2}]})
                 wait_sim(page,.3)
-                assert abs(state(page)['combat']['special']['target']['x']-state(page)['position']['x']-24)<.2
+                assert abs(state(page)['combat']['special']['target']['x']-state(page)['position']['x']-20)<.2
                 assert abs(state(page)['position']['x']-player_before['x'])<.05
-                passed('Holding grows range to 24m; the left stick only redirects, and holding-finger jitter cannot reset the target')
+                passed('Holding grows range to 20m; the left stick only redirects, and holding-finger jitter cannot reset the target')
             else:
                 point=page.evaluate('nebeljagdProjectPoint({x:2,z:-7})');page.mouse.move(point['x'],point['y'])
             page.wait_for_function('old=>Math.hypot(nebeljagdTestState().combat.special.target.x-old.x,nebeljagdTestState().combat.special.target.z-old.z)>.5',arg=before)
-            page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===24')
+            page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===20')
+            charge=state(page)['combat']['special']['aimRange']
+            assert charge['maximum']==20 and charge['heldSeconds']>=3, charge
             samples=page.evaluate('window.recordAim=false;window.aimSamples')
+            assert all(s['range']<=20 for s in samples),samples
             assert all(a['range']<=b['range']+1e-6 for a,b in zip(samples,samples[1:])),samples
             assert any(1<s['range']<5 for s in samples) and any(5<s['range']<10 for s in samples)
             (OUT/('touch-charge.json' if touch else 'mouse-charge.json')).write_text(json.dumps(samples,indent=2))
