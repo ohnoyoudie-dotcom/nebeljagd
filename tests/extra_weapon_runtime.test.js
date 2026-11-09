@@ -100,8 +100,8 @@ test('ornate bow animates its actual baked string only on the held clone and rel
   assert.notEqual(stringMesh.geometry,prototypeString);
   assert.ok(weapons.telemetry.heldModel.stringVertices>0);
   let addedLines=0;held.traverse(part=>{if(part.isLine)addedLines++;});assert.equal(addedLines,0,'no duplicate rope overlays the uploaded string');
-  weapons.attack(actor.position,0);weapons.update(.12,.12);
-  assert.ok(stringMesh.geometry.attributes.position.getX(2)>.20,'middle of the original string is drawn back');
+  weapons.attack(actor.position,0);
+  assert.ok(stringMesh.geometry.attributes.position.getX(2)>.20,'immediate release pose animates the original string');
   assert.equal(stringMesh.geometry.attributes.position.getX(0),prototypeString.attributes.position.getX(0),'limb endpoint remains fixed');
   assert.deepEqual(Array.from(prototypeString.attributes.position.array),source,'template and ground pickup keep their original positions');
   weapons.releaseAttack(actor.position);

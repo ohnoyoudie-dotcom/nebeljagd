@@ -42,7 +42,8 @@ test('one continuous cloud volume fades in/out, has independent age, and release
   assert.equal(mesh.material.depthTest,true); assert.equal(mesh.material.depthWrite,false);
   assert.equal(mesh.material.side,THREE.FrontSide,'test the volume entry rather than clipping its exit against the ground');
   assert.equal(mesh.material.uniforms.uFade.value,0);
-  special.update(.3,player,.3); assert.equal(mesh.material.uniforms.uFade.value,1);
+  special.update(.05,player,.05); assert.equal(mesh.material.uniforms.uFade.value,1,'impact is fully visible within 50ms');
+  special.update(.25,player,.3);
   const age=mesh.material.uniforms.uAge.value;
   special.update(0,player,10); assert.equal(mesh.material.uniforms.uAge.value,age);
   land(); const newer=scene.children.filter(p=>p.name==='Giftwolke · 3 Sekunden')[1].children[0];

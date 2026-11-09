@@ -33,7 +33,7 @@ with sync_playwright() as p:
     browser = p.chromium.launch(executable_path=os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else p.chromium.executable_path),
         headless=True, args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
     try:
-        for touch in [False, True]:
+        for touch in ([True] if os.environ.get('NEBELJAGD_TOUCH_ONLY') == '1' else [False, True]):
             context = browser.new_context(viewport={'width':960, 'height':720}, has_touch=touch, is_mobile=touch)
             context.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1", '+json.dumps(json.dumps(fixture))+');')
             page = context.new_page(); page.set_default_timeout(120000)
@@ -58,7 +58,22 @@ with sync_playwright() as p:
             assert state(page)['combat']['shotsFired']==0
             before = state(page)['combat']['special']['target']
             if touch:
-                cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x-55,'y':y-35,'id':1}]})
+                joy=page.locator('#joystick').bounding_box()
+                cx,cy=joy['x']+joy['width']/2,joy['y']+joy['height']/2
+                radius=joy['width']*.32
+                player_before=state(page)['position']
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':1},{'x':cx+radius*.25,'y':cy,'id':2}]})
+                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.x-nebeljagdTestState().position.x-3)<.2')
+                near=state(page)['combat']['special']
+                assert near['aimRange']['radius']==12
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x,'y':y,'id':1},{'x':cx+radius,'y':cy,'id':2}]})
+                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.x-nebeljagdTestState().position.x-12)<.2')
+                # Small motion of the holding finger must not reset the left-thumb target.
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':x+3,'y':y+2,'id':1},{'x':cx+radius,'y':cy,'id':2}]})
+                wait_sim(page,.3)
+                assert abs(state(page)['combat']['special']['target']['x']-state(page)['position']['x']-12)<.2
+                assert abs(state(page)['position']['x']-player_before['x'])<.05
+                passed('Two fingers: attack stays held, left stick selects 3m then 12m without moving a stationary player')
             else:
                 point=page.evaluate('nebeljagdProjectPoint({x:2,z:-7})');page.mouse.move(point['x'],point['y'])
             page.wait_for_function('old=>Math.hypot(nebeljagdTestState().combat.special.target.x-old.x,nebeljagdTestState().combat.special.target.z-old.z)>.5',arg=before)
@@ -74,8 +89,20 @@ with sync_playwright() as p:
             passed(('Touch' if touch else 'Mouse')+' hold, move target, release once, cloud expires after 3 seconds')
             # Cancellation must not create a projectile.
             if touch:
-                cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':1}]})
+                # While moving, aiming changes the target but preserves travel direction.
+                left={'x':cx+radius*.3,'y':cy,'id':2}
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[left]})
+                page.wait_for_function('nebeljagdTestState().moving')
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[left,{'x':x,'y':y,'id':1}]})
                 page.wait_for_function('nebeljagdTestState().combat.special.aiming')
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':cx,'y':cy-radius*.5,'id':2},{'x':x,'y':y,'id':1}]})
+                page.wait_for_function('Math.abs(nebeljagdTestState().combat.special.target.z-nebeljagdTestState().position.z+6)<.2')
+                movement_start=state(page)['position']
+                wait_sim(page,.25)
+                movement_end=state(page)['position']
+                assert movement_end['x']>movement_start['x']+.05
+                assert abs(movement_end['z']-movement_start['z'])<.05
+                passed('Moving touch aim retains travel direction while the other thumb redirects the target')
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchCancel','touchPoints':[]})
             else:
                 page.keyboard.down('f');page.wait_for_function('nebeljagdTestState().combat.special.aiming');page.keyboard.press('Escape');page.keyboard.up('f')
@@ -101,18 +128,17 @@ with sync_playwright() as p:
                 box = page.locator('#attackBtn').bounding_box()
                 cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':box['x']+box['width']/2,'y':box['y']+box['height']/2,'id':1}]})
             else: page.keyboard.down('f')
-            page.wait_for_function('nebeljagdTestState().combat.bowDraw===1')
-            wait_sim(page, .8)
+            page.wait_for_function('n=>nebeljagdTestState().combat.shotsFired===n+1',arg=before)
+            wait_sim(page, 1.5)
             held = state(page)['combat']
-            assert held['bowHolding'] and held['shotsFired']==before, held
+            assert not held['bowHolding'] and held['shotsFired']==before+1, held
             assert held['bowAlignment']['error']<.025 and held['heldPose']['bow']['x']<-.22, held['hands']
             if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
             else: page.keyboard.up('f')
-            page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
             assert state(page)['combat']['shotsFired']==before+1
             assert state(page)['combat']['arrowModel']['nominalLength']==1.05
             page.screenshot(path=str(OUT/('touch-arrow.png' if touch else 'mouse-arrow.png')))
-            passed(('Touch' if touch else 'Keyboard')+' bow holds beside the torso and releases one enlarged 3D arrow only on release')
+            passed(('Touch' if touch else 'Keyboard')+' bow fires immediately on press, never repeats while held or on release')
             context.close()
         assert not report['errors'], report['errors']
         report['status']='passed'

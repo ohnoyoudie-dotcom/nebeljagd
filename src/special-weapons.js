@@ -19,6 +19,10 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   const targetMaterial = material(ringMaterial.clone()); targetMaterial.depthTest = false; targetMaterial.color.set('#e4ffa1'); targetMaterial.opacity = .85;
   const targetRing = root(new THREE.Mesh(ringGeometry, targetMaterial)); targetRing.renderOrder = 30;
   targetRing.name = 'Giftwolke · Zielbereich'; targetRing.rotation.x = -Math.PI / 2; targetRing.visible = false;
+  const rangeMaterial = material(targetMaterial.clone()); rangeMaterial.opacity = .3;
+  const rangeRing = root(new THREE.Mesh(geometry(new THREE.RingGeometry(SPECIAL_RULES.poisonRange - .055, SPECIAL_RULES.poisonRange, 96)), rangeMaterial));
+  rangeRing.name = 'Giftstab · maximale Reichweite'; rangeRing.rotation.x = -Math.PI / 2;
+  rangeRing.renderOrder = 29; rangeRing.visible = false;
   let crescent;
   if (moonProjectilePrototype) {
     crescent = new THREE.Group();
@@ -64,14 +68,15 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     aim.target.set(position.x + dx * factor, 0, position.z + dz * factor);
     aim.target.y = ground(aim.target) + .06;
     targetRing.position.copy(aim.target);
+    rangeRing.position.set(position.x, ground(position) + .055, position.z);
   }
   function beginAim(position, direction) {
     if (aim) return false;
-    aim = { target: new THREE.Vector3() }; targetRing.visible = true;
+    aim = { target: new THREE.Vector3() }; targetRing.visible = rangeRing.visible = true;
     aimAt(position, { x: position.x + Math.sin(direction) * 6, z: position.z + Math.cos(direction) * 6 });
     return true;
   }
-  function cancelAim() { aim = null; targetRing.visible = false; }
+  function cancelAim() { aim = null; targetRing.visible = rangeRing.visible = false; }
   function releasePoison(origin, payload, blocked = null) {
     if (!aim) return false;
     if (blocked) { cloudAt(blocked.point, { ...payload, sourceId: ownerId }); cancelAim(); return true; }
@@ -192,6 +197,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   return { beginAim, aimAt, cancelAim, releasePoison, launchMoon, update, reset,
     get moonBusy() { return Boolean(moon); }, get aiming() { return Boolean(aim); },
     get telemetry() { return { aiming: Boolean(aim), target: aim ? { ...aim.target } : null,
+      aimRange: rangeRing.visible ? { radius: SPECIAL_RULES.poisonRange, center: { ...rangeRing.position } } : null,
       moonImpacts: moonImpacts.telemetry,
       moonModel: moonProjectilePrototype ? { ...moonProjectilePrototype.userData, imported: true } : { imported: false },
       moonVisible: moonMesh.visible,

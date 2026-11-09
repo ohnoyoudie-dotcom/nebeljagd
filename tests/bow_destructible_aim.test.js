@@ -38,7 +38,7 @@ function fixture({ yaw = 0, distance = 6, offset = 0, blocked = false, enemy = f
   weapons.interact(actor.position);
   return { scene, actor, combat, target, weapons, world,
     hide() { visible = false; },
-    draw() { weapons.attack(actor.position, yaw); for (let i = 0; i < 30; i++) weapons.update(1 / 60, i / 60, actor.position); },
+    draw() { weapons.update(0, 0, actor.position); },
     dispose() { weapons.dispose(); geometry.dispose(); material.dispose(); } };
 }
 
@@ -47,7 +47,7 @@ test('a high drawn bow pitches down at the lined-up barrel while its arrow stays
     const f = fixture({ yaw });
     try {
       f.draw();
-      f.actor.rotation.y = yaw + .2;
+      f.actor.rotation.y = yaw;
       f.weapons.update(1 / 60, .6, f.actor.position, yaw);
       const state = f.weapons.telemetry;
       assert.equal(state.bowAim?.targetId, 'barrel'); assert.ok(state.bowAim.pitch > 0);
@@ -66,8 +66,9 @@ test('a high drawn bow pitches down at the lined-up barrel while its arrow stays
       for (let i = 0; i < 20; i++) f.weapons.update(1 / 60, 1 + i / 60, f.actor.position);
       assert.ok(held.position.distanceTo(heldPosition) < 1e-9, 'aim preserves the hand grip anchor');
       assert.ok(held.quaternion.angleTo(heldOrientation) < 1e-7, 'pitch never accumulates each held frame');
-      f.weapons.releaseAttack(f.actor.position);
+      f.weapons.attack(f.actor.position, f.actor.rotation.y);
       const arrow = f.scene.children.find(part => part.name === 'Fliegender Pfeil' && part.visible);
+      forward.set(Math.sin(yaw)*Math.cos(f.weapons.telemetry.bowAim.pitch),-Math.sin(f.weapons.telemetry.bowAim.pitch),Math.cos(yaw)*Math.cos(f.weapons.telemetry.bowAim.pitch));
       assert.ok(arrow); const from = arrow.position.clone();
       assert.ok(new THREE.Vector3(0, 0, 1).applyQuaternion(arrow.quaternion).dot(forward) > .999999);
       f.weapons.update(.02, 2, f.actor.position);
@@ -85,7 +86,7 @@ test('bow pitch assistance never snaps off axis, exceeds range, reveals hidden p
     try {
       if (options.hidden) f.hide();
       f.draw(); assert.equal(f.weapons.telemetry.bowAim, null, JSON.stringify(options));
-      f.weapons.releaseAttack(f.actor.position);
+      f.weapons.attack(f.actor.position, f.actor.rotation.y);
       for (let i = 0; i < 90; i++) f.weapons.update(1 / 60, 1 + i / 60, f.actor.position);
       assert.equal(f.target.health, 60, 'an untargeted high shot cannot receive an invisible taller barrel collider');
       if (options.enemy) assert.equal(f.combat.targets.get('front').health, 78);

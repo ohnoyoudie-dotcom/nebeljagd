@@ -13,6 +13,7 @@ import { createPickups } from './pickups.js';
 import { rollLootRarity } from './loot-tiers.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
+import { SPECIAL_RULES } from './special-weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
 import { loadFireballModel } from './fireball-model.js';
 import { loadProjectileModels } from './projectile-models.js';
@@ -50,6 +51,7 @@ const stick = new THREE.Vector2();
 let ready = false;
 let inputPointer = null;
 let aimDrag = null;
+let touchAim = null;
 let canvasAttackPointer = null;
 const frameSamples = [];
 
@@ -69,7 +71,7 @@ const ui = createUI({
   onAttack: event => { attackWeapon(); beginAimDrag(event); },
   onAttackMove: event => moveAttackAim(event, true),
   onAttackRelease: () => releaseWeapon(),
-  onAttackCancel: () => { aimDrag = null; weapons?.cancelAim(); },
+  onAttackCancel: () => { aimDrag = null; touchAim = null; weapons?.cancelAim(); },
   onInteract: () => interactWeapon(),
   onQualityChange: (quality) => setQuality(quality),
 });
@@ -205,7 +207,7 @@ let lastShelter = null;
 let lastConcealment = false;
 
 function clearInput() {
-  keys.clear(); stick.set(0, 0); inputPointer = null;
+  keys.clear(); stick.set(0, 0); inputPointer = null; touchAim = null;
   if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
 }
 
@@ -306,17 +308,23 @@ function groundPointer(event) {
 function beginAimDrag(event) {
   const target = weapons.telemetry.special.target, start = groundPointer(event);
   aimDrag = target && start ? { start, target } : null;
+  touchAim = target && event?.pointerType === 'touch'
+    ? { stickUsed: false, movement: stick.clone(), offset: new THREE.Vector2(target.x - player.x, target.z - player.z) } : null;
 }
 function moveAttackAim(event, relative = false) {
-  if (state.phase !== 'playing' || !weapons.telemetry.special.aiming) return;
+  if (state.phase !== 'playing' || !weapons.aiming || (relative && touchAim?.stickUsed)) return;
   const point = groundPointer(event); if (!point) return;
   if (relative && aimDrag) point.sub(aimDrag.start).add(new THREE.Vector3(aimDrag.target.x, aimDrag.target.y, aimDrag.target.z));
   weapons.aimAt(player, point);
+  if (touchAim) {
+    const target = weapons.telemetry.special.target;
+    touchAim.offset.set(target.x - player.x, target.z - player.z);
+  }
 }
 function releaseWeapon() {
   if (state.phase === 'playing') weapons.releaseAttack(player, state.direction);
   else weapons.cancelAim();
-  aimDrag = null;
+  aimDrag = null; touchAim = null;
 }
 
 function simulate(dt) {
@@ -325,10 +333,12 @@ function simulate(dt) {
   combat.update(dt);
   state.rollCooldown = Math.max(0, state.rollCooldown - dt);
   state.rollRemaining = Math.max(0, state.rollRemaining - dt);
+  if (!weapons.aiming) touchAim = null;
+  const movementStick = touchAim?.movement ?? stick;
   moveDirection.set(
-    (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + stick.x,
+    (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + movementStick.x,
     0,
-    (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) + stick.y,
+    (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) + movementStick.y,
   );
   const inputLength = Math.min(1, moveDirection.length());
   if (moveDirection.lengthSq() > 0.001) moveDirection.normalize();
@@ -340,6 +350,7 @@ function simulate(dt) {
   practiceActors.resolvePlayerMovement(player, 0.42);
   world.resolveMovement(player, 0.42);
   player.y = world.heightAt(player.x, player.z);
+  if (touchAim) weapons.aimAt(player, { x: player.x + touchAim.offset.x, z: player.z + touchAim.offset.y });
   const travelled = Math.hypot(player.x - lastPosition.x, player.z - lastPosition.z);
   state.actualSpeed = travelled / dt;
   state.moving = travelled > 0.0005;
@@ -369,7 +380,7 @@ function onCollect(item) {
 
 function updateUI() {
   const nearby = nearbyInteraction();
-  ui.update({ ...state, zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
+  ui.update({ ...state, touchAiming: Boolean(touchAim && weapons.aiming), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
     zoneProgress: currentZone.progress, zoneShrinking: currentZone.shrinking,
     rollCooldownDuration: ROLL_COOLDOWN, equippedWeapon: weapons.equipped,
     equippedItem: weapons.equippedItem, nearWeapon: nearby.weapon, nearChest: nearby.chest, attackCooldown: weapons.attackCooldown,
@@ -427,10 +438,16 @@ function moveStick(event) {
   stick.set((event.clientX - rect.left - rect.width / 2) / limit,
     (event.clientY - rect.top - rect.height / 2) / limit);
   if (stick.length() > 1) stick.normalize();
+  if (touchAim && weapons.aiming) {
+    touchAim.stickUsed = true;
+    // The left thumb now controls the whole aiming disk: center = near, rim = max range.
+    touchAim.offset.copy(stick).multiplyScalar(SPECIAL_RULES.poisonRange);
+    weapons.aimAt(player, { x: player.x + touchAim.offset.x, z: player.z + touchAim.offset.y });
+  }
   if (ui.joystickKnob) ui.joystickKnob.style.transform = `translate(-50%, -50%) translate(${stick.x * limit}px, ${stick.y * limit}px)`;
 }
 ui.joystick.addEventListener('pointerdown', (event) => {
-  if (state.phase !== 'playing') return;
+  if (state.phase !== 'playing' || inputPointer !== null) return;
   event.preventDefault(); inputPointer = event.pointerId;
   ui.joystick.setPointerCapture(event.pointerId); moveStick(event);
 });
@@ -439,6 +456,7 @@ for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   ui.joystick.addEventListener(eventName, (event) => {
     if (event.pointerId !== inputPointer) return;
     inputPointer = null; stick.set(0, 0);
+    if (touchAim) touchAim.movement.set(0, 0);
     if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
   });
 }

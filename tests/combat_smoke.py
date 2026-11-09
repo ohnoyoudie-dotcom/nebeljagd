@@ -106,18 +106,18 @@ try:
         collect(page)
         shots_before = state(page)['combat']['shotsFired']
         page.keyboard.down('f')
-        page.wait_for_function("window.nebeljagdTestState().combat.attackPhase === 'draw' && window.nebeljagdTestState().combat.bowDraw > .05")
+        page.wait_for_function('n=>window.nebeljagdTestState().combat.shotsFired === n+1',arg=shots_before)
         draw = state(page)['combat']
-        assert draw['shotsFired'] == shots_before, draw
+        assert draw['shotsFired'] == shots_before+1, draw
         assert -.12 < draw['heldPose']['bow']['z'] < 1.0 and .7 < draw['heldPose']['bow']['y'] < 1.9, draw
         capture(page, 'combat-bow-draw.png')
         page.keyboard.up('f')
         page.wait_for_function('n => window.nebeljagdTestState().combat.shotsFired === n + 1', arg=shots_before)
         page.wait_for_function('window.nebeljagdTestState().attackCooldown === 0')
         bow_samples = samples(page)
-        assert {'draw', 'release'}.issubset({s['attackPhase'] for s in bow_samples}), bow_samples
+        assert any(s['shotsFired']==shots_before+1 for s in bow_samples), bow_samples
         settle_projectiles(page)
-        check('E equips bow in front of body; F visibly draws string before one released arrow', {
+        check('E equips bow beside body; F fires immediately', {
             'drawPose': draw, 'maxDraw': max(s['bowDraw'] for s in bow_samples),
             'phases': list(dict.fromkeys(s['attackPhase'] for s in bow_samples))})
 
@@ -129,8 +129,8 @@ try:
         page.wait_for_function('window.nebeljagdTestState().rollCooldown > 0')
         page.wait_for_function('window.nebeljagdTestState().rollRemaining === 0 && window.nebeljagdTestState().attackCooldown === 0')
         cancelled = state(page)['combat']
-        assert cancelled['shotsFired'] == shots_before and cancelled['attackPhase'] == 'idle', cancelled
-        check('Rolling during the bow windup cancels the pending arrow', cancelled)
+        assert cancelled['shotsFired'] == shots_before+1 and cancelled['attackPhase'] == 'idle', cancelled
+        check('Rolling after an immediate bow shot never duplicates it', cancelled)
 
         inspect(page, -8, 6, math.pi)
         house_impact = fire_and_wait_impact(page, 'house', 'combat-house-impact.png')

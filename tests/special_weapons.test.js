@@ -140,3 +140,20 @@ test('a landed poison cloud lasts exactly three seconds and stops damaging at ex
   tick(1); assert.ok(Math.abs(target.health - 82) < 1e-6);
   special.dispose();
 });
+
+
+test('artillery range follows the character, clamps distant targets and disappears on cancel or release', () => {
+  const { special, player, tick, scene } = setup();
+  special.beginAim(player, 0);
+  const range = scene.getObjectByName('Giftstab · maximale Reichweite');
+  assert.ok(range.visible);
+  assert.equal(special.telemetry.aimRange.radius, 12);
+  player.set(4, 0, -2); tick(.1);
+  assert.equal(range.position.x, 4); assert.equal(range.position.z, -2);
+  special.aimAt(player, { x: 100, z: 100 });
+  assert.ok(Math.abs(Math.hypot(special.telemetry.target.x-4, special.telemetry.target.z+2)-12)<1e-8);
+  special.cancelAim(); assert.equal(range.visible, false);
+  special.beginAim(player, 0); special.releasePoison(origin, payload);
+  assert.equal(range.visible, false); assert.equal(special.telemetry.aimRange, null);
+  special.dispose();
+});

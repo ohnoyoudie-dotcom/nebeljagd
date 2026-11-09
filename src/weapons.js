@@ -424,7 +424,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     return group;
   }
   let committedBowDirection = 0;
-  let bowHolding = false, bowHoldAge = 0, bowReleaseDraw = 0;
+  let bowReleaseDraw = 0;
   let bowAim = null;
   function trackBowAim(direction = characterGroup.rotation.y) {
     committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
@@ -433,7 +433,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     characterGroup.rotation.y = committedBowDirection;
   }
   function alignNockedArrow() {
-    const aim = bowHolding ? committedBowDirection : characterGroup.rotation.y;
+    const aim = characterGroup.rotation.y;
     const relative = aim - characterGroup.rotation.y;
     heldBow.rotation.y = Math.PI / 2 + relative;
     heldBow.updateMatrix();
@@ -545,7 +545,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     equippedItem = { ...weaponStats(item.type, item.rarity, item.variant), label: item.label, name: item.name,
       id: item.id, variant: item.variant, model: item.model,
       rotation: item.rotation ?? 0, scale: item.scale ?? 1 };
-    bowHolding = false; bowHoldAge = 0;
+    bowReleaseDraw = 0;
     applyTier(held, equippedItem.rarity);
     clearSwordCombo();
     cooldown = 0; attackAge = -1; attackPhase = 'idle';
@@ -563,26 +563,31 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function attack(position, direction) {
-    if (!equippedType || bowHolding || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
+    if (!equippedType || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
     if (equippedType === 'poisonStaff') {
       if (!specials.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
     committedBowDirection = Number.isFinite(direction) ? direction : characterGroup.rotation.y;
-    bowHolding = equippedType === 'bow'; bowHoldAge = 0; bowReleaseDraw = 0;
-    if (bowHolding) trackBowAim(direction);
+    bowReleaseDraw = 0;
+    if (equippedType === 'bow') trackBowAim(direction);
     attackAge = 0; shotReleased = false;
     attackDuration = equippedItem.cooldown;
-    cooldown = bowHolding ? 0 : attackDuration;
+    cooldown = attackDuration;
     if (equippedType === 'sword') {
       swordIndex = swordComboRemaining > 0 ? (swordIndex + 1) % SWORD_PATTERNS.length : 0;
       swordComboRemaining = attackDuration + SWORD_COMBO_GRACE;
       swordSwingId++;
       swordEffects.beginSwing({ color: equippedItem.color, pattern: SWORD_PATTERNS[swordIndex] });
     }
-    attackPhase = equippedType === 'bow' ? 'draw' : equippedType === 'sword' ? 'windup' : 'channel';
+    attackPhase = equippedType === 'bow' ? 'release' : equippedType === 'sword' ? 'windup' : 'channel';
+    if (equippedType === 'bow') {
+      // Press fires immediately; only a short recoil remains in the side stance.
+      attackAge = .23; bowReleaseDraw = .65; shotReleased = true;
+    }
     applyHeldPose();
-    return { type: equippedType, message: equippedType === 'bow' ? 'Bogensehne gespannt' : equippedType === 'sword' ? 'Schwertschlag' : 'Zauber gewirkt' };
+    if (equippedType === 'bow') releaseArrow(position);
+    return { type: equippedType, message: equippedType === 'bow' ? 'Pfeil abgeschossen' : equippedType === 'sword' ? 'Schwertschlag' : 'Zauber gewirkt' };
   }
 
   function applyHeldPose() {
@@ -598,7 +603,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     combatPose.swordWeight = 0; combatPose.swordLead = 1; combatPose.chestLean = 0;
     combatPose.bowStringOffset = null;
     if (equippedType === 'bow') {
-      bowDraw = bowHolding ? ease(0, .35, bowHoldAge) : attackAge < 0 ? 0 : bowReleaseDraw * (1 - ease(.23, .36, attackAge));
+      bowDraw = attackAge < 0 ? 0 : bowReleaseDraw * (1 - ease(.23, .36, attackAge));
       // +X is the avatar's left. Keep the arrow beside the right shoulder,
       // with the left arm extended forward and the right elbow outside the ribs.
       leftHand.set(-.28, 1.42, .52);
@@ -613,7 +618,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       bowAimOrigin.copy(leftHand).add(offset);
       characterGroup.updateWorldMatrix(true, false); scene.updateWorldMatrix(true, false);
       scene.worldToLocal(characterGroup.localToWorld(bowAimOrigin));
-      const aim = bowHolding ? committedBowDirection : characterGroup.rotation.y;
+      const aim = characterGroup.rotation.y;
       bowAim = aimBowAtDestructible(world, combat, bowAimOrigin, aim, 18 * 1.35, ownerId, isVisible);
       const recoil = attackAge >= .23 && attackAge < .40 ? Math.sin((attackAge - .23) * 38) * .035 : 0;
       const bowPitch = (bowAim?.pitch ?? 0) + recoil;
@@ -769,18 +774,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const staffTip = new THREE.Vector3();
   function cancelAim() {
     specials.cancelAim();
-    if (bowHolding) { bowHolding = false; bowHoldAge = 0; attackAge = -1; attackPhase = 'idle'; shotReleased = true; applyHeldPose(); }
   }
-  function releaseAttack(position, direction = characterGroup.rotation.y) {
-    if (bowHolding) {
-      if (!position || equippedType !== 'bow' || characterGroup.userData.rolling) { cancelAim(); return false; }
-      trackBowAim(direction);
-      bowReleaseDraw = bowDraw; bowHolding = false;
-      attackAge = .23; attackPhase = 'release'; shotReleased = true;
-      cooldown = equippedItem.cooldown;
-      applyHeldPose(); releaseArrow(position);
-      return true;
-    }
+  function releaseAttack(position) {
     if (!specials.aiming || equippedType !== 'poisonStaff' || characterGroup.userData.rolling) { specials.cancelAim(); return false; }
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
@@ -889,9 +884,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       if (swordIndex >= 0) clearSwordCombo();
     }
     if (attackAge >= 0) {
-      if (bowHolding) { trackBowAim(direction); bowHoldAge += delta; attackAge = Math.min(.22, bowHoldAge); }
-      else attackAge += delta;
-      if (equippedType === 'bow') attackPhase = attackAge < .23 ? 'draw' : attackAge < .36 ? 'release' : 'recover';
+      attackAge += delta;
+      if (equippedType === 'bow') attackPhase = attackAge < .36 ? 'release' : 'recover';
       else if (equippedType.endsWith('Staff')) attackPhase = attackAge < .25 ? 'channel' : attackAge < .4 ? 'release' : 'recover';
       else {
         const p = attackAge / attackDuration;
@@ -980,7 +974,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   function reset({ reroll = true } = {}) {
-    bowHolding = false; bowHoldAge = 0; bowAim = null;
+    bowReleaseDraw = 0; bowAim = null;
     equippedType = null; equippedItem = null; equippedPickup = null; cooldown = 0; attackAge = -1; attackPhase = 'idle'; bowDraw = swordSweep = 0;
     shotReleased = false; shotCount = impactCount = 0; lastImpact = lastSpellLaunch = null;
     for (const held of Object.values(heldByType)) held.visible = false;
@@ -1049,7 +1043,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     items,
     get equipped() { return equippedType; },
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
-    get bowHolding() { return bowHolding; },
+    get bowHolding() { return false; },
+    get aiming() { return specials.aiming; },
     get attackCooldown() { return specials.moonBusy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
@@ -1079,7 +1074,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
       let meshCount = 0;
       held?.traverse(part => { if (part.isMesh) meshCount++; });
-      return { attackPhase, bowDraw, bowHolding, bowAlignment, bowAim: bowAim ? { ...bowAim } : null, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
+      return { attackPhase, bowDraw, bowHolding: false, bowAlignment, bowAim: bowAim ? { ...bowAim } : null, swordSweep, shotsFired: shotCount, impacts: impactCount, lastImpact, damageHits, lastDamage,
         swordCombo: { index: swordIndex + 1, pattern: SWORD_PATTERNS[swordIndex] ?? null, swingId: swordSwingId,
           active: equippedType === 'sword' && attackAge >= 0, progress: equippedType === 'sword' && attackAge >= 0 ? Math.min(1, attackAge / attackDuration) : 0,
           remaining: swordComboRemaining },

@@ -34,42 +34,22 @@ with sync_playwright() as p:
    elif mode=='mouse':
     page.mouse.move(750,550);page.mouse.down()
    else:page.keyboard.down('f')
-   page.wait_for_function('nebeljagdTestState().combat.bowDraw===1')
+   page.wait_for_function('nebeljagdTestState().combat.shotsFired===1 && window.__arrowFrame')
    started=page.evaluate('nebeljagdTestState().elapsed')
-   page.wait_for_function('t=>nebeljagdTestState().elapsed>t+1',arg=started)
+   page.wait_for_function('t=>nebeljagdTestState().elapsed>t+1.5',arg=started)
    held=page.evaluate('nebeljagdTestState().combat')
-   assert held['shotsFired']==0 and held['bowHolding'] and held['bowDraw']==1,held
+   assert held['shotsFired']==1 and not held['bowHolding'],held
    assert held['heldPose']['bow']['x']<-.22 and held['bowAlignment']['error']<.025,held
    assert held['rigPose']['rightArm']['elbow']['x']<-.22,held['rigPose']
-   report['checks'].append(label+': held full draw without firing; hands and bow stay beside the torso')
-   page.screenshot(path=str(OUT/(label+'-drawn.png')))
-   # Reproduce the reported bug with real movement inputs while still holding.
-   if touch:
-    joy=page.locator('#joystick').bounding_box();cx=joy['x']+joy['width']/2;cy=joy['y']+joy['height']/2
-    session.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[attack_point,{'id':2,'x':cx-30,'y':cy}]})
-   else:page.keyboard.down('a')
-   page.wait_for_function('Math.abs(nebeljagdTestState().direction+Math.PI/2)<.02 && Math.abs(nebeljagdTestState().combat.bowAlignment.direction+Math.PI/2)<.02')
-   if touch:session.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[attack_point,{'id':2,'x':cx,'y':cy-30}]})
-   else:
-    page.keyboard.up('a');page.keyboard.down('w')
-   page.wait_for_function('Math.cos(nebeljagdTestState().direction)<-.999 && Math.cos(nebeljagdTestState().combat.bowAlignment.direction)<-.999')
-   # Keep both touch contacts down until the final release. CDP touchEnd
-   # ends the active gesture rather than reliably lifting just one finger.
-   if not touch:page.keyboard.up('w')
-   held=page.evaluate('nebeljagdTestState().combat')
-   assert held['shotsFired']==0 and held['bowHolding'] and held['bowDraw']==1,held
-   assert held['bowAlignment']['error']<.025,held['bowAlignment']
-   (OUT/(label+'-pose.json')).write_text(json.dumps(held,indent=2))
-   page.screenshot(path=str(OUT/(label+'-turned.png')))
    if touch:session.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
    elif mode=='mouse':page.mouse.up()
    else:page.keyboard.up('f')
-   page.wait_for_function('nebeljagdTestState().combat.arrowsFlying>0')
+   assert page.evaluate('nebeljagdTestState().combat.shotsFired')==1
+   report['checks'].append(label+': press fires immediately; holding and release never repeat; side grip preserved')
    page.wait_for_function('window.__arrowFrame')
    (OUT/(label+'-flight.png')).write_bytes(base64.b64decode(page.evaluate('window.__arrowFrame').split(',',1)[1]))
    state=page.evaluate('window.__arrowState')
-   assert math.cos(state['combat']['arrows'][0]['direction'])<-.999,state['combat']['arrows']
-   report['checks'].append(label+': held left, changed to up, kept full draw, released exactly one arrow upward')
+   assert abs(state['combat']['arrows'][0]['direction']-.8)<.02,state['combat']['arrows']
    assert state['combat']['shotsFired']==1,state['combat']
    assert state['combat']['arrowModel']['source'].endswith('feathered spear 3d model.glb')
    assert state['combat']['arrowModel']['nominalLength']==1.05

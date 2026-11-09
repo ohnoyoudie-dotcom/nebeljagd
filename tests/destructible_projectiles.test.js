@@ -78,7 +78,7 @@ function fixture(type, { blocked = false, behind = false, step = 1 / 60 } = {}) 
   return { actor, weapons, barrel, enemy, world, combat, hits, bodies, tick,
     attack() {
       assert.ok(weapons.attack(actor.position, 0), `${type} begins an attack`);
-      if (type === 'bow') { tick(.4); assert.equal(weapons.releaseAttack(actor.position), true); }
+      if (type === 'bow') assert.equal(weapons.releaseAttack(actor.position), false);
       if (type === 'poisonStaff') {
         weapons.aimAt(actor.position, barrel.position); assert.equal(weapons.releaseAttack(actor.position), true);
       }

@@ -68,7 +68,12 @@ die Waffe und legt die bisherige an der Fundstelle ab. **F** greift an:
 
 - Giftstab: Maustaste auf dem Spielfeld oder die Angriffstaste halten, den
   Zielkreis bewegen und loslassen. Mit F halten lässt sich über den Mauszeiger
-  zielen. Auf Touch-Geräten die Angriffstaste halten und ziehen. Reichweite:
+  zielen. Auf Touch-Geräten die Angriffstaste halten und mit dem linken Stick
+  Richtung und Entfernung wählen (Mitte: nah, Rand: maximal). Eine bereits
+  laufende Bewegung behält dabei ihre Richtung; Loslassen des linken Sticks
+  stoppt sie. Ohne linken Stick kann durch Ziehen der Angriffstaste gezielt
+  werden. Der äußere Kreis zeigt die maximale Reichweite, der kleine Kreis
+  den Einschlagbereich. Reichweite:
   zwölf Meter; Wolkenradius: 2,4 Meter. Die Wolke besteht drei Sekunden und
   schädigt erreichbare Gegner im Bereich. Mauern blockieren Projektil und
   Wolkenschaden. Abbrechen, Rollen oder Pausieren verwirft ein gehaltenes Ziel.
@@ -114,3 +119,14 @@ Die Dateien im Importpaket dokumentieren den Stand der Modellaufbereitung.
 Spätere Spielprüfungen stehen getrennt in `test-results/tripo-weapons/` und
 werden im Veröffentlichungsworkflow als Prüfartefakt aufbewahrt. Die
 ursprünglichen Aufbereitungsbelege werden nicht nachträglich umgeschrieben.
+
+
+Aktuelle Bogensteuerung: Ein Druck auf F, die linke Maustaste oder die
+Angriffstaste schießt sofort genau einen Pfeil. Halten lädt nicht auf;
+Loslassen erzeugt keinen weiteren Schuss. Größe, Pfeilmodell und seitliche
+Bogenhaltung bleiben erhalten.
+
+Die Giftwolke pufft nach dem Einschlag in 0,16 Sekunden auf. Eine weiche,
+kreisförmige Dichtebegrenzung mit Abstand zur Renderbox verhindert eine
+sichtbare abgeschnittene Wolkenkante. Schaden, Radius und Lebensdauer
+bleiben unverändert.

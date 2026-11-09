@@ -102,9 +102,10 @@ def shoot(page,kind):
     wait(page,'nebeljagdTestState().attackCooldown===0')
     if kind=='bow':
         aim=None
+        shots_before=state(page)['combat']['shotsFired']
         page.keyboard.down('KeyF')
         try:
-            wait(page,'nebeljagdTestState().combat.bowDraw>=.5',timeout=30000)
+            wait(page,f'nebeljagdTestState().combat.shotsFired>{shots_before}',timeout=30000)
             held=state(page)['combat'];aim=held['bowAim']
             if aim:
                 assert held['bowAlignment']['error']<.04,held['bowAlignment']

@@ -36,7 +36,8 @@ function cloudMaterial(seed) {
       uniform float uAge, uFade, uSeed, uOrtho;
       ${noiseGLSL}
       float density(vec3 p) {
-        float spread = .58 + .42 * smoothstep(0.0, .45, uAge);
+        float burst = 1.0 - pow(1.0 - clamp(uAge / .16, 0.0, 1.0), 3.0);
+        float spread = .22 + .78 * burst;
         p.xz /= spread;
         float height = p.y * .5 + .5;
         vec3 q = p * vec3(2.5, 2.2, 2.5) + vec3(uSeed, -uAge * .55, uSeed * .7);
@@ -49,6 +50,9 @@ function cloudMaterial(seed) {
         vec2 drift = vec2(sin(p.z * 3.0 + uAge * .7), cos(p.x * 3.0 - uAge * .6)) * .10;
         float radial = length(p.xz + drift);
         float edge = 1.0 - smoothstep(.54 + field * .22, 1.0, radial);
+        // The unwarped envelope reaches zero before the proxy box on every side.
+        // Noise/drift must never expose a straight clipping face.
+        edge *= 1.0 - smoothstep(.78, 1.0, length(p.xz));
         float rising = smoothstep(.0, .12, height) * (1.0 - smoothstep(.25 + field * .45, .96, height));
         return edge * rising * smoothstep(.26, .70, field + .16 * (1.0 - radial));
       }
@@ -56,7 +60,7 @@ function cloudMaterial(seed) {
         vec3 origin = uOrtho > .5 ? vLocal - uDirection * 5.0 : uEye;
         vec3 ray = uOrtho > .5 ? uDirection : normalize(vLocal - origin);
         vec3 inv = 1.0 / (sign(ray + .000001) * max(abs(ray), vec3(.00001)));
-        vec3 a = (-1.0 - origin) * inv, b = (1.0 - origin) * inv;
+        vec3 a = (-1.15 - origin) * inv, b = (1.15 - origin) * inv;
         vec3 nearPlane = min(a,b), farPlane = max(a,b);
         float nearT = max(0.0, max(max(nearPlane.x,nearPlane.y),nearPlane.z));
         float farT = min(min(farPlane.x,farPlane.y),farPlane.z);
@@ -125,7 +129,7 @@ function thornGeometry() {
 /** Simulation owns lifetime/damage. This renderer owns and releases only VFX. */
 export function createPoisonVisuals(scene, radius, canSee = () => true) {
   const clock = { value: 0 }, clouds = new Set(), projectiles = new Set();
-  const box = new THREE.BoxGeometry(2,2,2), thorn = thornGeometry();
+  const box = new THREE.BoxGeometry(2.3,2.3,2.3), thorn = thornGeometry();
   const venom = new THREE.MeshStandardMaterial({ name: 'Gift · Jadekern', color: '#91bd45',
     emissive: '#315419', emissiveIntensity: .65, metalness: .2, roughness: .32 });
   const trail = trailMaterial(clock), axis = new THREE.Vector3(0,0,1);
@@ -181,7 +185,7 @@ export function createPoisonVisuals(scene, radius, canSee = () => true) {
   }
   function updateCloud(mesh, age, remaining) {
     mesh.material.uniforms.uAge.value=age;
-    mesh.material.uniforms.uFade.value=THREE.MathUtils.smoothstep(age,0,.18)*THREE.MathUtils.smoothstep(remaining,0,.65);
+    mesh.material.uniforms.uFade.value=(.12 + .88 * THREE.MathUtils.smoothstep(age,0,.045))*THREE.MathUtils.smoothstep(remaining,0,.65);
   }
   function removeProjectile(visual) {
     if(!projectiles.delete(visual)) return;

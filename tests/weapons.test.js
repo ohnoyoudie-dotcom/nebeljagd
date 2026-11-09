@@ -23,14 +23,12 @@ function setup(type, offset = 1.5) {
   return { weapons, position, traces, wallZ };
 }
 
-test('bow draws before release and swept flight impacts the wall without passing through', () => {
+test('bow fires on press and swept flight impacts the wall without passing through', () => {
   const { weapons, position, traces, wallZ } = setup('bow');
   weapons.attack(position, 0);
-  weapons.update(.12, .12, position);
-  assert.equal(weapons.telemetry.attackPhase, 'draw');
-  assert.equal(weapons.telemetry.shotsFired, 0);
-  assert.ok(weapons.telemetry.bowDraw > .2);
-  weapons.releaseAttack(position);
+  assert.equal(weapons.telemetry.attackPhase, 'release');
+  assert.equal(weapons.telemetry.shotsFired, 1);
+  assert.equal(weapons.releaseAttack(position), false);
   weapons.update(.12, .24, position);
   assert.equal(weapons.telemetry.shotsFired, 1);
   assert.equal(weapons.telemetry.impacts, 1);

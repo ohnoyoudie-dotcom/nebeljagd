@@ -68,6 +68,12 @@ with sync_playwright() as p:
         assert state(page)['combat']['special']==before
         passed('Real mouse hold/release launches poison, and pause freezes its visuals and flight')
         page.keyboard.press('Escape')
+        pause_when(page, 's.combat.special.clouds.some(c=>c.remaining<2.96)')
+        capture(page,'poison-impact')
+        page.keyboard.press('Escape')
+        pause_when(page, 's.combat.special.clouds.some(c=>c.remaining<2.84)')
+        capture(page,'poison-puff')
+        page.keyboard.press('Escape')
         pause_when(page, 's.combat.special.clouds.some(c=>c.remaining<2.35)')
         capture(page,'poison-cloud')
         if not BASELINE:
