@@ -67,15 +67,18 @@ Unbewaffnete Spieler nehmen erreichbare Waffen automatisch auf. **E** wechselt
 die Waffe und legt die bisherige an der Fundstelle ab. **F** greift an:
 
 - Giftstab: Angriff halten und zum Werfen loslassen. Der Reichweitenkreis
-  beginnt beim Spieler und wächst gleichmäßig: 3 m nach 0,3 s, 6 m nach 0,6 s,
-  maximal 12 m nach 1,2 s. Am Computer bestimmt der aktuelle Mauszeiger sofort
+  beginnt beim Spieler und wächst gleichmäßig: 6 m nach 0,3 s, 12 m nach 0,6 s,
+  maximal 24 m nach 1,2 s. Am Computer bestimmt der aktuelle Mauszeiger sofort
   die Richtung, auch beim Drücken von F ohne weitere Mausbewegung. Liegt die
   Maus näher, bleibt der Einschlag dort und wird nicht überschossen.
   Auf Touch-Geräten steuert der linke Stick die Richtung; die Haltedauer
   bestimmt die Entfernung. Eine laufende Bewegung behält ihre Richtung,
   bis der linke Stick losgelassen wird. Ohne linken Stick kann die Richtung
   auch durch Ziehen auf der gehaltenen Angriffstaste gewählt werden.
-  Wolkenradius: 2,4 m, Dauer: 3 s. Mauern blockieren Projektil und Wolkenschaden.
+  Wolkenradius: 4,8 m (9,6 m Durchmesser), Dauer: 3 s. Zielkreis, Wolke und
+  Schadensbereich verwenden denselben Radius. Die langsame Fluggeschwindigkeit
+  von 8,5 m/s ergibt bei voller Reichweite etwa 2,8 s Flugzeit.
+  Mauern blockieren Projektil und Wolkenschaden.
   Abbrechen, Rollen oder Pausieren verwirft das gehaltene Ziel und die Ladung.
 - Mondstab: eine sichtbare 3D-Sichel durchdringt Gegner, trifft pro Flugweg jeden
   Gegner höchstens einmal und kehrt nach Mauerkontakt oder zwölf Metern zurück.

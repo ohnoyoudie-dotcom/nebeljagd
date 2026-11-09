@@ -4,8 +4,8 @@ import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
-  poisonRange: 12, poisonChargeSeconds: 1.2, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
-  cloudRadius: 2.4, cloudDuration: 3 });
+  poisonRange: 24, poisonChargeSeconds: 1.2, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
+  cloudRadius: 4.8, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */
 export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, isVisible, { moonProjectilePrototype = null } = {}) {

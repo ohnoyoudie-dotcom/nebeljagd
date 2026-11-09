@@ -131,7 +131,7 @@ with sync_playwright() as p:
         assert page.evaluate('p => document.elementFromPoint(p.x,p.y)?.id === "game"', point), point
         page.mouse.move(point['x'], point['y'])
         page.mouse.down()
-        page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===12')
+        page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===24')
         page.mouse.up()
         pause_when(page, 's.combat.special.poisonFlights.some(f => f.age/f.duration > .43 && f.age/f.duration < .8)')
         flight = state(page)['combat']['special']['poisonFlights'][0]

@@ -32,8 +32,9 @@ Zielmarkierung bleibt deutlich, die Markierung einer aktiven Wolke ist dezenter.
 Es gibt keine zusätzlichen Texturen, dynamischen Lichter oder bildschirmweiten
 Renderdurchgänge. Das Volumen prüft die Tiefe an seiner Vorderfläche, damit es
 nicht an den Bodendreiecken abgeschnitten wird. Die Verdeckung innerhalb des
-Volumens ist eine Näherung ohne separate Tiefentextur. Bestehende Sichtbarkeit,
-3 Sekunden Dauer, 2,4 m Wirkungsradius und Schadensprüfung bleiben erhalten.
+Volumens ist eine Näherung ohne separate Tiefentextur. Die Sichtbarkeitsprüfung bleibt aktiv.
+Die Wolke wirkt 3 Sekunden lang mit 4,8 m Wirkungsradius; ihre sichtbare Größe,
+der Zielkreis und die Schadensprüfung verwenden dieselbe Fläche.
 Pause friert die Effekte ein; Ablauf, Neustart und Entsorgung geben die
 instanzeigenen Geometrien und Materialien frei.
 

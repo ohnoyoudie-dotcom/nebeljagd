@@ -73,7 +73,7 @@ with sync_playwright() as pw:
                     point=p.evaluate('x=>nebeljagdProjectPoint({x,z:-29})',x)
                     p.mouse.move(point['x'],point['y'])
                     p.keyboard.down('f')
-                    p.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===12')
+                    p.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===24')
                 p.evaluate('''() => {
                   const before=nebeljagdTestState();
                   const check=window.projectileBarrierCheck={maxZ:-Infinity,done:false,

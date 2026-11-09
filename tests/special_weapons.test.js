@@ -50,12 +50,12 @@ test('poison aiming clamps range, waits for release and clouds damage only reach
   const player = new THREE.Vector3();
   special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 100 });
   assert.equal(special.telemetry.target.z, 0, 'aim starts at the player');
-  tick(.3); assert.ok(Math.abs(special.telemetry.target.z-3)<1e-8);
   tick(.3); assert.ok(Math.abs(special.telemetry.target.z-6)<1e-8);
+  tick(.3); assert.ok(Math.abs(special.telemetry.target.z-12)<1e-8);
   tick(1.4); assert.equal(special.telemetry.target.z, SPECIAL_RULES.poisonRange); assert.equal(special.telemetry.poisonProjectiles, 0); assert.equal(hits.length, 0);
   special.aimAt(player, { x: 0, z: 6 });
-  combat.addTarget({ id: 'inside', position: { x: 0, y: 0, z: 6 }, maxHealth: 100 });
-  combat.addTarget({ id: 'outside', position: { x: 8, y: 0, z: 6 }, maxHealth: 100 });
+  combat.addTarget({ id: 'inside', position: { x: 4.3, y: 0, z: 6 }, maxHealth: 100 });
+  combat.addTarget({ id: 'outside', position: { x: 5.5, y: 0, z: 6 }, maxHealth: 100 });
   special.releasePoison(origin, { type: 'poisonStaff', damage: 18, poison: { damagePerSecond: 5 } });
   tick(.9); assert.equal(special.telemetry.clouds.length, 1);
   const remaining = special.telemetry.clouds[0].remaining;
@@ -67,22 +67,22 @@ test('poison aiming clamps range, waits for release and clouds damage only reach
   special.dispose();
 });
 
-test('poison flies a high, slow artillery arc, freezes on pause and lands on the aimed terrain', () => {
+test('poison reaches twenty-four metres in a slow artillery arc, freezes on pause and lands on the aimed terrain', () => {
   const { special, player, tick } = setup();
-  special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 12 }); special.update(SPECIAL_RULES.poisonChargeSeconds, player, 0);
+  special.beginAim(player, 0); special.aimAt(player, { x: 0, z: 24 }); special.update(SPECIAL_RULES.poisonChargeSeconds, player, 0);
   special.releasePoison(origin, { type: 'poisonStaff', damage: 18 });
   const flight = special.telemetry.poisonFlights[0];
-  assert.ok(flight.duration > 1.4 && flight.duration < 1.5, '12 m shot takes about 1.42 seconds');
+  assert.ok(flight.duration > 2.8 && flight.duration < 2.9, '24 m shot takes about 2.83 seconds');
   tick(flight.duration / 2);
   const middle = special.telemetry.poisonFlights[0];
   assert.ok(middle.position.y > 4.7 && middle.position.y < 4.8, 'apex clears ordinary cover');
-  assert.ok(Math.abs(middle.position.z - 6) < 1e-6);
+  assert.ok(Math.abs(middle.position.z - 12) < 1e-6);
   special.update(0, player, 100);
   assert.deepEqual(special.telemetry.poisonFlights[0], middle);
   tick(flight.duration / 2);
   assert.equal(special.telemetry.poisonProjectiles, 0);
   assert.equal(special.telemetry.clouds.length, 1);
-  assert.ok(Math.abs(special.telemetry.clouds[0].position.z - 12) < 1e-6);
+  assert.ok(Math.abs(special.telemetry.clouds[0].position.z - 24) < 1e-6);
   assert.ok(Math.abs(special.telemetry.clouds[0].remaining - 3) < 1e-6);
   special.dispose();
 });
@@ -153,7 +153,7 @@ test('artillery range follows the character, clamps distant targets and disappea
   player.set(4, 0, -2); tick(1.2);
   assert.equal(range.position.x, 4); assert.equal(range.position.z, -2);
   special.aimAt(player, { x: 100, z: 100 });
-  assert.ok(Math.abs(Math.hypot(special.telemetry.target.x-4, special.telemetry.target.z+2)-12)<1e-8);
+  assert.ok(Math.abs(Math.hypot(special.telemetry.target.x-4, special.telemetry.target.z+2)-24)<1e-8);
   special.cancelAim(); assert.equal(range.visible, false);
   special.beginAim(player, 0); special.releasePoison(origin, payload);
   assert.equal(range.visible, false); assert.equal(special.telemetry.aimRange, null);
@@ -162,7 +162,7 @@ test('artillery range follows the character, clamps distant targets and disappea
 
 
 test('hold duration alone controls short and long throws, pause freezes charge and the mouse direction can change', () => {
-  for (const [hold,distance] of [[0,0],[.2,2],[.6,6],[1.2,12],[4,12]]) {
+  for (const [hold,distance] of [[0,0],[.2,4],[.6,12],[1.2,24],[4,24]]) {
     const { special, player, tick } = setup();
     special.beginAim(player, 0); special.aimAt(player, {x:30,z:0});
     tick(hold);

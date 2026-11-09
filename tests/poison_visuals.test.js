@@ -38,6 +38,12 @@ test('one continuous cloud volume fades in/out, has independent age, and release
   land();
   const mesh=scene.getObjectByName('Giftwolke · turbulentes Volumen');
   assert.equal(mesh.geometry.type,'BoxGeometry');
+  const boundary=mesh.parent.children.find(p=>p.geometry?.type==='RingGeometry');
+  const target=scene.getObjectByName('Giftwolke · Zielbereich');
+  assert.equal(special.telemetry.clouds[0].radius,4.8);
+  assert.equal(mesh.scale.x,4.8); assert.equal(mesh.scale.z,4.8);
+  assert.equal(boundary.geometry.parameters.outerRadius,4.8);
+  assert.equal(target.geometry.parameters.outerRadius,4.8,'aim, cloud volume and damage cover the enlarged area together');
   assert.equal(mesh.parent.children.filter(p=>p.isMesh).length,2,'one volume and the useful ground boundary');
   assert.equal(mesh.material.depthTest,true); assert.equal(mesh.material.depthWrite,false);
   assert.equal(mesh.material.side,THREE.FrontSide,'test the volume entry rather than clipping its exit against the ground');
