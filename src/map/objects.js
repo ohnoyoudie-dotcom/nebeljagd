@@ -61,6 +61,8 @@ export const OBJECT_CATALOG = Object.freeze([
     variants: [{ id: 'kit-tripo-moon-staff', label: 'Mondstab · Tripo' }] },
   { kind: 'starStaff', label: 'Sternstab', defaultVariant: 'kit-tripo-star-staff', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'kit-tripo-star-staff', label: 'Sternstab · Tripo' }] },
+  { kind: 'gravityStaff', label: 'Gravitationsstab', defaultVariant: 'kit-tripo-gravity-staff', defaultScale: 1, footprintRadius: .65,
+    variants: [{ id: 'kit-tripo-gravity-staff', label: 'Gravitationsstab · Tripo' }] },
   // Dimensions follow the already committed environment-kit collision hints.
   // Model placement stays explicit; adding a catalogue item never adds scenery.
   { kind: 'wall', label: 'Mauer', defaultVariant: 'kit-stone', defaultScale: 1,
@@ -98,7 +100,7 @@ const placementAssetIds = new Set([
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
   'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
-  'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff',
+  'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff', 'gravityStaff:kit-tripo-gravity-staff',
 ]);
 export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.flatMap(definition => {
   const variants = definition.variants.filter(variant => !variant.retired && placementAssetIds.has(variant.assetId));

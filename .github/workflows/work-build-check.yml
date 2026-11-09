@@ -43,6 +43,14 @@ jobs:
           fi
           printf '%s  %s\n' "$SHA" "$MODEL" | sha256sum --check
           echo "Tree1 leaf-mask GLB validated: $(wc -c < "$MODEL") bytes"
+      - name: Optimize uploaded gravity staff for offline gameplay
+        run: |
+          set -euo pipefail
+          if [ ! -f assets/imported/tripo-gravity-staff/runtime/gravity-staff.glb ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq --no-install-recommends blender
+            blender -b -t 3 --python scripts/prepare-gravity-staff.py
+          fi
       - name: Install and run unit tests
         run: |
           npm ci
@@ -152,7 +160,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           # Publish the exact verified binary alongside the matching browser build.
-          git add welt assets/imported/user-trees/runtime/tree1.glb
+          git add welt assets/imported/user-trees/runtime/tree1.glb assets/imported/tripo-gravity-staff
           if ! git diff --cached --quiet; then
             git commit -m 'build: publish verified work editor and game'
             git push origin HEAD:work

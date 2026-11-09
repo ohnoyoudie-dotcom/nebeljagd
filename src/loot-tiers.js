@@ -44,6 +44,7 @@ export const WEAPON_DEFINITIONS = Object.freeze({
   poisonStaff: Object.freeze({ type: 'poisonStaff', label: 'Giftstab', damage: 14, cooldown: .85, range: 12, effect: 'poison' }),
   moonStaff: Object.freeze({ type: 'moonStaff', label: 'Mondstab', damage: 22, cooldown: .85, range: 12, effect: null }),
   starStaff: Object.freeze({ type: 'starStaff', label: 'Sternstab', damage: 21, cooldown: .78, range: 23, effect: null }),
+  gravityStaff: Object.freeze({ type: 'gravityStaff', label: 'Gravitationsstab', damage: 14, cooldown: 2.8, range: 10, effect: 'gravity' }),
 });
 export const WEAPON_TYPES = Object.freeze(Object.keys(WEAPON_DEFINITIONS));
 export const STAFF_TYPES = Object.freeze(WEAPON_TYPES.filter(type => type.endsWith('Staff')));

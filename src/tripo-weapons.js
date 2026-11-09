@@ -7,6 +7,8 @@ import poisonStaffUrl from '../assets/imported/tripo-extra-weapons/runtime/poiso
 import moonStaffUrl from '../assets/imported/tripo-extra-weapons/runtime/moon-staff.glb?url&inline';
 import starStaffUrl from '../assets/imported/tripo-star-moon/runtime/star-staff.glb?url&inline';
 import starStaffInspection from '../assets/imported/tripo-star-moon/inspections/star-staff.json' with { type: 'json' };
+import gravityStaffUrl from '../assets/imported/tripo-gravity-staff/runtime/gravity-staff.glb?url&inline';
+import gravityStaffInspection from '../assets/imported/tripo-gravity-staff/inspections/gravity-staff.json' with { type: 'json' };
 import ornateBowUrl from '../assets/imported/tripo-extra-weapons/runtime/ornate-bow.glb?url&inline';
 import ornateBowInspection from '../assets/imported/tripo-extra-weapons/inspections/ornate-bow.json' with { type: 'json' };
 import poisonStaffInspection from '../assets/imported/tripo-extra-weapons/inspections/poison-staff.json' with { type: 'json' };
@@ -20,6 +22,8 @@ const SOURCES = {
   'kit-tripo-poison-staff': { url: poisonStaffUrl, name: 'Giftstab · Tripo', tip: poisonStaffInspection.normalization.tipPoint },
   'kit-tripo-star-staff': { url: starStaffUrl, name: 'Sternstab · Tripo', tip: starStaffInspection.normalization.tipPoint,
     source: 'assets/inbox/arcane star staff 3d model.glb' },
+  'kit-tripo-gravity-staff': { url: gravityStaffUrl, name: 'Gravitationsstab · Tripo', tip: gravityStaffInspection.normalization.tipPoint,
+    source: 'assets/inbox/fantasy staff 3d model.glb' },
   'kit-tripo-moon-staff': { url: moonStaffUrl, name: 'Mondstab · Tripo', tip: moonStaffInspection.normalization.tipPoint },
   'kit-tripo-ornate-bow': { url: ornateBowUrl, name: 'Verzierter Bogen · Tripo' },
 };

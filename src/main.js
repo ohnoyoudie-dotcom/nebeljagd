@@ -13,7 +13,6 @@ import { createPickups } from './pickups.js';
 import { rollLootRarity } from './loot-tiers.js';
 import { createZone } from './zone.js';
 import { createWeapons } from './weapons.js';
-import { SPECIAL_RULES } from './special-weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
 import { loadFireballModel } from './fireball-model.js';
 import { loadProjectileModels } from './projectile-models.js';
@@ -319,8 +318,8 @@ function beginAimDrag(event) {
   const direction = new THREE.Vector2(Math.sin(state.direction), Math.cos(state.direction));
   touchAim = { stickUsed: false, movement: stick.clone(), direction };
   const start = groundPointer(event);
-  if (start) aimDrag = { start, target: new THREE.Vector3(player.x + direction.x * SPECIAL_RULES.poisonRange,
-    player.y, player.z + direction.y * SPECIAL_RULES.poisonRange) };
+  if (start) aimDrag = { start, target: new THREE.Vector3(player.x + direction.x * weapons.aimRange,
+    player.y, player.z + direction.y * weapons.aimRange) };
 }
 function moveAttackAim(event, relative = false) {
   if (state.phase !== 'playing' || !weapons.aiming || (relative && touchAim?.stickUsed)) return;
@@ -361,8 +360,8 @@ function simulate(dt) {
   practiceActors.resolvePlayerMovement(player, 0.42);
   world.resolveMovement(player, 0.42);
   player.y = world.heightAt(player.x, player.z);
-  if (touchAim) weapons.aimAt(player, { x: player.x + touchAim.direction.x * SPECIAL_RULES.poisonRange,
-    z: player.z + touchAim.direction.y * SPECIAL_RULES.poisonRange });
+  if (touchAim) weapons.aimAt(player, { x: player.x + touchAim.direction.x * weapons.aimRange,
+    z: player.z + touchAim.direction.y * weapons.aimRange });
   else if (aimUsesMouse && mouseAimPointer) moveAttackAim(mouseAimPointer);
   const travelled = Math.hypot(player.x - lastPosition.x, player.z - lastPosition.z);
   state.actualSpeed = travelled / dt;

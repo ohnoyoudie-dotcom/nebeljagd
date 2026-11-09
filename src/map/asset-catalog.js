@@ -118,6 +118,8 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein aufbereiteter Mondstab. Verschießt Mondmagie mit direktem Schaden; die Seltenheit ist frei wählbar.', 'tripo-extra-weapons'),
   tripo('starStaff', 'kit-tripo-star-staff', 'Sternstab · Tripo', 'star-staff', 'arcane star staff 3d model',
     'Dein texturierter Sternstab. Verschießt einen geraden Sternenblitz mit funkelnder Lichtspur.', 'tripo-star-moon'),
+  tripo('gravityStaff', 'kit-tripo-gravity-staff', 'Gravitationsstab · Tripo', 'gravity-staff', 'fantasy staff 3d model',
+    'Violettes Gravitationsfeld: nach kurzer Warnung werden Gegner hineingezogen, bevor eine Explosion folgt.', 'tripo-gravity-staff'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 
 const byId = new Map(ASSET_CATALOG.map(asset => [asset.id, asset]));
@@ -128,6 +130,9 @@ export function getVariantAsset(kind, variant) { return byId.get(`${kind}:${vari
 export function getVariantPreviewSvg(kind, variant) {
   const asset = getVariantAsset(kind, variant);
   if (!asset) return '';
+  if (kind === 'gravityStaff' && variant === 'kit-tripo-gravity-staff' && !previews[asset.id]) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 192" role="img" aria-label="Gravitationsstab Vorschau"><rect width="256" height="192" fill="#24172d"/><path d="M124 183V88" stroke="#9d8eaa" stroke-width="11" stroke-linecap="round"/><circle cx="124" cy="57" r="30" fill="#191126" stroke="#b07cff" stroke-width="5"/><ellipse cx="124" cy="57" rx="49" ry="12" fill="none" stroke="#d7a7ff" stroke-width="4" transform="rotate(-23 124 57)"/><circle cx="124" cy="57" r="13" fill="#582083"/></svg>';
+  }
   const uri = previews[asset.id];
   if (!/^data:image\/webp;base64,[A-Za-z0-9+/=]+$/.test(uri ?? '')) return '';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 192" role="img" aria-label="Modellvorschau"><image width="256" height="192" href="${uri}"/></svg>`;

@@ -18,6 +18,7 @@ const icon = (name, className = '') => {
     fireStaff: '<path d="m5 22 9-14m-5 7 4 2M13 11c-5-2-2-6 1-8 0 3 5 3 4 6a3 3 0 0 1-5 2Z"/>',
     iceStaff: '<path d="m5 22 9-14M14 1v12M8 4l12 6M8 10l12-6M11 2l3 2 3-2m-6 10 3-2 3 2"/>',
     poisonStaff: '<path d="m5 22 9-13m-5 6 4 2M14 2c-1 3-5 5-5 8a5 5 0 0 0 10 0c0-3-4-5-5-8Z"/><path d="M12 10h.01M16 10h.01m-4 3 2 1 2-1"/>',
+    gravityStaff: '<path d="m4 22 9-14m-4 5 4 2"/><circle cx="16" cy="6" r="4"/><ellipse cx="16" cy="6" rx="7" ry="2" transform="rotate(-25 16 6)"/>',
     moonStaff: '<path d="m5 22 9-13m-5 6 4 2M18 2a6 6 0 1 0 4 9 6 6 0 0 1-4-9Z"/><path d="m8 3 .5 1.5L10 5l-1.5.5L8 7l-.5-1.5L6 5l1.5-.5Z"/>',
     starStaff: '<path d="m5 22 9-12m-5 6 3 2M15 1l1.7 4.6 4.8.3-3.7 3 1.2 4.7-4-2.7-4 2.7 1.2-4.7-3.7-3 4.8-.3Z"/>',
     heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
