@@ -465,8 +465,8 @@ function moveStick(event) {
     touchAim.stickUsed = true;
     // Stick chooses direction; hold duration alone controls throw distance.
     if (stick.length() > .08) touchAim.direction.copy(stick).normalize();
-    weapons.aimAt(player, { x: player.x + touchAim.direction.x * SPECIAL_RULES.poisonRange,
-      z: player.z + touchAim.direction.y * SPECIAL_RULES.poisonRange });
+    weapons.aimAt(player, { x: player.x + touchAim.direction.x * weapons.aimRange,
+      z: player.z + touchAim.direction.y * weapons.aimRange });
   }
   if (ui.joystickKnob) ui.joystickKnob.style.transform = `translate(-50%, -50%) translate(${stick.x * limit}px, ${stick.y * limit}px)`;
 }
