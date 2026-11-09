@@ -194,10 +194,29 @@ export function createPickups(scene, { placements, heightAt = () => 0, viewDista
       item.glint.scale.setScalar((item.type === 'gold' ? .55 : 1) * (0.6 + Math.pow(Math.max(0, Math.sin(animationTime * 3 + item.phase)), 6) * 1.3));
       item.ring.scale.setScalar((item.type === 'gold' ? .65 : 1) * (1 + Math.sin(animationTime * 2 + item.phase) * 0.045));
       const available = item.type !== 'heart' || remainingHealth < maxHealth;
-      const nearCollector = Boolean(playerPosition && Math.hypot(playerPosition.x - item.x, playerPosition.z - item.z) < 1.15);
-      const clearReach = !nearCollector || !world?.traceProjectile || !world.traceProjectile(
+      let distance = playerPosition ? Math.hypot(playerPosition.x - item.x, playerPosition.z - item.z) : Infinity;
+      const gold = item.type === 'gold';
+      const withinReach = distance < (gold ? 2.6 : 1.15);
+      const clearReach = !withinReach || !world?.traceProjectile || !world.traceProjectile(
         { x: playerPosition.x, y: (playerPosition.y ?? heightAt(playerPosition.x, playerPosition.z)) + .55, z: playerPosition.z },
         { x: item.x, y: item.groundY + .55, z: item.z }, .03);
+      if (gold && canCollect && inSight && item.flight <= 0 && withinReach && clearReach && dt > 0) {
+        // A short, accelerating flight toward the moving player. Test the full
+        // reach every frame so coins cannot be pulled through a wall or cover.
+        const delta = Math.min(dt, .1);
+        item.pullSpeed = Math.min(12, (item.pullSpeed || 2) + delta * 22);
+        const travel = Math.min(distance, item.pullSpeed * delta);
+        if (distance > 0) {
+          item.x += (playerPosition.x - item.x) / distance * travel;
+          item.z += (playerPosition.z - item.z) / distance * travel;
+          item.groundY = heightAt(item.x, item.z);
+          item.group.position.set(item.x, item.groundY, item.z);
+          distance -= travel;
+        }
+        item.ring.visible = item.halo.visible = false;
+      } else if (dt > 0) item.pullSpeed = 0;
+      if (gold && item.pullSpeed > 0) item.ring.visible = item.halo.visible = false;
+      const nearCollector = distance < (gold ? .3 : 1.15);
       if (canCollect && inSight && item.flight <= 0 && available && clearReach && nearCollector) {
         item.collected = true;
         item.group.visible = false;

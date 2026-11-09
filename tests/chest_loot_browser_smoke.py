@@ -67,9 +67,21 @@ with sync_playwright() as pw:
         (OUT/'open-chest.png').write_bytes(base64.b64decode(page.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]))
         (OUT/'gold-coins.json').write_text(json.dumps(state()['pickups'],indent=2))
         page.keyboard.press('Escape')
-        for coin in coins:
-            page.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z})', coin)
-            page.wait_for_function('id=>nebeljagdTestState().pickups.find(p=>p.id===id).collected', arg=coin['id'])
+        page.evaluate('''() => {
+          window.__pullSample=null;
+          const sample=()=>{const s=nebeljagdTestState();
+            const coin=s.pickups.find(p=>p.type==='gold'&&!p.collected&&p.z>1.75);
+            if(coin){window.__pullSample={coin,player:s.position};return;}
+            requestAnimationFrame(sample);
+          };requestAnimationFrame(sample);
+          nebeljagdInspect({x:0,z:3.6});
+        }''')
+        page.wait_for_function('window.__pullSample')
+        pulled=page.evaluate('window.__pullSample')
+        assert abs(pulled['player']['z']-3.6)<.001, pulled
+        page.wait_for_function('nebeljagdTestState().pickups.filter(p=>p.type==="gold").every(p=>p.collected)')
+        assert abs(state()['position']['z']-3.6)<.001
+        checks.append('Nearby gold visibly flies to the stationary player from beyond the old pickup radius')
         assert state()['gold']==sum(c['amount'] for c in coins)
         expect(page.locator('#goldCount')).to_have_text(str(state()['gold']))
         checks.append('Real chest drops two small symmetric wizard-hat gold coins: slow clockwise turn, pause freezes rotation, collection awards exact gold')

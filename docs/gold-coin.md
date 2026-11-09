@@ -18,3 +18,9 @@ Prüfung: gespiegelte Positionen, Normalen und Farben; Drehrichtung in der
 Spielkamera, langsame kontinuierliche Bewegung und Pause; echte Truhenöffnung,
 Aufnahme und Neustart in `tests/chest_loot_browser_smoke.py`. Die Prüfkarte wird
 nur im temporären Browserprofil angelegt; die Projektkarte bleibt unverändert.
+
+Münzen werden ab 2,6 Metern Nähe zum Charakter gezogen. Der kurze Flug
+beschleunigt von 2 auf höchstens 12 m/s und folgt der aktuellen Spielerposition.
+Erst beim Eintreffen innerhalb von 30 cm wird Gold gutgeschrieben. Während des
+Flugs verschwinden Bodenring und Schein. Truhenauswurf, Pause, Sicht und Wände
+werden weiterhin berücksichtigt; Herzen behalten ihre bisherige Aufnahme.
