@@ -529,7 +529,8 @@
             "wagon",
             "barrel",
             "well",
-            "starStaff"
+            "starStaff",
+            "gravityStaff"
           ]
         },
         "variant": {
@@ -1025,6 +1026,27 @@
         },
         {
           "if": {
+            "properties": {
+              "kind": {
+                "const": "gravityStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-gravity-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
             "required": [
               "rarity"
             ]
@@ -1039,7 +1061,8 @@
                   "iceStaff",
                   "poisonStaff",
                   "moonStaff",
-                  "starStaff"
+                  "starStaff",
+                  "gravityStaff"
                 ]
               }
             }
