@@ -638,6 +638,7 @@ function frame(now) {
     strength: playerGrassStrength,
   });
   practiceActors.appendGrassInteractors(grassInteractors);
+  weapons.appendGrassInteractors(grassInteractors);
   world.setGrassInteractors?.(grassInteractors);
   footprintSources.length = 0;
   footprintSources.push({

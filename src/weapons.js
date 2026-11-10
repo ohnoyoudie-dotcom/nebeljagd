@@ -1124,6 +1124,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           swordTip: { x: bladeTip.x, y: bladeTip.y, z: bladeTip.z } } };
     },
     nearest, interact, tryAutoPickup, attack, releaseAttack,
+    appendGrassInteractors: target => gravity.appendGrassInteractors(target),
     aimAt: (position, point) => { specials.aimAt(position, point); gravity.aimAt(position, point); }, cancelAim,
     update, reset, addDrop, dispose,
   };

@@ -188,3 +188,30 @@ test('target energy strands do not reveal an enemy hidden from the caster', () =
   assert.ok(opponent.position.x < 1.8, 'hidden target still receives the normal pull');
   gravity.dispose();
 });
+
+test('the gravity field bends actual map grass inward only during its suction phase', () => {
+  const { gravity } = scenario();
+  const origin = new THREE.Vector3(0, 0, 0);
+  const before = [{ x: 10, z: 12, radius: 1, dirX: 0, dirZ: 1, strength: .4 }];
+  assert.deepEqual(gravity.appendGrassInteractors([...before]), before);
+  gravity.beginAim(origin, 0);
+  gravity.release({ damage: 14 });
+  gravity.update(.2, origin);
+  assert.equal(gravity.appendGrassInteractors([...before]).length, 1, 'warning has no suction wind');
+  gravity.update(.45, origin);
+  const interactors = gravity.appendGrassInteractors([...before]);
+  assert.equal(interactors.length, 5);
+  assert.deepEqual(interactors[0], before[0], 'existing player interaction is retained');
+  for (const effect of interactors.slice(1)) {
+    assert.ok(effect.strength > 0 && effect.strength <= 1);
+    const directionX = gravity.telemetry.center.x - effect.x;
+    const directionZ = gravity.telemetry.center.z - effect.z;
+    assert.ok(effect.dirX * directionX + effect.dirZ * directionZ > 0,
+      'vegetation bends toward the gravity core');
+  }
+  const almostFull = Array.from({ length: 7 }, () => ({ x: 0, z: 0 }));
+  assert.equal(gravity.appendGrassInteractors(almostFull).length, 8, 'never exceeds the GPU interactor budget');
+  gravity.update(1, origin);
+  assert.equal(gravity.appendGrassInteractors([]).length, 0, 'collapse stops the grass suction');
+  gravity.dispose();
+});

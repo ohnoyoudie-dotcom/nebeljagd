@@ -138,6 +138,28 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
     visuals.showField(field.center, field.age, visibleAt(field.center), visualTargets(field.center));
     if (field.age >= activeEnd + rules.afterglow) { field = null; visuals.hideField(); }
   }
+  // Make the actual grass and low foliage bend inward during the suction phase.
+  // The vegetation shader accepts at most eight interactors, including player
+  // and training actors. Never displace world objects or change movement.
+  function appendGrassInteractors(interactors = []) {
+    if (!field || field.exploded || field.age < rules.warning
+      || field.age >= rules.warning + rules.pullDuration) return interactors;
+    const pullAge = field.age - rules.warning;
+    const remaining = rules.warning + rules.pullDuration - field.age;
+    const ramp = Math.min(1, pullAge / .18, remaining / .18);
+    const strength = Math.max(0, ramp) * .76;
+    if (!(strength > 0)) return interactors;
+    for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      if (interactors.length >= 8) break;
+      interactors.push({
+        x: field.center.x + dx * rules.radius * .63,
+        z: field.center.z + dz * rules.radius * .63,
+        radius: rules.radius * .68,
+        dirX: -dx, dirZ: -dz, strength,
+      });
+    }
+    return interactors;
+  }
   function reset() {
     cancelAim(); field = null; visuals.hideField();
     castCount = lastHitCount = 0;
@@ -145,7 +167,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
   function dispose() {
     reset(); visuals.dispose();
   }
-  return { beginAim, aimAt, cancelAim, release, update, reset, dispose,
+  return { beginAim, aimAt, cancelAim, release, update, reset, dispose, appendGrassInteractors,
     get aiming() { return Boolean(aim); },
     get telemetry() {
       return { aiming: Boolean(aim), aim: aim ? { x: aim.target.x, z: aim.target.z } : null,
