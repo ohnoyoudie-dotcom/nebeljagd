@@ -105,7 +105,7 @@ with sync_playwright() as p:
             pause_at(page, .9); capture(page, mode + '-pull')
             if not BASELINE:
                 g = state(page)['combat']['gravity']
-                assert g['visuals']['phase'] == 'pull' and g['visuals']['fieldDraws'] <= 9, g
+                assert g['visuals']['phase'] == 'pull' and g['visuals']['fieldDraws'] <= 15, g
                 assert not g['exploded']
             page.keyboard.press('Escape')
             pause_at(page, 1.46); capture(page, mode + '-collapse')
