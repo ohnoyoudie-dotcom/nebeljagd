@@ -67,7 +67,9 @@ test('placed Tripo pickups keep authored transforms and original PBR textures wi
     assert.equal(item.visual.scale.x, (item.type === 'sword' ? .8 : item.type === 'bow' ? .88 : .82) * 1.2,
       'weapon presentation enlarges independently of the authored placement scale');
     item.group.updateMatrixWorld(true);
-    const center = new THREE.Box3().setFromObject(item.visual).getCenter(new THREE.Vector3());
+    // Cosmetic orbit lines around the gravity head are intentionally outside the
+    // Tripo mesh. Check the physical source mesh, not its detachable energy aura.
+    const center = new THREE.Box3().setFromObject(model).getCenter(new THREE.Vector3());
     near(center, new THREE.Vector3(item.x, 2.5 + .75 * 1.4, item.z), 'ground preview centers the weapon above its halo');
   }
   assert.equal(JSON.stringify(placements), snapshot);
