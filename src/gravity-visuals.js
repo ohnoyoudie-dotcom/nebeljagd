@@ -1,7 +1,10 @@
 import * as THREE from 'three';
 
-const DEBRIS_COUNT = 28;
-const TRAIL_SEGMENTS = 6;
+const DEBRIS_COUNT = 56;
+const TRAIL_SEGMENTS = 8;
+const DUST_COUNT = 120;
+const TARGET_CAP = 8;
+const TETHER_SEGMENTS = 12;
 const TAU = Math.PI * 2;
 const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
@@ -28,10 +31,15 @@ export function createGravityVisuals(scene, rules) {
       fragmentShader: `varying vec2 vUv; uniform float uAge, uPull, uFade, uAim;
         void main() {
           vec2 p = vUv * 2.0 - 1.0; float r = length(p), a = atan(p.y, p.x);
-          float edge = 1.0 - smoothstep(.004, .018, abs(r - .975));
-          float inset = (1.0 - smoothstep(.004, .012, abs(r - .89))) * .35;
-          float sectors = step(.26, fract(a * 2.54648 + .5));
-          float runes = (1.0 - smoothstep(.01, .024, abs(r - .93))) * sectors;
+          float edge = 1.0 - smoothstep(.005, .018, abs(r - .975));
+          float inset = (1.0 - smoothstep(.006, .019, abs(r - .84))) * .44;
+          float inner = (1.0 - smoothstep(.006, .018, abs(r - .47))) * .38;
+          float ringTicks = step(.63, fract((a + uAge * .28) * 9.5493));
+          float sectors = step(.24, fract(a * 3.81972 + .5));
+          float runes = (1.0 - smoothstep(.008, .026, abs(r - .92))) * sectors;
+          float spokes = pow(max(0.0, cos(a * 12.0 + uAge * .8)), 34.0) * smoothstep(.44,.55,r) * (1.0 - smoothstep(.81,.9,r));
+          float glyphs = ringTicks * (1.0 - smoothstep(.012,.037,abs(r-.72)));
+          float sweep = pow(max(0.0, cos(a * 1.5 - uAge * (1.2 + uPull * 3.0))), 24.0) * smoothstep(.6,.74,r);
           float twist = a * 5.0 + r * 16.0 - uAge * (2.0 + uPull * 3.0);
           float arms = pow(max(0.0, cos(twist)), 22.0) * smoothstep(.10, .36, r);
           float grid = pow(max(0.0, cos(r * 47.0 + sin(a * 5.0 - uAge) * uPull * 2.0)), 28.0);
@@ -39,8 +47,8 @@ export function createGravityVisuals(scene, rules) {
           float interior = (.035 + arms * .30 + grid * .14) * envelope * (1.0 - uAim);
           float well = (1.0 - smoothstep(.16,.82,r)) * (1.0-uAim) * smoothstep(.0,.25,uPull);
           float warning = .72 + .18 * sin(uAge * 9.0);
-          float alpha = (edge * warning + inset + runes * .45 + interior + well * .6) * uFade;
-          vec3 color = mix(vec3(.28,.09,.53), vec3(.80,.62,1.0), clamp(edge + runes + arms * .45, 0.0, 1.0));
+          float alpha = (edge * warning + inset + inner * .65 + runes * .62 + glyphs * .52 + spokes * .26 + sweep * .25 + interior + well * .6) * uFade;
+          vec3 color = mix(vec3(.26,.065,.52), vec3(.91,.74,1.0), clamp(edge + runes + glyphs + arms * .45 + sweep, 0.0, 1.0));
           color = mix(color, vec3(.015,.006,.036), well * .9 * (1.0-arms*.65));
           gl_FragColor = vec4(color, min(.88, alpha));
           #include <colorspace_fragment>
@@ -119,6 +127,49 @@ export function createGravityVisuals(scene, rules) {
   const debris = new THREE.InstancedMesh(geo(new THREE.OctahedronGeometry(1, 0)), debrisMat, DEBRIS_COUNT);
   debris.name = 'Gravitationsfeld · schwebende Trümmer'; debris.frustumCulled = false;
   debris.instanceMatrix.setUsage(THREE.DynamicDrawUsage); field.add(debris);
+  // Three GPU-friendly layers make the ground and air respond to the pull.
+  // Dust moves over the whole area, while only visible, unobstructed targets get
+  // their own feet rings and bent energy tethers. All buffers are reused.
+  const groundLines = [];
+  for (let i = 0; i < 16; i++) {
+    const a = i * TAU / 16, o = i % 2 ? .58 : .74;
+    groundLines.push(Math.cos(a) * rules.radius * .29, .022, Math.sin(a) * rules.radius * .29);
+    groundLines.push(Math.cos(a + .07) * rules.radius * o, .022, Math.sin(a + .07) * rules.radius * o);
+  }
+  const scarMat = mat(new THREE.LineBasicMaterial({ color: '#ad75f3', transparent: true,
+    opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const scars = new THREE.LineSegments(geo(new THREE.BufferGeometry().setFromPoints(
+    Array.from({ length: groundLines.length / 3 }, (_, i) =>
+      new THREE.Vector3(groundLines[i * 3], groundLines[i * 3 + 1], groundLines[i * 3 + 2])))), scarMat);
+  scars.name = 'Gravitationsfeld · bebende Bodenadern'; field.add(scars);
+
+  const dustPositions = new Float32Array(DUST_COUNT * 3);
+  const dustGeo = geo(new THREE.BufferGeometry());
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3).setUsage(THREE.DynamicDrawUsage));
+  const dustMat = mat(new THREE.PointsMaterial({ color: '#e1c4ff', size: .095, opacity: .73,
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const dust = new THREE.Points(dustGeo, dustMat);
+  dust.name = 'Gravitationsfeld · angehobener Bodenstaub'; dust.frustumCulled = false; field.add(dust);
+
+  const markerGeo = geo(new THREE.RingGeometry(.43, .48, 36));
+  const markerMat = mat(new THREE.MeshBasicMaterial({ color: '#d5a4ff', transparent: true,
+    opacity: .75, depthWrite: false, blending: THREE.AdditiveBlending,
+    toneMapped: false, side: THREE.DoubleSide }));
+  const targetMarkers = Array.from({ length: TARGET_CAP }, (_, i) => {
+    const ring = new THREE.Mesh(markerGeo, markerMat);
+    ring.name = 'Gravitation · Zugkraft am Gegner ' + (i + 1);
+    ring.rotation.x = -Math.PI / 2; ring.visible = false; field.add(ring); return ring;
+  });
+  const tetherPositions = new Float32Array(TARGET_CAP * 2 * TETHER_SEGMENTS * 6);
+  const tetherGeo = geo(new THREE.BufferGeometry());
+  tetherGeo.setAttribute('position', new THREE.BufferAttribute(tetherPositions, 3).setUsage(THREE.DynamicDrawUsage));
+  const tetherMat = mat(new THREE.LineBasicMaterial({ color: '#d9abff', transparent: true,
+    opacity: .7, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const tethers = new THREE.LineSegments(tetherGeo, tetherMat);
+  tethers.name = 'Gravitation · Energiezüge zum Gegner'; tethers.frustumCulled = false;
+  tethers.visible = false; field.add(tethers);
+  let affectedCount = 0;
+
   const trailPositions = new Float32Array(DEBRIS_COUNT * TRAIL_SEGMENTS * 6);
   const trailColors = new Float32Array(trailPositions.length);
   for (let i = 0; i < DEBRIS_COUNT; i++) for (let j = 0; j < TRAIL_SEGMENTS; j++) for (let k = 0; k < 2; k++) {
@@ -147,6 +198,15 @@ export function createGravityVisuals(scene, rules) {
     blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
   const wave = new THREE.Mesh(geo(new THREE.RingGeometry(.965, 1, 128)), waveMat);
   wave.rotation.x = -Math.PI / 2; wave.position.y = .045; field.add(wave);
+  const secondWaveMat = mat(new THREE.MeshBasicMaterial({ color: '#a46bff', transparent: true,
+    blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
+  const secondWave = new THREE.Mesh(geo(new THREE.RingGeometry(.90, 1, 96)), secondWaveMat);
+  secondWave.rotation.x = -Math.PI / 2; secondWave.position.y = .075; field.add(secondWave);
+  const flashMat = mat(new THREE.MeshBasicMaterial({ color: '#f2d7ff', transparent: true,
+    opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const flash = new THREE.Mesh(sphereGeometry, flashMat);
+  flash.name = 'Gravitation · Aufblitzen beim Kollaps'; flash.position.y = 1.02;
+  flash.visible = false; field.add(flash);
   const transform = new THREE.Object3D(), point = new THREE.Vector3();
   let phase = 'idle', disposed = false;
   function particle(index, progress, collapse, out) {
@@ -167,7 +227,7 @@ export function createGravityVisuals(scene, rules) {
     rangeMat.opacity = .2 + .13 * Math.min(1, age / rules.chargeSeconds);
   }
   function hideAim() { aim.visible = range.visible = false; }
-  function showField(center, age, visible) {
+  function showField(center, age, visible, affected = []) {
     field.position.set(center.x, center.y + .05, center.z); field.visible = visible;
     const end = rules.warning + rules.pullDuration;
     const progress = clamp((age - rules.warning) / rules.pullDuration);
@@ -178,10 +238,63 @@ export function createGravityVisuals(scene, rules) {
     floorMat.uniforms.uAge.value = age;
     floorMat.uniforms.uPull.value = progress;
     floorMat.uniforms.uFade.value = fade;
+    scars.visible = age <= end + rules.afterglow;
+    scars.rotation.y = age * (age < rules.warning ? -.22 : -.85);
+    scarMat.opacity = (.20 + .38 * Math.sin(Math.min(1, age / end) * Math.PI)) * fade;
+    const pullTime = Math.max(0, age - rules.warning);
+    dust.visible = age >= rules.warning && collapse < 0;
+    dustMat.opacity = (.38 + .34 * smooth(pullTime / .2)) * fade;
+    for (let i = 0; i < DUST_COUNT; i++) {
+      const seed = (i * .6180339) % 1;
+      const angle = i * 2.39996 + pullTime * (1.8 + seed * 2.2);
+      const travel = ((pullTime * (.3 + seed * .55)) + seed) % 1;
+      const radius = rules.radius * (.12 + .82 * (1 - travel));
+      const y = .06 + (.2 + seed * .6) * Math.sin(travel * Math.PI);
+      dustPositions[i * 3] = Math.cos(angle) * radius;
+      dustPositions[i * 3 + 1] = y;
+      dustPositions[i * 3 + 2] = Math.sin(angle) * radius;
+    }
+    dustGeo.attributes.position.needsUpdate = true;
+
+    const pulling = phase === 'pull';
+    affectedCount = pulling && visible ? Math.min(TARGET_CAP, affected.length) : 0;
+    tethers.visible = affectedCount > 0;
+    const currentMaterialOpacity = (.40 + progress * .4) * fade;
+    markerMat.opacity = currentMaterialOpacity;
+    tetherMat.opacity = currentMaterialOpacity;
+    let vertexIndex = 0;
+    for (let i = 0; i < TARGET_CAP; i++) {
+      const marker = targetMarkers[i]; marker.visible = i < affectedCount;
+      if (i >= affectedCount) continue;
+      const victim = affected[i], x = victim.x - center.x, z = victim.z - center.z;
+      const height = (victim.y ?? center.y) - center.y;
+      marker.position.set(x, height + .085, z);
+      marker.rotation.z = age * (i % 2 ? -.85 : .85);
+      marker.scale.setScalar(.9 + .13 * Math.sin(age * 11 + i));
+      for (let strand = 0; strand < 2; strand++) for (let part = 0; part < TETHER_SEGMENTS; part++) {
+        for (let k = 0; k < 2; k++) {
+          const t = (part + k) / TETHER_SEGMENTS;
+          const twist = t * TAU * 1.5 + age * 8 + i + strand * Math.PI;
+          const width = Math.sin(t * Math.PI) * (.18 + .09 * strand);
+          tetherPositions[vertexIndex++] = x * (1 - t) + Math.cos(twist) * width;
+          tetherPositions[vertexIndex++] = height + .20 + t * .78 + Math.sin(t * Math.PI) * .15;
+          tetherPositions[vertexIndex++] = z * (1 - t) + Math.sin(twist) * width;
+        }
+      }
+    }
+    tetherGeo.setDrawRange(0, vertexIndex / 3);
+    if (affectedCount) tetherGeo.attributes.position.needsUpdate = true;
     funnel.visible = collapse < 0; funnelMat.uniforms.uAge.value = age;
     funnelMat.uniforms.uStrength.value = strength;
     core.visible = collapse < 0;
-    core.scale.setScalar(.08 + strength * (.23 + .14 * progress) * (1 - smooth((progress - .78) / .22) * .75));
+    const compress = smooth((progress - .82) / .18);
+    core.scale.setScalar(.08 + strength * (.25 + .17 * progress) * (1 - compress * .9));
+    flash.visible = collapse >= 0 && collapse < .3 || collapse < 0 && compress > .05;
+    if (flash.visible) {
+      const intensity = collapse >= 0 ? 1 - smooth(collapse / .3) : compress;
+      flash.scale.setScalar(.15 + intensity * .42);
+      flashMat.opacity = intensity * (collapse >= 0 ? .85 : .32);
+    }
     orbits.forEach((orbit, i) => {
       orbit.visible = collapse < 0 && strength > 0;
       orbit.rotation.set(.5 + i * .85, age * (i ? -2.4 : 2.9), .3 + Math.sin(age * 1.3 + i) * .32);
@@ -202,20 +315,28 @@ export function createGravityVisuals(scene, rules) {
       }
     }
     debris.instanceMatrix.needsUpdate = true; trailGeometry.attributes.position.needsUpdate = true;
-    shock.visible = wave.visible = collapse >= 0;
+    shock.visible = wave.visible = secondWave.visible = collapse >= 0;
     if (collapse >= 0) {
       const spread = rules.radius * (.07 + .93 * (1 - (1 - collapse) ** 3));
       shock.scale.set(spread, .10 + Math.sin(collapse * Math.PI) * .6, spread);
       shockMat.uniforms.uFade.value = fade ** 2 * 1.3;
       shockMat.uniforms.uFlash.value = 1 - smooth(collapse / .5);
       wave.scale.setScalar(spread); waveMat.opacity = fade ** 1.5 * .95;
+      const delayed = clamp((collapse - .10) / .90);
+      secondWave.scale.setScalar(rules.radius * (.08 + .92 * (1 - (1 - delayed) ** 2)));
+      secondWaveMat.opacity = (1 - delayed) ** 2 * .7;
     }
   }
-  function hideField() { field.visible = false; phase = 'idle'; }
+  function hideField() {
+    field.visible = false; phase = 'idle'; affectedCount = 0;
+    targetMarkers.forEach(marker => { marker.visible = false; });
+    tethers.visible = false;
+  }
   return { showAim, hideAim, showField, hideField,
     get telemetry() { return { phase, fieldVisible: field.visible, aimVisible: aim.visible,
       fieldDraws: field.visible ? field.children.filter(child => child.visible).length : 0,
-      debrisCount: DEBRIS_COUNT, rangeRadius: rangeMesh.scale.x * rules.range }; },
+      debrisCount: DEBRIS_COUNT, dustCount: DUST_COUNT, affectedCount,
+      rangeRadius: rangeMesh.scale.x * rules.range }; },
     dispose() {
       if (disposed) return;
       aim.removeFromParent(); range.removeFromParent(); field.removeFromParent(); debris.dispose();

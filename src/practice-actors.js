@@ -125,7 +125,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     const axis = index % 2 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
     actors.push({ id, target, group, pivot, coat, flames, frost, limbs, label, site, axis, direction: 1,
       origin: group.position.clone(), travelled: 0, phase: 0, visible: true, speed: .85,
-      grassDirX: axis.x, grassDirZ: axis.z, grassStrength: 0 });
+      grassDirX: axis.x, grassDirZ: axis.z, grassStrength: 0, gravityResponse: 0 });
   }
 
   const previous = new THREE.Vector3(), desired = new THREE.Vector3();
@@ -157,9 +157,18 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
           limb.arm.rotation.x = -Math.sin(actor.phase) * .3 * limb.side;
         }
       }
-      pivot.rotation.z = THREE.MathUtils.lerp(pivot.rotation.z, target.alive ? 0 : Math.PI * .47, 1 - Math.exp(-delta * 8));
+      // A brief physical struggle follows the actual gravity displacement.
+      // This is visual-only: it does not add stun or slow gameplay effects.
+      const gravity = target.gravityVisual;
+      const pulled = target.alive && (gravity?.remaining ?? 0) > 0;
+      actor.gravityResponse = THREE.MathUtils.lerp(actor.gravityResponse, pulled ? 1 : 0, 1 - Math.exp(-delta * 10));
+      const xLean = pulled ? -(gravity?.z ?? 0) * .17 : 0;
+      const zLean = pulled ? (gravity?.x ?? 0) * .17 : 0;
+      pivot.rotation.x = THREE.MathUtils.lerp(pivot.rotation.x, target.alive ? xLean * actor.gravityResponse : 0, 1 - Math.exp(-delta * 9));
+      pivot.rotation.z = THREE.MathUtils.lerp(pivot.rotation.z, target.alive ? zLean * actor.gravityResponse : Math.PI * .47, 1 - Math.exp(-delta * 8));
+      if (gravity) gravity.remaining = Math.max(0, gravity.remaining - delta);
       pivot.position.y = target.alive ? Math.sin(actor.phase * 2) * .025 : -.02;
-      actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
+      actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : pulled ? '#522680' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
       actor.flames.visible = target.alive && target.burnRemaining > 0;
       actor.frost.visible = target.alive && target.slowRemaining > 0;
       actor.flames.children.forEach((flame, i) => {
@@ -197,10 +206,10 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     for (const actor of actors) {
       const { target } = actor;
       actor.group.position.copy(actor.origin); actor.pivot.rotation.set(0, 0, 0); actor.pivot.position.y = 0;
-      actor.direction = 1; actor.phase = 0; actor.travelled = 0;
+      actor.direction = 1; actor.phase = 0; actor.travelled = 0; actor.gravityResponse = 0;
       actor.grassDirX = actor.axis.x; actor.grassDirZ = actor.axis.z; actor.grassStrength = 0;
       target.health = target.initialHealth; target.burnRemaining = target.burnDamagePerSecond = target.poisonRemaining = target.poisonDamagePerSecond = target.slowRemaining = target.hitFlash = 0; target.slowFactor = 1;
-      delete target.poisonSourceId;
+      delete target.poisonSourceId; delete target.gravityVisual;
     }
   }
 

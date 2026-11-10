@@ -129,7 +129,8 @@ test('the spatial vortex freezes on pause, respects visibility and releases its 
   assert.ok(core.position.y > .8 && core.visible, 'the singularity floats above the ground');
   const bounds = new THREE.Box3().setFromBufferAttribute(funnel.geometry.attributes.position);
   assert.ok(bounds.max.y - bounds.min.y > 1, 'the vortex has physical height');
-  assert.equal(debris.count, 28); assert.ok(gravity.telemetry.visuals.fieldDraws <= 9);
+  assert.equal(debris.count, 56); assert.equal(gravity.telemetry.visuals.dustCount, 120);
+  assert.ok(gravity.telemetry.visuals.fieldDraws <= 15, 'bounded effect draw count');
   const matrix = Array.from(debris.instanceMatrix.array), clock = funnel.material.uniforms.uAge.value;
   gravity.update(0, origin, 200);
   assert.deepEqual(Array.from(debris.instanceMatrix.array), matrix); assert.equal(funnel.material.uniforms.uAge.value, clock);
@@ -146,4 +147,44 @@ test('pull cannot exceed 1.5m, cross the centre or run with zero dt', () => {
   assert.ok(Math.abs(gravityPullStep(2, 1.4, 1) - .1) < 1e-8);
   assert.equal(gravityPullStep(.1, 0, 1), 0);
   assert.equal(gravityPullStep(2, 0, 0), 0);
+});
+
+test('enhanced gravity effect shows ground dust, victim tethers and a double shockwave without altering combat timing', () => {
+  const { gravity, scene, opponent } = scenario();
+  const origin = new THREE.Vector3();
+  gravity.beginAim(origin, 0);
+  gravity.release({ damage: 14 });
+  gravity.update(.2, origin, .2);
+  assert.equal(opponent.health, 100, 'warning is non-damaging');
+  const dust = scene.getObjectByName('Gravitationsfeld · angehobener Bodenstaub');
+  const marker = scene.getObjectByName('Gravitation · Zugkraft am Gegner 1');
+  const tether = scene.getObjectByName('Gravitation · Energiezüge zum Gegner');
+  assert.ok(dust && marker && tether, 'visual-only reaction layers exist');
+  gravity.update(.5, origin, .7);
+  assert.equal(gravity.telemetry.visuals.phase, 'pull');
+  assert.ok(dust.visible && marker.visible && tether.visible);
+  assert.ok(tether.geometry.drawRange.count > 0);
+  assert.ok(opponent.gravityVisual?.remaining > 0, 'actual movement drives the character response');
+  assert.equal(opponent.health, 100, 'still no damage during pulling');
+  gravity.update(.72, origin, 1.42);
+  assert.equal(opponent.health, 86);
+  assert.equal(gravity.telemetry.visuals.phase, 'collapse');
+  assert.ok(scene.getObjectByName('Gravitation · Aufblitzen beim Kollaps').visible);
+  gravity.reset();
+  assert.equal(marker.visible, false);
+  assert.equal(gravity.telemetry.visuals.affectedCount, 0);
+  gravity.dispose();
+});
+
+test('target energy strands do not reveal an enemy hidden from the caster', () => {
+  const { gravity, scene, opponent } = scenario(false, p => p.x < 1);
+  const origin = new THREE.Vector3();
+  gravity.beginAim(origin, 0);
+  gravity.release({ damage: 14 });
+  gravity.update(.8, origin);
+  assert.equal(gravity.telemetry.visuals.fieldVisible, true);
+  assert.equal(gravity.telemetry.visuals.affectedCount, 0);
+  assert.equal(scene.getObjectByName('Gravitation · Energiezüge zum Gegner').visible, false);
+  assert.ok(opponent.position.x < 1.8, 'hidden target still receives the normal pull');
+  gravity.dispose();
 });

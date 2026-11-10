@@ -92,6 +92,9 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
       p.x = next.x; p.z = next.z;
       p.y = ground(p);
       field.pulled.set(target.id, moved + Math.min(step, actual));
+      // A short-lived hint to visual actors. Damage, speed and combat status
+      // are unchanged. The hint fades automatically when the pull ends.
+      target.gravityVisual = { x: dx / distance, z: dz / distance, remaining: .22 };
     }
   }
   function explode() {
@@ -106,6 +109,22 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
       if (result) { lastHitCount++; onDamage(result); }
     }
   }
+  // Visible energy tethers must never reveal opponents behind cover or hidden
+  // in grass. Combat collision and the damage calculation remain separate.
+  function visualTargets(center) {
+    const found = [];
+    for (const target of combat?.targets?.values() ?? []) {
+      if (found.length >= 8) break;
+      if (!target.alive || target.id === ownerId || target.destructible || target.targetable === false || !target.position) continue;
+      const p = target.position;
+      if (target.concealed || (world?.concealmentAt?.(p.x, p.z) ?? 0) > .01 || !visibleAt(p)) continue;
+      if (Math.abs((p.y ?? ground(p)) - center.y) > 2) continue;
+      if (Math.hypot(p.x - center.x, p.z - center.z) > rules.radius + Math.min(.3, target.radius ?? 0)) continue;
+      if (!unblocked(center, target)) continue;
+      found.push({ x: p.x, y: p.y ?? ground(p), z: p.z });
+    }
+    return found;
+  }
   function update(dt, position, time = 0) {
     if (!(dt > 0)) return;
     if (aim && position) { aim.age += dt; refreshAim(position); }
@@ -116,7 +135,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
     const active = Math.max(0, Math.min(field.age, activeEnd) - Math.max(before, activeStart));
     if (active > 0 && !field.exploded) pull(active);
     if (field.age >= activeEnd && !field.exploded) explode();
-    visuals.showField(field.center, field.age, visibleAt(field.center));
+    visuals.showField(field.center, field.age, visibleAt(field.center), visualTargets(field.center));
     if (field.age >= activeEnd + rules.afterglow) { field = null; visuals.hideField(); }
   }
   function reset() {

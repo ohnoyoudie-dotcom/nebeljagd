@@ -5,6 +5,7 @@ import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tie
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
 import { createGravitySpell, GRAVITY_RULES } from './gravity-spell.js';
+import { attachGravityStaffAccent, animateGravityStaffAccent } from './gravity-staff-accent.js';
 import { createLootGlow } from './loot-glow.js';
 import { createSwordEffects } from './sword-effects.js';
 import { createSwordPose, sampleSwordPose, SWORD_PATTERNS, SWORD_COMBO_GRACE,
@@ -181,6 +182,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       group.add(model);
       const bounds = new THREE.Box3().setFromObject(model);
       group.userData.weaponTipY = bounds.max.y;
+      if (type === 'gravityStaff') group.userData.gravityAccent = attachGravityStaffAccent(model, bounds.max.y);
       group.userData.weaponSource = tripoPrototypes[variant].userData.weaponSource ?? null;
       const measuredTip = tripoPrototypes[variant].userData.weaponTipPoint;
       group.userData.weaponTipPoint = Array.isArray(measuredTip) && measuredTip.length === 3 && measuredTip.every(Number.isFinite)
@@ -196,9 +198,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function disposeWeaponVisual(visual) {
     const geometries = new Set(), materials = new Set();
     visual.traverse(part => {
-      if (!part.isMesh && !part.isLine) return;
+      if (!part.isMesh && !part.isLine && !part.isPoints) return;
       if (!part.userData.sharedWeaponGeometry) geometries.add(part.geometry);
-      if (part.userData.ownsWeaponMaterial || part.userData.ownsTierMaterial || part.isLine) {
+      if (part.userData.ownsWeaponMaterial || part.userData.ownsTierMaterial || part.isLine || part.isPoints) {
         for (const mat of Array.isArray(part.material) ? part.material : [part.material]) materials.add(mat);
       }
     });
@@ -889,6 +891,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
         item.ring.visible = t >= 1;
       } else { item.floating.position.y = .72 + wave * .11; item.floating.rotation.z = 0; }
       item.floating.rotation.y = Math.sin(time * .6 + item.phase) * .32;
+      if (item.type === 'gravityStaff') animateGravityStaffAccent(item.visual.userData.gravityAccent, time);
       item.ring.scale.setScalar(1 + wave * .065); item.ringMaterial.opacity = .26 + (wave + 1) * .035;
       item.halo.scale.setScalar(1 + wave * .075);
       item.halo.material.opacity = item.glow.halo * (.9 + wave * .1);
@@ -911,6 +914,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
       }
     }
     applyHeldPose();
+    if (equippedType === 'gravityStaff') animateGravityStaffAccent(heldStaffs.gravityStaff.userData.gravityAccent, time, gravity.aiming);
     const opacity = characterGroup.userData.concealmentOpacity ?? 1;
     const swordProgress = attackAge < 0 ? 0 : attackAge / attackDuration;
     if (heldSword.visible) measureSwordBlade();
@@ -1046,7 +1050,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const geometries = new Set([ringGeometry, haloGeometry, arrowShaftGeometry, arrowHeadGeometry, arrowFeatherGeometry]), materials = new Set(baseMaterials);
     for (const root of roots) {
       root.traverse(part => {
-        if (!part.isMesh && !part.isLine) return;
+        if (!part.isMesh && !part.isLine && !part.isPoints) return;
         if (!part.userData.sharedWeaponGeometry) geometries.add(part.geometry);
         for (const mat of Array.isArray(part.material) ? part.material : [part.material]) materials.add(mat);
       });
