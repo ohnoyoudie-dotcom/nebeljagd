@@ -57,11 +57,26 @@ test('the raised sphere pops into one bounded instance batch, then every reusabl
   let disposed = 0; geometries.forEach(geometry => geometry.addEventListener('dispose', () => disposed++));
   vortex.update(center, rules.warning + rules.pullDuration + .05);
   assert.equal(sphere.visible, false); assert.equal(shell.count, 14);
+  assert.equal(vortex.telemetry.capVisible, true, 'the broken upper shell survives the first burst, like the reference');
   assert.ok(vortex.telemetry.sphereHeight >= before.sphereHeight);
   const matrix = Array.from(shell.instanceMatrix.array);
   vortex.update(center, rules.warning + rules.pullDuration + .05);
   assert.deepEqual(Array.from(shell.instanceMatrix.array), matrix, 'same simulation age freezes every fragment');
   vortex.update(center, rules.warning + rules.pullDuration + rules.afterglow);
+  assert.equal(vortex.telemetry.capVisible, false);
   assert.equal(shell.count, 0); assert.ok(vortex.telemetry.surfaceOpacity < 1e-10);
   vortex.dispose(); vortex.dispose(); assert.equal(disposed, geometries.size); assert.equal(parent.children.length, 0);
+});
+
+test('reference maps are borrowed, retained through casts, and never disposed with one vortex', () => {
+  const parent = new THREE.Group(), center = new THREE.Vector3();
+  const textures = { ground: new THREE.Texture(), orb: new THREE.Texture() };
+  let disposed = 0; Object.values(textures).forEach(map => map.addEventListener('dispose', () => disposed++));
+  const vortex = createGravityVortex(parent, rules, { textures });
+  vortex.update(center, .8);
+  assert.equal(vortex.telemetry.artwork, 'gravity-reference-v1');
+  assert.equal(parent.getObjectByName('Gravitationsfeld · gefärbter Bodenstrudel').material.uniforms.uGround.value, textures.ground);
+  assert.equal(parent.getObjectByName('Gravitationsfeld · Singularität').material.uniforms.uOrb.value, textures.orb);
+  vortex.dispose(); assert.equal(disposed, 0, 'the app owns the maps across restarts');
+  Object.values(textures).forEach(map => map.dispose()); assert.equal(disposed, 2);
 });

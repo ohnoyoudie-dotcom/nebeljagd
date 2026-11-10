@@ -16,6 +16,7 @@ import { createWeapons } from './weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
 import { loadFireballModel } from './fireball-model.js';
 import { loadProjectileModels } from './projectile-models.js';
+import { loadGravityTextures } from './gravity-textures.js';
 import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
@@ -182,7 +183,7 @@ const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
     rollRarity: rollLootRarity,
     tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel(),
-    projectilePrototypes: await loadProjectileModels() });
+    projectilePrototypes: await loadProjectileModels(), gravityTextures: await loadGravityTextures() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {
@@ -548,9 +549,13 @@ if (new URLSearchParams(location.search).has('inspect')) {
     const rect = renderer.domElement.getBoundingClientRect();
     return {x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2};
   };
-  window.nebeljagdInspectCamera = ({ zoom = 1 } = {}) => {
+  window.nebeljagdInspectCamera = ({ zoom = 1, focus = null } = {}) => {
     camera.zoom = THREE.MathUtils.clamp(Number.isFinite(zoom) ? zoom : 1, 1, 4);
+    const target = focus && Number.isFinite(focus.x) && Number.isFinite(focus.z)
+      ? world.root.localToWorld(new THREE.Vector3(focus.x, world.heightAt(focus.x, focus.z), focus.z)) : cameraFocus;
+    camera.position.copy(target).add(cameraOffset); camera.lookAt(target);
     camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
   };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });

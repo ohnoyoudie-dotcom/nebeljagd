@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "gravity-reference-v1",
+  "category": "project-2d-effect",
+  "colorSpace": "sRGB",
+  "rights": "Project-generated artwork; see LICENSE.txt and provenance.json",
+  "runtime": [
+    {
+      "role": "ground",
+      "path": "runtime/ground.webp",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "role": "orb",
+      "path": "runtime/orb.webp",
+      "width": 512,
+      "height": 256,
+      "alpha": false
+    },
+    {
+      "role": "burst",
+      "path": "runtime/burst.webp",
+      "width": 512,
+      "height": 512,
+      "alpha": true
+    }
+  ],
+  "budgets": {
+    "encodedBytes": 524288,
+    "decodedMipBytes": 8388608
+  },
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 523,
+      "sha256": "9eaa89e7d119a35b957a3aaa58fed4d322256e6a17a4acc298bb9333d3e6da58"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 6506,
+      "sha256": "082e05cd6e1dae190df8a82cdce78e534d2d5da21f46e4725756f66a2b356245"
+    },
+    {
+      "path": "runtime/burst.webp",
+      "bytes": 54710,
+      "sha256": "f55a77a870844818adf40146ecad46ee009d2d8f9a740742f03fdbdb5b613720"
+    },
+    {
+      "path": "runtime/ground.webp",
+      "bytes": 170404,
+      "sha256": "c6635493e522325622e6280c163a0962a6424bfc9bb18daa2ef1350e727d5ef3"
+    },
+    {
+      "path": "runtime/orb.webp",
+      "bytes": 15904,
+      "sha256": "50db0db0ff0fc09eb67e8071fe99d7f9299b084aed89f7605fb3990671b37dd4"
+    }
+  ]
+}

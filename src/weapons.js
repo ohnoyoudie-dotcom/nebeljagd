@@ -38,7 +38,7 @@ export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
   { placements, heightAt = world?.heightAt, viewDistance = 100, combat = null, ownerId = 'player', isVisible = null,
-    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {}, rollRarity = null } = {}) {
+    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {}, gravityTextures = null, rollRarity = null } = {}) {
   function assertPrototype(type, variant) {
     const modelType = TRIPO_WEAPON_VARIANTS[variant];
     if (!modelType) return;
@@ -779,7 +779,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }, isVisible, { moonProjectilePrototype: projectilePrototypes.moon });
   const gravity = createGravitySpell(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
-  }, isVisible, { effects: spellEffects });
+  }, isVisible, { effects: spellEffects, textures: gravityTextures });
   const staffTip = new THREE.Vector3();
   function cancelAim() {
     specials.cancelAim(); gravity.cancelAim();

@@ -1,0 +1,56 @@
+{
+  "asset": "Nebeljagd · gravity reference effects",
+  "generator": "OpenAI ImageGen (host-native)",
+  "reference": {
+    "origin": "Concept generated in this conversation and supplied again by the repository owner as the requested visual reference",
+    "sourceFile": "exec-6dd94a4f-f05e-4e1d-9a94-cbb4e7a9a34c.png",
+    "sha256": "fa253af23ce9e6af502329c6d89679d292f381b0f2521aec8cd3c20154fbd5cf",
+    "dimensions": [
+      2149,
+      732
+    ]
+  },
+  "rights": "Generated for the repository owner on their request, using the conversation's generated concept. Project use and offline redistribution requested by the owner; no independent third-party license certification.",
+  "generation": {
+    "ground": {
+      "hostGenerationId": "exec-3c15fab1-4dca-43cc-b21c-813ec7fca1a9",
+      "prompt": "Create a production-ready fantasy game VFX COLOR TEXTURE, using the purple ground whirlpool in the LEFT PANEL of the supplied reference as the precise visual art reference. Reconstruct only that magic ground vortex, without any of the arena or figures. CRITICAL: render a PERFECT CIRCLE seen in orthographic straight overhead view, NOT an ellipse and NOT a perspective screenshot. One square 1024x1024 texture. The circle occupies 96 percent of the square; pixels outside are fully transparent. Inside the circle is a CONTINUOUS OPAQUE painted surface, with a small near-black purple central sink and five or six broad sweeping deep-violet spiral arms curling inward. Match the reference's rich luminous violet midtones against deep black-plum shadows and fine painterly flowing brush fibers, soft organic turbulent wisps and subtly layered depth. The brush strokes should be LONG, delicate, organic and curve along the inward spirals, exactly like the reference's painted flowing surface. No smooth flat vector arcs, no cartoon pinwheel, no plastic ridges, no regular concentric bands. Keep the interior fully filled with rich purple, not transparent ribbons. The very thin violet perimeter and restrained soft purple edge halo from the reference can remain, with only the outermost edge softly fading into transparency. The small central sink is black and opaque, not a transparent hole. Treat the center as below the surrounding swirl through painted shading only. Remove the sphere, orb, characters, staff, monsters, rocks, grass, plants, environmental scenery, text, symbols and UI. No baked shadows cast by objects. No vertical cone or raised tornado. The final output must be ONLY the clean circular purple painted vortex decal on a transparent background, ready to map onto a gently curved ground mesh. Keep the distinctive reference spiral, contrast, colors and brushed texture as faithfully as possible.",
+      "transparentBackground": true,
+      "sourceSha256": "b621e5db397a2c214d9949222036fff4dc3b3579522d80fc75a9664a2bab9209",
+      "sourceBytes": 1879516,
+      "sourceDimensions": [
+        1254,
+        1254
+      ]
+    },
+    "orb": {
+      "hostGenerationId": "exec-7b671e19-1c20-47f1-979a-0b15e50570b5",
+      "prompt": "Create a production-ready EQUIRECTANGULAR COLOR AND EMISSION TEXTURE for the dark purple energy sphere in the MIDDLE PANEL of the supplied reference. Output a flat 2:1 rectangular texture map, 1024 wide by 512 high, fully opaque. This is the unwrapped surface of that specific sphere, NOT a rendering of a spherical object. Fill the entire rectangle with near-black deep plum and violet, and sparse connected irregular branching cracks with violet-purple glowing edges and narrow lilac-pink bright centers exactly like the reference orb. Large organic uneven plates separated by thin jagged energy fissures, subtle smoky violet marbling inside the dark plates, dark violet material remains about 90 percent of the area. The crack network should be coherent, not repeated geometric squiggles or a regular grid. Very restrained soft spill around the cracks, no broad white regions. Horizontally seamless wrap: left and right edges should join naturally. Keep the top and bottom polar regions fairly dark to avoid bright pole pinching. Absolutely no ball silhouette, no isolated circle, no rounded object, no surrounding glow, no background scenery, no field, no text, no UI, no border. Uniform flat material lighting, no baked sphere highlight or shadow. Match the reference orb's purple crack colors and dark mysterious interior faithfully. The result must be a rectangular texture ready to UV-map onto a Three.js sphere and its broken shell pieces.",
+      "transparentBackground": false,
+      "sourceSha256": "45fa8ba0e9c5d4475242a39671d1cdd2dfc9685ea6a84c0268298e68fbadc73d",
+      "sourceBytes": 1552619,
+      "sourceDimensions": [
+        1774,
+        887
+      ]
+    },
+    "burst": {
+      "hostGenerationId": "exec-2519684a-3ef4-4edc-b838-2fdb73c16347",
+      "prompt": "Create one production-ready fantasy VFX SPRITE TEXTURE based on the bright purple-white explosion at the CENTER of the RIGHT PANEL in the supplied reference. A square 1024x1024 image, transparent background. Extract and reconstruct ONLY the energy flash: a small brilliant white-lilac center with organically jagged violet and magenta rays, a few curved wispy energy filaments and restrained soft purple glow fading completely into transparency. Most of the square must remain transparent. Strong tight bright center, crisp delicate branching streaks with broad softer violet rays around them, elegant magical burst, not a fire explosion and not a giant filled white blob. Give it the same detailed painterly fantasy-game style as the reference. No ground circle, no ring, no vortex, no orb or sphere surface, no shell fragments, no rocks, no grass, no characters, no weapon, no environment, no text, no UI. This sprite will be briefly shown as a camera-facing flash below the rupturing sphere; separate real 3D geometry supplies shell fragments and the expanding ring. Keep all rays comfortably inside the square with transparent padding.",
+      "transparentBackground": true,
+      "sourceSha256": "be353f53b8586581b24550d70dd34944c1834b2ddc4561c5d2f053fcf2d0b419",
+      "sourceBytes": 1406177,
+      "sourceDimensions": [
+        1254,
+        1254
+      ]
+    }
+  },
+  "transformations": {
+    "ground": "ImageMagick: resize 1024x1024, sRGB, WebP q92, alpha q100",
+    "orb": "ImageMagick: resize 512x256, sRGB, WebP q94",
+    "burst": "ImageMagick: resize 512x512, sRGB, WebP q90, alpha q100"
+  },
+  "paidExternalProviderInvoked": false,
+  "sourceImagesPreserved": true
+}

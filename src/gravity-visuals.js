@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { createGravityVortex } from './gravity-vortex.js';
 
-const DEBRIS_COUNT = 24;
+const DEBRIS_COUNT = 12;
 const TRAIL_SEGMENTS = 8;
-const DUST_COUNT = 64;
+const DUST_COUNT = 32;
 const TARGET_CAP = 8;
 const TETHER_SEGMENTS = 12;
 const TAU = Math.PI * 2;
@@ -14,7 +14,7 @@ const vertex = `varying vec2 vUv;
 
 /** Reusable ground vortex and rising sphere, with bounded instanced debris
  * and victim feedback. Depth-tested geometry, no full-screen pass. */
-export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
+export function createGravityVisuals(scene, rules, { heightAt = null, textures = null } = {}) {
   const geometries = new Set(), materials = new Set();
   const geo = value => (geometries.add(value), value);
   const mat = value => {
@@ -69,16 +69,17 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     opacity: .32, side: THREE.DoubleSide, depthWrite: false }));
   const rangeMesh = new THREE.Mesh(geo(new THREE.RingGeometry(rules.range - .045, rules.range, 128)), rangeMat);
   rangeMesh.rotation.x = -Math.PI / 2; range.add(rangeMesh);
-  const vortex = createGravityVortex(field, rules, { heightAt });
+  const vortex = createGravityVortex(field, rules, { heightAt, textures });
   const sphereGeometry = geo(new THREE.SphereGeometry(1, 24, 14));
   const sphereVertex = `varying vec3 vNormal, vView;
     void main() { vec4 p = modelViewMatrix * vec4(position,1.0);
       vNormal = normalize(normalMatrix * normal); vView = -p.xyz; gl_Position = projectionMatrix * p; }`;
-  const debrisMat = mat(new THREE.MeshStandardMaterial({ color: '#615468', roughness: 1,
+  const debrisMat = mat(new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 1,
     emissive: '#38223f', emissiveIntensity: .02, transparent: true, depthWrite: false }));
   const debris = new THREE.InstancedMesh(geo(new THREE.OctahedronGeometry(1, 0)), debrisMat, DEBRIS_COUNT);
   debris.name = 'Gravitationsfeld · schwebende Trümmer'; debris.frustumCulled = false;
   debris.instanceMatrix.setUsage(THREE.DynamicDrawUsage); field.add(debris);
+  for (let i = 0; i < DEBRIS_COUNT; i++) debris.setColorAt(i, new THREE.Color(i % 3 === 0 ? '#647b37' : '#615468'));
   // Ground dust, feet rings and energy tethers share fixed reusable buffers.
   // Only visible, unobstructed targets receive their own feedback.
   const dustPositions = new Float32Array(DUST_COUNT * 3);
@@ -146,45 +147,56 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.NormalBlending, toneMapped: false,
     uniforms: { uFade: { value: 0 }, uFlash: { value: 0 } }, vertexShader: sphereVertex,
     fragmentShader: `varying vec3 vNormal, vView; uniform float uFade, uFlash;
-      void main() { float rim = pow(max(0.0, 1.0 - abs(dot(normalize(vNormal),normalize(vView)))), 2.5);
-        gl_FragColor = vec4(mix(vec3(.20,.10,.29),vec3(.40,.27,.48),uFlash),
-          (rim + uFlash * .6) * uFade);
+      void main() { float rim = pow(max(0.0, 1.0 - abs(dot(normalize(vNormal),normalize(vView)))), 7.0);
+        gl_FragColor = vec4(mix(vec3(.36,.055,.70),vec3(.85,.60,1.),uFlash),
+          rim * uFade);
         #include <colorspace_fragment>
       }`,
   }));
   const shock = new THREE.Mesh(sphereGeometry, shockMat); shock.position.y = .2; field.add(shock);
   const waveMat = mat(new THREE.ShaderMaterial({ transparent: true,
     blending: THREE.NormalBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false,
-    uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color('#9e7eae') } },
+    uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color('#a74bea') } },
     vertexShader: vertex,
     fragmentShader: `varying vec2 vUv;uniform vec3 uColor;uniform float uOpacity;
       void main(){float r=length(vUv*2.-1.);
-        float feather=smoothstep(.82,.91,r)*(1.-smoothstep(.95,1.,r));
-        gl_FragColor=vec4(uColor,feather*uOpacity);
+        float d=abs(r-.92),line=exp(-d*190.),glow=exp(-d*40.);
+        float feather=smoothstep(.82,.85,r)*(1.-smoothstep(.985,1.,r));
+        gl_FragColor=vec4(mix(uColor,vec3(.95,.70,1.),line),(line*.8+glow*.28)*feather*uOpacity);
         #include <colorspace_fragment>
       }`,
   }));
   const wave = new THREE.Mesh(geo(new THREE.RingGeometry(.82, 1, 96)), waveMat);
   wave.rotation.x = -Math.PI / 2; wave.position.y = .045; field.add(wave);
-  const secondWaveMat = mat(waveMat.clone()); secondWaveMat.uniforms.uColor.value.set('#765783');
+  const secondWaveMat = mat(waveMat.clone()); secondWaveMat.uniforms.uColor.value.set('#763cb5');
   const secondWave = new THREE.Mesh(wave.geometry, secondWaveMat);
   secondWave.rotation.x = -Math.PI / 2; secondWave.position.y = .075; field.add(secondWave);
-  const thirdWaveMat = mat(secondWaveMat.clone()); thirdWaveMat.uniforms.uColor.value.set('#574060');
+  const thirdWaveMat = mat(secondWaveMat.clone()); thirdWaveMat.uniforms.uColor.value.set('#532c83');
   const thirdWave = new THREE.Mesh(secondWave.geometry, thirdWaveMat);
   thirdWave.rotation.x = -Math.PI / 2; thirdWave.position.y = .095; field.add(thirdWave);
-  const flashMat = mat(new THREE.MeshBasicMaterial({ color: '#cfb9d9', transparent: true,
+  const flashMat = mat(new THREE.SpriteMaterial({ map: textures?.burst ?? null, color: '#ffffff', transparent: true,
     opacity: 0, blending: THREE.NormalBlending, depthWrite: false, toneMapped: false }));
-  const flash = new THREE.Mesh(sphereGeometry, flashMat);
+  const flash = new THREE.Sprite(flashMat);
   flash.name = 'Gravitation · Aufblitzen beim Kollaps'; flash.position.y = 1.25;
   flash.visible = false; field.add(flash);
+  const burstCoreMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false, toneMapped: false,
+    uniforms: { uOpacity: { value: 0 } }, vertexShader: sphereVertex,
+    fragmentShader: `varying vec3 vNormal,vView;uniform float uOpacity;
+      void main(){float facing=abs(dot(normalize(vNormal),normalize(vView)));
+        gl_FragColor=vec4(1.,.90,1.,pow(facing,1.5)*uOpacity);
+        #include <colorspace_fragment>
+      }`,
+  }));
+  const burstCore = new THREE.Mesh(sphereGeometry, burstCoreMat);
+  burstCore.name = 'Gravitation · weißer Kern des Ausbruchs'; burstCore.visible = false; field.add(burstCore);
   const transform = new THREE.Object3D(), point = new THREE.Vector3();
   let phase = 'idle', disposed = false;
   function particle(index, progress, collapse, out) {
     const seed = (index * .61803398875) % 1;
-    const p = smooth((progress - seed * .26) / (1 - seed * .26));
+    const p = smooth(seed * .4 + progress * (.35 + seed * .15));
     const angle = index * 2.39996 - rules.pullDuration * (1.1 * p + 3 * p ** 3) * (1 + seed * .35);
-    const radius = collapse >= 0 ? .14 + rules.radius * Math.sqrt(collapse) * (.4 + seed * .52)
-      : .18 + rules.radius * (.42 + seed * .48) * (1 - p) ** .8;
+    const baseRadius = .18 + rules.radius * (.42 + seed * .48) * (1 - p) ** .8;
+    const radius = collapse >= 0 ? baseRadius + rules.radius * Math.sqrt(collapse) * (.2 + seed * .3) : baseRadius;
     const height = collapse >= 0 ? .25 + Math.sin(collapse * Math.PI) * (.25 + seed * .25)
       : .12 + p * .16 + Math.sin(p * Math.PI) * (.12 + seed * .12);
     return out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
@@ -257,12 +269,15 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     tetherGeo.setDrawRange(0, vertexIndex / 3);
     if (affectedCount) tetherGeo.attributes.position.needsUpdate = true;
     if (affectedCount) { markers.instanceMatrix.needsUpdate = true; victims.instanceMatrix.needsUpdate = true; }
-    flash.visible = collapse >= 0 && collapse < .3;
-    flash.position.y = motion.sphereHeight;
+    flash.visible = burstCore.visible = collapse >= 0 && collapse < .5;
+    flash.position.set(.25, motion.sphereHeight - .3, .9);
+    burstCore.position.copy(flash.position);
     if (flash.visible) {
-      const intensity = 1 - smooth(collapse / .3);
-      flash.scale.setScalar(.15 + intensity * .55);
-      flashMat.opacity = intensity * .55;
+      const intensity = 1 - smooth((collapse - .08) / .42);
+      flash.scale.setScalar(1.4 + intensity * 1.7);
+      flashMat.opacity = intensity * .95;
+      burstCore.scale.setScalar(.13 + intensity * .06);
+      burstCoreMat.uniforms.uOpacity.value = intensity * .95;
     }
     debrisMat.opacity = fade;
     trails.visible = age >= rules.warning;
@@ -271,6 +286,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
       particle(i, progress, collapse, transform.position);
       transform.rotation.set(age * 2 + i, age + i * .8, age * 1.4);
       transform.scale.setScalar((.070 + i % 4 * .026) * fade);
+      if (i % 3 === 0) transform.scale.set(transform.scale.x * .25, transform.scale.y * 1.6, transform.scale.z * .45);
       transform.updateMatrix(); debris.setMatrixAt(i, transform.matrix);
       for (let j = 0; j < TRAIL_SEGMENTS; j++) for (let k = 0; k < 2; k++) {
         const back = (j + k) * .025;
@@ -281,15 +297,15 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     debris.instanceMatrix.needsUpdate = true; trailGeometry.attributes.position.needsUpdate = true;
     shock.visible = wave.visible = secondWave.visible = thirdWave.visible = collapse >= 0;
     if (collapse >= 0) {
-      const spread = rules.radius * (.07 + .93 * (1 - (1 - collapse) ** 3));
+      const spread = rules.radius * (.12 + .88 * (1 - (1 - collapse) ** 6));
       shock.position.y = motion.sphereHeight * (1 - smooth(collapse)) + .10;
       shock.scale.set(spread, .10 + Math.sin(collapse * Math.PI) * .22, spread);
-      shockMat.uniforms.uFade.value = fade ** 2 * .65;
+      shockMat.uniforms.uFade.value = fade ** 2 * .5;
       shockMat.uniforms.uFlash.value = 1 - smooth(collapse / .5);
-      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = fade ** 1.5 * .65;
+      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = fade ** 1.5 * .85;
       const delayed = clamp((collapse - .10) / .90);
       secondWave.scale.setScalar(rules.radius * (.08 + .92 * (1 - (1 - delayed) ** 2)));
-      secondWaveMat.uniforms.uOpacity.value = (1 - delayed) ** 2 * .5;
+      secondWaveMat.uniforms.uOpacity.value = (1 - delayed) ** 2 * .6;
       const last = clamp((collapse - .26) / .74);
       thirdWave.visible = collapse >= .26;
       thirdWave.scale.setScalar(rules.radius * (.10 + .90 * (1 - (1 - last) ** 2)));
@@ -305,7 +321,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   function countDraws(root) {
     let count = 0;
     root.traverseVisible(child => {
-      if ((child.isMesh || child.isLine || child.isPoints) && (!child.isInstancedMesh || child.count > 0)) {
+      if ((child.isMesh || child.isLine || child.isPoints || child.isSprite) && (!child.isInstancedMesh || child.count > 0)) {
         count += child.material.transparent && child.material.side === THREE.DoubleSide && !child.material.forceSinglePass ? 2 : 1;
       }
     });

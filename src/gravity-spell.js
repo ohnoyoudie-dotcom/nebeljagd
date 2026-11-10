@@ -21,9 +21,9 @@ export function gravityPullStep(distance, moved, dt, rules = GRAVITY_RULES) {
 }
 
 /** Ground-targeted hold/release spell. Crowd control and visual phases share one clock. */
-export function createGravitySpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null, { effects: sharedEffects = null } = {}) {
+export function createGravitySpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null, { effects: sharedEffects = null, textures = null } = {}) {
   const rules = GRAVITY_RULES;
-  const visuals = createGravityVisuals(scene, rules, { heightAt: world?.heightAt?.bind(world) });
+  const visuals = createGravityVisuals(scene, rules, { heightAt: world?.heightAt?.bind(world), textures });
   const arrival = createGravityArrival(scene, rules);
   const effects = sharedEffects ?? createSpellEffects(scene, { isVisible });
   const projectile = effects.createProjectile();

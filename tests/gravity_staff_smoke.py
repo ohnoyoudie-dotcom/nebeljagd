@@ -10,6 +10,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4176').rstrip('/')
 BASELINE = os.environ.get('NEBELJAGD_BASELINE') == '1'
+ART_REVIEW = os.environ.get('NEBELJAGD_GRAVITY_REFERENCE') == '1'
 OUT = ROOT / 'test-results/gravity-staff' / ('before' if BASELINE else 'after')
 OUT.mkdir(parents=True, exist_ok=True)
 map_hash = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
@@ -32,6 +33,16 @@ def capture(page, name):
     data = page.evaluate('nebeljagdCaptureFrame()').split(',', 1)[1]
     (OUT / (name + '.png')).write_bytes(base64.b64decode(data))
     (OUT / (name + '.json')).write_text(json.dumps(state(page), ensure_ascii=False, indent=2) + '\n')
+
+def capture_reference_detail(page, name):
+    # Same generated game and simulation state, framed around the effect so its
+    # painted artwork can be compared directly with the supplied three panels.
+    data = page.evaluate('''() => {
+      const zoom=nebeljagdTestState().camera.zoom;
+      nebeljagdInspectCamera({zoom:2.2,focus:nebeljagdTestState().combat.gravity.center});
+      const png=nebeljagdCaptureFrame();nebeljagdInspectCamera({zoom});return png;
+    }''').split(',', 1)[1]
+    (OUT / (name + '.png')).write_bytes(base64.b64decode(data))
 
 def pause_at(page, age):
     page.evaluate('''age => {
@@ -89,14 +100,16 @@ with sync_playwright() as p:
             target = next(actor for actor in state(page)['practiceActors'] if actor['id'] == 'practice-1')
             point = target['position']
             # Let the real camera settle after moving before projecting the mouse.
-            page.evaluate('p => nebeljagdInspect({x:p.x-(p.touch?10:0),z:p.z-(p.touch?0:5),direction:p.touch?Math.PI/2:0})',
+            page.evaluate('p => nebeljagdInspect({x:p.x-2.7-(p.touch?10:0),z:p.z-(p.touch?0:5),direction:p.touch?Math.PI/2:0})',
                 {**point, 'touch': touch})
             page.evaluate('nebeljagdInspectCamera({zoom:1.05})')
             elapsed = state(page)['elapsed']
             page.wait_for_function('t=>nebeljagdTestState().elapsed>=t', arg=elapsed+.2)
             target = next(actor for actor in state(page)['practiceActors'] if actor['id'] == 'practice-1')
             point = target['position']
-            pixel = page.evaluate('p=>nebeljagdProjectPoint(p)', point)
+            # Cast beside the victim so its body and name do not conceal the
+            # central sphere in the reference-art captures. Real pull still runs.
+            pixel = page.evaluate('p=>nebeljagdProjectPoint({x:p.x-2.7,z:p.z})', point)
             before_health = target['health']
             expected_damage = state(page)['equippedItem']['damage']
             if touch:
@@ -151,12 +164,14 @@ with sync_playwright() as p:
                 page.keyboard.press('Escape')
             if not BASELINE:
                 pause_at(page, .6); capture(page, mode + '-sphere-start')
+                if not touch: capture_reference_detail(page, 'reference-start')
                 early = state(page)['combat']['gravity']['visuals']['vortex']
                 page.keyboard.press('Escape')
             pause_at(page, .9); capture(page, mode + '-pull')
             if not BASELINE:
                 g = state(page)['combat']['gravity']
                 assert g['visuals']['phase'] == 'pull' and g['visuals']['fieldDraws'] <= 15, g
+                assert g['visuals']['vortex']['artwork'] == 'gravity-reference-v1', 'the actual game must render the loaded reference artwork'
                 assert not g['exploded']
                 assert any(actor['gravityResponse'] > .1 for actor in state(page)['practiceActors']), 'the actual opponent reacts physically to the pull'
                 coverage = filled_vortex_coverage(page)
@@ -165,6 +180,7 @@ with sync_playwright() as p:
             page.keyboard.press('Escape')
             if not BASELINE:
                 pause_at(page, 1.3); capture(page, mode + '-sphere-grown')
+                if not touch: capture_reference_detail(page, 'reference-grown')
                 late = state(page)['combat']['gravity']['visuals']['vortex']
                 assert late['sphereVisible'] and late['sphereHeight'] > early['sphereHeight'] + .8, (early, late)
                 assert late['sphereRadius'] > early['sphereRadius'] * 2 and late['spinSpeed'] > early['spinSpeed'] * 3, (early, late)
@@ -173,10 +189,12 @@ with sync_playwright() as p:
                 passed(mode + ': filled ground spiral accelerates while its sphere rises and grows')
                 page.keyboard.press('Escape')
             pause_at(page, 1.46); capture(page, mode + '-collapse')
+            if not BASELINE and not touch: capture_reference_detail(page, 'reference-burst')
             assert state(page)['combat']['gravity']['exploded']
             if not BASELINE:
                 burst = state(page)['combat']['gravity']['visuals']['vortex']
                 assert not burst['sphereVisible'] and burst['shellCount'] == 14, burst
+                assert burst['capVisible'], 'the upper shell remains briefly visible during the first pop'
             assert state(page)['combat']['shotsFired'] == 1
             page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
@@ -199,6 +217,22 @@ with sync_playwright() as p:
                 assert not state(page)['combat']['gravity']['aiming']
                 assert state(page)['combat']['shotsFired'] == 1
                 passed(mode + ': cancel discards the charge without another cast')
+            if ART_REVIEW and not touch:
+                # A second real cast on empty ground keeps name plates out of
+                # the art review. Functional hit/pull checks above still use AI.
+                clean = {'x': 18, 'z': 18}
+                page.evaluate('p=>nebeljagdInspect({x:p.x-2,z:p.z-4,direction:Math.atan2(2,4)})', clean)
+                elapsed = state(page)['elapsed']
+                page.wait_for_function('t=>nebeljagdTestState().elapsed>=t', arg=elapsed+.3)
+                pixel = page.evaluate('p=>nebeljagdProjectPoint(p)', clean)
+                page.mouse.move(pixel['x'], pixel['y']); page.keyboard.down('f')
+                page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange?.radius === 10')
+                page.keyboard.up('f')
+                for age, name in [(.6, 'reference-start'), (1.3, 'reference-grown'), (1.46, 'reference-burst')]:
+                    pause_at(page, age); capture_reference_detail(page, name)
+                    page.keyboard.press('Escape')
+                page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
+                passed('Reference art review captures the three actual phases on empty ground')
             context.close()
         assert not report['errors'], report['errors']
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == map_hash

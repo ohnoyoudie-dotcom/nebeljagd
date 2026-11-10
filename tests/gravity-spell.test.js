@@ -140,7 +140,7 @@ test('the spatial vortex freezes on pause, respects visibility and releases its 
   const bounds = new THREE.Box3().setFromBufferAttribute(surface.geometry.attributes.position);
   assert.ok(bounds.max.y - bounds.min.y > .2 && bounds.max.y - bounds.min.y < .4,
     'the filled ground vortex has shallow physical depth');
-  assert.equal(debris.count, 24); assert.equal(gravity.telemetry.visuals.dustCount, 64);
+  assert.equal(debris.count, 12); assert.equal(gravity.telemetry.visuals.dustCount, 32);
   assert.ok(gravity.telemetry.visuals.fieldDraws <= 15, 'bounded effect draw count');
   const matrix = Array.from(debris.instanceMatrix.array), spin = surface.material.uniforms.uSpin.value;
   gravity.update(0, origin, 200);

@@ -1,0 +1,10 @@
+Project-generated artwork
+
+These effect textures were generated with host-native OpenAI ImageGen for the
+Nebeljagd repository owner, using the concept from this conversation as the
+owner-requested reference. The owner requested their integration, browser use
+and offline distribution as part of Nebeljagd.
+
+This record documents origin and authorized project use. It is not an
+independent certification of copyright, exclusivity or third-party licensing,
+and does not assign a new license to unrelated repository contents.

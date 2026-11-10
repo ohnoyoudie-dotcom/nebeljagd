@@ -1,4 +1,4 @@
-# Gravitationsstab – gefüllter Bodenstrudel und aufsteigende Energiekugel
+# Gravitationsstab – gemalter Strudel nach Bildreferenz und aufsteigende Energiekugel
 
 Der neue Stab verwendet das bereits hochgeladene Original
 assets/inbox/fantasy staff 3d model.glb (ca. 65 MB).
@@ -54,11 +54,17 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 - Erst danach öffnet sich ein durchgehend violett gefärbter Strudel auf den
   tatsächlichen Radius. Breite Spiralbänder unterscheiden sich durch ihre Farbe;
   zwischen ihnen bleibt die Fläche gefüllt. Ein weicher violetter Übergang begrenzt sie.
-- Die Oberfläche verwendet dunkle, matte Pflaumen- und Violetttöne mit weicher,
-  mitrotierender Pinselstruktur. Der Rand läuft weich aus. Gedämpfte Partikel,
-  Körperenergie und Schockwellen werden normal mit dem Hintergrund gemischt;
-  helle Neon-Konturen und additive Lichtketten entfallen. Dafür ist keine neue
-  Bildtextur nötig; die Struktur entsteht direkt im vorhandenen Material.
+- Die gemalte Boden-Textur übernimmt die breiten violetten Strömungen, feinen
+  Farbfäden, den dunklen Mittelpunkt und den schmalen violetten Rand aus der
+  vom Besitzer vorgegebenen Dreiphasen-Referenz. Ihre Farben werden im sRGB-Raum
+  geladen und ohne zusätzliche Umfärbung dargestellt. Der Drehwinkel animiert
+  diese Strömungen im vorhandenen Material.
+- Drei eigene ImageGen-Texturen liegen unter `assets/effects/gravity-reference/`:
+  Boden 1024×1024, Kugelrisse 512×256 und Ausbruchsblitz 512×512. Zusammen
+  241.018 Byte WebP und etwa 7,33 MiB RGBA-Texturspeicher einschließlich Mipmaps.
+  Das Paket enthält Prompts, Herkunft, Nutzungsnachweis und ein geschlossenes
+  Hash-Verzeichnis; `npm run verify:assets` prüft Bytes, Formate und Speicherbudgets.
+  Die Originalbilder bleiben außerhalb des Laufzeitpakets erhalten.
 - Die Bodenfläche bildet eine flache, 0,26 m tiefe Schale mit erhöhtem Außenrand.
   Sie folgt einmal pro Platzierung der bestehenden Geländehöhe und verändert
   weder Gelände noch Karte. Schattierung und geringe Wellen geben zusätzliche Tiefe.
@@ -67,21 +73,23 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 - Aus der Mitte steigt eine dunkle Energiekugel mit leuchtenden violetten Rissen.
   Ihr Mittelpunkt steigt während des Sogs von 0,13 auf 1,73 m über der Feldbasis,
   ihr Radius wächst von 0,10 auf 0,75 m. Eine schmale Energieverbindung reicht zum Zentrum.
-- 24 wiederverwendete Gesteinssplitter, 64 Bodenpartikel und zurückhaltende Lichtspuren werden
+- 12 wiederverwendete Fragmente aus Stein und Gras, 32 Bodenpartikel und zurückhaltende Lichtspuren werden
   bodennah nach innen gezogen. Das vorhandene Gras-System erhält begrenzte
   Interaktoren, welche die Halme sichtbar zur Feldmitte biegen.
 - Bis zu acht sichtbare Gegner erhalten violette Körperenergie und Fußrunen.
   Ihre Figuren stemmen Arme und Beine gegen den Sog und kippen sichtbar mit.
 - Beim Kollaps zerplatzt die große Kugel in 14 gemeinsam gezeichnete
-  Schalenfragmente. Ein kurzer heller Blitz auf Kugelhöhe, eine räumliche
+  Schalenfragmente. Die aufgebrochene obere Schale bleibt rund 0,18 s bestehen,
+  während darunter ein weiß-violetter Blitz aufleuchtet. Eine räumliche
   Druckwelle und drei zeitversetzte Bodenringe zeigen den einen Treffer.
   Der violette Strudel rotiert darunter weiter und blendet zusammen mit den Fragmenten aus.
 - Vorwarnung, Sog, Kollaps und Abklingen laufen über dieselbe Simulationszeit.
   Pause friert sie ein, Sichtprüfung und Tiefentest verbergen verdeckte Effekte.
 - Instanz-Geometrie bündelt Partikel, Trümmer und Gegnerreaktionen. Die Feld-
   Darstellung bleibt auch mit acht betroffenen Gegnern bei höchstens 15 Zeichenschritten,
-  die gepoolte Landung benötigt vier. Keine neuen externen Texturen,
-  dynamische Lichtquellen oder Bildschirm-Postprocessing-Effekte.
+  die gepoolte Landung benötigt vier. Die Texturen werden vor Spielbereitschaft
+  einmal geladen und als Daten-URLs eingebettet, auch für die Offline-Ausgabe.
+  Keine dynamischen Lichtquellen oder Bildschirm-Postprocessing-Effekte.
 
 ## Prüfweg
 1. npm test, npm run verify:assets, npm run map:check, npm run build.
@@ -89,7 +97,11 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
    prüft Maus und Touch am erzeugten Spiel und erfasst Flug, Landung, Öffnung,
    Sog, Kugelaufstieg und Zerplatzen. Pixelproben des echten GPU-Bilds prüfen
    die gefüllte violette Fläche; Zustandsprüfungen erfassen Beschleunigung,
-   Kugelwachstum und den weiterhin einmaligen Schaden.
+   Kugelwachstum und den weiterhin einmaligen Schaden. Drei vergrößerte echte
+   Spielaufnahmen (`reference-start`, `reference-grown`, `reference-burst`)
+   erlauben den direkten Vergleich mit dem Entwurf.
+   Mit `NEBELJAGD_GRAVITY_REFERENCE=1` erfasst derselbe Test zusätzlich einen
+   echten Zauber auf freier Fläche, damit Lebensbalken die Effektprüfung nicht verdecken.
 2. Im Editor den neuen Stab neben Übungsgegnern platzieren, **Spielen** öffnen,
    aufnehmen, Ziel markieren und Flug, Landung, Feldöffnung, Sog und Explosion ansehen.
 3. Den Angriff mit Rolle, Hindernissen, Waffenwechsel und Neustart prüfen.
