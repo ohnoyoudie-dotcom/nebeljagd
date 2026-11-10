@@ -109,7 +109,10 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     starStaff: { core: solid(ELEMENTS.starStaff.core), tip: additive(ELEMENTS.starStaff.spark, .7),
       body: elementMaterial('body', { type: 'starStaff', opacity: .42 }),
       crystal: solid(ELEMENTS.starStaff.core) },
+    gravityStaff: { core: solid('#140626'), tip: additive('#cf9aff', .8),
+      body: elementMaterial('body', { type: 'gravityStaff', opacity: .8 }) },
   };
+  const gravityOrbitGeometry = ownGeometry(new THREE.TorusGeometry(.40, .018, 5, 40, Math.PI * 1.7));
   const starShape = new THREE.Shape();
   for (let i = 0; i < 10; i++) {
     const angle = Math.PI / 2 + i * Math.PI / 5, radius = i % 2 ? .105 : .31;
@@ -144,6 +147,14 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function createProjectile() {
     if (disposed) throw new Error('Disposed spell effects cannot create projectiles.');
     const group = addRoot(new THREE.Group()); group.name = 'Zauberprojektil'; group.visible = false;
+    const gravity = new THREE.Group(); gravity.name = 'Gravitationsprojektil · dunkler Kern'; group.add(gravity);
+    mesh(gravity, sphere, projectileMaterials.gravityStaff.core).scale.set(.29, .32, .29);
+    const gravityOrbits = [mesh(gravity, gravityOrbitGeometry, projectileMaterials.gravityStaff.tip),
+      mesh(gravity, gravityOrbitGeometry, projectileMaterials.gravityStaff.tip)];
+    const gravityParticles = new THREE.InstancedMesh(octahedron, projectileMaterials.gravityStaff.tip, 8);
+    gravityParticles.count = 0;
+    gravityParticles.name = 'Gravitationsprojektil · umlaufende Energiepartikel'; gravityParticles.frustumCulled = false;
+    gravityParticles.instanceMatrix.setUsage(THREE.DynamicDrawUsage); gravity.add(gravityParticles);
     const fire = new THREE.Group(), ice = new THREE.Group(), star = new THREE.Group(); group.add(fire, ice, star);
     star.name = 'Sternstab · rotierender Sternenblitz'; star.visible = false;
     mesh(star, starGeometry, starMaterial);
@@ -200,7 +211,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, fire, ice, star, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, fire, ice, star, gravity, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -306,11 +317,13 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function launch(visual, type, position, direction = 0) {
     if (disposed || !valid(position)) return end(visual);
     type = typeOf(type); direction = finite(direction);
-    Object.assign(visual, { type, direction, active: true, historyCount: 0, sampleDistance: 0,
+    Object.assign(visual, { type, direction, age: 0, active: true, historyCount: 0, sampleDistance: 0,
       sparkDistance: 0, smokeDistance: 0, headBirth: clock.value, trailRemaining: 0, visibleTrailSegments: 0 });
     visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
     const appearance = projectileMaterials[type];
-    visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type);
+    visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type) && type !== 'gravityStaff';
+    visual.gravity.visible = type === 'gravityStaff';
+    visual.gravityParticles.count = 0;
     visual.ice.visible = crystalline(type) && type !== 'starStaff'; visual.star.visible = type === 'starStaff';
     if (visual.fireModel) visual.fireModel.visible = type === 'fireStaff';
     const importedIce = Boolean(visual.iceModel && type === 'iceStaff');
@@ -340,6 +353,18 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function advance(visual, from, to, delta, time) {
     if (disposed || !visual.active || !valid(from) || !valid(to)) return;
     delta = Math.max(0, Math.min(.25, finite(delta))); if (!delta) return;
+    visual.age += delta;
+    if (visual.type === 'gravityStaff') {
+      visual.gravityParticles.count = 8;
+      visual.gravityOrbits.forEach((orbit, index) => orbit.rotation.set(.5 + index, visual.age * (index ? -5 : 7), index * .8));
+      for (let i = 0; i < 8; i++) {
+        const angle = i * Math.PI / 4 + visual.age * 8;
+        transform.position.set(Math.cos(angle) * .47, Math.sin(angle * 1.3) * .25, Math.sin(angle) * .47);
+        transform.rotation.set(angle, angle * .7, 0); transform.scale.setScalar(.035 + i % 3 * .014);
+        transform.updateMatrix(); visual.gravityParticles.setMatrixAt(i, transform.matrix);
+      }
+      visual.gravityParticles.instanceMatrix.needsUpdate = true;
+    }
     visual.group.position.copy(to); visual.group.visible = canSee(to);
     visual.headBirth = clock.value + delta;
     const distance = Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z);
@@ -524,6 +549,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function dispose() {
     if (disposed) return;
     reset(); disposed = true;
+    for (const visual of projectiles) visual.gravityParticles.dispose();
     for (const root of roots) {
       if (root.isInstancedMesh) root.dispose();
       root.removeFromParent();

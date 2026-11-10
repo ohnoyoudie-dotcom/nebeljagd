@@ -779,7 +779,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }, isVisible, { moonProjectilePrototype: projectilePrototypes.moon });
   const gravity = createGravitySpell(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
-  }, isVisible);
+  }, isVisible, { effects: spellEffects });
   const staffTip = new THREE.Vector3();
   function cancelAim() {
     specials.cancelAim(); gravity.cancelAim();
@@ -793,7 +793,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     attackPhase = 'release'; shotReleased = true;
     getStaffTip(staffTip);
     if (isGravity) {
-      gravity.release(equippedItem);
+      const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .16);
+      gravity.release(equippedItem, staffTip, blocked);
       spellEffects.fire('gravityStaff', staffTip, characterGroup.rotation.y);
     }
     else {
@@ -1068,7 +1069,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get bowHolding() { return false; },
     get aiming() { return specials.aiming || gravity.aiming; },
     get aimRange() { return gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
-    get attackCooldown() { return specials.moonBusy ? Math.max(.05, cooldown) : cooldown; },
+    get attackCooldown() { return specials.moonBusy || gravity.busy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
         .multiply(heldSword.scale).applyQuaternion(heldSword.quaternion).add(heldSword.position);

@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
 import { createGravitySpell, GRAVITY_RULES, gravityPullStep } from '../src/gravity-spell.js';
+import { createCollisionIndex } from '../src/collision.js';
+import { createPracticeActors } from '../src/practice-actors.js';
 
 function scenario(blocked = false, visible = () => true) {
   const scene = new THREE.Scene();
@@ -19,6 +21,12 @@ function scenario(blocked = false, visible = () => true) {
   return { scene, world, combat, gravity, opponent, hits };
 }
 
+// Existing field checks start their clock at the physical landing.
+function land(gravity, position) {
+  const duration = gravity.telemetry.flight?.duration;
+  if (duration) gravity.update(duration, position);
+}
+
 test('gravity uses a visible warning, limited pull, one explosion and a resettable lifecycle', () => {
   const { gravity, opponent, hits } = scenario();
   const origin = new THREE.Vector3(0, 0, 0);
@@ -26,6 +34,7 @@ test('gravity uses a visible warning, limited pull, one explosion and a resettab
   gravity.aimAt(origin, { x: 0, z: 0 });
   assert.equal(gravity.telemetry.aiming, true);
   assert.equal(gravity.release({ damage: 14 }), true);
+  land(gravity, origin);
   assert.equal(gravity.telemetry.active, true);
   gravity.update(.2, origin);
   assert.equal(opponent.position.x, 1.8);
@@ -48,7 +57,7 @@ test('gravity respects world blockers and never pulls or damages through walls',
   const origin = new THREE.Vector3(0, 0, 0);
   gravity.beginAim(origin, 0);
   gravity.aimAt(origin, { x: 0, z: 0 });
-  gravity.release({ damage: 14 });
+  gravity.release({ damage: 14 }); land(gravity, origin);
   for (let i = 0; i < 10; i++) gravity.update(.2, origin);
   assert.equal(opponent.position.x, 1.8);
   assert.equal(opponent.health, 100);
@@ -84,7 +93,7 @@ test('hold duration controls placement up to ten metres in three seconds, never 
     gravity.update(0, origin, 500); assert.deepEqual(gravity.telemetry, before, 'pause freezes charge and visuals');
     gravity.aimAt(origin, { x: -100, z: 0 });
     assert.ok(Math.abs(gravity.telemetry.aim.x + distance) < 1e-8, 'mouse changes direction at the current charge');
-    gravity.release({ damage: 14 });
+    gravity.release({ damage: 14 }); land(gravity, origin);
     assert.ok(Math.abs(gravity.telemetry.center.x + distance) < 1e-8);
     assert.equal(gravity.release({ damage: 14 }), false, 'release never fires twice');
     gravity.dispose();
@@ -109,7 +118,7 @@ test('the larger field pulls and hits targets at three metres, with one hit and 
   const origin = new THREE.Vector3(); opponent.position.x = 3.1;
   const outside = combat.addTarget({ id: 'outside', position: new THREE.Vector3(3.8, 0, 0), health: 100 });
   const owner = combat.addTarget({ id: 'player', position: new THREE.Vector3(), health: 100 });
-  gravity.beginAim(origin, 0); gravity.release({ damage: 14 });
+  gravity.beginAim(origin, 0); gravity.release({ damage: 14 }); land(gravity, origin);
   gravity.update(.4, origin); assert.equal(opponent.position.x, 3.1);
   gravity.update(.98, origin); assert.equal(opponent.health, 100);
   assert.ok(opponent.position.x < 3.1 && opponent.position.x >= 1.6);
@@ -122,7 +131,7 @@ test('the larger field pulls and hits targets at three metres, with one hit and 
 test('the spatial vortex freezes on pause, respects visibility and releases its reusable resources', () => {
   let visible = true;
   const { gravity, scene } = scenario(false, () => visible); const origin = new THREE.Vector3();
-  gravity.beginAim(origin, 0); gravity.release({ damage: 14 }); gravity.update(.9, origin);
+  gravity.beginAim(origin, 0); gravity.release({ damage: 14 }); land(gravity, origin); gravity.update(.9, origin);
   const core = scene.getObjectByName('Gravitationsfeld · Singularität');
   const funnel = scene.getObjectByName('Gravitationsfeld · gekrümmter Sog');
   const debris = scene.getObjectByName('Gravitationsfeld · schwebende Trümmer');
@@ -153,7 +162,7 @@ test('enhanced gravity effect shows ground dust, victim tethers and a double sho
   const { gravity, scene, opponent } = scenario();
   const origin = new THREE.Vector3();
   gravity.beginAim(origin, 0);
-  gravity.release({ damage: 14 });
+  gravity.release({ damage: 14 }); land(gravity, origin);
   gravity.update(.2, origin, .2);
   assert.equal(opponent.health, 100, 'warning is non-damaging');
   const dust = scene.getObjectByName('Gravitationsfeld · angehobener Bodenstaub');
@@ -180,7 +189,7 @@ test('target energy strands do not reveal an enemy hidden from the caster', () =
   const { gravity, scene, opponent } = scenario(false, p => p.x < 1);
   const origin = new THREE.Vector3();
   gravity.beginAim(origin, 0);
-  gravity.release({ damage: 14 });
+  gravity.release({ damage: 14 }); land(gravity, origin);
   gravity.update(.8, origin);
   assert.equal(gravity.telemetry.visuals.fieldVisible, true);
   assert.equal(gravity.telemetry.visuals.affectedCount, 0);
@@ -195,7 +204,7 @@ test('the gravity field bends actual map grass inward only during its suction ph
   const before = [{ x: 10, z: 12, radius: 1, dirX: 0, dirZ: 1, strength: .4 }];
   assert.deepEqual(gravity.appendGrassInteractors([...before]), before);
   gravity.beginAim(origin, 0);
-  gravity.release({ damage: 14 });
+  gravity.release({ damage: 14 }); land(gravity, origin);
   gravity.update(.2, origin);
   assert.equal(gravity.appendGrassInteractors([...before]).length, 1, 'warning has no suction wind');
   gravity.update(.45, origin);
@@ -214,4 +223,91 @@ test('the gravity field bends actual map grass inward only during its suction ph
   gravity.update(1, origin);
   assert.equal(gravity.appendGrassInteractors([]).length, 0, 'collapse stops the grass suction');
   gravity.dispose();
+});
+
+test('release throws a dark projectile with a curved, pauseable flight before landing and field opening', () => {
+  const { gravity, scene, opponent } = scenario();
+  const caster = new THREE.Vector3(), hand = new THREE.Vector3(0, 1.4, 0);
+  gravity.beginAim(caster, 0); gravity.aimAt(caster, { x: 0, z: 10 }); gravity.update(3, caster);
+  gravity.release({ damage: 14 }, hand);
+  const first = gravity.telemetry;
+  assert.equal(first.phase, 'flight'); assert.equal(first.landed, false);
+  assert.equal(first.visuals.fieldVisible, false); assert.equal(first.arrival.visible, false);
+  assert.equal(gravity.beginAim(caster, 0), false, 'the cast has a fixed bounded projectile capacity');
+  gravity.update(first.flight.duration / 2, caster);
+  assert.ok(gravity.telemetry.flight.position.y > 3.8, 'the projectile has a clearly visible high arc');
+  assert.ok(Math.abs(gravity.telemetry.flight.position.z - 5) < 1e-7);
+  assert.ok(scene.getObjectByName('Gravitationsprojektil · umlaufende Energiepartikel').count === 8);
+  const before = gravity.telemetry;
+  gravity.update(0, caster, 100); assert.deepEqual(gravity.telemetry, before);
+  gravity.update(first.flight.duration / 2, caster);
+  assert.equal(gravity.telemetry.flight, null); assert.equal(gravity.telemetry.phase, 'impact');
+  assert.equal(gravity.telemetry.arrival.visible, true); assert.equal(gravity.telemetry.visuals.fieldVisible, false);
+  assert.equal(opponent.health, 100);
+  gravity.update(.25, caster); assert.equal(gravity.telemetry.phase, 'opening');
+  assert.equal(gravity.telemetry.visuals.fieldVisible, true);
+  gravity.reset(); assert.equal(gravity.telemetry.active, false); assert.equal(gravity.telemetry.arrival.visible, false);
+  gravity.dispose(); assert.equal(scene.children.length, 0);
+});
+
+test('coarse frames sweep the gravity arc against actual barriers and preserve cover behind the impact', () => {
+  for (const height of [1.99, 8]) {
+    const { gravity, world, opponent } = scenario();
+    const index = createCollisionIndex([], [{ type: 'wall', minX: -2, maxX: 2,
+      minZ: 4.9, maxZ: 5.1, minY: 0, maxY: height }]);
+    const caster = new THREE.Vector3(); opponent.position.set(0, 0, 7);
+    gravity.beginAim(caster, 0); gravity.aimAt(caster, { x: 0, z: 10 }); gravity.update(3, caster);
+    gravity.release({ damage: 14 }, new THREE.Vector3(0, 1.4, 0));
+    world.traceProjectile = (...args) => index.traceSegment(...args);
+    world.resolveMovement = (...args) => index.resolve(...args);
+    gravity.update(gravity.telemetry.flight.duration + .1, caster);
+    assert.equal(gravity.telemetry.flight, null);
+    assert.ok(Math.abs(gravity.telemetry.center.z - (height < 2 ? 10 : 4.62)) < .05);
+    gravity.update(1.2, caster);
+    if (height >= 2) { assert.equal(opponent.health, 100); assert.equal(opponent.position.z, 7); }
+    gravity.dispose();
+  }
+});
+
+test('flight time is separate from the unchanged landing warning and damage occurs only once across multiple shockwaves', () => {
+  const { gravity, opponent, hits } = scenario(); const caster = new THREE.Vector3();
+  gravity.beginAim(caster, 0); gravity.release({ damage: 14 }, new THREE.Vector3(0, 1.4, 0));
+  const duration = gravity.telemetry.flight.duration;
+  gravity.update(duration + 1.38, caster);
+  assert.equal(opponent.health, 100);
+  gravity.update(.03, caster); assert.equal(opponent.health, 86); assert.equal(hits.length, 1);
+  gravity.update(.25, caster); assert.equal(hits.length, 1);
+  gravity.update(.5, caster); assert.equal(hits.length, 1); assert.equal(gravity.telemetry.active, false);
+  gravity.dispose();
+});
+
+test('eight visible victims use shared instanced feedback and respect the field draw and grass budgets', () => {
+  const { gravity, combat, scene } = scenario(); const caster = new THREE.Vector3();
+  for (let i = 0; i < 12; i++) combat.addTarget({ id: 'crowd-' + i,
+    position: new THREE.Vector3(Math.sin(i) * 2.3, 0, Math.cos(i) * 2.3), health: 100 });
+  gravity.beginAim(caster, 0); gravity.release({ damage: 14 }); land(gravity, caster); gravity.update(.7, caster);
+  assert.equal(gravity.telemetry.visuals.affectedCount, 8);
+  assert.equal(scene.getObjectByName('Gravitation · gebündelte Fußrunen').count, 8);
+  assert.equal(scene.getObjectByName('Gravitation · Energie an betroffenen Körpern').count, 8);
+  assert.ok(gravity.telemetry.visuals.fieldDraws <= 15);
+  assert.ok(gravity.appendGrassInteractors([]).length <= 8);
+  gravity.reset();
+  for (const target of combat.targets.values()) assert.equal(target.gravityVisual, undefined);
+  gravity.dispose();
+});
+
+test('actual practice bodies brace against the pull and their pose freezes on pause', () => {
+  const scene = new THREE.Scene(), combat = createCombat();
+  const world = { spawn: { x: 0, z: 0 }, heightAt: () => 0, isLand: () => true,
+    isWater: () => false, concealmentAt: () => 0, resolveMovement: () => {}, traceProjectile: () => null };
+  const actors = createPracticeActors(scene, { world, combat });
+  combat.targets.get('practice-1').position.set(1.8, 0, 0);
+  const gravity = createGravitySpell(scene, world, combat, 'player'); const caster = new THREE.Vector3();
+  gravity.beginAim(caster, 0); gravity.release({ damage: 14 }); land(gravity, caster); gravity.update(.8, caster);
+  actors.update(.05, 1, caster);
+  assert.ok(actors.inspect()[0].gravityResponse > .1);
+  const pivot = actors.root.children[0].children[0];
+  const pose = () => { const values = []; pivot.traverse(object => values.push([...object.position.toArray(), ...object.quaternion.toArray()])); return values; };
+  const before = pose(); actors.update(0, 999, caster); assert.deepEqual(pose(), before);
+  gravity.dispose(); actors.dispose(); assert.equal(scene.children.length, 0);
 });

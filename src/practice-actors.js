@@ -167,7 +167,15 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       pivot.rotation.x = THREE.MathUtils.lerp(pivot.rotation.x, target.alive ? xLean * actor.gravityResponse : 0, 1 - Math.exp(-delta * 9));
       pivot.rotation.z = THREE.MathUtils.lerp(pivot.rotation.z, target.alive ? zLean * actor.gravityResponse : Math.PI * .47, 1 - Math.exp(-delta * 8));
       if (gravity) gravity.remaining = Math.max(0, gravity.remaining - delta);
-      pivot.position.y = target.alive ? Math.sin(actor.phase * 2) * .025 : -.02;
+      for (const limb of actor.limbs) {
+        const reaction = actor.gravityResponse;
+        limb.arm.rotation.z = limb.side * reaction * .35;
+        if (reaction > .01 && delta > 0) {
+          limb.arm.rotation.x = THREE.MathUtils.lerp(limb.arm.rotation.x, -.9 + Math.sin(time * 13 + limb.side) * .12, reaction);
+          limb.leg.rotation.x = THREE.MathUtils.lerp(limb.leg.rotation.x, limb.side * .26, reaction);
+        }
+      }
+      pivot.position.y = target.alive ? Math.sin(actor.phase * 2) * .025 + actor.gravityResponse * .08 : -.02;
       actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : pulled ? '#522680' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
       actor.flames.visible = target.alive && target.burnRemaining > 0;
       actor.frost.visible = target.alive && target.slowRemaining > 0;
@@ -243,10 +251,11 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
 
   return {
     root, update, reset, resolvePlayerMovement, appendGrassInteractors, appendFootprintSources,
-    inspect: () => actors.map(({ id, target, group, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
+    inspect: () => actors.map(({ id, target, group, pivot, gravityResponse, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
       alive: target.alive, visible, burnRemaining: target.burnRemaining, poisonRemaining: target.poisonRemaining, slowRemaining: target.slowRemaining,
-      speedMultiplier: target.speedMultiplier, baseSpeed: speed, travelled })),
+      speedMultiplier: target.speedMultiplier, baseSpeed: speed, travelled, gravityResponse,
+      gravityLean: { x: pivot.rotation.x, z: pivot.rotation.z } })),
     dispose() {
       for (const actor of actors) { combat.removeTarget(actor.id); healthBars?.remove(actor.id); }
       root.removeFromParent(); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose());

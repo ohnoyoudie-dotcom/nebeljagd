@@ -74,8 +74,9 @@ Der Code des Branches `work` enthält u. a. `src/loot-tiers.js`, `src/weapons.js
 | Reflexion | ~1,8 s Schutz, ~8 s Cooldown, kein Direktschaden |
 
 **Gravitationsstab, überarbeiteter Prototyp:** Zielreichweite wächst wie beim
-Giftstab in 3 s von 0 auf 10 m; Loslassen setzt das Feld. Radius 3,2 m,
-0,4 s Vorwarnung, 1,0 s Sog mit maximal 1,5 m Verschiebung je Gegner,
+Giftstab in 3 s von 0 auf 10 m; Loslassen wirft ein violettes Bogenprojektil.
+Nach dem Aufprall öffnen Landungsanimation und Feldöffnung das Feld in der
+bestehenden 0,4-s-Vorwarnung. Radius 3,2 m, 1,0 s Sog mit maximal 1,5 m Verschiebung je Gegner,
 einmalig 14 Grundschaden beim Kollaps, danach 0,65 s visuelles Abklingen.
 Cooldown 2,8 s ab Loslassen. Radius, Zug und Zeiten bleiben unabhängig von der
 Seltenheit. Genaue Bedienung und Darstellung: [gravitationsstab.md](gravitationsstab.md).
