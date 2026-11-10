@@ -53,7 +53,12 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   eine aufsteigende Energiesäule und eine kurz aufploppende Energieblase.
 - Erst danach öffnet sich ein durchgehend violett gefärbter Strudel auf den
   tatsächlichen Radius. Breite Spiralbänder unterscheiden sich durch ihre Farbe;
-  zwischen ihnen bleibt die Fläche gefüllt. Ein schmaler violetter Rand begrenzt sie.
+  zwischen ihnen bleibt die Fläche gefüllt. Ein weicher violetter Übergang begrenzt sie.
+- Die Oberfläche verwendet dunkle, matte Pflaumen- und Violetttöne mit weicher,
+  mitrotierender Pinselstruktur. Der Rand läuft weich aus. Gedämpfte Partikel,
+  Körperenergie und Schockwellen werden normal mit dem Hintergrund gemischt;
+  helle Neon-Konturen und additive Lichtketten entfallen. Dafür ist keine neue
+  Bildtextur nötig; die Struktur entsteht direkt im vorhandenen Material.
 - Die Bodenfläche bildet eine flache, 0,26 m tiefe Schale mit erhöhtem Außenrand.
   Sie folgt einmal pro Platzierung der bestehenden Geländehöhe und verändert
   weder Gelände noch Karte. Schattierung und geringe Wellen geben zusätzliche Tiefe.

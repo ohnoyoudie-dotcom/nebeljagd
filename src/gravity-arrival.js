@@ -18,15 +18,15 @@ export function createGravityArrival(scene, rules) {
   const waveMat = mat(createElementMaterial('shock', clock, { type: 'gravityStaff', opacity: .9 }));
   const wave = new THREE.Mesh(geo(new THREE.PlaneGeometry(1, 1)), waveMat);
   wave.name = 'Gravitation · violette Aufprallwelle'; wave.rotation.x = -Math.PI / 2; wave.position.y = .08; group.add(wave);
-  const popMat = mat(new THREE.MeshBasicMaterial({ color: '#54219b', transparent: true, opacity: .7, depthWrite: false }));
+  const popMat = mat(new THREE.MeshBasicMaterial({ color: '#392448', transparent: true, opacity: .5, depthWrite: false }));
   const pop = new THREE.Mesh(geo(new THREE.SphereGeometry(1, 24, 14)), popMat);
   pop.name = 'Gravitation · aufploppende Energieblase'; group.add(pop);
   const energyMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending, toneMapped: false, uniforms: { uAge: clock, uFade: { value: 0 } },
+    blending: THREE.NormalBlending, toneMapped: false, uniforms: { uAge: clock, uFade: { value: 0 } },
     vertexShader: `varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
     fragmentShader: `varying vec2 vUv; uniform float uAge,uFade;
       void main(){float rays=pow(max(0.0,cos(vUv.x*50.265-vUv.y*4.0+uAge*12.0)),12.0);
-        float envelope=sin(vUv.y*3.14159);gl_FragColor=vec4(.63,.29,1.0,rays*envelope*uFade);
+        float envelope=sin(vUv.y*3.14159);gl_FragColor=vec4(.27,.14,.37,rays*envelope*uFade);
         #include <colorspace_fragment>
       }`,
   }));
@@ -55,14 +55,14 @@ export function createGravityArrival(scene, rules) {
     if (!group.visible) return;
     group.position.set(center.x, center.y + .045, center.z); clock.value = age;
     wave.scale.setScalar((.15 + Math.sqrt(t) * rules.radius) * 2.7);
-    waveMat.uniforms.uOpacity.value = (1 - t) ** 1.3 * .95;
+    waveMat.uniforms.uOpacity.value = (1 - t) ** 1.3 * .60;
     const puff = Math.sin(t * Math.PI);
     pop.position.y = .18 + puff * .40;
     pop.scale.set(.3 + puff * .8, .10 + puff * .65, .3 + puff * .8);
-    popMat.opacity = (1 - t) ** 1.4 * .7;
+    popMat.opacity = (1 - t) ** 1.4 * .5;
     energy.scale.set(.35 + t * 1.1, .2 + puff * 2.2, .35 + t * 1.1);
     energy.position.y = energy.scale.y * .5;
-    energyMat.uniforms.uFade.value = puff * .8;
+    energyMat.uniforms.uFade.value = puff * .45;
     dustMat.uniforms.uFade.value = (1 - t) ** 1.4 * .40;
     for (let i = 0; i < DUST_COUNT; i++) {
       const seed = i * .61803398875 % 1, angle = i * 2.39996 + t * .7;

@@ -74,8 +74,8 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   const sphereVertex = `varying vec3 vNormal, vView;
     void main() { vec4 p = modelViewMatrix * vec4(position,1.0);
       vNormal = normalize(normalMatrix * normal); vView = -p.xyz; gl_Position = projectionMatrix * p; }`;
-  const debrisMat = mat(new THREE.MeshStandardMaterial({ color: '#655075', roughness: .82,
-    emissive: '#582181', emissiveIntensity: .38, transparent: true, depthWrite: false }));
+  const debrisMat = mat(new THREE.MeshStandardMaterial({ color: '#615468', roughness: 1,
+    emissive: '#38223f', emissiveIntensity: .02, transparent: true, depthWrite: false }));
   const debris = new THREE.InstancedMesh(geo(new THREE.OctahedronGeometry(1, 0)), debrisMat, DEBRIS_COUNT);
   debris.name = 'Gravitationsfeld · schwebende Trümmer'; debris.frustumCulled = false;
   debris.instanceMatrix.setUsage(THREE.DynamicDrawUsage); field.add(debris);
@@ -84,11 +84,11 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   const dustPositions = new Float32Array(DUST_COUNT * 3);
   const dustGeo = geo(new THREE.BufferGeometry());
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3).setUsage(THREE.DynamicDrawUsage));
-  const dustMat = mat(new THREE.ShaderMaterial({ transparent: true, blending: THREE.AdditiveBlending,
+  const dustMat = mat(new THREE.ShaderMaterial({ transparent: true, blending: THREE.NormalBlending,
     depthWrite: false, toneMapped: false, uniforms: { uOpacity: { value: .7 } },
-    vertexShader: `void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_PointSize=3.2;}`,
+    vertexShader: `void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_PointSize=1.8;}`,
     fragmentShader: `uniform float uOpacity; void main(){float a=1.-smoothstep(.05,.5,length(gl_PointCoord-.5));
-      if(a<.01)discard;gl_FragColor=vec4(.72,.43,1.,a*uOpacity);
+      if(a<.01)discard;gl_FragColor=vec4(.20,.12,.29,a*uOpacity);
       #include <colorspace_fragment>
     }`,
   }));
@@ -96,8 +96,8 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   dust.name = 'Gravitationsfeld · angehobener Bodenstaub'; dust.frustumCulled = false; field.add(dust);
 
   const markerGeo = geo(new THREE.RingGeometry(.43, .48, 36));
-  const markerMat = mat(new THREE.MeshBasicMaterial({ color: '#d5a4ff', transparent: true,
-    opacity: .75, depthWrite: false, blending: THREE.AdditiveBlending,
+  const markerMat = mat(new THREE.MeshBasicMaterial({ color: '#9d83ad', transparent: true,
+    opacity: .35, depthWrite: false, blending: THREE.NormalBlending,
     toneMapped: false, side: THREE.DoubleSide }));
   const targetMarkers = Array.from({ length: TARGET_CAP }, (_, i) => {
     const ring = new THREE.Group();
@@ -108,11 +108,11 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   markers.name = 'Gravitation · gebündelte Fußrunen'; markers.frustumCulled = false; markers.count = 0;
   markers.instanceMatrix.setUsage(THREE.DynamicDrawUsage); field.add(markers);
   const victimMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending, toneMapped: false, uniforms: { uAge: { value: 0 }, uFade: { value: .7 } },
+    blending: THREE.NormalBlending, toneMapped: false, uniforms: { uAge: { value: 0 }, uFade: { value: .35 } },
     vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*instanceMatrix*vec4(position,1.);}`,
     fragmentShader: `varying vec2 vUv;uniform float uAge,uFade;
       void main(){float stripe=pow(max(0.,cos(vUv.x*37.699-vUv.y*14.+uAge*10.)),16.);
-        float alpha=stripe*sin(vUv.y*3.14159)*uFade;gl_FragColor=vec4(.66,.28,1.,alpha);
+        float alpha=stripe*sin(vUv.y*3.14159)*uFade;gl_FragColor=vec4(.24,.12,.34,alpha);
         #include <colorspace_fragment>
       }`,
   }));
@@ -122,8 +122,8 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   const tetherPositions = new Float32Array(TARGET_CAP * 2 * TETHER_SEGMENTS * 6);
   const tetherGeo = geo(new THREE.BufferGeometry());
   tetherGeo.setAttribute('position', new THREE.BufferAttribute(tetherPositions, 3).setUsage(THREE.DynamicDrawUsage));
-  const tetherMat = mat(new THREE.LineBasicMaterial({ color: '#d9abff', transparent: true,
-    opacity: .7, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const tetherMat = mat(new THREE.LineBasicMaterial({ color: '#80658f', transparent: true,
+    opacity: .35, blending: THREE.NormalBlending, depthWrite: false, toneMapped: false }));
   const tethers = new THREE.LineSegments(tetherGeo, tetherMat);
   tethers.name = 'Gravitation · Energiezüge zum Gegner'; tethers.frustumCulled = false;
   tethers.visible = false; field.add(tethers);
@@ -134,38 +134,46 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   for (let i = 0; i < DEBRIS_COUNT; i++) for (let j = 0; j < TRAIL_SEGMENTS; j++) for (let k = 0; k < 2; k++) {
     const offset = (i * TRAIL_SEGMENTS * 2 + j * 2 + k) * 3;
     const fade = 1 - (j + k) / TRAIL_SEGMENTS;
-    trailColors.set([.52 * fade, .29 * fade, .86 * fade], offset);
+    trailColors.set([.11 * fade, .07 * fade, .16 * fade], offset);
   }
   const trailGeometry = geo(new THREE.BufferGeometry());
   trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3).setUsage(THREE.DynamicDrawUsage));
   trailGeometry.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
   const trailMat = mat(new THREE.LineBasicMaterial({ vertexColors: true, transparent: true,
-    blending: THREE.AdditiveBlending, opacity: .6, depthWrite: false, toneMapped: false }));
+    blending: THREE.NormalBlending, opacity: .04, depthWrite: false, toneMapped: false }));
   const trails = new THREE.LineSegments(trailGeometry, trailMat); trails.frustumCulled = false; field.add(trails);
   const shockMat = mat(new THREE.ShaderMaterial({ name: 'Gravitation · räumliche Kollapswelle',
-    transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+    transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.NormalBlending, toneMapped: false,
     uniforms: { uFade: { value: 0 }, uFlash: { value: 0 } }, vertexShader: sphereVertex,
     fragmentShader: `varying vec3 vNormal, vView; uniform float uFade, uFlash;
       void main() { float rim = pow(max(0.0, 1.0 - abs(dot(normalize(vNormal),normalize(vView)))), 2.5);
-        gl_FragColor = vec4(mix(vec3(.57,.26,1.0),vec3(.90,.78,1.0),uFlash),
+        gl_FragColor = vec4(mix(vec3(.20,.10,.29),vec3(.40,.27,.48),uFlash),
           (rim + uFlash * .6) * uFade);
         #include <colorspace_fragment>
       }`,
   }));
   const shock = new THREE.Mesh(sphereGeometry, shockMat); shock.position.y = .2; field.add(shock);
-  const waveMat = mat(new THREE.MeshBasicMaterial({ color: '#e7d7ff', transparent: true,
-    blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
-  const wave = new THREE.Mesh(geo(new THREE.RingGeometry(.965, 1, 128)), waveMat);
+  const waveMat = mat(new THREE.ShaderMaterial({ transparent: true,
+    blending: THREE.NormalBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false,
+    uniforms: { uOpacity: { value: 0 }, uColor: { value: new THREE.Color('#9e7eae') } },
+    vertexShader: vertex,
+    fragmentShader: `varying vec2 vUv;uniform vec3 uColor;uniform float uOpacity;
+      void main(){float r=length(vUv*2.-1.);
+        float feather=smoothstep(.82,.91,r)*(1.-smoothstep(.95,1.,r));
+        gl_FragColor=vec4(uColor,feather*uOpacity);
+        #include <colorspace_fragment>
+      }`,
+  }));
+  const wave = new THREE.Mesh(geo(new THREE.RingGeometry(.82, 1, 96)), waveMat);
   wave.rotation.x = -Math.PI / 2; wave.position.y = .045; field.add(wave);
-  const secondWaveMat = mat(new THREE.MeshBasicMaterial({ color: '#a46bff', transparent: true,
-    blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
-  const secondWave = new THREE.Mesh(geo(new THREE.RingGeometry(.90, 1, 96)), secondWaveMat);
+  const secondWaveMat = mat(waveMat.clone()); secondWaveMat.uniforms.uColor.value.set('#765783');
+  const secondWave = new THREE.Mesh(wave.geometry, secondWaveMat);
   secondWave.rotation.x = -Math.PI / 2; secondWave.position.y = .075; field.add(secondWave);
-  const thirdWaveMat = mat(secondWaveMat.clone()); thirdWaveMat.color.set('#7139e7');
+  const thirdWaveMat = mat(secondWaveMat.clone()); thirdWaveMat.uniforms.uColor.value.set('#574060');
   const thirdWave = new THREE.Mesh(secondWave.geometry, thirdWaveMat);
   thirdWave.rotation.x = -Math.PI / 2; thirdWave.position.y = .095; field.add(thirdWave);
-  const flashMat = mat(new THREE.MeshBasicMaterial({ color: '#f2d7ff', transparent: true,
-    opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const flashMat = mat(new THREE.MeshBasicMaterial({ color: '#cfb9d9', transparent: true,
+    opacity: 0, blending: THREE.NormalBlending, depthWrite: false, toneMapped: false }));
   const flash = new THREE.Mesh(sphereGeometry, flashMat);
   flash.name = 'Gravitation · Aufblitzen beim Kollaps'; flash.position.y = 1.25;
   flash.visible = false; field.add(flash);
@@ -202,7 +210,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     const motion = vortex.update(center, age);
     const pullTime = Math.max(0, age - rules.warning);
     dust.visible = age >= rules.warning && collapse < 0;
-    dustMat.uniforms.uOpacity.value = (.38 + .34 * smooth(pullTime / .2)) * fade;
+    dustMat.uniforms.uOpacity.value = (.18 + .17 * smooth(pullTime / .2)) * fade;
     for (let i = 0; i < DUST_COUNT; i++) {
       const seed = (i * .6180339) % 1;
       const angle = i * 2.39996 - motion.spin * (1 + seed * .35);
@@ -218,7 +226,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     const pulling = phase === 'pull';
     affectedCount = pulling && visible ? Math.min(TARGET_CAP, affected.length) : 0;
     tethers.visible = affectedCount > 0;
-    const currentMaterialOpacity = (.40 + progress * .4) * fade;
+    const currentMaterialOpacity = (.16 + progress * .2) * fade;
     markerMat.opacity = currentMaterialOpacity;
     tetherMat.opacity = currentMaterialOpacity;
     victimMat.uniforms.uAge.value = age; victimMat.uniforms.uFade.value = currentMaterialOpacity;
@@ -254,11 +262,11 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
     if (flash.visible) {
       const intensity = 1 - smooth(collapse / .3);
       flash.scale.setScalar(.15 + intensity * .55);
-      flashMat.opacity = intensity * .85;
+      flashMat.opacity = intensity * .55;
     }
     debrisMat.opacity = fade;
     trails.visible = age >= rules.warning;
-    trailMat.opacity = .10 * fade;
+    trailMat.opacity = .04 * fade;
     for (let i = 0; i < DEBRIS_COUNT; i++) {
       particle(i, progress, collapse, transform.position);
       transform.rotation.set(age * 2 + i, age + i * .8, age * 1.4);
@@ -276,16 +284,16 @@ export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
       const spread = rules.radius * (.07 + .93 * (1 - (1 - collapse) ** 3));
       shock.position.y = motion.sphereHeight * (1 - smooth(collapse)) + .10;
       shock.scale.set(spread, .10 + Math.sin(collapse * Math.PI) * .22, spread);
-      shockMat.uniforms.uFade.value = fade ** 2 * 1.3;
+      shockMat.uniforms.uFade.value = fade ** 2 * .65;
       shockMat.uniforms.uFlash.value = 1 - smooth(collapse / .5);
-      wave.scale.setScalar(spread); waveMat.opacity = fade ** 1.5 * .95;
+      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = fade ** 1.5 * .65;
       const delayed = clamp((collapse - .10) / .90);
       secondWave.scale.setScalar(rules.radius * (.08 + .92 * (1 - (1 - delayed) ** 2)));
-      secondWaveMat.opacity = (1 - delayed) ** 2 * .7;
+      secondWaveMat.uniforms.uOpacity.value = (1 - delayed) ** 2 * .5;
       const last = clamp((collapse - .26) / .74);
       thirdWave.visible = collapse >= .26;
       thirdWave.scale.setScalar(rules.radius * (.10 + .90 * (1 - (1 - last) ** 2)));
-      thirdWaveMat.opacity = (1 - last) ** 2 * .65;
+      thirdWaveMat.uniforms.uOpacity.value = (1 - last) ** 2 * .4;
     }
   }
   function hideField() {

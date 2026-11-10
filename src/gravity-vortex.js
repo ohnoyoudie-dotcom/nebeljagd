@@ -4,6 +4,14 @@ const TAU = Math.PI * 2;
 const SHELL_COUNT = 14;
 const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
+// Low-frequency, periodic flow coordinates give the broad arms a brushed,
+// matte surface. Value noise uses arithmetic only, with no texture reads.
+const paintNoise = `
+  float paintHash(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
+  float paintNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+    return mix(mix(paintHash(i),paintHash(i+vec2(1.,0.)),f.x),
+      mix(paintHash(i+vec2(0.,1.)),paintHash(i+vec2(1.,1.)),f.x),f.y);}
+`;
 
 /** Analytically integrated angular acceleration: identical at any frame rate.
  * The surface pattern a*5+r*19+spin*5 moves inward at every fixed angle. */
@@ -56,23 +64,32 @@ export function createGravityVortex(parent, rules, { heightAt = null } = {}) {
     uniforms: { uSpin: spin, uFade: { value: 1 } },
     vertexShader: `varying vec2 vUv;uniform float uSpin;
       void main(){vUv=uv;vec3 p=position;vec2 xy=uv*2.-1.;float r=length(xy);
-        p.y+=sin(atan(xy.y,xy.x+.000001)*5.+r*15.+uSpin*5.)*.024*sin(r*3.14159);
+        p.y+=sin(atan(xy.y,xy.x+.000001)*5.+r*15.+uSpin*5.)*.008*sin(r*3.14159);
         gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
     fragmentShader: `varying vec2 vUv;uniform float uSpin,uFade;
+      ${paintNoise}
       void main(){vec2 p=vUv*2.-1.;float r=length(p),a=atan(p.y,p.x+.000001);
-        float phase=a*5.+r*19.+uSpin*5.;
-        float arm=.5+.5*sin(phase+.42*sin(phase*2.-r*5.));
-        float broad=smoothstep(.05,.96,arm);
-        float silk=.5+.5*sin(phase*3.+r*58.+sin(a*10.+r*15.)*.55);
-        vec3 color=mix(vec3(.022,.003,.065),vec3(.18,.018,.36),broad);
-        color+=vec3(.10,.012,.15)*pow(arm,5.)+vec3(.028,.003,.045)*silk;
-        float depth=smoothstep(.025,.32,r);
+        float angle=a+uSpin+r*3.8;
+        vec2 flow=vec2(cos(angle),sin(angle))*(1.+r*9.);
+        float cloud=paintNoise(flow*.62);
+        float phase=a*5.+r*19.+uSpin*5.+(cloud-.5)*2.;
+        // Long, gently broken strokes follow each arm, rather than forming
+        // glossy concentric bands. Polar coordinates keep the seam continuous.
+        vec2 stroke=vec2(cos(phase),sin(phase));
+        float brush=paintNoise(stroke*8.+vec2(r*2.5,0.));
+        float grain=paintNoise(flow*4.1);
+        float broad=smoothstep(.02,.98,.5+.5*sin(phase));
+        vec3 color=mix(vec3(.012,.004,.029),vec3(.105,.024,.18),broad*.86+cloud*.14);
+        color*=.68+.32*brush;
+        color+=vec3(.006,.002,.009)*(grain-.5);
+        float depth=smoothstep(.025,.38,r);
         color=mix(vec3(.003,.001,.009),color,depth);
-        color*=.74+.26*smoothstep(-.7,.9,p.y+r*.35);
-        float edge=1.-smoothstep(.003,.011,abs(r-.984));
-        color=mix(color,vec3(.48,.08,.90),edge*.82);
+        color*=.85+.15*smoothstep(-.7,.9,p.y+r*.35);
+        // A soft painted boundary, with no bright emissive outline.
+        float edge=1.-smoothstep(.012,.035,abs(r-.975));
+        color=mix(color,vec3(.09,.032,.12),edge*.16);
         // Every interior pixel stays filled; the broad bands vary in COLOR.
-        float alpha=(1.-smoothstep(.989,1.,r))*.97*uFade;
+        float alpha=(1.-smoothstep(.963,1.,r))*.97*uFade;
         gl_FragColor=vec4(color,alpha);
         #include <colorspace_fragment>
       }`,
@@ -95,7 +112,9 @@ export function createGravityVortex(parent, rules, { heightAt = null } = {}) {
         vec3 p=normalize(vLocal);float a=atan(p.z,p.x+.000001),h=asin(clamp(p.y,-1.,1.));
         float vein=abs(sin(a*5.+sin(h*7.)*1.3+uAge*.7)+sin(h*9.-a*2.)*.35);
         float cracks=(1.-smoothstep(.025,.09,vein))*(.18+.65*uGrowth);
-        vec3 color=vec3(.009,.002,.027)+vec3(.48,.07,.95)*rim+vec3(.36,.035,.65)*cracks;
+        float light=max(0.,dot(normalize(vNormal),normalize(vec3(-.3,.7,.6))));
+        vec3 color=vec3(.009,.003,.023)+vec3(.13,.045,.20)*rim+vec3(.10,.025,.15)*cracks;
+        color+=vec3(.008,.004,.013)*light;
         gl_FragColor=vec4(color,1.);
         #include <colorspace_fragment>
       }`,
@@ -103,12 +122,12 @@ export function createGravityVortex(parent, rules, { heightAt = null } = {}) {
   const sphere = add(new THREE.Mesh(geo(new THREE.SphereGeometry(1, 32, 20)), sphereMat));
   sphere.name = 'Gravitationsfeld · Singularität';
   const neckMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
-    side: THREE.DoubleSide, forceSinglePass: true, blending: THREE.AdditiveBlending, toneMapped: false,
+    side: THREE.DoubleSide, forceSinglePass: true, blending: THREE.NormalBlending, toneMapped: false,
     uniforms: { uSpin: spin, uFade: { value: 0 } },
     vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
     fragmentShader: `varying vec2 vUv;uniform float uSpin,uFade;
       void main(){float thread=pow(.5+.5*cos(vUv.x*18.84956-vUv.y*6.+uSpin*5.),4.);
-        gl_FragColor=vec4(.56,.10,1.,(.14+thread*.7)*uFade);
+        gl_FragColor=vec4(.19,.08,.28,(.10+thread*.35)*uFade);
         #include <colorspace_fragment>
       }`,
   }));

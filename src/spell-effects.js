@@ -9,7 +9,7 @@ const ELEMENTS = {
   poisonStaff: { core: '#e2f7b3', glow: '#65c84a', spark: '#b3e976', edge: '#398d3b' },
   moonStaff: { core: '#fbf4ff', glow: '#bca1ef', spark: '#e5d6ff', edge: '#8862c4' },
   starStaff: { core: '#fff4c5', glow: '#75c9ed', spark: '#fff0b4', edge: '#477fc3' },
-  gravityStaff: { core: '#ead5ff', glow: '#a66bff', spark: '#cf9aff', edge: '#6931bd' },
+  gravityStaff: { core: '#756183', glow: '#5e426f', spark: '#9e88ab', edge: '#46324f' },
 };
 const finite = value => Number.isFinite(value) ? value : 0;
 const valid = point => point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
@@ -109,7 +109,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     starStaff: { core: solid(ELEMENTS.starStaff.core), tip: additive(ELEMENTS.starStaff.spark, .7),
       body: elementMaterial('body', { type: 'starStaff', opacity: .42 }),
       crystal: solid(ELEMENTS.starStaff.core) },
-    gravityStaff: { core: solid('#140626'), tip: additive('#cf9aff', .8),
+    gravityStaff: { core: solid('#140626'), tip: ownMaterial(new THREE.MeshBasicMaterial({
+      color: '#9e88ab', transparent: true, opacity: .55, depthWrite: false, blending: THREE.NormalBlending })),
       body: elementMaterial('body', { type: 'gravityStaff', opacity: .8 }) },
   };
   const gravityOrbitGeometry = ownGeometry(new THREE.TorusGeometry(.40, .018, 5, 40, Math.PI * 1.7));
