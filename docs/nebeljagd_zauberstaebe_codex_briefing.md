@@ -73,6 +73,13 @@ Der Code des Branches `work` enthält u. a. `src/loot-tiers.js`, `src/weapons.js
 | Lanze | bis ~1 s laden, je nach Ladezustand ~12–30 Schaden, ~1,5 s Cooldown |
 | Reflexion | ~1,8 s Schutz, ~8 s Cooldown, kein Direktschaden |
 
+**Gravitationsstab, überarbeiteter Prototyp:** Zielreichweite wächst wie beim
+Giftstab in 3 s von 0 auf 10 m; Loslassen setzt das Feld. Radius 3,2 m,
+0,4 s Vorwarnung, 1,0 s Sog mit maximal 1,5 m Verschiebung je Gegner,
+einmalig 14 Grundschaden beim Kollaps, danach 0,65 s visuelles Abklingen.
+Cooldown 2,8 s ab Loslassen. Radius, Zug und Zeiten bleiben unabhängig von der
+Seltenheit. Genaue Bedienung und Darstellung: [gravitationsstab.md](gravitationsstab.md).
+
 **Spezialfall Seelenrichter:** Die automatische Hinrichtung nach dem dritten Treffer + 2 s wurde gewünscht; ein zusätzliches Leben-Schwellen-Kriterium wurde **nicht** gewählt. Unklar und noch zu testen: Zeit zwischen den drei Treffern, Gegenmaßnahmen im Countdown, Drop/Quest-Details, Interaktion mit anderen Schutzzaubern. Nicht eigenmächtig in eine andere Execute-Variante ändern.
 
 ## Empfehlung: In kleinen Codex-Schritten arbeiten

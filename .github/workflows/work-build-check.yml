@@ -17,7 +17,9 @@ jobs:
   verify-and-publish:
     if: github.ref == 'refs/heads/work'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The existing graphical checks have reached 30 minutes before publication.
+    # Keep every check and allow time for gravity input/visual QA and Pages.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,6 +76,10 @@ jobs:
             curl -fsS http://127.0.0.1:4174/magebrawl.html >/dev/null && break
             sleep 1
           done
+      - name: Verify gravity charge, mouse and touch input, pull and spatial collapse
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/gravity_staff_smoke.py
       - name: Verify uploaded weapon models, pickup, swaps and attacks
         # Full graphical regression is available on manual dispatch.
         # Full graphical regression is available on manual dispatch. Ordinary
@@ -225,6 +231,7 @@ jobs:
             test-results/fireball
             test-results/projectiles-sight
             test-results/projectile-barriers
+            test-results/gravity-staff
             test-results/woodland-details
             test-results/bow-alignment
             test-results/natural-details

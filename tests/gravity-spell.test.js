@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
 import { createGravitySpell, GRAVITY_RULES, gravityPullStep } from '../src/gravity-spell.js';
 
-function scenario(blocked = false) {
+function scenario(blocked = false, visible = () => true) {
   const scene = new THREE.Scene();
   const world = {
     heightAt: () => 0, isLand: () => true, isWater: () => false,
@@ -15,7 +15,7 @@ function scenario(blocked = false) {
   const opponentPosition = new THREE.Vector3(1.8, 0, 0);
   const opponent = combat.addTarget({ id: 'opponent', position: opponentPosition, health: 100 });
   const hits = [];
-  const gravity = createGravitySpell(scene, world, combat, 'player', result => hits.push(result));
+  const gravity = createGravitySpell(scene, world, combat, 'player', result => hits.push(result), visible);
   return { scene, world, combat, gravity, opponent, hits };
 }
 
@@ -56,16 +56,88 @@ test('gravity respects world blockers and never pulls or damages through walls',
   gravity.dispose();
 });
 
-test('gravity target is capped at ten metres and can be cancelled', () => {
+test('gravity grows its reachable distance while held and can be cancelled without casting', () => {
   const { gravity } = scenario();
   const origin = new THREE.Vector3(0, 0, 0);
   gravity.beginAim(origin, 0);
   gravity.aimAt(origin, { x: 50, z: 0 });
+  assert.equal(gravity.telemetry.aim.x, 0);
+  gravity.update(1.5, origin);
+  assert.ok(Math.abs(gravity.telemetry.aim.x - 5) < 1e-6);
+  gravity.update(1.5, origin);
   assert.ok(Math.abs(gravity.telemetry.aim.x - 10) < 1e-6);
   gravity.cancelAim();
   assert.equal(gravity.release({ damage: 14 }), false);
   assert.equal(gravity.telemetry.active, false);
   gravity.dispose();
+});
+
+test('hold duration controls placement up to ten metres in three seconds, never the field size or damage', () => {
+  for (const [held, distance] of [[0, 0], [.6, 2], [1.5, 5], [2.99, 10 * 2.99 / 3], [3, 10], [5, 10]]) {
+    const { gravity } = scenario();
+    const origin = new THREE.Vector3();
+    gravity.beginAim(origin, 0); gravity.aimAt(origin, { x: 100, z: 0 });
+    gravity.update(held, origin);
+    assert.ok(Math.abs(gravity.telemetry.aim.x - distance) < 1e-8);
+    assert.equal(gravity.telemetry.radius, 3.2);
+    const before = gravity.telemetry;
+    gravity.update(0, origin, 500); assert.deepEqual(gravity.telemetry, before, 'pause freezes charge and visuals');
+    gravity.aimAt(origin, { x: -100, z: 0 });
+    assert.ok(Math.abs(gravity.telemetry.aim.x + distance) < 1e-8, 'mouse changes direction at the current charge');
+    gravity.release({ damage: 14 });
+    assert.ok(Math.abs(gravity.telemetry.center.x + distance) < 1e-8);
+    assert.equal(gravity.release({ damage: 14 }), false, 'release never fires twice');
+    gravity.dispose();
+  }
+});
+
+test('nearby targets are not overshot and the range follows a moving caster', () => {
+  const { gravity, scene } = scenario();
+  const origin = new THREE.Vector3();
+  gravity.beginAim(origin, 0); gravity.aimAt(origin, { x: 2, z: 0 }); gravity.update(3, origin);
+  assert.equal(gravity.telemetry.aim.x, 2);
+  origin.set(4, 0, -2); gravity.aimAt(origin, { x: 100, z: 100 }); gravity.update(.1, origin);
+  assert.ok(Math.abs(Math.hypot(gravity.telemetry.aim.x - 4, gravity.telemetry.aim.z + 2) - 10) < 1e-8);
+  assert.equal(scene.getObjectByName('Gravitationsstab · wachsende Reichweite').position.x, 4);
+  gravity.cancelAim();
+  gravity.beginAim(origin, 0); assert.equal(gravity.telemetry.aimRange.radius, 0, 'each press starts a fresh charge');
+  gravity.dispose();
+});
+
+test('the larger field pulls and hits targets at three metres, with one hit and no damage during warning or pull', () => {
+  const { gravity, combat, opponent, hits } = scenario();
+  const origin = new THREE.Vector3(); opponent.position.x = 3.1;
+  const outside = combat.addTarget({ id: 'outside', position: new THREE.Vector3(3.8, 0, 0), health: 100 });
+  const owner = combat.addTarget({ id: 'player', position: new THREE.Vector3(), health: 100 });
+  gravity.beginAim(origin, 0); gravity.release({ damage: 14 });
+  gravity.update(.4, origin); assert.equal(opponent.position.x, 3.1);
+  gravity.update(.98, origin); assert.equal(opponent.health, 100);
+  assert.ok(opponent.position.x < 3.1 && opponent.position.x >= 1.6);
+  gravity.update(.03, origin); assert.equal(opponent.health, 86); assert.equal(hits.length, 1);
+  gravity.update(.6, origin); assert.equal(hits.length, 1);
+  assert.equal(outside.health, 100); assert.equal(outside.position.x, 3.8); assert.equal(owner.health, 100);
+  gravity.dispose();
+});
+
+test('the spatial vortex freezes on pause, respects visibility and releases its reusable resources', () => {
+  let visible = true;
+  const { gravity, scene } = scenario(false, () => visible); const origin = new THREE.Vector3();
+  gravity.beginAim(origin, 0); gravity.release({ damage: 14 }); gravity.update(.9, origin);
+  const core = scene.getObjectByName('Gravitationsfeld · Singularität');
+  const funnel = scene.getObjectByName('Gravitationsfeld · gekrümmter Sog');
+  const debris = scene.getObjectByName('Gravitationsfeld · schwebende Trümmer');
+  assert.ok(core.position.y > .8 && core.visible, 'the singularity floats above the ground');
+  const bounds = new THREE.Box3().setFromBufferAttribute(funnel.geometry.attributes.position);
+  assert.ok(bounds.max.y - bounds.min.y > 1, 'the vortex has physical height');
+  assert.equal(debris.count, 28); assert.ok(gravity.telemetry.visuals.fieldDraws <= 9);
+  const matrix = Array.from(debris.instanceMatrix.array), clock = funnel.material.uniforms.uAge.value;
+  gravity.update(0, origin, 200);
+  assert.deepEqual(Array.from(debris.instanceMatrix.array), matrix); assert.equal(funnel.material.uniforms.uAge.value, clock);
+  visible = false; gravity.update(.02, origin); assert.equal(gravity.telemetry.visuals.fieldVisible, false);
+  visible = true; gravity.update(.02, origin); assert.equal(gravity.telemetry.visuals.fieldVisible, true);
+  let disposed = 0; funnel.geometry.addEventListener('dispose', () => disposed++);
+  gravity.reset(); assert.equal(gravity.telemetry.visuals.fieldVisible, false);
+  gravity.dispose(); assert.equal(disposed, 1); assert.equal(scene.children.length, 0);
 });
 
 test('pull cannot exceed 1.5m, cross the centre or run with zero dt', () => {

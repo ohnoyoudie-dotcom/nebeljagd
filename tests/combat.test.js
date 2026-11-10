@@ -36,7 +36,11 @@ function attackOnce(instance, seconds = .9) {
   weapons.attack(actor.position, 0);
   if (weapons.equipped === 'bow') weapons.releaseAttack(actor.position);
   if (weapons.equipped === 'poisonStaff') { weapons.aimAt(actor.position, instance.target.position); weapons.update(1.2, 0, actor.position); weapons.releaseAttack(actor.position); seconds = 4.1; }
-  if (weapons.equipped === 'gravityStaff') { weapons.aimAt(actor.position, instance.target.position); weapons.releaseAttack(actor.position); seconds = 2.0; }
+  if (weapons.equipped === 'gravityStaff') {
+    weapons.aimAt(actor.position, instance.target.position);
+    for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);
+    weapons.releaseAttack(actor.position); seconds = 2.1;
+  }
   for (let time = 0; time < seconds; time += .04) weapons.update(.04, time, actor.position);
 }
 
