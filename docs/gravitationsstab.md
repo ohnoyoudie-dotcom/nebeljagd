@@ -1,4 +1,4 @@
-# Gravitationsstab – Wurfprojektil, Landung, Sog und mehrstufiger Kollaps
+# Gravitationsstab – gefüllter Bodenstrudel und aufsteigende Energiekugel
 
 Der neue Stab verwendet das bereits hochgeladene Original
 assets/inbox/fantasy staff 3d model.glb (ca. 65 MB).
@@ -15,6 +15,8 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Auf Touch-Geräten die Angriffstaste halten und mit dem linken Stick die Richtung wählen.
 - Wie beim Giftstab wächst der Reichweitenkreis beim Halten vom Spieler aus:
   0 m beim Drücken, 5 m nach 1,5 s und maximal 10 m nach 3 s.
+  Beide Stäbe verwenden dieselbe lineare Ladefunktion: halbe Ladung nach
+  1,5 s, volle Ladung nach 3 s. Ihre jeweiligen Maximalreichweiten bleiben erhalten.
   Ein näherer Mauszeiger wird nicht überschossen. Frühes Loslassen wirft das Projektil näher.
   Das Halten allein löst keinen Angriff aus; jede neue Betätigung beginnt bei null.
 - Der Wirkungsradius beträgt **3,2 m**, also **6,4 m Durchmesser**. Die Fläche ist
@@ -28,7 +30,7 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Giftwurf; massive Hindernisse fangen das Projektil ab. Wasser erzeugt kein Feld.
 - **Ab dem Aufprall** folgen weiterhin 0,4 s Vorwarnung. Diese Zeit besteht jetzt
   aus einer Landung mit Druckwelle, Staub und aufsteigender Energie und der
-  anschließenden Öffnung des Runenfelds. Während des Flugs entsteht noch kein Feld.
+  anschließenden Öffnung des Bodenstrudels. Während des Flugs entsteht noch kein Feld.
 - Anschließend 1,0 s leichter Sog, höchstens 1,5 m Gesamtverschiebung pro Gegner.
   Keine Bewegung durch geschlossene Hindernisse; der Gegner kann dagegenlaufen
   bzw. durch rechtzeitige Rolle entkommen. Sog selbst verursacht keinen Schaden.
@@ -49,17 +51,26 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Element-Schweif. Auch der Einschlag verwendet das gemeinsame Effekt-System.
 - Die Landung zeigt eine breite violette Druckwelle, 32 weiche Staubschwaden,
   eine aufsteigende Energiesäule und eine kurz aufploppende Energieblase.
-- Erst danach öffnet sich ein rotierender Runenrand auf den tatsächlichen Radius.
-- Während des Sogs krümmen sich mehrere Spiralströme vom Boden zu einem
-  schwebenden dunklen Kern. Zwei geneigte Umlaufbahnen zeigen dessen Rotation.
-- 56 wiederverwendete Gesteinssplitter, 120 Bodenpartikel und Lichtspuren werden
-  angehoben und nach innen gezogen. Das vorhandene Gras-System erhält begrenzte
+- Erst danach öffnet sich ein durchgehend violett gefärbter Strudel auf den
+  tatsächlichen Radius. Breite Spiralbänder unterscheiden sich durch ihre Farbe;
+  zwischen ihnen bleibt die Fläche gefüllt. Ein schmaler violetter Rand begrenzt sie.
+- Die Bodenfläche bildet eine flache, 0,26 m tiefe Schale mit erhöhtem Außenrand.
+  Sie folgt einmal pro Platzierung der bestehenden Geländehöhe und verändert
+  weder Gelände noch Karte. Schattierung und geringe Wellen geben zusätzliche Tiefe.
+- Die Spiralbänder wandern nach innen. Während des Sogs steigt die Drehgeschwindigkeit
+  stetig von 1,1 auf 10,1 rad/s; der Drehwinkel wird aus der Simulationszeit berechnet.
+- Aus der Mitte steigt eine dunkle Energiekugel mit leuchtenden violetten Rissen.
+  Ihr Mittelpunkt steigt während des Sogs von 0,13 auf 1,73 m über der Feldbasis,
+  ihr Radius wächst von 0,10 auf 0,75 m. Eine schmale Energieverbindung reicht zum Zentrum.
+- 24 wiederverwendete Gesteinssplitter, 64 Bodenpartikel und zurückhaltende Lichtspuren werden
+  bodennah nach innen gezogen. Das vorhandene Gras-System erhält begrenzte
   Interaktoren, welche die Halme sichtbar zur Feldmitte biegen.
 - Bis zu acht sichtbare Gegner erhalten violette Körperenergie und Fußrunen.
   Ihre Figuren stemmen Arme und Beine gegen den Sog und kippen sichtbar mit.
-- Vor dem Kollaps zieht sich der schwarze Kern zusammen. Ein heller Blitz, eine
-  räumliche Druckwelle und drei zeitversetzte Bodenringe zeigen den einen Treffer. Trümmer
-  werden kurz nach außen geschleudert und blenden aus.
+- Beim Kollaps zerplatzt die große Kugel in 14 gemeinsam gezeichnete
+  Schalenfragmente. Ein kurzer heller Blitz auf Kugelhöhe, eine räumliche
+  Druckwelle und drei zeitversetzte Bodenringe zeigen den einen Treffer.
+  Der violette Strudel rotiert darunter weiter und blendet zusammen mit den Fragmenten aus.
 - Vorwarnung, Sog, Kollaps und Abklingen laufen über dieselbe Simulationszeit.
   Pause friert sie ein, Sichtprüfung und Tiefentest verbergen verdeckte Effekte.
 - Instanz-Geometrie bündelt Partikel, Trümmer und Gegnerreaktionen. Die Feld-
@@ -71,7 +82,9 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 1. npm test, npm run verify:assets, npm run map:check, npm run build.
    `NEBELJAGD_URL=http://127.0.0.1:4176 python tests/gravity_staff_smoke.py`
    prüft Maus und Touch am erzeugten Spiel und erfasst Flug, Landung, Öffnung,
-   Sog und Kollaps.
+   Sog, Kugelaufstieg und Zerplatzen. Pixelproben des echten GPU-Bilds prüfen
+   die gefüllte violette Fläche; Zustandsprüfungen erfassen Beschleunigung,
+   Kugelwachstum und den weiterhin einmaligen Schaden.
 2. Im Editor den neuen Stab neben Übungsgegnern platzieren, **Spielen** öffnen,
    aufnehmen, Ziel markieren und Flug, Landung, Feldöffnung, Sog und Explosion ansehen.
 3. Den Angriff mit Rolle, Hindernissen, Waffenwechsel und Neustart prüfen.

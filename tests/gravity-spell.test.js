@@ -5,6 +5,7 @@ import { createCombat } from '../src/combat.js';
 import { createGravitySpell, GRAVITY_RULES, gravityPullStep } from '../src/gravity-spell.js';
 import { createCollisionIndex } from '../src/collision.js';
 import { createPracticeActors } from '../src/practice-actors.js';
+import { createSpecialWeapons } from '../src/special-weapons.js';
 
 function scenario(blocked = false, visible = () => true) {
   const scene = new THREE.Scene();
@@ -133,19 +134,20 @@ test('the spatial vortex freezes on pause, respects visibility and releases its 
   const { gravity, scene } = scenario(false, () => visible); const origin = new THREE.Vector3();
   gravity.beginAim(origin, 0); gravity.release({ damage: 14 }); land(gravity, origin); gravity.update(.9, origin);
   const core = scene.getObjectByName('Gravitationsfeld · Singularität');
-  const funnel = scene.getObjectByName('Gravitationsfeld · gekrümmter Sog');
+  const surface = scene.getObjectByName('Gravitationsfeld · gefärbter Bodenstrudel');
   const debris = scene.getObjectByName('Gravitationsfeld · schwebende Trümmer');
   assert.ok(core.position.y > .8 && core.visible, 'the singularity floats above the ground');
-  const bounds = new THREE.Box3().setFromBufferAttribute(funnel.geometry.attributes.position);
-  assert.ok(bounds.max.y - bounds.min.y > 1, 'the vortex has physical height');
-  assert.equal(debris.count, 56); assert.equal(gravity.telemetry.visuals.dustCount, 120);
+  const bounds = new THREE.Box3().setFromBufferAttribute(surface.geometry.attributes.position);
+  assert.ok(bounds.max.y - bounds.min.y > .2 && bounds.max.y - bounds.min.y < .4,
+    'the filled ground vortex has shallow physical depth');
+  assert.equal(debris.count, 24); assert.equal(gravity.telemetry.visuals.dustCount, 64);
   assert.ok(gravity.telemetry.visuals.fieldDraws <= 15, 'bounded effect draw count');
-  const matrix = Array.from(debris.instanceMatrix.array), clock = funnel.material.uniforms.uAge.value;
+  const matrix = Array.from(debris.instanceMatrix.array), spin = surface.material.uniforms.uSpin.value;
   gravity.update(0, origin, 200);
-  assert.deepEqual(Array.from(debris.instanceMatrix.array), matrix); assert.equal(funnel.material.uniforms.uAge.value, clock);
+  assert.deepEqual(Array.from(debris.instanceMatrix.array), matrix); assert.equal(surface.material.uniforms.uSpin.value, spin);
   visible = false; gravity.update(.02, origin); assert.equal(gravity.telemetry.visuals.fieldVisible, false);
   visible = true; gravity.update(.02, origin); assert.equal(gravity.telemetry.visuals.fieldVisible, true);
-  let disposed = 0; funnel.geometry.addEventListener('dispose', () => disposed++);
+  let disposed = 0; surface.geometry.addEventListener('dispose', () => disposed++);
   gravity.reset(); assert.equal(gravity.telemetry.visuals.fieldVisible, false);
   gravity.dispose(); assert.equal(disposed, 1); assert.equal(scene.children.length, 0);
 });
@@ -158,7 +160,7 @@ test('pull cannot exceed 1.5m, cross the centre or run with zero dt', () => {
   assert.equal(gravityPullStep(2, 0, 0), 0);
 });
 
-test('enhanced gravity effect shows ground dust, victim tethers and a double shockwave without altering combat timing', () => {
+test('enhanced gravity effect shows ground dust, victim tethers and shockwaves without altering combat timing', () => {
   const { gravity, scene, opponent } = scenario();
   const origin = new THREE.Vector3();
   gravity.beginAim(origin, 0);
@@ -183,6 +185,25 @@ test('enhanced gravity effect shows ground dust, victim tethers and a double sho
   assert.equal(marker.visible, false);
   assert.equal(gravity.telemetry.visuals.affectedCount, 0);
   gravity.dispose();
+});
+
+test('gravity and poison fill at the same normalized rate, including pauses, moving aim and a fresh press', () => {
+  const { scene, world, combat, gravity } = scenario(); const caster = new THREE.Vector3();
+  const poison = createSpecialWeapons(scene, world, combat, 'player', () => {});
+  for (let cast = 0; cast < 2; cast++) {
+    gravity.beginAim(caster, 0); poison.beginAim(caster, 0);
+    for (const dt of [0, .01, .29, 0, .7, .5, .5, .99, .01, 1]) {
+      gravity.update(dt, caster); poison.update(dt, caster, 0);
+      const g = gravity.telemetry.aimRange, p = poison.telemetry.aimRange;
+      assert.equal(g.radius / g.maximum, p.radius / p.maximum);
+      assert.equal(g.heldSeconds, p.heldSeconds);
+      caster.x += .1;
+      gravity.aimAt(caster, { x: 100, z: 20 }); poison.aimAt(caster, { x: 100, z: 20 });
+      assert.equal(gravity.telemetry.active, false, 'charging never casts');
+    }
+    gravity.cancelAim(); poison.cancelAim();
+  }
+  gravity.dispose(); poison.dispose(); assert.equal(scene.children.length, 0);
 });
 
 test('target energy strands do not reveal an enemy hidden from the caster', () => {

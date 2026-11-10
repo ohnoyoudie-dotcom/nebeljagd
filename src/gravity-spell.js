@@ -3,11 +3,12 @@ import { createGravityVisuals } from './gravity-visuals.js';
 import { createGravityArrival } from './gravity-arrival.js';
 import { createSpellEffects } from './spell-effects.js';
 import { traceRangedProjectile } from './projectile-collision.js';
+import { STAFF_CHARGE_SECONDS, chargedStaffRange } from './staff-charge.js';
 
 // All times are seconds and all distances are in world metres.
 // Keep crowd control independent of rarity: only the blast damage scales.
 export const GRAVITY_RULES = Object.freeze({
-  range: 10, chargeSeconds: 3, radius: 3.2, warning: .4, pullDuration: 1,
+  range: 10, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 3.2, warning: .4, pullDuration: 1,
   pullSpeed: 1.5, maxPull: 1.5, minCenterDistance: .2,
   afterglow: .65,
   projectileSpeed: 10, projectileArcHeight: 3.2, projectileMinFlight: .5,
@@ -22,7 +23,7 @@ export function gravityPullStep(distance, moved, dt, rules = GRAVITY_RULES) {
 /** Ground-targeted hold/release spell. Crowd control and visual phases share one clock. */
 export function createGravitySpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null, { effects: sharedEffects = null } = {}) {
   const rules = GRAVITY_RULES;
-  const visuals = createGravityVisuals(scene, rules);
+  const visuals = createGravityVisuals(scene, rules, { heightAt: world?.heightAt?.bind(world) });
   const arrival = createGravityArrival(scene, rules);
   const effects = sharedEffects ?? createSpellEffects(scene, { isVisible });
   const projectile = effects.createProjectile();
@@ -39,7 +40,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
   function refreshAim(position) {
     const dx = aim.requested.x - position.x, dz = aim.requested.z - position.z;
     const distance = Math.hypot(dx, dz);
-    aim.range = rules.range * Math.min(1, aim.age / rules.chargeSeconds);
+    aim.range = chargedStaffRange(aim.age, rules.range);
     const factor = Math.min(1, aim.range / (distance || 1));
     aim.caster.copy(position);
     const point = aimPoint.set(position.x + dx * factor, 0, position.z + dz * factor);

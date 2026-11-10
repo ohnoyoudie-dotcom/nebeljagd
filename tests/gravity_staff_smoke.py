@@ -42,6 +42,25 @@ def pause_at(page, age):
     }''', age)
     page.wait_for_function('nebeljagdTestState().phase === "paused"')
 
+def filled_vortex_coverage(page):
+    # Test the actual GPU output: broad purple color must fill the area between
+    # the spiral arms. Thin outlines or a transparent interior fail this check.
+    return page.evaluate('''async () => {
+      const image=new Image(); image.src=nebeljagdCaptureFrame(); await image.decode();
+      const copy=document.createElement('canvas');copy.width=image.width;copy.height=image.height;
+      const ctx=copy.getContext('2d');ctx.drawImage(image,0,0);
+      const rect=document.querySelector('#game').getBoundingClientRect();
+      const g=nebeljagdTestState().combat.gravity;let purple=0,total=0;
+      for(const radius of [.45,.72])for(let i=0;i<20;i++){
+        const a=i*Math.PI/10,p=nebeljagdProjectPoint({x:g.center.x+Math.cos(a)*g.radius*radius,z:g.center.z+Math.sin(a)*g.radius*radius});
+        const x=Math.floor((p.x-rect.left)/rect.width*copy.width),y=Math.floor((p.y-rect.top)/rect.height*copy.height);
+        if(x<0||y<0||x>=copy.width||y>=copy.height)continue;
+        const [r,v,b]=ctx.getImageData(x,y,1,1).data;
+        if(b>v*1.4 && r>v*1.05 && b>24)purple++;total++;
+      }
+      return {purple,total,coverage:purple/Math.max(1,total)};
+    }''')
+
 with sync_playwright() as p:
     executable = os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else p.chromium.executable_path)
     browser = p.chromium.launch(executable_path=executable, headless=True,
@@ -130,15 +149,34 @@ with sync_playwright() as p:
                 pause_at(page, .28); capture(page, mode + '-opening')
                 assert state(page)['combat']['gravity']['visuals']['fieldVisible']
                 page.keyboard.press('Escape')
+            if not BASELINE:
+                pause_at(page, .6); capture(page, mode + '-sphere-start')
+                early = state(page)['combat']['gravity']['visuals']['vortex']
+                page.keyboard.press('Escape')
             pause_at(page, .9); capture(page, mode + '-pull')
             if not BASELINE:
                 g = state(page)['combat']['gravity']
                 assert g['visuals']['phase'] == 'pull' and g['visuals']['fieldDraws'] <= 15, g
                 assert not g['exploded']
                 assert any(actor['gravityResponse'] > .1 for actor in state(page)['practiceActors']), 'the actual opponent reacts physically to the pull'
+                coverage = filled_vortex_coverage(page)
+                assert coverage['total'] >= 20 and coverage['coverage'] >= .78, coverage
+                report.setdefault('surfaceCoverage', {})[mode] = coverage
             page.keyboard.press('Escape')
+            if not BASELINE:
+                pause_at(page, 1.3); capture(page, mode + '-sphere-grown')
+                late = state(page)['combat']['gravity']['visuals']['vortex']
+                assert late['sphereVisible'] and late['sphereHeight'] > early['sphereHeight'] + .8, (early, late)
+                assert late['sphereRadius'] > early['sphereRadius'] * 2 and late['spinSpeed'] > early['spinSpeed'] * 3, (early, late)
+                page.wait_for_timeout(150)
+                assert state(page)['combat']['gravity']['visuals']['vortex'] == late, 'pause freezes growth and acceleration'
+                passed(mode + ': filled ground spiral accelerates while its sphere rises and grows')
+                page.keyboard.press('Escape')
             pause_at(page, 1.46); capture(page, mode + '-collapse')
             assert state(page)['combat']['gravity']['exploded']
+            if not BASELINE:
+                burst = state(page)['combat']['gravity']['visuals']['vortex']
+                assert not burst['sphereVisible'] and burst['shellCount'] == 14, burst
             assert state(page)['combat']['shotsFired'] == 1
             page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.gravity.active')

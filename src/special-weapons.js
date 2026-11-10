@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { traceRangedProjectile, colliderTarget, colliderBlocksTarget } from './projectile-collision.js';
 import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
+import { STAFF_CHARGE_SECONDS, chargedStaffRange } from './staff-charge.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
-  poisonRange: 20, poisonChargeSeconds: 3, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
+  poisonRange: 20, poisonChargeSeconds: STAFF_CHARGE_SECONDS, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
   cloudRadius: 4.8, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */
@@ -68,7 +69,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   }
   function refreshAim(position) {
     const dx = aim.requested.x - position.x, dz = aim.requested.z - position.z;
-    aim.range = SPECIAL_RULES.poisonRange * Math.min(1, aim.age / SPECIAL_RULES.poisonChargeSeconds);
+    aim.range = chargedStaffRange(aim.age, SPECIAL_RULES.poisonRange);
     const factor = Math.min(1, aim.range / (Math.hypot(dx, dz) || 1));
     aim.target.set(position.x + dx * factor, 0, position.z + dz * factor);
     aim.target.y = ground(aim.target) + .06;

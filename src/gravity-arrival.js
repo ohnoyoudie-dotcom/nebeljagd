@@ -9,7 +9,10 @@ const TAU = Math.PI * 2;
 export function createGravityArrival(scene, rules) {
   const geometries = new Set(), materials = new Set();
   const geo = value => (geometries.add(value), value);
-  const mat = value => (materials.add(value), value);
+  const mat = value => {
+    if (value.transparent && value.side === THREE.DoubleSide) value.forceSinglePass = true;
+    materials.add(value); return value;
+  };
   const group = new THREE.Group(); group.name = 'Gravitation · Landung und Öffnung'; group.visible = false; scene.add(group);
   const clock = { value: 0 };
   const waveMat = mat(createElementMaterial('shock', clock, { type: 'gravityStaff', opacity: .9 }));

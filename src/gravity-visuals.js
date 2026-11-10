@@ -1,8 +1,9 @@
 import * as THREE from 'three';
+import { createGravityVortex } from './gravity-vortex.js';
 
-const DEBRIS_COUNT = 56;
+const DEBRIS_COUNT = 24;
 const TRAIL_SEGMENTS = 8;
-const DUST_COUNT = 120;
+const DUST_COUNT = 64;
 const TARGET_CAP = 8;
 const TETHER_SEGMENTS = 12;
 const TAU = Math.PI * 2;
@@ -11,12 +12,15 @@ const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
 const vertex = `varying vec2 vUv;
   void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 
-/** Reusable, depth-tested spell geometry: a curved vortex, event horizon,
- * orbiting debris and a three-dimensional collapse. No full-screen pass. */
-export function createGravityVisuals(scene, rules) {
+/** Reusable ground vortex and rising sphere, with bounded instanced debris
+ * and victim feedback. Depth-tested geometry, no full-screen pass. */
+export function createGravityVisuals(scene, rules, { heightAt = null } = {}) {
   const geometries = new Set(), materials = new Set();
   const geo = value => (geometries.add(value), value);
-  const mat = value => (materials.add(value), value);
+  const mat = value => {
+    if (value.transparent && value.side === THREE.DoubleSide) value.forceSinglePass = true;
+    materials.add(value); return value;
+  };
   const root = name => { const group = new THREE.Group(); group.name = name; group.visible = false; scene.add(group); return group; };
   const aim = root('Gravitationsstab · Zielkreis');
   const range = root('Gravitationsstab · wachsende Reichweite');
@@ -55,7 +59,7 @@ export function createGravityVisuals(scene, rules) {
         }`,
     }));
   }
-  const aimMaterial = floorMaterial(true), floorMat = floorMaterial(false);
+  const aimMaterial = floorMaterial(true);
   const disk = (parent, material) => {
     const mesh = new THREE.Mesh(floorGeometry, material); mesh.rotation.x = -Math.PI / 2;
     mesh.scale.setScalar(rules.radius); parent.add(mesh); return mesh;
@@ -65,84 +69,18 @@ export function createGravityVisuals(scene, rules) {
     opacity: .32, side: THREE.DoubleSide, depthWrite: false }));
   const rangeMesh = new THREE.Mesh(geo(new THREE.RingGeometry(rules.range - .045, rules.range, 128)), rangeMat);
   rangeMesh.rotation.x = -Math.PI / 2; range.add(rangeMesh);
-  disk(field, floorMat).position.y = .012;
-
-  // A curved funnel rises from the ground to the suspended singularity.
-  const positions = [], uvs = [], indices = [];
-  const segments = 72, rings = 14;
-  for (let y = 0; y <= rings; y++) for (let x = 0; x <= segments; x++) {
-    const t = y / rings, a = x / segments * TAU;
-    const r = rules.radius * (.085 + .82 * t);
-    positions.push(Math.cos(a) * r, .06 + (1 - t) ** 2 * 1.05, Math.sin(a) * r);
-    uvs.push(x / segments, t);
-    if (y < rings && x < segments) {
-      const i = y * (segments + 1) + x;
-      indices.push(i, i + segments + 1, i + 1, i + 1, i + segments + 1, i + segments + 2);
-    }
-  }
-  const funnelGeometry = geo(new THREE.BufferGeometry());
-  funnelGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  funnelGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-  funnelGeometry.setIndex(indices);
-  const funnelMat = mat(new THREE.ShaderMaterial({ name: 'Gravitation · räumliche Spiralströmung',
-    transparent: true, side: THREE.DoubleSide, depthWrite: false, toneMapped: false,
-    uniforms: { uAge: { value: 0 }, uStrength: { value: 0 } },
-    vertexShader: `varying vec2 vUv; uniform float uAge;
-      void main() { vUv = uv; vec3 p = position;
-        p.y += sin(uv.x * 18.84956 - uv.y * 8.0 + uAge * 3.0) * .045 * sin(uv.y * 3.14159);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
-    fragmentShader: `varying vec2 vUv; uniform float uAge, uStrength;
-      void main() {
-        float arm = pow(max(0.0, cos(vUv.x * 37.6991 + vUv.y * 13.0 - uAge * 6.0)), 18.0);
-        float thread = pow(max(0.0, cos(vUv.x * 113.097 + vUv.y * 27.0 - uAge * 8.0)), 32.0);
-        float fade = smoothstep(0.0,.12,vUv.y) * (1.0 - smoothstep(.73,1.0,vUv.y));
-        vec3 color = mix(vec3(.18,.035,.40), vec3(.70,.35,1.0), arm);
-        gl_FragColor = vec4(color, (arm * .72 + thread * .18 + .025) * fade * uStrength);
-        #include <colorspace_fragment>
-      }`,
-  }));
-  const funnel = new THREE.Mesh(funnelGeometry, funnelMat); funnel.name = 'Gravitationsfeld · gekrümmter Sog'; field.add(funnel);
-  const sphereGeometry = geo(new THREE.SphereGeometry(1, 32, 20));
+  const vortex = createGravityVortex(field, rules, { heightAt });
+  const sphereGeometry = geo(new THREE.SphereGeometry(1, 24, 14));
   const sphereVertex = `varying vec3 vNormal, vView;
     void main() { vec4 p = modelViewMatrix * vec4(position,1.0);
       vNormal = normalize(normalMatrix * normal); vView = -p.xyz; gl_Position = projectionMatrix * p; }`;
-  const coreMat = mat(new THREE.ShaderMaterial({ name: 'Gravitation · dunkler Ereignishorizont', toneMapped: false,
-    vertexShader: sphereVertex,
-    fragmentShader: `varying vec3 vNormal, vView;
-      void main() {
-        float rim = pow(1.0 - abs(dot(normalize(vNormal),normalize(vView))), 3.0);
-        vec3 color = vec3(.006,.003,.019) + vec3(.46,.22,.88) * rim + vec3(.31,.31,.48) * pow(rim,5.0);
-        gl_FragColor = vec4(color,1.0);
-        #include <colorspace_fragment>
-      }`,
-  }));
-  const core = new THREE.Mesh(sphereGeometry, coreMat); core.name = 'Gravitationsfeld · Singularität'; core.position.y = 1.25; field.add(core);
-  const orbitGeometry = geo(new THREE.TorusGeometry(.62, .016, 5, 72, Math.PI * 1.72));
-  const orbitMat = mat(new THREE.MeshBasicMaterial({ color: '#d5baff', transparent: true,
-    blending: THREE.AdditiveBlending, opacity: .82, depthWrite: false, toneMapped: false }));
-  const orbits = [new THREE.Mesh(orbitGeometry, orbitMat), new THREE.Mesh(orbitGeometry, orbitMat)];
-  orbits.forEach(orbit => { orbit.position.y = 1.25; field.add(orbit); });
   const debrisMat = mat(new THREE.MeshStandardMaterial({ color: '#655075', roughness: .82,
     emissive: '#582181', emissiveIntensity: .38, transparent: true, depthWrite: false }));
   const debris = new THREE.InstancedMesh(geo(new THREE.OctahedronGeometry(1, 0)), debrisMat, DEBRIS_COUNT);
   debris.name = 'Gravitationsfeld · schwebende Trümmer'; debris.frustumCulled = false;
   debris.instanceMatrix.setUsage(THREE.DynamicDrawUsage); field.add(debris);
-  // Three GPU-friendly layers make the ground and air respond to the pull.
-  // Dust moves over the whole area, while only visible, unobstructed targets get
-  // their own feet rings and bent energy tethers. All buffers are reused.
-  const groundLines = [];
-  for (let i = 0; i < 16; i++) {
-    const a = i * TAU / 16, o = i % 2 ? .58 : .74;
-    groundLines.push(Math.cos(a) * rules.radius * .29, .022, Math.sin(a) * rules.radius * .29);
-    groundLines.push(Math.cos(a + .07) * rules.radius * o, .022, Math.sin(a + .07) * rules.radius * o);
-  }
-  const scarMat = mat(new THREE.LineBasicMaterial({ color: '#ad75f3', transparent: true,
-    opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
-  const scars = new THREE.LineSegments(geo(new THREE.BufferGeometry().setFromPoints(
-    Array.from({ length: groundLines.length / 3 }, (_, i) =>
-      new THREE.Vector3(groundLines[i * 3], groundLines[i * 3 + 1], groundLines[i * 3 + 2])))), scarMat);
-  scars.name = 'Gravitationsfeld · bebende Bodenadern'; field.add(scars);
-
+  // Ground dust, feet rings and energy tethers share fixed reusable buffers.
+  // Only visible, unobstructed targets receive their own feedback.
   const dustPositions = new Float32Array(DUST_COUNT * 3);
   const dustGeo = geo(new THREE.BufferGeometry());
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3).setUsage(THREE.DynamicDrawUsage));
@@ -236,11 +174,11 @@ export function createGravityVisuals(scene, rules) {
   function particle(index, progress, collapse, out) {
     const seed = (index * .61803398875) % 1;
     const p = smooth((progress - seed * .26) / (1 - seed * .26));
-    const angle = index * 2.39996 + p ** 1.4 * (8 + seed * 7);
+    const angle = index * 2.39996 - rules.pullDuration * (1.1 * p + 3 * p ** 3) * (1 + seed * .35);
     const radius = collapse >= 0 ? .14 + rules.radius * Math.sqrt(collapse) * (.4 + seed * .52)
       : .18 + rules.radius * (.42 + seed * .48) * (1 - p) ** .8;
-    const height = collapse >= 0 ? .95 + Math.sin(collapse * Math.PI) * (.3 + seed * .3) - collapse * .85
-      : .10 + p * .93 + Math.sin(p * Math.PI + index) * .12;
+    const height = collapse >= 0 ? .25 + Math.sin(collapse * Math.PI) * (.25 + seed * .25)
+      : .12 + p * .16 + Math.sin(p * Math.PI) * (.12 + seed * .12);
     return out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
   }
   function showAim(target, center, radius, age, visible) {
@@ -261,21 +199,16 @@ export function createGravityVisuals(scene, rules) {
     const strength = smooth((age - rules.warning) / .16);
     const fade = collapse >= 0 ? 1 - collapse : 1;
     phase = collapse >= 0 ? 'collapse' : age < rules.warning * .55 ? 'impact' : age < rules.warning ? 'opening' : 'pull';
-    floorMat.uniforms.uAge.value = age;
-    floorMat.uniforms.uPull.value = progress;
-    floorMat.uniforms.uFade.value = fade;
-    scars.visible = age <= end + rules.afterglow;
-    scars.rotation.y = age * (age < rules.warning ? -.22 : -.85);
-    scarMat.opacity = (.20 + .38 * Math.sin(Math.min(1, age / end) * Math.PI)) * fade;
+    const motion = vortex.update(center, age);
     const pullTime = Math.max(0, age - rules.warning);
     dust.visible = age >= rules.warning && collapse < 0;
     dustMat.uniforms.uOpacity.value = (.38 + .34 * smooth(pullTime / .2)) * fade;
     for (let i = 0; i < DUST_COUNT; i++) {
       const seed = (i * .6180339) % 1;
-      const angle = i * 2.39996 + pullTime * (1.8 + seed * 2.2);
+      const angle = i * 2.39996 - motion.spin * (1 + seed * .35);
       const travel = ((pullTime * (.3 + seed * .55)) + seed) % 1;
       const radius = rules.radius * (.12 + .82 * (1 - travel));
-      const y = .06 + (.2 + seed * .6) * Math.sin(travel * Math.PI);
+      const y = .10 + (.08 + seed * .12) * Math.sin(travel * Math.PI);
       dustPositions[i * 3] = Math.cos(angle) * radius;
       dustPositions[i * 3 + 1] = y;
       dustPositions[i * 3 + 2] = Math.sin(angle) * radius;
@@ -308,7 +241,7 @@ export function createGravityVisuals(scene, rules) {
           const twist = t * TAU * 1.5 + age * 8 + i + strand * Math.PI;
           const width = Math.sin(t * Math.PI) * (.18 + .09 * strand);
           tetherPositions[vertexIndex++] = x * (1 - t) + Math.cos(twist) * width;
-          tetherPositions[vertexIndex++] = height + .20 + t * .78 + Math.sin(t * Math.PI) * .15;
+          tetherPositions[vertexIndex++] = height * (1 - t) + .20 + Math.sin(t * Math.PI) * .12;
           tetherPositions[vertexIndex++] = z * (1 - t) + Math.sin(twist) * width;
         }
       }
@@ -316,25 +249,16 @@ export function createGravityVisuals(scene, rules) {
     tetherGeo.setDrawRange(0, vertexIndex / 3);
     if (affectedCount) tetherGeo.attributes.position.needsUpdate = true;
     if (affectedCount) { markers.instanceMatrix.needsUpdate = true; victims.instanceMatrix.needsUpdate = true; }
-    funnel.visible = collapse < 0; funnelMat.uniforms.uAge.value = age;
-    funnelMat.uniforms.uStrength.value = strength;
-    core.visible = collapse < 0;
-    const compress = smooth((progress - .82) / .18);
-    core.scale.setScalar(.12 + strength * (.40 + .22 * progress) * (1 - compress * .95));
-    flash.visible = collapse >= 0 && collapse < .3 || collapse < 0 && compress > .05;
+    flash.visible = collapse >= 0 && collapse < .3;
+    flash.position.y = motion.sphereHeight;
     if (flash.visible) {
-      const intensity = collapse >= 0 ? 1 - smooth(collapse / .3) : compress;
-      flash.scale.setScalar(.15 + intensity * .42);
-      flashMat.opacity = intensity * (collapse >= 0 ? .85 : .32);
+      const intensity = 1 - smooth(collapse / .3);
+      flash.scale.setScalar(.15 + intensity * .55);
+      flashMat.opacity = intensity * .85;
     }
-    orbits.forEach((orbit, i) => {
-      orbit.visible = collapse < 0 && strength > 0;
-      orbit.rotation.set(.5 + i * .85, age * (i ? -2.4 : 2.9), .3 + Math.sin(age * 1.3 + i) * .32);
-      orbit.scale.setScalar(.9 + progress * .7);
-    });
     debrisMat.opacity = fade;
     trails.visible = age >= rules.warning;
-    trailMat.opacity = .65 * fade;
+    trailMat.opacity = .10 * fade;
     for (let i = 0; i < DEBRIS_COUNT; i++) {
       particle(i, progress, collapse, transform.position);
       transform.rotation.set(age * 2 + i, age + i * .8, age * 1.4);
@@ -350,7 +274,8 @@ export function createGravityVisuals(scene, rules) {
     shock.visible = wave.visible = secondWave.visible = thirdWave.visible = collapse >= 0;
     if (collapse >= 0) {
       const spread = rules.radius * (.07 + .93 * (1 - (1 - collapse) ** 3));
-      shock.scale.set(spread, .10 + Math.sin(collapse * Math.PI) * .6, spread);
+      shock.position.y = motion.sphereHeight * (1 - smooth(collapse)) + .10;
+      shock.scale.set(spread, .10 + Math.sin(collapse * Math.PI) * .22, spread);
       shockMat.uniforms.uFade.value = fade ** 2 * 1.3;
       shockMat.uniforms.uFlash.value = 1 - smooth(collapse / .5);
       wave.scale.setScalar(spread); waveMat.opacity = fade ** 1.5 * .95;
@@ -369,14 +294,25 @@ export function createGravityVisuals(scene, rules) {
     markers.visible = victims.visible = false; markers.count = victims.count = 0;
     tethers.visible = false;
   }
+  function countDraws(root) {
+    let count = 0;
+    root.traverseVisible(child => {
+      if ((child.isMesh || child.isLine || child.isPoints) && (!child.isInstancedMesh || child.count > 0)) {
+        count += child.material.transparent && child.material.side === THREE.DoubleSide && !child.material.forceSinglePass ? 2 : 1;
+      }
+    });
+    return count;
+  }
   return { showAim, hideAim, showField, hideField,
     get telemetry() { return { phase, fieldVisible: field.visible, aimVisible: aim.visible,
-      fieldDraws: field.visible ? field.children.filter(child => child.visible && (child.isMesh || child.isLine || child.isPoints)).length : 0,
+      fieldDraws: field.visible ? countDraws(field) : 0,
+      vortex: { ...vortex.telemetry, sphereVisible: field.visible && vortex.telemetry.sphereVisible,
+        shellCount: field.visible ? vortex.telemetry.shellCount : 0 },
       debrisCount: DEBRIS_COUNT, dustCount: DUST_COUNT, affectedCount,
       rangeRadius: rangeMesh.scale.x * rules.range }; },
     dispose() {
       if (disposed) return;
-      aim.removeFromParent(); range.removeFromParent(); field.removeFromParent(); debris.dispose(); markers.dispose(); victims.dispose();
+      aim.removeFromParent(); range.removeFromParent(); field.removeFromParent(); vortex.dispose(); debris.dispose(); markers.dispose(); victims.dispose();
       geometries.forEach(value => value.dispose()); materials.forEach(value => value.dispose()); disposed = true;
     },
   };
