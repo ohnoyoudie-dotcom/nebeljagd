@@ -119,6 +119,7 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
     conform(center); gravityVortexMotion(age, rules, state);
     clock.value = age; spin.value = state.spin; growth.value = state.progress;
     surfaceMat.uniforms.uFade.value = state.fade;
+    surface.visible = state.fade > 0;
     sphere.visible = state.burst < 0;
     sphere.position.y = state.sphereHeight; sphere.scale.setScalar(state.sphereRadius);
     sphere.rotation.y = -state.spin * .55;
@@ -126,10 +127,10 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
     neck.visible = state.burst < 0 && state.progress > .04;
     neck.position.y = connectionHeight * .5; neck.scale.set(1, connectionHeight, 1);
     neckMat.uniforms.uFade.value = smooth(state.progress * 5) * .8;
-    shell.visible = state.burst >= 0 && state.burst < .85;
+    shell.visible = state.shellBurst >= 0 && state.shellBurst < .85;
     shell.count = shell.visible ? SHELL_COUNT : 0;
     if (shell.visible) {
-      const t = state.burst;
+      const t = state.shellBurst;
       for (let i = 0; i < SHELL_COUNT; i++) {
         const a = i * 2.399963, y = 1 - (i + .5) / SHELL_COUNT * 2, radius = Math.sqrt(1 - y * y);
         const distance = state.sphereRadius * .8 + (1 - (1 - t) ** 2) * rules.radius * (.55 + i % 3 * .17);

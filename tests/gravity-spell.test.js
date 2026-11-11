@@ -327,7 +327,7 @@ test('flight precedes a full three-second field, one final hit and a short clean
   gravity.dispose();
 });
 
-test('debris is swallowed before one short impulse, then every field layer is completely hidden', () => {
+test('debris is swallowed before a single hit and the outgoing visual wave clears afterwards', () => {
   const { gravity, scene, opponent, hits } = scenario(); const caster = new THREE.Vector3();
   gravity.beginAim(caster, 0); gravity.release({ damage: 14 }); land(gravity, caster);
   gravity.update(.28, caster);
@@ -350,6 +350,8 @@ test('debris is swallowed before one short impulse, then every field layer is co
   assert.equal(opponent.health, 86); assert.equal(hits.length, 1);
   assert.ok(gravity.telemetry.visuals.fieldDraws <= 15);
   gravity.update(.22, caster); assert.equal(gravity.telemetry.active, false);
+  assert.equal(gravity.telemetry.visualActive, true, 'the wave outlives the combat lock');
+  gravity.update(.75, caster);
   const cleared = gravity.telemetry;
   assert.equal(cleared.visuals.fieldDraws, 0); assert.equal(cleared.arrival.visible, false);
   assert.equal(cleared.visuals.vortex.surfaceOpacity, 0);
@@ -390,4 +392,44 @@ test('actual practice bodies brace against the pull and their pose freezes on pa
   const pose = () => { const values = []; pivot.traverse(object => values.push([...object.position.toArray(), ...object.quaternion.toArray()])); return values; };
   const before = pose(); actors.update(0, 999, caster); assert.deepEqual(pose(), before);
   gravity.dispose(); actors.dispose(); assert.equal(scene.children.length, 0);
+});
+
+
+test('residual pressure wave preserves recast timing, pause, fog and reset without additional hits', () => {
+  let visible = true;
+  const { gravity, hits, opponent } = scenario(false, () => visible);
+  const caster = new THREE.Vector3();
+  gravity.beginAim(caster, 0); gravity.release({ damage: 14 }); land(gravity, caster);
+  gravity.update(GRAVITY_RULES.warning + GRAVITY_RULES.pullDuration + GRAVITY_RULES.afterglow + .01, caster);
+  assert.equal(hits.length, 1); assert.equal(opponent.health, 86);
+  assert.equal(gravity.busy, false); assert.equal(gravity.telemetry.visualActive, true);
+  const frozen = gravity.telemetry;
+  gravity.update(0, caster, 999); assert.deepEqual(gravity.telemetry, frozen);
+  const position = opponent.position.clone();
+  visible = false; gravity.update(.1, caster);
+  assert.equal(gravity.telemetry.visuals.fieldVisible, false);
+  assert.deepEqual(opponent.position, position); assert.equal(hits.length, 1);
+  assert.equal(gravity.appendGrassInteractors([]).length, 0);
+  visible = true; gravity.update(.1, caster);
+  assert.ok(gravity.telemetry.visuals.burst.visible);
+  assert.equal(gravity.beginAim(caster, 0), true, 'tail never extends the original attack lock');
+  assert.equal(gravity.release({ damage: 14 }, null, { point: { x: 2, y: 0, z: 2 } }), true);
+  assert.equal(gravity.telemetry.age, 0); assert.equal(gravity.telemetry.visuals.burst.visible, false);
+  gravity.update(3.65, caster); assert.equal(hits.length, 2);
+  gravity.reset(); assert.equal(gravity.telemetry.visualActive, false);
+  assert.equal(gravity.telemetry.visuals.fieldDraws, 0);
+  gravity.update(10, caster); assert.equal(hits.length, 2);
+  gravity.dispose();
+});
+
+
+test('a blocked recast into water cancels the previous visual tail without leaving a frozen wave', () => {
+  const { gravity, world, hits } = scenario(); const caster = new THREE.Vector3();
+  gravity.beginAim(caster, 0); gravity.release({ damage: 14 }); land(gravity, caster);
+  gravity.update(3.65, caster); assert.ok(gravity.telemetry.visualActive);
+  gravity.beginAim(caster, 0); world.isWater = () => true;
+  gravity.release({ damage: 14 }, null, { point: { x: 0, y: 0, z: 0 } });
+  assert.equal(gravity.busy, false); assert.equal(gravity.telemetry.visualActive, false);
+  assert.equal(gravity.telemetry.visuals.fieldDraws, 0); assert.equal(hits.length, 1);
+  gravity.dispose();
 });

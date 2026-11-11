@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createGravityWave, createGravityFlash } from './gravity-wave.js';
 import { createGravityVortex } from './gravity-vortex.js';
 import { createStaffAimRing } from './staff-aim.js';
 import { createGravityParticleFlow } from './gravity-particles.js';
@@ -11,8 +12,7 @@ const TETHER_SEGMENTS = 12;
 const TAU = Math.PI * 2;
 const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
-const vertex = `varying vec2 vUv;
-  void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+
 
 /** Reusable ground vortex and rising sphere, with bounded instanced debris
  * and victim feedback. Depth-tested geometry, no full-screen pass. */
@@ -109,31 +109,10 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   const trailMat = mat(new THREE.LineBasicMaterial({ vertexColors: true, transparent: true,
     blending: THREE.NormalBlending, opacity: .04, depthWrite: false, toneMapped: false }));
   const trails = new THREE.LineSegments(trailGeometry, trailMat); trails.frustumCulled = false; field.add(trails);
-  const waveMat = mat(new THREE.ShaderMaterial({ name: 'Gravitation · flächige Burstwelle', transparent: true,
-    blending: THREE.NormalBlending, side: THREE.DoubleSide, depthWrite: false, toneMapped: false,
-    uniforms: { uOpacity: { value: 0 }, uFront: { value: 0 }, uProgress: { value: 0 } },
-    vertexShader: vertex,
-    fragmentShader: `varying vec2 vUv;uniform float uOpacity,uFront,uProgress;
-      void main(){vec2 p=vUv*2.-1.;float r=length(p),a=atan(p.y,p.x+.000001);
-        float front=exp(-pow((r-uFront)/.14,2.));
-        float wake=1.-smoothstep(uFront-.10,uFront+.08,r);
-        float rays=pow(max(0.,cos(a*14.+sin(a*3.)*.65-uProgress*3.)),14.)*wake;
-        float feather=1.-smoothstep(.94,1.,r);
-        float alpha=(front*.70+wake*.58+rays*.12)*feather*uOpacity;
-        vec3 color=mix(vec3(.25,.025,.48),vec3(.62,.18,.95),front);
-        gl_FragColor=vec4(color,min(.94,alpha));
-        #include <colorspace_fragment>
-      }`,
-  }));
-  // Borrow the existing terrain-conforming bowl: one broad front covers the
-  // complete field and its wake, without adding a bubble or terrain samples.
-  const wave = new THREE.Mesh(vortex.ground.geometry, waveMat);
-  wave.position.y = .012; field.add(wave);
-  wave.name = 'Gravitation · letzter Flächenimpuls';
-  const flashMat = mat(new THREE.SpriteMaterial({ map: textures?.burst ?? null, color: '#ffffff', transparent: true,
-    opacity: 0, blending: THREE.NormalBlending, depthWrite: false, toneMapped: false }));
-  const flash = new THREE.Sprite(flashMat);
-  flash.name = 'Gravitation · Aufblitzen beim Kollaps'; flash.position.y = 1.25;
+  const wave = createGravityWave(vortex.ground.geometry);
+  const waveMat = mat(wave.material); field.add(wave);
+  const flash = createGravityFlash();
+  const flashMat = mat(flash.material); geo(flash.geometry);
   flash.visible = false; field.add(flash);
   const burstCoreMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false, toneMapped: false,
     uniforms: { uOpacity: { value: 0 } }, vertexShader: sphereVertex,
@@ -161,12 +140,11 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     const opening = smooth((age - rules.warning * .55) / (rules.warning * .45));
     field.position.set(center.x, center.y + .05, center.z); field.visible = visible && opening > 0;
     field.scale.setScalar(Math.max(.001, opening));
-    const end = rules.warning + rules.pullDuration;
     const progress = clamp((age - rules.warning) / rules.pullDuration);
-    const collapse = age >= end ? clamp((age - end) / rules.afterglow) : -1;
+    const motion = vortex.update(center, age);
+    const collapse = motion.burst;
     const fade = collapse >= 0 ? 1 - collapse : 1;
     phase = collapse >= 0 ? 'collapse' : age < rules.warning * .55 ? 'impact' : age < rules.warning ? 'opening' : 'pull';
-    const motion = vortex.update(center, age);
     dust.visible = opening > 0 && collapse < 0;
     dustMat.uniforms.uOpacity.value = .6 * fade;
     liveDust = 0;
@@ -212,14 +190,14 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     tetherGeo.setDrawRange(0, vertexIndex / 3);
     if (affectedCount) tetherGeo.attributes.position.needsUpdate = true;
     if (affectedCount) { markers.instanceMatrix.needsUpdate = true; victims.instanceMatrix.needsUpdate = true; }
-    flash.visible = burstCore.visible = collapse >= 0 && collapse < .75;
+    flash.visible = burstCore.visible = motion.flash > 0;
     flash.position.set(0, motion.sphereHeight, 0);
     burstCore.position.copy(flash.position);
     if (flash.visible) {
-      const intensity = 1 - smooth(collapse / .75);
-      flash.scale.setScalar(4.4 + 2.2 * smooth(collapse / .5));
-      flashMat.opacity = intensity;
-      burstCore.scale.setScalar(.36 * intensity);
+      const intensity = motion.flash;
+      flash.scale.setScalar(1.1 + 1.1 * (1 - intensity));
+      flashMat.uniforms.uOpacity.value = intensity;
+      burstCore.scale.setScalar(.55 + .35 * (1 - intensity));
       burstCoreMat.uniforms.uOpacity.value = intensity;
     }
     debrisMat.opacity = fade;
@@ -246,7 +224,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
       }
     }
     debris.instanceMatrix.needsUpdate = true; trailGeometry.attributes.position.needsUpdate = true;
-    wave.visible = collapse >= 0;
+    wave.visible = collapse >= 0 && motion.burstOpacity > 0;
     burstRadius = motion.burstRadius; burstOpacity = motion.burstOpacity;
     if (collapse >= 0) {
       waveMat.uniforms.uFront.value = burstRadius / vortex.ground.radius;
@@ -283,7 +261,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
       liveDebris: field.visible ? liveDebris : 0, liveDust: field.visible ? liveDust : 0,
       absorbingDebris: field.visible ? absorbingDebris : 0,
       burst: { visible: field.visible && wave.visible, radius: field.visible ? burstRadius : 0,
-        opacity: field.visible ? burstOpacity : 0, style: 'broad-ground-front' },
+        opacity: field.visible ? burstOpacity : 0, style: 'rolling-pressure-wave' },
       rangeRadius: rangeMesh.scale.x * rules.range }; },
     dispose() {
       if (disposed) return;

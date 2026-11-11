@@ -4,6 +4,7 @@ import { createGravityArrival } from './gravity-arrival.js';
 import { createSpellEffects } from './spell-effects.js';
 import { traceRangedProjectile } from './projectile-collision.js';
 import { STAFF_CHARGE_SECONDS, STAFF_THROW_RANGE, chargedStaffRange } from './staff-charge.js';
+import { GRAVITY_BURST_SECONDS } from './gravity-motion.js';
 
 // All times are seconds and all distances are in world metres.
 // Keep crowd control independent of rarity: only the blast damage scales.
@@ -30,7 +31,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
   const ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
   const visibleAt = p => !isVisible || isVisible(p);
   const aimPoint = new THREE.Vector3(), nextPull = new THREE.Vector3(), segmentStart = new THREE.Vector3(), segmentEnd = new THREE.Vector3();
-  let aim = null, flight = null, field = null, castCount = 0, lastHitCount = 0;
+  let aim = null, flight = null, field = null, visualTail = null, castCount = 0, lastHitCount = 0;
 
   function aimAt(position, requested) {
     if (!aim || !requested || !Number.isFinite(requested.x) || !Number.isFinite(requested.z)) return;
@@ -68,6 +69,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
   }
   function cancelAim() { aim = null; visuals.hideAim(); }
   function land(point, normal = null) {
+    visualTail = null; visuals.hideField();
     effects.end(projectile); flight = null;
     const center = point.clone(); center.y = ground(center);
     effects.impact('gravityStaff', center, normal ?? { x: 0, y: 1, z: 0 });
@@ -154,6 +156,14 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
   }
   function update(dt, position, time = 0) {
     if (!(dt > 0)) return;
+    // The outgoing wave is visual only. It cannot pull, hit, or delay recasting.
+    // One reusable field renderer bounds memory; a new landing replaces the tail.
+    if (visualTail) {
+      visualTail.age += dt;
+      if (visualTail.age >= rules.warning + rules.pullDuration + GRAVITY_BURST_SECONDS) {
+        visualTail = null; visuals.hideField();
+      } else visuals.showField(visualTail.center, visualTail.age, visibleAt(visualTail.center));
+    }
     if (aim && position) { aim.age += dt; refreshAim(position); }
     let fieldDelta = dt;
     if (flight) {
@@ -190,7 +200,11 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
     if (field.age >= activeEnd && !field.exploded) explode();
     arrival.show(field.center, field.age, visibleAt(field.center));
     visuals.showField(field.center, field.age, visibleAt(field.center), visualTargets(field.center));
-    if (field.age >= activeEnd + rules.afterglow) { field = null; visuals.hideField(); arrival.hide(); }
+    if (field.age >= activeEnd + rules.afterglow) {
+      if (field.age < activeEnd + GRAVITY_BURST_SECONDS) visualTail = { center: field.center, age: field.age };
+      else visuals.hideField();
+      field = null; arrival.hide();
+    }
   }
   // Make the actual grass and low foliage bend inward during the suction phase.
   // The vegetation shader accepts at most eight interactors, including player
@@ -218,7 +232,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
     for (const target of combat?.targets?.values() ?? []) {
       if (target.gravityVisual?.sourceId === ownerId) delete target.gravityVisual;
     }
-    cancelAim(); flight = field = castPayload = null; effects.end(projectile); arrival.hide(); visuals.hideField();
+    cancelAim(); flight = field = visualTail = castPayload = null; effects.end(projectile); arrival.hide(); visuals.hideField();
     if (!sharedEffects) effects.reset();
     castCount = lastHitCount = 0;
   }
@@ -234,8 +248,10 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
         radius: rules.radius, chargeSeconds: rules.chargeSeconds, fieldSeconds: rules.pullDuration, visuals: visuals.telemetry,
         active: Boolean(flight || field), landed: Boolean(field), phase: flight ? 'flight' : field ? field.age < rules.warning * .55 ? 'impact' : field.age < rules.warning ? 'opening' : field.exploded ? 'collapse' : 'pull' : 'idle',
         flight: flight ? { position: { ...flight.position }, origin: { ...flight.origin }, target: { ...flight.target }, age: flight.age, duration: flight.duration, arcHeight: rules.projectileArcHeight } : null,
-        arrival: arrival.telemetry, castCount, lastHitCount, age: field?.age ?? 0, exploded: field?.exploded ?? false,
-        center: field ? { x: field.center.x, z: field.center.z } : flight ? { x: flight.target.x, z: flight.target.z } : null,
+        arrival: arrival.telemetry, castCount, lastHitCount, age: field?.age ?? visualTail?.age ?? 0, exploded: field?.exploded ?? false,
+        visualActive: Boolean(field || visualTail),
+        center: field ? { x: field.center.x, z: field.center.z } : flight ? { x: flight.target.x, z: flight.target.z }
+          : visualTail ? { x: visualTail.center.x, z: visualTail.center.z } : null,
         pulled: field ? Object.fromEntries(field.pulled) : {} };
     } };
 }

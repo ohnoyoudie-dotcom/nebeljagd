@@ -13,13 +13,15 @@ test('the vortex accelerates inward continuously as its sphere rises and grows, 
   for (let i = 1; i <= 60; i++) {
     const now = gravityVortexMotion(rules.warning + rules.pullDuration * i / 60, rules);
     assert.ok(now.spin > previous.spin && now.spinSpeed > previous.spinSpeed);
-    assert.ok(now.sphereHeight > previous.sphereHeight && now.sphereRadius > previous.sphereRadius);
+    assert.ok(now.sphereHeight > previous.sphereHeight);
+    if (i / 60 <= .94) assert.ok(now.sphereRadius > previous.sphereRadius);
+    else assert.ok(now.sphereRadius < previous.sphereRadius, 'energy contracts just before release');
     // In a*5+r*19+spin*5, keeping the spiral phase fixed moves r inward.
     assert.ok(-(now.spin - previous.spin) * 5 / 19 < 0);
     previous = now;
   }
   assert.ok(previous.spinSpeed > start.spinSpeed * 8);
-  assert.ok(previous.sphereHeight > 1.6 && previous.sphereRadius > .7);
+  assert.ok(previous.sphereHeight > 1.6 && previous.sphereRadius > .6);
   assert.deepEqual(gravityVortexMotion(rules.warning + rules.pullDuration, rules), previous);
   const justBefore = gravityVortexMotion(rules.warning + rules.pullDuration - .000001, rules);
   const justAfter = gravityVortexMotion(rules.warning + rules.pullDuration + .000001, rules);

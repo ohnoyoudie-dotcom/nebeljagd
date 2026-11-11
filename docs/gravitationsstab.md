@@ -1,4 +1,4 @@
-# Gravitationsstab – drei Sekunden Sog, aufsteigende Kugel und letzter Flächenimpuls
+# Gravitationsstab – Strudel, aufgeladene Kugel und auslaufende Druckwelle
 
 Der neue Stab verwendet das bereits hochgeladene Original
 assets/inbox/fantasy voidstaff 3d model.glb (ca. 65 MB).
@@ -36,16 +36,17 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   bzw. durch rechtzeitige Rolle entkommen. Sog selbst verursacht keinen Schaden.
 - Beim Kollaps 14 Grundschaden, Seltenheitsstufen multiplizieren nur den Schaden.
   Der Treffer erfolgt **3,4 s nach dem Aufprall**, genau einmal pro erreichbarem Ziel.
-  Ein letzter Flächenimpuls dauert **0,22 s**. Danach sind Bodenstrudel, Kugel,
-  Staub, Trümmer, Schalenstücke und Druckwelle vollständig verschwunden.
-  Es gibt keine zweite Trefferberechnung während dieses kurzen Abschlusses.
+  Die bisherige Angriffsfreigabe bleibt bei **0,22 s nach dem Treffer**.
+  Die rein optische Druckwelle läuft insgesamt **0,95 s** nach dem Treffer aus.
+  Sie berechnet weder weitere Treffer noch Sog und verzögert keine neue Ladung.
   Der Besitzer wird weder gezogen noch getroffen. Zerstörbare Gegenstände
   werden nicht angesaugt.
 - Angriffs-Cooldown: 2,8 s, separat von der bestehenden Rolle (2,5 s).
   Der Cooldown beginnt beim Loslassen. Escape/Pause, Rolle und Waffenwechsel
   brechen das Zielen ab, ohne einen Zauber auszulösen.
-  Gleichzeitig ist höchstens ein vollständiger Gravitationszauber aktiv.
-  Eine neue Ladung beginnt erst nach dessen vollständigem Ende.
+  Gleichzeitig ist höchstens ein spielwirksamer Gravitationszauber aktiv.
+  Während die letzte Druckwelle verblasst, kann bereits wieder geladen werden.
+  Ein neuer Einschlag ersetzt einen eventuell verbleibenden optischen Rest.
 
 ## Darstellung
 
@@ -94,7 +95,9 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Simulationszeit berechnet.
 - Aus der Mitte steigt eine dunkle Energiekugel mit leuchtenden violetten Rissen.
   Ihr Mittelpunkt steigt während des Sogs von 0,13 auf 1,73 m über der Feldbasis,
-  ihr Radius wächst von 0,10 auf 0,75 m. Eine schmale Energieverbindung reicht zum Zentrum.
+  ihr Radius wächst von 0,10 auf knapp 0,75 m. In den letzten 0,18 s
+  verdichtet sie sich auf 0,63 m, bevor sie zentral zerplatzt.
+  Eine schmale Energieverbindung reicht zum Zentrum.
 - 64 wiederverwendete Fragmente aus Stein und Gras, 160 Bodenpartikel und
   zurückhaltende Lichtspuren ziehen in unregelmäßigen Schüben nach innen.
   Vorbereitete Startzeiten, Pausen, Flugzeiten, Winkel und Abstände unterscheiden
@@ -106,15 +109,18 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Interaktoren, welche die Halme sichtbar zur Feldmitte biegen.
 - Bis zu acht sichtbare Gegner erhalten violette Körperenergie und Fußrunen.
   Ihre Figuren stemmen Arme und Beine gegen den Sog und kippen sichtbar mit.
-- Beim Kollaps zerplatzt die große Kugel vollständig in 24 gemeinsam gezeichnete
-  Schalenfragmente, die nach außen fliegen. Es bleibt keine intakte Halbkugel zurück.
-  Ein weiß-violetter Blitz am Ort der aufgestiegenen Kugel und eine breite violette
-  Druckfront mit gefärbter Nachströmung vom Zentrum über den gesamten Wirkungsradius
-  zeigen den einen Treffer. Die Front bleibt hell, bis sie die Außenkante erreicht.
-  Sie verwendet dieselbe geländefolgende Geometrie wie der Strudel und bildet
-  keine zusätzliche Luftblase. Der Bodenstrudel
-  zieht sich unter diesem Impuls innerhalb von 0,11 s zurück; nach insgesamt
-  0,22 s endet die gesamte Darstellung ohne weitere Wellen oder schwebende Reste.
+- Beim Kollaps zerplatzt die Kugel in 24 kurz sichtbare Schalenfragmente.
+  Ein kompakter, runder weiß-lila Lichtblitz hält höchstens 0,24 s an.
+  Die alte Strahlen-Textur und radialen Speichen entfallen vollständig.
+- Eine einzige breite violette Druckwelle bewegt sich vom Zentrum nach außen.
+  Ihre leicht erhöhte Wellenfront rollt über das Gelände; weiches, kartesisches
+  Rauschen gibt dem leuchtenden Saum eine unregelmäßige, wolkige Oberfläche.
+  Es gibt keine nach außen drehenden Spiralarme: Der deutliche Strudel bleibt
+  die vorgelagerte Sogphase und verblasst beim Ausbruch innerhalb von 0,16 s.
+  Hinter der Wellenfront wird der Boden wieder sichtbar. Die Welle erreicht
+  den gesamten Wirkungsradius, bevor sie weich ausblendet; nach 0,95 s ist sie weg.
+  Sie verwendet die vorhandene geländefolgende Geometrie, benötigt einen
+  Zeichenschritt und erzeugt keine neuen Texturen oder Bildschirm-Effekte.
 - Vorwarnung, Sog, Kollaps und Abklingen laufen über dieselbe Simulationszeit.
   Pause friert sie ein, Sichtprüfung und Tiefentest verbergen verdeckte Effekte.
 - Instanz-Geometrie bündelt Partikel, Trümmer und Gegnerreaktionen. Die Feld-
@@ -128,7 +134,8 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
    `NEBELJAGD_URL=http://127.0.0.1:4176 python tests/gravity_staff_smoke.py`
    prüft Maus und Touch am erzeugten Spiel und erfasst Flug, Landung, Öffnung,
    Sog, Kugelaufstieg und Zerplatzen. Pixelproben des echten GPU-Bilds prüfen
-   die gefüllte violette Fläche sowie die Burstwelle im Zentrum und am Außenrand;
+   die gefüllte violette Strudelfläche, die zusammenhängende Wellenfront
+   und das dahinter freigewordene Zentrum;
    Zustandsprüfungen erfassen das geladene Void-Modell, Beschleunigung,
    Kugelwachstum und den weiterhin einmaligen Schaden. Vier vergrößerte echte
    Spielaufnahmen (`reference-start`, `reference-grown`, `reference-burst`, `reference-wave`)

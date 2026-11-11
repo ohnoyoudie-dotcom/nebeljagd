@@ -46,10 +46,12 @@ def capture_reference_detail(page, name, center=None):
 
 def pause_at(page, age):
     page.evaluate('''age => {
+      if(nebeljagdTestState().phase === 'paused' && nebeljagdTestState().combat.gravity.age >= age)return;
       function frame() {
         if(nebeljagdTestState().combat.gravity.age >= age) document.querySelector('#pauseBtn').click();
         else requestAnimationFrame(frame);
       } requestAnimationFrame(frame);
+      if(nebeljagdTestState().phase === 'paused')document.querySelector('#resumeBtn').click();
     }''', age)
     page.wait_for_function('nebeljagdTestState().phase === "paused"')
 
@@ -168,7 +170,6 @@ with sync_playwright() as p:
                 assert effects['gravityModel']['presentationScale'] == .8
                 page.wait_for_timeout(150); assert state(page)['combat']['gravity'] == g
                 passed(mode + ': uploaded Void model and glowing trail follow the arc and freeze on pause')
-                page.keyboard.press('Escape')
             pause_at(page, .08); capture(page, mode + '-impact')
             g = state(page)['combat']['gravity']
             assert not g['exploded']
@@ -176,16 +177,13 @@ with sync_playwright() as p:
                 assert g['phase'] == 'impact' and g['arrival']['visible'] and not g['visuals']['fieldVisible'], g
             page.wait_for_timeout(150)
             assert state(page)['combat']['gravity'] == g, 'pause freezes the field and every visual phase'
-            page.keyboard.press('Escape')
             if not BASELINE:
                 pause_at(page, .28); capture(page, mode + '-opening')
                 assert state(page)['combat']['gravity']['visuals']['fieldVisible']
-                page.keyboard.press('Escape')
             if not BASELINE:
                 pause_at(page, .75); capture(page, mode + '-sphere-start')
                 if not touch: capture_reference_detail(page, 'reference-start')
                 early = state(page)['combat']['gravity']['visuals']['vortex']
-                page.keyboard.press('Escape')
             pause_at(page, 1.8); capture(page, mode + '-pull')
             if not BASELINE:
                 g = state(page)['combat']['gravity']
@@ -197,7 +195,6 @@ with sync_playwright() as p:
                 coverage = filled_vortex_coverage(page)
                 assert coverage['total'] >= 20 and coverage['coverage'] >= .78, coverage
                 report.setdefault('surfaceCoverage', {})[mode] = coverage
-            page.keyboard.press('Escape')
             if not BASELINE:
                 pause_at(page, 3.15); capture(page, mode + '-sphere-grown')
                 if not touch: capture_reference_detail(page, 'reference-grown')
@@ -207,7 +204,6 @@ with sync_playwright() as p:
                 page.wait_for_timeout(150)
                 assert state(page)['combat']['gravity']['visuals']['vortex'] == late, 'pause freezes growth and acceleration'
                 passed(mode + ': filled ground spiral accelerates while its sphere rises and grows')
-                page.keyboard.press('Escape')
             pause_at(page, 3.43); capture(page, mode + '-collapse')
             if not BASELINE and not touch: capture_reference_detail(page, 'reference-burst')
             assert state(page)['combat']['gravity']['exploded']
@@ -219,25 +215,22 @@ with sync_playwright() as p:
             assert state(page)['combat']['shotsFired'] == 1
             collapse_hits = state(page)['combat']['gravity']['lastHitCount']
             if not BASELINE:
-                # A slow rendered frame may already have reached the area
-                # burst. Reuse that paused frame instead of stepping past it.
-                g = state(page)['combat']['gravity']
-                if g['visuals']['burst']['radius'] < g['radius']:
-                    page.keyboard.press('Escape'); pause_at(page, 3.505)
+                pause_at(page, 4.075)
                 capture(page, mode + '-area-burst')
                 g = state(page)['combat']['gravity']
                 assert g['visuals']['burst']['visible'] and g['visuals']['burst']['radius'] >= g['radius'], g
-                assert g['lastHitCount'] == collapse_hits and g['visuals']['burst']['style'] == 'broad-ground-front'
+                assert g['lastHitCount'] == collapse_hits and g['visuals']['burst']['style'] == 'rolling-pressure-wave'
                 assert not g['visuals']['vortex']['sphereVisible'] and not g['visuals']['vortex']['capVisible']
                 # The pulled actor can cover the center; sample the annulus in
                 # combat, then check the center on an unobstructed cast below.
-                coverage = filled_vortex_coverage(page, radii=[.55,.92], burst=True)
+                front = g['visuals']['burst']['radius'] / g['radius']
+                coverage = filled_vortex_coverage(page, radii=[front-.10,front-.03], burst=True)
                 assert coverage['total'] >= 20 and coverage['coverage'] >= .75, coverage
                 report.setdefault('burstAreaCoverage', {})[mode] = coverage
                 if not touch: capture_reference_detail(page, 'reference-wave')
                 passed(mode + ': real GPU burst reaches the outer field without an intact orb or extra hit')
             page.keyboard.press('Escape')
-            page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
+            page.wait_for_function('!nebeljagdTestState().combat.gravity.visualActive')
             if not BASELINE:
                 capture(page, mode + '-clear')
                 g = state(page)['combat']['gravity']
@@ -277,19 +270,21 @@ with sync_playwright() as p:
                 page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange?.radius === 20')
                 page.keyboard.up('f')
                 phases = [(.75, 'reference-start'), (3.15, 'reference-grown'), (3.43, 'reference-burst')] if ART_REVIEW else []
-                for age, name in phases + [(3.505, 'reference-wave')]:
-                    if state(page)['phase'] == 'paused' and state(page)['combat']['gravity']['age'] < age:
-                        page.keyboard.press('Escape')
-                    if state(page)['phase'] != 'paused': pause_at(page, age)
+                for age, name in phases + [(3.8, 'reference-wave-middle'), (4.075, 'reference-wave')]:
+                    pause_at(page, age)
                     capture_reference_detail(page, name)
                     last_center = state(page)['combat']['gravity']['center']
-                    if name == 'reference-wave':
-                        coverage = filled_vortex_coverage(page, radii=[0,.55,.92], burst=True)
-                        assert coverage['total'] == 60 and coverage['coverage'] >= .95, coverage
-                        report['unobstructedBurstCoverage'] = coverage
-                        passed('Real GPU burst fills the unobstructed center and outer field')
+                    if name.startswith('reference-wave'):
+                        g = state(page)['combat']['gravity']
+                        front = g['visuals']['burst']['radius'] / g['radius']
+                        coverage = filled_vortex_coverage(page, radii=[front-.1,front-.03], burst=True)
+                        cleared = filled_vortex_coverage(page, radii=[0,.15,.3], burst=True)
+                        assert coverage['total'] == 40 and coverage['coverage'] >= .8, coverage
+                        assert cleared['total'] == 60 and cleared['coverage'] <= .1, cleared
+                        report.setdefault('unobstructedWave', {})[name] = dict(front=coverage,interior=cleared)
+                        passed('Real GPU pressure front rolls outwards and clears its interior: ' + name)
                 page.keyboard.press('Escape')
-                page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
+                page.wait_for_function('!nebeljagdTestState().combat.gravity.visualActive')
                 page.locator('#pauseBtn').click()
                 capture_reference_detail(page, 'reference-clear', last_center)
                 empty = filled_vortex_coverage(page, last_center)
