@@ -1,4 +1,4 @@
-# Gravitationsstab – gemalter Strudel nach Bildreferenz und aufsteigende Energiekugel
+# Gravitationsstab – drei Sekunden Sog, aufsteigende Kugel und letzter Flächenimpuls
 
 Der neue Stab verwendet das bereits hochgeladene Original
 assets/inbox/fantasy staff 3d model.glb (ca. 65 MB).
@@ -31,18 +31,21 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 - **Ab dem Aufprall** folgen weiterhin 0,4 s Vorwarnung. Diese Zeit besteht jetzt
   aus einer Landung mit Druckwelle, Staub und aufsteigender Energie und der
   anschließenden Öffnung des Bodenstrudels. Während des Flugs entsteht noch kein Feld.
-- Anschließend 1,0 s leichter Sog, höchstens 1,5 m Gesamtverschiebung pro Gegner.
+- Anschließend **3,0 s Sog** mit 0,5 m/s, höchstens 1,5 m Gesamtverschiebung pro Gegner.
   Keine Bewegung durch geschlossene Hindernisse; der Gegner kann dagegenlaufen
   bzw. durch rechtzeitige Rolle entkommen. Sog selbst verursacht keinen Schaden.
 - Beim Kollaps 14 Grundschaden, Seltenheitsstufen multiplizieren nur den Schaden.
-  Der Treffer erfolgt **1,4 s nach dem Aufprall**, genau einmal pro erreichbarem Ziel.
-  Keine zweite Trefferberechnung während der anschließenden 1,1 s Ausblendung.
+  Der Treffer erfolgt **3,4 s nach dem Aufprall**, genau einmal pro erreichbarem Ziel.
+  Ein letzter Flächenimpuls dauert **0,22 s**. Danach sind Bodenstrudel, Kugel,
+  Staub, Trümmer, Schalenstücke und Druckwelle vollständig verschwunden.
+  Es gibt keine zweite Trefferberechnung während dieses kurzen Abschlusses.
   Der Besitzer wird weder gezogen noch getroffen. Zerstörbare Gegenstände
   werden nicht angesaugt.
 - Angriffs-Cooldown: 2,8 s, separat von der bestehenden Rolle (2,5 s).
   Der Cooldown beginnt beim Loslassen. Escape/Pause, Rolle und Waffenwechsel
   brechen das Zielen ab, ohne einen Zauber auszulösen.
   Gleichzeitig ist höchstens ein vollständiger Gravitationszauber aktiv.
+  Eine neue Ladung beginnt erst nach dessen vollständigem Ende.
 
 ## Darstellung
 
@@ -53,13 +56,14 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   eine aufsteigende Energiesäule und eine kurz aufploppende Energieblase.
 - Erst danach öffnet sich ein durchgehend violett gefärbter Strudel.
   Breite Spiralbänder unterscheiden sich durch ihre Farbe; zwischen ihnen bleibt
-  die Fläche gefüllt. Weiche, gekrümmte Ausläufer reichen unregelmäßig über den
-  Wirkungsradius hinaus, maximal bis 4,16 m. Diese Ausläufer verursachen keinen
+  die Fläche gefüllt. Kleine, weich auslaufende Wirbel geben dem sonst regelmäßigen
+  Rand leichte Wellen. Die transparente Geometrie reicht maximal bis 3,712 m;
+  der sichtbare Rand bleibt innerhalb dieser Grenze. Die Ausläufer verursachen keinen
   zusätzlichen Sog oder Schaden; der Wirkungsradius bleibt 3,2 m.
 - Die gemalte Boden-Textur übernimmt die breiten violetten Strömungen, feinen
   Farbfäden und den dunklen Mittelpunkt aus der vorgegebenen Dreiphasen-Referenz.
   Ihre aufgemalte kreisrunde Randlinie wird beim Abtasten ausgespart; eine breite,
-  animierte Spiralmaske lässt den Rand ohne harten Kreisschnitt auslaufen.
+  animierte Spiralmaske lässt den ruhigeren Rand ohne harten Kreisschnitt auslaufen.
   Die Farben werden im sRGB-Raum
   geladen und ohne zusätzliche Umfärbung dargestellt. Der Drehwinkel animiert
   diese Strömungen im vorhandenen Material.
@@ -73,24 +77,28 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Sie folgt einmal pro Platzierung der bestehenden Geländehöhe und verändert
   weder Gelände noch Karte. Schattierung und geringe Wellen geben zusätzliche Tiefe.
 - Die Spiralbänder wandern nach innen. Während des Sogs steigt die Drehgeschwindigkeit
-  stetig von 1,1 auf 10,1 rad/s; der Drehwinkel wird aus der Simulationszeit berechnet.
+  über drei Sekunden von **0,18 auf 6,6 rad/s**. Der Anfang ist deutlich langsamer;
+  die Beschleunigung nimmt stetig zu. Der Drehwinkel wird analytisch aus der
+  Simulationszeit berechnet.
 - Aus der Mitte steigt eine dunkle Energiekugel mit leuchtenden violetten Rissen.
   Ihr Mittelpunkt steigt während des Sogs von 0,13 auf 1,73 m über der Feldbasis,
   ihr Radius wächst von 0,10 auf 0,75 m. Eine schmale Energieverbindung reicht zum Zentrum.
 - 64 wiederverwendete Fragmente aus Stein und Gras, 160 Bodenpartikel und
-  zurückhaltende Lichtspuren ziehen schon während der Feldöffnung kontinuierlich
-  nach innen. Versetzte Lebenszyklen liefern bis zum Kollaps neue Trümmer nach.
+  zurückhaltende Lichtspuren ziehen in unregelmäßigen Schüben nach innen.
+  Vorbereitete Startzeiten, Pausen, Flugzeiten, Winkel und Abstände unterscheiden
+  sich pro Fragment. Die Trümmer bilden keine regelmäßige Perlenkette.
+  Sie steigen auf den letzten Windungen zur gleichzeitig wachsenden Kugel auf
+  und werden erst innerhalb ihrer Oberfläche unsichtbar. Vor dem Zerplatzen
+  nimmt die Kugel alle übrigen Fragmente auf; danach entstehen keine neuen.
   Das vorhandene Gras-System erhält begrenzte
   Interaktoren, welche die Halme sichtbar zur Feldmitte biegen.
 - Bis zu acht sichtbare Gegner erhalten violette Körperenergie und Fußrunen.
   Ihre Figuren stemmen Arme und Beine gegen den Sog und kippen sichtbar mit.
 - Beim Kollaps zerplatzt die große Kugel in 24 gemeinsam gezeichnete
-  Schalenfragmente. Die aufgebrochene obere Schale bleibt rund 0,3 s bestehen,
-  während darunter ein wesentlich größerer weiß-violetter Blitz aufleuchtet.
-  Eine räumliche Druckwelle und drei stärkere, zeitversetzte Bodenwellen zeigen
-  den einen Treffer. Drei Viertel der Trümmer und Staubpartikel fliegen nach außen
-  und oben; die übrigen werden noch eine halbe Sekunde weiter eingesaugt.
-  Der Strudel rotiert darunter weiter und blendet mit den Fragmenten über 1,1 s aus.
+  Schalenfragmente. Ein weiß-violetter Blitz und ein gemeinsamer kurzer Impuls
+  von der Kugel über die Bodenfläche zeigen den einen Treffer. Der Bodenstrudel
+  zieht sich unter diesem Impuls innerhalb von 0,11 s zurück; nach insgesamt
+  0,22 s endet die gesamte Darstellung ohne weitere Wellen oder schwebende Reste.
 - Vorwarnung, Sog, Kollaps und Abklingen laufen über dieselbe Simulationszeit.
   Pause friert sie ein, Sichtprüfung und Tiefentest verbergen verdeckte Effekte.
 - Instanz-Geometrie bündelt Partikel, Trümmer und Gegnerreaktionen. Die Feld-
@@ -107,7 +115,8 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
    die gefüllte violette Fläche; Zustandsprüfungen erfassen Beschleunigung,
    Kugelwachstum und den weiterhin einmaligen Schaden. Drei vergrößerte echte
    Spielaufnahmen (`reference-start`, `reference-grown`, `reference-burst`)
-   erlauben den direkten Vergleich mit dem Entwurf.
+   erlauben den direkten Vergleich mit dem Entwurf. Eine zusätzliche Aufnahme
+   `reference-clear` und echte GPU-Pixelproben prüfen die leere Fläche nach dem Impuls.
    Mit `NEBELJAGD_GRAVITY_REFERENCE=1` erfasst derselbe Test zusätzlich einen
    echten Zauber auf freier Fläche, damit Lebensbalken die Effektprüfung nicht verdecken.
 2. Im Editor den neuen Stab neben Übungsgegnern platzieren, **Spielen** öffnen,

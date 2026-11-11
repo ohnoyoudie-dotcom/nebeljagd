@@ -5,6 +5,7 @@ import { createCombat } from '../src/combat.js';
 import { createWeapons, DEFAULT_WEAPON_VARIANTS, TRIPO_WEAPON_VARIANTS } from '../src/weapons.js';
 import { swordPrototype } from './helpers/weapon-prototypes.js';
 import { RARITIES, WEAPON_TYPES, weaponStats } from '../src/loot-tiers.js';
+import { GRAVITY_RULES } from '../src/gravity-spell.js';
 
 function setup(type = 'bow', rarity = 'common', { wallZ = null, targetZ = 4, visible = () => true } = {}) {
   const scene = new THREE.Scene(), actor = new THREE.Group(); scene.add(actor);
@@ -39,7 +40,9 @@ function attackOnce(instance, seconds = .9) {
   if (weapons.equipped === 'gravityStaff') {
     weapons.aimAt(actor.position, instance.target.position);
     for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);
-    weapons.releaseAttack(actor.position); seconds = 2.1;
+    weapons.releaseAttack(actor.position);
+    seconds = (weapons.telemetry.gravity.flight?.duration ?? 0)
+      + GRAVITY_RULES.warning + GRAVITY_RULES.pullDuration + GRAVITY_RULES.afterglow + .05;
   }
   for (let time = 0; time < seconds; time += .04) weapons.update(.04, time, actor.position);
 }

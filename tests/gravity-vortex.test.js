@@ -6,6 +6,9 @@ import { GRAVITY_RULES as rules } from '../src/gravity-spell.js';
 
 test('the vortex accelerates inward continuously as its sphere rises and grows, independent of frame rate', () => {
   const start = gravityVortexMotion(rules.warning, rules);
+  assert.ok(start.spinSpeed < .25, 'rotation starts very gently');
+  assert.ok(gravityVortexMotion(rules.warning + 1, rules).spinSpeed < 1.2,
+    'the first second stays slower than the previous immediate rotation');
   let previous = start;
   for (let i = 1; i <= 60; i++) {
     const now = gravityVortexMotion(rules.warning + rules.pullDuration * i / 60, rules);
@@ -34,8 +37,8 @@ test('a shallow filled surface follows terrain once per placement without deform
   const attribute = surface.geometry.attributes.position;
   assert.ok(attribute.count < 2500 && surface.material.forceSinglePass);
   const bounds = new THREE.Box3().setFromBufferAttribute(attribute);
-  assert.ok(bounds.max.x > rules.radius * 1.25 && bounds.max.x <= rules.radius * 1.31,
-    'transparent mesh has room for outward wisps beyond the gameplay radius');
+  assert.ok(bounds.max.x > rules.radius * 1.1 && bounds.max.x <= rules.radius * 1.17,
+    'small soft wisps fit inside a restrained outer margin');
   for (let i = 0; i < attribute.count; i++) {
     const relativeHeight = attribute.getY(i) - ((center.x + attribute.getX(i)) * .03
       + (center.z + attribute.getZ(i)) * .02 - center.y);
@@ -51,7 +54,7 @@ test('a shallow filled surface follows terrain once per placement without deform
 test('the raised sphere pops into one bounded instance batch, then every reusable buffer is released once', () => {
   const parent = new THREE.Group(), center = new THREE.Vector3();
   const vortex = createGravityVortex(parent, rules);
-  vortex.update(center, 1.3);
+  vortex.update(center, rules.warning + rules.pullDuration - .1);
   const before = vortex.telemetry;
   assert.ok(before.sphereVisible && before.shellCount === 0);
   const sphere = parent.getObjectByName('Gravitationsfeld · Singularität');

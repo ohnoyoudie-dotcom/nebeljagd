@@ -8,9 +8,9 @@ import { STAFF_CHARGE_SECONDS, STAFF_THROW_RANGE, chargedStaffRange } from './st
 // All times are seconds and all distances are in world metres.
 // Keep crowd control independent of rarity: only the blast damage scales.
 export const GRAVITY_RULES = Object.freeze({
-  range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 3.2, warning: .4, pullDuration: 1,
-  pullSpeed: 1.5, maxPull: 1.5, minCenterDistance: .2,
-  afterglow: 1.1,
+  range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 3.2, warning: .4, pullDuration: 3,
+  pullSpeed: .5, maxPull: 1.5, minCenterDistance: .2,
+  afterglow: .22,
   projectileSpeed: 10, projectileArcHeight: 3.2, projectileMinFlight: .5,
 });
 
@@ -231,7 +231,7 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
     get telemetry() {
       return { aiming: Boolean(aim), aim: aim ? { x: aim.target.x, z: aim.target.z } : null,
         aimRange: aim ? { radius: aim.range, maximum: rules.range, heldSeconds: aim.age } : null,
-        radius: rules.radius, chargeSeconds: rules.chargeSeconds, visuals: visuals.telemetry,
+        radius: rules.radius, chargeSeconds: rules.chargeSeconds, fieldSeconds: rules.pullDuration, visuals: visuals.telemetry,
         active: Boolean(flight || field), landed: Boolean(field), phase: flight ? 'flight' : field ? field.age < rules.warning * .55 ? 'impact' : field.age < rules.warning ? 'opening' : field.exploded ? 'collapse' : 'pull' : 'idle',
         flight: flight ? { position: { ...flight.position }, origin: { ...flight.origin }, target: { ...flight.target }, age: flight.age, duration: flight.duration, arcHeight: rules.projectileArcHeight } : null,
         arrival: arrival.telemetry, castCount, lastHitCount, age: field?.age ?? 0, exploded: field?.exploded ?? false,

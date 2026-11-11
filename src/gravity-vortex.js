@@ -1,29 +1,12 @@
 import * as THREE from 'three';
+import { gravityVortexMotion } from './gravity-motion.js';
+export { gravityVortexMotion } from './gravity-motion.js';
 
 const TAU = Math.PI * 2;
 const SHELL_COUNT = 24;
-const VISUAL_RADIUS = 1.3;
+const VISUAL_RADIUS = 1.16;
 const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
-
-/** Analytically integrated angular acceleration: identical at any frame rate.
- * The surface pattern a*5+r*19+spin*5 moves inward at every fixed angle. */
-export function gravityVortexMotion(age, rules, out = {}) {
-  const elapsed = Math.max(0, age - rules.warning);
-  const progress = clamp(elapsed / rules.pullDuration);
-  const growth = smooth(progress);
-  const burst = age >= rules.warning + rules.pullDuration
-    ? clamp((age - rules.warning - rules.pullDuration) / rules.afterglow) : -1;
-  out.progress = progress;
-  out.spinSpeed = 1.1 + 9 * progress ** 2;
-  out.spin = rules.pullDuration * (1.1 * progress + 3 * progress ** 3)
-    + Math.max(0, elapsed - rules.pullDuration) * 10.1;
-  out.sphereHeight = .13 + growth * 1.60;
-  out.sphereRadius = .10 + growth * .65;
-  out.burst = burst;
-  out.fade = burst < 0 ? 1 : 1 - smooth(burst);
-  return out;
-}
 
 /** Reference-painted ground and sphere maps are borrowed from the app loader.
  * One sample per surface replaces procedural stripes; no lights or postprocess. */
@@ -56,14 +39,14 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
   surfaceGeometry.setIndex(indices);
   const surfaceMat = mat(new THREE.ShaderMaterial({ name: 'Gravitation · gefüllte einwärts fließende Spirale',
     transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true, toneMapped: false,
-    uniforms: { uSpin: spin, uFade: { value: 1 }, uGround: { value: textures?.ground ?? null },
+    uniforms: { uSpin: spin, uFade: { value: 1 }, uVisualRadius: { value: VISUAL_RADIUS }, uGround: { value: textures?.ground ?? null },
       uTextured: { value: textures?.ground ? 1 : 0 } },
     vertexShader: `varying vec2 vUv;uniform float uSpin;
       void main(){vUv=uv;vec3 p=position;vec2 xy=uv*2.-1.;float r=length(xy);
         p.y+=sin(atan(xy.y,xy.x+.000001)*5.+r*15.+uSpin*5.)*.008*sin(r*3.14159);
         gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
-    fragmentShader: `varying vec2 vUv;uniform float uSpin,uFade,uTextured;uniform sampler2D uGround;
-      void main(){vec2 p=(vUv*2.-1.)*1.3;float r=length(p),a=atan(p.y,p.x+.000001);
+    fragmentShader: `varying vec2 vUv;uniform float uSpin,uFade,uTextured,uVisualRadius;uniform sampler2D uGround;
+      void main(){vec2 p=(vUv*2.-1.)*uVisualRadius;float r=length(p),a=atan(p.y,p.x+.000001);
         float c=cos(uSpin),s=sin(uSpin);
         vec2 q=vec2(c*p.x-s*p.y,s*p.x+c*p.y);
         // Sample the painted interior, avoiding its baked bright circular rim.
@@ -72,8 +55,8 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
         vec4 paint=texture2D(uGround,uv);
         if(uTextured<.5)paint=vec4(.07,.012,.14,1.);
         float curl=pow(.5+.5*sin(a*5.+r*7.+uSpin*5.),3.);
-        float edge=.96+.055*sin(a*7.+uSpin)+.025*sin(a*13.-uSpin*.6)+curl*.22;
-        float feather=1.-smoothstep(edge-.22,edge+.025,r);
+        float edge=1.+.018*sin(a*5.+uSpin*.4)+.009*sin(a*9.-uSpin*.2)+curl*.065;
+        float feather=1.-smoothstep(edge-.13,edge+.02,r);
         gl_FragColor=vec4(paint.rgb,paint.a*.97*uFade*feather);
         #include <colorspace_fragment>
       }`,
