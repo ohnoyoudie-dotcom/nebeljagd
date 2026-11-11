@@ -99,9 +99,12 @@ def capture(page, name):
 
 
 with sync_playwright() as pw:
-    # Exercise the runner's stable desktop browser, matching the local desktop
-    # check. Playwright 1.63 bundles older Chromium 153, whose popup crashes here.
-    executable = os.environ.get('CHROMIUM_EXECUTABLE') or shutil.which('chromium') or shutil.which('google-chrome') or pw.chromium.executable_path
+    # CI must use the browser from its pinned Playwright installation. The
+    # moving runner-image Chromium 156 crashes while loading the editor popup.
+    executable = os.environ.get('CHROMIUM_EXECUTABLE')
+    if not executable and os.environ.get('NEBELJAGD_BUNDLED_CHROMIUM') != '1':
+        executable = shutil.which('chromium') or shutil.which('google-chrome')
+    executable = executable or pw.chromium.executable_path
     browser = pw.chromium.launch(executable_path=executable, headless=True,
         args=['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
     report['browser'] = {'version': browser.version, 'executable': executable}
