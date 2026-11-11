@@ -46,16 +46,17 @@ def run(directory: Path) -> None:
         return page.evaluate('window.nebeljagdMapTestState()')
 
     def monitor(page):
+        page.set_default_timeout(30000)
         page.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
 
     try:
         with sync_playwright() as p:
             options = {'headless': True, 'args': ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']}
-            executable = os.environ.get('CHROMIUM_PATH') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else None)
-            if executable:
-                options['executable_path'] = executable
+            # Keep real editor/game popups on Playwright's tested browser in CI.
+            options['executable_path'] = os.environ.get('CHROMIUM_PATH') or p.chromium.executable_path
             browser = p.chromium.launch(**options)
             context = browser.new_context(viewport={'width': 1280, 'height': 900}, accept_downloads=True)
+            context.route('**/favicon.ico', lambda route: route.fulfill(status=204))
             context.add_init_script('window.showSaveFilePicker = undefined; window.showOpenFilePicker = undefined;')
             page = context.new_page()
             monitor(page)
@@ -67,7 +68,7 @@ def run(directory: Path) -> None:
             ready(page)
             query = parse_qs(urlsplit(page.url).query)
             assert query['v'] == [release['files']['map-editor.html']['sha256']]
-            assert query['start'] == ['project']
+            assert 'start' not in query
             assert state(page)['map'] == project, 'Project handoff preserves the complete map, including painted terrain and biomes'
             expect(page.locator('#editor-build-version')).to_contain_text(release['buildId'])
             expect(page.locator('#editor-map-source')).to_contain_text('Projektkarte')
@@ -78,6 +79,50 @@ def run(directory: Path) -> None:
             page.screenshot(path=str(out / 'editor-mobile.png'))
             page.set_viewport_size({'width': 1280, 'height': 900})
             passed('Fresh launcher opens matching editor and project map with visible version')
+
+            # Legacy first-visit links used to retain start=project. Refreshing
+            # that URL then reopened the project despite a successfully saved edit.
+            page.goto(base + '/map-editor.html?start=project&v=' + release['files']['map-editor.html']['sha256'])
+            ready(page)
+            assert 'start' not in parse_qs(urlsplit(page.url).query)
+            page.locator('[data-editor-action="objects"]').click()
+            for kind, variant in [('crate', 'kit-tripo-crate-01'), ('lightningStaff', 'kit-tripo-lightning-staff')]:
+                page.locator('#palette-kind').select_option(kind)
+                page.locator('#palette-variant').select_option(variant)
+                if page.locator('#place-object').get_attribute('aria-pressed') != 'true':
+                    page.locator('#place-object').click()
+                visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+                assert set(visible) == {obj['id'] for obj in state(page)['map']['objects']}
+                page.locator('#add-object-center').click()
+                visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+                assert set(visible) == {obj['id'] for obj in state(page)['map']['objects']}, 'Placing a different kind must keep every neighbour on the map'
+            edited = state(page)['map']
+            assert edited['objects'][:-2] == project['objects']
+            page.locator('[data-editor-action="more"]').click()
+            page.locator('#object-kind-filter').select_option('crate')
+            visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+            assert set(visible) == {obj['id'] for obj in edited['objects']}, 'A list filter must not hide objects on the canvas'
+            page.screenshot(path=str(out / 'placement-neighbours.png'))
+            passed('Crate and staff placement and list filtering keep all existing map objects visible')
+
+            assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', KEY) == edited
+            reopen_url = page.url
+            with page.expect_popup() as event:
+                page.locator('#playtest-world').click()
+            game = event.value; monitor(game)
+            game.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls > 0', timeout=180000)
+            assert game.evaluate('nebeljagdTestState().world.objects') == edited['objects']
+            assert game.evaluate('nebeljagdTestState().world.source') == 'editor'
+            game.close(); page.close()
+            page = context.new_page(); monitor(page)
+            page.goto(reopen_url); ready(page)
+            assert state(page)['map'] == edited
+            page.reload(); ready(page)
+            assert state(page)['map'] == edited
+            page.goto(base + '/editor.html'); ready(page)
+            assert state(page)['map'] == edited
+            expect(page.locator('#save-status')).to_contain_text('Automatisch im Browser gespeichert')
+            passed('Real game test, closing the editor, reopening its address, reload and stable bookmark retain the complete edited map')
 
             draft = copy.deepcopy(project)
             draft['name'] = 'Mein unveröffentlichter Entwurf'
@@ -92,6 +137,7 @@ def run(directory: Path) -> None:
             expect(page.locator('#open-project')).to_be_enabled()
             page.locator('#open-project').click()
             ready(page)
+            assert 'start' not in parse_qs(urlsplit(page.url).query)
             assert state(page)['map']['name'] == project['name']
             assert page.evaluate('JSON.parse(localStorage.getItem("nebeljagd.worldmap.v1")).name') == draft['name']
             expect(page.locator('#restore-banner')).to_be_visible()

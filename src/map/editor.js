@@ -54,6 +54,14 @@ if (storedDraftText && storedDraftText.length <= MAX_FILE_BYTES) {
 }
 const startup = planEditorStart({ project: projectMap, snapshot: embeddedSnapshot,
   draft: validStoredDraft, requested: requestedEditorStart(location.search) });
+// A source choice applies to this opening only. Reloading the editor must
+// resume later edits instead of repeatedly replacing them with the project.
+if (requestedEditorStart(location.search)) {
+  const resumeUrl = new URL(location.href);
+  resumeUrl.searchParams.delete('start');
+  try { window.history.replaceState(window.history.state, '', resumeUrl.href); }
+  catch { /* Local file browsers may disallow rewriting their address. */ }
+}
 const initialSnapshot = startup.map;
 let map = clone(initialSnapshot);
 let mapSource = startup.source;
@@ -289,13 +297,12 @@ function renderMap(rebuild = true) {
     // Only validated imports/commits can reach this renderer. During a drag all
     // coordinates are numeric and may briefly leave land until pointerup rolls
     // them back. Avoid revalidating thousands of static objects per pointermove.
-    const kind = $('object-kind-filter').value;
     $('map-stage').innerHTML = renderWorldmapSvg(map, {
       ...layers, zoneRadius: zone.radius, editor: true, validated: true,
       showLabels: layers.showLabels && zoom <= 4,
       showPlaces: zoom <= 4,
       showSpawns: layers.showSpawns && zoom <= 6,
-      showObjectKinds: kind === 'all' ? undefined : [kind],
+      // List filters never hide neighbouring objects while placing or moving.
     });
   }
   const svg = $('map-stage').firstElementChild;
@@ -1166,6 +1173,9 @@ function resetMap() {
 function setMode(next) {
   cancelPointer();
   mode = next;
+  if (placementModes.includes(mode)) {
+    layers.showObjects = true; $('layer-objects').checked = true;
+  }
   if (placementModes.includes(mode)) selection = null;
   renderProperties();
   for (const type of ['select', 'pan']) {
@@ -1346,7 +1356,7 @@ $('playtest-world').addEventListener('click', playtestWorld);
 $('properties-form').addEventListener('submit', applyProperties);
 $('feature-filter').addEventListener('change', () => { listLimit = 50; renderList(); });
 $('feature-search').addEventListener('input', () => { listLimit = 50; renderList(); });
-$('object-kind-filter').addEventListener('change', () => { listLimit = 50; $('feature-filter').value = 'object'; renderList(); renderMap(); });
+$('object-kind-filter').addEventListener('change', () => { listLimit = 50; $('feature-filter').value = 'object'; renderList(); });
 $('list-more').addEventListener('click', () => { listLimit += 50; renderList(); });
 $('clear-selection').addEventListener('click', () => { selection = null; renderAll(); });
 $('undo').addEventListener('click', undo); $('redo').addEventListener('click', redo);

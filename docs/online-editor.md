@@ -19,6 +19,13 @@ einschließlich Objekten, Bodenfarben und Biomflächen erhalten. Mit
 möglich; ein anderer Entwurf wird dabei geschützt. Die Versionsanzeige nennt
 den Editor-Build und kennzeichnet die geöffnete Kartenquelle separat.
 
+Die Auswahl „Projektkarte“ gilt nur für das einmalige Öffnen. Der Editor entfernt
+danach den Startparameter aus seiner Adresse. Neuladen und erneutes Öffnen dieser
+Adresse setzen den automatisch gespeicherten Browserentwurf fort. „Spielen“
+überträgt genau diesen Kartenstand ins Testfenster und ändert den Entwurf nicht.
+Die Filter unter „Karteninhalt“ begrenzen nur die Liste; auf der Karte bleiben
+andere Objektarten beim Platzieren und Verschieben als Orientierung sichtbar.
+
 ## Was veröffentlicht wird
 
 Die zentrale Projektkarte bleibt `worldmap.json` im Projektstamm auf `work`.

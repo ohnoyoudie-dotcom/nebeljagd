@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <script id="editor-build-info" type="application/json">{"buildId":"53c3a2ab7c8e","builtAt":"2026-11-11T19:51:04.886Z","sourceCommit":"60d6f83ba1afcda1b7fc63b79d6bc62217781460","mapSha256":"a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"}</script>
+    <script id="editor-build-info" type="application/json">{"buildId":"a80dcbb388cd","builtAt":"2026-11-11T22:02:38.236Z","sourceCommit":"50860ed890cd30020513e2bdf83770a6f4d63502","mapSha256":"a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"}</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#173c32">
@@ -91,7 +91,9 @@
           byId('release-time').textContent = Number.isNaN(date.getTime()) ? '' : 'Erstellt am ' + new Intl.DateTimeFormat('de-DE', {dateStyle: 'medium', timeStyle: 'short'}).format(date);
           byId('open-project').disabled = false;
           inspectDraft();
-          if (automatic) openEditor(byId('open-draft').disabled ? 'project' : 'draft', true);
+          // Normal visits let the editor resume its last valid draft. Only an
+          // explicit source button requests the project or a particular draft.
+          if (automatic) openEditor(null, true);
         } catch (error) {
           if (sequence !== requestSequence) return;
           byId('version').textContent = 'Aktueller Stand nicht bestätigt';
@@ -105,7 +107,7 @@
         if (!currentRelease) return;
         const url = new URL('./map-editor.html', location.href);
         url.searchParams.set('v', currentRelease.files['map-editor.html'].sha256);
-        url.searchParams.set('start', start);
+        if (start) url.searchParams.set('start', start);
         if (replace) location.replace(url.href); else location.assign(url.href);
       }
       byId('open-project').addEventListener('click', () => openEditor('project'));

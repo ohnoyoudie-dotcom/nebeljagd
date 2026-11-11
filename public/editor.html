@@ -90,7 +90,9 @@
           byId('release-time').textContent = Number.isNaN(date.getTime()) ? '' : 'Erstellt am ' + new Intl.DateTimeFormat('de-DE', {dateStyle: 'medium', timeStyle: 'short'}).format(date);
           byId('open-project').disabled = false;
           inspectDraft();
-          if (automatic) openEditor(byId('open-draft').disabled ? 'project' : 'draft', true);
+          // Normal visits let the editor resume its last valid draft. Only an
+          // explicit source button requests the project or a particular draft.
+          if (automatic) openEditor(null, true);
         } catch (error) {
           if (sequence !== requestSequence) return;
           byId('version').textContent = 'Aktueller Stand nicht bestätigt';
@@ -104,7 +106,7 @@
         if (!currentRelease) return;
         const url = new URL('./map-editor.html', location.href);
         url.searchParams.set('v', currentRelease.files['map-editor.html'].sha256);
-        url.searchParams.set('start', start);
+        if (start) url.searchParams.set('start', start);
         if (replace) location.replace(url.href); else location.assign(url.href);
       }
       byId('open-project').addEventListener('click', () => openEditor('project'));
