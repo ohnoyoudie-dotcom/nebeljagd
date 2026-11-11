@@ -17,5 +17,8 @@ export function gravityVortexMotion(age, rules, out = {}) {
   out.sphereRadius = .10 + growth * .65;
   out.burst = burst;
   out.fade = burst < 0 ? 1 : 1 - smooth(burst / .5);
+  out.burstRadius = burst < 0 ? 0 : rules.radius * (.06 + 1.1 * (1 - (1 - burst) ** 3));
+  // Keep the pressure front bright until it has crossed the gameplay radius.
+  out.burstOpacity = burst < 0 ? 0 : 1 - smooth((burst - .75) / .25);
   return out;
 }

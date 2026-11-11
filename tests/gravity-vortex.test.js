@@ -63,7 +63,7 @@ test('the raised sphere pops into one bounded instance batch, then every reusabl
   let disposed = 0; geometries.forEach(geometry => geometry.addEventListener('dispose', () => disposed++));
   vortex.update(center, rules.warning + rules.pullDuration + .05);
   assert.equal(sphere.visible, false); assert.equal(shell.count, 24);
-  assert.equal(vortex.telemetry.capVisible, true, 'the broken upper shell survives the first burst, like the reference');
+  assert.equal(vortex.telemetry.capVisible, false, 'the complete ball breaks apart without an intact hemisphere lingering');
   assert.ok(vortex.telemetry.sphereHeight >= before.sphereHeight);
   const matrix = Array.from(shell.instanceMatrix.array);
   vortex.update(center, rules.warning + rules.pullDuration + .05);

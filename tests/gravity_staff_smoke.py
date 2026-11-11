@@ -53,10 +53,10 @@ def pause_at(page, age):
     }''', age)
     page.wait_for_function('nebeljagdTestState().phase === "paused"')
 
-def filled_vortex_coverage(page, center=None):
+def filled_vortex_coverage(page, center=None, radii=None, burst=False):
     # Test the actual GPU output: broad purple color must fill the area between
     # the spiral arms. Thin outlines or a transparent interior fail this check.
-    return page.evaluate('''center => {
+    return page.evaluate('''({center,radii,burst}) => {
       const zoom=nebeljagdTestState().camera.zoom;
       if(center)nebeljagdInspectCamera({zoom:2.2,focus:center});
       nebeljagdCaptureFrame();
@@ -65,16 +65,16 @@ def filled_vortex_coverage(page, center=None):
       const ctx=copy.getContext('2d');ctx.drawImage(game,0,0);
       const rect=game.getBoundingClientRect();
       const g=nebeljagdTestState().combat.gravity,c=center||g.center;let purple=0,total=0;
-      for(const radius of [.45,.72])for(let i=0;i<20;i++){
+      for(const radius of radii)for(let i=0;i<20;i++){
         const a=i*Math.PI/10,p=nebeljagdProjectPoint({x:c.x+Math.cos(a)*g.radius*radius,z:c.z+Math.sin(a)*g.radius*radius});
         const x=Math.floor((p.x-rect.left)/rect.width*copy.width),y=Math.floor((p.y-rect.top)/rect.height*copy.height);
         if(x<0||y<0||x>=copy.width||y>=copy.height)continue;
         const [r,v,b]=ctx.getImageData(x,y,1,1).data;
-        if(b>v*1.4 && r>v*1.05 && b>24)purple++;total++;
+        if(b>v*(burst?1.10:1.4) && r>v*(burst?1.02:1.05) && b>(burst?45:24))purple++;total++;
       }
       if(center)nebeljagdInspectCamera({zoom});
       return {purple,total,coverage:purple/Math.max(1,total)};
-    }''', center)
+    }''', {'center': center, 'radii': radii or [.45,.72], 'burst': burst})
 
 with sync_playwright() as p:
     executable = os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else p.chromium.executable_path)
@@ -218,6 +218,18 @@ with sync_playwright() as p:
             assert state(page)['combat']['shotsFired'] == 1
             collapse_hits = state(page)['combat']['gravity']['lastHitCount']
             page.keyboard.press('Escape')
+            if not BASELINE:
+                pause_at(page, 3.51); capture(page, mode + '-area-burst')
+                g = state(page)['combat']['gravity']
+                assert g['visuals']['burst']['visible'] and g['visuals']['burst']['radius'] >= g['radius'], g
+                assert g['lastHitCount'] == collapse_hits and g['visuals']['burst']['style'] == 'broad-ground-front'
+                assert not g['visuals']['vortex']['sphereVisible'] and not g['visuals']['vortex']['capVisible']
+                coverage = filled_vortex_coverage(page, radii=[0,.55,.92], burst=True)
+                assert coverage['total'] >= 20 and coverage['coverage'] >= .75, coverage
+                report.setdefault('burstAreaCoverage', {})[mode] = coverage
+                if not touch: capture_reference_detail(page, 'reference-wave')
+                passed(mode + ': real GPU burst covers the center and outer field without an intact orb or extra hit')
+                page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
             if not BASELINE:
                 capture(page, mode + '-clear')
@@ -256,7 +268,7 @@ with sync_playwright() as p:
                 page.mouse.move(pixel['x'], pixel['y']); page.keyboard.down('f')
                 page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange?.radius === 20')
                 page.keyboard.up('f')
-                for age, name in [(.75, 'reference-start'), (3.15, 'reference-grown'), (3.43, 'reference-burst')]:
+                for age, name in [(.75, 'reference-start'), (3.15, 'reference-grown'), (3.43, 'reference-burst'), (3.51, 'reference-wave')]:
                     pause_at(page, age); capture_reference_detail(page, name)
                     last_center = state(page)['combat']['gravity']['center']
                     page.keyboard.press('Escape')

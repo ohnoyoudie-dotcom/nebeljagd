@@ -89,8 +89,6 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
   }));
   const sphere = add(new THREE.Mesh(geo(new THREE.SphereGeometry(1, 32, 20)), sphereMat));
   sphere.name = 'Gravitationsfeld · Singularität';
-  const cap = add(new THREE.Mesh(geo(new THREE.SphereGeometry(1, 24, 12, 0, TAU, 0, Math.PI*.50)), sphereMat));
-  cap.name = 'Gravitation · aufbrechende obere Kugelschale'; cap.visible = false;
   const neckMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
     side: THREE.DoubleSide, forceSinglePass: true, blending: THREE.NormalBlending, toneMapped: false,
     uniforms: { uSpin: spin, uFade: { value: 0 } },
@@ -124,10 +122,6 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
     sphere.visible = state.burst < 0;
     sphere.position.y = state.sphereHeight; sphere.scale.setScalar(state.sphereRadius);
     sphere.rotation.y = -state.spin * .55;
-    cap.visible = state.burst >= 0 && state.burst < .28;
-    cap.position.y = state.sphereHeight + Math.max(0, state.burst) * .28;
-    cap.scale.setScalar(state.sphereRadius * (1 + Math.max(0, state.burst) * .14));
-    cap.rotation.set(-.18, -state.spin * .55, .15);
     const connectionHeight = Math.max(.02, state.sphereHeight - state.sphereRadius * .45);
     neck.visible = state.burst < 0 && state.progress > .04;
     neck.position.y = connectionHeight * .5; neck.scale.set(1, connectionHeight, 1);
@@ -138,9 +132,9 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
       const t = state.burst;
       for (let i = 0; i < SHELL_COUNT; i++) {
         const a = i * 2.399963, y = 1 - (i + .5) / SHELL_COUNT * 2, radius = Math.sqrt(1 - y * y);
-        const distance = .56 + t * (4.0 + i % 3 * .65);
+        const distance = state.sphereRadius * .8 + (1 - (1 - t) ** 2) * rules.radius * (.55 + i % 3 * .17);
         transform.position.set(Math.cos(a) * radius * distance,
-          Math.max(.08, state.sphereHeight + y * distance * .45 + Math.sin(t * Math.PI) * .8 - t * t * 1.6),
+          Math.max(.08, state.sphereHeight + y * distance * .3 + Math.sin(t * Math.PI) * .45 - t * t * 1.2),
           Math.sin(a) * radius * distance);
         transform.rotation.set(i + t * 5, a + t * 3, t * (i % 2 ? 4 : -4));
         transform.scale.setScalar((.42 + i % 3 * .08) * (1 - smooth(t / .85)));
@@ -150,13 +144,13 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
     }
     return state;
   }
-  return { update,
+  return { update, ground: { geometry: surfaceGeometry, radius: rules.radius * VISUAL_RADIUS },
     get telemetry() { return { spin: state.spin, spinSpeed: state.spinSpeed, sphereHeight: sphere.position.y,
       sphereRadius: sphere.scale.x, sphereVisible: sphere.visible, shellCount: shell.count,
       surfaceOpacity: surfaceMat.uniforms.uFade.value * .97, shallowDepth: .26,
       visualRadius: rules.radius * VISUAL_RADIUS,
       artwork: textures?.ground && textures?.orb ? 'gravity-reference-v1' : null,
-      capVisible: cap.visible }; },
+      capVisible: false }; },
     dispose() {
       if (disposed) return;
       objects.forEach(object => object.removeFromParent()); shell.dispose();

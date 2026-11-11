@@ -104,9 +104,13 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Interaktoren, welche die Halme sichtbar zur Feldmitte biegen.
 - Bis zu acht sichtbare Gegner erhalten violette Körperenergie und Fußrunen.
   Ihre Figuren stemmen Arme und Beine gegen den Sog und kippen sichtbar mit.
-- Beim Kollaps zerplatzt die große Kugel in 24 gemeinsam gezeichnete
-  Schalenfragmente. Ein weiß-violetter Blitz und ein gemeinsamer kurzer Impuls
-  von der Kugel über die Bodenfläche zeigen den einen Treffer. Der Bodenstrudel
+- Beim Kollaps zerplatzt die große Kugel vollständig in 24 gemeinsam gezeichnete
+  Schalenfragmente, die nach außen fliegen. Es bleibt keine intakte Halbkugel zurück.
+  Ein weiß-violetter Blitz am Ort der aufgestiegenen Kugel und eine breite violette
+  Druckfront mit gefärbter Nachströmung vom Zentrum über den gesamten Wirkungsradius
+  zeigen den einen Treffer. Die Front bleibt hell, bis sie die Außenkante erreicht.
+  Sie verwendet dieselbe geländefolgende Geometrie wie der Strudel und bildet
+  keine zusätzliche Luftblase. Der Bodenstrudel
   zieht sich unter diesem Impuls innerhalb von 0,11 s zurück; nach insgesamt
   0,22 s endet die gesamte Darstellung ohne weitere Wellen oder schwebende Reste.
 - Vorwarnung, Sog, Kollaps und Abklingen laufen über dieselbe Simulationszeit.
@@ -122,9 +126,10 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
    `NEBELJAGD_URL=http://127.0.0.1:4176 python tests/gravity_staff_smoke.py`
    prüft Maus und Touch am erzeugten Spiel und erfasst Flug, Landung, Öffnung,
    Sog, Kugelaufstieg und Zerplatzen. Pixelproben des echten GPU-Bilds prüfen
-   die gefüllte violette Fläche; Zustandsprüfungen erfassen Beschleunigung,
-   Kugelwachstum und den weiterhin einmaligen Schaden. Drei vergrößerte echte
-   Spielaufnahmen (`reference-start`, `reference-grown`, `reference-burst`)
+   die gefüllte violette Fläche sowie die Burstwelle im Zentrum und am Außenrand;
+   Zustandsprüfungen erfassen das geladene Void-Modell, Beschleunigung,
+   Kugelwachstum und den weiterhin einmaligen Schaden. Vier vergrößerte echte
+   Spielaufnahmen (`reference-start`, `reference-grown`, `reference-burst`, `reference-wave`)
    erlauben den direkten Vergleich mit dem Entwurf. Eine zusätzliche Aufnahme
    `reference-clear` und echte GPU-Pixelproben prüfen die leere Fläche nach dem Impuls.
    Mit `NEBELJAGD_GRAVITY_REFERENCE=1` erfasst derselbe Test zusätzlich einen
