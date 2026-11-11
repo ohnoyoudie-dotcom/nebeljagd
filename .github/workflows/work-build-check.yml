@@ -10,7 +10,8 @@ permissions:
   contents: write
   pages: write
 concurrency:
-  group: nebeljagd-work-build
+  # Retire the orphaned lock whose completed job ignored normal/forced cancellation.
+  group: nebeljagd-work-build-v2
   cancel-in-progress: true
 
 jobs:
