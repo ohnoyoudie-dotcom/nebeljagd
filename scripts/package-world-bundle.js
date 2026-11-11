@@ -1,8 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { crc32, deflateRawSync } from 'node:zlib';
 import { resolve } from 'node:path';
+import { deflateAsync } from '@gfx/zopfli';
 
-/** A small deterministic ZIP, using only Node's built-in modules. */
+/** A deterministic, standard-deflate ZIP preserving every standalone file. */
 export async function packageWorldBundle(directory = resolve('dist')) {
   const names = ['index.html', 'teacher.html', 'lobby.html', 'magebrawl.html', 'nebeljagd.html', 'map-editor.html', 'editor.html', 'avatar-preview.html', 'worldmap.json', 'worldmap.svg', 'worldmap.schema.json'];
   const entries = await Promise.all(names.map(async name => ({ name, bytes: await readFile(resolve(directory, name)) })));
@@ -59,7 +60,13 @@ und Teams sind noch nicht implementiert.
 `, 'utf8') });
   const files = [], central = []; let offset = 0;
   for (const entry of entries) {
-    const filename = Buffer.from(entry.name), compressed = deflateRawSync(entry.bytes, { level: 9 }), checksum = crc32(entry.bytes);
+    // The offline HTML files stay byte-identical and self-contained. Compress
+    // the editor more thoroughly to leave room for additional weapons
+    // under GitHub's file limit without removing assets or offline features.
+    const compressed = entry.name === 'map-editor.html'
+      ? Buffer.from(await deflateAsync(entry.bytes, { numiterations: 1 }))
+      : deflateRawSync(entry.bytes, { level: 9, memLevel: 9 });
+    const filename = Buffer.from(entry.name), checksum = crc32(entry.bytes);
     const header = Buffer.alloc(30);
     header.writeUInt32LE(0x04034b50); header.writeUInt16LE(20, 4); header.writeUInt16LE(0x800, 6);
     header.writeUInt16LE(8, 8); header.writeUInt16LE(0x21, 12); header.writeUInt32LE(checksum, 14);
@@ -77,7 +84,7 @@ und Teams sind noch nicht implementiert.
   end.writeUInt32LE(directoryBytes.length, 12); end.writeUInt32LE(offset, 16);
   const bundle = Buffer.concat([...files, directoryBytes, end]);
   if (bundle.length >= 100 * 1024 * 1024) {
-    throw new Error('Offline-ZIP überschreitet GitHubs 100-MiB-Dateilimit; Laufzeit-Assets vor der Veröffentlichung verkleinern.');
+    throw new Error(`Offline-ZIP (${bundle.length} Byte) überschreitet GitHubs 100-MiB-Dateilimit; Laufzeit-Assets vor der Veröffentlichung verkleinern.`);
   }
   await writeFile(resolve(directory, 'magebrawl-welt-und-editor.zip'), bundle);
   console.log('Offline bundle: dist/magebrawl-welt-und-editor.zip');

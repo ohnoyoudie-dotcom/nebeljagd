@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/fantasy thunder staff 3d model.glb",
+    "bytes": 67107016,
+    "sha256": "83cf184c52639981d3f35caf224609e55a08228756a5a6e4518666e43b656bb4",
+    "triangles": 1964358,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/lightning-staff.json",
+      "bytes": 2937,
+      "sha256": "4009761af9c8b8ed9b3e70d4fd7c38e565f7b9f7b9620325bc4ea5c7fc4e255f"
+    },
+    {
+      "path": "previews/lightning-staff-runtime.png",
+      "bytes": 281206,
+      "sha256": "8573616bfbf4f7b8d41489967797a4c510e6b28afc098acadabebdc571a9dbff"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 375,
+      "sha256": "07faec488c7eeab200fbdf75ecb4ed338fe4d682d33029dc771ce6b3c6c16572"
+    },
+    {
+      "path": "runtime/lightning-staff.glb",
+      "bytes": 224908,
+      "sha256": "4eb42c11d92293f09edeeeebf511cbeb2b220c9ea3d3afb206809d03eeae0f97"
+    }
+  ]
+}

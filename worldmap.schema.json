@@ -532,7 +532,8 @@
             "starStaff",
             "gravityStaff",
             "stump",
-            "log"
+            "log",
+            "lightningStaff"
           ]
         },
         "variant": {
@@ -1064,7 +1065,8 @@
                   "poisonStaff",
                   "moonStaff",
                   "starStaff",
-                  "gravityStaff"
+                  "gravityStaff",
+                  "lightningStaff"
                 ]
               }
             }
@@ -1265,6 +1267,27 @@
                 "enum": [
                   "kit-tripo-log-01",
                   "kit-tripo-log-02"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "lightningStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-lightning-staff"
                 ]
               }
             }

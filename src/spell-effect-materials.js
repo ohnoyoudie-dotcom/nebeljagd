@@ -6,6 +6,7 @@ const COLORS = {
   poisonStaff: ['#153c21', '#47ae45', '#c6ef83'],
   moonStaff: ['#44316c', '#aa8bdb', '#f1e8ff'],
   starStaff: ['#284b78', '#6bc7ed', '#fff3b8'],
+  lightningStaff: ['#17335c', '#58adff', '#fff5cf'],
   gravityStaff: ['#281a35', '#60466f', '#a28eae'],
 };
 const MODES = { body: 0, trail: 1, shock: 2, cloud: 3, rays: 4, charge: 5 };

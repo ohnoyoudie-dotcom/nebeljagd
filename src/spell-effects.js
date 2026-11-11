@@ -1,10 +1,12 @@
 import * as THREE from 'three';
+import { createLightningVisual } from './lightning-visual.js';
 import { createElementMaterial, setElementMaterial } from './spell-effect-materials.js';
 import { createFireballMaterial } from './fireball-material.js';
 
-const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
 const GRAVITY_PROJECTILE_SCALE = .8;
+const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
 const ELEMENTS = {
+  lightningStaff: { core: '#fff5cf', glow: '#58adff', spark: '#bfeaff', edge: '#4b83dc' },
   fireStaff: { core: '#fff3bf', glow: '#ff681c', spark: '#ffb52d', edge: '#ff360d' },
   iceStaff: { core: '#edffff', glow: '#45bfff', spark: '#8ceeff', edge: '#358de5' },
   poisonStaff: { core: '#e2f7b3', glow: '#65c84a', spark: '#b3e976', edge: '#398d3b' },
@@ -111,6 +113,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     starStaff: { core: solid(ELEMENTS.starStaff.core), tip: additive(ELEMENTS.starStaff.spark, .7),
       body: elementMaterial('body', { type: 'starStaff', opacity: .42 }),
       crystal: solid(ELEMENTS.starStaff.core) },
+    lightningStaff: { core: solid('#fff5cf'), tip: additive(ELEMENTS.lightningStaff.spark, .7),
+      body: elementMaterial('body', { type: 'lightningStaff', opacity: .5 }) },
     gravityStaff: { core: solid('#140626'), tip: ownMaterial(new THREE.MeshBasicMaterial({
       color: '#9e88ab', transparent: true, opacity: .55, depthWrite: false, blending: THREE.NormalBlending })),
       body: elementMaterial('body', { type: 'gravityStaff', opacity: .8 }) },
@@ -150,6 +154,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function createProjectile() {
     if (disposed) throw new Error('Disposed spell effects cannot create projectiles.');
     const group = addRoot(new THREE.Group()); group.name = 'Zauberprojektil'; group.visible = false;
+    const lightning = createLightningVisual({ ownGeometry, ownMaterial }); group.add(lightning.group);
     const gravity = new THREE.Group(); gravity.name = 'Gravitationsprojektil · dunkler Kern'; group.add(gravity);
     const gravityCore = mesh(gravity, sphere, projectileMaterials.gravityStaff.core);
     gravityCore.scale.set(.29, .32, .29);
@@ -234,7 +239,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, fire, ice, star, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, lightning, fire, ice, star, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -302,6 +307,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   const bursts = Array.from({ length: BURSTS }, () => {
     const group = addRoot(new THREE.Group()); group.name = 'Zauberimpuls'; group.visible = false;
     const halo = glow('#ffffff'); group.add(halo);
+    const lightning = createLightningVisual({ impact: true, ownGeometry, ownMaterial });
     const ring = mesh(group, planeGeometry, elementMaterial('shock', { opacity: .75 }));
     const cloud = mesh(group, planeGeometry, elementMaterial('cloud', { opacity: .35, billboard: true }));
     const rays = mesh(group, planeGeometry, elementMaterial('rays', { opacity: .65 }));
@@ -309,15 +315,18 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const connectors = Array.from({ length: 4 }, () => {
       const part = mesh(group, connectorGeometry, connectorMaterial); part.visible = false; return part;
     });
-    return { group, halo, ring, cloud, rays, connectors, connectorMaterial, connectorCount: 0,
+    group.add(lightning.group);
+    return { group, lightning, halo, ring, cloud, rays, connectors, connectorMaterial, connectorCount: 0,
       life: 0, duration: 1, type: 'fireStaff', kind: 'impact', size: 1, x: 0, y: 0, z: 0 };
   });
   function burst(type, point, direction, kind, normal) {
     const entry = bursts[burstCursor++ % BURSTS], palette = ELEMENTS[type];
-    entry.life = entry.duration = kind === 'muzzle' ? .30 : type === 'fireStaff' ? .85 : .64;
+    entry.life = entry.duration = kind === 'muzzle' ? .30 : type === 'lightningStaff' ? .38 : type === 'fireStaff' ? .85 : .64;
     Object.assign(entry, { type, kind, size: kind === 'muzzle' ? .52 : type === 'fireStaff' ? 1.55 : 1.05,
       x: point.x, y: point.y, z: point.z, connectorCount: 0 });
     entry.group.position.set(0, 0, 0); entry.group.visible = true;
+    entry.lightning.group.position.copy(point); entry.lightning.update(0);
+    entry.lightning.group.visible = type === 'lightningStaff' && kind === 'impact';
     entry.halo.position.copy(point); entry.ring.position.copy(point); entry.cloud.position.copy(point); entry.rays.position.copy(point);
     entry.halo.material.color.set(palette.glow);
     for (const part of [entry.ring, entry.cloud, entry.rays]) setElementMaterial(part.material, type);
@@ -345,7 +354,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
     const appearance = projectileMaterials[type];
     visual.group.scale.setScalar(type === 'gravityStaff' ? GRAVITY_PROJECTILE_SCALE : 1);
-    visual.fire.visible = !crystalline(type) && type !== 'gravityStaff';
+    visual.fire.visible = !crystalline(type) && type !== 'gravityStaff' && type !== 'lightningStaff';
+    visual.lightning.group.visible = type === 'lightningStaff'; visual.lightning.update(0);
     visual.gravity.visible = type === 'gravityStaff';
     visual.gravityCore.visible = !visual.gravityModel;
     if (visual.gravityModel) {
@@ -528,7 +538,10 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       if (!entry.life) continue;
       const age = entry.duration - entry.life, t = age / entry.duration, visible = canSee(entry);
       entry.halo.visible = entry.ring.visible = visible;
-      entry.cloud.visible = visible && entry.kind === 'impact';
+      entry.cloud.visible = visible && entry.kind === 'impact' && entry.type !== 'lightningStaff';
+      entry.lightning.group.visible = visible && entry.type === 'lightningStaff' && entry.kind === 'impact';
+      entry.lightning.update(age, (1 - t) ** 1.2);
+      if (entry.type === 'lightningStaff') entry.ring.visible = false;
       entry.rays.visible = visible && (crystalline(entry.type) || entry.type === 'fireStaff') && entry.kind === 'impact' && t < .65;
       entry.halo.scale.setScalar(entry.size * (.9 + t * 2.0));
       entry.halo.material.opacity = (1 - t) ** 1.8 * (entry.type === 'fireStaff' && entry.kind === 'impact' ? .85 : .42);
@@ -561,6 +574,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     for (const visual of projectiles) {
       visual.group.visible = visual.active && canSee(visual.group.position);
       if (visual.active) {
+        visual.lightning.update(visual.age);
         const pulse = 1 + Math.sin(time * 17) * .035;
         visual.fire.scale.set(pulse, pulse, 1); visual.fire.rotation.z = Math.sin(time * 6) * .10;
         visual.hotCore.scale.set(.065 * pulse, .065 * pulse, .15);
@@ -603,6 +617,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   return { createProjectile, launch, advance, end, channel, fire, impact, update, reset, dispose,
     get telemetry() {
       return { activeProjectiles: projectiles.filter(v => v.active).length,
+        lightningProjectiles: projectiles.filter(v => v.active && v.type === 'lightningStaff').length,
+        lightningStyle: 'forked-arc-ribbons',
         visibleProjectiles: projectiles.filter(v => v.active && v.group.visible).length,
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
         activeSmoke: smoke.filter(p => p.life > 0).length,

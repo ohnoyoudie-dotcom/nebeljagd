@@ -18,11 +18,12 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-poison-staff': 'poisonStaff',
   'kit-tripo-moon-staff': 'moonStaff',
   'kit-tripo-star-staff': 'starStaff',
+  'kit-tripo-lightning-staff': 'lightningStaff',
   'kit-tripo-gravity-staff': 'gravityStaff',
   'kit-tripo-ornate-bow': 'bow',
 });
 export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
-  poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff', gravityStaff: 'kit-tripo-gravity-staff' });
+  poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff', gravityStaff: 'kit-tripo-gravity-staff', lightningStaff: 'kit-tripo-lightning-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
 const WOOD_BOW_DRAW = .18;
 export function resolveWeaponVariant(type, variant) {
@@ -31,7 +32,7 @@ export function resolveWeaponVariant(type, variant) {
 // Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
-  fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82, gravityStaff: .82 });
+  fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82, gravityStaff: .82, lightningStaff: .82 });
 export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
 export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * (type === 'bow' ? 1.18 : .88)])));
 
@@ -103,7 +104,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const moonCore = material('#eee6ff', { emissive: '#ac8bff', emissiveIntensity: 1.5 });
   const starCore = material('#fff0b8', { emissive: '#6ebfe3', emissiveIntensity: 1.4 });
   const gravityCore = material('#ba86ff', { emissive: '#743bc7', emissiveIntensity: 1.6 });
-  const staffCores = { fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore, gravityStaff: gravityCore };
+  const staffCores = { fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore, gravityStaff: gravityCore, lightningStaff: material('#fff4cb', { emissive: '#68baff', emissiveIntensity: 1.2 }) };
   function makeStaff(type) {
     const group = new THREE.Group();
     group.name = weaponStats(type).label;
@@ -828,12 +829,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
     const angle = characterGroup.rotation.y;
-    spell.mode = 'flying'; spell.life = 1.35; spell.direction = angle;
+    const speed = equippedType === 'lightningStaff' ? 32 : 18;
+    spell.mode = 'flying'; spell.life = equippedType === 'lightningStaff' ? equippedItem.range / speed : 1.35; spell.direction = angle;
     // The crystal fixes the shot's height for its whole flight. Facing sets
     // only its horizontal direction; there is no later change of flight plane.
     spell.flightHeight = launchCenter.y;
     spell.pendingDelta = Math.max(0, attackAge - .25);
-    spell.vx = Math.sin(angle) * 18; spell.vz = Math.cos(angle) * 18;
+    spell.vx = Math.sin(angle) * speed; spell.vz = Math.cos(angle) * speed;
     spell.payload = { ...equippedItem, sourceId: ownerId };
     spellEffects.launch(spell.visual, spell.payload.type, launchCenter, angle);
     spellEffects.fire(spell.payload.type, staffTip, angle);
@@ -856,17 +858,19 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function updateSpells(delta, time) {
     for (const spell of spells) {
       if (spell.life <= 0) continue;
-      const flightDelta = spell.pendingDelta ?? delta;
+      const lightning = spell.payload.type === 'lightningStaff';
+      const flightDelta = lightning ? Math.min(spell.life, spell.pendingDelta ?? delta) : spell.pendingDelta ?? delta;
       spell.pendingDelta = null;
       if (flightDelta <= 0) continue;
       spell.life -= flightDelta;
-      if (spell.life <= 0) { spellEffects.end(spell.visual); spell.mode = 'inactive'; continue; }
+      if (spell.life <= 0 && !lightning) { spellEffects.end(spell.visual); spell.mode = 'inactive'; continue; }
       tipBefore.copy(spell.group.position);
       tipAfter.copy(tipBefore); tipAfter.x += spell.vx * flightDelta; tipAfter.z += spell.vz * flightDelta;
       const collision = firstHit(tipBefore, tipAfter, .13);
       spellEffects.advance(spell.visual, tipBefore, collision?.point ?? tipAfter, flightDelta, time);
       if (collision?.target) hitTarget(spell, collision);
       else if (collision) spellImpact(spell, collision);
+      else if (spell.life <= 0) { spellEffects.end(spell.visual); spell.mode = 'inactive'; }
     }
   }
 

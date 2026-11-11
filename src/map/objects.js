@@ -67,6 +67,8 @@ export const OBJECT_CATALOG = Object.freeze([
     variants: [{ id: 'kit-tripo-moon-staff', label: 'Mondstab · Tripo' }] },
   { kind: 'starStaff', label: 'Sternstab', defaultVariant: 'kit-tripo-star-staff', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'kit-tripo-star-staff', label: 'Sternstab · Tripo' }] },
+  { kind: 'lightningStaff', label: 'Blitzstab', defaultVariant: 'kit-tripo-lightning-staff', defaultScale: 1, footprintRadius: .65,
+    variants: [{ id: 'kit-tripo-lightning-staff', label: 'Blitzstab · Tripo' }] },
   { kind: 'gravityStaff', label: 'Gravitationsstab', defaultVariant: 'kit-tripo-gravity-staff', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'kit-tripo-gravity-staff', label: 'Gravitationsstab · Tripo' }] },
   // Dimensions follow the already committed environment-kit collision hints.
@@ -111,7 +113,7 @@ const placementAssetIds = new Set([
   'chest:kit-tripo-chest',
   ...TRIPO_WOODLAND_DEFINITIONS.map(prop => prop.id),
   'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
-  'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff', 'gravityStaff:kit-tripo-gravity-staff',
+  'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff', 'gravityStaff:kit-tripo-gravity-staff', 'lightningStaff:kit-tripo-lightning-staff',
 ]);
 export const PLACEMENT_OBJECT_CATALOG = Object.freeze(AUTHORING_OBJECT_CATALOG.flatMap(definition => {
   const variants = definition.variants.filter(variant => !variant.retired && placementAssetIds.has(variant.assetId));

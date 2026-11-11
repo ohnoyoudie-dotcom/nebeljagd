@@ -18,8 +18,8 @@ jobs:
     if: github.ref == 'refs/heads/work'
     runs-on: ubuntu-latest
     # Existing graphical checks take about 40 minutes on the hosted runner.
-    # Keep every check and allow time for the six new props and live Pages QA.
-    timeout-minutes: 60
+    # Keep every check and allow time for asset QA, offline compression and live Pages QA.
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,6 +80,10 @@ jobs:
             curl -fsS http://127.0.0.1:4174/magebrawl.html >/dev/null && break
             sleep 1
           done
+      - name: Verify uploaded lightning staff, branching projectile and mouse/touch hits
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/lightning_staff_smoke.py
       - name: Verify six uploaded stumps, logs and crates in editor and game
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
@@ -244,6 +248,7 @@ jobs:
             test-results/projectiles-sight
             test-results/projectile-barriers
             test-results/gravity-staff
+            test-results/lightning-staff
             test-results/woodland-details
             test-results/tripo-woodland
             test-results/bow-alignment

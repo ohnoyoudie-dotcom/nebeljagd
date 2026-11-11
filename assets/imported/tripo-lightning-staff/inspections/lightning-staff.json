@@ -1,0 +1,143 @@
+{
+  "source": {
+    "path": "assets/inbox/fantasy thunder staff 3d model.glb",
+    "bytes": 67107016,
+    "sha256": "83cf184c52639981d3f35caf224609e55a08228756a5a6e4518666e43b656bb4",
+    "triangles": 1964358,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-lightning-staff/runtime/lightning-staff.glb",
+    "bytes": 224908,
+    "sha256": "4eb42c11d92293f09edeeeebf511cbeb2b220c9ea3d3afb206809d03eeae0f97",
+    "triangles": 6000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.12432861328125,
+        -0.06430435180664062,
+        0.0
+      ],
+      [
+        0.12432861328125,
+        0.06430435180664062,
+        0.981170654296875
+      ]
+    ],
+    "sourceGripPointGltf": [
+      0.0011844877153635025,
+      0.1999969482421875,
+      2.100132405757904e-05
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.0021698109339922667,
+      0.999997615814209,
+      -0.00029515099595300853
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999994039535522,
+      0.00014757559983991086,
+      -0.0010849061654880643,
+      0.0
+    ],
+    "uniformScale": 1.7321961157928814,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.21938566863536835,
+        -0.34643372893333435,
+        -0.11117732524871826
+      ],
+      [
+        0.21131210029125214,
+        1.353566288948059,
+        0.11159802228212357
+      ]
+    ],
+    "tipPoint": [
+      0.19855552911758423,
+      1.350986123085022,
+      -0.0023573744110763073
+    ],
+    "gltfBounds": [
+      [
+        -0.21932101249694824,
+        -0.34826895594596863,
+        -0.11128532886505127
+      ],
+      [
+        0.21193014085292816,
+        1.350986123085022,
+        0.11165934056043625
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "fantasy_staff_3d_model_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "fantasy_staff_3d_model_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "fantasy_staff_3d_model_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "lightning-staff",
+    "length": 1.7,
+    "gripHeight": 0.2,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 6000
+  }
+}

@@ -15,7 +15,12 @@ import poisonStaffInspection from '../assets/imported/tripo-extra-weapons/inspec
 import moonStaffInspection from '../assets/imported/tripo-extra-weapons/inspections/moon-staff.json' with { type: 'json' };
 import { TRIPO_WEAPON_VARIANTS, DEFAULT_WEAPON_VARIANTS } from './weapons.js';
 
+import lightningStaffUrl from '../assets/imported/tripo-lightning-staff/runtime/lightning-staff.glb?url&inline';
+import lightningStaffInspection from '../assets/imported/tripo-lightning-staff/inspections/lightning-staff.json' with { type: 'json' };
+
 const SOURCES = {
+  'kit-tripo-lightning-staff': { url: lightningStaffUrl, name: 'Blitzstab · Tripo', tip: lightningStaffInspection.normalization.tipPoint,
+    source: 'assets/inbox/fantasy thunder staff 3d model.glb' },
   'kit-tripo-sword': { url: swordUrl, name: 'Schwert · Tripo' },
   'kit-tripo-lava-staff': { url: lavaStaffUrl, name: 'Lavastab · Tripo' },
   'kit-tripo-crystal-staff': { url: crystalStaffUrl, name: 'Kristallstab · Tripo' },

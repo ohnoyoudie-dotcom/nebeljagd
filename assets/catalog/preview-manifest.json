@@ -1084,6 +1084,32 @@
         ],
         "span": 2.102837212451802
       }
+    },
+    {
+      "kind": "lightningStaff",
+      "variant": "kit-tripo-lightning-staff",
+      "label": "Blitzstab · Tripo",
+      "file": "assets/catalog/lightningStaff-kit-tripo-lightning-staff.webp",
+      "bytes": 3556,
+      "sha256": "1e1b38b9006646a1b7fa9297d7245d92be0506075c0d19ccb84e0ff17fe66507",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-lightning-staff/previews/lightning-staff-runtime.png",
+      "model": "assets/imported/tripo-lightning-staff/runtime/lightning-staff.glb",
+      "modelSha256": "4eb42c11d92293f09edeeeebf511cbeb2b220c9ea3d3afb206809d03eeae0f97",
+      "originalSourceSha256": "83cf184c52639981d3f35caf224609e55a08228756a5a6e4518666e43b656bb4",
+      "generator": "scripts/prepare-lightning-staff.py; scripts/register-lightning-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.21932101249694824,
+          -0.34826895594596863,
+          -0.11128532886505127
+        ],
+        "max": [
+          0.21193014085292816,
+          1.350986123085022,
+          0.11165934056043625
+        ]
+      }
     }
   ],
   "errors": []
