@@ -530,7 +530,9 @@
             "barrel",
             "well",
             "starStaff",
-            "gravityStaff"
+            "gravityStaff",
+            "stump",
+            "log"
           ]
         },
         "variant": {
@@ -1145,7 +1147,9 @@
             "properties": {
               "variant": {
                 "enum": [
-                  "kit-wood"
+                  "kit-wood",
+                  "kit-tripo-crate-01",
+                  "kit-tripo-crate-02"
                 ]
               }
             }
@@ -1217,6 +1221,50 @@
                 "enum": [
                   "wall",
                   "fence"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "stump"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-stump-01",
+                  "kit-tripo-stump-02"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "log"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-log-01",
+                  "kit-tripo-log-02"
                 ]
               }
             }

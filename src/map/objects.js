@@ -3,7 +3,13 @@ import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
 import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
 import { TRIPO_PROP_DEFINITIONS } from './tripo-prop-definitions.js';
+import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
 import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
+
+const woodlandVariants = kind => TRIPO_WOODLAND_DEFINITIONS.filter(prop => prop.kind === kind)
+  .map(({ variant, label, footprint }) => ({ id: variant, label,
+    footprintRadius: Math.hypot(footprint.halfWidth, footprint.halfDepth),
+    footprintWidth: footprint.halfWidth * 2, footprintDepth: footprint.halfDepth * 2 }));
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
@@ -76,9 +82,13 @@ export const OBJECT_CATALOG = Object.freeze([
     footprintRadius: Math.hypot(2, .22), footprintWidth: 4, footprintDepth: .44,
     variants: [{ id: 'kit-wood', label: 'Holzzaun · GLB', footprintRadius: Math.hypot(1.6, .2), footprintWidth: 3.2, footprintDepth: .4, retired: true },
       { id: 'kit-cross-wood', label: 'Holzzaun · Kreuzstreben', footprintRadius: Math.hypot(2, .22), footprintWidth: 4, footprintDepth: .44 }] },
-  { kind: 'crate', label: 'Holzkiste', defaultVariant: 'kit-wood', defaultScale: 1,
+  { kind: 'stump', label: 'Baumstumpf', defaultVariant: 'kit-tripo-stump-01', defaultScale: 1,
+    variants: woodlandVariants('stump') },
+  { kind: 'log', label: 'Liegender Stamm', defaultVariant: 'kit-tripo-log-01', defaultScale: 1,
+    variants: woodlandVariants('log') },
+  { kind: 'crate', label: 'Holzkiste', defaultVariant: 'kit-tripo-crate-01', defaultScale: 1,
     footprintRadius: Math.hypot(.425, .425), footprintWidth: .85, footprintDepth: .85,
-    variants: [{ id: 'kit-wood', label: 'Holzkiste · GLB', retired: true }] },
+    variants: [{ id: 'kit-wood', label: 'Holzkiste · GLB', retired: true }, ...woodlandVariants('crate')] },
 ].map(definition => Object.freeze({ ...definition,
   retired: RETIRED_SCENERY_KINDS.includes(definition.kind) || definition.variants.every(variant => variant.retired),
   variants: Object.freeze(definition.variants.map(variant => Object.freeze({
@@ -99,6 +109,7 @@ const placementAssetIds = new Set([
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
+  ...TRIPO_WOODLAND_DEFINITIONS.map(prop => prop.id),
   'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
   'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff', 'gravityStaff:kit-tripo-gravity-staff',
 ]);

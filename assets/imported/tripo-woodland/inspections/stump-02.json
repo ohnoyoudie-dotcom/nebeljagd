@@ -1,0 +1,234 @@
+{
+  "id": "stump-02",
+  "label": "Baumstumpf 2",
+  "source": {
+    "path": "assets/inbox/tree stump 3d model (1).glb",
+    "bytes": 69535444,
+    "sha256": "6200f786b02a10f8bfe93b92e416d8d7a4f638bb7142bad356c51df6ae9931e0",
+    "triangles": 1956436,
+    "vertices": 1012342,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-woodland/runtime/stump-02.glb",
+    "bytes": 337836,
+    "sha256": "804de8c34934112d5369bf4317beafe04c7f6cf9938eeeb567d8cba2d0eda53a",
+    "triangles": 7999,
+    "vertices": 7033,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 1.381172975793826,
+    "blenderSourceBounds": [
+      [
+        -0.4905548095703125,
+        -0.4894256591796875,
+        0.0
+      ],
+      [
+        0.4905548095703125,
+        0.4894256591796875,
+        0.760223388671875
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -0.6775410771369934,
+        -0.6759815216064453,
+        0.0
+      ],
+      [
+        0.6775410771369934,
+        0.6759815216064453,
+        1.0500000715255737
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      -0.0014876127243041992,
+      0.0011145174503326416,
+      0.0018343126866966486
+    ],
+    "gltfBounds": [
+      [
+        -0.6785842776298523,
+        0.0,
+        -0.6759328842163086
+      ],
+      [
+        0.6785842776298523,
+        1.0485719442367554,
+        0.6759328842163086
+      ]
+    ],
+    "dimensions": [
+      1.3571685552597046,
+      1.0485719442367554,
+      1.3518657684326172
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 1294,
+      "gltfBounds": [
+        [
+          -0.6785842776298523,
+          0.0,
+          -0.6759328842163086
+        ],
+        [
+          0.6785842776298523,
+          0.14999671280384064,
+          0.6759328842163086
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 1708,
+      "gltfBounds": [
+        [
+          -0.45947301387786865,
+          0.15005503594875336,
+          -0.5165809392929077
+        ],
+        [
+          0.4960585832595825,
+          0.5494068264961243,
+          0.514102578163147
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 948,
+      "gltfBounds": [
+        [
+          -0.2649194896221161,
+          0.5501224994659424,
+          -0.3473920226097107
+        ],
+        [
+          0.3931858539581299,
+          0.948326826095581,
+          0.34455275535583496
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.95,
+        1.5
+      ],
+      "vertices": 51,
+      "gltfBounds": [
+        [
+          -0.2390698343515396,
+          0.9505549073219299,
+          -0.22193452715873718
+        ],
+        [
+          -0.06363427639007568,
+          1.0485719442367554,
+          0.14308156073093414
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.000105,
+    "before": {
+      "vertices": 1012342,
+      "faces": 1956436
+    },
+    "after": {
+      "vertices": 978147,
+      "faces": 1956289
+    }
+  },
+  "textures": [
+    {
+      "name": "tree_stump_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        384,
+        384
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "tree_stump_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "tree_stump_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        128,
+        128
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 8000,
+    "textureLimit": 384,
+    "fileLimitBytes": 1048576
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  },
+  "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+}
