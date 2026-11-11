@@ -124,7 +124,7 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein aufbereiteter Mondstab. Verschießt Mondmagie mit direktem Schaden; die Seltenheit ist frei wählbar.', 'tripo-extra-weapons'),
   tripo('starStaff', 'kit-tripo-star-staff', 'Sternstab · Tripo', 'star-staff', 'arcane star staff 3d model',
     'Dein texturierter Sternstab. Verschießt einen geraden Sternenblitz mit funkelnder Lichtspur.', 'tripo-star-moon'),
-  tripo('gravityStaff', 'kit-tripo-gravity-staff', 'Gravitationsstab · Tripo', 'gravity-staff', 'fantasy staff 3d model',
+  tripo('gravityStaff', 'kit-tripo-gravity-staff', 'Gravitationsstab · Tripo', 'gravity-staff', 'fantasy voidstaff 3d model',
     'Violettes Gravitationsfeld: nach kurzer Warnung werden Gegner hineingezogen, bevor eine Explosion folgt.', 'tripo-gravity-staff'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));
 

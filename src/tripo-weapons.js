@@ -23,7 +23,7 @@ const SOURCES = {
   'kit-tripo-star-staff': { url: starStaffUrl, name: 'Sternstab · Tripo', tip: starStaffInspection.normalization.tipPoint,
     source: 'assets/inbox/arcane star staff 3d model.glb' },
   'kit-tripo-gravity-staff': { url: gravityStaffUrl, name: 'Gravitationsstab · Tripo', tip: gravityStaffInspection.normalization.tipPoint,
-    source: 'assets/inbox/fantasy staff 3d model.glb' },
+    source: 'assets/inbox/fantasy voidstaff 3d model.glb' },
   'kit-tripo-moon-staff': { url: moonStaffUrl, name: 'Mondstab · Tripo', tip: moonStaffInspection.normalization.tipPoint },
   'kit-tripo-ornate-bow': { url: ornateBowUrl, name: 'Verzierter Bogen · Tripo' },
 };
