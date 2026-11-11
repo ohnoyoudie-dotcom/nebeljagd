@@ -1,6 +1,7 @@
 import previews from '../../assets/catalog/previews.json' with { type: 'json' };
 import { WEAPON_TYPES } from '../loot-tiers.js';
 import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
+import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
 
 /** Explicit mapping to models already used by the game. Preview images are
  * captures of those models, embedded so the standalone editor stays offline.
@@ -97,6 +98,11 @@ export const ASSET_CATALOG = Object.freeze([
   tripo('house', 'kit-tripo-house-02', 'Wohnhaus 2 · Tripo', 'house-02', 'medieval house interior 3d model 2',
     'Dachloses Wohnhaus mit erhaltenen Farb- und Materialtexturen. Räume und Einrichtung sind Teil deines Modells; im Editor frei platzierbar, drehbar und skalierbar.', 'tripo-houses'),
   kit('crate', 'kit-wood', 'Holzkiste · GLB', 'crate_wood', 'Zerstörbare Holzkiste; blockiert Bewegung, Sicht und Pfeile bis sie kaputt ist.'),
+  ...TRIPO_WOODLAND_DEFINITIONS.map(prop => tripo(prop.kind, prop.variant, prop.label,
+    prop.file.replace(/\.glb$/, ''), prop.source.replace('assets/inbox/', '').replace(/\.glb$/, ''),
+    prop.kind === 'stump' ? 'Baumstumpf mit Wurzeln und sichtbarer Schnittfläche. Frei platzierbar, drehbar und skalierbar.'
+      : prop.kind === 'log' ? 'Liegender Holzstamm mit erhaltener Rinde. Als niedriges Hindernis platzierbar, drehbar und skalierbar.'
+        : 'Texturierte Holzkiste. Frei platzierbar, drehbar, skalierbar und im Kampf zerstörbar.', 'tripo-woodland')),
   tripo('wagon', 'kit-tripo-wagon', 'Holzwagen · Tripo', 'wagon', 'wooden wagon 3d model', 'Holzwagen mit texturiertem Holz, Rädern und Deichseln. Drehen, skalieren und als festes Hindernis platzieren.'),
   tripo('barrel', 'kit-tripo-barrel', 'Holzfass · Tripo', 'barrel', 'wooden barrel 3d model', 'Massives Holzfass mit Eisenreifen. Blockiert die Bewegung und lässt sich im Kampf zerstören.'),
   tripo('well', 'kit-tripo-well', 'Steinbrunnen · Tripo', 'well', 'medieval well 3d model', 'Steinerner Brunnen mit Holzaufbau, Dach und Seil. Festes Landschaftsobjekt.'),

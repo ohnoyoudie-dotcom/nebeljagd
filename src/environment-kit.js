@@ -21,6 +21,12 @@ import tripoWall from '../assets/imported/tripo-wall/runtime/wall.glb?url&inline
 import tripoRock01 from '../assets/imported/tripo-props/runtime/rock-01.glb?url&inline';
 import tripoRock02 from '../assets/imported/tripo-props/runtime/rock-02.glb?url&inline';
 import tripoRock03 from '../assets/imported/tripo-props/runtime/rock-03.glb?url&inline';
+import tripoStump01 from '../assets/imported/tripo-woodland/runtime/stump-01.glb?url&inline';
+import tripoStump02 from '../assets/imported/tripo-woodland/runtime/stump-02.glb?url&inline';
+import tripoLog01 from '../assets/imported/tripo-woodland/runtime/log-01.glb?url&inline';
+import tripoLog02 from '../assets/imported/tripo-woodland/runtime/log-02.glb?url&inline';
+import tripoCrate01 from '../assets/imported/tripo-woodland/runtime/crate-01.glb?url&inline';
+import tripoCrate02 from '../assets/imported/tripo-woodland/runtime/crate-02.glb?url&inline';
 import timberHouse from '../Blender/nebeljagd_umwelt_kit_v1/assets/house_timbersmall.glb?url&inline';
 import tallGrass from '../Blender/nebeljagd_umwelt_kit_v1/assets/grass_tall_patch.glb?url&inline';
 import rockCluster from '../Blender/nebeljagd_umwelt_kit_v1/assets/rock_cluster.glb?url&inline';
@@ -42,6 +48,9 @@ const urls = {
   'well:kit-tripo-well': tripoWell,
   'wall:kit-tripo-wall': tripoWall,
   'rock:kit-tripo-01': tripoRock01, 'rock:kit-tripo-02': tripoRock02, 'rock:kit-tripo-03': tripoRock03,
+  'stump:kit-tripo-stump-01': tripoStump01, 'stump:kit-tripo-stump-02': tripoStump02,
+  'log:kit-tripo-log-01': tripoLog01, 'log:kit-tripo-log-02': tripoLog02,
+  'crate:kit-tripo-crate-01': tripoCrate01, 'crate:kit-tripo-crate-02': tripoCrate02,
   'house:kit-timber': timberHouse, 'grass:kit-tall': tallGrass,
   'rock:kit-cluster': rockCluster, 'rock:kit-single': rockSingle,
   'ruin:kit-arch': ruinArch, 'wall:kit-stone': stoneWall,

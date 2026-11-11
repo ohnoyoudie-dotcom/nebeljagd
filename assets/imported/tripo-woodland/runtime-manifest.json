@@ -1,0 +1,172 @@
+{
+  "name": "nebeljagd-tripo-woodland",
+  "version": 1,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1858,
+      "sha256": "2b5602efa3696a24ae8623c1213e6f9e4c53e7a8ab08da51b4dd34af2127a72f"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 33049,
+      "sha256": "d9f30204fe360096cfa17743e80dc67b82a7b06e9b2868c3b53bedf7ff828117"
+    },
+    {
+      "path": "inspections/crate-01.json",
+      "bytes": 4724,
+      "sha256": "fb7823c02e071f5b60ed1b910fb1639c937aa72f0bcf4cac4c41803ec88ac046"
+    },
+    {
+      "path": "inspections/crate-02.json",
+      "bytes": 4373,
+      "sha256": "f61cf2c68daf6fdfee01bd40ac5a363c76773ea1791ad89dcb0bbb60147b474e"
+    },
+    {
+      "path": "inspections/log-01.json",
+      "bytes": 4693,
+      "sha256": "5b13a5f235e8e3059a61175864277a175d95b773af8e50e4990246f1c3d76d10"
+    },
+    {
+      "path": "inspections/log-02.json",
+      "bytes": 4696,
+      "sha256": "17144c4d5a9f57da6b1fd23493b5b8cced783094ee5186d5145b2313679b2b03"
+    },
+    {
+      "path": "inspections/stump-01.json",
+      "bytes": 4358,
+      "sha256": "e844499a1d923a8d06763716e90b73d8461ba64ceafd852ac317d3448256225f"
+    },
+    {
+      "path": "inspections/stump-02.json",
+      "bytes": 4714,
+      "sha256": "943cba75ea3abae1f2a5f25c577c134c3435045ebd1f5211fd46c64d8ad73a0e"
+    },
+    {
+      "path": "previews/crate-01-runtime.png",
+      "bytes": 748392,
+      "sha256": "d52600d79cb01bf647fcb13630a51cb80d2a47079279f919bf3c1c4b8b199b84"
+    },
+    {
+      "path": "previews/crate-01-source.png",
+      "bytes": 783193,
+      "sha256": "d37659d78786527da194117625424a9470502a34f2c099b2622ad1955cee3ca5"
+    },
+    {
+      "path": "previews/crate-02-runtime.png",
+      "bytes": 676016,
+      "sha256": "f894ec56fad0fe67672eacede557b47db797fbeb7187d7688905ec484d5e09fc"
+    },
+    {
+      "path": "previews/crate-02-source.png",
+      "bytes": 707990,
+      "sha256": "c81076bd9d2506f869e9ec859dd5f611bcce5aef2967fe93a9dac6a9f5e07c8b"
+    },
+    {
+      "path": "previews/log-01-runtime.png",
+      "bytes": 632515,
+      "sha256": "30398093d6eff853aa0865323bb8fefb3d81b878cc34a8e8c691eb34e4fde850"
+    },
+    {
+      "path": "previews/log-01-source.png",
+      "bytes": 649063,
+      "sha256": "1c408b25deed7a1d0bf64c33a07d20767850685791a517a2c16e69d820910fc2"
+    },
+    {
+      "path": "previews/log-02-runtime.png",
+      "bytes": 638566,
+      "sha256": "e43145ae0a5bd5e92e61329e316bfc8a6a3dec4559b8d51c93a5371160c0358b"
+    },
+    {
+      "path": "previews/log-02-source.png",
+      "bytes": 652533,
+      "sha256": "8fd983b0c11d107ad273410f4662af6674a6c023564328d5e0f5ac596237baf0"
+    },
+    {
+      "path": "previews/stump-01-runtime.png",
+      "bytes": 658670,
+      "sha256": "ef99d21f8352c6b280c672b4d1cb1a1882873656a90095c8fdce3c4a2cd755f0"
+    },
+    {
+      "path": "previews/stump-01-source.png",
+      "bytes": 686288,
+      "sha256": "f32df3a97f02f53e4b329162df72d51e33be1ce988adad60cf1ce58b785019c7"
+    },
+    {
+      "path": "previews/stump-02-runtime.png",
+      "bytes": 665650,
+      "sha256": "319a673486be69344fe31883c2eb5c108620fc199c419a1705161013b859c136"
+    },
+    {
+      "path": "previews/stump-02-source.png",
+      "bytes": 695586,
+      "sha256": "3ed1445da8b06e1ec61de0d760ed3b93471ddc61d61e3d0fc9d781dddbdc3136"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 6896,
+      "sha256": "0efc7f0d05df08305c7e9cc9781e9621f902702285477bc5bb22c8897192139d"
+    },
+    {
+      "path": "runtime/crate-01.glb",
+      "bytes": 387408,
+      "sha256": "a738afe1450e212a5b412cba0cf14a80817f7009703192cfa708c06f8fb76c5e"
+    },
+    {
+      "path": "runtime/crate-02.glb",
+      "bytes": 371896,
+      "sha256": "1d609e2d0be264ccd7ab747b986dba40e609572d17a1fa15d0a5a85f293757df"
+    },
+    {
+      "path": "runtime/log-01.glb",
+      "bytes": 359760,
+      "sha256": "9dbcdd9e270fdab0a3c2e4dac7d0db991a75875789698dcd1b1a7815f85c9318"
+    },
+    {
+      "path": "runtime/log-02.glb",
+      "bytes": 361792,
+      "sha256": "452dc4dc74da5bfa1987549304d300bfb5da55e5cced6200d06f5a10ef599c76"
+    },
+    {
+      "path": "runtime/stump-01.glb",
+      "bytes": 309724,
+      "sha256": "003258f9b1d205bf90d51f7707c807ce5aa8f6db0f069a8649e5b81478dda72c"
+    },
+    {
+      "path": "runtime/stump-02.glb",
+      "bytes": 337836,
+      "sha256": "804de8c34934112d5369bf4317beafe04c7f6cf9938eeeb567d8cba2d0eda53a"
+    }
+  ],
+  "sources": [
+    {
+      "path": "assets/inbox/tree stump 3d model.glb",
+      "sha256": "14563d744b262936e3240f4f0f36d8da8c11b1212cb851ecad724be66b7a31b5"
+    },
+    {
+      "path": "assets/inbox/tree stump 3d model (1).glb",
+      "sha256": "6200f786b02a10f8bfe93b92e416d8d7a4f638bb7142bad356c51df6ae9931e0"
+    },
+    {
+      "path": "assets/inbox/wood log 3d model.glb",
+      "sha256": "119adb4caafd480bc02890f9d887f954f5ebf94b44841a81ed776266bfe5ece0"
+    },
+    {
+      "path": "assets/inbox/wooden log 3d model.glb",
+      "sha256": "58b3be35f12cdc61ec9ea11366b2048e3229513107ce3d47052679bc057e0772"
+    },
+    {
+      "path": "assets/inbox/wooden crate 3d model.glb",
+      "sha256": "c4cf6e68be8939633b62c6cf0a4c73ef7b2742675af221f0bfc593f2d1a25ec8"
+    },
+    {
+      "path": "assets/inbox/wooden crate 3d model (1).glb",
+      "sha256": "d6e86062eec8ce9d45bede573c18581f6d996f9e77741dc7c3ed85213ed0f114"
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "allStaticPoliciesPassed": true
+  },
+  "licenseStatus": "User-provided project assets; separate commercial provider receipt not supplied."
+}

@@ -1,5 +1,5 @@
 {
-  "method": "256x192 renders of actual model assets for editor thumbnails; WebGL captures unless a per-entry rendering method is specified.",
+  "method": "256x192 WebGL renders of the actual current runtime object models; editor thumbnails only.",
   "source": "assets/catalog/preview.html",
   "generator": "scripts/capture-asset-previews.py",
   "variants": [
@@ -957,6 +957,132 @@
           1.3542275428771973,
           0.24949732422828674
         ]
+      }
+    },
+    {
+      "kind": "stump",
+      "variant": "kit-tripo-stump-01",
+      "label": "Baumstumpf 1 · Tripo",
+      "file": "assets/catalog/stump-kit-tripo-stump-01.webp",
+      "bytes": 4398,
+      "sha256": "dfe4c8cacfad43a2914353079bbffa7815ef2ea70a06ced03ff57fa170754d0a",
+      "renderedBounds": {
+        "min": [
+          4799.214030623436,
+          0.009999999776482582,
+          -0.7611581087112427
+        ],
+        "max": [
+          4800.785969376564,
+          0.8091816399246454,
+          0.7611581087112427
+        ],
+        "span": 2.609174414173721
+      }
+    },
+    {
+      "kind": "stump",
+      "variant": "kit-tripo-stump-02",
+      "label": "Baumstumpf 2 · Tripo",
+      "file": "assets/catalog/stump-kit-tripo-stump-02.webp",
+      "bytes": 4014,
+      "sha256": "70faaaf6fe8e17c480d16648e7cd8489f869b3ba263085ddf09f67a3856d7f6a",
+      "renderedBounds": {
+        "min": [
+          4879.32141572237,
+          0.009999999776482582,
+          -0.6759328842163086
+        ],
+        "max": [
+          4880.67858427763,
+          1.058571944013238,
+          0.6759328842163086
+        ],
+        "span": 2.4458478519290057
+      }
+    },
+    {
+      "kind": "log",
+      "variant": "kit-tripo-log-01",
+      "label": "Liegender Stamm 1 · Tripo",
+      "file": "assets/catalog/log-kit-tripo-log-01.webp",
+      "bytes": 4274,
+      "sha256": "b8c019fcb949dccf7abf33240fd0d9a9c24ae5d8be40e85dc01a7b527f6c6bab",
+      "renderedBounds": {
+        "min": [
+          4959.506118297577,
+          0.009999999776482582,
+          -1.594696044921875
+        ],
+        "max": [
+          4960.493881702423,
+          1.0149514768272638,
+          1.594696044921875
+        ],
+        "span": 3.9052242997632214
+      }
+    },
+    {
+      "kind": "log",
+      "variant": "kit-tripo-log-02",
+      "label": "Liegender Stamm 2 · Tripo",
+      "file": "assets/catalog/log-kit-tripo-log-02.webp",
+      "bytes": 4252,
+      "sha256": "2b13a6bfc6bfc82de6e6c20c000d5f725a6247aaeb24f4ee899990850454c1b5",
+      "renderedBounds": {
+        "min": [
+          5039.520022839308,
+          0.009999999776482582,
+          -1.4988176822662354
+        ],
+        "max": [
+          5040.479977160692,
+          1.3346592281013727,
+          1.4988176822662354
+        ],
+        "span": 3.824771655372257
+      }
+    },
+    {
+      "kind": "crate",
+      "variant": "kit-tripo-crate-01",
+      "label": "Holzkiste 1 · Tripo",
+      "file": "assets/catalog/crate-kit-tripo-crate-01.webp",
+      "bytes": 6918,
+      "sha256": "859c1f15ea38ee505c29b61bc4cf486c232b581c88b52c2d78e9d08298c7f04d",
+      "renderedBounds": {
+        "min": [
+          5199.424597859383,
+          0.009999999776482582,
+          -0.5769929885864258
+        ],
+        "max": [
+          5200.575402140617,
+          0.9614687655121088,
+          0.5769929885864258
+        ],
+        "span": 2.1136055723052847
+      }
+    },
+    {
+      "kind": "crate",
+      "variant": "kit-tripo-crate-02",
+      "label": "Holzkiste 2 · Tripo",
+      "file": "assets/catalog/crate-kit-tripo-crate-02.webp",
+      "bytes": 5980,
+      "sha256": "f76b80ff8fe8417614f02ceac4420cb5cbe41ab23b37ca514d8f2e143e03b462",
+      "renderedBounds": {
+        "min": [
+          5279.29905796051,
+          0.009999999776482582,
+          -0.5366185903549194
+        ],
+        "max": [
+          5280.70094203949,
+          0.6487597320228815,
+          0.5366185903549194
+        ],
+        "span": 2.102837212451802
       }
     }
   ],

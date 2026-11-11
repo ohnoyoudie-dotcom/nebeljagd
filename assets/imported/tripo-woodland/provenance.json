@@ -1,0 +1,239 @@
+{
+  "name": "nebeljagd-tripo-woodland",
+  "version": 1,
+  "sourceOrigin": "Six user-provided project uploads; editor/game integration explicitly requested.",
+  "providerInvoked": false,
+  "preparation": {
+    "command": "blender -b -t 3 --python scripts/prepare-tripo-woodland.py",
+    "blender": "4.3.2",
+    "scripts": {
+      "scripts/prepare-tripo-woodland.py": "233bb5a120c8a593060c76247df0f6cfa33df1a1e03de20fee4306309b2cec49",
+      "scripts/prepare-tripo-props.py": "2840846b7cb28f337d4c2e60794028c1b8b5dbd8b7cbe671ef126226d6f8ce28"
+    },
+    "method": "Uniform metric scaling, centering and grounding; UV-preserving cleanup and decimation; original embedded PBR textures resampled to colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85 with 4:4:4 channels. Source orientation retained, logs lie along Z."
+  },
+  "assets": [
+    {
+      "id": "stump-01",
+      "source": {
+        "path": "assets/inbox/tree stump 3d model.glb",
+        "bytes": 68743476,
+        "sha256": "14563d744b262936e3240f4f0f36d8da8c11b1212cb851ecad724be66b7a31b5",
+        "triangles": 1997310,
+        "vertices": 1024465,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/stump-01.glb",
+        "bytes": 309724,
+        "sha256": "003258f9b1d205bf90d51f7707c807ce5aa8f6db0f069a8649e5b81478dda72c",
+        "triangles": 8000,
+        "vertices": 6258,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "stump-02",
+      "source": {
+        "path": "assets/inbox/tree stump 3d model (1).glb",
+        "bytes": 69535444,
+        "sha256": "6200f786b02a10f8bfe93b92e416d8d7a4f638bb7142bad356c51df6ae9931e0",
+        "triangles": 1956436,
+        "vertices": 1012342,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/stump-02.glb",
+        "bytes": 337836,
+        "sha256": "804de8c34934112d5369bf4317beafe04c7f6cf9938eeeb567d8cba2d0eda53a",
+        "triangles": 7999,
+        "vertices": 7033,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "log-01",
+      "source": {
+        "path": "assets/inbox/wood log 3d model.glb",
+        "bytes": 69249928,
+        "sha256": "119adb4caafd480bc02890f9d887f954f5ebf94b44841a81ed776266bfe5ece0",
+        "triangles": 1888955,
+        "vertices": 980662,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/log-01.glb",
+        "bytes": 359760,
+        "sha256": "9dbcdd9e270fdab0a3c2e4dac7d0db991a75875789698dcd1b1a7815f85c9318",
+        "triangles": 7997,
+        "vertices": 7116,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "log-02",
+      "source": {
+        "path": "assets/inbox/wooden log 3d model.glb",
+        "bytes": 70096048,
+        "sha256": "58b3be35f12cdc61ec9ea11366b2048e3229513107ce3d47052679bc057e0772",
+        "triangles": 1948245,
+        "vertices": 1011864,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/log-02.glb",
+        "bytes": 361792,
+        "sha256": "452dc4dc74da5bfa1987549304d300bfb5da55e5cced6200d06f5a10ef599c76",
+        "triangles": 7999,
+        "vertices": 7231,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "crate-01",
+      "source": {
+        "path": "assets/inbox/wooden crate 3d model.glb",
+        "bytes": 67066800,
+        "sha256": "c4cf6e68be8939633b62c6cf0a4c73ef7b2742675af221f0bfc593f2d1a25ec8",
+        "triangles": 1844527,
+        "vertices": 1004051,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/crate-01.glb",
+        "bytes": 387408,
+        "sha256": "a738afe1450e212a5b412cba0cf14a80817f7009703192cfa708c06f8fb76c5e",
+        "triangles": 6000,
+        "vertices": 8445,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    },
+    {
+      "id": "crate-02",
+      "source": {
+        "path": "assets/inbox/wooden crate 3d model (1).glb",
+        "bytes": 64751808,
+        "sha256": "d6e86062eec8ce9d45bede573c18581f6d996f9e77741dc7c3ed85213ed0f114",
+        "triangles": 1820802,
+        "vertices": 1007773,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/crate-02.glb",
+        "bytes": 371896,
+        "sha256": "1d609e2d0be264ccd7ab747b986dba40e609572d17a1fa15d0a5a85f293757df",
+        "triangles": 6000,
+        "vertices": 8132,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      }
+    }
+  ]
+}

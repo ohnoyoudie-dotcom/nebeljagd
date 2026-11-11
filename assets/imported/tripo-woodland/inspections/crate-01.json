@@ -1,0 +1,234 @@
+{
+  "id": "crate-01",
+  "label": "Holzkiste 1",
+  "source": {
+    "path": "assets/inbox/wooden crate 3d model.glb",
+    "bytes": 67066800,
+    "sha256": "c4cf6e68be8939633b62c6cf0a4c73ef7b2742675af221f0bfc593f2d1a25ec8",
+    "triangles": 1844527,
+    "vertices": 1004051,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-woodland/runtime/crate-01.glb",
+    "bytes": 387408,
+    "sha256": "a738afe1450e212a5b412cba0cf14a80817f7009703192cfa708c06f8fb76c5e",
+    "triangles": 6000,
+    "vertices": 8445,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 1.1767542079130624,
+    "blenderSourceBounds": [
+      [
+        -0.4886322021484375,
+        -0.4904938340187073,
+        0.0
+      ],
+      [
+        0.4886322021484375,
+        0.4904938340187073,
+        0.8079835176467896
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -0.574999988079071,
+        -0.5771906971931458,
+        0.0
+      ],
+      [
+        0.574999988079071,
+        0.5771906971931458,
+        0.9507980346679688
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      -0.0005321800708770752,
+      5.587935447692871e-05,
+      -0.0010981219820678234
+    ],
+    "gltfBounds": [
+      [
+        -0.5754021406173706,
+        0.0,
+        -0.5769929885864258
+      ],
+      [
+        0.5754021406173706,
+        0.9514687657356262,
+        0.5769929885864258
+      ]
+    ],
+    "dimensions": [
+      1.1508042812347412,
+      0.9514687657356262,
+      1.1539859771728516
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 783,
+      "gltfBounds": [
+        [
+          -0.5754021406173706,
+          0.0,
+          -0.5769929885864258
+        ],
+        [
+          0.5754021406173706,
+          0.14959368109703064,
+          0.5769929885864258
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 848,
+      "gltfBounds": [
+        [
+          -0.5674417018890381,
+          0.1502644568681717,
+          -0.5753880739212036
+        ],
+        [
+          0.5741872787475586,
+          0.5489477515220642,
+          0.57218337059021
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 1356,
+      "gltfBounds": [
+        [
+          -0.5656259059906006,
+          0.550330638885498,
+          -0.5643701553344727
+        ],
+        [
+          0.5651499032974243,
+          0.9496263861656189,
+          0.5635106563568115
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.95,
+        1.5
+      ],
+      "vertices": 1,
+      "gltfBounds": [
+        [
+          0.46938106417655945,
+          0.9514687657356262,
+          0.44142332673072815
+        ],
+        [
+          0.46938106417655945,
+          0.9514687657356262,
+          0.44142332673072815
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.00011499999999999999,
+    "before": {
+      "vertices": 1004051,
+      "faces": 1844527
+    },
+    "after": {
+      "vertices": 922245,
+      "faces": 1844513
+    }
+  },
+  "textures": [
+    {
+      "name": "wooden_crate_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        384,
+        384
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "wooden_crate_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "wooden_crate_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        128,
+        128
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 6000,
+    "textureLimit": 384,
+    "fileLimitBytes": 1048576
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  },
+  "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+}

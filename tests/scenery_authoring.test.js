@@ -6,7 +6,7 @@ import { AUTHORING_OBJECT_CATALOG, OBJECT_CATALOG, PLACEMENT_OBJECT_CATALOG,
 import { createScatterStroke, createVegetationStroke, createBiomeStroke } from '../src/map/landscape-brush.js';
 import { BIOME_PRESETS } from '../src/map/landscape.js';
 
-const retired = ['mound', 'flower', 'ruin', 'shrine', 'crate'];
+const retired = ['mound', 'flower', 'ruin', 'shrine'];
 const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 function fixture() {
   const map = structuredClone(base);
@@ -33,6 +33,10 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
   assert.equal(isObjectAvailable('house', 'kit-taverne'), false);
   assert.equal(isObjectAvailable('house', 'kit-tripo-castle'), false);
   assert.equal(isObjectAvailable('fence', 'kit-wood'), false);
+  assert.equal(isObjectAvailable('crate', 'kit-wood'), false);
+  for (const kind of ['stump', 'log', 'crate']) {
+    for (const suffix of ['01', '02']) assert.equal(isObjectAvailable(kind, `kit-tripo-${kind}-${suffix}`), true);
+  }
   assert.equal(isObjectAvailable('fence', 'kit-cross-wood'), true);
   for (const variant of ['granite', 'basalt', 'kit-cluster', 'kit-single']) assert.equal(isObjectAvailable('rock', variant), false);
   for (const variant of ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']) assert.equal(isObjectAvailable('rock', variant), true);
@@ -44,8 +48,9 @@ test('individual placement only offers approved Tripo assets; old trees remain l
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
     'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
     'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff',
-    'gravityStaff:kit-tripo-gravity-staff'];
-  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'starStaff', 'gravityStaff']);
+    'gravityStaff:kit-tripo-gravity-staff', 'stump:kit-tripo-stump-01', 'stump:kit-tripo-stump-02',
+    'log:kit-tripo-log-01', 'log:kit-tripo-log-02', 'crate:kit-tripo-crate-01', 'crate:kit-tripo-crate-02'];
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'starStaff', 'gravityStaff', 'stump', 'log', 'crate']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {
     assert.equal(isObjectPlaceable(definition.kind), true);

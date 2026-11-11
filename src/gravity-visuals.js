@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createGravityVortex } from './gravity-vortex.js';
 import { createStaffAimRing } from './staff-aim.js';
+import { createGravityParticleFlow } from './gravity-particles.js';
 
 const DEBRIS_COUNT = 64;
 const TRAIL_SEGMENTS = 8;
@@ -133,12 +134,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   }));
   const wave = new THREE.Mesh(geo(new THREE.RingGeometry(.82, 1, 96)), waveMat);
   wave.rotation.x = -Math.PI / 2; wave.position.y = .045; field.add(wave);
-  const secondWaveMat = mat(waveMat.clone()); secondWaveMat.uniforms.uColor.value.set('#763cb5');
-  const secondWave = new THREE.Mesh(wave.geometry, secondWaveMat);
-  secondWave.rotation.x = -Math.PI / 2; secondWave.position.y = .075; field.add(secondWave);
-  const thirdWaveMat = mat(secondWaveMat.clone()); thirdWaveMat.uniforms.uColor.value.set('#532c83');
-  const thirdWave = new THREE.Mesh(secondWave.geometry, thirdWaveMat);
-  thirdWave.rotation.x = -Math.PI / 2; thirdWave.position.y = .095; field.add(thirdWave);
+  wave.name = 'Gravitation · letzter Flächenimpuls';
   const flashMat = mat(new THREE.SpriteMaterial({ map: textures?.burst ?? null, color: '#ffffff', transparent: true,
     opacity: 0, blending: THREE.NormalBlending, depthWrite: false, toneMapped: false }));
   const flash = new THREE.Sprite(flashMat);
@@ -155,38 +151,10 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   const burstCore = new THREE.Mesh(sphereGeometry, burstCoreMat);
   burstCore.name = 'Gravitation · weißer Kern des Ausbruchs'; burstCore.visible = false; field.add(burstCore);
   const transform = new THREE.Object3D(), point = new THREE.Vector3();
+  const flow = createGravityParticleFlow(rules, DEBRIS_COUNT + DUST_COUNT);
+  const sample = {}, pastSample = {};
+  let liveDebris = 0, liveDust = 0, absorbingDebris = 0;
   let phase = 'idle', disposed = false;
-  function particle(index, age, out) {
-    const seed = (index * .61803398875) % 1;
-    const end = rules.warning + rules.pullDuration;
-    const time = Math.max(0, Math.min(age, end) - rules.warning * .55);
-    // Staggered streams continually replenish the rim. A zero-size transition
-    // at either end hides recycling; no frame delta or per-particle allocation.
-    const p = (seed + time * (.65 + seed * .4)) % 1;
-    const life = smooth(p / .12) * (1 - smooth((p - .85) / .15));
-    const spin = 1.1 * time + 1.8 * time ** 3;
-    let angle = index * 2.39996 - spin * (1 + seed * .35) - p * 2.4;
-    let radius = .12 + rules.radius * (1.1 - smooth(p));
-    let height = .10 + p * p * (.65 + seed * .5);
-    if (age >= end) {
-      const t = age - end;
-      if (index % 4 !== 0) {
-        // Most stones and dust keep their exact launch position, then fly
-        // outward and upward under gravity instead of vanishing into the orb.
-        radius += t * (3.5 + seed * 4.5);
-        height = Math.max(.06, height + t * (2 + seed * 2.8) - 4 * t * t);
-        angle += t * (seed - .5) * .7;
-      } else {
-        const intake = smooth(t / .5);
-        radius *= 1 - intake;
-        height += intake * 1.2;
-        out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
-        return life * (1 - intake);
-      }
-    }
-    out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
-    return life;
-  }
   function showAim(target, center, radius, age, visible) {
     aim.position.set(target.x, target.y + .055, target.z); aim.visible = visible;
     range.position.set(center.x, center.y + .055, center.z); range.visible = visible;
@@ -203,10 +171,13 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     const fade = collapse >= 0 ? 1 - collapse : 1;
     phase = collapse >= 0 ? 'collapse' : age < rules.warning * .55 ? 'impact' : age < rules.warning ? 'opening' : 'pull';
     const motion = vortex.update(center, age);
-    dust.visible = opening > 0;
+    dust.visible = opening > 0 && collapse < 0;
     dustMat.uniforms.uOpacity.value = .6 * fade;
+    liveDust = 0;
     for (let i = 0; i < DUST_COUNT; i++) {
-      dustLife[i] = particle(i + DEBRIS_COUNT, age, point);
+      flow.sample(i + DEBRIS_COUNT, age, sample);
+      dustLife[i] = sample.life; if (sample.life > .01) liveDust++;
+      point.set(sample.x, sample.y, sample.z);
       point.toArray(dustPositions, i * 3);
     }
     dustGeo.attributes.position.needsUpdate = dustGeo.attributes.life.needsUpdate = true;
@@ -245,52 +216,48 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     tetherGeo.setDrawRange(0, vertexIndex / 3);
     if (affectedCount) tetherGeo.attributes.position.needsUpdate = true;
     if (affectedCount) { markers.instanceMatrix.needsUpdate = true; victims.instanceMatrix.needsUpdate = true; }
-    const blastTime = Math.max(0, age - end);
-    flash.visible = burstCore.visible = collapse >= 0 && blastTime < .42;
+    flash.visible = burstCore.visible = collapse >= 0 && collapse < .75;
     flash.position.set(.18, motion.sphereHeight - .25, .75);
     burstCore.position.copy(flash.position);
     if (flash.visible) {
-      const intensity = (1 - smooth(blastTime / .42)) * (.8 + .2 * Math.cos(blastTime * 32) ** 2);
-      flash.scale.setScalar(3.8 + intensity * 2.8);
+      const intensity = 1 - smooth(collapse / .75);
+      flash.scale.setScalar(4.4 + 2.2 * smooth(collapse / .5));
       flashMat.opacity = intensity;
-      burstCore.scale.setScalar(.22 + intensity * .14);
+      burstCore.scale.setScalar(.36 * intensity);
       burstCoreMat.uniforms.uOpacity.value = intensity;
     }
     debrisMat.opacity = fade;
-    trails.visible = opening > 0;
+    debris.visible = trails.visible = opening > 0 && collapse < 0;
     trailMat.opacity = .10 * fade;
+    liveDebris = absorbingDebris = 0;
     for (let i = 0; i < DEBRIS_COUNT; i++) {
-      const life = particle(i, age, transform.position);
-      transform.rotation.set(age * (collapse >= 0 ? 7 : 2) + i, age + i * .8, age * 1.4);
+      flow.sample(i, age, sample);
+      const life = sample.life;
+      if (life > .01) { liveDebris++; if (sample.progress > .82) absorbingDebris++; }
+      transform.position.set(sample.x, sample.y, sample.z);
+      transform.rotation.set(age * 2 + i, age + i * .8, age * 1.4);
       transform.scale.setScalar((.055 + i % 5 * .022) * fade * life);
       if (i % 4 === 0) transform.scale.set(transform.scale.x * .25, transform.scale.y * 2.8, transform.scale.z * .45);
       transform.updateMatrix(); debris.setMatrixAt(i, transform.matrix);
       for (let j = 0; j < TRAIL_SEGMENTS; j++) for (let k = 0; k < 2; k++) {
         const back = (j + k) * .025;
-        particle(i, Math.max(0, age - back), point);
-        // Recycling never draws a long line from the centre to a new spawn.
-        if (point.distanceToSquared(transform.position) > rules.radius ** 2 * .5) point.copy(transform.position);
+        flow.sample(i, Math.max(0, age - back), pastSample);
+        point.set(pastSample.x, pastSample.y, pastSample.z);
+        // Each birth has its own trail. Gaps and swallowed particles leave no
+        // straight links across the field or remnants hanging in the air.
+        if (pastSample.event !== sample.event || pastSample.life <= .01 || life <= .01) point.copy(transform.position);
         point.toArray(trailPositions, (i * TRAIL_SEGMENTS * 2 + j * 2 + k) * 3);
       }
     }
     debris.instanceMatrix.needsUpdate = true; trailGeometry.attributes.position.needsUpdate = true;
-    shock.visible = wave.visible = secondWave.visible = thirdWave.visible = collapse >= 0;
+    shock.visible = wave.visible = collapse >= 0;
     if (collapse >= 0) {
-      const blast = clamp(blastTime / .65);
-      const spread = rules.radius * (.12 + 1.18 * (1 - (1 - blast) ** 4));
-      shock.position.y = motion.sphereHeight * (1 - smooth(blast)) + .10;
-      shock.scale.set(spread, .18 + Math.sin(blast * Math.PI) * .45, spread);
-      shockMat.uniforms.uFade.value = (1 - blast) ** 2 * .85;
-      shockMat.uniforms.uFlash.value = 1 - smooth(blast / .5);
-      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = (1 - blast) ** 1.5;
-      const delayed = clamp((blastTime - .10) / .75);
-      secondWave.visible = blastTime >= .10;
-      secondWave.scale.setScalar(rules.radius * (.08 + 1.12 * (1 - (1 - delayed) ** 3)));
-      secondWaveMat.uniforms.uOpacity.value = (1 - delayed) ** 2 * .85;
-      const last = clamp((blastTime - .24) / .86);
-      thirdWave.visible = blastTime >= .24;
-      thirdWave.scale.setScalar(rules.radius * (.10 + 1.02 * (1 - (1 - last) ** 3)));
-      thirdWaveMat.uniforms.uOpacity.value = (1 - last) ** 2 * .65;
+      const spread = rules.radius * (.10 + 1.12 * (1 - (1 - collapse) ** 3));
+      shock.position.y = motion.sphereHeight * (1 - smooth(collapse / .6)) + .10;
+      shock.scale.set(spread, .18 + Math.sin(collapse * Math.PI) * .3, spread);
+      shockMat.uniforms.uFade.value = (1 - collapse) ** 1.5 * .85;
+      shockMat.uniforms.uFlash.value = 1 - smooth(collapse / .5);
+      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = (1 - collapse) ** 1.25;
     }
   }
   function hideField() {
@@ -298,6 +265,8 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     targetMarkers.forEach(marker => { marker.visible = false; });
     markers.visible = victims.visible = false; markers.count = victims.count = 0;
     tethers.visible = false;
+    debris.visible = dust.visible = trails.visible = shock.visible = wave.visible = flash.visible = burstCore.visible = false;
+    liveDebris = liveDust = absorbingDebris = 0;
   }
   function countDraws(root) {
     let count = 0;
@@ -312,8 +281,12 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     get telemetry() { return { phase, fieldVisible: field.visible, aimVisible: aim.visible,
       fieldDraws: field.visible ? countDraws(field) : 0,
       vortex: { ...vortex.telemetry, sphereVisible: field.visible && vortex.telemetry.sphereVisible,
-        shellCount: field.visible ? vortex.telemetry.shellCount : 0 },
+        shellCount: field.visible ? vortex.telemetry.shellCount : 0,
+        capVisible: field.visible && vortex.telemetry.capVisible,
+        surfaceOpacity: field.visible ? vortex.telemetry.surfaceOpacity : 0 },
       debrisCount: DEBRIS_COUNT, dustCount: DUST_COUNT, affectedCount,
+      liveDebris: field.visible ? liveDebris : 0, liveDust: field.visible ? liveDust : 0,
+      absorbingDebris: field.visible ? absorbingDebris : 0,
       rangeRadius: rangeMesh.scale.x * rules.range }; },
     dispose() {
       if (disposed) return;

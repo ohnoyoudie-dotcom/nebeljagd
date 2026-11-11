@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { createWeapons, TRIPO_WEAPON_VARIANTS } from '../src/weapons.js';
 import { createCombat } from '../src/combat.js';
 import { weaponStats, rarityVisual } from '../src/loot-tiers.js';
+import { GRAVITY_RULES } from '../src/gravity-spell.js';
 
 // In-memory stand-ins exercise the runtime contract without a DOM/image loader.
 // Browser smoke tests use the actual embedded GLBs and their texture maps.
@@ -216,7 +217,9 @@ test('Tripo sword and staffs retain real melee, ranged damage, burn and slow beh
       weapons.releaseAttack(actor.position);
     }
     const tips = [];
-    for (let i = 0; i < (kind === 'poisonStaff' ? 110 : kind === 'gravityStaff' ? 50 : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
+    const gravityFrames = kind === 'gravityStaff' ? Math.ceil(((weapons.telemetry.gravity.flight?.duration ?? 0)
+      + GRAVITY_RULES.warning + GRAVITY_RULES.pullDuration + GRAVITY_RULES.afterglow + .05) / .04) : 0;
+    for (let i = 0; i < (kind === 'poisonStaff' ? 110 : kind === 'gravityStaff' ? gravityFrames : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
     const expected = weaponStats(kind, 'legendary');
     assert.ok(Math.abs(target.health - (500 - expected.damage)) < 1e-6, `${variant} deals the tier damage, spread over the cloud lifetime for poison`);
     if (kind === 'poisonStaff') assert.ok(weapons.telemetry.damageHits > 1);

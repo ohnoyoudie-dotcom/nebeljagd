@@ -1,0 +1,234 @@
+{
+  "id": "log-01",
+  "label": "Liegender Stamm 1",
+  "source": {
+    "path": "assets/inbox/wood log 3d model.glb",
+    "bytes": 69249928,
+    "sha256": "119adb4caafd480bc02890f9d887f954f5ebf94b44841a81ed776266bfe5ece0",
+    "triangles": 1888955,
+    "vertices": 980662,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-woodland/runtime/log-01.glb",
+    "bytes": 359760,
+    "sha256": "9dbcdd9e270fdab0a3c2e4dac7d0db991a75875789698dcd1b1a7815f85c9318",
+    "triangles": 7997,
+    "vertices": 7116,
+    "meshes": 1,
+    "materials": 1,
+    "embeddedImages": 3,
+    "externalUris": [],
+    "animations": 0,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "uniformScale": 3.2593826738366856,
+    "blenderSourceBounds": [
+      [
+        -0.1518707275390625,
+        -0.4908905029296875,
+        0.0
+      ],
+      [
+        0.1518707275390625,
+        0.4908905029296875,
+        0.3084564507007599
+      ]
+    ],
+    "scaledSourceBounds": [
+      [
+        -0.4950048327445984,
+        -1.600000023841858,
+        0.0
+      ],
+      [
+        0.4950048327445984,
+        1.600000023841858,
+        1.0053776502609253
+      ]
+    ],
+    "centerGroundOffsetBlender": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "simplifiedCenterGroundOffsetBlender": [
+      -0.0005940347909927368,
+      -0.0018352866172790527,
+      -0.0001961153029697016
+    ],
+    "gltfBounds": [
+      [
+        -0.4938817024230957,
+        0.0,
+        -1.594696044921875
+      ],
+      [
+        0.4938817024230957,
+        1.0049514770507812,
+        1.594696044921875
+      ]
+    ],
+    "dimensions": [
+      0.9877634048461914,
+      1.0049514770507812,
+      3.18939208984375
+    ],
+    "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+  },
+  "heightBands": [
+    {
+      "heightRange": [
+        0,
+        0.15
+      ],
+      "vertices": 801,
+      "gltfBounds": [
+        [
+          -0.40021616220474243,
+          0.0,
+          -1.594696044921875
+        ],
+        [
+          0.35679614543914795,
+          0.14972251653671265,
+          1.5938365459442139
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.15,
+        0.55
+      ],
+      "vertices": 1394,
+      "gltfBounds": [
+        [
+          -0.4938817024230957,
+          0.15034152567386627,
+          -1.5931599140167236
+        ],
+        [
+          0.4938817024230957,
+          0.548664391040802,
+          1.5930726528167725
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.55,
+        0.95
+      ],
+      "vertices": 1755,
+      "gltfBounds": [
+        [
+          -0.4838634729385376,
+          0.5504156947135925,
+          -1.5940961837768555
+        ],
+        [
+          0.4827079176902771,
+          0.9491729140281677,
+          1.594696044921875
+        ]
+      ]
+    },
+    {
+      "heightRange": [
+        0.95,
+        1.5
+      ],
+      "vertices": 36,
+      "gltfBounds": [
+        [
+          -0.02202504314482212,
+          0.950646162033081,
+          0.9396297931671143
+        ],
+        [
+          0.23314832150936127,
+          1.0049514770507812,
+          1.2105913162231445
+        ]
+      ]
+    }
+  ],
+  "cleanup": {
+    "weldDistanceMetres": 0.00032,
+    "before": {
+      "vertices": 980662,
+      "faces": 1888955
+    },
+    "after": {
+      "vertices": 944194,
+      "faces": 1888410
+    }
+  },
+  "textures": [
+    {
+      "name": "wood_log_3d_model_basecolor.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        384,
+        384
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "wood_log_3d_model_normal.png",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ],
+      "format": "JPEG"
+    },
+    {
+      "name": "wood_log_3d_model_rm.jpg",
+      "sourceSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        128,
+        128
+      ],
+      "format": "JPEG"
+    }
+  ],
+  "policy": {
+    "triangleBudget": 8000,
+    "textureLimit": 384,
+    "fileLimitBytes": 1048576
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "embeddedDependenciesOnly": true,
+    "triangleBudgetPassed": true,
+    "fileBudgetPassed": true,
+    "preservedUVAndNormals": true,
+    "preservedMaterialCount": true
+  },
+  "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+}

@@ -1,0 +1,1370 @@
+{
+  "assets": [
+    {
+      "id": "stump-01",
+      "label": "Baumstumpf 1",
+      "source": {
+        "path": "assets/inbox/tree stump 3d model.glb",
+        "bytes": 68743476,
+        "sha256": "14563d744b262936e3240f4f0f36d8da8c11b1212cb851ecad724be66b7a31b5",
+        "triangles": 1997310,
+        "vertices": 1024465,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/stump-01.glb",
+        "bytes": 309724,
+        "sha256": "003258f9b1d205bf90d51f7707c807ce5aa8f6db0f069a8649e5b81478dda72c",
+        "triangles": 8000,
+        "vertices": 6258,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 1.6031801363789255,
+        "blenderSourceBounds": [
+          [
+            -0.489532470703125,
+            -0.4746856689453125,
+            0.0
+          ],
+          [
+            0.489532470703125,
+            0.4746856689453125,
+            0.4990081787109375
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.7848087549209595,
+            -0.7610066533088684,
+            0.0
+          ],
+          [
+            0.7848087549209595,
+            0.7610066533088684,
+            0.800000011920929
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0010099709033966064,
+          0.00018835067749023438,
+          -0.0001765715715009719
+        ],
+        "gltfBounds": [
+          [
+            -0.7859693765640259,
+            0.0,
+            -0.7611581087112427
+          ],
+          [
+            0.7859693765640259,
+            0.7991816401481628,
+            0.7611581087112427
+          ]
+        ],
+        "dimensions": [
+          1.5719387531280518,
+          0.7991816401481628,
+          1.5223162174224854
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 1288,
+          "gltfBounds": [
+            [
+              -0.7859693765640259,
+              0.0,
+              -0.7611581087112427
+            ],
+            [
+              0.7859693765640259,
+              0.14996717870235443,
+              0.7611581087112427
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1909,
+          "gltfBounds": [
+            [
+              -0.6918524503707886,
+              0.1500740796327591,
+              -0.6948140263557434
+            ],
+            [
+              0.6246637105941772,
+              0.549856960773468,
+              0.6954254508018494
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 805,
+          "gltfBounds": [
+            [
+              -0.4932681918144226,
+              0.550555944442749,
+              -0.5152686238288879
+            ],
+            [
+              0.4501235783100128,
+              0.7991816401481628,
+              0.45288822054862976
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 8e-05,
+        "before": {
+          "vertices": 1024465,
+          "faces": 1997310
+        },
+        "after": {
+          "vertices": 998657,
+          "faces": 1997310
+        }
+      },
+      "textures": [
+        {
+          "name": "tree_stump_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            384,
+            384
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "tree_stump_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            256,
+            256
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "tree_stump_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            128,
+            128
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 8000,
+        "textureLimit": 384,
+        "fileLimitBytes": 1048576
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      },
+      "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+    },
+    {
+      "id": "stump-02",
+      "label": "Baumstumpf 2",
+      "source": {
+        "path": "assets/inbox/tree stump 3d model (1).glb",
+        "bytes": 69535444,
+        "sha256": "6200f786b02a10f8bfe93b92e416d8d7a4f638bb7142bad356c51df6ae9931e0",
+        "triangles": 1956436,
+        "vertices": 1012342,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/stump-02.glb",
+        "bytes": 337836,
+        "sha256": "804de8c34934112d5369bf4317beafe04c7f6cf9938eeeb567d8cba2d0eda53a",
+        "triangles": 7999,
+        "vertices": 7033,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 1.381172975793826,
+        "blenderSourceBounds": [
+          [
+            -0.4905548095703125,
+            -0.4894256591796875,
+            0.0
+          ],
+          [
+            0.4905548095703125,
+            0.4894256591796875,
+            0.760223388671875
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.6775410771369934,
+            -0.6759815216064453,
+            0.0
+          ],
+          [
+            0.6775410771369934,
+            0.6759815216064453,
+            1.0500000715255737
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0014876127243041992,
+          0.0011145174503326416,
+          0.0018343126866966486
+        ],
+        "gltfBounds": [
+          [
+            -0.6785842776298523,
+            0.0,
+            -0.6759328842163086
+          ],
+          [
+            0.6785842776298523,
+            1.0485719442367554,
+            0.6759328842163086
+          ]
+        ],
+        "dimensions": [
+          1.3571685552597046,
+          1.0485719442367554,
+          1.3518657684326172
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 1294,
+          "gltfBounds": [
+            [
+              -0.6785842776298523,
+              0.0,
+              -0.6759328842163086
+            ],
+            [
+              0.6785842776298523,
+              0.14999671280384064,
+              0.6759328842163086
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1708,
+          "gltfBounds": [
+            [
+              -0.45947301387786865,
+              0.15005503594875336,
+              -0.5165809392929077
+            ],
+            [
+              0.4960585832595825,
+              0.5494068264961243,
+              0.514102578163147
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 948,
+          "gltfBounds": [
+            [
+              -0.2649194896221161,
+              0.5501224994659424,
+              -0.3473920226097107
+            ],
+            [
+              0.3931858539581299,
+              0.948326826095581,
+              0.34455275535583496
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 51,
+          "gltfBounds": [
+            [
+              -0.2390698343515396,
+              0.9505549073219299,
+              -0.22193452715873718
+            ],
+            [
+              -0.06363427639007568,
+              1.0485719442367554,
+              0.14308156073093414
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.000105,
+        "before": {
+          "vertices": 1012342,
+          "faces": 1956436
+        },
+        "after": {
+          "vertices": 978147,
+          "faces": 1956289
+        }
+      },
+      "textures": [
+        {
+          "name": "tree_stump_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            384,
+            384
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "tree_stump_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            256,
+            256
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "tree_stump_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            128,
+            128
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 8000,
+        "textureLimit": 384,
+        "fileLimitBytes": 1048576
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      },
+      "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+    },
+    {
+      "id": "log-01",
+      "label": "Liegender Stamm 1",
+      "source": {
+        "path": "assets/inbox/wood log 3d model.glb",
+        "bytes": 69249928,
+        "sha256": "119adb4caafd480bc02890f9d887f954f5ebf94b44841a81ed776266bfe5ece0",
+        "triangles": 1888955,
+        "vertices": 980662,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/log-01.glb",
+        "bytes": 359760,
+        "sha256": "9dbcdd9e270fdab0a3c2e4dac7d0db991a75875789698dcd1b1a7815f85c9318",
+        "triangles": 7997,
+        "vertices": 7116,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 3.2593826738366856,
+        "blenderSourceBounds": [
+          [
+            -0.1518707275390625,
+            -0.4908905029296875,
+            0.0
+          ],
+          [
+            0.1518707275390625,
+            0.4908905029296875,
+            0.3084564507007599
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.4950048327445984,
+            -1.600000023841858,
+            0.0
+          ],
+          [
+            0.4950048327445984,
+            1.600000023841858,
+            1.0053776502609253
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0005940347909927368,
+          -0.0018352866172790527,
+          -0.0001961153029697016
+        ],
+        "gltfBounds": [
+          [
+            -0.4938817024230957,
+            0.0,
+            -1.594696044921875
+          ],
+          [
+            0.4938817024230957,
+            1.0049514770507812,
+            1.594696044921875
+          ]
+        ],
+        "dimensions": [
+          0.9877634048461914,
+          1.0049514770507812,
+          3.18939208984375
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 801,
+          "gltfBounds": [
+            [
+              -0.40021616220474243,
+              0.0,
+              -1.594696044921875
+            ],
+            [
+              0.35679614543914795,
+              0.14972251653671265,
+              1.5938365459442139
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1394,
+          "gltfBounds": [
+            [
+              -0.4938817024230957,
+              0.15034152567386627,
+              -1.5931599140167236
+            ],
+            [
+              0.4938817024230957,
+              0.548664391040802,
+              1.5930726528167725
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 1755,
+          "gltfBounds": [
+            [
+              -0.4838634729385376,
+              0.5504156947135925,
+              -1.5940961837768555
+            ],
+            [
+              0.4827079176902771,
+              0.9491729140281677,
+              1.594696044921875
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 36,
+          "gltfBounds": [
+            [
+              -0.02202504314482212,
+              0.950646162033081,
+              0.9396297931671143
+            ],
+            [
+              0.23314832150936127,
+              1.0049514770507812,
+              1.2105913162231445
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00032,
+        "before": {
+          "vertices": 980662,
+          "faces": 1888955
+        },
+        "after": {
+          "vertices": 944194,
+          "faces": 1888410
+        }
+      },
+      "textures": [
+        {
+          "name": "wood_log_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            384,
+            384
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wood_log_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            256,
+            256
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wood_log_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            128,
+            128
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 8000,
+        "textureLimit": 384,
+        "fileLimitBytes": 1048576
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      },
+      "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+    },
+    {
+      "id": "log-02",
+      "label": "Liegender Stamm 2",
+      "source": {
+        "path": "assets/inbox/wooden log 3d model.glb",
+        "bytes": 70096048,
+        "sha256": "58b3be35f12cdc61ec9ea11366b2048e3229513107ce3d47052679bc057e0772",
+        "triangles": 1948245,
+        "vertices": 1011864,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/log-02.glb",
+        "bytes": 361792,
+        "sha256": "452dc4dc74da5bfa1987549304d300bfb5da55e5cced6200d06f5a10ef599c76",
+        "triangles": 7999,
+        "vertices": 7231,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 3.0581427904806344,
+        "blenderSourceBounds": [
+          [
+            -0.156494140625,
+            -0.4904937744140625,
+            0.0
+          ],
+          [
+            0.156494140625,
+            0.4904937744140625,
+            0.432464599609375
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.4785814583301544,
+            -1.5,
+            0.0
+          ],
+          [
+            0.4785814583301544,
+            1.5,
+            1.3225384950637817
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0003803372383117676,
+          -0.0011424422264099121,
+          -0.00034844523179344833
+        ],
+        "gltfBounds": [
+          [
+            -0.47997716069221497,
+            0.0,
+            -1.4988176822662354
+          ],
+          [
+            0.47997716069221497,
+            1.3246592283248901,
+            1.4988176822662354
+          ]
+        ],
+        "dimensions": [
+          0.9599543213844299,
+          1.3246592283248901,
+          2.9976353645324707
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 497,
+          "gltfBounds": [
+            [
+              -0.44136661291122437,
+              0.0,
+              -1.416750192642212
+            ],
+            [
+              0.44225335121154785,
+              0.14994069933891296,
+              1.4926443099975586
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1356,
+          "gltfBounds": [
+            [
+              -0.47997716069221497,
+              0.15020139515399933,
+              -1.4407172203063965
+            ],
+            [
+              0.47997716069221497,
+              0.5497802495956421,
+              1.4988176822662354
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 1955,
+          "gltfBounds": [
+            [
+              -0.43921127915382385,
+              0.5501368045806885,
+              -1.4988176822662354
+            ],
+            [
+              0.44090500473976135,
+              0.948916494846344,
+              1.4655399322509766
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 190,
+          "gltfBounds": [
+            [
+              -0.0944814383983612,
+              0.9524883031845093,
+              -0.6743219494819641
+            ],
+            [
+              0.32120591402053833,
+              1.3246592283248901,
+              -0.3126397430896759
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00030000000000000003,
+        "before": {
+          "vertices": 1011864,
+          "faces": 1948245
+        },
+        "after": {
+          "vertices": 974042,
+          "faces": 1948085
+        }
+      },
+      "textures": [
+        {
+          "name": "wooden_log_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            384,
+            384
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_log_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            256,
+            256
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_log_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            128,
+            128
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 8000,
+        "textureLimit": 384,
+        "fileLimitBytes": 1048576
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      },
+      "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+    },
+    {
+      "id": "crate-01",
+      "label": "Holzkiste 1",
+      "source": {
+        "path": "assets/inbox/wooden crate 3d model.glb",
+        "bytes": 67066800,
+        "sha256": "c4cf6e68be8939633b62c6cf0a4c73ef7b2742675af221f0bfc593f2d1a25ec8",
+        "triangles": 1844527,
+        "vertices": 1004051,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/crate-01.glb",
+        "bytes": 387408,
+        "sha256": "a738afe1450e212a5b412cba0cf14a80817f7009703192cfa708c06f8fb76c5e",
+        "triangles": 6000,
+        "vertices": 8445,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 1.1767542079130624,
+        "blenderSourceBounds": [
+          [
+            -0.4886322021484375,
+            -0.4904938340187073,
+            0.0
+          ],
+          [
+            0.4886322021484375,
+            0.4904938340187073,
+            0.8079835176467896
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.574999988079071,
+            -0.5771906971931458,
+            0.0
+          ],
+          [
+            0.574999988079071,
+            0.5771906971931458,
+            0.9507980346679688
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -0.0005321800708770752,
+          5.587935447692871e-05,
+          -0.0010981219820678234
+        ],
+        "gltfBounds": [
+          [
+            -0.5754021406173706,
+            0.0,
+            -0.5769929885864258
+          ],
+          [
+            0.5754021406173706,
+            0.9514687657356262,
+            0.5769929885864258
+          ]
+        ],
+        "dimensions": [
+          1.1508042812347412,
+          0.9514687657356262,
+          1.1539859771728516
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 783,
+          "gltfBounds": [
+            [
+              -0.5754021406173706,
+              0.0,
+              -0.5769929885864258
+            ],
+            [
+              0.5754021406173706,
+              0.14959368109703064,
+              0.5769929885864258
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 848,
+          "gltfBounds": [
+            [
+              -0.5674417018890381,
+              0.1502644568681717,
+              -0.5753880739212036
+            ],
+            [
+              0.5741872787475586,
+              0.5489477515220642,
+              0.57218337059021
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 1356,
+          "gltfBounds": [
+            [
+              -0.5656259059906006,
+              0.550330638885498,
+              -0.5643701553344727
+            ],
+            [
+              0.5651499032974243,
+              0.9496263861656189,
+              0.5635106563568115
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.95,
+            1.5
+          ],
+          "vertices": 1,
+          "gltfBounds": [
+            [
+              0.46938106417655945,
+              0.9514687657356262,
+              0.44142332673072815
+            ],
+            [
+              0.46938106417655945,
+              0.9514687657356262,
+              0.44142332673072815
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00011499999999999999,
+        "before": {
+          "vertices": 1004051,
+          "faces": 1844527
+        },
+        "after": {
+          "vertices": 922245,
+          "faces": 1844513
+        }
+      },
+      "textures": [
+        {
+          "name": "wooden_crate_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            384,
+            384
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_crate_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            256,
+            256
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_crate_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            128,
+            128
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 6000,
+        "textureLimit": 384,
+        "fileLimitBytes": 1048576
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      },
+      "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+    },
+    {
+      "id": "crate-02",
+      "label": "Holzkiste 2",
+      "source": {
+        "path": "assets/inbox/wooden crate 3d model (1).glb",
+        "bytes": 64751808,
+        "sha256": "d6e86062eec8ce9d45bede573c18581f6d996f9e77741dc7c3ed85213ed0f114",
+        "triangles": 1820802,
+        "vertices": 1007773,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "runtime": {
+        "path": "assets/imported/tripo-woodland/runtime/crate-02.glb",
+        "bytes": 371896,
+        "sha256": "1d609e2d0be264ccd7ab747b986dba40e609572d17a1fa15d0a5a85f293757df",
+        "triangles": 6000,
+        "vertices": 8132,
+        "meshes": 1,
+        "materials": 1,
+        "embeddedImages": 3,
+        "externalUris": [],
+        "animations": 0,
+        "attributes": [
+          "NORMAL",
+          "POSITION",
+          "TEXCOORD_0"
+        ]
+      },
+      "normalization": {
+        "uniformScale": 1.4281553321316158,
+        "blenderSourceBounds": [
+          [
+            -0.4901427626609802,
+            -0.3766480088233948,
+            0.0
+          ],
+          [
+            0.4901427626609802,
+            0.3766480088233948,
+            0.4466246962547302
+          ]
+        ],
+        "scaledSourceBounds": [
+          [
+            -0.699999988079071,
+            -0.5379118323326111,
+            0.0
+          ],
+          [
+            0.699999988079071,
+            0.5379118323326111,
+            0.6378494501113892
+          ]
+        ],
+        "centerGroundOffsetBlender": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "simplifiedCenterGroundOffsetBlender": [
+          -1.3142824172973633e-05,
+          -0.00013557076454162598,
+          0.0002975340757984668
+        ],
+        "gltfBounds": [
+          [
+            -0.7009420394897461,
+            0.0,
+            -0.5366185903549194
+          ],
+          [
+            0.7009420394897461,
+            0.6387597322463989,
+            0.5366185903549194
+          ]
+        ],
+        "dimensions": [
+          1.4018840789794922,
+          0.6387597322463989,
+          1.0732371807098389
+        ],
+        "axes": "glTF +Y up, +Z front; original orientation retained; X/Z centered; bottom Y=0"
+      },
+      "heightBands": [
+        {
+          "heightRange": [
+            0,
+            0.15
+          ],
+          "vertices": 793,
+          "gltfBounds": [
+            [
+              -0.7009420394897461,
+              0.0,
+              -0.5366185903549194
+            ],
+            [
+              0.7009420394897461,
+              0.1499709039926529,
+              0.5366185903549194
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.15,
+            0.55
+          ],
+          "vertices": 1570,
+          "gltfBounds": [
+            [
+              -0.6935917139053345,
+              0.15026086568832397,
+              -0.5271880626678467
+            ],
+            [
+              0.6952191591262817,
+              0.5497000217437744,
+              0.5293910503387451
+            ]
+          ]
+        },
+        {
+          "heightRange": [
+            0.55,
+            0.95
+          ],
+          "vertices": 639,
+          "gltfBounds": [
+            [
+              -0.6930315494537354,
+              0.5502510666847229,
+              -0.5208966732025146
+            ],
+            [
+              0.6920102834701538,
+              0.6387597322463989,
+              0.5257395505905151
+            ]
+          ]
+        }
+      ],
+      "cleanup": {
+        "weldDistanceMetres": 0.00014,
+        "before": {
+          "vertices": 1007773,
+          "faces": 1820802
+        },
+        "after": {
+          "vertices": 910390,
+          "faces": 1820776
+        }
+      },
+      "textures": [
+        {
+          "name": "wooden_crate_3d_model_basecolor.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            384,
+            384
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_crate_3d_model_normal.png",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            256,
+            256
+          ],
+          "format": "JPEG"
+        },
+        {
+          "name": "wooden_crate_3d_model_rm.jpg",
+          "sourceSize": [
+            4096,
+            4096
+          ],
+          "runtimeSize": [
+            128,
+            128
+          ],
+          "format": "JPEG"
+        }
+      ],
+      "policy": {
+        "triangleBudget": 6000,
+        "textureLimit": 384,
+        "fileLimitBytes": 1048576
+      },
+      "validation": {
+        "sourceUnchanged": true,
+        "embeddedDependenciesOnly": true,
+        "triangleBudgetPassed": true,
+        "fileBudgetPassed": true,
+        "preservedUVAndNormals": true,
+        "preservedMaterialCount": true
+      },
+      "textureEncoding": "Original-source resampling: colour 384px, normals 256px, roughness/metalness 128px; JPEG quality 85, 4:4:4 channels; no external decoder"
+    }
+  ]
+}

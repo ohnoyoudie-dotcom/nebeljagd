@@ -17,9 +17,9 @@ jobs:
   verify-and-publish:
     if: github.ref == 'refs/heads/work'
     runs-on: ubuntu-latest
-    # The existing graphical checks have reached 30 minutes before publication.
-    # Keep every check and allow time for gravity input/visual QA and Pages.
-    timeout-minutes: 45
+    # Existing graphical checks take about 40 minutes on the hosted runner.
+    # Keep every check and allow time for the six new props and live Pages QA.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -67,7 +67,11 @@ jobs:
       - name: Install browser smoke dependencies
         run: |
           python -m pip install --quiet playwright==1.63.0
-          python -m playwright install --with-deps chromium
+          # Hosted runners already provide Chromium's shared libraries and
+          # Liberation/Noto fonts. Avoid unrelated extra font downloads from
+          # Ubuntu mirrors; fail here if the real WebGL browser cannot start.
+          python -m playwright install chromium
+          python tests/browser_runtime_probe.py
       - name: Start the generated browser preview
         run: |
           npm run preview -- --port 4174 >/tmp/nebeljagd-preview.log 2>&1 &
@@ -102,6 +106,10 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/woodland_details_smoke.py
+      - name: Verify six uploaded stumps, logs and crates in editor and game
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/tripo_woodland_smoke.py
       - name: Verify uploaded fireball, shader, sparks and smoke
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.
@@ -208,6 +216,9 @@ jobs:
         # Token-authored pushes do not trigger the normal automatic Pages build.
         # Use the existing branch-Pages API explicitly; never change site config.
         run: node scripts/request-pages-build.js
+      - name: Verify permanent Pages editor, game and preserved map bytes
+        timeout-minutes: 12
+        run: node scripts/verify-pages-preview.js
       - name: Upload the verified work browser package
         uses: actions/upload-artifact@v4
         with:
@@ -233,6 +244,7 @@ jobs:
             test-results/projectile-barriers
             test-results/gravity-staff
             test-results/woodland-details
+            test-results/tripo-woodland
             test-results/bow-alignment
             test-results/natural-details
             test-results/moon-projectile
