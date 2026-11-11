@@ -129,7 +129,7 @@ with sync_playwright() as pw:
             if os.environ.get('GITHUB_ACTIONS') == 'true':
                 print('::notice title=Woodland placement::' + definition['id'], flush=True)
             obj = add(editor, definition['kind'], definition['variant'], -7 + (i % 3) * 7, 5 + (i // 3) * 9,
-                      rotation=45 if i == 2 else 0, scale=1.2 if i == 1 else 1)
+                      rotation=45 if i in [2, 4] else 0, scale={0: 1.5, 1: 1.2, 4: 1.5, 5: 1.8}.get(i, 1))
             placed.append(obj)
             preview = editor.evaluate('''async () => {
                 const node=document.querySelector('#palette-preview-image svg image');
@@ -195,6 +195,10 @@ with sync_playwright() as pw:
                 position = game_state(game)['position']
                 local_z = (s * (position['x'] - obj['position'][0]) + c * (position['z'] - obj['position'][1])) / scale
                 assert front + .2 / scale <= local_z <= front + .85 / scale, (definition['id'], front, local_z)
+                if obj['kind'] in ['stump', 'crate']:
+                    behind = {'x': obj['position'][0] - s * distance, 'z': obj['position'][1] - c * distance}
+                    assert game.evaluate('p=>nebeljagdInspectVisibility(p)', behind), (definition['id'], behind)
+                    passed(definition['label'] + ': sight stays clear across the solid rotated/scaled prop')
             game.evaluate('nebeljagdInspectCamera({zoom:1.65})')
             game.locator('#pauseBtn').click()
             capture(game, definition['file'].replace('.glb', ''))

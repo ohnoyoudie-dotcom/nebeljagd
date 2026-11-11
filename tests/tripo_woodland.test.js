@@ -11,6 +11,7 @@ import { renderWorldmapSvg } from '../src/map/render.js';
 import { removeRetiredScenery } from '../src/map/retired-scenery.js';
 import { removeNonTripoObjects } from '../src/map/tripo-object-cleanup.js';
 import { createCollisionIndex } from '../src/collision.js';
+import { createSightModel } from '../src/visibility-model.js';
 import { createLobbyMap } from '../src/lobby-map.js';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url));
@@ -99,5 +100,24 @@ test('woodland solids stop walking and low shots; high shots clear them and brok
       walls.forEach(wall => { wall.destroyed = true; });
       assert.equal(collisions.traceSegment(...ray(.2), .02), null);
     }
+  }
+});
+
+test('both stumps and both crates allow sight and the ground contour through at every scale while remaining solid', () => {
+  for (const prop of props) for (const scale of [1, 2.5]) for (const ground of [0, 24]) {
+    const metadata = { type: prop.kind, objectKind: prop.kind, minY: ground, maxY: ground + prop.height * scale };
+    const circles = prop.circles.map(c => ({ ...metadata, x: c.x * scale, z: c.z * scale, radius: c.radius * scale }));
+    const walls = prop.walls.map(w => ({ ...metadata, minX: w.minX * scale, maxX: w.maxX * scale,
+      minZ: w.minZ * scale, maxZ: w.maxZ * scale }));
+    const obstacles = [...circles, ...walls], original = structuredClone(obstacles);
+    const sight = createSightModel({ obstacles, radius: 18 });
+    sight.update({ x: 0, y: ground, z: -6 });
+    const seeOver = prop.kind !== 'log';
+    assert.equal(sight.isVisible({ x: 0, z: 6 }), seeOver, `${prop.id} at scale ${scale}`);
+    assert.equal(sight.distanceAtAngle(Math.PI / 2) === 18, seeOver, 'actor visibility and scenery shading agree');
+    const position = { x: 0, y: ground, z: 0 };
+    createCollisionIndex(circles, walls).resolve(position, .42);
+    assert.ok(Math.hypot(position.x, position.z) > .4, `${prop.id} remains solid`);
+    assert.deepEqual(obstacles, original, 'visibility cannot change the physical colliders');
   }
 });

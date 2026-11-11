@@ -2,7 +2,7 @@ import { isLowSightBarrier } from './map/barrier-height.js';
 
 // These props provide physical cover without hiding actors, loot or the ground.
 // objectKind also covers a well's separately named posts and roof colliders.
-const SEE_OVER_PROPS = new Set(['well', 'wagon', 'barrel', 'crate', 'chest']);
+const SEE_OVER_PROPS = new Set(['well', 'wagon', 'barrel', 'crate', 'chest', 'stump']);
 
 /** 2D tactical line of sight. Static blocker cells make the cost local to the
  * observer, independent of island size. Walls keep their rotated corner shape. */
