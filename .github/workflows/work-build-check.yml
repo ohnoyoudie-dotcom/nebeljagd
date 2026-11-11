@@ -83,6 +83,7 @@ jobs:
       - name: Verify six uploaded stumps, logs and crates in editor and game
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
+          NEBELJAGD_BUNDLED_CHROMIUM: '1'
         run: python tests/tripo_woodland_smoke.py
       - name: Verify gravity charge, mouse and touch input, pull and spatial collapse
         env:

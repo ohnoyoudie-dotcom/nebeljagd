@@ -10,6 +10,7 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import shutil
 import sys
 import traceback
 from playwright.sync_api import sync_playwright
@@ -54,7 +55,6 @@ def passed(message):
 
 
 def monitor(page):
-    page.route('**/favicon.ico', lambda route: route.fulfill(status=204))
     page.on('pageerror', lambda error: report['errors'].append(str(error)))
     page.on('console', lambda msg: report['errors'].append(msg.text) if msg.type == 'error' else None)
     page.set_default_timeout(180000)
@@ -99,14 +99,22 @@ def capture(page, name):
 
 
 with sync_playwright() as pw:
-    executable = os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else pw.chromium.executable_path)
+    # CI must use the browser from its pinned Playwright installation. The
+    # moving runner-image Chromium 156 crashes while loading the editor popup.
+    executable = os.environ.get('CHROMIUM_EXECUTABLE')
+    if not executable and os.environ.get('NEBELJAGD_BUNDLED_CHROMIUM') != '1':
+        executable = shutil.which('chromium') or shutil.which('google-chrome')
+    executable = executable or pw.chromium.executable_path
     browser = pw.chromium.launch(executable_path=executable, headless=True,
-        # The standalone editor and popup embed large GLBs; permit the same
-        # renderer heap as desktop Chrome and avoid small runner /dev/shm mounts.
-        args=['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
-              '--disable-dev-shm-usage', '--js-flags=--max-old-space-size=4096'])
+        args=['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+    report['browser'] = {'version': browser.version, 'executable': executable}
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        print('::notice title=Woodland browser::' + json.dumps(report['browser']), flush=True)
     try:
         context = browser.new_context(viewport={'width': 960, 'height': 640}, accept_downloads=True)
+        # Install routing before navigation; changing Fetch interception during
+        # a popup's large inline module load can interrupt the renderer.
+        context.route('**/favicon.ico', lambda route: route.fulfill(status=204))
         context.add_init_script("Object.defineProperty(window,'showSaveFilePicker',{value:undefined,configurable:true})")
         editor = context.new_page()
         monitor(editor)
@@ -212,6 +220,11 @@ with sync_playwright() as pw:
     except Exception as error:
         report['status'] = 'failed'
         report['failure'] = str(error)
+        report['memory'] = {name: (Path('/sys/fs/cgroup') / name).read_text().strip()
+                            for name in ['memory.max', 'memory.current', 'memory.events']
+                            if (Path('/sys/fs/cgroup') / name).exists()}
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
+            print('::notice title=Woodland runner memory::' + json.dumps(report['memory']), flush=True)
         show_failure(type(error), error, error.__traceback__)
         if 'editor' in locals():
             try:
