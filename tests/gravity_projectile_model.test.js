@@ -66,3 +66,18 @@ test('gravity retains its procedural fallback for model-free simulations', () =>
   assert.equal(effects.telemetry.importedGravityProjectiles, 0);
   effects.dispose();
 });
+
+test('a northward Void throw does not flip at the top of its arc', () => {
+  const effects = createSpellEffects(new THREE.Scene(), { gravityProjectilePrototype: new THREE.Group() });
+  const visual = effects.createProjectile();
+  const points = [new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 1.01, -1),
+    new THREE.Vector3(0, 1.01, -2), new THREE.Vector3(0, 1, -3)];
+  effects.launch(visual, 'gravityStaff', points[0], Math.PI);
+  let previous;
+  for (let i = 1; i < points.length; i++) {
+    effects.advance(visual, points[i - 1], points[i], .1, i * .1);
+    if (previous) assert.ok(previous.angleTo(visual.group.quaternion) < .03, 'orientation stays continuous across the apex');
+    previous = visual.group.quaternion.clone();
+  }
+  effects.dispose();
+});

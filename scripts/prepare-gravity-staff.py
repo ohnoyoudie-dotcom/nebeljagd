@@ -12,7 +12,7 @@ import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / 'assets/inbox/fantasy staff 3d model.glb'
+SOURCE = ROOT / 'assets/inbox/fantasy voidstaff 3d model.glb'
 OUTPUT = ROOT / 'assets/imported/tripo-gravity-staff'
 DESTINATION = OUTPUT / 'runtime/gravity-staff.glb'
 HELPER = ROOT / 'scripts/prepare-tripo-weapons.py'

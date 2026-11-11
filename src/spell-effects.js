@@ -387,7 +387,10 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         // simulated arc, then spin only the model around that flight axis.
         directionVector.subVectors(to, from);
         if (directionVector.lengthSq() > .00000001) {
-          visual.group.quaternion.setFromUnitVectors(forward, directionVector.normalize());
+          const horizontal = Math.hypot(directionVector.x, directionVector.z);
+          const yaw = horizontal > .0001 ? Math.atan2(directionVector.x, directionVector.z) : visual.direction;
+          // Stable yaw/pitch avoids a half-turn of roll at the apex of a -Z throw.
+          visual.group.rotation.set(-Math.atan2(directionVector.y, horizontal), yaw, 0, 'YXZ');
         }
         visual.gravityModel.rotation.z = visual.age * 7;
       }

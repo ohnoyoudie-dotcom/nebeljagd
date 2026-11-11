@@ -80,6 +80,10 @@ jobs:
             curl -fsS http://127.0.0.1:4174/magebrawl.html >/dev/null && break
             sleep 1
           done
+      - name: Verify six uploaded stumps, logs and crates in editor and game
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/tripo_woodland_smoke.py
       - name: Verify gravity charge, mouse and touch input, pull and spatial collapse
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
@@ -106,10 +110,6 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/woodland_details_smoke.py
-      - name: Verify six uploaded stumps, logs and crates in editor and game
-        env:
-          NEBELJAGD_URL: http://127.0.0.1:4174
-        run: python tests/tripo_woodland_smoke.py
       - name: Verify uploaded fireball, shader, sparks and smoke
         # Full graphical regression is available on manual dispatch. Ordinary
         # editor pushes still run all unit/asset/build and focused browser checks.

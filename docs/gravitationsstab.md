@@ -1,7 +1,7 @@
 # Gravitationsstab – drei Sekunden Sog, aufsteigende Kugel und letzter Flächenimpuls
 
 Der neue Stab verwendet das bereits hochgeladene Original
-assets/inbox/fantasy staff 3d model.glb (ca. 65 MB).
+assets/inbox/fantasy voidstaff 3d model.glb (ca. 65 MB).
 Die Originaldatei bleibt unverändert. Der CI-Build bereitet über
 scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 (assets/imported/tripo-gravity-staff/runtime/gravity-staff.glb).

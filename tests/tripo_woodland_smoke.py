@@ -10,8 +10,20 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import sys
+import traceback
 from playwright.sync_api import sync_playwright
 
+def show_failure(exception_type, exception, trace):
+    # Make failures visible in the public Actions annotations as well as logs.
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        message = ''.join(traceback.format_exception(exception_type, exception, trace))
+        message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print('::error title=Woodland browser verification::' + message, flush=True)
+    sys.__excepthook__(exception_type, exception, trace)
+
+
+sys.excepthook = show_failure
 ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4175/welt').rstrip('/')
 DELIVERY_ONLY = os.environ.get('NEBELJAGD_DELIVERY_ONLY') == '1'
@@ -30,12 +42,15 @@ report['files'] = {name: hashlib.sha256((ROOT / 'welt' / name).read_bytes()).hex
                    for name in ['map-editor.html', 'magebrawl.html', 'worldmap.json']
                    if (ROOT / 'welt' / name).exists()}
 for name in ['map-editor.html', 'magebrawl.html', 'magebrawl-welt-und-editor.zip']:
-    assert (ROOT / 'welt' / name).stat().st_size < 100 * 1024 * 1024, f'{name}: GitHub file limit'
+    size = (ROOT / 'welt' / name).stat().st_size
+    assert size < 100 * 1024 * 1024, f'{name}: {size} bytes exceeds GitHub file limit'
 
 
 def passed(message):
     report['checks'].append(message)
     print('PASS', message, flush=True)
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        print('::notice title=Woodland browser progress::' + message, flush=True)
 
 
 def monitor(page):
@@ -86,7 +101,10 @@ def capture(page, name):
 with sync_playwright() as pw:
     executable = os.environ.get('CHROMIUM_EXECUTABLE') or ('/usr/bin/chromium' if Path('/usr/bin/chromium').exists() else pw.chromium.executable_path)
     browser = pw.chromium.launch(executable_path=executable, headless=True,
-        args=['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+        # The standalone editor and popup embed large GLBs; permit the same
+        # renderer heap as desktop Chrome and avoid small runner /dev/shm mounts.
+        args=['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
+              '--disable-dev-shm-usage', '--js-flags=--max-old-space-size=4096'])
     try:
         context = browser.new_context(viewport={'width': 960, 'height': 640}, accept_downloads=True)
         context.add_init_script("Object.defineProperty(window,'showSaveFilePicker',{value:undefined,configurable:true})")
@@ -100,6 +118,8 @@ with sync_playwright() as pw:
         placed = []
         for i, definition in enumerate(definitions):
             print('STAGE placing', definition['id'], flush=True)
+            if os.environ.get('GITHUB_ACTIONS') == 'true':
+                print('::notice title=Woodland placement::' + definition['id'], flush=True)
             obj = add(editor, definition['kind'], definition['variant'], -7 + (i % 3) * 7, 5 + (i // 3) * 9,
                       rotation=45 if i == 2 else 0, scale=1.2 if i == 1 else 1)
             placed.append(obj)
@@ -122,11 +142,20 @@ with sync_playwright() as pw:
         editor.screenshot(path=str(OUT / 'editor.png'))
         passed('All six real thumbnails, placement, rotation, scale, measured map symbols and JSON export/reimport')
 
+        report['editorHeap'] = editor.evaluate('''() => performance.memory ? {
+            used:performance.memory.usedJSHeapSize, limit:performance.memory.jsHeapSizeLimit} : null''')
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
+            print('::notice title=Woodland browser heap::' + json.dumps(report['editorHeap']), flush=True)
         with editor.expect_popup() as event:
             editor.locator('#playtest-world').click()
         game = event.value
         monitor(game)
         game.wait_for_function('window.nebeljagdTestState && nebeljagdTestState().rendering.calls>0')
+        assert game_state(game)['world']['objects'] == snapshot['objects']
+        passed('Real editor popup starts the exact placed map with both tabs open')
+        # The handoff above is verified; release the editor before a second game
+        # navigation so CI does not retain three large standalone documents.
+        editor.close()
         game.goto(game.url + '&inspect=1&quality=low', wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         game.locator('#startBtn').click()
@@ -183,8 +212,12 @@ with sync_playwright() as pw:
     except Exception as error:
         report['status'] = 'failed'
         report['failure'] = str(error)
+        show_failure(type(error), error, error.__traceback__)
         if 'editor' in locals():
-            editor.screenshot(path=str(OUT / 'editor-failure.png'))
+            try:
+                editor.screenshot(path=str(OUT / 'editor-failure.png'))
+            except Exception:
+                pass
         if 'game' in locals():
             try:
                 capture(game, 'failure')
@@ -193,5 +226,8 @@ with sync_playwright() as pw:
                 pass
         raise
     finally:
-        browser.close()
         (OUT / 'report.json').write_text(json.dumps(report, indent=2))
+        try:
+            browser.close()
+        except Exception as error:
+            print('Browser cleanup:', error, flush=True)
