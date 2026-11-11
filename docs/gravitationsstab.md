@@ -132,8 +132,10 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
    Spielaufnahmen (`reference-start`, `reference-grown`, `reference-burst`, `reference-wave`)
    erlauben den direkten Vergleich mit dem Entwurf. Eine zusätzliche Aufnahme
    `reference-clear` und echte GPU-Pixelproben prüfen die leere Fläche nach dem Impuls.
-   Mit `NEBELJAGD_GRAVITY_REFERENCE=1` erfasst derselbe Test zusätzlich einen
-   echten Zauber auf freier Fläche, damit Lebensbalken die Effektprüfung nicht verdecken.
+   Ein zweiter echter Zauber auf freier Fläche prüft in jedem CI-Lauf auch das
+   unverdeckte Zentrum, damit angesaugte Figuren und Lebensbalken die Pixelprüfung
+   nicht verfälschen. Mit `NEBELJAGD_GRAVITY_REFERENCE=1` erfasst derselbe Test
+   zusätzlich alle vier vergrößerten Phasen dieses freien Zaubers.
 2. Im Editor den neuen Stab neben Übungsgegnern platzieren, **Spielen** öffnen,
    aufnehmen, Ziel markieren und Flug, Landung, Feldöffnung, Sog und Explosion ansehen.
 3. Den Angriff mit Rolle, Hindernissen, Waffenwechsel und Neustart prüfen.

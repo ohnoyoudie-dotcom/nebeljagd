@@ -224,11 +224,13 @@ with sync_playwright() as p:
                 assert g['visuals']['burst']['visible'] and g['visuals']['burst']['radius'] >= g['radius'], g
                 assert g['lastHitCount'] == collapse_hits and g['visuals']['burst']['style'] == 'broad-ground-front'
                 assert not g['visuals']['vortex']['sphereVisible'] and not g['visuals']['vortex']['capVisible']
-                coverage = filled_vortex_coverage(page, radii=[0,.55,.92], burst=True)
+                # The pulled actor can cover the center; sample the annulus in
+                # combat, then check the center on an unobstructed cast below.
+                coverage = filled_vortex_coverage(page, radii=[.55,.92], burst=True)
                 assert coverage['total'] >= 20 and coverage['coverage'] >= .75, coverage
                 report.setdefault('burstAreaCoverage', {})[mode] = coverage
                 if not touch: capture_reference_detail(page, 'reference-wave')
-                passed(mode + ': real GPU burst covers the center and outer field without an intact orb or extra hit')
+                passed(mode + ': real GPU burst reaches the outer field without an intact orb or extra hit')
                 page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
             if not BASELINE:
@@ -257,9 +259,10 @@ with sync_playwright() as p:
                 assert not state(page)['combat']['gravity']['aiming']
                 assert state(page)['combat']['shotsFired'] == 1
                 passed(mode + ': cancel discards the charge without another cast')
-            if ART_REVIEW and not touch:
+            if not BASELINE and not touch:
                 # A second real cast on empty ground keeps name plates out of
-                # the art review. Functional hit/pull checks above still use AI.
+                # the center coverage check. Functional hit/pull checks above
+                # still use AI; this GPU check also runs in CI without art mode.
                 clean = {'x': 18, 'z': 18}
                 page.evaluate('p=>nebeljagdInspect({x:p.x-2,z:p.z-4,direction:Math.atan2(2,4)})', clean)
                 elapsed = state(page)['elapsed']
@@ -268,9 +271,15 @@ with sync_playwright() as p:
                 page.mouse.move(pixel['x'], pixel['y']); page.keyboard.down('f')
                 page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange?.radius === 20')
                 page.keyboard.up('f')
-                for age, name in [(.75, 'reference-start'), (3.15, 'reference-grown'), (3.43, 'reference-burst'), (3.51, 'reference-wave')]:
+                phases = [(.75, 'reference-start'), (3.15, 'reference-grown'), (3.43, 'reference-burst')] if ART_REVIEW else []
+                for age, name in phases + [(3.51, 'reference-wave')]:
                     pause_at(page, age); capture_reference_detail(page, name)
                     last_center = state(page)['combat']['gravity']['center']
+                    if name == 'reference-wave':
+                        coverage = filled_vortex_coverage(page, radii=[0,.55,.92], burst=True)
+                        assert coverage['total'] == 60 and coverage['coverage'] >= .95, coverage
+                        report['unobstructedBurstCoverage'] = coverage
+                        passed('Real GPU burst fills the unobstructed center and outer field')
                     page.keyboard.press('Escape')
                 page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
                 page.locator('#pauseBtn').click()
@@ -278,7 +287,7 @@ with sync_playwright() as p:
                 empty = filled_vortex_coverage(page, last_center)
                 assert empty['total'] == 40 and empty['coverage'] <= .05, empty
                 report['clearedCoverage'] = empty
-                passed('Real GPU captures show the three phases and an empty field after the last impulse')
+                passed('Real GPU capture shows an empty field after the last impulse')
             context.close()
         assert not report['errors'], report['errors']
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == map_hash
