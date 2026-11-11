@@ -159,8 +159,19 @@ def attack_target(page, identifier, distance):
         page.keyboard.down('f')
         point = page.evaluate('id=>nebeljagdProjectPoint(nebeljagdTestState().practiceActors.find(a=>a.id===id).position)', identifier)
         page.mouse.move(point['x'], point['y'])
-        page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===20')
-        page.keyboard.up('f')
+        try:
+            # SwiftShader on a shared runner can render the authored world at
+            # under 1 fps. Allow wall-clock time without shortening game time.
+            page.wait_for_function('nebeljagdTestState().combat.special.aimRange?.radius===20', timeout=240000)
+            charge = game_state(page)['combat']['special']['aimRange']
+            assert charge['maximum'] == 20 and charge['heldSeconds'] >= 3, charge
+            REPORT['poisonCharge'] = charge
+        except Exception:
+            REPORT['attackFailureState'] = game_state(page)
+            capture(page, 'attack-failure')
+            raise
+        finally:
+            page.keyboard.up('f')
     else:
         page.keyboard.press('f')
     page.wait_for_function('n=>nebeljagdTestState().combat.damageHits>n', arg=before)
@@ -197,7 +208,7 @@ try:
             if request.resource_type == 'document':
                 if not request.url.startswith(URL + '/'):
                     REPORT['unexpectedRequests'].append(request.url)
-            elif not urlsplit(request.url).path.endswith('/favicon.ico'):
+            elif request.url != URL + '/release.json' and not urlsplit(request.url).path.endswith('/favicon.ico'):
                 REPORT['unexpectedRequests'].append(request.url)
 
         context.on('request', resource)
@@ -255,6 +266,9 @@ try:
         # The unchanged first launch above proves the user-facing handoff. Load
         # its stored draft again with the existing explicit inspection mode for
         # deterministic player positioning during the gameplay assertions.
+        # Keep the real authored map and simulation. Bound the software-rendered
+        # pixel count so the 3s poison charge can advance on hosted runners.
+        game.set_viewport_size({'width': 800, 'height': 600})
         game.goto(URL + '/magebrawl.html?mapSource=editor&inspect=1&quality=low', wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
         assert game_state(game)['world']['objects'] == edited['objects']
