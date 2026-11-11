@@ -49,6 +49,8 @@ for name in ['map-editor.html', 'magebrawl.html', 'magebrawl-welt-und-editor.zip
 def passed(message):
     report['checks'].append(message)
     print('PASS', message, flush=True)
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        print('::notice title=Woodland browser progress::' + message, flush=True)
 
 
 def monitor(page):
@@ -113,6 +115,8 @@ with sync_playwright() as pw:
         placed = []
         for i, definition in enumerate(definitions):
             print('STAGE placing', definition['id'], flush=True)
+            if os.environ.get('GITHUB_ACTIONS') == 'true':
+                print('::notice title=Woodland placement::' + definition['id'], flush=True)
             obj = add(editor, definition['kind'], definition['variant'], -7 + (i % 3) * 7, 5 + (i // 3) * 9,
                       rotation=45 if i == 2 else 0, scale=1.2 if i == 1 else 1)
             placed.append(obj)
@@ -196,8 +200,12 @@ with sync_playwright() as pw:
     except Exception as error:
         report['status'] = 'failed'
         report['failure'] = str(error)
+        show_failure(type(error), error, error.__traceback__)
         if 'editor' in locals():
-            editor.screenshot(path=str(OUT / 'editor-failure.png'))
+            try:
+                editor.screenshot(path=str(OUT / 'editor-failure.png'))
+            except Exception:
+                pass
         if 'game' in locals():
             try:
                 capture(game, 'failure')
@@ -206,5 +214,8 @@ with sync_playwright() as pw:
                 pass
         raise
     finally:
-        browser.close()
         (OUT / 'report.json').write_text(json.dumps(report, indent=2))
+        try:
+            browser.close()
+        except Exception as error:
+            print('Browser cleanup:', error, flush=True)
