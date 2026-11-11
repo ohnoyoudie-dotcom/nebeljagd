@@ -14,6 +14,8 @@ test('the bright burst front crosses the complete gameplay area before fading ou
     assert.ok(state.burstRadius >= previous); previous = state.burstRadius;
     if (!crossed && state.burstRadius >= rules.radius) {
       assert.ok(state.burstOpacity > .85, 'the outer edge receives a strong front'); crossed = true;
+      assert.ok(gravityVortexMotion(end + GRAVITY_BURST_SECONDS * i / 30 + .1, rules).burstOpacity > .95,
+        'a slow touch frame still sees the pressure front before its final fade');
     }
 
   }

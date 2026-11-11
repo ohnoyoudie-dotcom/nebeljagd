@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4176').rstrip('/')
 BASELINE = os.environ.get('NEBELJAGD_BASELINE') == '1'
 ART_REVIEW = os.environ.get('NEBELJAGD_GRAVITY_REFERENCE') == '1'
+MODE = os.environ.get('NEBELJAGD_GRAVITY_MODE', 'all')
+assert MODE in ('all', 'mouse', 'touch'), MODE
 OUT = ROOT / 'test-results/gravity-staff' / ('before' if BASELINE else 'after')
 OUT.mkdir(parents=True, exist_ok=True)
 map_hash = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
@@ -83,7 +85,7 @@ with sync_playwright() as p:
     browser = p.chromium.launch(executable_path=executable, headless=True,
         args=['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
     try:
-        for touch in ([False] if BASELINE else [False, True]):
+        for touch in ([False] if BASELINE else [True] if MODE == 'touch' else [False] if MODE == 'mouse' else [False, True]):
             mode = 'touch' if touch else 'mouse'
             print('START', mode, flush=True)
             options = dict(viewport={'width': 960, 'height': 720}, has_touch=touch, is_mobile=touch)

@@ -23,7 +23,8 @@ export function gravityVortexMotion(age, rules, out = {}) {
   out.fade = burst < 0 ? 1 : 1 - smooth(burstAge / .16);
   // One outward front: its wake clears instead of filling the field with rays.
   out.burstRadius = burst < 0 ? 0 : rules.radius * (.06 + 1.04 * (1 - (1 - burst) ** 2));
-  out.burstOpacity = burst < 0 ? 0 : 1 - smooth((burst - .68) / .32);
+  // Hold through a complete 100 ms frame after crossing the gameplay edge.
+  out.burstOpacity = burst < 0 ? 0 : 1 - smooth((burst - .80) / .20);
   out.flash = burst < 0 ? 0 : 1 - smooth(burstAge / .24);
   return out;
 }
