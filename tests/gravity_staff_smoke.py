@@ -204,11 +204,12 @@ with sync_playwright() as p:
                 assert not burst['sphereVisible'] and burst['shellCount'] == 24, burst
                 assert burst['capVisible'], 'the upper shell remains briefly visible during the first pop'
             assert state(page)['combat']['shotsFired'] == 1
+            collapse_hits = state(page)['combat']['gravity']['lastHitCount']
             page.keyboard.press('Escape')
             if not BASELINE:
                 pause_at(page, 1.95); capture(page, mode + '-debris-outward')
                 g = state(page)['combat']['gravity']
-                assert g['active'] and g['exploded'] and g['lastHitCount'] >= 0
+                assert g['active'] and g['exploded'] and g['lastHitCount'] == collapse_hits
                 assert g['visuals']['fieldDraws'] <= 15
                 page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.gravity.active')

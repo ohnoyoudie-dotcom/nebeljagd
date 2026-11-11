@@ -1,3 +1,5 @@
+import { STAFF_THROW_RANGE } from './staff-charge.js';
+
 /** Shared by combat, chest loot, HUD and the map editor. */
 export const RARITIES = Object.freeze({
   normal: Object.freeze({ id: 'normal', label: 'Normal', color: '#a2a6ac', multiplier: .8 }),
@@ -41,10 +43,10 @@ export const WEAPON_DEFINITIONS = Object.freeze({
   sword: Object.freeze({ type: 'sword', label: 'Eisenschwert', damage: 27, cooldown: .58, range: 2.35, effect: null }),
   fireStaff: Object.freeze({ type: 'fireStaff', label: 'Feuerstab', damage: 16, cooldown: .8, range: 23, effect: 'burn' }),
   iceStaff: Object.freeze({ type: 'iceStaff', label: 'Eisstab', damage: 19, cooldown: .85, range: 23, effect: 'slow' }),
-  poisonStaff: Object.freeze({ type: 'poisonStaff', label: 'Giftstab', damage: 14, cooldown: .85, range: 12, effect: 'poison' }),
+  poisonStaff: Object.freeze({ type: 'poisonStaff', label: 'Giftstab', damage: 14, cooldown: .85, range: STAFF_THROW_RANGE, effect: 'poison' }),
   moonStaff: Object.freeze({ type: 'moonStaff', label: 'Mondstab', damage: 22, cooldown: .85, range: 12, effect: null }),
   starStaff: Object.freeze({ type: 'starStaff', label: 'Sternstab', damage: 21, cooldown: .78, range: 23, effect: null }),
-  gravityStaff: Object.freeze({ type: 'gravityStaff', label: 'Gravitationsstab', damage: 14, cooldown: 2.8, range: 10, effect: 'gravity' }),
+  gravityStaff: Object.freeze({ type: 'gravityStaff', label: 'Gravitationsstab', damage: 14, cooldown: 2.8, range: STAFF_THROW_RANGE, effect: 'gravity' }),
 });
 export const WEAPON_TYPES = Object.freeze(Object.keys(WEAPON_DEFINITIONS));
 export const STAFF_TYPES = Object.freeze(WEAPON_TYPES.filter(type => type.endsWith('Staff')));

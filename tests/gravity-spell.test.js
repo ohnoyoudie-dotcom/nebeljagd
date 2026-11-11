@@ -6,6 +6,7 @@ import { createGravitySpell, GRAVITY_RULES, gravityPullStep } from '../src/gravi
 import { createCollisionIndex } from '../src/collision.js';
 import { createPracticeActors } from '../src/practice-actors.js';
 import { createSpecialWeapons } from '../src/special-weapons.js';
+import { RARITIES, weaponStats } from '../src/loot-tiers.js';
 
 function scenario(blocked = false, visible = () => true) {
   const scene = new THREE.Scene();
@@ -190,6 +191,10 @@ test('enhanced gravity effect shows ground dust, victim tethers and shockwaves w
 test('gravity and poison share ordinary target circles and exactly the same reach in metres throughout charging', () => {
   const { scene, world, combat, gravity } = scenario(); const caster = new THREE.Vector3();
   const poison = createSpecialWeapons(scene, world, combat, 'player', () => {});
+  for (const rarity of Object.keys(RARITIES)) {
+    assert.equal(weaponStats('gravityStaff', rarity).range, GRAVITY_RULES.range);
+    assert.equal(weaponStats('poisonStaff', rarity).range, GRAVITY_RULES.range);
+  }
   const gravityTarget = scene.getObjectByName('Gravitationsstab · Zielkreis').children[0];
   const poisonTarget = scene.getObjectByName('Giftwolke · Zielbereich');
   const gravityRange = scene.getObjectByName('Gravitationsstab · wachsende Reichweite').children[0];
