@@ -10,8 +10,20 @@ import math
 import os
 from pathlib import Path
 import subprocess
+import sys
+import traceback
 from playwright.sync_api import sync_playwright
 
+def show_failure(exception_type, exception, trace):
+    # Make failures visible in the public Actions annotations as well as logs.
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        message = ''.join(traceback.format_exception(exception_type, exception, trace))
+        message = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        print('::error title=Woodland browser verification::' + message, flush=True)
+    sys.__excepthook__(exception_type, exception, trace)
+
+
+sys.excepthook = show_failure
 ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4175/welt').rstrip('/')
 DELIVERY_ONLY = os.environ.get('NEBELJAGD_DELIVERY_ONLY') == '1'
@@ -30,7 +42,8 @@ report['files'] = {name: hashlib.sha256((ROOT / 'welt' / name).read_bytes()).hex
                    for name in ['map-editor.html', 'magebrawl.html', 'worldmap.json']
                    if (ROOT / 'welt' / name).exists()}
 for name in ['map-editor.html', 'magebrawl.html', 'magebrawl-welt-und-editor.zip']:
-    assert (ROOT / 'welt' / name).stat().st_size < 100 * 1024 * 1024, f'{name}: GitHub file limit'
+    size = (ROOT / 'welt' / name).stat().st_size
+    assert size < 100 * 1024 * 1024, f'{name}: {size} bytes exceeds GitHub file limit'
 
 
 def passed(message):
