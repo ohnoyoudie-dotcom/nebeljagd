@@ -59,7 +59,7 @@ und Teams sind noch nicht implementiert.
 `, 'utf8') });
   const files = [], central = []; let offset = 0;
   for (const entry of entries) {
-    const filename = Buffer.from(entry.name), compressed = deflateRawSync(entry.bytes), checksum = crc32(entry.bytes);
+    const filename = Buffer.from(entry.name), compressed = deflateRawSync(entry.bytes, { level: 9 }), checksum = crc32(entry.bytes);
     const header = Buffer.alloc(30);
     header.writeUInt32LE(0x04034b50); header.writeUInt16LE(20, 4); header.writeUInt16LE(0x800, 6);
     header.writeUInt16LE(8, 8); header.writeUInt16LE(0x21, 12); header.writeUInt32LE(checksum, 14);
@@ -75,6 +75,10 @@ und Teams sind noch nicht implementiert.
   const end = Buffer.alloc(22), directoryBytes = Buffer.concat(central);
   end.writeUInt32LE(0x06054b50); end.writeUInt16LE(entries.length, 8); end.writeUInt16LE(entries.length, 10);
   end.writeUInt32LE(directoryBytes.length, 12); end.writeUInt32LE(offset, 16);
-  await writeFile(resolve(directory, 'magebrawl-welt-und-editor.zip'), Buffer.concat([...files, directoryBytes, end]));
+  const bundle = Buffer.concat([...files, directoryBytes, end]);
+  if (bundle.length >= 100 * 1024 * 1024) {
+    throw new Error('Offline-ZIP überschreitet GitHubs 100-MiB-Dateilimit; Laufzeit-Assets vor der Veröffentlichung verkleinern.');
+  }
+  await writeFile(resolve(directory, 'magebrawl-welt-und-editor.zip'), bundle);
   console.log('Offline bundle: dist/magebrawl-welt-und-editor.zip');
 }

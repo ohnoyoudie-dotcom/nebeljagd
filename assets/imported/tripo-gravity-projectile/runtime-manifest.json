@@ -1,0 +1,25 @@
+{
+  "sources": [
+    {
+      "path": "assets/inbox/Void Projektil.glb",
+      "sha256": "419684146dcf1378d9efde812508008dee949899ef35df547f3e5d4197deede5"
+    }
+  ],
+  "files": [
+    {
+      "path": "runtime/void-projectile.glb",
+      "bytes": 235348,
+      "sha256": "5d8c7bb2e9c77b7c2c50189d03a25dee236a0f5d8cba5355df445944adb00913"
+    },
+    {
+      "path": "void-projectile-inspection.json",
+      "bytes": 2233,
+      "sha256": "cd09c8a4eaab631cfc6a3899a8d5592920c0da3a82117fb63f85b6ebd01e47d8"
+    },
+    {
+      "path": "void-projectile-preview.png",
+      "bytes": 360972,
+      "sha256": "5061cebb86020ddf506459d734fd88ec35254b478c19cd56342a076f33730112"
+    }
+  ]
+}

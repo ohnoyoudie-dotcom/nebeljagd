@@ -12,6 +12,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'assets/imported/tripo-projectiles'
 COMMAND = 'blender -b -t 3 --python scripts/prepare-tripo-projectiles.py -- --execute'
+TRIANGLE_BUDGET = 6000
+TEXTURE_BUDGET = 512
 ASSETS = [
     ('ice-crystal', 'ice crystal 3d model.glb', 'bd13db83001f5dfaa286180cf31b073b26fcb4504b4be6e0c101c4603b4e8c42'),
     ('feathered-arrow', 'feathered spear 3d model.glb', 'eb66a058ef2d9aab9fed589ddc750e0af8978f6a331a1f627b37b06c3a4327eb'),
@@ -96,10 +98,10 @@ def execute():
         mesh.data.calc_loop_triangles()
         for attempt in range(3):
             triangles = len(mesh.data.loop_triangles)
-            if triangles <= 6000:
+            if triangles <= TRIANGLE_BUDGET:
                 break
             modifier = mesh.modifiers.new('Browser projectile budget', 'DECIMATE')
-            modifier.ratio = min(1, (6000 if attempt == 0 else 5900) / triangles)
+            modifier.ratio = min(1, (TRIANGLE_BUDGET if attempt == 0 else TRIANGLE_BUDGET - 100) / triangles)
             modifier.use_collapse_triangulate = True
             bpy.ops.object.modifier_apply(modifier=modifier.name)
             mesh.data.calc_loop_triangles()
@@ -108,7 +110,7 @@ def execute():
             if image.source not in {'FILE', 'GENERATED'} or not image.size[0]:
                 continue
             before = list(image.size)
-            ratio = min(1, 512 / max(before))
+            ratio = min(1, TEXTURE_BUDGET / max(before))
             if ratio < 1:
                 image.scale(max(1, round(before[0] * ratio)), max(1, round(before[1] * ratio)))
             textures.append({'name': image.name, 'originalSize': before, 'runtimeSize': list(image.size)})
@@ -118,8 +120,8 @@ def execute():
             export_animations=False, export_cameras=False, export_lights=False, export_image_format='AUTO')
         runtime = inspect(destination)
         checks = {'sourceUnchanged': digest(source) == pin,
-            'triangleBudget': 0 < runtime['triangles'] <= 6000, 'fileBudget': runtime['bytes'] <= 1536 * 1024,
-            'textureBudget': all(max(t['runtimeSize']) <= 512 for t in textures),
+            'triangleBudget': 0 < runtime['triangles'] <= TRIANGLE_BUDGET, 'fileBudget': runtime['bytes'] <= 1536 * 1024,
+            'textureBudget': all(max(t['runtimeSize']) <= TEXTURE_BUDGET for t in textures),
             'uvAndNormals': {'NORMAL', 'TEXCOORD_0'} <= set(runtime['attributes']),
             'embeddedOnly': not runtime['externalUris'], 'imageCountPreserved': runtime['images'] == original['images']}
         assert all(checks.values()), checks

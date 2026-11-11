@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import iceUrl from '../assets/imported/tripo-projectiles/runtime/ice-crystal.glb?url&inline';
 import arrowUrl from '../assets/imported/tripo-projectiles/runtime/feathered-arrow.glb?url&inline';
 import moonUrl from '../assets/imported/tripo-star-moon/runtime/moon-crescent.glb?url&inline';
+import gravityUrl from '../assets/imported/tripo-gravity-projectile/runtime/void-projectile.glb?url&inline';
 
 // Ice uses its measured source direction; the arrow uses full 3D endpoints.
 // Both are aligned to gameplay +Z. The crescent retains its XY
@@ -16,6 +17,9 @@ const definitions = {
   moon: { url: moonUrl, source: 'crescent moon prop 3d model.glb', runtime: 'moon-crescent.glb',
     name: 'Verzierte Silbersichel · hochgeladenes Mondprojektil', plane: 'XY', length: 1.20,
     package: 'tripo-star-moon' },
+  gravity: { url: gravityUrl, source: 'Void Projektil.glb', runtime: 'void-projectile.glb',
+    name: 'Void · hochgeladenes Gravitationsprojektil', forward: [0, 1, 0], length: 1.10,
+    package: 'tripo-gravity-projectile' },
 };
 
 export async function loadProjectileModels() {

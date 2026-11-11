@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/Void Projektil.glb",
+  "original": {
+    "bytes": 63232376,
+    "sha256": "419684146dcf1378d9efde812508008dee949899ef35df547f3e5d4197deede5",
+    "triangles": 1961550,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.290618896484375,
+          0.0,
+          -0.26885986328125
+        ],
+        "max": [
+          0.290618896484375,
+          0.978271484375,
+          0.26885986328125
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 235348,
+    "sha256": "5d8c7bb2e9c77b7c2c50189d03a25dee236a0f5d8cba5355df445944adb00913",
+    "triangles": 4000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.28993985056877136,
+          -0.0012326940195634961,
+          -0.2686244547367096
+        ],
+        "max": [
+          0.2903348207473755,
+          0.9781460762023926,
+          0.2694770097732544
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "Void_Projektil_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Void_Projektil_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Void_Projektil_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-gravity-projectile.py -- --execute",
+  "sourceAxisPreserved": true,
+  "preview": "Prepared derivative, front view with source +X to image right.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent license certification."
+}

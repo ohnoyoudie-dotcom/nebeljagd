@@ -21,8 +21,10 @@ function imageSize(bytes) {
   throw new Error('Missing JPEG dimensions');
 }
 
-for (const name of ['ice-crystal', 'feathered-arrow', 'crescent-moon']) test(`${name} preserves its upload and ships bounded, embedded PBR geometry`, () => {
-  const root = new URL(`../assets/imported/${name === 'crescent-moon' ? 'tripo-moon-projectile' : 'tripo-projectiles'}/`, import.meta.url);
+for (const name of ['ice-crystal', 'feathered-arrow', 'crescent-moon', 'void-projectile']) test(`${name} preserves its upload and ships bounded, embedded PBR geometry`, () => {
+  const packageName = name === 'void-projectile' ? 'tripo-gravity-projectile'
+    : name === 'crescent-moon' ? 'tripo-moon-projectile' : 'tripo-projectiles';
+  const root = new URL(`../assets/imported/${packageName}/`, import.meta.url);
   const report = JSON.parse(readFileSync(new URL(`${name}-inspection.json`, root)));
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   assert.equal(hash(readFileSync(new URL(`../${report.source}`, import.meta.url))), report.original.sha256);
@@ -30,7 +32,7 @@ for (const name of ['ice-crystal', 'feathered-arrow', 'crescent-moon']) test(`${
   assert.equal(hash(bytes), report.runtime.sha256);
   assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
   assert.equal(bytes.readUInt32LE(4), 2); assert.equal(bytes.readUInt32LE(8), bytes.length);
-  assert.ok(bytes.length < 1536 * 1024);
+  assert.ok(bytes.length < (name === 'void-projectile' ? 300 : 1536) * 1024);
   const doc = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
   assert.ok(doc.buffers.every(b => !b.uri));
   assert.equal(doc.images.length, 3);
@@ -39,14 +41,14 @@ for (const name of ['ice-crystal', 'feathered-arrow', 'crescent-moon']) test(`${
   for (const image of doc.images) {
     const view = doc.bufferViews[image.bufferView], offset = binStart + (view.byteOffset ?? 0);
     const dimensions = imageSize(bytes.subarray(offset, offset + view.byteLength));
-    assert.ok(dimensions.every(n => n > 0 && n <= 512), 'actual embedded texture dimensions');
+    assert.ok(dimensions.every(n => n > 0 && n <= (name === 'void-projectile' ? 256 : 512)), 'actual embedded texture dimensions');
   }
   let triangles = 0;
   for (const mesh of doc.meshes) for (const part of mesh.primitives) {
     for (const attr of ['POSITION', 'NORMAL', 'TEXCOORD_0']) assert.notEqual(part.attributes[attr], undefined);
     triangles += doc.accessors[part.indices ?? part.attributes.POSITION].count / 3;
   }
-  assert.ok(triangles > 0 && triangles <= 6000);
+  assert.ok(triangles > 0 && triangles <= (name === 'void-projectile' ? 4000 : 6000));
   for (const mat of doc.materials) assert.ok(mat.normalTexture && mat.pbrMetallicRoughness.baseColorTexture && mat.pbrMetallicRoughness.metallicRoughnessTexture);
 });
 

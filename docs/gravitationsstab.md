@@ -49,9 +49,19 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 
 ## Darstellung
 
-- Das Flugprojektil hat einen schwarzen violett umleuchteten Kern, zwei
-  rotierende Energiebahnen, acht umlaufende Partikel und den vorhandenen
-  Element-Schweif. Auch der Einschlag verwendet das gemeinsame Effekt-System.
+- Das Flugprojektil verwendet das hochgeladene **Void Projektil.glb**:
+  schwarzer Kern mit violetter Spirale, entlang des Wurfbogens ausgerichtete
+  Spitze und Rotation um die Flugachse. Zwei Energiebahnen, acht umlaufende
+  Partikel und der vorhandene Element-Schweif begleiten das Modell.
+  Auch der Einschlag verwendet das gemeinsame Effekt-System.
+- Das Original unter `assets/inbox/` bleibt bytegenau erhalten (63.232.376 Byte).
+  `scripts/prepare-gravity-projectile.py` erzeugt über die vorhandene Blender-
+  Pipeline eine getrennte Laufzeitdatei: 235.348 Byte, 4.000 Dreiecke und drei
+  eingebettete PBR-Texturen mit höchstens 256×256 Pixeln. Der Loader richtet
+  die ursprüngliche +Y-Spitze auf +Z aus und skaliert die Länge auf 1,10 m.
+  Die Kollisionsgröße, Flugbahn, Spielwerte und das Stabmodell bleiben unverändert.
+  Geometrie und Texturen werden geteilt; nur veränderliche Materialien gehören
+  den wiederverwendeten Projektilen. Pause und Sichtprüfung gelten auch für das Modell.
 - Die Landung zeigt eine breite violette Druckwelle, 32 weiche Staubschwaden,
   eine aufsteigende Energiesäule und eine kurz aufploppende Energieblase.
 - Erst danach öffnet sich ein durchgehend violett gefärbter Strudel.

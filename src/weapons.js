@@ -773,7 +773,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     else { projectile.life = 0; projectile.mode = 'inactive'; projectile.group.visible = false; }
   }
 
-  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype, iceProjectilePrototype: projectilePrototypes.ice });
+  const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype,
+    iceProjectilePrototype: projectilePrototypes.ice, gravityProjectilePrototype: projectilePrototypes.gravity });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
   }, isVisible, { moonProjectilePrototype: projectilePrototypes.moon });

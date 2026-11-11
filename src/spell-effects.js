@@ -17,7 +17,8 @@ const typeOf = type => Object.hasOwn(ELEMENTS, type) ? type : 'fireStaff';
 const crystalline = type => type === 'iceStaff' || type === 'moonStaff' || type === 'starStaff';
 
 /** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
-export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null, iceProjectilePrototype = null } = {}) {
+export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null, iceProjectilePrototype = null,
+  gravityProjectilePrototype = null } = {}) {
   const roots = [], geometries = new Set(), materials = new Set(), projectiles = [];
   const clock = { value: 0 };
   const ownGeometry = geometry => (geometries.add(geometry), geometry);
@@ -149,7 +150,27 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     if (disposed) throw new Error('Disposed spell effects cannot create projectiles.');
     const group = addRoot(new THREE.Group()); group.name = 'Zauberprojektil'; group.visible = false;
     const gravity = new THREE.Group(); gravity.name = 'Gravitationsprojektil · dunkler Kern'; group.add(gravity);
-    mesh(gravity, sphere, projectileMaterials.gravityStaff.core).scale.set(.29, .32, .29);
+    const gravityCore = mesh(gravity, sphere, projectileMaterials.gravityStaff.core);
+    gravityCore.scale.set(.29, .32, .29);
+    const gravityModel = gravityProjectilePrototype?.clone(true) ?? null;
+    if (gravityModel) {
+      gravityModel.name = 'Void · hochgeladenes Gravitationsprojektil';
+      gravityModel.traverse(part => {
+        if (!part.isMesh) return;
+        const prepare = source => {
+          const copy = ownMaterial(source.clone());
+          // The painted violet spiral glows softly; its black center stays dark.
+          if (copy.emissive) {
+            copy.emissiveMap = source.map ?? source.emissiveMap;
+            copy.emissive.set('#a56aff'); copy.emissiveIntensity = .35;
+          }
+          return copy;
+        };
+        part.material = Array.isArray(part.material) ? part.material.map(prepare) : prepare(part.material);
+        part.castShadow = part.receiveShadow = false;
+      });
+      gravity.add(gravityModel);
+    }
     const gravityOrbits = [mesh(gravity, gravityOrbitGeometry, projectileMaterials.gravityStaff.tip),
       mesh(gravity, gravityOrbitGeometry, projectileMaterials.gravityStaff.tip)];
     const gravityParticles = new THREE.InstancedMesh(octahedron, projectileMaterials.gravityStaff.tip, 8);
@@ -212,7 +233,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, fire, ice, star, gravity, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, fire, ice, star, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -324,6 +345,11 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const appearance = projectileMaterials[type];
     visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type) && type !== 'gravityStaff';
     visual.gravity.visible = type === 'gravityStaff';
+    visual.gravityCore.visible = !visual.gravityModel;
+    if (visual.gravityModel) {
+      visual.gravityModel.visible = type === 'gravityStaff';
+      visual.gravityModel.rotation.set(0, 0, 0);
+    }
     visual.gravityParticles.count = 0;
     visual.ice.visible = crystalline(type) && type !== 'starStaff'; visual.star.visible = type === 'starStaff';
     if (visual.fireModel) visual.fireModel.visible = type === 'fireStaff';
@@ -356,6 +382,15 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     delta = Math.max(0, Math.min(.25, finite(delta))); if (!delta) return;
     visual.age += delta;
     if (visual.type === 'gravityStaff') {
+      if (visual.gravityModel) {
+        // +Z is the measured tip direction after normalization. Follow the
+        // simulated arc, then spin only the model around that flight axis.
+        directionVector.subVectors(to, from);
+        if (directionVector.lengthSq() > .00000001) {
+          visual.group.quaternion.setFromUnitVectors(forward, directionVector.normalize());
+        }
+        visual.gravityModel.rotation.z = visual.age * 7;
+      }
       visual.gravityParticles.count = 8;
       visual.gravityOrbits.forEach((orbit, index) => orbit.rotation.set(.5 + index, visual.age * (index ? -5 : 7), index * .8));
       for (let i = 0; i < 8; i++) {
@@ -569,6 +604,9 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
         importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,
         importedIceProjectiles: projectiles.filter(p => p.active && p.type === 'iceStaff' && p.iceModel).length,
+        importedGravityProjectiles: projectiles.filter(p => p.active && p.type === 'gravityStaff' && p.gravityModel).length,
+        visibleImportedGravityProjectiles: projectiles.filter(p => p.active && p.type === 'gravityStaff' && p.gravityModel && p.group.visible).length,
+        gravityModel: gravityProjectilePrototype ? { ...gravityProjectilePrototype.userData } : null,
         starProjectiles: projectiles.filter(p => p.active && p.type === 'starStaff').length,
         visibleStarProjectiles: projectiles.filter(p => p.active && p.type === 'starStaff' && p.group.visible).length,
         starProjectileStyle: 'gold-star-blue-trail',

@@ -159,8 +159,14 @@ with sync_playwright() as p:
                 g = state(page)['combat']['gravity']
                 assert g['phase'] == 'flight' and not g['landed'] and not g['visuals']['fieldVisible'], g
                 assert state(page)['combat']['effects']['visibleTrailSegments'] > 0
+                effects = state(page)['combat']['effects']
+                assert effects['importedGravityProjectiles'] == 1, effects
+                assert effects['visibleImportedGravityProjectiles'] == 1, effects
+                assert effects['gravityModel']['source'] == 'assets/inbox/Void Projektil.glb'
+                assert effects['gravityModel']['triangles'] <= 4000
+                assert effects['gravityModel']['forwardAxis'] == '+Z'
                 page.wait_for_timeout(150); assert state(page)['combat']['gravity'] == g
-                passed(mode + ': curved projectile and glowing trail precede the field and freeze on pause')
+                passed(mode + ': uploaded Void model and glowing trail follow the arc and freeze on pause')
                 page.keyboard.press('Escape')
             pause_at(page, .08); capture(page, mode + '-impact')
             g = state(page)['combat']['gravity']
