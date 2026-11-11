@@ -76,7 +76,7 @@ Der Code des Branches `work` enthält u. a. `src/loot-tiers.js`, `src/weapons.js
 **Gravitationsstab, überarbeiteter Prototyp:** Zielreichweite wächst wie beim
 Giftstab in 3 s von 0 auf 20 m; Loslassen wirft ein violettes Bogenprojektil.
 Nach dem Aufprall öffnen Landungsanimation und Feldöffnung das Feld in der
-bestehenden 0,4-s-Vorwarnung. Radius 3,2 m, 3,0 s Sog mit maximal 1,5 m Verschiebung je Gegner,
+bestehenden 0,4-s-Vorwarnung. Radius 4,5 m, 3,0 s Sog mit maximal 1,5 m Verschiebung je Gegner,
 langsam beginnende und beschleunigende Drehung, unregelmäßiger Partikeleinzug
 in die aufsteigende Kugel. Einmalig 14 Grundschaden beim Zerplatzen, danach
 0,22 s letzter Flächenimpuls und vollständig leere Fläche.

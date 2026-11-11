@@ -19,8 +19,8 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   und einfache Ringdarstellung. Die Zielfläche hat keine Runen oder Animation.
   Ein näherer Mauszeiger wird nicht überschossen. Frühes Loslassen wirft das Projektil näher.
   Das Halten allein löst keinen Angriff aus; jede neue Betätigung beginnt bei null.
-- Der Wirkungsradius beträgt **3,2 m**, also **6,4 m Durchmesser**. Die Fläche ist
-  damit gut doppelt so groß wie beim bisherigen Radius von 2,2 m.
+- Der Wirkungsradius beträgt **4,5 m**, also **9 m Durchmesser**. Die Fläche ist
+  damit knapp doppelt so groß wie beim vorherigen Radius von 3,2 m.
   Die Haltedauer verändert die erreichbare Entfernung, nicht Radius oder Schaden.
 - Beim Loslassen fliegt ein dunkelviolettes Projektil vom tatsächlichen Stabkopf
   zum gewählten Punkt. Fluggeschwindigkeit 10 m/s, mindestens 0,5 s Flugzeit,
@@ -58,8 +58,10 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   `scripts/prepare-gravity-projectile.py` erzeugt über die vorhandene Blender-
   Pipeline eine getrennte Laufzeitdatei: 235.348 Byte, 4.000 Dreiecke und drei
   eingebettete PBR-Texturen mit höchstens 256×256 Pixeln. Der Loader richtet
-  die ursprüngliche +Y-Spitze auf +Z aus und skaliert die Länge auf 1,10 m.
-  Die Kollisionsgröße, Flugbahn, Spielwerte und das Stabmodell bleiben unverändert.
+  die ursprüngliche +Y-Spitze auf +Z aus und normalisiert die Länge auf 1,10 m.
+  Die Darstellung skaliert Modell, Leuchten und Energiebahnen gemeinsam auf 80 %;
+  das sichtbare Modell ist dadurch 0,88 m lang. Kollisionsgröße, Flugbahn,
+  Schaden, Zeiten und Stabmodell bleiben erhalten; das Feld nutzt den obigen größeren Radius.
   Geometrie und Texturen werden geteilt; nur veränderliche Materialien gehören
   den wiederverwendeten Projektilen. Pause und Sichtprüfung gelten auch für das Modell.
 - Die Landung zeigt eine breite violette Druckwelle, 32 weiche Staubschwaden,

@@ -90,7 +90,7 @@ test('hold duration controls placement up to twenty metres in three seconds, nev
     gravity.beginAim(origin, 0); gravity.aimAt(origin, { x: 100, z: 0 });
     gravity.update(held, origin);
     assert.ok(Math.abs(gravity.telemetry.aim.x - distance) < 1e-8);
-    assert.equal(gravity.telemetry.radius, 3.2);
+    assert.equal(gravity.telemetry.radius, 4.5);
     const before = gravity.telemetry;
     gravity.update(0, origin, 500); assert.deepEqual(gravity.telemetry, before, 'pause freezes charge and visuals');
     gravity.aimAt(origin, { x: -100, z: 0 });
@@ -115,18 +115,18 @@ test('nearby targets are not overshot and the range follows a moving caster', ()
   gravity.dispose();
 });
 
-test('the larger field pulls and hits targets at three metres, with one hit and no damage during warning or pull', () => {
+test('the larger field pulls and hits targets beyond four metres, with one hit and no damage during warning or pull', () => {
   const { gravity, combat, opponent, hits } = scenario();
-  const origin = new THREE.Vector3(); opponent.position.x = 3.1;
-  const outside = combat.addTarget({ id: 'outside', position: new THREE.Vector3(3.8, 0, 0), health: 100 });
+  const origin = new THREE.Vector3(); opponent.position.x = 4.4;
+  const outside = combat.addTarget({ id: 'outside', position: new THREE.Vector3(5.1, 0, 0), health: 100 });
   const owner = combat.addTarget({ id: 'player', position: new THREE.Vector3(), health: 100 });
   gravity.beginAim(origin, 0); gravity.release({ damage: 14 }); land(gravity, origin);
-  gravity.update(.4, origin); assert.equal(opponent.position.x, 3.1);
+  gravity.update(.4, origin); assert.equal(opponent.position.x, 4.4);
   gravity.update(2.98, origin); assert.equal(opponent.health, 100);
-  assert.ok(opponent.position.x < 3.1 && opponent.position.x >= 1.6);
+  assert.ok(opponent.position.x < 4.4 && opponent.position.x >= 2.9);
   gravity.update(.03, origin); assert.equal(opponent.health, 86); assert.equal(hits.length, 1);
   gravity.update(.6, origin); assert.equal(hits.length, 1);
-  assert.equal(outside.health, 100); assert.equal(outside.position.x, 3.8); assert.equal(owner.health, 100);
+  assert.equal(outside.health, 100); assert.equal(outside.position.x, 5.1); assert.equal(owner.health, 100);
   gravity.dispose();
 });
 
@@ -202,7 +202,7 @@ test('gravity and poison share ordinary target circles and exactly the same reac
   const poisonRange = scene.getObjectByName('Giftstab · maximale Reichweite');
   assert.ok(gravityTarget.geometry.isBufferGeometry && gravityTarget.material.isMeshBasicMaterial);
   assert.equal(gravityTarget.geometry.type, 'RingGeometry');
-  assert.equal(gravityTarget.geometry.parameters.outerRadius, 3.2, 'target circle marks the actual field');
+  assert.equal(gravityTarget.geometry.parameters.outerRadius, 4.5, 'target circle marks the actual field');
   assert.equal(poisonTarget.geometry.parameters.outerRadius, 4.8, 'poison retains its actual cloud radius');
   assert.deepEqual(gravityRange.geometry.parameters, poisonRange.geometry.parameters);
   for (const [g, p] of [[gravityTarget, poisonTarget], [gravityRange, poisonRange]]) {

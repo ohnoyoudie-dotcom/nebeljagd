@@ -65,6 +65,7 @@ with sync_playwright() as p:
         pause_when(page, f's.combat.special.poisonProjectiles>0 && s.elapsed>{release_time+.12}')
         capture(page,'poison-flight')
         before = state(page)['combat']['special']; page.wait_for_timeout(100)
+        if not BASELINE: assert before['visuals']['projectileScale']==1.5
         assert state(page)['combat']['special']==before
         passed('Real mouse hold/release launches poison, and pause freezes its visuals and flight')
         page.keyboard.press('Escape')

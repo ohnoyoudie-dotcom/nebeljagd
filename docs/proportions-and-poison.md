@@ -23,7 +23,9 @@ Standardgröße. Kartenkoordinaten, Originaldateien, vorbereitete GLBs, Kampfrei
 und Schaden werden durch die Präsentationsänderung nicht umgeschrieben.
 
 `src/poison-visuals.js` zeichnet einen gedrehten, spitz zulaufenden Venomstachel
-mit einer Spur aus maximal 14 Wegpunkten. Beim Einschlag ersetzt ein einzelnes
+mit einer Spur aus maximal 14 Wegpunkten. Der Stachel wird in allen Achsen um
+50 % auf rund 1,44 m Länge vergrößert; die Rauchspur wird entsprechend breiter.
+Die Giftfläche behält ihren Radius von 4,8 m. Beim Einschlag ersetzt ein einzelnes
 Rauchvolumen die sieben sichtbaren Kugeln. Drei bewegte Rauschfrequenzen erzeugen
 unregelmäßige Dichte; 16 feste Abtastschritte pro Pixel integrieren die Farbe und
 Durchsichtigkeit. Die Wolke quillt auf und löst sich am Ende weich auf. Die

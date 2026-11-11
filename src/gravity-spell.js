@@ -8,7 +8,7 @@ import { STAFF_CHARGE_SECONDS, STAFF_THROW_RANGE, chargedStaffRange } from './st
 // All times are seconds and all distances are in world metres.
 // Keep crowd control independent of rarity: only the blast damage scales.
 export const GRAVITY_RULES = Object.freeze({
-  range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 3.2, warning: .4, pullDuration: 3,
+  range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 4.5, warning: .4, pullDuration: 3,
   pullSpeed: .5, maxPull: 1.5, minCenterDistance: .2,
   afterglow: .22,
   projectileSpeed: 10, projectileArcHeight: 3.2, projectileMinFlight: .5,

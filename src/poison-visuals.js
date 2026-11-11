@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 const VOLUME_STEPS = 16;
 const TRAIL_SAMPLES = 14;
+const PROJECTILE_SCALE = 1.5;
 const noiseGLSL = `
   float hash3(vec3 p) {
     p = fract(p * .1031); p += dot(p, p.yzx + 33.33);
@@ -137,7 +138,7 @@ export function createPoisonVisuals(scene, radius, canSee = () => true) {
   let serial = 0, disposed = false;
   function createProjectile(origin) {
     const group = new THREE.Group(); group.name = 'Giftstab · Venomstachel'; group.position.copy(origin);
-    const core = new THREE.Mesh(thorn,venom); group.add(core); scene.add(group);
+    const core = new THREE.Mesh(thorn,venom); core.scale.setScalar(PROJECTILE_SCALE); group.add(core); scene.add(group);
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position',new THREE.Float32BufferAttribute(new Float32Array(TRAIL_SAMPLES*4*3),3).setUsage(THREE.DynamicDrawUsage));
     const uv = [], indices = [];
@@ -162,7 +163,7 @@ export function createPoisonVisuals(scene, radius, canSee = () => true) {
     }
     const positions=visual.geometry.attributes.position;
     for(let i=0;i<visual.history.length;i++) {
-      const p=visual.history[i], width=(.05+.15*i/(TRAIL_SAMPLES-1))*(1-i/TRAIL_SAMPLES);
+      const p=visual.history[i], width=PROJECTILE_SCALE*(.05+.15*i/(TRAIL_SAMPLES-1))*(1-i/TRAIL_SAMPLES);
       // Collapse unseen portions instead of allowing trails through fog/walls.
       const w=canSee(p) ? width : 0;
       positions.setXYZ(i*4,p.x-w,p.y,p.z); positions.setXYZ(i*4+1,p.x+w,p.y,p.z);
@@ -198,7 +199,7 @@ export function createPoisonVisuals(scene, radius, canSee = () => true) {
   return { createProjectile, moveProjectile, createCloud, updateCloud, removeProjectile, removeCloud,
     update(dt) { if(dt>0) clock.value+=dt; },
     get telemetry() {return { activeClouds:clouds.size, cloudDraws:clouds.size,
-      activeProjectiles:projectiles.size, volumeSteps:VOLUME_STEPS, trailSamples:TRAIL_SAMPLES };},
+      activeProjectiles:projectiles.size, projectileScale:PROJECTILE_SCALE, volumeSteps:VOLUME_STEPS, trailSamples:TRAIL_SAMPLES };},
     dispose() { if(disposed)return; disposed=true;
       for(const v of projectiles)removeProjectile(v); for(const mesh of clouds)removeCloud(mesh);
       box.dispose(); thorn.dispose(); venom.dispose(); trail.dispose();

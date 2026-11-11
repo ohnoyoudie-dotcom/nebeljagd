@@ -20,6 +20,8 @@ test('poison has a tapered physical projectile and a swept ribbon, both hidden b
   const thorn=scene.getObjectByName('Giftstab · Venomstachel'), ribbon=scene.getObjectByName('Giftstab · Rauchspur');
   const bounds=new THREE.Box3().setFromBufferAttribute(thorn.children[0].geometry.attributes.position);
   const size=bounds.getSize(new THREE.Vector3());
+  size.multiply(thorn.children[0].scale);
+  assert.ok(Math.abs(size.z-1.44)<1e-6, 'the visible poison thorn is 50 percent longer');
   assert.ok(size.z>size.x*3 && size.z>size.y*3, 'recognizable long projectile rather than a round orb');
   assert.ok(ribbon.geometry.drawRange.count>0);
   const before=thorn.position.clone(), time=ribbon.material.uniforms.uTime.value;

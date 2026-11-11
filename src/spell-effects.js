@@ -3,6 +3,7 @@ import { createElementMaterial, setElementMaterial } from './spell-effect-materi
 import { createFireballMaterial } from './fireball-material.js';
 
 const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
+const GRAVITY_PROJECTILE_SCALE = .8;
 const ELEMENTS = {
   fireStaff: { core: '#fff3bf', glow: '#ff681c', spark: '#ffb52d', edge: '#ff360d' },
   iceStaff: { core: '#edffff', glow: '#45bfff', spark: '#8ceeff', edge: '#358de5' },
@@ -343,7 +344,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       sparkDistance: 0, smokeDistance: 0, headBirth: clock.value, trailRemaining: 0, visibleTrailSegments: 0 });
     visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
     const appearance = projectileMaterials[type];
-    visual.group.scale.setScalar(1); visual.fire.visible = !crystalline(type) && type !== 'gravityStaff';
+    visual.group.scale.setScalar(type === 'gravityStaff' ? GRAVITY_PROJECTILE_SCALE : 1);
+    visual.fire.visible = !crystalline(type) && type !== 'gravityStaff';
     visual.gravity.visible = type === 'gravityStaff';
     visual.gravityCore.visible = !visual.gravityModel;
     if (visual.gravityModel) {
@@ -609,7 +611,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         importedIceProjectiles: projectiles.filter(p => p.active && p.type === 'iceStaff' && p.iceModel).length,
         importedGravityProjectiles: projectiles.filter(p => p.active && p.type === 'gravityStaff' && p.gravityModel).length,
         visibleImportedGravityProjectiles: projectiles.filter(p => p.active && p.type === 'gravityStaff' && p.gravityModel && p.group.visible).length,
-        gravityModel: gravityProjectilePrototype ? { ...gravityProjectilePrototype.userData } : null,
+        gravityModel: gravityProjectilePrototype ? { ...gravityProjectilePrototype.userData, presentationScale: GRAVITY_PROJECTILE_SCALE } : null,
         starProjectiles: projectiles.filter(p => p.active && p.type === 'starStaff').length,
         visibleStarProjectiles: projectiles.filter(p => p.active && p.type === 'starStaff' && p.group.visible).length,
         starProjectileStyle: 'gold-star-blue-trail',

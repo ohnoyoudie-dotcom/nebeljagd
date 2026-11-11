@@ -24,6 +24,7 @@ test('Void follows the arc and spins on its flight axis without changing shared 
   assert.equal(material.emissiveMap, null);
   const from = new THREE.Vector3(0, 1, 0), to = new THREE.Vector3(1, 2, 3);
   effects.launch(visual, 'gravityStaff', from, 1.2);
+  assert.deepEqual(visual.group.scale.toArray(), [.8, .8, .8], 'model, halo and orbiting energy shrink together');
   assert.equal(visual.gravityCore.visible, false);
   assert.ok(visual.gravityModel.visible);
   assert.equal(effects.telemetry.importedGravityProjectiles, 1);
@@ -47,6 +48,7 @@ test('Void follows the arc and spins on its flight axis without changing shared 
   effects.end(visual);
   assert.equal(effects.telemetry.importedGravityProjectiles, 0);
   effects.launch(visual, 'fireStaff', from);
+  assert.deepEqual(visual.group.scale.toArray(), [1, 1, 1], 'pooled gravity scale never shrinks another weapon');
   assert.equal(visual.gravity.visible, false);
   assert.equal(visual.gravityModel.visible, false);
   effects.launch(visual, 'gravityStaff', from);

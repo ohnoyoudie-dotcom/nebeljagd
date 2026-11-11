@@ -134,7 +134,7 @@ with sync_playwright() as p:
                 assert abs(g['aimRange']['radius'] - 20*min(1, g['aimRange']['heldSeconds']/3)) < 1e-6, g
                 assert state(page)['combat']['shotsFired'] == 0 and not g['active'], g
                 page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange.radius === 20')
-                assert state(page)['combat']['gravity']['radius'] == 3.2
+                assert state(page)['combat']['gravity']['radius'] == 4.5
                 passed(mode + ': holding grows the reach to 20m in 3s, without firing')
             capture(page, mode + '-aim')
             if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
@@ -165,6 +165,7 @@ with sync_playwright() as p:
                 assert effects['gravityModel']['source'] == 'assets/inbox/Void Projektil.glb'
                 assert effects['gravityModel']['triangles'] <= 4000
                 assert effects['gravityModel']['forwardAxis'] == '+Z'
+                assert effects['gravityModel']['presentationScale'] == .8
                 page.wait_for_timeout(150); assert state(page)['combat']['gravity'] == g
                 passed(mode + ': uploaded Void model and glowing trail follow the arc and freeze on pause')
                 page.keyboard.press('Escape')
