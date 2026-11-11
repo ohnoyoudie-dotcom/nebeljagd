@@ -15,6 +15,8 @@ test('the bright burst front crosses the complete gameplay area before fading ou
     if (!crossed && state.burstRadius >= rules.radius) {
       assert.ok(state.burstOpacity > .9, 'the outer edge receives a strong front'); crossed = true;
     }
+    if (state.burstRadius >= rules.radius && i / 30 <= .95) assert.equal(state.burstOpacity, 1,
+      'the full-area flash remains bright for at least one 100 ms render interval');
   }
   assert.ok(crossed); assert.equal(gravityVortexMotion(end + rules.afterglow, rules).burstOpacity, 0);
 });
