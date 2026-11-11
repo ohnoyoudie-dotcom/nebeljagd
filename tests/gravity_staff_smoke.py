@@ -100,7 +100,7 @@ with sync_playwright() as p:
             target = next(actor for actor in state(page)['practiceActors'] if actor['id'] == 'practice-1')
             point = target['position']
             # Let the real camera settle after moving before projecting the mouse.
-            page.evaluate('p => nebeljagdInspect({x:p.x-2.7-(p.touch?10:0),z:p.z-(p.touch?0:5),direction:p.touch?Math.PI/2:0})',
+            page.evaluate('p => nebeljagdInspect({x:p.x-2.7-(p.touch?20:0),z:p.z-(p.touch?0:5),direction:p.touch?Math.PI/2:0})',
                 {**point, 'touch': touch})
             page.evaluate('nebeljagdInspectCamera({zoom:1.05})')
             elapsed = state(page)['elapsed']
@@ -127,15 +127,23 @@ with sync_playwright() as p:
             if not BASELINE:
                 page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange.heldSeconds >= 1.5')
                 g = state(page)['combat']['gravity']
-                assert abs(g['aimRange']['radius'] - 10*min(1, g['aimRange']['heldSeconds']/3)) < 1e-6, g
+                assert abs(g['aimRange']['radius'] - 20*min(1, g['aimRange']['heldSeconds']/3)) < 1e-6, g
                 assert state(page)['combat']['shotsFired'] == 0 and not g['active'], g
-                page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange.radius === 10')
+                page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange.radius === 20')
                 assert state(page)['combat']['gravity']['radius'] == 3.2
-                passed(mode + ': holding grows the reach to 10m in 3s, without firing')
+                passed(mode + ': holding grows the reach to 20m in 3s, without firing')
             capture(page, mode + '-aim')
             if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
             else: page.keyboard.up('f')
             page.wait_for_function('nebeljagdTestState().combat.gravity.active')
+            if touch:
+                # Full reach is now 20m, outside the normal camera framing.
+                # Move the observer after launch; the projectile keeps its
+                # locked destination and all actual touch release checks run.
+                page.evaluate('''() => {
+                  const p=nebeljagdTestState().combat.gravity.flight.target;
+                  nebeljagdInspect({x:p.x-6,z:p.z-4,direction:Math.atan2(6,4)});
+                }''')
             if not BASELINE:
                 page.evaluate('''() => { function frame() {
                   const g=nebeljagdTestState().combat.gravity;
@@ -193,10 +201,16 @@ with sync_playwright() as p:
             assert state(page)['combat']['gravity']['exploded']
             if not BASELINE:
                 burst = state(page)['combat']['gravity']['visuals']['vortex']
-                assert not burst['sphereVisible'] and burst['shellCount'] == 14, burst
+                assert not burst['sphereVisible'] and burst['shellCount'] == 24, burst
                 assert burst['capVisible'], 'the upper shell remains briefly visible during the first pop'
             assert state(page)['combat']['shotsFired'] == 1
             page.keyboard.press('Escape')
+            if not BASELINE:
+                pause_at(page, 1.95); capture(page, mode + '-debris-outward')
+                g = state(page)['combat']['gravity']
+                assert g['active'] and g['exploded'] and g['lastHitCount'] >= 0
+                assert g['visuals']['fieldDraws'] <= 15
+                page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.gravity.active')
             if not touch:
                 opponent = next(actor for actor in state(page)['practiceActors'] if actor['id'] == 'practice-1')
@@ -226,9 +240,9 @@ with sync_playwright() as p:
                 page.wait_for_function('t=>nebeljagdTestState().elapsed>=t', arg=elapsed+.3)
                 pixel = page.evaluate('p=>nebeljagdProjectPoint(p)', clean)
                 page.mouse.move(pixel['x'], pixel['y']); page.keyboard.down('f')
-                page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange?.radius === 10')
+                page.wait_for_function('nebeljagdTestState().combat.gravity.aimRange?.radius === 20')
                 page.keyboard.up('f')
-                for age, name in [(.6, 'reference-start'), (1.3, 'reference-grown'), (1.46, 'reference-burst')]:
+                for age, name in [(.6, 'reference-start'), (1.3, 'reference-grown'), (1.46, 'reference-burst'), (1.95, 'reference-debris')]:
                     pause_at(page, age); capture_reference_detail(page, name)
                     page.keyboard.press('Escape')
                 page.wait_for_function('!nebeljagdTestState().combat.gravity.active')

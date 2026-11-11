@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import { traceRangedProjectile, colliderTarget, colliderBlocksTarget } from './projectile-collision.js';
 import { createPoisonVisuals } from './poison-visuals.js';
 import { createImpactSparks } from './impact-sparks.js';
-import { STAFF_CHARGE_SECONDS, chargedStaffRange } from './staff-charge.js';
+import { STAFF_CHARGE_SECONDS, STAFF_THROW_RANGE, chargedStaffRange } from './staff-charge.js';
+import { createStaffAimRing } from './staff-aim.js';
 
 export const SPECIAL_RULES = Object.freeze({ moonRange: 12, moonSpeed: 18, returnSpeed: 24,
-  poisonRange: 20, poisonChargeSeconds: STAFF_CHARGE_SECONDS, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
+  poisonRange: STAFF_THROW_RANGE, poisonChargeSeconds: STAFF_CHARGE_SECONDS, poisonSpeed: 8.5, poisonArcHeight: 4, poisonMinFlight: .6,
   cloudRadius: 4.8, cloudDuration: 3 });
 
 /** Owns the complete flight/return and ground-area lifetimes, independent of input. */
@@ -17,13 +18,10 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   const ringGeometry = geometry(new THREE.RingGeometry(SPECIAL_RULES.cloudRadius - .07, SPECIAL_RULES.cloudRadius, 48));
   const ringMaterial = material(new THREE.MeshBasicMaterial({ color: '#91ab53', side: THREE.DoubleSide, transparent: true, opacity: .22, depthWrite: false }));
   function root(object) { roots.push(object); scene.add(object); return object; }
-  const targetMaterial = material(ringMaterial.clone()); targetMaterial.depthTest = false; targetMaterial.color.set('#e4ffa1'); targetMaterial.opacity = .85;
-  const targetRing = root(new THREE.Mesh(ringGeometry, targetMaterial)); targetRing.renderOrder = 30;
-  targetRing.name = 'Giftwolke · Zielbereich'; targetRing.rotation.x = -Math.PI / 2; targetRing.visible = false;
-  const rangeMaterial = material(targetMaterial.clone()); rangeMaterial.opacity = .3;
-  const rangeRing = root(new THREE.Mesh(geometry(new THREE.RingGeometry(SPECIAL_RULES.poisonRange - .055, SPECIAL_RULES.poisonRange, 96)), rangeMaterial));
-  rangeRing.name = 'Giftstab · maximale Reichweite'; rangeRing.rotation.x = -Math.PI / 2;
-  rangeRing.renderOrder = 29; rangeRing.visible = false;
+  const targetRing = root(createStaffAimRing(SPECIAL_RULES.cloudRadius));
+  geometry(targetRing.geometry); material(targetRing.material); targetRing.name = 'Giftwolke · Zielbereich';
+  const rangeRing = root(createStaffAimRing(SPECIAL_RULES.poisonRange, { range: true }));
+  geometry(rangeRing.geometry); material(rangeRing.material); rangeRing.name = 'Giftstab · maximale Reichweite';
   let crescent;
   if (moonProjectilePrototype) {
     crescent = new THREE.Group();

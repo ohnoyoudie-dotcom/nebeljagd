@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
 const TAU = Math.PI * 2;
-const SHELL_COUNT = 14;
+const SHELL_COUNT = 24;
+const VISUAL_RADIUS = 1.3;
 const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
 
@@ -40,7 +41,9 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
     const x = Math.cos(angle) * radius, z = Math.sin(angle) * radius;
     // The raised outer lip makes a shallow depression without cutting terrain.
     const y = .025 + .26 * radius ** .7;
-    positions.push(x * rules.radius, y, z * rules.radius); radialHeights.push(y);
+    // Extra transparent space lets curved wisps cross the gameplay boundary;
+    // the mesh's circular perimeter never becomes the visible silhouette.
+    positions.push(x * rules.radius * VISUAL_RADIUS, y, z * rules.radius * VISUAL_RADIUS); radialHeights.push(y);
     uvs.push(x * .5 + .5, z * .5 + .5);
     if (ring < rings && segment < segments) {
       const i = ring * (segments + 1) + segment;
@@ -60,13 +63,18 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
         p.y+=sin(atan(xy.y,xy.x+.000001)*5.+r*15.+uSpin*5.)*.008*sin(r*3.14159);
         gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
     fragmentShader: `varying vec2 vUv;uniform float uSpin,uFade,uTextured;uniform sampler2D uGround;
-      void main(){vec2 p=vUv*2.-1.;float c=cos(uSpin),s=sin(uSpin);
+      void main(){vec2 p=(vUv*2.-1.)*1.3;float r=length(p),a=atan(p.y,p.x+.000001);
+        float c=cos(uSpin),s=sin(uSpin);
         vec2 q=vec2(c*p.x-s*p.y,s*p.x+c*p.y);
-        // Fit the painted perimeter to the actual gameplay radius.
-        vec2 uv=vec2(.495,.503)+vec2(q.x,-q.y)*vec2(.47,.465);
+        // Sample the painted interior, avoiding its baked bright circular rim.
+        // The same broad colored arms continue through the feathered wisps.
+        vec2 uv=vec2(.495,.503)+vec2(q.x,-q.y)*vec2(.423,.4185)/(1.+.22*r*r);
         vec4 paint=texture2D(uGround,uv);
         if(uTextured<.5)paint=vec4(.07,.012,.14,1.);
-        gl_FragColor=vec4(paint.rgb,paint.a*.97*uFade*(1.-smoothstep(.997,1.,length(p))));
+        float curl=pow(.5+.5*sin(a*5.+r*7.+uSpin*5.),3.);
+        float edge=.96+.055*sin(a*7.+uSpin)+.025*sin(a*13.-uSpin*.6)+curl*.22;
+        float feather=1.-smoothstep(edge-.22,edge+.025,r);
+        gl_FragColor=vec4(paint.rgb,paint.a*.97*uFade*feather);
         #include <colorspace_fragment>
       }`,
   }));
@@ -147,9 +155,9 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
       const t = state.burst;
       for (let i = 0; i < SHELL_COUNT; i++) {
         const a = i * 2.399963, y = 1 - (i + .5) / SHELL_COUNT * 2, radius = Math.sqrt(1 - y * y);
-        const distance = .56 + t * (2.0 + i % 3 * .35);
+        const distance = .56 + t * (4.0 + i % 3 * .65);
         transform.position.set(Math.cos(a) * radius * distance,
-          state.sphereHeight + y * distance * .65 + Math.sin(t * Math.PI) * .24 - t * t * .5,
+          Math.max(.08, state.sphereHeight + y * distance * .45 + Math.sin(t * Math.PI) * .8 - t * t * 1.6),
           Math.sin(a) * radius * distance);
         transform.rotation.set(i + t * 5, a + t * 3, t * (i % 2 ? 4 : -4));
         transform.scale.setScalar((.42 + i % 3 * .08) * (1 - smooth(t / .85)));
@@ -163,6 +171,7 @@ export function createGravityVortex(parent, rules, { heightAt = null, textures =
     get telemetry() { return { spin: state.spin, spinSpeed: state.spinSpeed, sphereHeight: sphere.position.y,
       sphereRadius: sphere.scale.x, sphereVisible: sphere.visible, shellCount: shell.count,
       surfaceOpacity: surfaceMat.uniforms.uFade.value * .97, shallowDepth: .26,
+      visualRadius: rules.radius * VISUAL_RADIUS,
       artwork: textures?.ground && textures?.orb ? 'gravity-reference-v1' : null,
       capVisible: cap.visible }; },
     dispose() {

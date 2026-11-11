@@ -33,6 +33,9 @@ test('a shallow filled surface follows terrain once per placement without deform
   const surface = parent.getObjectByName('Gravitationsfeld · gefärbter Bodenstrudel');
   const attribute = surface.geometry.attributes.position;
   assert.ok(attribute.count < 2500 && surface.material.forceSinglePass);
+  const bounds = new THREE.Box3().setFromBufferAttribute(attribute);
+  assert.ok(bounds.max.x > rules.radius * 1.25 && bounds.max.x <= rules.radius * 1.31,
+    'transparent mesh has room for outward wisps beyond the gameplay radius');
   for (let i = 0; i < attribute.count; i++) {
     const relativeHeight = attribute.getY(i) - ((center.x + attribute.getX(i)) * .03
       + (center.z + attribute.getZ(i)) * .02 - center.y);
@@ -56,7 +59,7 @@ test('the raised sphere pops into one bounded instance batch, then every reusabl
   const geometries = new Set(parent.children.map(object => object.geometry));
   let disposed = 0; geometries.forEach(geometry => geometry.addEventListener('dispose', () => disposed++));
   vortex.update(center, rules.warning + rules.pullDuration + .05);
-  assert.equal(sphere.visible, false); assert.equal(shell.count, 14);
+  assert.equal(sphere.visible, false); assert.equal(shell.count, 24);
   assert.equal(vortex.telemetry.capVisible, true, 'the broken upper shell survives the first burst, like the reference');
   assert.ok(vortex.telemetry.sphereHeight >= before.sphereHeight);
   const matrix = Array.from(shell.instanceMatrix.array);

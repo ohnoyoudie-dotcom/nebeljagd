@@ -42,7 +42,7 @@ test('gravity uses a visible warning, limited pull, one explosion and a resettab
   assert.equal(opponent.health, 100);
   gravity.update(.4, origin);
   assert.ok(opponent.position.x < 1.8);
-  for (let i = 0; i < 8; i++) gravity.update(.2, origin, i * .2);
+  for (let i = 0; i < 10; i++) gravity.update(.2, origin, i * .2);
   assert.ok(opponent.position.x >= .2 - 1e-6);
   assert.ok(opponent.position.x <= .5);
   assert.equal(opponent.health, 86);
@@ -73,17 +73,17 @@ test('gravity grows its reachable distance while held and can be cancelled witho
   gravity.aimAt(origin, { x: 50, z: 0 });
   assert.equal(gravity.telemetry.aim.x, 0);
   gravity.update(1.5, origin);
-  assert.ok(Math.abs(gravity.telemetry.aim.x - 5) < 1e-6);
-  gravity.update(1.5, origin);
   assert.ok(Math.abs(gravity.telemetry.aim.x - 10) < 1e-6);
+  gravity.update(1.5, origin);
+  assert.ok(Math.abs(gravity.telemetry.aim.x - 20) < 1e-6);
   gravity.cancelAim();
   assert.equal(gravity.release({ damage: 14 }), false);
   assert.equal(gravity.telemetry.active, false);
   gravity.dispose();
 });
 
-test('hold duration controls placement up to ten metres in three seconds, never the field size or damage', () => {
-  for (const [held, distance] of [[0, 0], [.6, 2], [1.5, 5], [2.99, 10 * 2.99 / 3], [3, 10], [5, 10]]) {
+test('hold duration controls placement up to twenty metres in three seconds, never the field size or damage', () => {
+  for (const [held, distance] of [[0, 0], [.6, 4], [1.5, 10], [2.99, 20 * 2.99 / 3], [3, 20], [5, 20]]) {
     const { gravity } = scenario();
     const origin = new THREE.Vector3();
     gravity.beginAim(origin, 0); gravity.aimAt(origin, { x: 100, z: 0 });
@@ -107,7 +107,7 @@ test('nearby targets are not overshot and the range follows a moving caster', ()
   gravity.beginAim(origin, 0); gravity.aimAt(origin, { x: 2, z: 0 }); gravity.update(3, origin);
   assert.equal(gravity.telemetry.aim.x, 2);
   origin.set(4, 0, -2); gravity.aimAt(origin, { x: 100, z: 100 }); gravity.update(.1, origin);
-  assert.ok(Math.abs(Math.hypot(gravity.telemetry.aim.x - 4, gravity.telemetry.aim.z + 2) - 10) < 1e-8);
+  assert.ok(Math.abs(Math.hypot(gravity.telemetry.aim.x - 4, gravity.telemetry.aim.z + 2) - 20) < 1e-8);
   assert.equal(scene.getObjectByName('Gravitationsstab · wachsende Reichweite').position.x, 4);
   gravity.cancelAim();
   gravity.beginAim(origin, 0); assert.equal(gravity.telemetry.aimRange.radius, 0, 'each press starts a fresh charge');
@@ -140,7 +140,7 @@ test('the spatial vortex freezes on pause, respects visibility and releases its 
   const bounds = new THREE.Box3().setFromBufferAttribute(surface.geometry.attributes.position);
   assert.ok(bounds.max.y - bounds.min.y > .2 && bounds.max.y - bounds.min.y < .4,
     'the filled ground vortex has shallow physical depth');
-  assert.equal(debris.count, 12); assert.equal(gravity.telemetry.visuals.dustCount, 32);
+  assert.equal(debris.count, 64); assert.equal(gravity.telemetry.visuals.dustCount, 160);
   assert.ok(gravity.telemetry.visuals.fieldDraws <= 15, 'bounded effect draw count');
   const matrix = Array.from(debris.instanceMatrix.array), spin = surface.material.uniforms.uSpin.value;
   gravity.update(0, origin, 200);
@@ -187,15 +187,31 @@ test('enhanced gravity effect shows ground dust, victim tethers and shockwaves w
   gravity.dispose();
 });
 
-test('gravity and poison fill at the same normalized rate, including pauses, moving aim and a fresh press', () => {
+test('gravity and poison share ordinary target circles and exactly the same reach in metres throughout charging', () => {
   const { scene, world, combat, gravity } = scenario(); const caster = new THREE.Vector3();
   const poison = createSpecialWeapons(scene, world, combat, 'player', () => {});
+  const gravityTarget = scene.getObjectByName('Gravitationsstab · Zielkreis').children[0];
+  const poisonTarget = scene.getObjectByName('Giftwolke · Zielbereich');
+  const gravityRange = scene.getObjectByName('Gravitationsstab · wachsende Reichweite').children[0];
+  const poisonRange = scene.getObjectByName('Giftstab · maximale Reichweite');
+  assert.ok(gravityTarget.geometry.isBufferGeometry && gravityTarget.material.isMeshBasicMaterial);
+  assert.equal(gravityTarget.geometry.type, 'RingGeometry');
+  assert.equal(gravityTarget.geometry.parameters.outerRadius, 3.2, 'target circle marks the actual field');
+  assert.equal(poisonTarget.geometry.parameters.outerRadius, 4.8, 'poison retains its actual cloud radius');
+  assert.deepEqual(gravityRange.geometry.parameters, poisonRange.geometry.parameters);
+  for (const [g, p] of [[gravityTarget, poisonTarget], [gravityRange, poisonRange]]) {
+    assert.equal(g.material.color.getHex(), p.material.color.getHex());
+    assert.equal(g.material.opacity, p.material.opacity);
+    assert.equal(g.material.depthTest, p.material.depthTest);
+    assert.equal(g.renderOrder, p.renderOrder);
+  }
   for (let cast = 0; cast < 2; cast++) {
     gravity.beginAim(caster, 0); poison.beginAim(caster, 0);
     for (const dt of [0, .01, .29, 0, .7, .5, .5, .99, .01, 1]) {
       gravity.update(dt, caster); poison.update(dt, caster, 0);
       const g = gravity.telemetry.aimRange, p = poison.telemetry.aimRange;
-      assert.equal(g.radius / g.maximum, p.radius / p.maximum);
+      assert.equal(g.maximum, 20); assert.equal(g.radius, p.radius);
+      assert.equal(gravityRange.scale.x, poisonRange.scale.x);
       assert.equal(g.heldSeconds, p.heldSeconds);
       caster.x += .1;
       gravity.aimAt(caster, { x: 100, z: 20 }); poison.aimAt(caster, { x: 100, z: 20 });
@@ -298,7 +314,43 @@ test('flight time is separate from the unchanged landing warning and damage occu
   assert.equal(opponent.health, 100);
   gravity.update(.03, caster); assert.equal(opponent.health, 86); assert.equal(hits.length, 1);
   gravity.update(.25, caster); assert.equal(hits.length, 1);
+  gravity.update(.5, caster); assert.equal(hits.length, 1);
+  assert.equal(gravity.telemetry.active, true, 'visual debris persists after the former short fade');
   gravity.update(.5, caster); assert.equal(hits.length, 1); assert.equal(gravity.telemetry.active, false);
+  gravity.dispose();
+});
+
+test('continuous suction debris survives the burst, ejects stones outward, and pauses without another hit', () => {
+  const { gravity, scene, opponent, hits } = scenario(); const caster = new THREE.Vector3();
+  gravity.beginAim(caster, 0); gravity.release({ damage: 14 }); land(gravity, caster);
+  gravity.update(.28, caster);
+  const debris = scene.getObjectByName('Gravitationsfeld · schwebende Trümmer');
+  const dust = scene.getObjectByName('Gravitationsfeld · angehobener Bodenstaub');
+  assert.ok(dust.visible, 'decorative suction starts during opening');
+  assert.equal(dust.geometry.attributes.position.count, 160);
+  const radii = () => {
+    const result = [], matrix = new THREE.Matrix4(), position = new THREE.Vector3();
+    for (let i = 0; i < debris.count; i++) {
+      debris.getMatrixAt(i, matrix); position.setFromMatrixPosition(matrix); result.push(Math.hypot(position.x, position.z));
+    }
+    return result;
+  };
+  gravity.update(1.121, caster);
+  const start = radii();
+  assert.ok(scene.getObjectByName('Gravitation · Aufblitzen beim Kollaps').scale.x > 6);
+  gravity.update(.5, caster);
+  const later = radii();
+  for (let i = 0; i < debris.count; i++) {
+    if (i % 4) assert.ok(later[i] > start[i] + 1.5, 'stones fly outward');
+    else assert.ok(later[i] < start[i] * .02, 'remaining leaves still spiral inward');
+  }
+  assert.ok(dust.visible);
+  const before = Array.from(debris.instanceMatrix.array);
+  gravity.update(0, caster, 999); assert.deepEqual(Array.from(debris.instanceMatrix.array), before);
+  gravity.update(.3, caster); assert.ok(gravity.telemetry.active && dust.visible, 'longer visible afterglow');
+  assert.equal(opponent.health, 86); assert.equal(hits.length, 1);
+  assert.ok(gravity.telemetry.visuals.fieldDraws <= 15);
+  gravity.update(.4, caster); assert.equal(gravity.telemetry.active, false);
   gravity.dispose();
 });
 

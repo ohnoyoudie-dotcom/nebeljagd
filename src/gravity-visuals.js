@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { createGravityVortex } from './gravity-vortex.js';
+import { createStaffAimRing } from './staff-aim.js';
 
-const DEBRIS_COUNT = 12;
+const DEBRIS_COUNT = 64;
 const TRAIL_SEGMENTS = 8;
-const DUST_COUNT = 32;
+const DUST_COUNT = 160;
 const TARGET_CAP = 8;
 const TETHER_SEGMENTS = 12;
 const TAU = Math.PI * 2;
@@ -25,50 +26,10 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   const aim = root('Gravitationsstab · Zielkreis');
   const range = root('Gravitationsstab · wachsende Reichweite');
   const field = root('Gravitationsfeld · Raumwirbel und Kollaps');
-  const floorGeometry = geo(new THREE.CircleGeometry(1, 96));
-  function floorMaterial(aiming) {
-    return mat(new THREE.ShaderMaterial({
-      name: aiming ? 'Gravitation · Zielrune' : 'Gravitation · gekrümmte Bodenlinien',
-      transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
-      uniforms: { uAge: { value: 0 }, uPull: { value: 0 }, uFade: { value: 1 }, uAim: { value: aiming ? 1 : 0 } },
-      vertexShader: vertex,
-      fragmentShader: `varying vec2 vUv; uniform float uAge, uPull, uFade, uAim;
-        void main() {
-          vec2 p = vUv * 2.0 - 1.0; float r = length(p), a = atan(p.y, p.x) - uAge * .45;
-          float edge = 1.0 - smoothstep(.005, .018, abs(r - .975));
-          float inset = (1.0 - smoothstep(.006, .019, abs(r - .84))) * .44;
-          float inner = (1.0 - smoothstep(.006, .018, abs(r - .47))) * .38;
-          float ringTicks = step(.63, fract((a + uAge * .28) * 9.5493));
-          float sectors = step(.24, fract(a * 3.81972 + .5));
-          float runes = (1.0 - smoothstep(.008, .026, abs(r - .92))) * sectors;
-          float spokes = pow(max(0.0, cos(a * 12.0 + uAge * .8)), 34.0) * smoothstep(.44,.55,r) * (1.0 - smoothstep(.81,.9,r));
-          float glyphs = ringTicks * (1.0 - smoothstep(.012,.037,abs(r-.72)));
-          float sweep = pow(max(0.0, cos(a * 1.5 - uAge * (1.2 + uPull * 3.0))), 24.0) * smoothstep(.6,.74,r);
-          float twist = a * 5.0 + r * 16.0 - uAge * (2.0 + uPull * 3.0);
-          float arms = pow(max(0.0, cos(twist)), 22.0) * smoothstep(.10, .36, r);
-          float grid = pow(max(0.0, cos(r * 47.0 + sin(a * 5.0 - uAge) * uPull * 2.0)), 28.0);
-          float envelope = smoothstep(.07, .26, r) * (1.0 - smoothstep(.76, .92, r));
-          float interior = (.035 + arms * .30 + grid * .14) * envelope * (1.0 - uAim);
-          float well = (1.0 - smoothstep(.16,.82,r)) * (1.0-uAim) * smoothstep(.0,.25,uPull);
-          float warning = .72 + .18 * sin(uAge * 9.0);
-          float alpha = (edge * warning + inset + inner * .65 + runes * .62 + glyphs * .52 + spokes * .26 + sweep * .25 + interior + well * .6) * uFade;
-          vec3 color = mix(vec3(.26,.065,.52), vec3(.91,.74,1.0), clamp(edge + runes + glyphs + arms * .45 + sweep, 0.0, 1.0));
-          color = mix(color, vec3(.015,.006,.036), well * .9 * (1.0-arms*.65));
-          gl_FragColor = vec4(color, min(.88, alpha));
-          #include <colorspace_fragment>
-        }`,
-    }));
-  }
-  const aimMaterial = floorMaterial(true);
-  const disk = (parent, material) => {
-    const mesh = new THREE.Mesh(floorGeometry, material); mesh.rotation.x = -Math.PI / 2;
-    mesh.scale.setScalar(rules.radius); parent.add(mesh); return mesh;
-  };
-  disk(aim, aimMaterial).renderOrder = 30;
-  const rangeMat = mat(new THREE.MeshBasicMaterial({ color: '#c7a2ff', transparent: true,
-    opacity: .32, side: THREE.DoubleSide, depthWrite: false }));
-  const rangeMesh = new THREE.Mesh(geo(new THREE.RingGeometry(rules.range - .045, rules.range, 128)), rangeMat);
-  rangeMesh.rotation.x = -Math.PI / 2; range.add(rangeMesh);
+  const aimMesh = createStaffAimRing(rules.radius);
+  geo(aimMesh.geometry); mat(aimMesh.material); aimMesh.visible = true; aim.add(aimMesh);
+  const rangeMesh = createStaffAimRing(rules.range, { range: true });
+  geo(rangeMesh.geometry); mat(rangeMesh.material); rangeMesh.visible = true; range.add(rangeMesh);
   const vortex = createGravityVortex(field, rules, { heightAt, textures });
   const sphereGeometry = geo(new THREE.SphereGeometry(1, 24, 14));
   const sphereVertex = `varying vec3 vNormal, vView;
@@ -79,17 +40,21 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   const debris = new THREE.InstancedMesh(geo(new THREE.OctahedronGeometry(1, 0)), debrisMat, DEBRIS_COUNT);
   debris.name = 'Gravitationsfeld · schwebende Trümmer'; debris.frustumCulled = false;
   debris.instanceMatrix.setUsage(THREE.DynamicDrawUsage); field.add(debris);
-  for (let i = 0; i < DEBRIS_COUNT; i++) debris.setColorAt(i, new THREE.Color(i % 3 === 0 ? '#647b37' : '#615468'));
+  for (let i = 0; i < DEBRIS_COUNT; i++) debris.setColorAt(i, new THREE.Color(i % 4 === 0 ? '#647b37' : i % 2 ? '#766779' : '#514659'));
   // Ground dust, feet rings and energy tethers share fixed reusable buffers.
   // Only visible, unobstructed targets receive their own feedback.
   const dustPositions = new Float32Array(DUST_COUNT * 3);
+  const dustLife = new Float32Array(DUST_COUNT);
   const dustGeo = geo(new THREE.BufferGeometry());
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3).setUsage(THREE.DynamicDrawUsage));
+  dustGeo.setAttribute('life', new THREE.BufferAttribute(dustLife, 1).setUsage(THREE.DynamicDrawUsage));
   const dustMat = mat(new THREE.ShaderMaterial({ transparent: true, blending: THREE.NormalBlending,
     depthWrite: false, toneMapped: false, uniforms: { uOpacity: { value: .7 } },
-    vertexShader: `void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_PointSize=1.8;}`,
-    fragmentShader: `uniform float uOpacity; void main(){float a=1.-smoothstep(.05,.5,length(gl_PointCoord-.5));
-      if(a<.01)discard;gl_FragColor=vec4(.20,.12,.29,a*uOpacity);
+    vertexShader: `attribute float life;varying float vLife;
+      void main(){vLife=life;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_PointSize=1.+life*2.8;}`,
+    fragmentShader: `uniform float uOpacity;varying float vLife;
+      void main(){float a=(1.-smoothstep(.05,.5,length(gl_PointCoord-.5)))*vLife;
+      if(a<.01)discard;gl_FragColor=vec4(.32,.22,.40,a*uOpacity);
       #include <colorspace_fragment>
     }`,
   }));
@@ -160,7 +125,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     vertexShader: vertex,
     fragmentShader: `varying vec2 vUv;uniform vec3 uColor;uniform float uOpacity;
       void main(){float r=length(vUv*2.-1.);
-        float d=abs(r-.92),line=exp(-d*190.),glow=exp(-d*40.);
+        float d=abs(r-.92),line=exp(-d*120.),glow=exp(-d*22.);
         float feather=smoothstep(.82,.85,r)*(1.-smoothstep(.985,1.,r));
         gl_FragColor=vec4(mix(uColor,vec3(.95,.70,1.),line),(line*.8+glow*.28)*feather*uOpacity);
         #include <colorspace_fragment>
@@ -191,22 +156,41 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   burstCore.name = 'Gravitation · weißer Kern des Ausbruchs'; burstCore.visible = false; field.add(burstCore);
   const transform = new THREE.Object3D(), point = new THREE.Vector3();
   let phase = 'idle', disposed = false;
-  function particle(index, progress, collapse, out) {
+  function particle(index, age, out) {
     const seed = (index * .61803398875) % 1;
-    const p = smooth(seed * .4 + progress * (.35 + seed * .15));
-    const angle = index * 2.39996 - rules.pullDuration * (1.1 * p + 3 * p ** 3) * (1 + seed * .35);
-    const baseRadius = .18 + rules.radius * (.42 + seed * .48) * (1 - p) ** .8;
-    const radius = collapse >= 0 ? baseRadius + rules.radius * Math.sqrt(collapse) * (.2 + seed * .3) : baseRadius;
-    const height = collapse >= 0 ? .25 + Math.sin(collapse * Math.PI) * (.25 + seed * .25)
-      : .12 + p * .16 + Math.sin(p * Math.PI) * (.12 + seed * .12);
-    return out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
+    const end = rules.warning + rules.pullDuration;
+    const time = Math.max(0, Math.min(age, end) - rules.warning * .55);
+    // Staggered streams continually replenish the rim. A zero-size transition
+    // at either end hides recycling; no frame delta or per-particle allocation.
+    const p = (seed + time * (.65 + seed * .4)) % 1;
+    const life = smooth(p / .12) * (1 - smooth((p - .85) / .15));
+    const spin = 1.1 * time + 1.8 * time ** 3;
+    let angle = index * 2.39996 - spin * (1 + seed * .35) - p * 2.4;
+    let radius = .12 + rules.radius * (1.1 - smooth(p));
+    let height = .10 + p * p * (.65 + seed * .5);
+    if (age >= end) {
+      const t = age - end;
+      if (index % 4 !== 0) {
+        // Most stones and dust keep their exact launch position, then fly
+        // outward and upward under gravity instead of vanishing into the orb.
+        radius += t * (3.5 + seed * 4.5);
+        height = Math.max(.06, height + t * (2 + seed * 2.8) - 4 * t * t);
+        angle += t * (seed - .5) * .7;
+      } else {
+        const intake = smooth(t / .5);
+        radius *= 1 - intake;
+        height += intake * 1.2;
+        out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
+        return life * (1 - intake);
+      }
+    }
+    out.set(Math.cos(angle) * radius, height, Math.sin(angle) * radius);
+    return life;
   }
   function showAim(target, center, radius, age, visible) {
     aim.position.set(target.x, target.y + .055, target.z); aim.visible = visible;
     range.position.set(center.x, center.y + .055, center.z); range.visible = visible;
     rangeMesh.scale.setScalar(Math.max(.001, radius / rules.range));
-    aimMaterial.uniforms.uAge.value = age;
-    rangeMat.opacity = .2 + .13 * Math.min(1, age / rules.chargeSeconds);
   }
   function hideAim() { aim.visible = range.visible = false; }
   function showField(center, age, visible, affected = []) {
@@ -216,24 +200,16 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     const end = rules.warning + rules.pullDuration;
     const progress = clamp((age - rules.warning) / rules.pullDuration);
     const collapse = age >= end ? clamp((age - end) / rules.afterglow) : -1;
-    const strength = smooth((age - rules.warning) / .16);
     const fade = collapse >= 0 ? 1 - collapse : 1;
     phase = collapse >= 0 ? 'collapse' : age < rules.warning * .55 ? 'impact' : age < rules.warning ? 'opening' : 'pull';
     const motion = vortex.update(center, age);
-    const pullTime = Math.max(0, age - rules.warning);
-    dust.visible = age >= rules.warning && collapse < 0;
-    dustMat.uniforms.uOpacity.value = (.18 + .17 * smooth(pullTime / .2)) * fade;
+    dust.visible = opening > 0;
+    dustMat.uniforms.uOpacity.value = .6 * fade;
     for (let i = 0; i < DUST_COUNT; i++) {
-      const seed = (i * .6180339) % 1;
-      const angle = i * 2.39996 - motion.spin * (1 + seed * .35);
-      const travel = ((pullTime * (.3 + seed * .55)) + seed) % 1;
-      const radius = rules.radius * (.12 + .82 * (1 - travel));
-      const y = .10 + (.08 + seed * .12) * Math.sin(travel * Math.PI);
-      dustPositions[i * 3] = Math.cos(angle) * radius;
-      dustPositions[i * 3 + 1] = y;
-      dustPositions[i * 3 + 2] = Math.sin(angle) * radius;
+      dustLife[i] = particle(i + DEBRIS_COUNT, age, point);
+      point.toArray(dustPositions, i * 3);
     }
-    dustGeo.attributes.position.needsUpdate = true;
+    dustGeo.attributes.position.needsUpdate = dustGeo.attributes.life.needsUpdate = true;
 
     const pulling = phase === 'pull';
     affectedCount = pulling && visible ? Math.min(TARGET_CAP, affected.length) : 0;
@@ -269,47 +245,52 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
     tetherGeo.setDrawRange(0, vertexIndex / 3);
     if (affectedCount) tetherGeo.attributes.position.needsUpdate = true;
     if (affectedCount) { markers.instanceMatrix.needsUpdate = true; victims.instanceMatrix.needsUpdate = true; }
-    flash.visible = burstCore.visible = collapse >= 0 && collapse < .5;
-    flash.position.set(.25, motion.sphereHeight - .3, .9);
+    const blastTime = Math.max(0, age - end);
+    flash.visible = burstCore.visible = collapse >= 0 && blastTime < .42;
+    flash.position.set(.18, motion.sphereHeight - .25, .75);
     burstCore.position.copy(flash.position);
     if (flash.visible) {
-      const intensity = 1 - smooth((collapse - .08) / .42);
-      flash.scale.setScalar(1.4 + intensity * 1.7);
-      flashMat.opacity = intensity * .95;
-      burstCore.scale.setScalar(.13 + intensity * .06);
-      burstCoreMat.uniforms.uOpacity.value = intensity * .95;
+      const intensity = (1 - smooth(blastTime / .42)) * (.8 + .2 * Math.cos(blastTime * 32) ** 2);
+      flash.scale.setScalar(3.8 + intensity * 2.8);
+      flashMat.opacity = intensity;
+      burstCore.scale.setScalar(.22 + intensity * .14);
+      burstCoreMat.uniforms.uOpacity.value = intensity;
     }
     debrisMat.opacity = fade;
-    trails.visible = age >= rules.warning;
-    trailMat.opacity = .04 * fade;
+    trails.visible = opening > 0;
+    trailMat.opacity = .10 * fade;
     for (let i = 0; i < DEBRIS_COUNT; i++) {
-      particle(i, progress, collapse, transform.position);
-      transform.rotation.set(age * 2 + i, age + i * .8, age * 1.4);
-      transform.scale.setScalar((.070 + i % 4 * .026) * fade);
-      if (i % 3 === 0) transform.scale.set(transform.scale.x * .25, transform.scale.y * 1.6, transform.scale.z * .45);
+      const life = particle(i, age, transform.position);
+      transform.rotation.set(age * (collapse >= 0 ? 7 : 2) + i, age + i * .8, age * 1.4);
+      transform.scale.setScalar((.055 + i % 5 * .022) * fade * life);
+      if (i % 4 === 0) transform.scale.set(transform.scale.x * .25, transform.scale.y * 2.8, transform.scale.z * .45);
       transform.updateMatrix(); debris.setMatrixAt(i, transform.matrix);
       for (let j = 0; j < TRAIL_SEGMENTS; j++) for (let k = 0; k < 2; k++) {
         const back = (j + k) * .025;
-        particle(i, Math.max(0, progress - back), collapse < 0 ? -1 : Math.max(0, collapse - back), point);
+        particle(i, Math.max(0, age - back), point);
+        // Recycling never draws a long line from the centre to a new spawn.
+        if (point.distanceToSquared(transform.position) > rules.radius ** 2 * .5) point.copy(transform.position);
         point.toArray(trailPositions, (i * TRAIL_SEGMENTS * 2 + j * 2 + k) * 3);
       }
     }
     debris.instanceMatrix.needsUpdate = true; trailGeometry.attributes.position.needsUpdate = true;
     shock.visible = wave.visible = secondWave.visible = thirdWave.visible = collapse >= 0;
     if (collapse >= 0) {
-      const spread = rules.radius * (.12 + .88 * (1 - (1 - collapse) ** 6));
-      shock.position.y = motion.sphereHeight * (1 - smooth(collapse)) + .10;
-      shock.scale.set(spread, .10 + Math.sin(collapse * Math.PI) * .22, spread);
-      shockMat.uniforms.uFade.value = fade ** 2 * .5;
-      shockMat.uniforms.uFlash.value = 1 - smooth(collapse / .5);
-      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = fade ** 1.5 * .85;
-      const delayed = clamp((collapse - .10) / .90);
-      secondWave.scale.setScalar(rules.radius * (.08 + .92 * (1 - (1 - delayed) ** 2)));
-      secondWaveMat.uniforms.uOpacity.value = (1 - delayed) ** 2 * .6;
-      const last = clamp((collapse - .26) / .74);
-      thirdWave.visible = collapse >= .26;
-      thirdWave.scale.setScalar(rules.radius * (.10 + .90 * (1 - (1 - last) ** 2)));
-      thirdWaveMat.uniforms.uOpacity.value = (1 - last) ** 2 * .4;
+      const blast = clamp(blastTime / .65);
+      const spread = rules.radius * (.12 + 1.18 * (1 - (1 - blast) ** 4));
+      shock.position.y = motion.sphereHeight * (1 - smooth(blast)) + .10;
+      shock.scale.set(spread, .18 + Math.sin(blast * Math.PI) * .45, spread);
+      shockMat.uniforms.uFade.value = (1 - blast) ** 2 * .85;
+      shockMat.uniforms.uFlash.value = 1 - smooth(blast / .5);
+      wave.scale.setScalar(spread); waveMat.uniforms.uOpacity.value = (1 - blast) ** 1.5;
+      const delayed = clamp((blastTime - .10) / .75);
+      secondWave.visible = blastTime >= .10;
+      secondWave.scale.setScalar(rules.radius * (.08 + 1.12 * (1 - (1 - delayed) ** 3)));
+      secondWaveMat.uniforms.uOpacity.value = (1 - delayed) ** 2 * .85;
+      const last = clamp((blastTime - .24) / .86);
+      thirdWave.visible = blastTime >= .24;
+      thirdWave.scale.setScalar(rules.radius * (.10 + 1.02 * (1 - (1 - last) ** 3)));
+      thirdWaveMat.uniforms.uOpacity.value = (1 - last) ** 2 * .65;
     }
   }
   function hideField() {

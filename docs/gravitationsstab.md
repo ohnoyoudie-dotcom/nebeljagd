@@ -10,13 +10,13 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 - Im Editor unter **Objekte → Einzeln → Gravitationsstab · Tripo** auswählen
   und wie andere Waffen platzieren. Die Projektkarte wird nicht automatisch bearbeitet.
 - Unbewaffnet die Waffe aufnehmen oder mit **E** wechseln.
-- **F / Angriff halten**, den violetten Zielkreis ausrichten, **loslassen**.
+- **F / Angriff halten**, den schlichten Zielkreis ausrichten, **loslassen**.
   Am Computer funktionieren auch die linke Maustaste und der aktuelle Mauszeiger.
   Auf Touch-Geräten die Angriffstaste halten und mit dem linken Stick die Richtung wählen.
 - Wie beim Giftstab wächst der Reichweitenkreis beim Halten vom Spieler aus:
-  0 m beim Drücken, 5 m nach 1,5 s und maximal 10 m nach 3 s.
-  Beide Stäbe verwenden dieselbe lineare Ladefunktion: halbe Ladung nach
-  1,5 s, volle Ladung nach 3 s. Ihre jeweiligen Maximalreichweiten bleiben erhalten.
+  0 m beim Drücken, 10 m nach 1,5 s und maximal 20 m nach 3 s.
+  Beide Stäbe verwenden dieselbe lineare Ladefunktion, maximale Reichweite
+  und einfache Ringdarstellung. Die Zielfläche hat keine Runen oder Animation.
   Ein näherer Mauszeiger wird nicht überschossen. Frühes Loslassen wirft das Projektil näher.
   Das Halten allein löst keinen Angriff aus; jede neue Betätigung beginnt bei null.
 - Der Wirkungsradius beträgt **3,2 m**, also **6,4 m Durchmesser**. Die Fläche ist
@@ -36,7 +36,7 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   bzw. durch rechtzeitige Rolle entkommen. Sog selbst verursacht keinen Schaden.
 - Beim Kollaps 14 Grundschaden, Seltenheitsstufen multiplizieren nur den Schaden.
   Der Treffer erfolgt **1,4 s nach dem Aufprall**, genau einmal pro erreichbarem Ziel.
-  Keine zweite Trefferberechnung während der anschließenden 0,65 s Ausblendung.
+  Keine zweite Trefferberechnung während der anschließenden 1,1 s Ausblendung.
   Der Besitzer wird weder gezogen noch getroffen. Zerstörbare Gegenstände
   werden nicht angesaugt.
 - Angriffs-Cooldown: 2,8 s, separat von der bestehenden Rolle (2,5 s).
@@ -51,12 +51,16 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   Element-Schweif. Auch der Einschlag verwendet das gemeinsame Effekt-System.
 - Die Landung zeigt eine breite violette Druckwelle, 32 weiche Staubschwaden,
   eine aufsteigende Energiesäule und eine kurz aufploppende Energieblase.
-- Erst danach öffnet sich ein durchgehend violett gefärbter Strudel auf den
-  tatsächlichen Radius. Breite Spiralbänder unterscheiden sich durch ihre Farbe;
-  zwischen ihnen bleibt die Fläche gefüllt. Ein weicher violetter Übergang begrenzt sie.
+- Erst danach öffnet sich ein durchgehend violett gefärbter Strudel.
+  Breite Spiralbänder unterscheiden sich durch ihre Farbe; zwischen ihnen bleibt
+  die Fläche gefüllt. Weiche, gekrümmte Ausläufer reichen unregelmäßig über den
+  Wirkungsradius hinaus, maximal bis 4,16 m. Diese Ausläufer verursachen keinen
+  zusätzlichen Sog oder Schaden; der Wirkungsradius bleibt 3,2 m.
 - Die gemalte Boden-Textur übernimmt die breiten violetten Strömungen, feinen
-  Farbfäden, den dunklen Mittelpunkt und den schmalen violetten Rand aus der
-  vom Besitzer vorgegebenen Dreiphasen-Referenz. Ihre Farben werden im sRGB-Raum
+  Farbfäden und den dunklen Mittelpunkt aus der vorgegebenen Dreiphasen-Referenz.
+  Ihre aufgemalte kreisrunde Randlinie wird beim Abtasten ausgespart; eine breite,
+  animierte Spiralmaske lässt den Rand ohne harten Kreisschnitt auslaufen.
+  Die Farben werden im sRGB-Raum
   geladen und ohne zusätzliche Umfärbung dargestellt. Der Drehwinkel animiert
   diese Strömungen im vorhandenen Material.
 - Drei eigene ImageGen-Texturen liegen unter `assets/effects/gravity-reference/`:
@@ -73,16 +77,20 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
 - Aus der Mitte steigt eine dunkle Energiekugel mit leuchtenden violetten Rissen.
   Ihr Mittelpunkt steigt während des Sogs von 0,13 auf 1,73 m über der Feldbasis,
   ihr Radius wächst von 0,10 auf 0,75 m. Eine schmale Energieverbindung reicht zum Zentrum.
-- 12 wiederverwendete Fragmente aus Stein und Gras, 32 Bodenpartikel und zurückhaltende Lichtspuren werden
-  bodennah nach innen gezogen. Das vorhandene Gras-System erhält begrenzte
+- 64 wiederverwendete Fragmente aus Stein und Gras, 160 Bodenpartikel und
+  zurückhaltende Lichtspuren ziehen schon während der Feldöffnung kontinuierlich
+  nach innen. Versetzte Lebenszyklen liefern bis zum Kollaps neue Trümmer nach.
+  Das vorhandene Gras-System erhält begrenzte
   Interaktoren, welche die Halme sichtbar zur Feldmitte biegen.
 - Bis zu acht sichtbare Gegner erhalten violette Körperenergie und Fußrunen.
   Ihre Figuren stemmen Arme und Beine gegen den Sog und kippen sichtbar mit.
-- Beim Kollaps zerplatzt die große Kugel in 14 gemeinsam gezeichnete
-  Schalenfragmente. Die aufgebrochene obere Schale bleibt rund 0,18 s bestehen,
-  während darunter ein weiß-violetter Blitz aufleuchtet. Eine räumliche
-  Druckwelle und drei zeitversetzte Bodenringe zeigen den einen Treffer.
-  Der violette Strudel rotiert darunter weiter und blendet zusammen mit den Fragmenten aus.
+- Beim Kollaps zerplatzt die große Kugel in 24 gemeinsam gezeichnete
+  Schalenfragmente. Die aufgebrochene obere Schale bleibt rund 0,3 s bestehen,
+  während darunter ein wesentlich größerer weiß-violetter Blitz aufleuchtet.
+  Eine räumliche Druckwelle und drei stärkere, zeitversetzte Bodenwellen zeigen
+  den einen Treffer. Drei Viertel der Trümmer und Staubpartikel fliegen nach außen
+  und oben; die übrigen werden noch eine halbe Sekunde weiter eingesaugt.
+  Der Strudel rotiert darunter weiter und blendet mit den Fragmenten über 1,1 s aus.
 - Vorwarnung, Sog, Kollaps und Abklingen laufen über dieselbe Simulationszeit.
   Pause friert sie ein, Sichtprüfung und Tiefentest verbergen verdeckte Effekte.
 - Instanz-Geometrie bündelt Partikel, Trümmer und Gegnerreaktionen. Die Feld-

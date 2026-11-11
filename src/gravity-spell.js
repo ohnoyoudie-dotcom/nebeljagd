@@ -3,14 +3,14 @@ import { createGravityVisuals } from './gravity-visuals.js';
 import { createGravityArrival } from './gravity-arrival.js';
 import { createSpellEffects } from './spell-effects.js';
 import { traceRangedProjectile } from './projectile-collision.js';
-import { STAFF_CHARGE_SECONDS, chargedStaffRange } from './staff-charge.js';
+import { STAFF_CHARGE_SECONDS, STAFF_THROW_RANGE, chargedStaffRange } from './staff-charge.js';
 
 // All times are seconds and all distances are in world metres.
 // Keep crowd control independent of rarity: only the blast damage scales.
 export const GRAVITY_RULES = Object.freeze({
-  range: 10, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 3.2, warning: .4, pullDuration: 1,
+  range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS, radius: 3.2, warning: .4, pullDuration: 1,
   pullSpeed: 1.5, maxPull: 1.5, minCenterDistance: .2,
-  afterglow: .65,
+  afterglow: 1.1,
   projectileSpeed: 10, projectileArcHeight: 3.2, projectileMinFlight: .5,
 });
 
