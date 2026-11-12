@@ -17,6 +17,9 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     forceSinglePass: true, toneMapped: false, uniforms: { uTime: { value: 0 }, uOpacity: { value: 0 } },
     vertexShader: `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
     fragmentShader: `varying vec2 vUv;uniform float uTime,uOpacity;
+      float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+      float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+        return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1.),f.x),f.y);}
       void main(){vec2 p=(vUv*2.-1.)*1.06;float r=length(p),a=atan(p.y,p.x+.00001);
         float bands=0.;
         for(int i=0;i<4;i++){float lane=float(i);float t=a-uTime*(.65+lane*.13);
@@ -24,8 +27,8 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
           float ribbon=exp(-pow((r-radius)/.045,2.));
           float stream=pow(.5+.5*sin(t*3.+r*5.+lane*2.),2.);
           bands+=ribbon*stream;}
-        float grain=.5+.5*sin(p.x*343.+sin(p.y*281.+uTime));
-        float alpha=bands*(.12+grain*.18)*uOpacity*(1.-smoothstep(.9,1.,r));
+        float grain=noise(p*72.+vec2(sin(uTime*.4),cos(uTime*.4)));
+        float alpha=bands*(.24+grain*.25)*uOpacity*(1.-smoothstep(.9,1.,r));
         gl_FragColor=vec4(mix(vec3(.48,.26,.06),vec3(.95,.65,.22),grain),alpha);
         #include <colorspace_fragment>
       }`,

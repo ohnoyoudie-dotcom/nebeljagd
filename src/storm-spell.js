@@ -11,7 +11,7 @@ export const STORM_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSecon
 /** One aimed storm, using simulation time for charge, strikes and cleanup. */
 export function createStormSpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null) {
   const r = STORM_RULES, ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
-  const targetRing = createStaffAimRing(r.radius), reachRing = createStaffAimRing(r.range, { range: true });
+  const targetRing = createStaffAimRing(r.radius, { color: '#9bd8ff' }), reachRing = createStaffAimRing(r.range, { range: true });
   scene.add(targetRing, reachRing);
   const visuals = createStormVisuals(scene, r, ground, isVisible);
   let aim = null, field = null, casts = 0, pulses = 0, hits = 0;
@@ -24,6 +24,7 @@ export function createStormSpell(scene, world, combat, ownerId, onDamage = () =>
     point.set(position.x + dx * scale, 0, position.z + dz * scale); point.y = ground(point);
     if (world?.isLand && !world.isLand(point.x, point.z) || world?.isWater?.(point.x, point.z)) return;
     aim.target.copy(point); targetRing.position.copy(point); targetRing.position.y += .08;
+    targetRing.userData.update(aim.age);
     targetRing.visible = reachRing.visible = true;
     reachRing.position.set(position.x, ground(position) + .07, position.z);
     reachRing.scale.setScalar(Math.max(.0001, aim.range / r.range));

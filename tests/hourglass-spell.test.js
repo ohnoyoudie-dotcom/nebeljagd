@@ -53,6 +53,13 @@ test('time slow composes with ice and multiple casters without multiplying, and 
  combat.reset();assert.equal(target.speedMultiplier,1);spell.dispose();
 });
 
+test('a storm stun temporarily overrides time slow and the remaining slow resumes afterwards',()=>{
+ const {combat,target,spell}=scenario();combat.setTimeSlow(target,Symbol(),.5,1);
+ combat.hit(target,{damage:0,stun:.4});assert.equal(target.speedMultiplier,0);assert.equal(target.canAct,false);
+ combat.update(.45);assert.equal(target.speedMultiplier,.5);assert.equal(target.canAct,true);
+ combat.update(.6);assert.equal(target.speedMultiplier,1);spell.dispose();
+});
+
 test('warning, active and dissolution freeze, respect visibility and release resources',()=>{
  const {scene,world,combat,caster,spell:idle}=scenario();let visible=true;
  const s=createHourglassSpell(scene,world,combat,'other',()=>visible);
