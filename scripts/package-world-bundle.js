@@ -61,9 +61,9 @@ und Teams sind noch nicht implementiert.
   const files = [], central = []; let offset = 0;
   for (const entry of entries) {
     // The offline HTML files stay byte-identical and self-contained. Compress
-    // the editor more thoroughly to leave room for additional weapons
+    // the editor and game more thoroughly to leave room for additional weapons
     // under GitHub's file limit without removing assets or offline features.
-    const compressed = entry.name === 'map-editor.html'
+    const compressed = entry.name === 'map-editor.html' || entry.name === 'magebrawl.html'
       ? Buffer.from(await deflateAsync(entry.bytes, { numiterations: 1 }))
       : deflateRawSync(entry.bytes, { level: 9, memLevel: 9 });
     const filename = Buffer.from(entry.name), checksum = crc32(entry.bytes);

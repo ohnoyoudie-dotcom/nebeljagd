@@ -1,0 +1,143 @@
+{
+  "source": {
+    "path": "assets/inbox/Meteorstab.glb",
+    "bytes": 68083784,
+    "sha256": "50a20636486c57281120a165b05abe52533c09dee1f078f4d53970313bd8f5df",
+    "triangles": 1953210,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-meteor-staff/runtime/meteor-staff.glb",
+    "bytes": 242244,
+    "sha256": "431649e6cfd712f8b3956196b7b92dd44a6043417b7a0ccc8c6b0af06bf7c37c",
+    "triangles": 6000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.122894287109375,
+        -0.12279129028320312,
+        0.0
+      ],
+      [
+        0.122894287109375,
+        0.12279129028320312,
+        0.979736328125
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.0006637368351221085,
+      0.1999969482421875,
+      -0.00021359510719776154
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.0029647075571119785,
+      0.9999953508377075,
+      0.0007649887120351195
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999988079071045,
+      -0.0003824947925750166,
+      0.0014823555247858167,
+      0.0
+    ],
+    "uniformScale": 1.7355162517956857,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.20892399549484253,
+        -0.34710198640823364,
+        -0.2135123610496521
+      ],
+      [
+        0.21764153242111206,
+        1.3528980016708374,
+        0.2127017229795456
+      ]
+    ],
+    "tipPoint": [
+      0.12165866792201996,
+      1.3541438579559326,
+      -0.0025541449431329966
+    ],
+    "gltfBounds": [
+      [
+        -0.2098870426416397,
+        -0.3481937050819397,
+        -0.21233020722866058
+      ],
+      [
+        0.21806521713733673,
+        1.3541438579559326,
+        0.2133651226758957
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Meteorstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Meteorstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Meteorstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "meteor-staff",
+    "length": 1.7,
+    "gripHeight": 0.2,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 6000
+  }
+}

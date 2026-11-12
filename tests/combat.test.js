@@ -42,6 +42,13 @@ function attackOnce(instance, seconds = .9) {
     for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);
     weapons.releaseAttack(actor.position); seconds = 3.6;
   }
+  if (weapons.equipped === 'meteorStaff') {
+    weapons.aimAt(actor.position, instance.target.position); weapons.update(3, 0, actor.position);
+    weapons.releaseAttack(actor.position);
+    // Stop at the blast; separate tests cover the later fragment/burn damage.
+    for (let time = 0; time < 4 && weapons.telemetry.meteor.phase === 'flight'; time += .01) weapons.update(.01, time, actor.position);
+    return;
+  }
   if (weapons.equipped === 'gravityStaff') {
     weapons.aimAt(actor.position, instance.target.position);
     for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);

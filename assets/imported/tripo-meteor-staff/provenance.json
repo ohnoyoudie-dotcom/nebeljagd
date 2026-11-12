@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Meteorstab.glb",
+  "sourceSha256": "50a20636486c57281120a165b05abe52533c09dee1f078f4d53970313bd8f5df",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

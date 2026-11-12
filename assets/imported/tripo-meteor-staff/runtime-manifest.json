@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Meteorstab.glb",
+    "bytes": 68083784,
+    "sha256": "50a20636486c57281120a165b05abe52533c09dee1f078f4d53970313bd8f5df",
+    "triangles": 1953210,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/meteor-staff.json",
+      "bytes": 2871,
+      "sha256": "b5a78dd0dd7b8f682d9200c2f079527e79a7206b68e050c0973b700742bec02b"
+    },
+    {
+      "path": "previews/meteor-staff-runtime.png",
+      "bytes": 283779,
+      "sha256": "a12194afd0ed082aa6bf774d59158b2c0ff5edb0256fc93e9183145a445e106a"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 355,
+      "sha256": "73997b650d7769fa42d81fce7e6c8f3922ac5ce485503570f882c6123ed0d4dc"
+    },
+    {
+      "path": "runtime/meteor-staff.glb",
+      "bytes": 242244,
+      "sha256": "431649e6cfd712f8b3956196b7b92dd44a6043417b7a0ccc8c6b0af06bf7c37c"
+    }
+  ]
+}

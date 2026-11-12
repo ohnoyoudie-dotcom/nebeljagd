@@ -48,6 +48,7 @@ export const WEAPON_DEFINITIONS = Object.freeze({
   starStaff: Object.freeze({ type: 'starStaff', label: 'Sternstab', damage: 21, cooldown: .78, range: 23, effect: null }),
   lightningStaff: Object.freeze({ type: 'lightningStaff', label: 'Blitzstab', damage: 23, cooldown: .9, range: 20, effect: 'storm' }),
   hourglassStaff: Object.freeze({ type: 'hourglassStaff', label: 'Sanduhrstab', damage: 0, cooldown: 3.1, range: STAFF_THROW_RANGE, effect: 'time' }),
+  meteorStaff: Object.freeze({ type: 'meteorStaff', label: 'Meteorstab', damage: 24, cooldown: 4.6, range: STAFF_THROW_RANGE, effect: 'meteor' }),
   gravityStaff: Object.freeze({ type: 'gravityStaff', label: 'Gravitationsstab', damage: 14, cooldown: 2.8, range: STAFF_THROW_RANGE, effect: 'gravity' }),
 });
 export const WEAPON_TYPES = Object.freeze(Object.keys(WEAPON_DEFINITIONS));

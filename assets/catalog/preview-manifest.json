@@ -1119,6 +1119,32 @@
       "bytes": 1630,
       "sha256": "ce6ea3a0db932cd9e80e0392d1d93a9a829a22a36fe41486a13fd4ad9631b16e",
       "method": "Blender render of the optimized runtime GLB, resized to 256x192"
+    },
+    {
+      "kind": "meteorStaff",
+      "variant": "kit-tripo-meteor-staff",
+      "label": "Meteorstab · Tripo",
+      "file": "assets/catalog/meteorStaff-kit-tripo-meteor-staff.webp",
+      "bytes": 3416,
+      "sha256": "ef128c1a9fdfa132ddfa0a0fc2128ac1a8fbe5b002e75c97afc977c0f747a5a3",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-meteor-staff/previews/meteor-staff-runtime.png",
+      "model": "assets/imported/tripo-meteor-staff/runtime/meteor-staff.glb",
+      "modelSha256": "431649e6cfd712f8b3956196b7b92dd44a6043417b7a0ccc8c6b0af06bf7c37c",
+      "originalSourceSha256": "50a20636486c57281120a165b05abe52533c09dee1f078f4d53970313bd8f5df",
+      "generator": "scripts/prepare-meteor-staff.py; scripts/register-meteor-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.2098870426416397,
+          -0.3481937050819397,
+          -0.21233020722866058
+        ],
+        "max": [
+          0.21806521713733673,
+          1.3541438579559326,
+          0.2133651226758957
+        ]
+      }
     }
   ],
   "errors": []
