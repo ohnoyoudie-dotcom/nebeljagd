@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { join, relative, resolve, sep } from 'node:path';
 import './verify-gravity-effects.js';
+import './verify-storm-effects.js';
 
 const preserved = JSON.parse(await readFile('archive/preserved-versions.json', 'utf8'));
 for (const [path, expected] of Object.entries(preserved)) {

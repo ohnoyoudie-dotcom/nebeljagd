@@ -16,6 +16,7 @@ import { createWeapons } from './weapons.js';
 import { loadTripoWeapons } from './tripo-weapons.js';
 import { loadFireballModel } from './fireball-model.js';
 import { loadProjectileModels } from './projectile-models.js';
+import { loadStormTexture } from './storm-textures.js';
 import { loadGravityTextures } from './gravity-textures.js';
 import { createUI } from './ui.js';
 import { createVision } from './vision.js';
@@ -183,7 +184,7 @@ const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
     rollRarity: rollLootRarity,
     tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel(),
-    projectilePrototypes: await loadProjectileModels(), gravityTextures: await loadGravityTextures() });
+    projectilePrototypes: await loadProjectileModels(), gravityTextures: await loadGravityTextures(), stormTexture: await loadStormTexture() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
   onDrop: (item, launch) => {

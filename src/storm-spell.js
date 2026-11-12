@@ -9,11 +9,11 @@ export const STORM_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSecon
   pulses: Object.freeze([.35, .91, 1.53, 2.12, 2.78]) });
 
 /** One aimed storm, using simulation time for charge, strikes and cleanup. */
-export function createStormSpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null) {
+export function createStormSpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null, texture = null) {
   const r = STORM_RULES, ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
   const targetRing = createStaffAimRing(r.radius, { color: '#9bd8ff' }), reachRing = createStaffAimRing(r.range, { range: true });
   scene.add(targetRing, reachRing);
-  const visuals = createStormVisuals(scene, r, ground, isVisible);
+  const visuals = createStormVisuals(scene, r, ground, isVisible, texture);
   let aim = null, field = null, casts = 0, pulses = 0, hits = 0;
   const point = new THREE.Vector3(), origin = new THREE.Vector3();
   const protectedPoints = [];

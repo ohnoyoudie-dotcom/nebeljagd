@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "thunder-reference-v1",
+  "category": "project-2d-effect",
+  "colorSpace": "sRGB",
+  "runtime": [
+    {
+      "role": "cloud",
+      "path": "runtime/cloud.webp",
+      "width": 768,
+      "height": 768,
+      "alpha": true
+    }
+  ],
+  "budgets": {
+    "encodedBytes": 131072,
+    "decodedMipBytes": 4194304
+  },
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 523,
+      "sha256": "9eaa89e7d119a35b957a3aaa58fed4d322256e6a17a4acc298bb9333d3e6da58"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 173,
+      "sha256": "6458ed82b99939fc44511b5ba52920ee867cab6e693e4a05faafc094331db741"
+    },
+    {
+      "path": "prompt.txt",
+      "bytes": 1398,
+      "sha256": "a1d9b93a3f2a8e58e564b6d0a70e826a5ac98bc3b0a9a87c18cbef1469aa936b"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 444,
+      "sha256": "19599ad56c893933695888b969a4036894a4a75683fc701cbe2d9f6e5aba7485"
+    },
+    {
+      "path": "runtime/cloud.webp",
+      "bytes": 80534,
+      "sha256": "93a86025db873f491a6818fc33bca1e1bb92e962a403b011fd7f7634be587360"
+    },
+    {
+      "path": "source/cloud.png",
+      "bytes": 1117527,
+      "sha256": "a1d5b302c5ed0f491ec48b063cf301c6e9c31d4053a379d2c0e250a4176dd098"
+    }
+  ]
+}

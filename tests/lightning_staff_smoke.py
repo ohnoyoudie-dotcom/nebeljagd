@@ -111,7 +111,8 @@ with sync_playwright() as pw:
             current = state(page); cloud = current['combat']['storm']
             assert cloud['visuals']['style'] == 'compact-storm-eye' and cloud['visuals']['visible']
             assert cloud['visuals']['cloudRadius'] <= 1.9 < cloud['radius']*.4
-            assert cloud['visuals']['cloudShape'] == 'sculpted-thunderhead'
+            assert cloud['visuals']['cloudShape'] == 'reference-thunderhead'
+            assert cloud['visuals']['artwork'] == 'thunder-reference-v1'
             assert cloud['visuals']['boltStyle'] == 'hierarchical-thunderbolts'
             assert cloud['visuals']['draws'] <= 8 and cloud['visuals']['impacts'] > 0
             assert current['combat']['shotsFired'] == 1 and current['combat']['effects']['lightningProjectiles'] == 0

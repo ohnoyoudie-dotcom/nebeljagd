@@ -1,0 +1,12 @@
+{
+  "width": 768,
+  "height": 768,
+  "alpha": true,
+  "alphaExtrema": [
+    0,
+    253
+  ],
+  "edgeAlphaMaximum": 1,
+  "textureBytes": 80534,
+  "decodedMipBytes": 3145728
+}

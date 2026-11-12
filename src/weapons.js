@@ -44,7 +44,7 @@ export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries
 /** Ground loot, hand-aligned combat animation and swept terrain impacts. */
 export function createWeapons(scene, characterGroup, world, character = null,
   { placements, heightAt = world?.heightAt, viewDistance = 100, combat = null, ownerId = 'player', isVisible = null,
-    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {}, gravityTextures = null, rollRarity = null } = {}) {
+    revealSceneryThroughFog = false, tripoPrototypes = {}, fireProjectilePrototype = null, projectilePrototypes = {}, gravityTextures = null, stormTexture = null, rollRarity = null } = {}) {
   function assertPrototype(type, variant) {
     const modelType = TRIPO_WEAPON_VARIANTS[variant];
     if (!modelType) return;
@@ -790,7 +790,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const hourglass = createHourglassSpell(scene, world, combat, ownerId, isVisible);
   const storm = createStormSpell(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
-  }, isVisible);
+  }, isVisible, stormTexture);
   const meteor = createMeteorSpell(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
   }, isVisible, { prototype: projectilePrototypes.meteor });

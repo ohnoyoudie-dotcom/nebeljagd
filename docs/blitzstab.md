@@ -11,14 +11,14 @@ Rolle, Pause und Waffenwechsel brechen eine laufende Zielwahl ab.
 
 Beim Loslassen bildet sich direkt über der gewählten Fläche ein kompaktes,
 halbtransparentes blau-graues Gewitterauge. Sein sichtbarer Radius beträgt höchstens
-1,9 m, die dezente Bodenfläche hat **4,8 m Radius**. Die Wolke hat eine zusammenhängende,
-asymmetrische Oberfläche mit tiefen Eigenschatten, beleuchteten Kanten und
-innerem Wetterleuchten. Kräftige weiße Hauptkanäle verzweigen sich in dünnere
-Nebenäste. Drei kurze Rückentladungen halten jeden Einschlag deutlich sichtbar;
-in den Pausen erlischt der Blitz vollständig, statt als graue Linie zu verbleiben. Am Einschlag sprühen Funken auf, elektrische
-Ausläufer und ein kleiner Lichtimpuls laufen über den Boden. Figuren erhalten
-bei Betäubung einen kleinen elektrischen
-Bogen über dem Kopf und eine kurze Körperreaktion. Der Boden bleibt sichtbar.
+1,9 m, die dezente Bodenfläche hat **4,8 m Radius**. Die Wolke verwendet nun
+Artwork aus der freigegebenen Gewitter-Referenz: dunkle Wolkentiefen, silberblaue
+Kanten, feine Dampffahnen und inneres Wetterleuchten. Zwei zur Kamera gerichtete
+Ebenen animieren das transparente Artwork mit leichter Bewegung und Licht.
+24 Abschnitte bilden den hellen Hauptblitz, fünf feinere Nebenäste verzweigen
+sich daraus. Drei kurze Rückentladungen pro Einschlag bleiben kräftig; dazwischen
+erlischt der Blitz vollständig. Bodenentladungen und Funken markieren die Treffer.
+Bereits sichtbare Figuren erhalten weiche Aussparungen in der Wolke.
 
 Nach 0,25 s Öffnung dauert das Gewitter **3 s**, gefolgt von 0,25 s Ausblenden.
 Fünf unregelmäßig verteilte Einschlagswellen erzeugen Blitze an wechselnden Stellen
@@ -33,14 +33,13 @@ Die bisherige Abklingzeit von 0,9 s bleibt erhalten; solange ein Gewitter aktiv 
 kann kein zweites gesetzt werden. Pause friert Aufladung und Gewitter vollständig
 ein. Neustart entfernt das Feld und alle Blitze.
 
-Die Wolke nutzt eine einmal erzeugte, durchgehende Oberfläche mit vorberechneten
-Eigenschatten und einen weichen Nebelsaum ohne neue Texturdownloads. Die Geometrie
-wird zwischen Erzeugungen wiederverwendet; die Animation benötigt keine neue Vernetzung. Mit Bodenfläche, kameraseitig ausgerichteten Blitzbändern,
-Bodenentladungen und 144 gepoolten Funken benötigt der Effekt sieben Zeichenschritte.
-Weiche Aussparungen vor bereits sichtbaren Figuren halten diese erkennbar.
-Maximal 24 sichtbare Blitze werden wiederverwendet; zusätzliche
-Gegner verändern diese Darstellungsgrenze nicht. Keine dynamischen Lichtquellen oder
-Bildschirm-Nachbearbeitung. Die ehemalige gerade Projektil-Attacke wird ersetzt.
+Das einmal geladene 768×768-WebP mit Alpha benötigt rund 79 KiB komprimiert
+und 3 MiB einschließlich Mipmaps im GPU-Speicher. Es wird offline ins Spiel
+eingebettet und über alle Einsätze geteilt. Die Wolke benötigt vier Dreiecke;
+der gesamte Effekt sechs Zeichenschritte mit höchstens 24 sichtbaren Blitzen
+und 144 gepoolten Funken. Keine dynamischen Lichtquellen oder Nachbearbeitung.
+Quelle, Generierungsprompt, Hashes und Budgetprüfung liegen unter
+`assets/effects/thunder-reference/`.
 
 Prüfung: `npm test`, `npm run verify:assets`, `npm run build` und
 `NEBELJAGD_URL=http://127.0.0.1:4177 python tests/lightning_staff_smoke.py`.

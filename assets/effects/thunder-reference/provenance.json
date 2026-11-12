@@ -1,0 +1,9 @@
+{
+  "generator": "OpenAI ImageGen (host-native)",
+  "purpose": "Owner-requested Nebeljagd lightning-staff reference integration",
+  "referenceSha256": "62c3fb1938c8f78f0c18a6fb611bd5e11dda67bf569e0c76b0b93d660b5f023f",
+  "source": "source/cloud.png",
+  "prompt": "prompt.txt",
+  "transform": "ImageMagick resize to 768x768, WebP quality84, alpha quality90; original source preserved",
+  "rights": "Project-generated artwork; see LICENSE.txt"
+}

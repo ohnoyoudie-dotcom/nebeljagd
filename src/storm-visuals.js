@@ -4,9 +4,9 @@ import { createStormCloud } from './storm-cloud.js';
 const random = n => { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
 const BOLT_SECONDS = .42, IMPACT_SECONDS = .55;
 
-/** Fused volumetric cloud and instanced sparks; pooled, camera-facing lightning ribbons.
- * Seven draw calls, no lights, textures, postprocessing or per-frame geometry allocation. */
-export function createStormVisuals(scene, rules, ground, isVisible) {
+/** Animated cloud artwork and instanced sparks; pooled, camera-facing lightning ribbons.
+ * Six draw calls, one shared texture, no lights, postprocessing or per-frame geometry allocation. */
+export function createStormVisuals(scene, rules, ground, isVisible, texture = null) {
   const group = new THREE.Group(); group.name = 'Gewitter · kompaktes Auge'; group.visible = false; scene.add(group);
   const footprintGeometry = new THREE.CircleGeometry(rules.radius, 96); footprintGeometry.rotateX(-Math.PI / 2);
   const footprintMaterial = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, forceSinglePass: true,
@@ -23,7 +23,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
   const footprint = new THREE.Mesh(footprintGeometry, footprintMaterial); footprint.name = 'Gewitter · dezente Wirkungsfläche'; group.add(footprint);
   const cloudUniforms = { uAge: { value: 0 }, uOpacity: { value: 0 }, uFlash: { value: 0 },
     uCutouts: { value: Array.from({ length: 8 }, () => new THREE.Vector3()) }, uCutoutCount: { value: 0 } };
-  const cloud = createStormCloud(cloudUniforms);
+  const cloud = createStormCloud(cloudUniforms, texture);
   group.add(...cloud.meshes);
   const transform = new THREE.Object3D();
   // Only already-visible bodies receive a soft screen-space opening.
@@ -42,7 +42,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
   };
 
   for (const mesh of cloud.meshes) mesh.onBeforeRender=prepareCutouts;
-  const capacity = 24, segments = 24, vertices = capacity * segments * 6;
+  const capacity = 24, segments = 54, vertices = capacity * segments * 6;
   const positions = new Float32Array(vertices*3), tangents = new Float32Array(vertices*3);
   const widths = new Float32Array(vertices), sides = new Float32Array(vertices), energies = new Float32Array(vertices);
   const boltGeometry = new THREE.BufferGeometry();
@@ -56,7 +56,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
         vec2 across=vec2(-t.y,t.x);across/=max(length(across),.001);
         p.xy+=across*aWidth*aSide;vSide=aSide;vEnergy=aEnergy;gl_Position=projectionMatrix*p;}`,
     fragmentShader: `varying float vSide,vEnergy;
-      void main(){float d=abs(vSide);float core=1.-smoothstep(.22,.48,d);
+      void main(){float d=abs(vSide);float core=1.-smoothstep(.14,.32,d);
         float halo=pow(1.-d,1.6);vec3 color=mix(vec3(.09,.34,1.),vec3(.94,.98,1.),core);
         gl_FragColor=vec4(color,min(1.,core+halo*.75)*vEnergy);
         #include <colorspace_fragment>
@@ -85,7 +85,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
   const impacts = new THREE.InstancedMesh(impactGeometry,impactMaterial,capacity); impacts.name='Gewitter · elektrische Bodenentladung'; impacts.frustumCulled=false; group.add(impacts);
   const sparks = new THREE.InstancedMesh(new THREE.OctahedronGeometry(.10), new THREE.MeshBasicMaterial({ color:'#c9ecff',toneMapped:false }),capacity*6);
   sparks.name='Gewitter · aufsprühende Funken'; sparks.frustumCulled=false; group.add(sparks);
-  const path = Array.from({length:13},()=>new THREE.Vector3());
+  const path = Array.from({length:25},()=>new THREE.Vector3());
   const anchors = Array.from({length:5},()=>new THREE.Vector3());
   function segment(slot,index,a,b,widthA,widthB,tangentA,tangentB) {
     const base=(slot*segments+index)*6;
@@ -98,7 +98,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
     }
   }
   const tangentA=new THREE.Vector3(),tangentB=new THREE.Vector3();
-  const branchPath=Array.from({length:5},()=>new THREE.Vector3());
+  const branchPath=Array.from({length:7},()=>new THREE.Vector3());
   function polyline(slot,offset,nodes,widthStart,widthEnd) {
     const count=nodes.length-1;
     for(let i=0;i<count;i++) {
@@ -123,23 +123,23 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
       const t=k/4,bend=k===0||k===4?0:(k%2?1:-1)*(.34+random(seed+k)*.25);
       anchors[k].set(sx+(entry.x-sx)*t+nx*bend,3.35+(entry.y-3.35)*t,sz+(entry.z-sz)*t+nz*bend);
     }
-    for(let i=0;i<=12;i++) {
-      const section=Math.min(3,Math.floor(i/3)),t=(i-section*3)/3;
+    for(let i=0;i<=24;i++) {
+      const section=Math.min(3,Math.floor(i/6)),t=(i-section*6)/6;
       path[i].lerpVectors(anchors[section],anchors[section+1],t);
-      if(i%3) {const kink=(random(seed*17+i*7)-.5)*.22;path[i].x+=nx*kink;path[i].z+=nz*kink;}
+      if(i%6) {const kink=(random(seed*17+i*7)-.5)*.15;path[i].x+=nx*kink;path[i].z+=nz*kink;}
 
     }
-    polyline(slot,0,path,.30,.225);
-    for(let branch=0;branch<3;branch++) {
-      const node=3+branch*3,side=branch%2?1:-1; branchPath[0].copy(path[node]);
+    polyline(slot,0,path,.27,.18);
+    for(let branch=0;branch<5;branch++) {
+      const node=4+branch*4,side=branch%2?1:-1; branchPath[0].copy(path[node]);
       const angle=Math.atan2(entry.z-sz,entry.x-sx)+side*(.65+random(seed+branch*7)*.45);
-      for(let j=0;j<4;j++) {
-        const t=(j+1)/4,base=path[Math.min(12,node+j+1)];
+      for(let j=0;j<6;j++) {
+        const t=(j+1)/6,base=path[Math.min(24,node+j+1)];
         branchPath[j+1].set(base.x+Math.cos(angle)*t*1.05+(random(seed+j+branch)-.5)*.22,
           base.y+.12*t,base.z+Math.sin(angle)*t*1.05+side*(random(seed+j*11)-.5)*.18);
 
       }
-      polyline(slot,12+branch*4,branchPath,.12,.018);
+      polyline(slot,24+branch*6,branchPath,.075,.005);
     }
     for(const name of ['position','aTangent','aWidth','aSide'])boltGeometry.attributes[name].needsUpdate=true;
     flash=Math.max(flash,Math.max(0,1-lag*5));paint();
@@ -151,7 +151,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
       // A thunderbolt extinguishes between return strokes instead of becoming
       // a lingering translucent line across the field.
       const energy=s.life>0&&boltAge<1?(age<.14?1:age<.18?0:age<.28?.98:age<.32?0:.90):0;
-      s.energy=energy;
+      s.energy=energy;flash=Math.max(flash,energy*.8);
       energies.fill(energy,i*segments*6,(i+1)*segments*6);
       impactEnergy[i]=s.life>0?Math.pow(s.life/IMPACT_SECONDS,1.3):0;impactAge[i]=age/IMPACT_SECONDS;
       transform.position.set(s.x,s.y+.025,s.z);transform.scale.setScalar(.9+age*.8);transform.updateMatrix();impacts.setMatrixAt(i,transform.matrix);
@@ -179,7 +179,7 @@ export function createStormVisuals(scene, rules, ground, isVisible) {
       const opacity=Math.min(1,age/rules.warning)*THREE.MathUtils.clamp(1-(age-rules.warning-rules.duration)/rules.fade,0,1);
       cloudUniforms.uAge.value=age;cloudUniforms.uOpacity.value=opacity;cloudUniforms.uFlash.value=flash;
       footprintMaterial.uniforms.uOpacity.value=opacity;footprintMaterial.uniforms.uFlash.value=flash;},
-    get telemetry(){return {style:'compact-storm-eye',cloudShape:'sculpted-thunderhead',boltStyle:'hierarchical-thunderbolts',visible:group.visible,cloudRadius:1.9,
+    get telemetry(){return {style:'compact-storm-eye',cloudShape:'reference-thunderhead',artwork:cloud.artwork,boltStyle:'hierarchical-thunderbolts',visible:group.visible,cloudRadius:1.9,
       capacity,bolts:slots.filter(s=>s.energy>0).length,impacts:slots.filter(s=>s.life>0).length,draws:group.visible?4+cloud.meshes.length:0};},
     dispose(){scene.remove(group);cloud.dispose();for(const mesh of [footprint,bolts,impacts,sparks]){mesh.geometry.dispose();mesh.material.dispose();if(mesh.isInstancedMesh)mesh.dispose();}},
   };

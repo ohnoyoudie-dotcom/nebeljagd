@@ -17,16 +17,16 @@ test('lightning branches connect to the jagged trunk and terminate at the collis
   visuals.strike({ x: 5, y: .08, z: 4 }, 19);
   const p = bolts.geometry.attributes.position;
   const point = i => new THREE.Vector3().fromBufferAttribute(p, i);
-  assert.ok(point(11*6+2).distanceTo(new THREE.Vector3(2,.08,2)) < 1e-6);
-  for (let i=1;i<12;i++) assert.ok(point(i*6).distanceTo(point((i-1)*6+2)) < 1e-6);
-  for (let branch=0;branch<3;branch++) {
-    const first=12+branch*4;
-    assert.ok(point(first*6).distanceTo(point((3+branch*3)*6)) < 1e-6, 'a fork must start on its actual trunk node');
-    for(let j=1;j<4;j++)assert.ok(point((first+j)*6).distanceTo(point((first+j-1)*6+2)) < 1e-6);
+  assert.ok(point(23*6+2).distanceTo(new THREE.Vector3(2,.08,2)) < 1e-6);
+  for (let i=1;i<24;i++) assert.ok(point(i*6).distanceTo(point((i-1)*6+2)) < 1e-6);
+  for (let branch=0;branch<5;branch++) {
+    const first=24+branch*6;
+    assert.ok(point(first*6).distanceTo(point((4+branch*4)*6)) < 1e-6, 'a fork must start on its actual trunk node');
+    for(let j=1;j<6;j++)assert.ok(point((first+j)*6).distanceTo(point((first+j-1)*6+2)) < 1e-6);
   }
   // Shared corners must agree on extrusion as well as centre position;
   // independent segment normals leave triangular holes in a thick bolt.
-  for(const [start,count] of [[0,12],[12,4],[16,4],[20,4]]) for(let i=1;i<count;i++) {
+  for(const [start,count] of [[0,24],[24,6],[30,6],[36,6],[42,6],[48,6]]) for(let i=1;i<count;i++) {
     const left=(start+i-1)*6+2,right=(start+i)*6;
     const tangents=bolts.geometry.attributes.aTangent,widths=bolts.geometry.attributes.aWidth;
     assert.ok(new THREE.Vector3().fromBufferAttribute(tangents,left).distanceTo(new THREE.Vector3().fromBufferAttribute(tangents,right))<1e-6);
