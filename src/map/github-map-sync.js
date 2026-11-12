@@ -122,16 +122,25 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
     }
     void poll();
   }
-  async function reconcile() {
+  function archiveDrafts(includeCurrent) {
+    const protectedDraft = getProtectedDraft?.();
+    if (protectedDraft) archive(protectedDraft);
+    if (includeCurrent) archive(mapDocument(getMap()));
+  }
+  async function reconcile({opening = false} = {}) {
     const before = JSON.stringify(getMap());
     const remote = await readGitHubMap({token});
     const local = getMap();
     const unchangedSinceSave = Boolean(savedHash) && await documentHash(JSON.stringify(local)) === savedHash;
-    let plan = planMapSync({local, project, remote, baseSha, unchangedSinceSave});
+    let plan = planMapSync({local, project, remote, baseSha, unchangedSinceSave, opening});
     if (plan === 'remote' && (JSON.stringify(getMap()) !== before || !canSave())) plan = 'conflict';
-    if (plan === 'remote') applyRemote(remote.map);
     if (plan === 'remote' || plan === 'synced') {
-      await rememberRemote(remote); status('Onlinekarte geladen · Veröffentlichung wird geprüft.');
+      // Do not replace any draft unless its backup has actually been stored.
+      archiveDrafts(plan === 'remote');
+      if (plan === 'remote') applyRemote(remote.map);
+      await rememberRemote(remote);
+      onSaved?.();
+      status('Zuletzt gespeicherte Onlinekarte geladen · Veröffentlichung wird geprüft.');
     } else if (plan === 'local') {
       baseSha = remote.sha; persistState();
       conflict = false; $('github-load-remote').hidden = true;
@@ -218,9 +227,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
       if (!canSave()) return;
       // Keep earlier conflict backups individually accessible. A full storage
       // aborts adoption instead of discarding the local map or an older backup.
-      const protectedDraft = getProtectedDraft?.();
-      if (protectedDraft) archive(protectedDraft);
-      archive(mapDocument(getMap()));
+      archiveDrafts(true);
       applyRemote(remote.map); await rememberRemote(remote);
       onSaved?.();
       connectionLabel(); status('Onlinekarte übernommen. Dein vorheriger Stand bleibt unter „Vorherige Karte sichern“ erhalten.');
@@ -231,7 +238,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
   connectionLabel();
   if (token) {
     setBusy(true); status('Aktuell gespeicherte Onlinekarte wird geprüft …');
-    void reconcile().catch(fail).finally(() => { setBusy(false); watchPublication(); });
+    void reconcile({opening: true}).catch(fail).finally(() => { setBusy(false); watchPublication(); });
   }
   return {save, changed() {
     if (token && !busy && !conflict) status(JSON.stringify(getMap()) === lastSavedDocument

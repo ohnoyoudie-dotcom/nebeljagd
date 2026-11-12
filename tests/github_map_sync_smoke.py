@@ -151,6 +151,7 @@ try:
         with page.expect_download() as dl: page.locator('#github-map-backup').click()
         backup = OUT / 'backup.json'; dl.value.save_as(backup)
         assert json.loads(backup.read_text()) == local; backup.unlink()
+        first_backup_count = page.locator('#github-backup-choice option').count()
         passed('Choosing the online map keeps a separately downloadable backup and undo history')
 
         race = copy.deepcopy(other); race['name'] = 'Edit during race'
@@ -164,7 +165,7 @@ try:
         page.locator('#github-load-remote').click()
         page.wait_for_function('(name)=>nebeljagdMapTestState().map.name===name', arg=other['name'])
         expect(page.locator('#github-backup-choice')).to_be_visible()
-        assert page.locator('#github-backup-choice option').count() == 2
+        assert page.locator('#github-backup-choice option').count() == first_backup_count + 1
         page.locator('#github-backup-choice').select_option(index=1)
         with page.expect_download() as dl: page.locator('#github-map-backup').click()
         backup = OUT / 'earlier-backup.json'; dl.value.save_as(backup)
@@ -202,6 +203,68 @@ try:
         page.wait_for_function('(name)=>nebeljagdMapTestState().map.name===name', arg=other['name'])
         assert state(page)['map'] == other
         passed('Explicit online save preserves a protected older draft separately and resumes the saved map; session-only credentials stay out of persistent storage')
+
+        older = copy.deepcopy(other); older['name'] = 'Abweichender Entwurf vor dem Öffnen'
+        latest = copy.deepcopy(other); latest['name'] = 'Zuletzt online gespeicherte Karte'
+        replace_remote(latest)
+        page.evaluate('([key,map,auth,token])=>{localStorage.setItem(key,JSON.stringify(map));localStorage.setItem(auth,token);localStorage.removeItem("nebeljagd.github-map-state.v1")}', [KEY,older,AUTH,FAKE])
+        writes_before_open = len(remote['writes'])
+        page.reload(); ready(page)
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        assert state(page)['map'] == latest
+        assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', KEY) == latest
+        assert page.evaluate('JSON.parse(localStorage.getItem("nebeljagd.worldmap.before-online.v1"))') == older
+        expect(page.locator('#github-load-remote')).to_be_hidden()
+        page.locator('#undo').click()
+        assert state(page)['map'] == older
+        page.reload(); ready(page)
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        assert state(page)['map'] == latest
+        page.close(); page = context.new_page()
+        page.on('pageerror', lambda error: report['pageErrors'].append(str(error)))
+        page.goto(base + '/map-editor.html?sync=github'); ready(page)
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        assert state(page)['map'] == latest and len(remote['writes']) == writes_before_open
+        page.screenshot(path=str(OUT / 'latest-online-map.png'))
+        passed('Opening, refreshing and reopening load the latest online save, archive the entire older draft and allow undo without writing remotely')
+
+        continued = copy.deepcopy(latest); continued['name'] = 'Auf dem aktuellen Stand weitergearbeitet'
+        import_map(page,continued)
+        page.locator('#export-json').click()
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        assert remote['map'] == continued
+        passed('Editing after automatic loading saves against the current online revision without a false conflict')
+
+        held = []
+        def delay_read(route):
+            if route.request.method == 'GET': held.append(route)
+            else: api(route)
+        page.route('https://api.github.com/**', delay_read)
+        newer = copy.deepcopy(continued); newer['name'] = 'Onlinekarte während langsamer Verbindung'
+        replace_remote(newer)
+        page.reload(); ready(page)
+        expect(page.locator('#online-map-status')).to_contain_text('wird geprüft')
+        editing = copy.deepcopy(continued); editing['name'] = 'Bereits während des Ladens bearbeitet'
+        import_map(page,editing)
+        assert len(held) == 1
+        api(held.pop())
+        expect(page.locator('#github-load-remote')).to_be_visible()
+        assert state(page)['map'] == editing
+        assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', KEY) == editing
+        page.unroute('https://api.github.com/**', delay_read)
+        passed('A delayed opening response never replaces edits already started in the current session')
+
+        page.add_init_script('''const originalSetItem = Storage.prototype.setItem;
+            Storage.prototype.setItem = function(key, value) {
+                if (key.startsWith('nebeljagd.worldmap.before-online.v1')) throw new DOMException('Full', 'QuotaExceededError');
+                return originalSetItem.call(this, key, value);
+            };''')
+        page.reload(); ready(page)
+        expect(page.locator('#online-map-status')).to_contain_text('lokale Sicherung ist voll')
+        assert state(page)['map'] == editing
+        assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', KEY) == editing
+        assert remote['map'] == newer
+        passed('When the backup cannot be stored, automatic opening retains the entire browser draft')
         assert not report['pageErrors'], report['pageErrors']
         browser.close()
     report['status'] = 'passed'
