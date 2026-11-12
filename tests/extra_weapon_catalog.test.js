@@ -94,3 +94,15 @@ test('large scenery scatter keeps all three new weapon pickups reachable', () =>
     assert.equal(createLandscapePlacementGuard(map).reason([0, 0], .5, 'rock'), 'loot', kind);
   }
 });
+
+test('every placeable model has an actual map-layer instance and a resolvable painted symbol', () => {
+  for (const definition of PLACEMENT_OBJECT_CATALOG) for (const variant of definition.variants) {
+    const object = makeWorldObject(definition.kind, [30, -42], { id: 'visible-placement', variant: variant.id });
+    const svg = renderWorldmapSvg({ ...structuredClone(project), objects: [object] }, { editor: true });
+    const instance = svg.match(/<g id="feature-object-visible-placement"[\s\S]*?<\/g>/)?.[0];
+    assert.ok(instance, `${definition.kind}:${variant.id} must render independently of selection`);
+    assert.ok(!instance.includes('NaN'), definition.kind);
+    const symbol = instance.match(/<use href="#([^"]+)"/)?.[1];
+    assert.ok(symbol && svg.includes(`id="${symbol}"`), `${definition.kind}:${variant.id} has painted geometry`);
+  }
+});

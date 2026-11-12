@@ -88,6 +88,13 @@ try:
         ready(page)
         draft = copy.deepcopy(PROJECT); draft['name'] = 'Meine aktuelle Karte · 🌙'
         import_map(page,draft)
+        page.locator('[data-editor-action="objects"]').click()
+        for kind,variant in [('stump','kit-tripo-stump-01'),('stump','kit-tripo-stump-02'),('gravityStaff','kit-tripo-gravity-staff')]:
+            page.locator('#palette-kind').select_option(kind)
+            page.locator('#palette-variant').select_option(variant)
+            page.locator('#add-object-center').click()
+        draft = state(page)['map']
+        assert len(draft['objects']) == len(PROJECT['objects']) + 3
         page.locator('#export-json').click()
         expect(page.locator('#github-map-dialog')).to_be_visible()
         page.set_viewport_size({'width':390,'height':844})

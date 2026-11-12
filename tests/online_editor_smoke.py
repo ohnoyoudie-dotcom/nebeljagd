@@ -86,26 +86,39 @@ def run(directory: Path) -> None:
             ready(page)
             assert 'start' not in parse_qs(urlsplit(page.url).query)
             page.locator('[data-editor-action="objects"]').click()
-            for kind, variant in [('crate', 'kit-tripo-crate-01'), ('lightningStaff', 'kit-tripo-lightning-staff')]:
+            for kind, variant in [('crate', 'kit-tripo-crate-01'), ('stump', 'kit-tripo-stump-01'), ('stump', 'kit-tripo-stump-02'), ('lightningStaff', 'kit-tripo-lightning-staff'), ('gravityStaff', 'kit-tripo-gravity-staff')]:
                 page.locator('#palette-kind').select_option(kind)
                 page.locator('#palette-variant').select_option(variant)
                 if page.locator('#place-object').get_attribute('aria-pressed') != 'true':
                     page.locator('#place-object').click()
-                visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+                visible = page.locator('#world-objects [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
                 assert set(visible) == {obj['id'] for obj in state(page)['map']['objects']}
                 page.locator('#add-object-center').click()
-                visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+                visible = page.locator('#world-objects [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
                 assert set(visible) == {obj['id'] for obj in state(page)['map']['objects']}, 'Placing a different kind must keep every neighbour on the map'
+                painted = page.locator('#world-objects [data-feature-type="object"] use').evaluate_all('(xs)=>xs.every(x=>x.getBBox().width>0 && x.getBBox().height>0)')
+                assert painted, 'An empty selection ring is not a painted object'
+            page.locator('#tool-select').click()
+            page.locator('#clear-selection').click()
+            page.locator('#world-objects [data-object-kind="gravityStaff"]').click()
+            page.locator('#focus-selection').click()
+            page.screenshot(path=str(out / 'gravity-and-stumps.png'))
+            page.locator('#clear-selection').click()
             edited = state(page)['map']
-            assert edited['objects'][:-2] == project['objects']
+            assert edited['objects'][:-5] == project['objects']
             page.locator('[data-editor-action="more"]').click()
             page.locator('#object-kind-filter').select_option('crate')
-            visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+            visible = page.locator('#world-objects [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
             assert set(visible) == {obj['id'] for obj in edited['objects']}, 'A list filter must not hide objects on the canvas'
             page.screenshot(path=str(out / 'placement-neighbours.png'))
             passed('Crate and staff placement and list filtering keep all existing map objects visible')
 
             assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', KEY) == edited
+            with page.expect_download() as saved_placements:
+                page.locator('#export-json').click()
+            saved_path = out / 'placed-models.json'
+            saved_placements.value.save_as(saved_path)
+            assert json.loads(saved_path.read_text()) == edited
             reopen_url = page.url
             with page.expect_popup() as event:
                 page.locator('#playtest-world').click()
