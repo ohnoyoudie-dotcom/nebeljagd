@@ -81,25 +81,33 @@ test('rotating sand fills the center, middle and edge in every direction',()=>{
  v.dispose();
 });
 
-test('dust clouds and nearby grains travel together instead of sliding past each other',t=>{
+test('sand and clouds vary their speeds without breaking the prevailing flow',t=>{
  const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules),center=new THREE.Vector3();
  t.after(()=>v.dispose());
  const sand=scene.getObjectByName('Sanduhrstab · kreisender Sand').geometry.attributes.position;
  const clouds=scene.getObjectByName('Sanduhrstab · aufgewirbelter Staub').geometry.attributes.center;
- v.show(center,1.5,true);
- const beforeSand=sand.array.slice(),beforeClouds=clouds.array.slice();
- v.show(center,2,true);
- const turn=(before,after,i)=>Math.atan2(before[i]*after[i+2]-before[i+2]*after[i],before[i]*after[i]+before[i+2]*after[i+2]);
- for(let i=0;i<beforeClouds.length;i+=3){
-  const radius=Math.hypot(beforeClouds[i],beforeClouds[i+2]);
-  let nearest=0,distance=Infinity;
-  for(let j=0;j<beforeSand.length;j+=3){
-   const delta=Math.abs(Math.hypot(beforeSand[j],beforeSand[j+2])-radius);
-   if(delta<distance){distance=delta;nearest=j;}
+ const capture=age=>{v.show(center,age,true);return [sand.array.slice(),clouds.array.slice()];};
+ const frames=[1.5,2,2.5].map(capture);
+ const turns=(before,after)=>{
+  const values=[];
+  for(let i=0;i<before.length;i+=3){
+   const radius=Math.hypot(before[i],before[i+2])/rules.radius;
+   // Compare one annulus: radial shear alone must not satisfy this regression.
+   if(radius<.45||radius>.7)continue;
+   values.push(Math.atan2(before[i]*after[i+2]-before[i+2]*after[i],before[i]*after[i]+before[i+2]*after[i+2]));
   }
-  assert.ok(Math.abs(turn(beforeClouds,clouds.array,i)-turn(beforeSand,sand.array,nearest))<.005,
-   'clouds and grains at the same radius must belong to one rotating sand mass');
+  return values;
+ };
+ const means=[];
+ for(let layer=0;layer<2;layer++){
+  const first=turns(frames[0][layer],frames[1][layer]),second=turns(frames[1][layer],frames[2][layer]);
+  assert.ok(first.length>=10);
+  assert.ok([...first,...second].every(angle=>angle>.55&&angle<1.6),'bounded motion keeps one forward flow');
+  assert.ok(Math.max(...first)-Math.min(...first)>.18,'nearby elements must not orbit as a rigid block');
+  assert.ok(first.some((angle,i)=>Math.abs(angle-second[i])>.025),'gentle gusts change individual speeds over time');
+  means.push(first.reduce((sum,n)=>sum+n,0)/first.length);
  }
+ assert.ok(Math.abs(means[0]-means[1])<.15,'clouds and grains retain a similar overall flow');
 });
 
 test('sand follows sloped terrain with cached height samples, including its warning boundary',()=>{
