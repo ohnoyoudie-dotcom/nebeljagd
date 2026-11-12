@@ -110,10 +110,10 @@ with sync_playwright() as pw:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             current = state(page); cloud = current['combat']['storm']
             assert cloud['visuals']['style'] == 'compact-storm-eye' and cloud['visuals']['visible']
-            assert cloud['visuals']['cloudRadius'] < cloud['radius']*.4
-            assert cloud['visuals']['cloudShape'] == 'billowing-thunderhead'
-            assert cloud['visuals']['boltStyle'] == 'forked-white-core'
-            assert cloud['visuals']['draws'] <= 6 and cloud['visuals']['impacts'] > 0
+            assert cloud['visuals']['cloudRadius'] <= 1.9 < cloud['radius']*.4
+            assert cloud['visuals']['cloudShape'] == 'sculpted-thunderhead'
+            assert cloud['visuals']['boltStyle'] == 'hierarchical-thunderbolts'
+            assert cloud['visuals']['draws'] <= 8 and cloud['visuals']['impacts'] > 0
             assert current['combat']['shotsFired'] == 1 and current['combat']['effects']['lightningProjectiles'] == 0
             victim = next(a for a in current['practiceActors'] if a['id'] == 'practice-2')
             assert victim['stunRemaining'] > .2 and victim['speedMultiplier'] == 0 and not victim['canAct'], victim
@@ -123,11 +123,34 @@ with sync_playwright() as pw:
             capture(page, mode+'-storm')
             page.wait_for_timeout(200); assert state(page)['combat']['storm'] == cloud
             passed(mode+': compact cloud, area and lightning render; the real victim is stunned; pause freezes the field')
-            pause_when(page, 'nebeljagdTestState().elapsed>='+str(current['elapsed']+.12))
+            # Inspect a follow-up discharge as well as the first peak.
+            # Simulation frames can be 100ms, so wait for an actual bright
+            # burst rather than accidentally pausing inside its dark gap.
+            if touch:
+                pause_when(page, 'nebeljagdTestState().elapsed>='+str(current['elapsed']+.12))
+            else:
+                pause_when(page, '(()=>{const s=nebeljagdTestState().combat.storm;return s.age>=.78 && s.age<1 && s.visuals.bolts>0;})()')
             page.keyboard.press('Escape'); page.wait_for_function('nebeljagdTestState().phase==="paused"')
             frozen = next(a for a in state(page)['practiceActors'] if a['id']=='practice-2')
             assert abs(frozen['travelled']-victim['travelled']) < .00001, frozen
             passed(mode+': stun physically stops patrol movement')
+            if not touch:
+                follow = state(page)['combat']['storm']
+                assert follow['pulses'] == 1 and follow['visuals']['bolts'] > 0, follow
+                assert follow['visuals']['visible'] and follow['visuals']['impacts'] > 0, follow
+                page.evaluate('p=>nebeljagdInspectCamera({zoom:1.7,focus:p})', cloud['center'])
+                capture(page, 'mouse-storm-follow-through')
+                pause_when(page, 'nebeljagdTestState().combat.storm.age>=1.05')
+                page.keyboard.press('Escape')
+                page.wait_for_function('nebeljagdTestState().phase==="paused"')
+                between = state(page)['combat']['storm']
+                assert between['active'] and between['visuals']['visible'], between
+                assert between['pulses'] == 1 and between['visuals']['bolts'] == 0, between
+                still_victim = next(a for a in state(page)['practiceActors'] if a['id']=='practice-2')
+                assert abs(still_victim['health']-victim['health']) < .001
+                page.evaluate('p=>nebeljagdInspectCamera({zoom:1.7,focus:p})', cloud['center'])
+                capture(page, 'mouse-storm-between-strikes')
+                passed('mouse: follow-up discharge stays visible, then clears before the next damage wave')
             page.keyboard.press('Escape')
             page.wait_for_function('!nebeljagdTestState().combat.storm.active')
             finished = state(page)

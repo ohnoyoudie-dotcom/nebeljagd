@@ -11,10 +11,11 @@ Rolle, Pause und Waffenwechsel brechen eine laufende Zielwahl ab.
 
 Beim Loslassen bildet sich direkt über der gewählten Fläche ein kompaktes,
 halbtransparentes blau-graues Gewitterauge. Sein sichtbarer Radius beträgt höchstens
-1,75 m, die dezente Bodenfläche hat **4,8 m Radius**. Die Wolke besteht aus
-bewegten, plastischen Wolkenballen mit dunkler Unterseite, silberblauen Rändern
-und innerem Wetterleuchten. Gezackte Blitze mit hellem Kern verzweigen sich
-mehrfach und flackern kurz nach. Am Einschlag sprühen Funken auf, elektrische
+1,9 m, die dezente Bodenfläche hat **4,8 m Radius**. Die Wolke hat eine zusammenhängende,
+asymmetrische Oberfläche mit tiefen Eigenschatten, beleuchteten Kanten und
+innerem Wetterleuchten. Kräftige weiße Hauptkanäle verzweigen sich in dünnere
+Nebenäste. Drei kurze Rückentladungen halten jeden Einschlag deutlich sichtbar;
+in den Pausen erlischt der Blitz vollständig, statt als graue Linie zu verbleiben. Am Einschlag sprühen Funken auf, elektrische
 Ausläufer und ein kleiner Lichtimpuls laufen über den Boden. Figuren erhalten
 bei Betäubung einen kleinen elektrischen
 Bogen über dem Kopf und eine kurze Körperreaktion. Der Boden bleibt sichtbar.
@@ -32,9 +33,10 @@ Die bisherige Abklingzeit von 0,9 s bleibt erhalten; solange ein Gewitter aktiv 
 kann kein zweites gesetzt werden. Pause friert Aufladung und Gewitter vollständig
 ein. Neustart entfernt das Feld und alle Blitze.
 
-Die Wolke nutzt 18 instanzierte Wolkenballen und einen weichen Nebelsaum ohne
-neue Texturdownloads. Mit Bodenfläche, kameraseitig ausgerichteten Blitzbändern,
-Bodenentladungen und 144 gepoolten Funken benötigt der Effekt sechs Zeichenschritte.
+Die Wolke nutzt eine einmal erzeugte, durchgehende Oberfläche mit vorberechneten
+Eigenschatten und einen weichen Nebelsaum ohne neue Texturdownloads. Die Geometrie
+wird zwischen Erzeugungen wiederverwendet; die Animation benötigt keine neue Vernetzung. Mit Bodenfläche, kameraseitig ausgerichteten Blitzbändern,
+Bodenentladungen und 144 gepoolten Funken benötigt der Effekt sieben Zeichenschritte.
 Weiche Aussparungen vor bereits sichtbaren Figuren halten diese erkennbar.
 Maximal 24 sichtbare Blitze werden wiederverwendet; zusätzliche
 Gegner verändern diese Darstellungsgrenze nicht. Keine dynamischen Lichtquellen oder
@@ -44,3 +46,5 @@ Prüfung: `npm test`, `npm run verify:assets`, `npm run build` und
 `NEBELJAGD_URL=http://127.0.0.1:4177 python tests/lightning_staff_smoke.py`.
 Der Browsertest prüft Editor, Stabmodell, echte Maus-/Touch-Eingabe, Aufladung,
 Gewitter, Schaden, tatsächlichen Bewegungsstopp, Pause, Erholung und Neustart.
+Zusätzliche Spielaufnahmen zeigen die zweite Entladung und die Pause zwischen
+zwei Einschlagswellen, damit nicht nur der hellste Moment beurteilt wird.
