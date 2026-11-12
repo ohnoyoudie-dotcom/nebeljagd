@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 
-export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 2400, puffs: 64, draws: 5 });
+export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 7200, puffs: 64, draws: 5 });
 const TAU = Math.PI * 2;
 const smooth = x => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const random = (i, salt) => { const v = Math.sin((i + 1) * salt) * 43758.5453; return v - Math.floor(v); };
@@ -21,6 +21,7 @@ float sandDensity(vec3 p){
   float r=clamp(length(p.xz)/uRadius,0.,1.);
   float a=-uTime*2.15*(.9+.12*(1.-r));
   vec2 q=vec2(cos(a)*p.x-sin(a)*p.z,sin(a)*p.x+cos(a)*p.z);
+  q+=.18*vec2(sin(q.y*2.4+p.y-uTime*.7),sin(q.x*2.1-p.y+uTime*.6));
   return dust(q*2.2+vec2(p.y*.55,-p.y*.4+uTime*.12));
 }
 vec3 sandColor(float n){return mix(vec3(.29,.15,.05),vec3(.78,.55,.28),.28+n*.64);}
@@ -67,8 +68,9 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
         void main(){float n=sandDensity(vField);
           float feather=pow(max(0.,sin(vUv.y*3.14159265)),2.);
           float ends=smoothstep(0.,.18,vUv.x)*(1.-smoothstep(.68,1.,vUv.x));
-          float density=smoothstep(.18,.72,n)*feather*ends;
-          gl_FragColor=vec4(sandColor(n),density*.34*uOpacity);
+          float breakup=smoothstep(.25,.7,noise(vec2(vUv.x*11.-uTime*.35,vUv.y*2.)));
+          float density=smoothstep(.28,.72,n)*feather*ends*(.25+.75*breakup);
+          gl_FragColor=vec4(sandColor(n),density*.25*uOpacity);
           #include <colorspace_fragment>
         }`,
     });
@@ -117,17 +119,30 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     for (const b of billows) b.depth = e[2]*b.x+e[6]*b.y+e[10]*b.z+e[14];
     sorted.sort((a,b)=>a.depth-b.depth); uploadBillows();
   };
-  const count = HOURGLASS_VISUAL_BUDGET.grains, positions = new Float32Array(count*3), colors = new Float32Array(count*3), seeds = new Float32Array(count), grainProgress = new Float32Array(count);
-  for (let i=0;i<count;i++) { seeds[i]=random(i,311.7); grainProgress[i]=random(i,77.3); new THREE.Color(i%7?'#c99b51':'#f0cf8a').toArray(colors,i*3); }
+  const count = HOURGLASS_VISUAL_BUDGET.grains, positions = new Float32Array(count*3), colors = new Float32Array(count*3), seeds = new Float32Array(count), grainProgress = new Float32Array(count), grainHeights = new Float32Array(count);
+  const sandColors = ['#ad8349','#c4a16b','#d6b67d','#e3c594'];
+  for (let i=0;i<count;i++) { seeds[i]=random(i,311.7); grainProgress[i]=random(i,77.3); grainHeights[i]=random(i,193.9); new THREE.Color(sandColors[i%4]).toArray(colors,i*3); }
   const grainGeometry = new THREE.BufferGeometry(); grainGeometry.setAttribute('position',new THREE.BufferAttribute(positions,3).setUsage(THREE.DynamicDrawUsage));
   grainGeometry.setAttribute('color',new THREE.BufferAttribute(colors,3)); grainGeometry.setAttribute('seed',new THREE.BufferAttribute(seeds,1));
   const grainMaterial = new THREE.ShaderMaterial({transparent:true,depthWrite:false,vertexColors:true,toneMapped:false,uniforms,
-    vertexShader:`attribute float seed;varying vec3 vColor;void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);
-      gl_Position=projectionMatrix*p;gl_PointSize=clamp((38.+seed*36.)/max(1.,-p.z),1.5,3.5);}`,
-    fragmentShader:`varying vec3 vColor;uniform float uOpacity;void main(){float a=1.-smoothstep(.15,.5,length(gl_PointCoord-.5));
-      gl_FragColor=vec4(vColor,a*uOpacity*.8);
-      #include <colorspace_fragment>
-    }`,
+    vertexShader:`attribute float seed;varying vec3 vColor;varying vec2 vFlow;varying float vStreak,vShade;
+      uniform float uTime;
+      void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);
+        vec2 flow=(modelViewMatrix*vec4(-position.z,.25,position.x,0.)).xy;
+        vFlow=flow/max(length(flow),.001);vStreak=step(.78,seed);
+        vShade=.65+.25*sin(seed*29.+uTime*(1.+seed));
+        gl_Position=projectionMatrix*p;
+        gl_PointSize=mix(clamp((24.+seed*25.)/max(1.,-p.z),1.15,2.6),clamp(90./max(1.,-p.z),2.4,5.),vStreak);
+      }`,
+    fragmentShader:`varying vec3 vColor;varying vec2 vFlow;varying float vStreak,vShade;uniform float uOpacity;
+      void main(){vec2 q=gl_PointCoord-.5;
+        vec2 axis=vec2(vFlow.x,-vFlow.y);
+        vec2 p=vec2(dot(q,axis),dot(q,vec2(-axis.y,axis.x)));
+        p.y*=mix(1.,3.3,vStreak);
+        float a=1.-smoothstep(.12,.48,length(p));
+        gl_FragColor=vec4(vColor,a*uOpacity*vShade);
+        #include <colorspace_fragment>
+      }`,
   });
   const grains = new THREE.Points(grainGeometry,grainMaterial); grains.name='Sanduhrstab · kreisender Sand'; grains.frustumCulled=false;root.add(grains);
   const activeMeshes = [...currents, puffs, grains];
@@ -159,18 +174,25 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     }
     for(const b of billows) {
       const t=Math.sqrt((b.i+.5)/billows.length),angle=orbit(time,.93*t,b.seed)+b.i*2.3999632297;
-      const radius=(rules.radius*.93*t)*(.4+.6*opening)+dissolving*.25;
+      const drift=.05*Math.sin(time*1.7+b.seed*TAU)*Math.sin(t*Math.PI);
+      const radius=(rules.radius*(.93*t+drift))*(.4+.6*opening)+dissolving*.25;
       b.x=Math.cos(angle)*radius;b.z=Math.sin(angle)*radius;
-      b.y=height(b.x,b.z)+.08+(.18+b.seed*1.9+.16*Math.sin(time*2+b.seed*TAU))*opening*fade;
-      b.width=(.68+.32*b.seed)*(.45+.55*opening)*(1+dissolve*.3);b.height=b.width*(.65+.35*b.seed);
-      b.alpha=.36+.14*b.seed;
+      b.y=height(b.x,b.z)+.08+Math.max(.04,.25+b.seed*1.65+.27*Math.sin(time*2+b.seed*TAU))*opening*fade;
+      b.width=(.85+.35*b.seed)*(.45+.55*opening)*(1+dissolve*.3)*(1+.14*Math.sin(time*1.6+b.seed*TAU));
+      b.height=b.width*(.4+.3*b.seed);b.alpha=.27+.1*b.seed;
     }uploadBillows();
     for(let i=0;i<count;i++) {
-      const seed=seeds[i],t=grainProgress[i],radial=.98*Math.sqrt((i+.5)/count),angle=orbit(time,radial,seed)+t*TAU;
-      const radius=rules.radius*radial*(.4+.6*opening)+dissolving*.3;
+      const seed=seeds[i],t=grainProgress[i],radial=.98*Math.sqrt((i+.5)/count);
+      const envelope=Math.sin(radial*Math.PI),phase=seed*TAU;
+      // Small eddies wander through the full disc instead of fixed circular tracks.
+      // Taper at the rim keeps the visible storm inside the gameplay footprint.
+      const drift=envelope*(.045*Math.sin(time*2.7+phase+t*12)+.018*Math.sin(time*4.3+t*TAU));
+      const angle=orbit(time,radial,seed)+t*TAU+.065*envelope*Math.sin(time*3.1+t*TAU);
+      const radius=rules.radius*(radial+drift)*(.4+.6*opening)+dissolving*.3;
       const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
       positions[i*3]=x;positions[i*3+2]=z;
-      positions[i*3+1]=height(x,z)+.04+(.1+t*2.2+seed*.17)*opening*fade;
+      const lift=Math.max(.035,.18+grainHeights[i]*1.85+.25*Math.sin(time*(1.7+seed)+phase)+.1*Math.sin(time*3.4+t*TAU));
+      positions[i*3+1]=height(x,z)+.04+lift*opening*fade;
     }grainGeometry.attributes.position.needsUpdate=true;
   }
   return {show,hide(){root.visible=false;phase='idle';},

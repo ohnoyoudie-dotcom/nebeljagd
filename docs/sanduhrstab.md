@@ -28,9 +28,11 @@ Der gemeinsame Zielindikator verwendet einen klaren Ring mit feinen wandernden
 Funken und weichem Saum, in Grün, Violett, Blitzblau oder Sandgold passend zum Stab. Die
 Zielsteuerung und Vorwarnzeiten vorhandener Waffen bleiben erhalten.
 
-Das Zeitfeld baut sich als körperlicher Sandwirbel auf: Zwei schraubenförmige
+Das Zeitfeld baut sich als dichter Sandsturm auf: Zwei weich aufgebrochene
 Sandböen steigen vom Boden auf und tragen 64 weiche, unregelmäßige Staubwolken.
-2.400 einzelne Sandkörner kreisen gleichmäßig über die gesamte Kreisfläche, auch im Zentrum, bis etwa 2,5 m über dem Boden.
+7.200 einzelne Sandkörner bewegen sich über die gesamte Kreisfläche, auch im Zentrum,
+bis etwa 2,5 m über dem Boden. Feine Körner und kurze, in Bewegungsrichtung
+gestreckte Teilchen machen den fliegenden Sand erkennbar.
 Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten. Durchscheinende
 Staubschichten lassen Spielfiguren und Boden erkennen. Die 64 Wolken verteilen
 sich über die Fläche, statt nur zwei schmale Wirbelbahnen zu besetzen. Der Rand markiert
@@ -42,8 +44,11 @@ Sandböen und Wolken verwenden dieselbe räumliche Staubstruktur und Farbpalette
 Breite, weich auslaufende Böen gehen in die Wolken über. Körner, Wolken und Böen
 folgen einer gemeinsamen Hauptströmung, drehen aber individuell etwas schneller
 oder langsamer. Sanfte, zeitversetzte Böen verändern das Tempo zusätzlich;
-auch die beiden Sandbahnen verformen sich leicht. So bleibt das Feld zusammenhängend,
-ohne wie ein starrer Block zu rotieren. Beim Absinken klingt die Bewegung weiter ab.
+kleine Wirbel versetzen die Körner außerdem seitlich und in der Höhe. Im aktiven
+Feld bleiben diese Bewegungen innerhalb der Zielfläche begrenzt. Staubwolken verändern
+weich ihre Form und Höhe, die Sandbahnen lösen sich stellenweise in feinen Staub auf.
+So bleibt das Feld zusammenhängend, ohne feste Kreisbahnen oder geschlossene
+Bänder zu zeigen. Beim Absinken klingt die Bewegung weiter ab.
 
 Beim Ausklingen verlieren die Sandböen ihre Höhe, die Staubwolken lockern sich,
 und die Körner sinken zu Boden und verblassen. Gelände wird einmal beim
@@ -66,7 +71,8 @@ Zielsteuerung und das Stabmodell bleiben erhalten.
 
 `tests/hourglass-spell.test.js` prüft Vorwarnung, Aufenthaltsdauer, Erholung,
 Eis-Kombination, Mehrfachquellen, Wände, Wasser, Pause, Sichtbarkeit,
-Geländeanpassung, tatsächliche Höhe und Kreisbewegung der Sandkörner, feste
+Geländeanpassung, tatsächliche Höhe, begrenzte seitliche und vertikale Bewegung
+sowie flächendeckende Verteilung der Sandkörner, feste
 Puffer, Freigabe der Ressourcen und die echte Waffensteuerung.
 `tests/hourglass_staff_smoke.py` prüft den erzeugten Editor, gespeicherte
 Platzierung, das importierte Modell, Maus/Touch, reale Übungsgegner und sämtliche

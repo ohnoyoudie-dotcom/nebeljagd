@@ -22,19 +22,26 @@ test('the sand vortex rises, orbits and reuses every buffer through pause and di
  const heightOf=array=>Math.max(...array.filter((_,i)=>i%3===1));
  v.show(center,2,true);assert.equal(v.telemetry.opening,1);assert.equal(v.telemetry.currents,2);
  assert.equal(v.telemetry.particles,HOURGLASS_VISUAL_BUDGET.grains);assert.equal(v.telemetry.puffs,64);
- assert.equal(sand.geometry.attributes.position.count,2400);
+ assert.equal(sand.geometry.attributes.position.count,7200);
  assert.ok(heightOf(positions)>1.5&&heightOf(positions)<=2.6,'sand rises visibly above a standing character');
  for(const sheet of sheets)assert.ok(heightOf(sheet.geometry.attributes.position.array)>1.5,'each sandy current has real 3D height');
  assert.ok(heightOf(puffs.geometry.attributes.center.array)>1.5,'billows rise with the sand');
  const drawn=root.children.filter(m=>m.visible);assert.equal(drawn.length,HOURGLASS_VISUAL_BUDGET.draws);
  assert.equal(drawn.length,5);assert.equal(drawn.filter(m=>m.isLight).length,0);
  const before=Array.from(positions);v.show(center,2.2,true);
+ let radialMotion=0,verticalMotion=0;
  for(let i=0;i<positions.length;i+=3){
   const x=before[i],z=before[i+2],nx=positions[i],nz=positions[i+2];
   const turn=Math.atan2(x*nz-z*nx,x*nx+z*nz);
   assert.ok(turn>.1&&turn<.8,'sand visibly rotates in a consistent direction');
-  assert.ok(Math.abs(Math.hypot(x,z)-Math.hypot(nx,nz))<1e-5,'sand circles rather than pulling into a point');
+  const radius=Math.hypot(nx,nz),radialChange=Math.abs(Math.hypot(x,z)-radius);
+  assert.ok(radius<=rules.radius,'active grains stay inside the marked field');
+  assert.ok(radialChange<=.45,'small eddies cannot throw grains across the field in one short interval');
+  radialMotion+=Number(radialChange>.001);
+  verticalMotion+=Number(Math.abs(positions[i+1]-before[i+1])>.003);
  }
+ assert.ok(radialMotion>sand.geometry.attributes.position.count*.6,'most grains drift between circular tracks');
+ assert.ok(verticalMotion>sand.geometry.attributes.position.count*.6,'most grains rise and fall independently of their orbit');
  const paused=buffers.map(({array})=>Array.from(array));v.show(center,2.2,true);
  buffers.forEach(({array},i)=>assert.deepEqual(Array.from(array),paused[i],'all motion uses simulation time'));
  v.show(center,5.25,true);assert.ok(v.telemetry.opacity<.3);
@@ -76,7 +83,7 @@ test('rotating sand fills the center, middle and edge in every direction',()=>{
    const ring=Math.min(3,Math.floor(r*r*4)),sector=Math.min(7,Math.floor((Math.atan2(z,x)+Math.PI)/(Math.PI*2)*8));
    bins[ring*8+sector]++;
   }
-  assert.ok(bins.every(n=>n>=40),'no empty center, annular gaps or missing angular sectors');
+  assert.ok(bins.every(n=>n>=120),'no empty center, annular gaps or missing angular sectors');
  }
  v.dispose();
 });
@@ -88,19 +95,23 @@ test('sand and clouds vary their speeds without breaking the prevailing flow',t=
  const clouds=scene.getObjectByName('Sanduhrstab · aufgewirbelter Staub').geometry.attributes.center;
  const capture=age=>{v.show(center,age,true);return [sand.array.slice(),clouds.array.slice()];};
  const frames=[1.5,2,2.5].map(capture);
- const turns=(before,after)=>{
+ const turns=(before,after,indices)=>{
   const values=[];
-  for(let i=0;i<before.length;i+=3){
-   const radius=Math.hypot(before[i],before[i+2])/rules.radius;
-   // Compare one annulus: radial shear alone must not satisfy this regression.
-   if(radius<.45||radius>.7)continue;
+  for(const i of indices){
    values.push(Math.atan2(before[i]*after[i+2]-before[i+2]*after[i],before[i]*after[i]+before[i+2]*after[i+2]));
   }
   return values;
  };
  const means=[];
  for(let layer=0;layer<2;layer++){
-  const first=turns(frames[0][layer],frames[1][layer]),second=turns(frames[1][layer],frames[2][layer]);
+  // Select one annulus once, then track those same grains/clouds through both
+  // intervals even when radial eddies carry them outside the initial annulus.
+  const indices=[],initial=frames[0][layer];
+  for(let i=0;i<initial.length;i+=3){
+   const radius=Math.hypot(initial[i],initial[i+2])/rules.radius;
+   if(radius>=.45&&radius<=.7)indices.push(i);
+  }
+  const first=turns(frames[0][layer],frames[1][layer],indices),second=turns(frames[1][layer],frames[2][layer],indices);
   assert.ok(first.length>=10);
   assert.ok([...first,...second].every(angle=>angle>.55&&angle<1.6),'bounded motion keeps one forward flow');
   assert.ok(Math.max(...first)-Math.min(...first)>.18,'nearby elements must not orbit as a rigid block');
