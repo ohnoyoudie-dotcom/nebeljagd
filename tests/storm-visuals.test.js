@@ -21,7 +21,7 @@ test('lightning branches connect to the jagged trunk and terminate at the collis
   for (let i=1;i<24;i++) assert.ok(point(i*6).distanceTo(point((i-1)*6+2)) < 1e-6);
   for (let branch=0;branch<5;branch++) {
     const first=24+branch*6;
-    assert.ok(point(first*6).distanceTo(point((4+branch*4)*6)) < 1e-6, 'a fork must start on its actual trunk node');
+    assert.ok(Array.from({length:23},(_,i)=>i+1).some(node=>point(first*6).distanceTo(point(node*6))<1e-6), 'a fork must start on an actual trunk node');
     for(let j=1;j<6;j++)assert.ok(point((first+j)*6).distanceTo(point((first+j-1)*6+2)) < 1e-6);
   }
   // Shared corners must agree on extrusion as well as centre position;
@@ -76,5 +76,50 @@ test('the first lightning flash stays bright across a slow frame before flickeri
   visuals.update(.25);
   assert.equal(bolts.geometry.attributes.aEnergy.getX(0),0);
   assert.equal(visuals.telemetry.impacts,1,'ground afterglow can outlive the bolt');
+  visuals.dispose();
+});
+
+test('bolt thickness and fork locations vary while every shared corner stays closed', () => {
+  const { visuals, bolts } = setup();
+  const profiles=[];
+  for(const seed of [19,32]) {
+    visuals.strike({x:5,y:.08,z:4},seed);
+    const slot=profiles.length,base=slot*54*6;
+    const p=bolts.geometry.attributes.position,w=bolts.geometry.attributes.aWidth;
+    const widths=Array.from({length:25},(_,i)=>w.getX(base+(i===24?23*6+2:i*6)));
+    assert.ok(Math.max(...widths)<.20 && Math.min(...widths)>.05);
+    assert.ok(widths.some((value,i)=>i>0 && value>widths[i-1]),'local width variation breaks the uniform ribbon');
+    const roots=[];
+    for(let branch=0;branch<5;branch++) {
+      const start=new THREE.Vector3().fromBufferAttribute(p,base+(24+branch*6)*6);
+      roots.push(Array.from({length:23},(_,i)=>i+1).find(i=>start.distanceTo(new THREE.Vector3().fromBufferAttribute(p,base+i*6))<1e-6));
+    }
+    assert.ok(roots.every(Number.isInteger));profiles.push({widths,roots});
+  }
+  assert.notDeepEqual(profiles[0].roots,profiles[1].roots);
+  visuals.dispose();
+});
+
+test('impact dust rises and dissipates while ground sparks travel outward, with complete pooled cleanup', () => {
+  const { scene, visuals } = setup();
+  const dust=scene.getObjectByName('Gewitter · kurze Staubstöße'),sparks=scene.getObjectByName('Gewitter · aufsprühende Funken');
+  const matrix=new THREE.Matrix4(),position=new THREE.Vector3(),rotation=new THREE.Quaternion(),scale=new THREE.Vector3();
+  visuals.strike({x:4,y:0,z:3},8);visuals.update(.1);
+  dust.getMatrixAt(0,matrix);matrix.decompose(position,rotation,scale);
+  const earlyY=position.y,earlyWidth=scale.x;
+  assert.ok(dust.geometry.attributes.aEnergy.getX(0)>0);
+  sparks.getMatrixAt(0,matrix);matrix.decompose(position,rotation,scale);
+  const earlyDistance=Math.hypot(position.x-1,position.z-1);
+  assert.ok(earlyDistance>.2 && position.y<.2,'the ground spark skims the terrain');
+  visuals.update(.15);
+  dust.getMatrixAt(0,matrix);matrix.decompose(position,rotation,scale);
+  assert.ok(position.y>earlyY && scale.x>earlyWidth);
+  sparks.getMatrixAt(0,matrix);matrix.decompose(position,rotation,scale);
+  assert.ok(Math.hypot(position.x-1,position.z-1)>earlyDistance);
+  visuals.update(.4);
+  assert.ok(dust.geometry.attributes.aEnergy.array.every(value=>value===0));
+  // Three's decompose() returns unit scale for a singular matrix; inspect its
+  // actual basis instead to verify that expired instances render no geometry.
+  for(let i=0;i<sparks.count;i++){sparks.getMatrixAt(i,matrix);assert.ok(matrix.elements.slice(0,12).every(value=>value===0));}
   visuals.dispose();
 });

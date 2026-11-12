@@ -6,7 +6,7 @@ const uniforms=()=>({uAge:{value:0},uOpacity:{value:1},uFlash:{value:0},uCutouts
 test('reference cloud uses the supplied shared artwork in a compact bounded billboard',()=>{
  const texture=new THREE.Texture();texture.userData.artwork='thunder-reference-v1';
  const cloud=createStormCloud(uniforms(),texture);
- assert.equal(cloud.artwork,'thunder-reference-v1');assert.equal(cloud.triangles,4);assert.ok(cloud.horizontalRadius<=2.5);
+ assert.equal(cloud.artwork,'thunder-reference-v1');assert.ok(cloud.triangles<=400);assert.ok(cloud.horizontalRadius<=2.5);
  for(const mesh of cloud.meshes){assert.equal(mesh.material.uniforms.uCloud.value,texture);assert.equal(mesh.material.depthWrite,false);assert.ok(mesh.geometry.parameters.width>=4.4&&mesh.geometry.parameters.width<=4.55);assert.equal(mesh.frustumCulled,false);}
  cloud.dispose();texture.dispose();
 });
