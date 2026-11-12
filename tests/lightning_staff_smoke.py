@@ -74,37 +74,64 @@ with sync_playwright() as pw:
             assert held['model'] == 'tripo' and held['source'] == 'assets/inbox/fantasy thunder staff 3d model.glb', held
             if touch: assert state(page)['graphicsProfile']['iPad']
             expected = state(page)['equippedItem']['damage']
-            page.evaluate('''()=>{const a=nebeljagdTestState().practiceActors.find(a=>a.id==='practice-2');
-              nebeljagdInspect({x:a.position.x,z:a.position.z-9,direction:0});}''')
-            pause_when(page, 'nebeljagdTestState().combat.effects.lightningProjectiles>0')
-            if touch: page.locator('#attackBtn').tap()
-            else: page.keyboard.press('f')
-            print('STAGE', mode, 'fired', flush=True)
+            target = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-2')
+            center = dict(target['position'])
+            page.evaluate('p=>nebeljagdInspect({x:p.x-(p.touch?20:5),z:p.z,direction:Math.PI/2})', {**center, 'touch': touch})
+            elapsed = state(page)['elapsed']
+            page.wait_for_function('t=>nebeljagdTestState().elapsed>=t', arg=elapsed+.2)
+            if touch:
+                attack = page.locator('#attackBtn').bounding_box()
+                ax, ay = attack['x']+attack['width']/2, attack['y']+attack['height']/2
+                joy = page.locator('#joystick').bounding_box()
+                jx, jy = joy['x']+joy['width']/2, joy['y']+joy['height']/2
+                cdp = context.new_cdp_session(page)
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':ax,'y':ay,'id':1}]})
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[
+                    {'x':ax,'y':ay,'id':1}, {'x':jx+joy['width']*.3,'y':jy,'id':2}]})
+            else:
+                pixel = page.evaluate('p=>nebeljagdProjectPoint(p)', center)
+                page.mouse.move(pixel['x'], pixel['y']); page.keyboard.down('f')
+            page.wait_for_function('nebeljagdTestState().combat.storm.aimRange?.radius===20')
+            charged = state(page)['combat']['storm']
+            assert charged['aimRange']['heldSeconds'] >= 3 and charged['radius'] == 4.8
+            assert state(page)['combat']['shotsFired'] == 0 and not charged['active']
+            capture(page, mode+'-aim')
+            passed(mode+': hold grows the plain target reach to 20m in 3s without firing')
+            pause_when(page, 'nebeljagdTestState().combat.storm.hits>0 && nebeljagdTestState().combat.storm.visuals.bolts>0')
+            if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
+            else: page.keyboard.up('f')
+            if touch:
+                page.evaluate('()=>{const p=nebeljagdTestState().combat.storm.center;nebeljagdInspect({x:p.x-5,z:p.z-4});}')
             page.wait_for_function('window.__lightningError || nebeljagdTestState().phase==="paused"')
             assert not page.evaluate('window.__lightningError'), report['errors']
-            before = state(page); capture(page, mode + '-flight')
-            assert before['combat']['effects']['lightningStyle'] == 'forked-arc-ribbons'
-            page.wait_for_timeout(200); assert state(page)['combat']['spells'] == before['combat']['spells']
-            passed(mode + ': uploaded staff and branching projectile render; pause freezes flight')
-            pause_when(page, '(nebeljagdTestState().combat.effects.emitted.lightningStaff?.impacts||0)>0')
+            current = state(page); cloud = current['combat']['storm']
+            assert cloud['visuals']['style'] == 'compact-storm-eye' and cloud['visuals']['visible']
+            assert cloud['visuals']['cloudRadius'] < cloud['radius']*.4
+            assert current['combat']['shotsFired'] == 1 and current['combat']['effects']['lightningProjectiles'] == 0
+            victim = next(a for a in current['practiceActors'] if a['id'] == 'practice-2')
+            assert victim['stunRemaining'] > .2 and victim['speedMultiplier'] == 0 and not victim['canAct'], victim
+            assert abs(victim['maxHealth']-victim['health']-expected/5) < .001
+            page.evaluate('p=>nebeljagdInspectCamera({zoom:1.7,focus:p})', cloud['center'])
+            capture(page, mode+'-storm')
+            page.wait_for_timeout(200); assert state(page)['combat']['storm'] == cloud
+            passed(mode+': compact cloud, area and lightning render; the real victim is stunned; pause freezes the field')
+            pause_when(page, 'nebeljagdTestState().elapsed>='+str(current['elapsed']+.12))
             page.keyboard.press('Escape'); page.wait_for_function('nebeljagdTestState().phase==="paused"')
-            current = state(page); capture(page, mode + '-impact')
-            assert current['combat']['damageHits'] == 1 and current['combat']['lastDamage']['damage'] == expected, current['combat']['lastDamage']
-            assert current['combat']['lastDamage']['targetId'] == 'practice-2'
-            assert current['combat']['effects']['activeSmoke'] == 0
-            assert current['combat']['effects']['emitted']['lightningStaff']['impacts'] == 1
-            passed(mode + ': electric hit applies equipped damage exactly once')
-            pause_when(page, 'nebeljagdTestState().elapsed>=' + str(current['elapsed'] + .12))
-            page.keyboard.press('Escape'); page.wait_for_function('nebeljagdTestState().phase==="paused"')
-            page.evaluate('nebeljagdInspectCamera({zoom:2.2,focus:nebeljagdTestState().combat.effects.latestImpact.point})')
-            capture(page, mode + '-pulse')
-            assert state(page)['combat']['effects']['activeBursts'] > 0
+            frozen = next(a for a in state(page)['practiceActors'] if a['id']=='practice-2')
+            assert abs(frozen['travelled']-victim['travelled']) < .00001, frozen
+            passed(mode+': stun physically stops patrol movement')
             page.keyboard.press('Escape')
-            page.wait_for_function('nebeljagdTestState().combat.effects.activeBursts===0 && nebeljagdTestState().combat.effects.activeParticles===0')
-            page.keyboard.press('Escape'); capture(page, mode + '-clear')
+            page.wait_for_function('!nebeljagdTestState().combat.storm.active')
+            finished = state(page)
+            victim = next(a for a in finished['practiceActors'] if a['id']=='practice-2')
+            assert finished['combat']['storm']['pulses'] == 5
+            assert abs(victim['maxHealth']-victim['health']-expected) < .001, victim
+            assert victim['stunRemaining'] == 0 and victim['speedMultiplier'] == 1
+            assert finished['combat']['storm']['visuals']['bolts'] == 0
+            page.keyboard.press('Escape'); capture(page, mode+'-clear')
             page.locator('#restartBtn').click(); page.wait_for_function('nebeljagdTestState().phase==="playing"')
-            assert state(page)['combat']['effects']['lightningProjectiles'] == 0
-            passed(mode + ': impact fades and restart clears the pooled effect'); context.close()
+            assert not state(page)['combat']['storm']['active']
+            passed(mode+': five strikes share the equipped damage; stun expires and the entire field clears'); context.close()
         assert not report['errors'], report['errors']
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == original
         report.update(status='passed', mapSha256=original, browser=browser.version)

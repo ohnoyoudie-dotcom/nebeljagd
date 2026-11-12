@@ -6,6 +6,7 @@ import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
 import { createGravitySpell, GRAVITY_RULES } from './gravity-spell.js';
 import { createHourglassSpell, HOURGLASS_RULES } from './hourglass-spell.js';
+import { createStormSpell, STORM_RULES } from './storm-spell.js';
 import { attachGravityStaffAccent, animateGravityStaffAccent } from './gravity-staff-accent.js';
 import { createLootGlow } from './loot-glow.js';
 import { createSwordEffects } from './sword-effects.js';
@@ -572,8 +573,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
 
   function attack(position, direction) {
     if (!equippedType || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
-    if (equippedType === 'poisonStaff' || equippedType === 'gravityStaff' || equippedType === 'hourglassStaff') {
-      const controller = equippedType === 'hourglassStaff' ? hourglass : equippedType === 'gravityStaff' ? gravity : specials;
+    if (equippedType === 'poisonStaff' || equippedType === 'gravityStaff' || equippedType === 'hourglassStaff' || equippedType === 'lightningStaff') {
+      const controller = equippedType === 'hourglassStaff' ? hourglass : equippedType === 'lightningStaff' ? storm : equippedType === 'gravityStaff' ? gravity : specials;
       if (!controller.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
@@ -785,22 +786,29 @@ export function createWeapons(scene, characterGroup, world, character = null,
     lastDamage = result; damageHits++;
   }, isVisible, { effects: spellEffects, textures: gravityTextures });
   const hourglass = createHourglassSpell(scene, world, combat, ownerId, isVisible);
+  const storm = createStormSpell(scene, world, combat, ownerId, result => {
+    lastDamage = result; damageHits++;
+  }, isVisible);
   const staffTip = new THREE.Vector3();
   function cancelAim() {
-    specials.cancelAim(); gravity.cancelAim(); hourglass.cancelAim();
+    specials.cancelAim(); gravity.cancelAim(); storm.cancelAim(); hourglass.cancelAim();
   }
   function releaseAttack(position) {
     const isPoison = equippedType === 'poisonStaff';
     const isHourglass = equippedType === 'hourglassStaff';
     const isGravity = equippedType === 'gravityStaff';
-    const controller = isHourglass ? hourglass : isGravity ? gravity : specials;
-    if ((!isPoison && !isGravity && !isHourglass) || !controller.aiming || characterGroup.userData.rolling) { cancelAim(); return false; }
+    const isStorm = equippedType === 'lightningStaff';
+    const controller = isHourglass ? hourglass : isStorm ? storm : isGravity ? gravity : specials;
+    if ((!isPoison && !isGravity && !isHourglass && !isStorm) || !controller.aiming || characterGroup.userData.rolling) { cancelAim(); return false; }
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
     getStaffTip(staffTip);
     if (isHourglass) {
       if (!hourglass.release()) { cooldown = 0; attackPhase = 'idle'; return false; }
       spellEffects.fire('hourglassStaff', staffTip, characterGroup.rotation.y);
+    } else if (isStorm) {
+      storm.release(equippedItem);
+      spellEffects.fire('lightningStaff', staffTip, characterGroup.rotation.y);
     } else if (isGravity) {
       const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .16);
       gravity.release(equippedItem, staffTip, blocked);
@@ -890,6 +898,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (characterGroup.userData.rolling) cancelAim();
     specials.update(delta, position, time);
     gravity.update(delta, position, time); hourglass.update(delta, position);
+    storm.update(delta, position);
     for (const item of items) {
       if (item.collected) continue;
       const wave = Math.sin(time * 2.2 + item.phase);
@@ -1040,7 +1049,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
     spellEffects.reset();
-    specials.reset(); gravity.reset(); hourglass.reset();
+    specials.reset(); gravity.reset(); hourglass.reset(); storm.reset();
     damageHits = 0; lastDamage = null;
     for (const arrow of arrows) { arrow.life = 0; arrow.mode = 'inactive'; arrow.group.visible = false; }
     impactParticles.forEach((particle, index) => {
@@ -1056,7 +1065,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     disposed = true;
     reset({ reroll: false });
     spellEffects.dispose();
-    specials.dispose(); gravity.dispose(); hourglass.dispose();
+    specials.dispose(); gravity.dispose(); hourglass.dispose(); storm.dispose();
     swordEffects.dispose();
     items.forEach(item => item.aura.dispose());
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
@@ -1080,9 +1089,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get equipped() { return equippedType; },
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
     get bowHolding() { return false; },
-    get aiming() { return specials.aiming || gravity.aiming || hourglass.aiming; },
-    get aimRange() { return hourglass.aiming ? HOURGLASS_RULES.range : gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
-    get attackCooldown() { return specials.moonBusy || gravity.busy ? Math.max(.05, cooldown) : cooldown; },
+    get aiming() { return specials.aiming || gravity.aiming || hourglass.aiming || storm.aiming; },
+    get aimRange() { return hourglass.aiming ? HOURGLASS_RULES.range : storm.aiming ? STORM_RULES.range : gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
+    get attackCooldown() { return specials.moonBusy || gravity.busy || storm.busy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
         .multiply(heldSword.scale).applyQuaternion(heldSword.quaternion).add(heldSword.position);
@@ -1117,7 +1126,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           remaining: swordComboRemaining },
         swordTrail: swordEffects.inspect(), swordBlade: { base: point(swordBase), tip: point(swordTip) },
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, heldGrip, hands, lastSpellLaunch,
+        effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, storm: storm.telemetry, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,
         staffTip: equippedType?.endsWith('Staff') ? point(getStaffTip(new THREE.Vector3())) : null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
@@ -1139,7 +1148,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     },
     nearest, interact, tryAutoPickup, attack, releaseAttack,
     appendGrassInteractors: target => gravity.appendGrassInteractors(target),
-    aimAt: (position, point) => { specials.aimAt(position, point); gravity.aimAt(position, point); hourglass.aimAt(position, point); }, cancelAim,
+    aimAt: (position, point) => { specials.aimAt(position, point); gravity.aimAt(position, point); hourglass.aimAt(position, point); storm.aimAt(position, point); }, cancelAim,
     update, reset, addDrop, dispose,
   };
 }

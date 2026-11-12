@@ -112,6 +112,10 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       mesh(frost, iceGeometry, frostMat, Math.cos(angle) * .45, .7 + (i % 2) * .4, Math.sin(angle) * .45).castShadow = false;
     }
     flames.visible = frost.visible = false;
+    const stunGeometry = new THREE.TorusGeometry(.28, .014, 4, 24, Math.PI * 1.65); geometries.add(stunGeometry);
+    const stunMaterial = new THREE.MeshBasicMaterial({ color: '#b9eaff', toneMapped: false }); materials.add(stunMaterial);
+    const stunHalo = new THREE.Mesh(stunGeometry, stunMaterial); stunHalo.rotation.x = Math.PI / 2;
+    stunHalo.position.y = 2.28; stunHalo.visible = false; group.add(stunHalo);
     let label = null;
     if (labelMaterial) {
       label = new THREE.Sprite(labelMaterial); label.position.y = 2.85; label.scale.set(2.4, .45, 1);
@@ -123,7 +127,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     healthBars?.add(id, { position: group.position, health: target.health, maxHealth: target.maxHealth, local: false, height: 2.48, color: '#d6a177' });
     // A short line patrol is easy to aim at and makes the ice slow measurable.
     const axis = index % 2 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
-    actors.push({ id, target, group, pivot, coat, flames, frost, limbs, label, site, axis, direction: 1,
+    actors.push({ id, target, group, pivot, coat, flames, frost, stunHalo, limbs, label, site, axis, direction: 1,
       origin: group.position.clone(), travelled: 0, phase: 0, visible: true, speed: .85,
       grassDirX: axis.x, grassDirZ: axis.z, grassStrength: 0, gravityResponse: 0 });
   }
@@ -177,6 +181,13 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       }
       pivot.position.y = target.alive ? Math.sin(actor.phase * 2) * .025 + actor.gravityResponse * .08 : -.02;
       actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : pulled ? '#522680' : target.timeSlows?.size ? '#76501b' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
+      const stunned = target.alive && target.stunRemaining > 0;
+      actor.stunHalo.visible = stunned; actor.stunHalo.rotation.z = time * 5;
+      if (stunned) {
+        pivot.rotation.x = .12; pivot.rotation.z = Math.sin(time * 32) * .025;
+        actor.coat.emissive.set('#28435c');
+        for (const limb of actor.limbs) { limb.arm.rotation.x = -.6; limb.leg.rotation.x = 0; }
+      }
       actor.flames.visible = target.alive && target.burnRemaining > 0;
       actor.frost.visible = target.alive && target.slowRemaining > 0;
       actor.flames.children.forEach((flame, i) => {
@@ -219,6 +230,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       target.health = target.initialHealth; target.burnRemaining = target.burnDamagePerSecond = target.poisonRemaining = target.poisonDamagePerSecond = target.slowRemaining = target.hitFlash = 0; target.slowFactor = 1;
       target.timeSlows?.clear();
       delete target.poisonSourceId; delete target.gravityVisual;
+      target.stunRemaining = 0; actor.stunHalo.visible = false;
     }
   }
 
@@ -255,7 +267,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     inspect: () => actors.map(({ id, target, group, pivot, gravityResponse, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
       alive: target.alive, visible, burnRemaining: target.burnRemaining, poisonRemaining: target.poisonRemaining, slowRemaining: target.slowRemaining,
-      speedMultiplier: target.speedMultiplier, baseSpeed: speed, travelled, gravityResponse,
+      speedMultiplier: target.speedMultiplier, stunRemaining: target.stunRemaining, canAct: target.canAct, baseSpeed: speed, travelled, gravityResponse,
       gravityLean: { x: pivot.rotation.x, z: pivot.rotation.z } })),
     dispose() {
       for (const actor of actors) { combat.removeTarget(actor.id); healthBars?.remove(actor.id); }

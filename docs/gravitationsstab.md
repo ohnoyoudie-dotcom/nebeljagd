@@ -17,7 +17,7 @@ scripts/prepare-gravity-staff.py eine kleine, offline ladbare GLB-Kopie vor
   0 m beim Drücken, 10 m nach 1,5 s und maximal 20 m nach 3 s.
   Beide Stäbe verwenden dieselbe lineare Ladefunktion, maximale Reichweite
   und einfache Ringdarstellung. Die Zielfläche hat keine Runen oder Animation.
-  Ein näherer Mauszeiger wird nicht überschossen. Frühes Loslassen wirft das Projektil näher.
+  Ein näherer Mauszeiger wird nicht überschossen. Der Zielkreis darf über Mauern und Objekte hinweg gesetzt werden und bleibt dort sichtbar; erst die tatsächliche Flugbahn prüft Hindernisse. Frühes Loslassen wirft das Projektil näher.
   Das Halten allein löst keinen Angriff aus; jede neue Betätigung beginnt bei null.
 - Der Wirkungsradius beträgt **4,5 m**, also **9 m Durchmesser**. Die Fläche ist
   damit knapp doppelt so groß wie beim vorherigen Radius von 3,2 m.
