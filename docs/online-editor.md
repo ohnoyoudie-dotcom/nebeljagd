@@ -23,6 +23,9 @@ Die Auswahl „Projektkarte“ gilt nur für das einmalige Öffnen. Der Editor e
 danach den Startparameter aus seiner Adresse. Neuladen und erneutes Öffnen dieser
 Adresse setzen den automatisch gespeicherten Browserentwurf fort. „Spielen“
 überträgt genau diesen Kartenstand ins Testfenster und ändert den Entwurf nicht.
+Auch ältere Lesezeichen mit `start=project` setzen einen vorhandenen Entwurf
+fort; ohne Entwurf öffnen sie die Projektkarte. Die ausdrückliche Auswahl über
+„Aktuelle Projektkarte öffnen“ bleibt erhalten und schützt andere Entwürfe.
 Die Filter unter „Karteninhalt“ begrenzen nur die Liste; auf der Karte bleiben
 andere Objektarten beim Platzieren und Verschieben als Orientierung sichtbar.
 

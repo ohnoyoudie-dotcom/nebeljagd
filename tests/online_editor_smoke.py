@@ -121,8 +121,14 @@ def run(directory: Path) -> None:
             assert state(page)['map'] == edited
             page.goto(base + '/editor.html'); ready(page)
             assert state(page)['map'] == edited
+            # Reusing the original old bookmark (not just the cleaned address)
+            # must resume the saved placements as well.
+            for _ in range(2):
+                page.goto(base + '/map-editor.html?start=project&v=old-bookmark'); ready(page)
+                assert state(page)['map'] == edited
+                assert 'start' not in parse_qs(urlsplit(page.url).query)
             expect(page.locator('#save-status')).to_contain_text('Automatisch im Browser gespeichert')
-            passed('Real game test, closing the editor, reopening its address, reload and stable bookmark retain the complete edited map')
+            passed('Real game test, closing the editor, reload, stable entry and repeated old project bookmarks retain the complete edited map')
 
             draft = copy.deepcopy(project)
             draft['name'] = 'Mein unveröffentlichter Entwurf'
@@ -138,6 +144,7 @@ def run(directory: Path) -> None:
             page.locator('#open-project').click()
             ready(page)
             assert 'start' not in parse_qs(urlsplit(page.url).query)
+            assert 'open' not in parse_qs(urlsplit(page.url).query)
             assert state(page)['map']['name'] == project['name']
             assert page.evaluate('JSON.parse(localStorage.getItem("nebeljagd.worldmap.v1")).name') == draft['name']
             expect(page.locator('#restore-banner')).to_be_visible()

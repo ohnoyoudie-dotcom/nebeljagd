@@ -106,7 +106,7 @@
         if (!currentRelease) return;
         const url = new URL('./map-editor.html', location.href);
         url.searchParams.set('v', currentRelease.files['map-editor.html'].sha256);
-        if (start) url.searchParams.set('start', start);
+        if (start) url.searchParams.set('open', start);
         if (replace) location.replace(url.href); else location.assign(url.href);
       }
       byId('open-project').addEventListener('click', () => openEditor('project'));

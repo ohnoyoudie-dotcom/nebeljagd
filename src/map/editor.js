@@ -56,9 +56,10 @@ const startup = planEditorStart({ project: projectMap, snapshot: embeddedSnapsho
   draft: validStoredDraft, requested: requestedEditorStart(location.search) });
 // A source choice applies to this opening only. Reloading the editor must
 // resume later edits instead of repeatedly replacing them with the project.
-if (requestedEditorStart(location.search)) {
+if (new URLSearchParams(location.search).has('start') || new URLSearchParams(location.search).has('open')) {
   const resumeUrl = new URL(location.href);
   resumeUrl.searchParams.delete('start');
+  resumeUrl.searchParams.delete('open');
   try { window.history.replaceState(window.history.state, '', resumeUrl.href); }
   catch { /* Local file browsers may disallow rewriting their address. */ }
 }

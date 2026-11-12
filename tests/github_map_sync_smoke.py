@@ -180,7 +180,7 @@ try:
         passed('Expired credentials and disconnect preserve the map and require a new connection')
 
         remote['deny'] = False
-        page.goto(base + '/map-editor.html?sync=github&start=project'); ready(page)
+        page.goto(base + '/map-editor.html?sync=github&open=project'); ready(page)
         expect(page.locator('#restore-banner')).to_be_visible()
         page.locator('#export-json').click()
         page.locator('#github-map-token').fill(FAKE)
