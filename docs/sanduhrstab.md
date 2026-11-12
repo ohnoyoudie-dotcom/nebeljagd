@@ -25,7 +25,7 @@ Diese Werte sind ein erster Teststand, keine endgültige Balanceentscheidung.
 ## Darstellung und Modell
 
 Der gemeinsame Zielindikator verwendet einen klaren Ring mit feinen wandernden
-Funken und weichem Saum, in Grün, Violett oder Sandgold passend zum Stab. Die
+Funken und weichem Saum, in Grün, Violett, Blitzblau oder Sandgold passend zum Stab. Die
 Zielsteuerung und Vorwarnzeiten vorhandener Waffen bleiben erhalten.
 
 Das Zeitfeld besitzt kreisende goldene Sandbahnen und 360 einzelne Körner.

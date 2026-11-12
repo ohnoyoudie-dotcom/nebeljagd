@@ -87,7 +87,7 @@ test('gravity target crosses solid cover and remains visible; flight still colli
   const gravity = createGravitySpell(scene, world, combat, 'caster', undefined, () => false);
   gravity.beginAim(origin); gravity.aimAt(origin, { x: 0, z: 15 }); gravity.update(3, origin);
   assert.equal(gravity.telemetry.aim.z, 15);
-  const visibleRings = []; scene.traverseVisible(p => { if (p.geometry?.type === 'RingGeometry') visibleRings.push(p); });
+  const visibleRings = []; scene.traverseVisible(p => { if (p.geometry?.type === 'RingGeometry' || p.userData.areaRadius) visibleRings.push(p); });
   assert.ok(visibleRings.length >= 2, 'target and reach rings stay visible behind cover');
   gravity.release({ damage: 14 }); gravity.update(.2, origin);
   assert.equal(gravity.telemetry.flight, null); assert.equal(gravity.telemetry.center.z, 0);
