@@ -16,6 +16,8 @@ fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e
     "import {createLobbyMap} from './src/lobby-map.js';console.log(JSON.stringify(createLobbyMap()))"], cwd=ROOT))
 fixture['objects'] = [dict(id='meteor', name='Meteorstab', kind='meteorStaff',
     variant='kit-tripo-meteor-staff', position=[0, -14], rotation=0, scale=1, rarity='common')]
+rules = json.loads(subprocess.check_output(['node', '--input-type=module', '-e',
+    "import {METEOR_RULES} from './src/meteor-spell.js';console.log(JSON.stringify(METEOR_RULES))"], cwd=ROOT))
 report = dict(status='running', checks=[], errors=[])
 
 def passed(message):
@@ -84,6 +86,9 @@ with sync_playwright() as p:
             page.wait_for_function('nebeljagdTestState().equippedWeapon==="meteorStaff"')
             s = state(page)
             assert s['equippedItem']['variant'] == 'kit-tripo-meteor-staff' and s['combat']['heldModel']['model'] == 'tripo'
+            # Initial world pickups roll a tier, even when their editor default
+            # is common. Check the actual equipped damage, as other staff tests do.
+            equipped_damage = s['equippedItem']['damage']
             if touch: assert s['graphicsProfile']['iPad'] and s['graphicsProfile']['pixelRatio'] <= 1
             target = next(a for a in s['practiceActors'] if a['id'] == 'practice-1')
             point = target['position']; health = target['health']
@@ -123,7 +128,14 @@ with sync_playwright() as p:
             impact = state(page)['combat']['meteor']; assert impact['radius'] == 4.8 and impact['visuals']['shock']
             capture(page, mode + '-impact')
             enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
-            assert 24 <= health-enemy['health'] <= 33.001, enemy
+            # A fragment also starts burn. Its remaining timer measures actual
+            # combat ticks, independently of the visual frame's impact age.
+            expected_damage = equipped_damage
+            if enemy['burnRemaining'] > 0:
+                expected_damage += equipped_damage * rules['fragmentDamageRatio']
+                expected_damage += rules['burnDps'] * (rules['burnSeconds'] - enemy['burnRemaining'])
+            assert abs(health-enemy['health'] - expected_damage) < .001, dict(enemy=enemy, expectedDamage=expected_damage, impact=impact)
+            assert impact['casts'] == 1
             assert impact['blastHits'] >= 1
             page.locator('#resumeBtn').click()
             page.wait_for_function('!nebeljagdTestState().combat.meteor.active')
