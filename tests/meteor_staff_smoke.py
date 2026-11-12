@@ -116,6 +116,7 @@ with sync_playwright() as p:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             late = state(page)['combat']['meteor']
             assert late['flight']['diameter'] > early['flight']['diameter'] * 1.7
+            assert late['flight']['diameter'] <= 1.75
             assert late['visuals']['bodyVisible'] and 0 < late['visuals']['puffs'] <= 96
             assert late['visuals']['model'] == 'uploaded' and late['visuals']['source'] == 'assets/inbox/Meteor Projektil.glb'
             assert late['visuals']['draws'] <= 3, late['visuals']
@@ -125,7 +126,11 @@ with sync_playwright() as p:
             passed(mode + ': real input launches the uploaded staff’s growing high-arc meteor; smoke and simulation pause correctly')
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=.15")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
-            impact = state(page)['combat']['meteor']; assert impact['radius'] == 4.8 and impact['visuals']['shock']
+            impact = state(page)['combat']['meteor']; assert impact['radius'] == 3.2 and impact['visuals']['shock']
+            assert 0 < impact['visuals']['fire'] <= 18
+            assert impact['visuals']['fragmentModel'] == 'uploaded'
+            assert impact['visuals']['fragments'] > 0
+            assert len(set(f['diameter'] for f in impact['fragmentStates'])) > 1
             capture(page, mode + '-impact')
             enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
             # A fragment also starts burn. Its remaining timer measures actual
@@ -137,10 +142,13 @@ with sync_playwright() as p:
             assert abs(health-enemy['health'] - expected_damage) < .001, dict(enemy=enemy, expectedDamage=expected_damage, impact=impact)
             assert impact['casts'] == 1
             assert impact['blastHits'] >= 1
+            arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=.6")
+            page.wait_for_function('nebeljagdTestState().phase==="paused"')
+            capture(page, mode + '-fragments')
             page.locator('#resumeBtn').click()
             page.wait_for_function('!nebeljagdTestState().combat.meteor.active')
             assert state(page)['combat']['meteor']['visuals']['draws'] == 0
-            passed(mode + ': broad explosion damages the real practice target and all effects expire')
+            passed(mode + ': compact fire explosion with uploaded mini meteors damages the real practice target and all effects expire')
             context.close()
         assert not report['errors'], report['errors']
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == map_hash

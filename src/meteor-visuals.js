@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 
-export const METEOR_VISUAL_BUDGET = Object.freeze({ puffs: 96, embers: 96, fragments: 6 });
+export const METEOR_VISUAL_BUDGET = Object.freeze({ puffs: 96, embers: 96, fragments: 6, fire: 18 });
 const random = (i, salt) => { const x = Math.sin(i * salt + 1.7) * 43758.5453; return x - Math.floor(x); };
 
 /** Pooled smoke, hot embers and a broad short blast. Imported body geometry and
@@ -55,16 +55,46 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
       body.add(plate); bodyDraws++;
     }
   }
-  const fragmentGeometry = geo(new THREE.DodecahedronGeometry(rules.fragmentRadius, 0));
-  const fragmentMaterial = mat(new THREE.MeshStandardMaterial({ color: '#4b2d20', emissive: '#fb6411', emissiveIntensity: 1.25, roughness: .9, flatShading: true }));
-  const chips = new THREE.InstancedMesh(fragmentGeometry, fragmentMaterial, rules.fragments); chips.frustumCulled = false; chips.count = 0; root.add(chips);
-  chips.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  // Instance the normalized uploaded body, including its lava textures. Every
+  // fragment shares geometry/materials with the main meteor, never a new asset.
+  const chips = [];
+  body.updateMatrixWorld(true);
+  body.traverse(part => {
+    if (!part.isMesh) return;
+    const mesh = new THREE.InstancedMesh(part.geometry, part.material, rules.fragments);
+    mesh.name = 'Meteorstab · kleine Meteorsplitter';
+    mesh.frustumCulled = false; mesh.count = 0;
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); root.add(mesh);
+    chips.push({ mesh, local: part.matrixWorld.clone() });
+  });
   const shock = createStaffAimRing(rules.radius, { color: '#ffc16b' });
   shock.material.depthTest = true; shock.visible = false; root.add(shock); geo(shock.geometry); mat(shock.material);
   const flashMat = mat(new THREE.MeshBasicMaterial({ color: '#ffbd62', transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
   const flash = new THREE.Mesh(geo(new THREE.SphereGeometry(1, 20, 12)), flashMat); flash.visible = false; root.add(flash);
   const noise = `float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}`;
+  const fireGeo = geo(new THREE.InstancedBufferGeometry()); fireGeo.setIndex([0,1,2,0,2,3]);
+  fireGeo.setAttribute('position', new THREE.Float32BufferAttribute([-1,-1,0,1,-1,0,1,1,0,-1,1,0], 3));
+  const fireCenters = new Float32Array(METEOR_VISUAL_BUDGET.fire * 3), fireShapes = new Float32Array(METEOR_VISUAL_BUDGET.fire * 4);
+  fireGeo.setAttribute('center', new THREE.InstancedBufferAttribute(fireCenters, 3).setUsage(THREE.DynamicDrawUsage));
+  fireGeo.setAttribute('shape', new THREE.InstancedBufferAttribute(fireShapes, 4).setUsage(THREE.DynamicDrawUsage)); fireGeo.instanceCount = 0;
+  const fireMat = mat(new THREE.ShaderMaterial({ transparent: true, depthWrite: false, toneMapped: false,
+    vertexShader: `attribute vec3 center;attribute vec4 shape;varying vec2 vUv;varying vec3 vShape;
+      void main(){vUv=position.xy;vShape=shape.yzw;vec4 p=modelViewMatrix*vec4(center,1.);
+        p.xy+=position.xy*shape.x*vec2(1.,1.35);gl_Position=projectionMatrix*p;}`,
+    fragmentShader: `varying vec2 vUv;varying vec3 vShape;${noise}
+      void main(){float age=vShape.x,seed=vShape.y;vec2 p=vUv;
+        float swirl=n(p*3.5+seed*41.+vec2(age*2.,-age*7.))*.65+n(p*8.-seed*13.-age*4.)*.35;
+        float contour=length(p)+(.5-swirl)*.42;
+        float edge=1.-smoothstep(.5,.98,contour);
+        float heat=clamp((1.-contour)*1.35+swirl*.4-age*.55,0.,1.);
+        vec3 color=mix(vec3(1.,.055,.002),vec3(1.,.48,.025),smoothstep(.05,.55,heat));
+        color=mix(color,vec3(1.,.94,.54),smoothstep(.55,.98,heat));
+        gl_FragColor=vec4(color,edge*vShape.z*.88);
+        #include <colorspace_fragment>
+      }` }));
+  const fire = new THREE.Mesh(fireGeo, fireMat); fire.name = 'Meteorstab · aufwallende Feuerexplosion';
+  fire.frustumCulled = false; root.add(fire);
   const puffGeo = geo(new THREE.InstancedBufferGeometry()); puffGeo.setIndex([0,1,2,0,2,3]);
   puffGeo.setAttribute('position', new THREE.Float32BufferAttribute([-1,-1,0,1,-1,0,1,1,0,-1,1,0], 3));
   const centers = new Float32Array(96 * 3), shapes = new Float32Array(96 * 4);
@@ -104,7 +134,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   const sparkMat = mat(new THREE.PointsMaterial({ color: '#ffb347', size: .075, sizeAttenuation: true, transparent: true, opacity: .9, depthWrite: false, toneMapped: false }));
   const sparks = new THREE.Points(sparkGeo, sparkMat); sparks.frustumCulled = false; root.add(sparks);
   const embers = Array.from({ length: 96 }, () => ({ age: 99, life: .8, position: new THREE.Vector3(), velocity: new THREE.Vector3() }));
-  const transform = new THREE.Object3D(), lastPosition = new THREE.Vector3();
+  const transform = new THREE.Object3D(), instance = new THREE.Matrix4(), lastPosition = new THREE.Vector3();
   let puffCursor = 0, emberCursor = 0, emission = 0, flying = false, blast = null, diameter = 0, disposed = false;
   const visible = p => !isVisible || isVisible(p);
   function puff(position, size, vx = 0, vy = .9, vz = 0) {
@@ -130,10 +160,12 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     let count = 0;
     for (const f of items) {
       if (!f.active || !visible(f.position)) continue;
-      transform.position.copy(f.position); transform.rotation.set(f.age * 6, f.age * 8, f.age * 3); transform.scale.setScalar(1);
-      transform.updateMatrix(); chips.setMatrixAt(count++, transform.matrix);
+      transform.position.copy(f.position); transform.rotation.set(f.age * (f.spin?.x ?? 6), f.age * (f.spin?.y ?? 8), f.age * (f.spin?.z ?? 3)); transform.scale.setScalar((f.radius ?? rules.fragmentRadius) * 2);
+      transform.updateMatrix();
+      for (const chip of chips) chip.mesh.setMatrixAt(count, instance.multiplyMatrices(transform.matrix, chip.local));
+      count++;
     }
-    chips.count = count; chips.instanceMatrix.needsUpdate = true;
+    for (const chip of chips) { chip.mesh.count = count; chip.mesh.instanceMatrix.needsUpdate = true; }
   }
   function update(dt) {
     if (!(dt > 0) || disposed) return; clock.value += dt;
@@ -163,23 +195,36 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
       blast.age += dt; const t = blast.age, active = visible(blast.center);
       shock.visible = active && t < .75; shock.position.copy(blast.center); shock.position.y += .08;
       shock.scale.setScalar(.1 + .9 * Math.min(1, t / .65)); shock.userData.update(t, Math.max(0, 1 - t / .75));
-      flash.visible = active && t < .35; flash.position.copy(blast.center); flash.position.y += .3;
+      flash.visible = active && t < .22; flash.position.copy(blast.center); flash.position.y += .3;
       flash.scale.setScalar(.4 + Math.min(1, t / .2) * rules.radius * .7); flash.scale.y *= .38;
-      flashMat.opacity = Math.max(0, 1 - t / .35) * .65;
+      flashMat.opacity = Math.max(0, 1 - t / .22) * .4;
+      let fireCount = 0;
+      for (let i = 0; i < METEOR_VISUAL_BUDGET.fire; i++) {
+        const delay = random(i, 24.1) * .12, age = (t - delay) / (.65 + random(i, 33.7) * .35);
+        if (!active || age < 0 || age >= 1) continue;
+        const angle = i * 2.399963, spread = rules.radius * (.18 + random(i, 12.9) * .42) * Math.sin(age * Math.PI * .65);
+        fireCenters.set([blast.center.x + Math.cos(angle) * spread,
+          blast.center.y + .35 + age * (1.2 + random(i, 7.9) * 1.8), blast.center.z + Math.sin(angle) * spread], fireCount * 3);
+        const size = (.45 + random(i, 18.7) * .55) * Math.sin(Math.PI * age) ** .4;
+        fireShapes.set([size, age, random(i, 44.3), Math.min(1, age * 12) * (1-age) ** .65], fireCount * 4);
+        fireCount++;
+      }
+      fireGeo.instanceCount = fireCount;
+      fireGeo.attributes.center.needsUpdate = fireGeo.attributes.shape.needsUpdate = true;
     }
   }
   function reset() {
     flying = false; blast = null; emission = diameter = 0; clock.value = 0;
-    body.visible = shock.visible = flash.visible = false; chips.count = 0;
+    body.visible = shock.visible = flash.visible = false; for (const chip of chips) chip.mesh.count = 0; fireGeo.instanceCount = 0;
     for (const p of [...puffs, ...embers]) p.age = 99;
     sorted.length = 0; puffGeo.instanceCount = 0; sparkGeo.setDrawRange(0, 0);
   }
   return { flight, impact, fragments, update, reset,
     get telemetry() { return { bodyVisible: body.visible, model: prototype ? 'uploaded' : 'procedural-fallback',
       source: prototype?.userData?.source ?? null, diameter,
-      puffs: puffGeo.instanceCount, embers: sparkGeo.drawRange.count, fragments: chips.count,
-      shock: shock.visible, flash: flash.visible, draws: (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + Number(chips.count > 0) + Number(shock.visible) + Number(flash.visible) }; },
-    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); chips.dispose();
+      puffs: puffGeo.instanceCount, embers: sparkGeo.drawRange.count, fragments: chips[0]?.mesh.count ?? 0, fragmentModel: prototype ? 'uploaded' : 'procedural-fallback', fire: fireGeo.instanceCount,
+      shock: shock.visible, flash: flash.visible, draws: (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
+    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); for (const chip of chips) chip.mesh.dispose();
       for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); },
   };
 }

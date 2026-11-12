@@ -6,16 +6,16 @@ import { createHash } from 'node:crypto';
 import { createCombat } from '../src/combat.js';
 import { createMeteorSpell, METEOR_RULES as rules, meteorDiameter } from '../src/meteor-spell.js';
 import { createMeteorVisuals, METEOR_VISUAL_BUDGET } from '../src/meteor-visuals.js';
-import { SPECIAL_RULES } from '../src/special-weapons.js';
+import { HOURGLASS_RULES } from '../src/hourglass-spell.js';
 import { makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { validateWorldmap } from '../src/map/model.js';
 import { getVariantAsset } from '../src/map/asset-catalog.js';
 import { renderWorldmapSvg } from '../src/map/render.js';
 
-function setup(overrides = {}) {
+function setup(overrides = {}, options = {}) {
   const scene = new THREE.Scene(), combat = createCombat(), caster = new THREE.Vector3();
   const world = { heightAt: () => 0, isLand: () => true, isWater: () => false, traceProjectile: () => null, ...overrides };
-  const hits = [], spell = createMeteorSpell(scene, world, combat, 'player', hit => hits.push(hit));
+  const hits = [], spell = createMeteorSpell(scene, world, combat, 'player', hit => hits.push(hit), null, options);
   const cast = (target = new THREE.Vector3(0, 0, 12)) => {
     assert.equal(spell.beginAim(caster, 0), true); spell.aimAt(caster, target); spell.update(3, caster);
     assert.equal(spell.release({ damage: 24 }), true);
@@ -23,20 +23,20 @@ function setup(overrides = {}) {
   return { scene, combat, caster, world, hits, spell, cast };
 }
 
-test('meteor grows continuously on a high arc and uses exactly the poison area radius', () => {
+test('meteor grows continuously on a high arc and stays person-sized and uses the hourglass area radius', () => {
   const { spell, caster, cast } = setup(); cast();
-  assert.equal(rules.radius, SPECIAL_RULES.cloudRadius);
+  assert.equal(rules.radius, HOURGLASS_RULES.radius);
   assert.equal(spell.telemetry.flight.diameter, rules.startDiameter);
   const duration = spell.telemetry.flight.duration;
   spell.update(duration / 2, caster);
   const mid = spell.telemetry.flight;
-  assert.ok(mid.position.y > 8); assert.ok(mid.diameter > 2 && mid.diameter < 3);
+  assert.ok(mid.position.y > 8); assert.ok(mid.diameter > 1 && mid.diameter < 1.2);
   spell.update(duration * .35, caster);
   assert.ok(spell.telemetry.flight.diameter > mid.diameter);
   assert.ok(spell.telemetry.flight.position.y < mid.position.y);
   const paused = spell.telemetry; spell.update(0, caster); assert.deepEqual(spell.telemetry, paused);
   spell.update(duration, caster); assert.equal(spell.telemetry.phase, 'impact');
-  assert.equal(meteorDiameter(1), 4.2); assert.equal(meteorDiameter(-1), .45);
+  assert.equal(meteorDiameter(1), 1.75); assert.equal(meteorDiameter(-1), .45);
   spell.dispose();
 });
 
@@ -76,7 +76,7 @@ test('meteor collision radius grows and actual arc clears a low prop instead of 
     return null;
   } });
   cast(); spell.update(spell.telemetry.flight.duration + .01, caster);
-  assert.ok(Math.abs(spell.telemetry.center.z-12)<.01); assert.ok(largestRadius>2);
+  assert.ok(Math.abs(spell.telemetry.center.z-12)<.01); assert.ok(largestRadius>.85 && largestRadius<=.875);
   spell.dispose();
 });
 
@@ -129,4 +129,56 @@ test('meteor archive and extracted original remain pinned alongside the bounded 
   assert.deepEqual(manifest.sources.map(s => s.path).sort(), ['assets/inbox/Meteor Projektil.glb', 'assets/inbox/Meteor Projektil.rar']);
   for (const source of manifest.sources) assert.equal(createHash('sha256').update(readFileSync(source.path)).digest('hex'), source.sha256);
   for (const file of manifest.files) assert.equal(createHash('sha256').update(readFileSync(root + file.path)).digest('hex'), file.sha256);
+});
+
+
+test('fragment scatter varies per cast, has unequal trajectories and bounces only once', () => {
+  let seed = 1234;
+  const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  const { spell, caster, cast } = setup({}, { random });
+  cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
+  const first = spell.telemetry.fragmentStates;
+  assert.equal(first.length, 6);
+  assert.equal(new Set(first.map(f => f.velocity.y)).size, 6);
+  assert.equal(new Set(first.map(f => f.diameter)).size, 6);
+  assert.ok(first.every(f => f.diameter >= .24 && f.diameter <= .448));
+  let bounced = false;
+  for (let i=0;i<80;i++) {
+    spell.update(.02, caster);
+    bounced ||= spell.telemetry.fragmentStates.some(f => f.active && f.bounces === 1);
+    assert.ok(spell.telemetry.fragmentStates.every(f => f.bounces <= 2));
+  }
+  assert.ok(bounced, 'at least one shard visibly rebounds from the ground');
+  assert.equal(spell.telemetry.fragments, 0);
+  spell.update(3, caster); cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
+  assert.notDeepEqual(spell.telemetry.fragmentStates, first);
+  spell.dispose();
+});
+
+test('smaller blast leaves targets outside the hourglass radius untouched', () => {
+  const { spell, combat, caster, cast } = setup();
+  const outside = combat.addTarget({ id:'outside', position:new THREE.Vector3(4,0,12), radius:.1 });
+  cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
+  assert.equal(outside.health,100); spell.dispose();
+});
+
+test('mini meteors reuse uploaded geometry and lava material; fire blooms and cleans up', () => {
+  const scene = new THREE.Scene(), geometry = new THREE.IcosahedronGeometry(.5), texture = new THREE.Texture();
+  const material = new THREE.MeshStandardMaterial({ map:texture });
+  const prototype = new THREE.Group(); prototype.add(new THREE.Mesh(geometry,material));
+  let sharedDisposals = 0;
+  for (const resource of [geometry,material,texture]) resource.addEventListener('dispose',()=>sharedDisposals++);
+  const v = createMeteorVisuals(scene,rules,{prototype});
+  v.impact(new THREE.Vector3());
+  v.fragments([{active:true,position:new THREE.Vector3(1,.5,0),age:.2,radius:.16,spin:new THREE.Vector3(3,4,5)}]);
+  v.update(.2);
+  const chip = scene.getObjectByName('Meteorstab · kleine Meteorsplitter');
+  assert.equal(chip.geometry,geometry); assert.equal(chip.material.map,texture); assert.equal(chip.material.emissiveMap,texture);
+  assert.equal(v.telemetry.fragments,1); assert.equal(v.telemetry.fragmentModel,'uploaded');
+  assert.ok(v.telemetry.fire > 0 && v.telemetry.fire <= METEOR_VISUAL_BUDGET.fire);
+  const before=v.telemetry; v.update(0); assert.deepEqual(v.telemetry,before);
+  v.update(1); assert.equal(v.telemetry.fire,0);
+  v.reset(); assert.equal(v.telemetry.draws,0);
+  v.dispose(); assert.equal(sharedDisposals,0);
+  geometry.dispose(); material.dispose(); texture.dispose();
 });

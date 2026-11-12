@@ -5,11 +5,14 @@ Angriff gedrückt halten, Ziel wählen und loslassen. Nach drei Sekunden ist
 die volle Reichweite von 20 Metern verfügbar. Maus/Tastatur und Touch
 verwenden dieselbe Zielsteuerung wie die anderen Flächenstäbe.
 
-Der Meteor wächst von 0,45 auf 4,2 Meter Durchmesser. Er fliegt in einem
+Der Meteor wächst von 0,45 auf 1,75 Meter Durchmesser. Er fliegt in einem
 hohen Bogen (acht Meter zusätzliche Höhe) und hinterlässt heiße Rauchwolken
 und Funken. Beim Einschlag folgen eine kurze Druckwelle, Rauch und sechs
-brennende Splitter. Die Einschlagsfläche hat denselben Radius wie die
-Giftwolke: 4,8 Meter.
+brennende Splitter. Die Einschlagsfläche hat denselben Radius wie der
+Sanduhrenstab: 3,2 Meter. Eine aufwallende Feuerexplosion mit hellem Kern geht
+in Rauch über. Die Splitter verwenden das verkleinerte Meteormodell samt
+Lavatextur; Richtung, Geschwindigkeit, Sprunghöhe, Drehung und Größe variieren
+bei jedem Einschlag. Am Boden prallen sie höchstens einmal kurz ab.
 
 Vorläufige Spielwerte: 24 Basisschaden für die Explosion, höchstens ein
 zusätzlicher Splittertreffer pro Gegner mit 12,5 Prozent des Explosionsschadens,
@@ -55,5 +58,6 @@ eine eigene Übungswiesen-Testkarte.
   tatsächlich erzeugter Editor und Spiel, importierter Stab, Maus/Touch,
   Flugphasen, Einschlag, Schaden und vollständiger Effektabbau.
 
-Rauch und Funken verwenden feste Pools mit jeweils 96 Einträgen. Es gibt
+Rauch und Funken verwenden feste Pools mit jeweils 96 Einträgen; die Feuerexplosion verwendet 18 gebündelte Flammenwolken.
+Die sechs Meteorsplitter teilen Geometrie und Material mit dem Hauptmodell. Es gibt
 keine zusätzlichen dynamischen Lichter oder Nachbearbeitungspässe.

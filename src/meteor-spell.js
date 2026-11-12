@@ -1,14 +1,14 @@
 import * as THREE from 'three';
 import { STAFF_THROW_RANGE, STAFF_CHARGE_SECONDS, chargedStaffRange } from './staff-charge.js';
-import { SPECIAL_RULES } from './special-weapons.js';
+import { HOURGLASS_RULES } from './hourglass-spell.js';
 import { traceRangedProjectile } from './projectile-collision.js';
 import { createStaffAimRing } from './staff-aim.js';
 import { createMeteorVisuals } from './meteor-visuals.js';
 
 export const METEOR_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
-  radius: SPECIAL_RULES.cloudRadius, arcHeight: 8, speed: 9, minFlight: 1.25,
-  startDiameter: .45, endDiameter: 4.2, aftermath: 2.8,
-  fragments: 6, fragmentRadius: .16, fragmentSpeed: 8, fragmentLife: .9,
+  radius: HOURGLASS_RULES.radius, arcHeight: 8, speed: 9, minFlight: 1.25,
+  startDiameter: .45, endDiameter: 1.75, aftermath: 2.8,
+  fragments: 6, fragmentRadius: .16, fragmentSpeed: 5.5, fragmentLife: 1.5,
   fragmentDamageRatio: .125, burnSeconds: 3, burnDps: 2 });
 
 export function meteorDiameter(progress) {
@@ -18,7 +18,7 @@ export function meteorDiameter(progress) {
 
 /** One aimed meteor per caster, swept along its growing 3D hull. All animation
  * and damage share simulation time; pausing, switching and reset cannot duplicate hits. */
-export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null, { prototype = null } = {}) {
+export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null, { prototype = null, random = Math.random } = {}) {
   const r = METEOR_RULES, visible = p => !isVisible || isVisible(p), ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
   const aimRing = createStaffAimRing(r.radius, { color: '#ffb15a' });
   const rangeRing = createStaffAimRing(r.range, { range: true }); scene.add(aimRing, rangeRing);
@@ -66,10 +66,14 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
       if (hit(target, { ...payload, sourceId: ownerId, type: 'meteor' })) blastHits++;
     }
     fragmentHits.clear();
+    const rotation = random() * Math.PI * 2;
     fragments = Array.from({ length: r.fragments }, (_, i) => {
-      const angle = i * Math.PI * 2 / r.fragments;
+      const angle = rotation + (i + (random() - .5) * .85) * Math.PI * 2 / r.fragments;
+      const speed = r.fragmentSpeed * (.55 + random() * .6), radius = r.fragmentRadius * (.75 + random() * .65);
+      const spin = new THREE.Vector3((random() - .5) * 15, (random() - .5) * 18, (random() - .5) * 15);
       return { position: center.clone().add(new THREE.Vector3(Math.cos(angle) * .25, .55, Math.sin(angle) * .25)),
-        velocity: new THREE.Vector3(Math.cos(angle) * r.fragmentSpeed, 3.1 + i % 2 * .4, Math.sin(angle) * r.fragmentSpeed), age: 0, active: true, payload };
+        velocity: new THREE.Vector3(Math.cos(angle) * speed, 2.4 + random() * 2.5, Math.sin(angle) * speed),
+        radius, spin, bounce: .4 + random() * .2, bounces: 0, age: 0, active: true, payload };
     });
     visuals.impact(center);
   }
@@ -91,8 +95,8 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
     for (const f of fragments) {
       if (!f.active) continue;
       start.copy(f.position); end.copy(start).addScaledVector(f.velocity, dt); end.y -= 5 * dt * dt;
-      const wall = traceRangedProjectile(world, start, end, r.fragmentRadius);
-      const target = combat?.traceSegment(start, end, r.fragmentRadius, ownerId, fragmentHits);
+      const wall = traceRangedProjectile(world, start, end, f.radius);
+      const target = combat?.traceSegment(start, end, f.radius, ownerId, fragmentHits);
       if (target && (!wall || target.t < (wall.t ?? 0) - .0001)) {
         hit(target.target, { damage: f.payload.damage * r.fragmentDamageRatio, sourceId: ownerId, type: 'meteor-fragment',
           burn: { duration: r.burnSeconds, damagePerSecond: r.burnDps } });
@@ -100,7 +104,14 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
       } else if (wall?.point) { f.active = false; f.position.copy(wall.point); }
       else f.position.copy(end);
       f.velocity.y -= 10 * dt; f.age += dt;
-      if (f.age >= r.fragmentLife || f.position.y <= ground(f.position) + r.fragmentRadius) f.active = false;
+      if (f.active && f.position.y <= ground(f.position) + f.radius) {
+        f.position.y = ground(f.position) + f.radius;
+        if (f.bounces++ === 0 && !world?.isWater?.(f.position.x, f.position.z)) {
+          f.velocity.y = Math.abs(f.velocity.y) * f.bounce;
+          f.velocity.x *= .55; f.velocity.z *= .55;
+        } else f.active = false;
+      }
+      if (f.age >= r.fragmentLife) f.active = false;
     }
   }
   function update(dt, position) {
@@ -140,7 +151,8 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
       radius: r.radius, age: flight?.age ?? impact?.age ?? 0,
       center: flight ? { x: flight.target.x, y: ground(flight.target), z: flight.target.z } : impact ? { ...impact.center } : null,
       flight: flight ? { position: { ...flight.position }, duration: flight.duration, progress: flight.age / flight.duration, diameter: flight.diameter, arcHeight: r.arcHeight } : null,
-      fragments: fragments.filter(f => f.active).length, fragmentHits: fragmentHits.size, visuals: visuals.telemetry }; },
+      fragments: fragments.filter(f => f.active).length,
+      fragmentStates: fragments.map(f => ({ position: { ...f.position }, velocity: { ...f.velocity }, diameter: f.radius * 2, bounces: f.bounces, active: f.active })), fragmentHits: fragmentHits.size, visuals: visuals.telemetry }; },
     dispose() { if (disposed) return; disposed = true; reset(); visuals.dispose();
       for (const mesh of [aimRing, rangeRing]) { mesh.removeFromParent(); mesh.geometry.dispose(); mesh.material.dispose(); } },
   };
