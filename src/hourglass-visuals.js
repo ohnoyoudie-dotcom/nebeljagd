@@ -182,6 +182,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       draws: root.visible ? 1 + 5 * Number(sand.visible) : 0 }; },
     dispose() {
       if (disposed) return; disposed = true; root.removeFromParent();
+      shards.dispose(); // Instanced matrices have their own GPU buffers.
       for (const mesh of [boundary, ground, ...currents, sand, shards]) { mesh.geometry.dispose(); mesh.material.dispose(); }
     },
   };

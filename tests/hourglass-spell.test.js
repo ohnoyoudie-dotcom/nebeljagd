@@ -23,8 +23,9 @@ test('the sand sea opens in layers, has real height and recycles every buffer th
  v.show(center,5.25,true);assert.ok(v.telemetry.opacity<.3);assert.equal(sand.geometry.attributes.position.array,positions);assert.equal(shards.instanceMatrix.array,matrices);
  assert.ok(Math.max(...positions.filter((_,i)=>i%3===1))<.3,'sand falls to the floor');
  v.show(center,5.45,true);assert.equal(v.telemetry.particles,0);assert.equal(shards.visible,false);
- let released=0;root.children.forEach(m=>{m.geometry.addEventListener('dispose',()=>released++);m.material.addEventListener('dispose',()=>released++);});
- v.dispose();v.dispose();assert.equal(released,12);assert.equal(scene.children.length,0);
+ let released=0,instancesReleased=0;shards.addEventListener('dispose',()=>instancesReleased++);
+ root.children.forEach(m=>{m.geometry.addEventListener('dispose',()=>released++);m.material.addEventListener('dispose',()=>released++);});
+ v.dispose();v.dispose();assert.equal(released,12);assert.equal(instancesReleased,1);assert.equal(scene.children.length,0);
 });
 
 test('sand follows sloped terrain with cached height samples, including its warning boundary',()=>{
