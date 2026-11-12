@@ -115,6 +115,7 @@ with sync_playwright() as pw:
             assert cloud['visuals']['cloudShape'] == 'reference-thunderhead'
             assert cloud['visuals']['artwork'] == 'thunder-reference-v1'
             assert cloud['visuals']['boltStyle'] == 'hierarchical-thunderbolts'
+            assert cloud['visuals']['finish'] == 'wind-frayed-cloud-grounded-strikes'
             assert cloud['visuals']['draws'] <= 8 and cloud['visuals']['impacts'] > 0
             assert current['combat']['shotsFired'] == 1 and current['combat']['effects']['lightningProjectiles'] == 0
             victim = next(a for a in current['practiceActors'] if a['id'] == 'practice-2')

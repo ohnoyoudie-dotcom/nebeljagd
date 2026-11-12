@@ -16,9 +16,13 @@ Artwork aus der freigegebenen Gewitter-Referenz: dunkle Wolkentiefen, silberblau
 Kanten, feine Dampffahnen und inneres Wetterleuchten. Zwei zur Kamera gerichtete
 Ebenen animieren das etwa 20 Prozent größere Artwork mit unterschiedlich
 strömenden Dampfrändern, sanftem Aufwallen und wanderndem Wetterleuchten.
-24 Abschnitte bilden den hellen Hauptblitz, fünf feinere Nebenäste verzweigen
-sich daraus. Drei kurze Rückentladungen pro Einschlag bleiben kräftig; dazwischen
-erlischt der Blitz vollständig. Bodenentladungen und Funken markieren die Treffer.
+24 Abschnitte bilden den hellen Hauptblitz mit wechselnder Dicke und
+unregelmäßigen Knicken. Fünf feinere Nebenäste setzen an unterschiedlichen
+Stellen an und variieren in Länge, Richtung und Stärke. Drei kurze Rückentladungen pro Einschlag bleiben kräftig; dazwischen
+erlischt der Blitz vollständig. Auslaufende Bodenentladungen, flach wegsprühende Funken und kurze erdige
+Staubstöße markieren die Treffer. Ein weicher, leicht bewegter Schatten verbindet
+die Wolke mit dem Boden. Nur der aktive Flächenrand ist dezenter; der normale
+Zielkreis beim Zielen bleibt unverändert.
 Bereits sichtbare Figuren erhalten weiche Aussparungen in der Wolke.
 
 Nach 0,25 s Öffnung dauert das Gewitter **3 s**, gefolgt von 0,25 s Ausblenden.
@@ -39,9 +43,9 @@ ein. Neustart entfernt das Feld und alle Blitze.
 
 Das einmal geladene 768×768-WebP mit Alpha benötigt rund 79 KiB komprimiert
 und 3 MiB einschließlich Mipmaps im GPU-Speicher. Es wird offline ins Spiel
-eingebettet und über alle Einsätze geteilt. Die Wolke benötigt vier Dreiecke;
-der gesamte Effekt sechs Zeichenschritte mit höchstens 24 sichtbaren Blitzen
-und 144 gepoolten Funken. Keine dynamischen Lichtquellen oder Nachbearbeitung.
+eingebettet und über alle Einsätze geteilt. Die Wolke benötigt 322 Dreiecke, damit ihre äußeren Dunstfetzen lokal
+strömen können; der gesamte Effekt sieben Zeichenschritte mit höchstens 24 sichtbaren Blitzen
+und 144 gepoolten Funken sowie 24 kurzlebigen Staubstößen. Keine dynamischen Lichtquellen oder Nachbearbeitung.
 Quelle, Generierungsprompt, Hashes und Budgetprüfung liegen unter
 `assets/effects/thunder-reference/`.
 
