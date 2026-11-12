@@ -26,7 +26,7 @@ Der Code des Branches `work` enthält u. a. `src/loot-tiers.js`, `src/weapons.js
 |---:|---|---|
 | 5 | **Gravitationsstab** | Zielbereich zieht Gegner begrenzt zur Mitte; danach eine Explosion. Gegner können dagegen anlaufen oder mit verfügbarer Rolle entkommen. Kein oder sehr wenig Schaden beim Sog, Hauptschaden beim Kollaps. |
 | 6 | **Dornenstab** | Markierbare Stelle wie beim Giftstab; Dornen wachsen aus dem Boden. Man kann hindurchlaufen, wird aber langsamer und erleidet etwas Schaden. Keine undurchdringliche Dornenwand. |
-| 7 | **Sanduhrstab** | Zeitsiegel bricht auf; je länger Gegner im Feld bleiben, desto langsamer bewegen sie sich. **Kein vollständiges Einfrieren**; Effekt wird bei Verlassen beendet/abgebaut. |
+| 7 | **Sanduhrstab** | **Zielfläche, kein Projektil:** sandiger Warnring, danach kreisende Sandbahnen. Je länger Gegner darin bleiben, desto langsamer bewegen sie sich. **Kein vollständiges Einfrieren**, kein Sog; Körner zerfallen und setzen sich beim Ausklingen. Spielbarer Prototyp und vorläufige Werte: [sanduhrstab.md](sanduhrstab.md). |
 | 8 | **Sonnenstab** | Sanftes Leuchten kündigt die Fläche an; nach Verzögerung trifft ein Lichtstrahl von oben, wird deutlich breiter, verursacht Schaden über Zeit und deckt Gegner für einige Sekunden auf, auch im Gras. Ersetzt die frühere Sternenstab-Idee. |
 | 9 | **Rabenstab** | Direkt zielsuchender Schattenrabe; begrenzte Reichweite, Lebensdauer und Wendigkeit; Wände blockieren ihn; ausweichbar. Nicht unfehlbar. |
 | 10 | **Erdbrecherstab** | Boden reißt entlang einer Linie in Blickrichtung auf; Felszacken kommen nach Vorwarnung hervor, treffen Gegner. |

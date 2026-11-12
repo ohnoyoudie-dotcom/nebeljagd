@@ -1,3 +1,5 @@
+import hourglassStaffUrl from '../assets/imported/tripo-hourglass-staff/runtime/hourglass-staff.glb?url&inline';
+import hourglassStaffInspection from '../assets/imported/tripo-hourglass-staff/inspections/hourglass-staff.json' with { type: 'json' };
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import swordUrl from '../assets/imported/tripo-weapons/runtime/sword.glb?url&inline';
@@ -19,6 +21,7 @@ import lightningStaffUrl from '../assets/imported/tripo-lightning-staff/runtime/
 import lightningStaffInspection from '../assets/imported/tripo-lightning-staff/inspections/lightning-staff.json' with { type: 'json' };
 
 const SOURCES = {
+  'kit-tripo-hourglass-staff': { url: hourglassStaffUrl, name: 'Sanduhrstab · Tripo', tip: hourglassStaffInspection.normalization.tipPoint, source: 'assets/inbox/Sanduhrenstab.glb' },
   'kit-tripo-lightning-staff': { url: lightningStaffUrl, name: 'Blitzstab · Tripo', tip: lightningStaffInspection.normalization.tipPoint,
     source: 'assets/inbox/fantasy thunder staff 3d model.glb' },
   'kit-tripo-sword': { url: swordUrl, name: 'Schwert · Tripo' },

@@ -27,7 +27,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   const aim = root('Gravitationsstab · Zielkreis');
   const range = root('Gravitationsstab · wachsende Reichweite');
   const field = root('Gravitationsfeld · Raumwirbel und Kollaps');
-  const aimMesh = createStaffAimRing(rules.radius);
+  const aimMesh = createStaffAimRing(rules.radius, { color: '#c393ff' });
   geo(aimMesh.geometry); mat(aimMesh.material); aimMesh.visible = true; aim.add(aimMesh);
   const rangeMesh = createStaffAimRing(rules.range, { range: true });
   geo(rangeMesh.geometry); mat(rangeMesh.material); rangeMesh.visible = true; range.add(rangeMesh);
@@ -131,6 +131,7 @@ export function createGravityVisuals(scene, rules, { heightAt = null, textures =
   let burstRadius = 0, burstOpacity = 0;
   let phase = 'idle', disposed = false;
   function showAim(target, center, radius, age, visible) {
+    aimMesh.userData.update(age);
     aim.position.set(target.x, target.y + .055, target.z); aim.visible = visible;
     range.position.set(center.x, center.y + .055, center.z); range.visible = visible;
     rangeMesh.scale.setScalar(Math.max(.001, radius / rules.range));

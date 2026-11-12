@@ -5,6 +5,8 @@ import { WEAPON_TYPES, STAFF_TYPES, weaponStats, rarityVisual } from './loot-tie
 import { createSpellEffects } from './spell-effects.js';
 import { createSpecialWeapons } from './special-weapons.js';
 import { createGravitySpell, GRAVITY_RULES } from './gravity-spell.js';
+import { createHourglassSpell, HOURGLASS_RULES } from './hourglass-spell.js';
+import { createStormSpell, STORM_RULES } from './storm-spell.js';
 import { attachGravityStaffAccent, animateGravityStaffAccent } from './gravity-staff-accent.js';
 import { createLootGlow } from './loot-glow.js';
 import { createSwordEffects } from './sword-effects.js';
@@ -19,11 +21,12 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-moon-staff': 'moonStaff',
   'kit-tripo-star-staff': 'starStaff',
   'kit-tripo-lightning-staff': 'lightningStaff',
+  'kit-tripo-hourglass-staff': 'hourglassStaff',
   'kit-tripo-gravity-staff': 'gravityStaff',
   'kit-tripo-ornate-bow': 'bow',
 });
 export const DEFAULT_WEAPON_VARIANTS = Object.freeze({ bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
-  poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff', gravityStaff: 'kit-tripo-gravity-staff', lightningStaff: 'kit-tripo-lightning-staff' });
+  hourglassStaff: 'kit-tripo-hourglass-staff', poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff', gravityStaff: 'kit-tripo-gravity-staff', lightningStaff: 'kit-tripo-lightning-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
 const WOOD_BOW_DRAW = .18;
 export function resolveWeaponVariant(type, variant) {
@@ -32,7 +35,7 @@ export function resolveWeaponVariant(type, variant) {
 // Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
 export const WEAPON_PRESENTATION_SCALE = Object.freeze({ sword: .8, bow: .88,
-  fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82, gravityStaff: .82, lightningStaff: .82 });
+  hourglassStaff: .82, fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82, gravityStaff: .82, lightningStaff: .82 });
 export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
 export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * (type === 'bow' ? 1.18 : .88)])));
 
@@ -104,7 +107,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const moonCore = material('#eee6ff', { emissive: '#ac8bff', emissiveIntensity: 1.5 });
   const starCore = material('#fff0b8', { emissive: '#6ebfe3', emissiveIntensity: 1.4 });
   const gravityCore = material('#ba86ff', { emissive: '#743bc7', emissiveIntensity: 1.6 });
-  const staffCores = { fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore, gravityStaff: gravityCore, lightningStaff: material('#fff4cb', { emissive: '#68baff', emissiveIntensity: 1.2 }) };
+  const staffCores = { hourglassStaff: material('#ffd177', { emissive: '#af7623', emissiveIntensity: .6 }), fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore, gravityStaff: gravityCore, lightningStaff: material('#fff4cb', { emissive: '#68baff', emissiveIntensity: 1.2 }) };
   function makeStaff(type) {
     const group = new THREE.Group();
     group.name = weaponStats(type).label;
@@ -570,8 +573,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
 
   function attack(position, direction) {
     if (!equippedType || cooldown > 0 || specials.moonBusy || !position || characterGroup.userData.rolling) return null;
-    if (equippedType === 'poisonStaff' || equippedType === 'gravityStaff') {
-      const controller = equippedType === 'gravityStaff' ? gravity : specials;
+    if (equippedType === 'poisonStaff' || equippedType === 'gravityStaff' || equippedType === 'hourglassStaff' || equippedType === 'lightningStaff') {
+      const controller = equippedType === 'hourglassStaff' ? hourglass : equippedType === 'lightningStaff' ? storm : equippedType === 'gravityStaff' ? gravity : specials;
       if (!controller.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
@@ -782,19 +785,31 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const gravity = createGravitySpell(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
   }, isVisible, { effects: spellEffects, textures: gravityTextures });
+  const hourglass = createHourglassSpell(scene, world, combat, ownerId, isVisible);
+  const storm = createStormSpell(scene, world, combat, ownerId, result => {
+    lastDamage = result; damageHits++;
+  }, isVisible);
   const staffTip = new THREE.Vector3();
   function cancelAim() {
-    specials.cancelAim(); gravity.cancelAim();
+    specials.cancelAim(); gravity.cancelAim(); storm.cancelAim(); hourglass.cancelAim();
   }
   function releaseAttack(position) {
     const isPoison = equippedType === 'poisonStaff';
+    const isHourglass = equippedType === 'hourglassStaff';
     const isGravity = equippedType === 'gravityStaff';
-    const controller = isGravity ? gravity : specials;
-    if ((!isPoison && !isGravity) || !controller.aiming || characterGroup.userData.rolling) { cancelAim(); return false; }
+    const isStorm = equippedType === 'lightningStaff';
+    const controller = isHourglass ? hourglass : isStorm ? storm : isGravity ? gravity : specials;
+    if ((!isPoison && !isGravity && !isHourglass && !isStorm) || !controller.aiming || characterGroup.userData.rolling) { cancelAim(); return false; }
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
     getStaffTip(staffTip);
-    if (isGravity) {
+    if (isHourglass) {
+      if (!hourglass.release()) { cooldown = 0; attackPhase = 'idle'; return false; }
+      spellEffects.fire('hourglassStaff', staffTip, characterGroup.rotation.y);
+    } else if (isStorm) {
+      storm.release(equippedItem);
+      spellEffects.fire('lightningStaff', staffTip, characterGroup.rotation.y);
+    } else if (isGravity) {
       const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, staffTip, .16);
       gravity.release(equippedItem, staffTip, blocked);
       spellEffects.fire('gravityStaff', staffTip, characterGroup.rotation.y);
@@ -882,7 +897,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     swordEffects.update(delta);
     if (characterGroup.userData.rolling) cancelAim();
     specials.update(delta, position, time);
-    gravity.update(delta, position, time);
+    gravity.update(delta, position, time); hourglass.update(delta, position);
+    storm.update(delta, position);
     for (const item of items) {
       if (item.collected) continue;
       const wave = Math.sin(time * 2.2 + item.phase);
@@ -926,7 +942,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     if (heldSword.visible) measureSwordBlade();
     swordEffects.sample({ base: swordBase, tip: swordTip, opacity,
       active: heldSword.visible && attackAge >= 0 && swordProgress >= SWORD_STRIKE_START && swordProgress <= SWORD_STRIKE_END });
-    if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
+    if (hourglass.aiming) spellEffects.channel('hourglassStaff', getStaffTip(staffTip), characterGroup.rotation.y, hourglass.telemetry.aimRange.heldSeconds / 3);
+    else if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
       spellEffects.channel(equippedType, getStaffTip(staffTip), characterGroup.rotation.y, attackAge / .25);
     } else spellEffects.channel(null);
     if (equippedType?.endsWith('Staff') && attackAge >= .25 && !shotReleased) {
@@ -1032,7 +1049,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
     spellEffects.reset();
-    specials.reset(); gravity.reset();
+    specials.reset(); gravity.reset(); hourglass.reset(); storm.reset();
     damageHits = 0; lastDamage = null;
     for (const arrow of arrows) { arrow.life = 0; arrow.mode = 'inactive'; arrow.group.visible = false; }
     impactParticles.forEach((particle, index) => {
@@ -1048,7 +1065,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     disposed = true;
     reset({ reroll: false });
     spellEffects.dispose();
-    specials.dispose(); gravity.dispose();
+    specials.dispose(); gravity.dispose(); hourglass.dispose(); storm.dispose();
     swordEffects.dispose();
     items.forEach(item => item.aura.dispose());
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
@@ -1072,9 +1089,9 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get equipped() { return equippedType; },
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
     get bowHolding() { return false; },
-    get aiming() { return specials.aiming || gravity.aiming; },
-    get aimRange() { return gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
-    get attackCooldown() { return specials.moonBusy || gravity.busy ? Math.max(.05, cooldown) : cooldown; },
+    get aiming() { return specials.aiming || gravity.aiming || hourglass.aiming || storm.aiming; },
+    get aimRange() { return hourglass.aiming ? HOURGLASS_RULES.range : storm.aiming ? STORM_RULES.range : gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
+    get attackCooldown() { return specials.moonBusy || gravity.busy || storm.busy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
         .multiply(heldSword.scale).applyQuaternion(heldSword.quaternion).add(heldSword.position);
@@ -1109,7 +1126,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           remaining: swordComboRemaining },
         swordTrail: swordEffects.inspect(), swordBlade: { base: point(swordBase), tip: point(swordTip) },
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, heldGrip, hands, lastSpellLaunch,
+        effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, storm: storm.telemetry, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,
         staffTip: equippedType?.endsWith('Staff') ? point(getStaffTip(new THREE.Vector3())) : null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
@@ -1131,7 +1148,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     },
     nearest, interact, tryAutoPickup, attack, releaseAttack,
     appendGrassInteractors: target => gravity.appendGrassInteractors(target),
-    aimAt: (position, point) => { specials.aimAt(position, point); gravity.aimAt(position, point); }, cancelAim,
+    aimAt: (position, point) => { specials.aimAt(position, point); gravity.aimAt(position, point); hourglass.aimAt(position, point); storm.aimAt(position, point); }, cancelAim,
     update, reset, addDrop, dispose,
   };
 }

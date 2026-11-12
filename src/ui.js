@@ -19,6 +19,7 @@ const icon = (name, className = '') => {
     iceStaff: '<path d="m5 22 9-14M14 1v12M8 4l12 6M8 10l12-6M11 2l3 2 3-2m-6 10 3-2 3 2"/>',
     poisonStaff: '<path d="m5 22 9-13m-5 6 4 2M14 2c-1 3-5 5-5 8a5 5 0 0 0 10 0c0-3-4-5-5-8Z"/><path d="M12 10h.01M16 10h.01m-4 3 2 1 2-1"/>',
     lightningStaff: '<path d="m4 22 9-14M17 1l-6 9h5l-3 9L23 7h-6l3-6Z"/>',
+    hourglassStaff: '<path d="M7 3h10M7 21h10M8 3v4l8 10v4M16 3v4L8 17v4"/>',
     gravityStaff: '<path d="m4 22 9-14m-4 5 4 2"/><circle cx="16" cy="6" r="4"/><ellipse cx="16" cy="6" rx="7" ry="2" transform="rotate(-25 16 6)"/>',
     moonStaff: '<path d="m5 22 9-13m-5 6 4 2M18 2a6 6 0 1 0 4 9 6 6 0 0 1-4-9Z"/><path d="m8 3 .5 1.5L10 5l-1.5.5L8 7l-.5-1.5L6 5l1.5-.5Z"/>',
     starStaff: '<path d="m5 22 9-12m-5 6 3 2M15 1l1.7 4.6 4.8.3-3.7 3 1.2 4.7-4-2.7-4 2.7 1.2-4.7-3.7-3 4.8-.3Z"/>',
@@ -497,7 +498,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
       const effectDetail = { bow: ' · Drücken zum Schießen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
-        poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz', lightningStaff: ' · Schneller Blitzschuss' }[weaponType] || '';
+        poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz', lightningStaff: ' · Gewitter zielen und loslassen' }[weaponType] || '';
       weaponDetail.textContent = weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
@@ -506,7 +507,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
       const attackLabel = { bow: 'Drücken zum Schießen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
-        poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken', lightningStaff: 'Blitzprojektil abfeuern' }[weaponType];
+        poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken', lightningStaff: 'Halten, Gewitterfläche wählen, loslassen · Blitze betäuben' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
       lastWeaponType = weaponKey;
     }

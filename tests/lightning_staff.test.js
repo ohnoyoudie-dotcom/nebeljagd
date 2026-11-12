@@ -35,23 +35,21 @@ function setup(targets = []) {
   return { weapons, combat, segments };
 }
 
-test('a fast lightning shot sweeps the first victim once, including coarse simulation frames', () => {
-  const { weapons, combat } = setup([{ id: 'first', position: { x: 0, y: 0, z: 4 }, radius: .7, maxHealth: 100 },
-    { id: 'second', position: { x: 0, y: 0, z: 8 }, radius: .7, maxHealth: 100 }]);
-  for (let i = 0; i < 8; i++) weapons.update(.25, i * .25);
-  assert.equal(weapons.telemetry.damageHits, 1);
-  assert.equal(weapons.telemetry.lastDamage.damage, 23);
-  assert.equal(weapons.telemetry.lastDamage.targetId, 'first');
-  assert.equal(weapons.telemetry.effects.emitted.lightningStaff.impacts, 1);
-  weapons.dispose(); combat.dispose?.();
-});
-
-test('the lightning projectile sweeps exactly its 24m range before retiring', () => {
-  const { weapons, segments } = setup();
-  for (let i = 0; i < 8; i++) weapons.update(.25, i * .25);
-  const launch = weapons.telemetry.lastSpellLaunch.position;
-  assert.ok(Math.abs(Math.max(...segments.map(([, b]) => b.z)) - launch.z - 24) < .0001);
-  assert.equal(weapons.telemetry.effects.lightningProjectiles, 0); weapons.dispose();
+test('the uploaded lightning staff charges without firing and releases one storm', () => {
+  const { weapons } = setup();
+  const origin = new THREE.Vector3();
+  weapons.aimAt(origin, { x: 0, z: 50 });
+  for (let i = 0; i < 12; i++) weapons.update(.25, i * .25);
+  assert.equal(weapons.aiming, true);
+  assert.equal(weapons.telemetry.storm.aimRange.radius, 20);
+  assert.equal(weapons.telemetry.shotsFired, 0);
+  assert.equal(weapons.releaseAttack(origin), true);
+  assert.equal(weapons.releaseAttack(origin), false);
+  assert.equal(weapons.telemetry.storm.center.z, 20);
+  assert.equal(weapons.telemetry.shotsFired, 1);
+  assert.equal(weapons.telemetry.effects.lightningProjectiles, 0);
+  weapons.reset(); assert.equal(weapons.telemetry.storm.active, false);
+  weapons.dispose();
 });
 
 test('lightning effects freeze, respect visibility, reuse buffers and expire on reset', () => {

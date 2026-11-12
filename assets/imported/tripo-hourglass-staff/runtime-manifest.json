@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Sanduhrenstab.glb",
+    "bytes": 66725384,
+    "sha256": "7da82740306403088148b4f1458b888e11a3bd05dce8d249406678cf8c5e9fbd",
+    "triangles": 1926400,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/hourglass-staff.json",
+      "bytes": 2883,
+      "sha256": "76b2c00b68479a5c883f04355e116e84ad105779293d47e6f313b27266b91f94"
+    },
+    {
+      "path": "previews/hourglass-staff-runtime.png",
+      "bytes": 304510,
+      "sha256": "879f23ec6174a6cab1b05ded32801690d07054eb4d6a2a0d71bcb498cbd33f51"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 358,
+      "sha256": "ca9fb7fef10c145e9625671ebcdbadada154856fab10e313ef178928373b9534"
+    },
+    {
+      "path": "runtime/hourglass-staff.glb",
+      "bytes": 247972,
+      "sha256": "9359a3fab8823f06f7ff70cbca39a1466d4860c8026052bf7f66957feb10254a"
+    }
+  ]
+}
