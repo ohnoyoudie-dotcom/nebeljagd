@@ -126,6 +126,8 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein texturierter Sternstab. Verschießt einen geraden Sternenblitz mit funkelnder Lichtspur.', 'tripo-star-moon'),
   tripo('lightningStaff', 'kit-tripo-lightning-staff', 'Blitzstab · Tripo', 'lightning-staff', 'fantasy thunder staff 3d model',
     'Schnelles Blitzprojektil mit verzweigten Lichtbögen und elektrischem Einschlag. Direkter Einzeltreffer; Seltenheit zufällig je Runde.', 'tripo-lightning-staff'),
+  tripo('hourglassStaff', 'kit-tripo-hourglass-staff', 'Sanduhrstab · Tripo', 'hourglass-staff', 'Sanduhrenstab',
+    'Zeitfeld mit kreisendem Sand. Halten, Ziel wählen und loslassen; Gegner werden zunehmend langsamer.', 'tripo-hourglass-staff'),
   tripo('gravityStaff', 'kit-tripo-gravity-staff', 'Gravitationsstab · Tripo', 'gravity-staff', 'fantasy voidstaff 3d model',
     'Violettes Gravitationsfeld: nach kurzer Warnung werden Gegner hineingezogen, bevor eine Explosion folgt.', 'tripo-gravity-staff'),
 ].map(asset => Object.freeze({ ...asset, sourcePaths: Object.freeze(asset.sourcePaths) })));

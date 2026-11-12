@@ -176,7 +176,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
         }
       }
       pivot.position.y = target.alive ? Math.sin(actor.phase * 2) * .025 + actor.gravityResponse * .08 : -.02;
-      actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : pulled ? '#522680' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
+      actor.coat.emissive.set(target.hitFlash > 0 ? '#a9572c' : pulled ? '#522680' : target.timeSlows?.size ? '#76501b' : target.slowRemaining > 0 ? '#1b5b83' : target.poisonRemaining > 0 ? '#2d6b16' : '#000000');
       actor.flames.visible = target.alive && target.burnRemaining > 0;
       actor.frost.visible = target.alive && target.slowRemaining > 0;
       actor.flames.children.forEach((flame, i) => {
@@ -217,6 +217,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
       actor.direction = 1; actor.phase = 0; actor.travelled = 0; actor.gravityResponse = 0;
       actor.grassDirX = actor.axis.x; actor.grassDirZ = actor.axis.z; actor.grassStrength = 0;
       target.health = target.initialHealth; target.burnRemaining = target.burnDamagePerSecond = target.poisonRemaining = target.poisonDamagePerSecond = target.slowRemaining = target.hitFlash = 0; target.slowFactor = 1;
+      target.timeSlows?.clear();
       delete target.poisonSourceId; delete target.gravityVisual;
     }
   }

@@ -200,13 +200,16 @@ test('gravity and poison share ordinary target circles and exactly the same reac
   const poisonTarget = scene.getObjectByName('Giftwolke · Zielbereich');
   const gravityRange = scene.getObjectByName('Gravitationsstab · wachsende Reichweite').children[0];
   const poisonRange = scene.getObjectByName('Giftstab · maximale Reichweite');
-  assert.ok(gravityTarget.geometry.isBufferGeometry && gravityTarget.material.isMeshBasicMaterial);
-  assert.equal(gravityTarget.geometry.type, 'RingGeometry');
-  assert.equal(gravityTarget.geometry.parameters.outerRadius, 4.5, 'target circle marks the actual field');
-  assert.equal(poisonTarget.geometry.parameters.outerRadius, 4.8, 'poison retains its actual cloud radius');
+  assert.ok(gravityTarget.geometry.isBufferGeometry && gravityTarget.material.isShaderMaterial);
+  assert.equal(gravityTarget.material.uniforms.uOpacity.value, 1);
+  assert.equal(gravityTarget.userData.areaRadius, 4.5, 'target circle marks the actual field');
+  assert.equal(poisonTarget.userData.areaRadius, 4.8, 'poison retains its actual cloud radius');
   assert.deepEqual(gravityRange.geometry.parameters, poisonRange.geometry.parameters);
   for (const [g, p] of [[gravityTarget, poisonTarget], [gravityRange, poisonRange]]) {
-    assert.equal(g.material.color.getHex(), p.material.color.getHex());
+    if (g.material.isShaderMaterial) {
+      assert.equal(g.material.fragmentShader, p.material.fragmentShader, 'shared sandy area style');
+      assert.notEqual(g.material.uniforms.uColor.value.getHex(), p.material.uniforms.uColor.value.getHex(), 'spell colours remain distinct');
+    } else assert.equal(g.material.color.getHex(), p.material.color.getHex());
     assert.equal(g.material.opacity, p.material.opacity);
     assert.equal(g.material.depthTest, p.material.depthTest);
     assert.equal(g.renderOrder, p.renderOrder);

@@ -1,0 +1,143 @@
+{
+  "source": {
+    "path": "assets/inbox/Sanduhrenstab.glb",
+    "bytes": 66725384,
+    "sha256": "7da82740306403088148b4f1458b888e11a3bd05dce8d249406678cf8c5e9fbd",
+    "triangles": 1926400,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-hourglass-staff/runtime/hourglass-staff.glb",
+    "bytes": 247972,
+    "sha256": "9359a3fab8823f06f7ff70cbca39a1466d4860c8026052bf7f66957feb10254a",
+    "triangles": 6000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.14162445068359375,
+        -0.119110107421875,
+        0.0
+      ],
+      [
+        0.14162445068359375,
+        0.119110107421875,
+        0.978424072265625
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.031105972826480865,
+      0.1999969482421875,
+      0.014144916087388992
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.01318314764648676,
+      0.9999107122421265,
+      0.0022036407608538866
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999776482582092,
+      -0.0011018449440598488,
+      0.006591720972210169,
+      0.0
+    ],
+    "uniformScale": 1.7393937829069444,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.18020254373550415,
+        -0.3479399085044861,
+        -0.2343674749135971
+      ],
+      [
+        0.31588366627693176,
+        1.352060079574585,
+        0.18084444105625153
+      ]
+    ],
+    "tipPoint": [
+      0.15148834884166718,
+      1.3519796133041382,
+      -0.1224195808172226
+    ],
+    "gltfBounds": [
+      [
+        -0.1804874837398529,
+        -0.34815800189971924,
+        -0.2343500703573227
+      ],
+      [
+        0.3151217997074127,
+        1.3519796133041382,
+        0.1801680624485016
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Sanduhrenstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Sanduhrenstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Sanduhrenstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "hourglass-staff",
+    "length": 1.7,
+    "gripHeight": 0.2,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 6000
+  }
+}

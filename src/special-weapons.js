@@ -73,6 +73,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     aim.target.y = ground(aim.target) + .06;
     targetRing.position.copy(aim.target);
     rangeRing.position.set(position.x, ground(position) + .055, position.z);
+    targetRing.userData.update(aim.age);
     rangeRing.scale.setScalar(Math.max(.001, aim.range / SPECIAL_RULES.poisonRange));
   }
   function beginAim(position, direction) {

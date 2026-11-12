@@ -47,8 +47,8 @@ function attackOnce(instance, seconds = .9) {
   for (let time = 0; time < seconds; time += .04) weapons.update(.04, time, actor.position);
 }
 
-test('all five tiers increase the actual damage dealt for each weapon', () => {
-  for (const type of WEAPON_TYPES) {
+test('all five tiers increase the actual damage dealt for each damaging weapon', () => {
+  for (const type of WEAPON_TYPES.filter(type => weaponStats(type).damage > 0)) {
     let previous = 0;
     for (const rarity of Object.keys(RARITIES)) {
       const instance = setup(type, rarity, { targetZ: type === 'sword' ? 1.6 : 4 });

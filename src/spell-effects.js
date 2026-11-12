@@ -6,6 +6,7 @@ import { createFireballMaterial } from './fireball-material.js';
 const GRAVITY_PROJECTILE_SCALE = .8;
 const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
 const ELEMENTS = {
+  hourglassStaff: { core: '#fff0bd', glow: '#d29d43', spark: '#ffe1a0', edge: '#a46f26' },
   lightningStaff: { core: '#fff5cf', glow: '#58adff', spark: '#bfeaff', edge: '#4b83dc' },
   fireStaff: { core: '#fff3bf', glow: '#ff681c', spark: '#ffb52d', edge: '#ff360d' },
   iceStaff: { core: '#edffff', glow: '#45bfff', spark: '#8ceeff', edge: '#358de5' },
@@ -115,6 +116,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       crystal: solid(ELEMENTS.starStaff.core) },
     lightningStaff: { core: solid('#fff5cf'), tip: additive(ELEMENTS.lightningStaff.spark, .7),
       body: elementMaterial('body', { type: 'lightningStaff', opacity: .5 }) },
+    hourglassStaff: { tip: additive(ELEMENTS.hourglassStaff.spark, .65) },
     gravityStaff: { core: solid('#140626'), tip: ownMaterial(new THREE.MeshBasicMaterial({
       color: '#9e88ab', transparent: true, opacity: .55, depthWrite: false, blending: THREE.NormalBlending })),
       body: elementMaterial('body', { type: 'gravityStaff', opacity: .8 }) },

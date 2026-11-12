@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 const COLORS = {
+  hourglassStaff: ['#725023', '#d29d43', '#fff0bd'],
   fireStaff: ['#a61908', '#f15a0d', '#ffd16b'],
   iceStaff: ['#14578d', '#36b9e0', '#c2f4ff'],
   poisonStaff: ['#153c21', '#47ae45', '#c6ef83'],

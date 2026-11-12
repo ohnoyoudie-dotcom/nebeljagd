@@ -18,6 +18,7 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Add these definitions only when their models are actually placed, keeping
 // previously authored SVGs byte-identical when their map has no new weapons.
 const extraWeaponSymbols = {
+  hourglassStaff: '<g id="world-object-hourglassStaff"><path d="M0 1.8V-.4" stroke="#92714a" stroke-width=".35"/><path d="M-.65-1.9H.65L-.55-.5H.55Z" fill="#e5af55" stroke="#ffe1a0" stroke-width=".16"/></g>',
   gravityStaff: '<g id="world-object-gravityStaff"><path d="M-.6,1.5 .5,-.85" stroke="#c0a979" stroke-width=".4"/><ellipse cx=".5" cy="-1.25" rx=".85" ry=".6" fill="#38264d" stroke="#d8b7ff" stroke-width=".2"/><path d="M-.25,-1.25Q.5,-2.15 1.25,-1.25Q.5,-.35-.25,-1.25M.5,-1.85Q-.15,-1.25 .5,-.65Q1.15,-1.25 .5,-1.85" fill="none" stroke="#f1dcff" stroke-width=".12"/><circle cx=".5" cy="-1.25" r=".22" fill="#171122"/></g>',
   lightningStaff: '<g id="world-object-lightningStaff"><path d="M-.6,1.5 .5,-.85" stroke="#9d875e" stroke-width=".4"/><path d="M.7,-2.1-.1,-1h.65L.2,-.15l1.05,-1.3H.55Z" fill="#fff5ce" stroke="#68baff" stroke-width=".16"/></g>',
   starStaff: '<g id="world-object-starStaff"><path d="M-.6,1.5 .5,-.85" stroke="#a79c78" stroke-width=".4"/><path d="M.5,-2l.24.58.62.04-.48.4.15.6-.53-.34-.53.34.15-.6-.48-.4.62-.04Z" fill="#fff0b6" stroke="#75bddb" stroke-width=".15"/></g>',

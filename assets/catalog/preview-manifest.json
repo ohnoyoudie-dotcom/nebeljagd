@@ -1110,6 +1110,15 @@
           0.11165934056043625
         ]
       }
+    },
+    {
+      "kind": "hourglassStaff",
+      "variant": "kit-tripo-hourglass-staff",
+      "label": "Sanduhrstab · Tripo",
+      "file": "assets/catalog/hourglassStaff-kit-tripo-hourglass-staff.webp",
+      "bytes": 1630,
+      "sha256": "ce6ea3a0db932cd9e80e0392d1d93a9a829a22a36fe41486a13fd4ad9631b16e",
+      "method": "Blender render of the optimized runtime GLB, resized to 256x192"
     }
   ],
   "errors": []

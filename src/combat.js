@@ -14,8 +14,13 @@ export function createCombat({ onHit, onDefeat } = {}) {
       burnRemaining: 0, burnDamagePerSecond: 0, burnSourceId: undefined, slowRemaining: 0, slowFactor: 1,
       poisonRemaining: 0, poisonDamagePerSecond: 0, poisonSourceId: undefined,
       hitFlash: 0,
+      timeSlows: new Map(),
       get alive() { return this.health > 0; },
-      get speedMultiplier() { return this.slowRemaining > 0 ? this.slowFactor : 1; },
+      get speedMultiplier() {
+        let factor = this.slowRemaining > 0 ? this.slowFactor : 1;
+        for (const slow of this.timeSlows.values()) factor = Math.min(factor, 1 - (1 - slow.factor) * Math.min(1, slow.remaining / .12));
+        return factor;
+      },
     };
     target.initialHealth = target.health;
     targets.set(target.id, target);
@@ -61,6 +66,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
     const result = { targetId: target.id, damage: before - target.health, health: target.health,
       killed: !target.alive, sourceId: payload.sourceId, type: payload.type ?? 'direct' };
     if (result.killed) {
+      target.timeSlows.clear();
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = 0;
       target.burnSourceId = undefined;
       target.poisonRemaining = target.poisonDamagePerSecond = 0;
@@ -73,9 +79,20 @@ export function createCombat({ onHit, onDefeat } = {}) {
     return result;
   }
 
+  function setTimeSlow(target, source, multiplier, duration = .25) {
+    if (!target?.alive || !Number.isFinite(multiplier)) return;
+    const entry = target.timeSlows.get(source) ?? {};
+    entry.factor = clamp(multiplier, .35, 1); entry.remaining = Math.max(0, finite(duration, .25));
+    target.timeSlows.set(source, entry);
+  }
+
   function update(dt) {
     const delta = Math.max(0, finite(dt, 0));
     for (const target of targets.values()) {
+      for (const [source, slow] of target.timeSlows) {
+        slow.remaining -= delta;
+        if (slow.remaining <= 0 || !target.alive) target.timeSlows.delete(source);
+      }
       target.hitFlash = Math.max(0, target.hitFlash - delta);
       if (target.alive && target.burnRemaining > 0) {
         hit(target, { damage: Math.min(delta, target.burnRemaining) * target.burnDamagePerSecond,
@@ -97,6 +114,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
 
   function reset() {
     for (const target of targets.values()) {
+      target.timeSlows.clear();
       target.health = target.initialHealth;
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = target.hitFlash = 0;
       target.burnSourceId = undefined;
@@ -162,5 +180,5 @@ export function createCombat({ onHit, onDefeat } = {}) {
     return hits;
   }
 
-  return { targets, addTarget, removeTarget: id => targets.delete(id), hit, update, reset, traceSegment, melee };
+  return { targets, addTarget, removeTarget: id => targets.delete(id), hit, setTimeSlow, update, reset, traceSegment, melee };
 }

@@ -533,7 +533,8 @@
             "gravityStaff",
             "stump",
             "log",
-            "lightningStaff"
+            "lightningStaff",
+            "hourglassStaff"
           ]
         },
         "variant": {
@@ -1066,7 +1067,8 @@
                   "moonStaff",
                   "starStaff",
                   "gravityStaff",
-                  "lightningStaff"
+                  "lightningStaff",
+                  "hourglassStaff"
                 ]
               }
             }
@@ -1288,6 +1290,27 @@
               "variant": {
                 "enum": [
                   "kit-tripo-lightning-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "hourglassStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-hourglass-staff"
                 ]
               }
             }

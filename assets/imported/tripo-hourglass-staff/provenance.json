@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Sanduhrenstab.glb",
+  "sourceSha256": "7da82740306403088148b4f1458b888e11a3bd05dce8d249406678cf8c5e9fbd",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}
