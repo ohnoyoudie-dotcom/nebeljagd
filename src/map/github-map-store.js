@@ -88,9 +88,12 @@ export async function writeGitHubMap({token, map, expectedSha, fetchImpl = fetch
   return {map, text, sha: result.content.sha, commit: result.commit.sha, hash: await documentHash(text)};
 }
 
-export function planMapSync({local, project, remote, baseSha, unchangedSinceSave = false}) {
+export function planMapSync({local, project, remote, baseSha, unchangedSinceSave = false, opening = false}) {
   const current = JSON.stringify(local), online = JSON.stringify(remote.map);
   if (current === online) return 'synced';
+  // Opening the connected editor starts with the latest online save. The UI
+  // must archive the previous draft and guard edits made during the request.
+  if (opening) return 'remote';
   if (current === JSON.stringify(project) || unchangedSinceSave) return 'remote';
   // Edits based on the known remote revision can be saved with compare-and-swap.
   if (remote.sha === baseSha || !baseSha && online === JSON.stringify(project)) return 'local';

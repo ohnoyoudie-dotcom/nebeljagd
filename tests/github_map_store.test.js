@@ -110,3 +110,12 @@ test('publication connection is limited to the owner preview and explicit loopba
   assert.equal(githubSyncAvailable(new URL('http://127.0.0.1:4174/map-editor.html?sync=github')), true);
   for (const url of ['file:///tmp/map-editor.html','https://example.com/map-editor.html?sync=github','http://127.0.0.1:4174/map-editor.html','https://ohnoyoudie-dotcom.github.io/other/map-editor.html']) assert.equal(githubSyncAvailable(new URL(url)), false);
 });
+
+test('opening a connected editor selects the latest online save even with an older unsaved draft', () => {
+  const local = fixture('Old browser draft'), remote = {map: fixture('Latest online save'), sha: newSha};
+  for (const baseSha of [undefined, oldSha, newSha]) {
+    assert.equal(planMapSync({local, project, remote, baseSha, opening: true}), 'remote');
+  }
+  assert.equal(planMapSync({local: remote.map, project, remote, opening: true}), 'synced');
+  assert.equal(planMapSync({local, project, remote, baseSha: oldSha}), 'conflict', 'connecting or saving during editing keeps conflict protection');
+});

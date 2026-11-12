@@ -13,7 +13,9 @@ nicht still eine möglicherweise ältere Editor-Datei geöffnet.
 
 Der feste Link öffnet nach der Versionsprüfung automatisch den aktuellen Editor
 mit dem zuletzt gespeicherten Browserentwurf, ansonsten mit der aktuellen
-Projektkarte. Auch nach einem Editor-Update bleibt der vollständige Entwurf
+Projektkarte. Bei eingerichteter GitHub-Verbindung lädt er anschließend automatisch
+die zuletzt online gespeicherte Karte; einen anderen Browserentwurf sichert er
+vorher separat. Auch nach einem Editor-Update bleibt der vollständige Entwurf
 einschließlich Objekten, Bodenfarben und Biomflächen erhalten. Mit
 `editor.html?choose=1` ist die ausdrückliche Auswahl der Projektkarte weiterhin
 möglich; ein anderer Entwurf wird dabei geschützt. Die Versionsanzeige nennt
@@ -21,7 +23,8 @@ den Editor-Build und kennzeichnet die geöffnete Kartenquelle separat.
 
 Die Auswahl „Projektkarte“ gilt nur für das einmalige Öffnen. Der Editor entfernt
 danach den Startparameter aus seiner Adresse. Neuladen und erneutes Öffnen dieser
-Adresse setzen den automatisch gespeicherten Browserentwurf fort. „Spielen“
+Adresse setzen ohne GitHub-Verbindung den automatisch gespeicherten Browserentwurf
+fort; mit Verbindung wird die Onlinekarte wie unten beschrieben geladen. „Spielen“
 überträgt genau diesen Kartenstand ins Testfenster und ändert den Entwurf nicht.
 Auch ältere Lesezeichen mit `start=project` setzen einen vorhandenen Entwurf
 fort; ohne Entwurf öffnen sie die Projektkarte. Die ausdrückliche Auswahl über
@@ -94,9 +97,15 @@ werden; dabei bleibt die Karte erhalten. Ohne eingerichtete Verbindung kann
 die Seite nichts auf GitHub schreiben.
 
 Bei bestehender Verbindung wird beim Öffnen auch der aktuelle gespeicherte
-Stand auf `work` geprüft. Neuere Onlinekarten werden übernommen, wenn der lokale
-Stand seit seiner letzten Synchronisation unverändert ist. Eigene abweichende
-Änderungen werden nicht still ersetzt. Jede Speicherung verwendet die zuvor
+Stand auf `work` geladen, auch beim Aktualisieren oder erneuten Öffnen des Tabs.
+Ein abweichender Browserentwurf wird vorher vollständig separat gesichert und
+bleibt unter **Vorherige Karte sichern** herunterladbar. Direkt nach der Übernahme
+ist er außerdem über **Rückgängig** erreichbar. Scheitert die Sicherung, bleibt
+die bisherige Karte geöffnet. Ohne Verbindung oder bei einem Netzwerkfehler
+bleibt ebenfalls der Browserentwurf erhalten.
+
+Bereits während der Online-Abfrage begonnene Änderungen werden nicht ersetzt;
+dann bietet der Editor den manuellen Abgleich an. Jede Speicherung verwendet die zuvor
 gelesene GitHub-Dateiversion als Schreibbedingung. Bei einem Konflikt bietet
 **Onlinekarte übernehmen** einen sicheren Abgleich: Der eigene Stand bleibt
 separat im Browser und unter **Vorherige Karte sichern** als JSON abrufbar.
@@ -109,8 +118,10 @@ nur an `welt/worldmap.json` sind keine dauerhafte Projektquelle.
 Lokale HTML-Kopien und ZIP-Pakete bleiben feste Offline-Stände. Ein geöffneter
 Editor tauscht während der Bearbeitung keinen Code oder Kartenstand aus.
 Der feste Einstieg lädt beim nächsten Öffnen den aktuellen Editor. Noch nicht
-online gesicherte Änderungen bleiben als Browserentwurf erhalten; für ein
-anderes Gerät zuvor **Speichern** verwenden und die erfolgreiche Meldung abwarten.
+online gesicherte Änderungen bleiben bei automatischer Übernahme einer Onlinekarte
+als separate Sicherung erhalten; ohne GitHub-Verbindung wird der Browserentwurf
+fortgesetzt. Für ein anderes Gerät zuvor **Speichern** verwenden und die
+erfolgreiche Meldung abwarten.
 
 ## Verbindlicher Entwicklungsablauf
 
