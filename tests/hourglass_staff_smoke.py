@@ -43,20 +43,26 @@ def capture(page,name):
     (OUT/(name+'.json')).write_text(json.dumps(state(page),indent=2)+'\n')
 
 def sand_coverage(page):
-    # Read actual GPU pixels across the interior. Sparse points and a thin rim
-    # cannot pass: substantial golden sand must fill the field between them.
+    # Read actual GPU pixels across the interior, away from the warning rim.
+    # Include beige/brown dust rather than requiring emissive gold. Reject a
+    # dominant cyan ground fill. Geometry/motion tests and normal-camera images
+    # separately establish volume: color coverage alone cannot prove a vortex.
     return page.evaluate('''()=>{
       const s=nebeljagdTestState(),g=s.combat.hourglass,zoom=s.camera.zoom;
       nebeljagdInspectCamera({zoom:2,focus:g.center});nebeljagdCaptureFrame();
       const game=document.querySelector('#game'),copy=document.createElement('canvas');
       copy.width=game.width;copy.height=game.height;const ctx=copy.getContext('2d');ctx.drawImage(game,0,0);
-      const rect=game.getBoundingClientRect();let gold=0,total=0;
+      const rect=game.getBoundingClientRect();let warmSand=0,cyan=0,total=0;
       for(const radius of [.35,.55,.75,.87])for(let i=0;i<24;i++){
         const a=i*Math.PI/12,p=nebeljagdProjectPoint({x:g.center.x+Math.cos(a)*g.radius*radius,z:g.center.z+Math.sin(a)*g.radius*radius});
         const x=Math.floor((p.x-rect.left)/rect.width*copy.width),y=Math.floor((p.y-rect.top)/rect.height*copy.height);
         if(x<0||y<0||x>=copy.width||y>=copy.height)continue;
-        const [r,v,b]=ctx.getImageData(x,y,1,1).data;if(r>v*1.12&&r>b*1.4&&r>90)gold++;total++;
-      }nebeljagdInspectCamera({zoom});return {gold,total,coverage:gold/Math.max(1,total)};
+        const [r,v,b]=ctx.getImageData(x,y,1,1).data;
+        if(r>=v*.95&&r>b*1.22&&v>b*1.1&&r>90)warmSand++;
+        if(b>r*1.1&&v>r*1.1&&v>65)cyan++;
+        total++;
+      }nebeljagdInspectCamera({zoom});
+      return {warmSand,cyan,total,coverage:warmSand/Math.max(1,total),cyanCoverage:cyan/Math.max(1,total)};
     }''')
 
 with sync_playwright() as p:
@@ -125,11 +131,14 @@ with sync_playwright() as p:
             early=actor(page);assert .35<early['speedMultiplier']<1,early
             frozen=state(page)['combat']['hourglass'];page.wait_for_timeout(150);assert state(page)['combat']['hourglass']==frozen
             pause_at(page,3);capture(page,mode+'-strong')
-            coverage=sand_coverage(page);assert coverage['total']==96 and coverage['coverage']>=.18,coverage
+            coverage=sand_coverage(page)
+            assert coverage['total']==96 and coverage['coverage']>=.18,coverage
+            assert coverage['cyanCoverage']<=.15,coverage
             report.setdefault('sandCoverage',{})[mode]=coverage
             late=actor(page);assert late['speedMultiplier']<early['speedMultiplier'] and late['speedMultiplier']>=.35-1e-8,late
             assert late['travelled']>early['travelled'] and late['health']==health
-            assert state(page)['combat']['hourglass']['visuals']['draws']<=6
+            visuals=state(page)['combat']['hourglass']['visuals']
+            assert visuals['draws']==5 and visuals['particles']==900 and visuals['puffs']==64 and visuals['currents']==2,visuals
             passed(mode+': actual practice movement slows progressively, stays mobile, deals no damage and freezes on pause')
             pause_at(page,4.95);capture(page,mode+'-dissolve')
             assert state(page)['combat']['hourglass']['visuals']['phase']=='dissolve'

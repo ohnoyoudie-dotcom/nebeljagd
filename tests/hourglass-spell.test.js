@@ -7,25 +7,62 @@ import { weaponStats, RARITIES } from '../src/loot-tiers.js';
 import { createWeapons } from '../src/weapons.js';
 import { createHourglassVisuals, HOURGLASS_VISUAL_BUDGET } from '../src/hourglass-visuals.js';
 
-test('the sand sea opens in layers, has real height and recycles every buffer through dissolution',()=>{
+test('the sand vortex rises, orbits and reuses every buffer through pause and dissolution',()=>{
  const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules),center=new THREE.Vector3();
- v.show(center,.3,true);assert.equal(v.telemetry.draws,1);assert.equal(v.telemetry.particles,0);
+ v.show(center,.3,true);assert.equal(v.telemetry.draws,1);assert.equal(v.telemetry.particles,0);assert.equal(v.telemetry.puffs,0);
  v.show(center,.75,true);const early=v.telemetry.opening;assert.ok(early>0&&early<1);
  const root=scene.getObjectByName('Sanduhrstab · Zeitfeld'),sand=root.getObjectByName('Sanduhrstab · kreisender Sand');
- const shards=root.getObjectByName('Sanduhrstab · schwebende Zeitfragmente');
- const positions=sand.geometry.attributes.position.array,matrices=shards.instanceMatrix.array;
+ const puffs=root.children.find(m=>m.geometry?.isInstancedBufferGeometry);
+ assert.ok(puffs,'dust billows share one instanced draw');
+ assert.equal(puffs.geometry.instanceCount,HOURGLASS_VISUAL_BUDGET.puffs);
+ const sheets=root.children.filter(m=>m!==root.children[0]&&m!==sand&&m!==puffs);
+ assert.equal(sheets.length,2);
+ const buffers=root.children.flatMap(m=>Object.values(m.geometry.attributes).map(attribute=>({attribute,array:attribute.array})));
+ const positions=sand.geometry.attributes.position.array;
+ const heightOf=array=>Math.max(...array.filter((_,i)=>i%3===1));
  v.show(center,2,true);assert.equal(v.telemetry.opening,1);assert.equal(v.telemetry.currents,2);
- assert.equal(v.telemetry.particles,HOURGLASS_VISUAL_BUDGET.grains);
- assert.ok(Math.max(...positions.filter((_,i)=>i%3===1))>.9,'sand floats above the ground plane');
+ assert.equal(v.telemetry.particles,HOURGLASS_VISUAL_BUDGET.grains);assert.equal(v.telemetry.puffs,64);
+ assert.equal(sand.geometry.attributes.position.count,900);
+ assert.ok(heightOf(positions)>1.5&&heightOf(positions)<=2.6,'sand rises visibly above a standing character');
+ for(const sheet of sheets)assert.ok(heightOf(sheet.geometry.attributes.position.array)>1.5,'each sandy current has real 3D height');
+ assert.ok(heightOf(puffs.geometry.attributes.center.array)>1.5,'billows rise with the sand');
  const drawn=root.children.filter(m=>m.visible);assert.equal(drawn.length,HOURGLASS_VISUAL_BUDGET.draws);
- assert.equal(drawn.filter(m=>m.isLight).length,0);
- const frame=Array.from(positions);v.show(center,2,true);assert.deepEqual(Array.from(positions),frame,'simulation time, not wall-clock time');
- v.show(center,5.25,true);assert.ok(v.telemetry.opacity<.3);assert.equal(sand.geometry.attributes.position.array,positions);assert.equal(shards.instanceMatrix.array,matrices);
- assert.ok(Math.max(...positions.filter((_,i)=>i%3===1))<.3,'sand falls to the floor');
- v.show(center,5.45,true);assert.equal(v.telemetry.particles,0);assert.equal(shards.visible,false);
- let released=0,instancesReleased=0;shards.addEventListener('dispose',()=>instancesReleased++);
- root.children.forEach(m=>{m.geometry.addEventListener('dispose',()=>released++);m.material.addEventListener('dispose',()=>released++);});
- v.dispose();v.dispose();assert.equal(released,12);assert.equal(instancesReleased,1);assert.equal(scene.children.length,0);
+ assert.equal(drawn.length,5);assert.equal(drawn.filter(m=>m.isLight).length,0);
+ const before=Array.from(positions);v.show(center,2.2,true);
+ for(let i=0;i<positions.length;i+=3){
+  const x=before[i],z=before[i+2],nx=positions[i],nz=positions[i+2];
+  const turn=Math.atan2(x*nz-z*nx,x*nx+z*nz);
+  assert.ok(turn>.1&&turn<.8,'sand visibly rotates in a consistent direction');
+  assert.ok(Math.abs(Math.hypot(x,z)-Math.hypot(nx,nz))<1e-5,'sand circles rather than pulling into a point');
+ }
+ const paused=buffers.map(({array})=>Array.from(array));v.show(center,2.2,true);
+ buffers.forEach(({array},i)=>assert.deepEqual(Array.from(array),paused[i],'all motion uses simulation time'));
+ v.show(center,5.25,true);assert.ok(v.telemetry.opacity<.3);
+ buffers.forEach(({attribute,array})=>assert.equal(attribute.array,array,'GPU buffers are reused'));
+ assert.ok(heightOf(positions)<=.4,'dissolving sand settles near the floor');
+ v.show(center,5.45,true);assert.equal(v.telemetry.particles,0);assert.equal(puffs.visible,false);
+ const releases=new Map();
+ root.children.forEach(m=>{for(const resource of [m.geometry,m.material]){releases.set(resource,0);resource.addEventListener('dispose',()=>releases.set(resource,releases.get(resource)+1));}});
+ v.dispose();v.dispose();assert.equal(releases.size,10);
+ for(const count of releases.values())assert.equal(count,1,'each geometry and material is released once');
+ assert.equal(scene.children.length,0);
+});
+
+test('dissolving sand keeps its orbit direction while slowing down',t=>{
+ const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules),center=new THREE.Vector3();
+ t.after(()=>v.dispose());
+ const sand=scene.getObjectByName('Sanduhrstab · kreisender Sand');
+ const frames=[.2,.4,.6].map(elapsed=>{
+  v.show(center,rules.warning+rules.duration+elapsed,true);
+  assert.equal(v.telemetry.phase,'dissolve');
+  return Array.from(sand.geometry.attributes.position.array);
+ });
+ const angle=(a,b,i)=>Math.atan2(a[i]*b[i+2]-a[i+2]*b[i],a[i]*b[i]+a[i+2]*b[i+2]);
+ for(let i=0;i<frames[0].length;i+=3){
+  const first=angle(frames[0],frames[1],i),second=angle(frames[1],frames[2],i);
+  assert.ok(first>0&&second>0,'settling grains must not reverse their active orbit direction');
+  assert.ok(second<first,'equal time intervals cover smaller angles as sand settles');
+ }
 });
 
 test('sand follows sloped terrain with cached height samples, including its warning boundary',()=>{
@@ -35,7 +72,7 @@ test('sand follows sloped terrain with cached height samples, including its warn
  const count=samples;visuals.show(center,2,true);assert.equal(samples,count,'no terrain queries per animation frame');
  const root=scene.getObjectByName('Sanduhrstab · Zeitfeld');
  const points=root.getObjectByName('Sanduhrstab · kreisender Sand').geometry.attributes.position;
- for(let i=0;i<points.count;i++){const clearance=points.getY(i)+center.y-height(points.getX(i)+center.x,points.getZ(i)+center.z);assert.ok(clearance>=.034&&clearance<2);}
+ for(let i=0;i<points.count;i++){const clearance=points.getY(i)+center.y-height(points.getX(i)+center.x,points.getZ(i)+center.z);assert.ok(clearance>=.034&&clearance<=2.6);}
  const rim=root.children[0];rim.updateMatrix();
  const p=new THREE.Vector3();for(let i=0;i<rim.geometry.attributes.position.count;i++){p.fromBufferAttribute(rim.geometry.attributes.position,i).applyMatrix4(rim.matrix).add(center);assert.ok(Math.abs(p.y-height(p.x,p.z)-.055)<1e-6);}
  visuals.dispose();
@@ -90,7 +127,7 @@ test('warning, active and dissolution freeze, respect visibility and release res
  const sand=root.getObjectByName('Sanduhrstab · kreisender Sand');
  const frozen=Array.from(sand.geometry.attributes.position.array);s.update(0,caster);assert.deepEqual(Array.from(sand.geometry.attributes.position.array),frozen);
  visible=false;s.update(.1,caster);assert.equal(s.telemetry.visuals.visible,false);
- visible=true;s.update(3.6,caster);assert.equal(s.telemetry.visuals.phase,'dissolve');assert.ok(s.telemetry.visuals.opacity>0);assert.ok(s.telemetry.visuals.draws<=6);
+ visible=true;s.update(3.6,caster);assert.equal(s.telemetry.visuals.phase,'dissolve');assert.ok(s.telemetry.visuals.opacity>0);assert.ok(s.telemetry.visuals.draws<=5);
  s.update(1,caster);assert.equal(s.telemetry.active,false);assert.equal(s.telemetry.visuals.draws,0);
  let disposed=0;sand.geometry.addEventListener('dispose',()=>disposed++);s.dispose();s.dispose();assert.equal(disposed,1);idle.dispose();assert.equal(scene.children.length,0);
 });

@@ -28,18 +28,23 @@ Der gemeinsame Zielindikator verwendet einen klaren Ring mit feinen wandernden
 Funken und weichem Saum, in Grün, Violett, Blitzblau oder Sandgold passend zum Stab. Die
 Zielsteuerung und Vorwarnzeiten vorhandener Waffen bleiben erhalten.
 
-Das überarbeitete Zeitfeld öffnet sich mit einer wandernden Lichtwelle und
-aufsteigenden Sandkörnern. Ein gefülltes Bernsteinfeld trägt dichte goldene
-Strömungen; zwei gekrümmte, angehobene Sandschichten geben dem Feld Volumen.
-1.200 unregelmäßig verteilte Körner, einzelne türkisfarbene Funken und 28
-schwebende Kristallsplitter umkreisen den Bereich. Kleine Sanduhrglyphen
-wandern am Rand. Keine zentrale Uhr und keine Bewegung zur Mitte.
+Das Zeitfeld baut sich als körperlicher Sandwirbel auf: Zwei schraubenförmige
+Sandböen steigen vom Boden auf und tragen 64 weiche, unregelmäßige Staubwolken.
+900 einzelne Sandkörner kreisen mit den Böen bis etwa 2,5 m über dem Boden.
+Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten. Lücken
+zwischen den Böen lassen Spielfiguren und Boden erkennen. Der Rand markiert
+zunächst die Vorwarnung und tritt nach dem Öffnen zurück. Das Feld enthält
+keine blaue Bodenfüllung, Runenscheibe oder Kristallsplitter. Es zieht Gegner
+weiterhin nicht zur Mitte.
 
-Beim Ausklingen brechen die Strömungen körnig auf, die Splitter schrumpfen,
-und der Sand sinkt zu Boden. Gelände wird einmal beim Platzieren abgetastet.
-Maximal sechs zusätzliche Zeichenaufrufe, feste Puffer und Instanzen, keine
-zusätzlichen Lichter, Texturen oder Nachbearbeitung. Pause friert sämtliche
-Bewegung ein. Die Spielwerte, Zielsteuerung und das Stabmodell bleiben erhalten.
+Beim Ausklingen verlieren die Sandböen ihre Höhe, die Staubwolken lockern sich,
+und die Körner sinken zu Boden und verblassen. Gelände wird einmal beim
+Platzieren abgetastet. Die Staubwolken teilen sich einen instanzierten
+Zeichenaufruf und richten sich zur Kamera aus; ihre Reihenfolge berücksichtigt
+die Kameratiefe. Insgesamt benötigt das Feld höchstens fünf zusätzliche
+Zeichenaufrufe. Es verwendet feste Puffer, keine zusätzlichen Lichter, Texturen
+oder Nachbearbeitung. Pause friert sämtliche Bewegung ein. Die Spielwerte,
+Zielsteuerung und das Stabmodell bleiben erhalten.
 
 - Original unverändert: `assets/inbox/Sanduhrenstab.glb`, SHA-256
   `7da82740306403088148b4f1458b888e11a3bd05dce8d249406678cf8c5e9fbd`.
@@ -53,10 +58,14 @@ Bewegung ein. Die Spielwerte, Zielsteuerung und das Stabmodell bleiben erhalten.
 
 `tests/hourglass-spell.test.js` prüft Vorwarnung, Aufenthaltsdauer, Erholung,
 Eis-Kombination, Mehrfachquellen, Wände, Wasser, Pause, Sichtbarkeit,
-Geländeanpassung, Freigabe der Ressourcen und die echte Waffensteuerung.
+Geländeanpassung, tatsächliche Höhe und Kreisbewegung der Sandkörner, feste
+Puffer, Freigabe der Ressourcen und die echte Waffensteuerung.
 `tests/hourglass_staff_smoke.py` prüft den erzeugten Editor, gespeicherte
 Platzierung, das importierte Modell, Maus/Touch, reale Übungsgegner und sämtliche
-Animationsphasen in Chromium. Screenshots landen unter
+Animationsphasen in Chromium. GPU-Pixelproben prüfen sichtbaren warmen Sand
+und den Verzicht auf eine dominante türkisblaue Fläche; sie ersetzen keine
+visuelle Prüfung der Wirbelform. Eine Aufnahme aus der normalen Spielkamera
+ergänzt die Detailbilder. Screenshots landen unter
 `test-results/hourglass-staff/`. Touch-Emulation ersetzt keinen Test auf einem
 physischen iPad. Der bestehende Veröffentlichungsworkflow führt diesen Test mit
 Unit-, Asset- und Build-Prüfungen vor der Pages-Veröffentlichung aus.
