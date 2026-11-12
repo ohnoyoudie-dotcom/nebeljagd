@@ -1,3 +1,5 @@
+import meteorStaffUrl from '../assets/imported/tripo-meteor-staff/runtime/meteor-staff.glb?url&inline';
+import meteorStaffInspection from '../assets/imported/tripo-meteor-staff/inspections/meteor-staff.json' with { type: 'json' };
 import hourglassStaffUrl from '../assets/imported/tripo-hourglass-staff/runtime/hourglass-staff.glb?url&inline';
 import hourglassStaffInspection from '../assets/imported/tripo-hourglass-staff/inspections/hourglass-staff.json' with { type: 'json' };
 import * as THREE from 'three';
@@ -21,6 +23,7 @@ import lightningStaffUrl from '../assets/imported/tripo-lightning-staff/runtime/
 import lightningStaffInspection from '../assets/imported/tripo-lightning-staff/inspections/lightning-staff.json' with { type: 'json' };
 
 const SOURCES = {
+  'kit-tripo-meteor-staff': { url: meteorStaffUrl, name: 'Meteorstab · Tripo', tip: meteorStaffInspection.normalization.tipPoint, source: 'assets/inbox/Meteorstab.glb' },
   'kit-tripo-hourglass-staff': { url: hourglassStaffUrl, name: 'Sanduhrstab · Tripo', tip: hourglassStaffInspection.normalization.tipPoint, source: 'assets/inbox/Sanduhrenstab.glb' },
   'kit-tripo-lightning-staff': { url: lightningStaffUrl, name: 'Blitzstab · Tripo', tip: lightningStaffInspection.normalization.tipPoint,
     source: 'assets/inbox/fantasy thunder staff 3d model.glb' },

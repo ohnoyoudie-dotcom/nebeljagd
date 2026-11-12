@@ -98,6 +98,10 @@ jobs:
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/hourglass_staff_smoke.py
+      - name: Verify meteor editor placement, growing flight, explosion and mouse/touch input
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/meteor_staff_smoke.py
       - name: Verify uploaded weapon models, pickup, swaps and attacks
         # Full graphical regression is available on manual dispatch.
         # Full graphical regression is available on manual dispatch. Ordinary
@@ -254,6 +258,7 @@ jobs:
             test-results/projectile-barriers
             test-results/gravity-staff
             test-results/hourglass-staff
+            test-results/meteor-staff
             test-results/lightning-staff
             test-results/woodland-details
             test-results/tripo-woodland
