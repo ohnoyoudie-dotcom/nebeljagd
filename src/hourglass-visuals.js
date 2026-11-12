@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 
-export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 900, puffs: 64, draws: 5 });
+export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 2400, puffs: 64, draws: 5 });
 const TAU = Math.PI * 2;
 const smooth = x => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const random = (i, salt) => { const v = Math.sin((i + 1) * salt) * 43758.5453; return v - Math.floor(v); };
@@ -110,7 +110,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
   grainGeometry.setAttribute('color',new THREE.BufferAttribute(colors,3)); grainGeometry.setAttribute('seed',new THREE.BufferAttribute(seeds,1));
   const grainMaterial = new THREE.ShaderMaterial({transparent:true,depthWrite:false,vertexColors:true,toneMapped:false,uniforms,
     vertexShader:`attribute float seed;varying vec3 vColor;void main(){vColor=color;vec4 p=modelViewMatrix*vec4(position,1.);
-      gl_Position=projectionMatrix*p;gl_PointSize=clamp((28.+seed*32.)/max(1.,-p.z),1.,3.);}`,
+      gl_Position=projectionMatrix*p;gl_PointSize=clamp((38.+seed*36.)/max(1.,-p.z),1.5,3.5);}`,
     fragmentShader:`varying vec3 vColor;uniform float uOpacity;void main(){float a=1.-smoothstep(.15,.5,length(gl_PointCoord-.5));
       gl_FragColor=vec4(vColor,a*uOpacity*.8);
       #include <colorspace_fragment>
@@ -134,10 +134,10 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     for(let layer=0;layer<2;layer++) {
       const a=currents[layer].geometry.attributes.position;
       for(let i=0;i<=SEGMENTS;i++) {
-        const t=i/SEGMENTS,angle=turn+layer*Math.PI+t*TAU*.86;
+        const t=i/SEGMENTS,angle=turn+layer*Math.PI+t*TAU*1.8;
         const swell=Math.sin(t*17-time*1.3)*.09;
-        const radius=(rules.radius*(.9-.47*t)+swell)*(.4+.6*opening),y=(.18+t*2.25+Math.sin(t*13+time)*.07)*opening*fade;
-        const width=(.38+.3*Math.sin(t*Math.PI))*fade;
+        const radius=(rules.radius*(.95-.92*t)+swell)*(.4+.6*opening),y=(.18+t*2.25+Math.sin(t*13+time)*.07)*opening*fade;
+        const width=(.55+.4*Math.sin(t*Math.PI))*fade;
         for(let side=0;side<2;side++) {
           const offset=(side-.5)*width,x=Math.cos(angle)*(radius+offset*.62),z=Math.sin(angle)*(radius+offset*.62);
           a.setXYZ(i*2+side,x,height(x,z)+Math.max(.035,y+offset*.78),z);
@@ -145,16 +145,16 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       }a.needsUpdate=true;
     }
     for(const b of billows) {
-      const t=(b.i>>1)/31,angle=turn+(b.i%2)*Math.PI+t*TAU*.86+b.seed*.18;
-      const radius=(rules.radius*(.91-.47*t)+Math.sin(t*17-time*1.3)*.09+(b.seed-.5)*.24)*(.4+.6*opening)+dissolving*.25;
+      const t=Math.sqrt((b.i+.5)/billows.length),angle=turn*(.75+b.seed*.35)+b.i*2.3999632297;
+      const radius=(rules.radius*.93*t)*(.4+.6*opening)+dissolving*.25;
       b.x=Math.cos(angle)*radius;b.z=Math.sin(angle)*radius;
-      b.y=height(b.x,b.z)+.08+(.18+t*2.05+.16*Math.sin(time*2+b.seed*TAU))*opening*fade;
-      b.width=(.48+.35*b.seed)*(.45+.55*opening)*(1+dissolve*.3);b.height=b.width*(.65+.35*b.seed);
-      b.alpha=(.55+.2*b.seed)*(.35+.65*Math.sin(t*Math.PI));
+      b.y=height(b.x,b.z)+.08+(.18+b.seed*1.9+.16*Math.sin(time*2+b.seed*TAU))*opening*fade;
+      b.width=(.68+.32*b.seed)*(.45+.55*opening)*(1+dissolve*.3);b.height=b.width*(.65+.35*b.seed);
+      b.alpha=.36+.14*b.seed;
     }uploadBillows();
     for(let i=0;i<count;i++) {
-      const seed=seeds[i],t=grainProgress[i],angle=turn*(.88+seed*.2)+(i%2)*Math.PI+t*TAU*.86;
-      const radius=rules.radius*(.91-.48*t+seed*.06)*(.4+.6*opening)+dissolving*.3;
+      const seed=seeds[i],t=grainProgress[i],angle=turn*(.75+seed*.45)+t*TAU;
+      const radius=rules.radius*.98*Math.sqrt((i+.5)/count)*(.4+.6*opening)+dissolving*.3;
       const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
       positions[i*3]=x;positions[i*3+2]=z;
       positions[i*3+1]=height(x,z)+.04+(.1+t*2.2+seed*.17)*opening*fade;

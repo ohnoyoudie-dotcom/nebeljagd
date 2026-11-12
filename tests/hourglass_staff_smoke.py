@@ -138,7 +138,7 @@ with sync_playwright() as p:
             late=actor(page);assert late['speedMultiplier']<early['speedMultiplier'] and late['speedMultiplier']>=.35-1e-8,late
             assert late['travelled']>early['travelled'] and late['health']==health
             visuals=state(page)['combat']['hourglass']['visuals']
-            assert visuals['draws']==5 and visuals['particles']==900 and visuals['puffs']==64 and visuals['currents']==2,visuals
+            assert visuals['draws']==5 and visuals['particles']==2400 and visuals['puffs']==64 and visuals['currents']==2,visuals
             passed(mode+': actual practice movement slows progressively, stays mobile, deals no damage and freezes on pause')
             pause_at(page,4.95);capture(page,mode+'-dissolve')
             assert state(page)['combat']['hourglass']['visuals']['phase']=='dissolve'
