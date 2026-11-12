@@ -1,49 +1,49 @@
 {
-  "buildId": "993b80d68165",
-  "builtAt": "2026-11-11T22:39:42.826Z",
-  "sourceCommit": "19f5b4c6b1865c7211b05d8478af7f45adc9dff7",
-  "mapSha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3",
-  "sourceBaseCommit": "19f5b4c6b1865c7211b05d8478af7f45adc9dff7",
+  "buildId": "055054b008f0",
+  "builtAt": "2026-11-12T08:28:43.892Z",
+  "sourceCommit": "04de5abb467357b0ceeab7460e326e763ee2661a",
+  "mapSha256": "c950ae35fc0d06aef4ca9c8a6ad5b6bce7147ff4faa18e84d0da6dfdc8f724c8",
+  "sourceBaseCommit": "04de5abb467357b0ceeab7460e326e763ee2661a",
   "files": {
     "editor.html": {
-      "bytes": 8088,
-      "sha256": "aceca7b31a8da1e421bb39a71bf7de255ee331e7efd71215b6adbedf05b8f623"
+      "bytes": 8087,
+      "sha256": "c4dcf8f9ebdf5c9a8b9ce1831841f2e9ba3faf4186e2422efcf9f117594ebfe3"
     },
     "map-editor.html": {
-      "bytes": 64560797,
-      "sha256": "d2a054499badbf6682cdacf2b735b3e640efa51cad5b30ac1b79ef0ac737f127"
+      "bytes": 64568918,
+      "sha256": "22f1ee0ae1fa3cd09785b7c071189cfd5b78010d3f98a60658fdcf86af69dc4f"
     },
     "magebrawl.html": {
-      "bytes": 96740765,
-      "sha256": "b59924e11ee128fbc8f989c7e002e6430299b119a4c9723e3c02b01335b70c50"
+      "bytes": 97097787,
+      "sha256": "3de12781b952dc19e3d8a0a9a5871e92e4404d475988e9d4bb1fdd64a9afce96"
     },
     "nebeljagd.html": {
       "bytes": 784,
-      "sha256": "b3c758b855a066739048b72f4ed84c821ae3f40518a15ebdcb999adb74dd393a"
+      "sha256": "df41baebad7183bc5fed15e2376371e43ee99886d48ea1de1d74fe3812dda5bb"
     },
     "avatar-preview.html": {
       "bytes": 14841744,
-      "sha256": "5905fc28d901439e397de3a149dc21205003ee960043d97601dac9612e4c1d05"
+      "sha256": "77fd0339a84a87888f59d1dd2c9845c43473b7aca563a52caaa88c4fcf963cbb"
     },
     "worldmap.json": {
-      "bytes": 56916,
-      "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
+      "bytes": 64871,
+      "sha256": "c950ae35fc0d06aef4ca9c8a6ad5b6bce7147ff4faa18e84d0da6dfdc8f724c8"
     },
     "worldmap.svg": {
-      "bytes": 130143,
-      "sha256": "2754d48ed0000b9d8c61268582f9d31597a975e88e0efb51bc0fe661d5dee6d1"
+      "bytes": 144082,
+      "sha256": "518010e97e0763ce80157649a70ea2fe4c1f8be8bc1cc5df485d938cd0597cad"
     },
     "worldmap.schema.json": {
-      "bytes": 43779,
-      "sha256": "84a29eb360f05ef03c3c2d82e228b20f04151174de26474a0fdfe916bc3e60bb"
+      "bytes": 44290,
+      "sha256": "9aad5cd69027fd7ae71dfc8ec3c7bc2c752df7f19d8e5944727232e0f0fcc8cd"
     },
     "magebrawl-welt-und-editor.zip": {
-      "bytes": 104372615,
-      "sha256": "ad2876921786e59a2eefc3c4566e17a55eefa2b7b748bf2086dfa87a17b878aa"
+      "bytes": 104587952,
+      "sha256": "82956ec521c6edb21f8de9b2798502921878f7b6eafcf57f7d6b45530003ef5c"
     },
     "index.html": {
-      "bytes": 96740765,
-      "sha256": "b59924e11ee128fbc8f989c7e002e6430299b119a4c9723e3c02b01335b70c50"
+      "bytes": 97097787,
+      "sha256": "3de12781b952dc19e3d8a0a9a5871e92e4404d475988e9d4bb1fdd64a9afce96"
     }
   },
   "name": "Magebrawl – aktuelle Spielwelt und Editor",
@@ -52,6 +52,6 @@
   "loginAvailable": false,
   "projectMap": {
     "name": "Nebelinsel · Vier Biome und zwei freie Brücken",
-    "sha256": "a9dc2cc720d48eb1d3b1a56319c11ba6f0ca6183b131a9cad76eda14ad1f12b3"
+    "sha256": "c950ae35fc0d06aef4ca9c8a6ad5b6bce7147ff4faa18e84d0da6dfdc8f724c8"
   }
 }
