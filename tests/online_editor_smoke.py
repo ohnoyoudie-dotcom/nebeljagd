@@ -100,7 +100,8 @@ def run(directory: Path) -> None:
                 assert painted, 'An empty selection ring is not a painted object'
             page.locator('#tool-select').click()
             page.locator('#clear-selection').click()
-            page.locator('#world-objects [data-object-kind="gravityStaff"]').click()
+            placed_staff_id = state(page)['map']['objects'][-1]['id']
+            page.locator(f'#world-objects [data-feature-id="{placed_staff_id}"]').click()
             page.locator('#focus-selection').click()
             page.screenshot(path=str(out / 'gravity-and-stumps.png'))
             page.locator('#clear-selection').click()

@@ -32,6 +32,10 @@ andere Objektarten beim Platzieren und Verschieben als Orientierung sichtbar.
 ## Was veröffentlicht wird
 
 Die zentrale Projektkarte bleibt `worldmap.json` im Projektstamm auf `work`.
+Wird nur `welt/worldmap.json` von Hand geändert, stoppt der Build zum Schutz
+dieser Bearbeitung. Der gewünschte Stand muss zuerst vollständig in die
+Quelldatei im Projektstamm übernommen werden; der Build darf ihn nicht still
+durch die ältere Projektkarte ersetzen.
 `npm run build` erzeugt Editor, Spiel, Kartendateien und Offline-Paket gemeinsam
 und synchronisiert sie nach `welt/`. Editor und Spiel enthalten dieselbe
 Build-Kennung und dieselbe Karten-Prüfsumme. `welt/release.json` enthält die

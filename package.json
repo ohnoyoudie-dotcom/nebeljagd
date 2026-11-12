@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "node scripts/build-worldmap.js --validate && node scripts/build-browser.js && node scripts/build-standalone.js && node scripts/sync-world-build.js",
+    "build": "node scripts/check-worldmap-source.js && node scripts/build-worldmap.js --validate && node scripts/build-browser.js && node scripts/build-standalone.js && node scripts/sync-world-build.js",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node --test tests/*.test.js",
     "verify:assets": "node scripts/verify-assets.js",
