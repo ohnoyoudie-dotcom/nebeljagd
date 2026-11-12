@@ -97,20 +97,28 @@ with sync_playwright() as pw:
             assert state(page)['combat']['shotsFired'] == 0 and not charged['active']
             capture(page, mode+'-aim')
             passed(mode+': hold grows the plain target reach to 20m in 3s without firing')
-            pause_when(page, 'nebeljagdTestState().combat.storm.hits>0 && nebeljagdTestState().combat.storm.visuals.bolts>0')
+            pause_when(page, 'nebeljagdTestState().combat.storm.age>=.3')
             if touch: cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
             else: page.keyboard.up('f')
             if touch:
                 page.evaluate('()=>{const p=nebeljagdTestState().combat.storm.center;nebeljagdInspect({x:p.x-5,z:p.z-4});}')
             page.wait_for_function('window.__lightningError || nebeljagdTestState().phase==="paused"')
             assert not page.evaluate('window.__lightningError'), report['errors']
+            capture(page, mode+'-cloud-forming')
+            pause_when(page, 'nebeljagdTestState().combat.storm.hits>0 && nebeljagdTestState().combat.storm.visuals.bolts>0')
+            page.keyboard.press('Escape')
+            page.wait_for_function('nebeljagdTestState().phase==="paused"')
             current = state(page); cloud = current['combat']['storm']
             assert cloud['visuals']['style'] == 'compact-storm-eye' and cloud['visuals']['visible']
             assert cloud['visuals']['cloudRadius'] < cloud['radius']*.4
+            assert cloud['visuals']['cloudShape'] == 'billowing-thunderhead'
+            assert cloud['visuals']['boltStyle'] == 'forked-white-core'
+            assert cloud['visuals']['draws'] <= 6 and cloud['visuals']['impacts'] > 0
             assert current['combat']['shotsFired'] == 1 and current['combat']['effects']['lightningProjectiles'] == 0
             victim = next(a for a in current['practiceActors'] if a['id'] == 'practice-2')
             assert victim['stunRemaining'] > .2 and victim['speedMultiplier'] == 0 and not victim['canAct'], victim
             assert abs(victim['maxHealth']-victim['health']-expected/5) < .001
+            capture(page, mode+'-storm-wide')
             page.evaluate('p=>nebeljagdInspectCamera({zoom:1.7,focus:p})', cloud['center'])
             capture(page, mode+'-storm')
             page.wait_for_timeout(200); assert state(page)['combat']['storm'] == cloud
