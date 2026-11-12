@@ -19,7 +19,7 @@ function setup({ visible = () => true, blocked = false, random = Math.random } =
 test('storm shares the 3s / 20m charge, keeps a fixed area and supports pause and cancellation', () => {
   const { storm, origin, scene } = setup();
   storm.beginAim(origin); storm.aimAt(origin, { x: 100, z: 0 }); storm.update(1.5, origin);
-  assert.equal(storm.telemetry.aim.x, 10); assert.equal(storm.telemetry.radius, 4.8);
+  assert.equal(storm.telemetry.aim.x, 10); assert.equal(storm.telemetry.radius, 3.8);
   const before = storm.telemetry; storm.update(0, origin); assert.deepEqual(storm.telemetry, before);
   storm.update(1.5, origin); assert.equal(storm.telemetry.aim.x, 20);
   storm.aimAt(origin, { x: 2, z: 0 }); assert.equal(storm.telemetry.aim.x, 2);
@@ -30,7 +30,7 @@ test('storm shares the 3s / 20m charge, keeps a fixed area and supports pause an
 
 test('five intermittent strikes distribute equipped damage, stun briefly, spare outsiders and clean up', () => {
   const { storm, combat, origin, target, cast } = setup();
-  const outside = combat.addTarget({ id: 'outside', position: new THREE.Vector3(4.81, 0, 0) });
+  const outside = combat.addTarget({ id: 'outside', position: new THREE.Vector3(3.81, 0, 0) });
   const owner = combat.addTarget({ id: 'caster', position: origin });
   const prop = combat.addTarget({ id: 'crate', position: origin, destructible: true });
   cast(); assert.equal(storm.beginAim(origin), false);
@@ -45,6 +45,27 @@ test('five intermittent strikes distribute equipped damage, stun briefly, spare 
   assert.equal(target.stunRemaining, 0, 'expired strikes in a coarse update cannot add a fresh stun');
   assert.equal(outside.health, 100); assert.equal(owner.health, 100); assert.equal(prop.health, 100);
   assert.equal(storm.telemetry.active, false); assert.equal(storm.telemetry.visuals.bolts, 0);
+  storm.dispose();
+});
+
+test('the smaller target circle matches damage and stun at the 3.8m radial boundary', () => {
+  const { storm, combat, scene, origin, cast } = setup();
+  const inside = combat.addTarget({ id: 'inside-edge', position: new THREE.Vector3(3.79, 0, 0) });
+  const boundary = combat.addTarget({ id: 'boundary', position: new THREE.Vector3(0, 0, -3.8) });
+  const outside = combat.addTarget({ id: 'outside-edge', position: new THREE.Vector3(-3.81, 0, 0) });
+  const diagonal = combat.addTarget({ id: 'outside-diagonal', position: new THREE.Vector3(2.7, 0, 2.7) });
+  storm.beginAim(origin);
+  const ring = scene.children.find(mesh => mesh.userData.areaRadius);
+  assert.equal(ring.userData.areaRadius, 3.8);
+  storm.cancelAim(); cast(); storm.update(.6, origin);
+  for (const target of [inside, boundary]) {
+    assert.ok(Math.abs(target.health - 95.4) < 1e-9);
+    assert.ok(target.stunRemaining > .39);
+  }
+  for (const target of [outside, diagonal]) {
+    assert.equal(target.health, 100);
+    assert.equal(target.stunRemaining, 0);
+  }
   storm.dispose();
 });
 

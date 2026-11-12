@@ -9,20 +9,22 @@ und Gravitationsstab in **3 Sekunden von 0 auf 20 Meter**. Frühes Loslassen wä
 entsprechend weniger Reichweite. Die Zielwahl darf über Mauern hinweg erfolgen.
 Rolle, Pause und Waffenwechsel brechen eine laufende Zielwahl ab.
 
-Beim Loslassen bildet sich direkt über der gewählten Fläche ein kompaktes,
-halbtransparentes blau-graues Gewitterauge. Sein sichtbarer Radius beträgt höchstens
-2,5 m einschließlich des bewegten Dunstes, die dezente Bodenfläche hat **4,8 m Radius**. Die Wolke verwendet nun
+Beim Loslassen bildet sich direkt über der gewählten Fläche ein blau-graues
+Gewitterauge. Die Ziel- und Wirkungsfläche hat jetzt **3,8 m Radius** statt 4,8 m;
+der Durchmesser sinkt von 9,6 auf 7,6 m. Die Wolke wird gleichzeitig etwa 15 Prozent größer (mit Dunst bis 2,85 m Radius)
+und füllt dadurch mehr von der kleineren Fläche aus. Sie verwendet weiterhin das
 Artwork aus der freigegebenen Gewitter-Referenz: dunkle Wolkentiefen, silberblaue
-Kanten, feine Dampffahnen und inneres Wetterleuchten. Zwei zur Kamera gerichtete
-Ebenen animieren das etwa 20 Prozent größere Artwork mit unterschiedlich
-strömenden Dampfrändern, sanftem Aufwallen und wanderndem Wetterleuchten.
-24 Abschnitte bilden den hellen Hauptblitz mit wechselnder Dicke und
-unregelmäßigen Knicken. Fünf feinere Nebenäste setzen an unterschiedlichen
-Stellen an und variieren in Länge, Richtung und Stärke. Drei kurze Rückentladungen pro Einschlag bleiben kräftig; dazwischen
-erlischt der Blitz vollständig. Auslaufende Bodenentladungen, flach wegsprühende Funken und kurze erdige
-Staubstöße markieren die Treffer. Ein weicher, leicht bewegter Schatten verbindet
-die Wolke mit dem Boden. Nur der aktive Flächenrand ist dezenter; der normale
-Zielkreis beim Zielen bleibt unverändert.
+Kanten, feine Dampffahnen und inneres Wetterleuchten. Ruhigere Bewegung und klarere
+Helligkeitsunterschiede zwischen Unterseite und beleuchteten Wolkenballen lassen
+die Wolke plastischer wirken.
+Der Hauptblitz läuft von einer kräftigen Basis zu einer schmalen Spitze aus und
+hat unregelmäßige Knicke. Zwei kräftigere Gabelungen und drei feine Nebenäste
+variieren in Ansatzpunkt, Länge, Richtung und Stärke. Kurze, versetzte
+Entladungen mit dunklen Pausen beleben die Einschläge. Auslaufende
+Bodenentladungen, flach wegsprühende Funken und kurze erdige Staubstöße markieren
+die Treffer. Ein weicher, leicht bewegter Schatten verbindet die Wolke mit dem
+Boden. Der aktive Flächenrand bleibt dezent; die runde Zielanzeige behält ihren
+gewohnten Stil und zeigt den verkleinerten Wirkungsradius an.
 Bereits sichtbare Figuren erhalten weiche Aussparungen in der Wolke.
 
 Nach 0,25 s Öffnung dauert das Gewitter **3 s**, gefolgt von 0,25 s Ausblenden.
@@ -43,8 +45,7 @@ ein. Neustart entfernt das Feld und alle Blitze.
 
 Das einmal geladene 768×768-WebP mit Alpha benötigt rund 79 KiB komprimiert
 und 3 MiB einschließlich Mipmaps im GPU-Speicher. Es wird offline ins Spiel
-eingebettet und über alle Einsätze geteilt. Die Wolke benötigt 322 Dreiecke, damit ihre äußeren Dunstfetzen lokal
-strömen können; der gesamte Effekt sieben Zeichenschritte mit höchstens 24 sichtbaren Blitzen
+eingebettet und über alle Einsätze geteilt. Die Wolke benötigt 384 Dreiecke für sanfte Bewegung von Körper und Dunst; der gesamte Effekt sieben Zeichenschritte mit höchstens 24 sichtbaren Blitzen
 und 144 gepoolten Funken sowie 24 kurzlebigen Staubstößen. Keine dynamischen Lichtquellen oder Nachbearbeitung.
 Quelle, Generierungsprompt, Hashes und Budgetprüfung liegen unter
 `assets/effects/thunder-reference/`.

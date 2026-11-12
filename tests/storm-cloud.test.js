@@ -6,8 +6,11 @@ const uniforms=()=>({uAge:{value:0},uOpacity:{value:1},uFlash:{value:0},uCutouts
 test('reference cloud uses the supplied shared artwork in a compact bounded billboard',()=>{
  const texture=new THREE.Texture();texture.userData.artwork='thunder-reference-v1';
  const cloud=createStormCloud(uniforms(),texture);
- assert.equal(cloud.artwork,'thunder-reference-v1');assert.ok(cloud.triangles<=400);assert.ok(cloud.horizontalRadius<=2.5);
- for(const mesh of cloud.meshes){assert.equal(mesh.material.uniforms.uCloud.value,texture);assert.equal(mesh.material.depthWrite,false);assert.ok(mesh.geometry.parameters.width>=4.4&&mesh.geometry.parameters.width<=4.55);assert.equal(mesh.frustumCulled,false);}
+ assert.equal(cloud.artwork,'thunder-reference-v1');assert.ok(cloud.triangles<=400);assert.ok(cloud.horizontalRadius<=2.85);
+ for(const mesh of cloud.meshes){assert.equal(mesh.material.uniforms.uCloud.value,texture);assert.equal(mesh.material.depthWrite,false);assert.ok(mesh.geometry.parameters.width>=5.05&&mesh.geometry.parameters.width<=5.18);assert.equal(mesh.frustumCulled,false);
+  // Include billow motion and breathing in the conservative visibility bound.
+  assert.ok(mesh.geometry.parameters.width*.5*1.012+.025+.035+.035<cloud.horizontalRadius);
+ }
  cloud.dispose();texture.dispose();
 });
 test('disposing a field frees its meshes but never the shared texture needed by the next cast',()=>{

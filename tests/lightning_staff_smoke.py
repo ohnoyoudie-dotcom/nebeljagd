@@ -93,7 +93,7 @@ with sync_playwright() as pw:
                 page.mouse.move(pixel['x'], pixel['y']); page.keyboard.down('f')
             page.wait_for_function('nebeljagdTestState().combat.storm.aimRange?.radius===20')
             charged = state(page)['combat']['storm']
-            assert charged['aimRange']['heldSeconds'] >= 3 and charged['radius'] == 4.8
+            assert charged['aimRange']['heldSeconds'] >= 3 and charged['radius'] == 3.8
             assert state(page)['combat']['shotsFired'] == 0 and not charged['active']
             capture(page, mode+'-aim')
             passed(mode+': hold grows the plain target reach to 20m in 3s without firing')
@@ -110,12 +110,12 @@ with sync_playwright() as pw:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             current = state(page); cloud = current['combat']['storm']
             assert cloud['visuals']['style'] == 'compact-storm-eye' and cloud['visuals']['visible']
-            assert 2.2 <= cloud['visuals']['cloudRadius'] <= 2.5 < cloud['radius']*.55
+            assert 2.7 <= cloud['visuals']['cloudRadius'] <= 3.0 < cloud['radius']*.85
             assert cloud['visuals']['bolts'] >= 6, cloud
             assert cloud['visuals']['cloudShape'] == 'reference-thunderhead'
             assert cloud['visuals']['artwork'] == 'thunder-reference-v1'
             assert cloud['visuals']['boltStyle'] == 'hierarchical-thunderbolts'
-            assert cloud['visuals']['finish'] == 'wind-frayed-cloud-grounded-strikes'
+            assert cloud['visuals']['finish'] == 'compact-billowing-thunderstorm'
             assert cloud['visuals']['draws'] <= 8 and cloud['visuals']['impacts'] > 0
             assert current['combat']['shotsFired'] == 1 and current['combat']['effects']['lightningProjectiles'] == 0
             victim = next(a for a in current['practiceActors'] if a['id'] == 'practice-2')

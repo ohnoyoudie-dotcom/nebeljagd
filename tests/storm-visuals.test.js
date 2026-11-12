@@ -71,7 +71,7 @@ test('the first lightning flash stays bright across a slow frame before flickeri
   visuals.strike({x:4,y:0,z:3},5);
   visuals.update(.05);
   assert.equal(bolts.geometry.attributes.aEnergy.getX(0),1);
-  visuals.update(.15);
+  visuals.update(.18);
   assert.ok(bolts.geometry.attributes.aEnergy.getX(0)>.85,'the second discharge remains bright, not a gray tail');
   visuals.update(.25);
   assert.equal(bolts.geometry.attributes.aEnergy.getX(0),0);
@@ -87,7 +87,7 @@ test('bolt thickness and fork locations vary while every shared corner stays clo
     const slot=profiles.length,base=slot*54*6;
     const p=bolts.geometry.attributes.position,w=bolts.geometry.attributes.aWidth;
     const widths=Array.from({length:25},(_,i)=>w.getX(base+(i===24?23*6+2:i*6)));
-    assert.ok(Math.max(...widths)<.20 && Math.min(...widths)>.05);
+    assert.ok(Math.max(...widths)<.21 && Math.min(...widths)>.05);
     assert.ok(widths.some((value,i)=>i>0 && value>widths[i-1]),'local width variation breaks the uniform ribbon');
     const roots=[];
     for(let branch=0;branch<5;branch++) {
@@ -121,5 +121,17 @@ test('impact dust rises and dissipates while ground sparks travel outward, with 
   // Three's decompose() returns unit scale for a singular matrix; inspect its
   // actual basis instead to verify that expired instances render no geometry.
   for(let i=0;i<sparks.count;i++){sparks.getMatrixAt(i,matrix);assert.ok(matrix.elements.slice(0,12).every(value=>value===0));}
+  visuals.dispose();
+});
+
+
+test('return strokes differ per bolt without changing collision endpoints or cleanup', () => {
+  const { visuals, bolts } = setup();
+  for(let seed=1;seed<=12;seed++)visuals.strike({x:4,y:0,z:3},seed);
+  visuals.update(.20);
+  const energy=bolts.geometry.attributes.aEnergy;
+  const values=Array.from({length:12},(_,i)=>energy.getX(i*54*6));
+  assert.ok(values.some(v=>v===0) && values.some(v=>v>.9),'return flashes should not all switch together');
+  visuals.update(.4);assert.ok(energy.array.every(v=>v===0));
   visuals.dispose();
 });

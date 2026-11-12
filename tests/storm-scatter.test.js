@@ -7,7 +7,7 @@ function seeded(seed) {
 }
 
 test('storm landings cover the disk with independent angles instead of a rotating ring', () => {
-  const radius = 4.8, points = createStormScatter(radius, 2048, seeded(734));
+  const radius = 3.8, points = createStormScatter(radius, 2048, seeded(734));
   const quadrants = [0, 0, 0, 0]; let central = 0, outer = 0, angularCorrelation = 0;
   for (let i = 0; i < points.length; i++) {
     const p = points[i], distance = Math.hypot(p.x, p.z);
@@ -27,8 +27,8 @@ test('storm landings cover the disk with independent angles instead of a rotatin
 });
 
 test('successive casts use fresh samples while an injected seed can reproduce a cast', () => {
-  const random = seeded(91), first = createStormScatter(4.8, 25, random), second = createStormScatter(4.8, 25, random);
+  const random = seeded(91), first = createStormScatter(3.8, 25, random), second = createStormScatter(3.8, 25, random);
   assert.notDeepEqual(first, second);
-  assert.deepEqual(first, createStormScatter(4.8, 25, seeded(91)));
+  assert.deepEqual(first, createStormScatter(3.8, 25, seeded(91)));
   assert.equal(new Set(first.map(p => `${p.x},${p.z}`)).size, 25);
 });

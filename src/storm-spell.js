@@ -6,7 +6,7 @@ import { traceRangedProjectile } from './projectile-collision.js';
 import { createStormScatter } from './storm-scatter.js';
 
 export const STORM_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
-  radius: 4.8, warning: .25, duration: 3, fade: .25, stun: .4, scatterPerPulse: 5,
+  radius: 3.8, warning: .25, duration: 3, fade: .25, stun: .4, scatterPerPulse: 5,
   pulses: Object.freeze([.35, .91, 1.53, 2.12, 2.78]) });
 
 /** One aimed storm, using simulation time for charge, strikes and cleanup. */

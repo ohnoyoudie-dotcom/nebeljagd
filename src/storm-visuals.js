@@ -14,7 +14,7 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
     vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
     fragmentShader: `varying vec2 vUv;uniform float uOpacity,uFlash,uAge;
       void main(){vec2 p=vUv*2.-1.;float r=length(p);float rim=1.-smoothstep(.007,.018,abs(r-.98));
-      vec2 q=(p-vec2(.01*sin(uAge*.85),.01*cos(uAge*1.35)))*vec2(2.3,2.65);
+      vec2 q=(p-vec2(.01*sin(uAge*.85),.01*cos(uAge*1.35)))*vec2(1.7,1.95);
       float shadow=exp(-dot(q,q)*(1.65+.10*sin(uAge*2.1)));
       vec3 tint=mix(vec3(.08,.12,.18),vec3(.42,.57,.68),rim);
       tint=mix(tint,vec3(.012,.019,.027),shadow);
@@ -59,7 +59,7 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
         vec2 across=vec2(-t.y,t.x);across/=max(length(across),.001);
         p.xy+=across*aWidth*aSide;vSide=aSide;vEnergy=aEnergy;gl_Position=projectionMatrix*p;}`,
     fragmentShader: `varying float vSide,vEnergy;
-      void main(){float d=abs(vSide);float core=1.-smoothstep(.08,.38,d);
+      void main(){float d=abs(vSide);float core=1.-smoothstep(.10,.46,d);
         float halo=pow(1.-d,2.6);vec3 color=mix(vec3(.09,.34,1.),vec3(.94,.98,1.),core);
         gl_FragColor=vec4(color,min(1.,core+halo*.55)*vEnergy);
         #include <colorspace_fragment>
@@ -145,8 +145,9 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
     const length=Math.hypot(entry.x-sx,entry.z-sz)||1;
     const nx=(entry.z-sz)/length,nz=-(entry.x-sx)/length;
     for(let k=0;k<7;k++) {
-      const t=k/6,bend=k===0||k===6?0:(random(seed+k*29)-.5)*.75;
-      anchors[k].set(sx+(entry.x-sx)*t+nx*bend,3.35+(entry.y-3.35)*t,sz+(entry.z-sz)*t+nz*bend);
+      const t=k/6,bend=k===0||k===6?0:(random(seed+k*29)-.5)*.95;
+      const lift=k===0||k===6?0:(random(seed+k*41)-.5)*.24;
+      anchors[k].set(sx+(entry.x-sx)*t+nx*bend,3.35+(entry.y-3.35)*t+lift,sz+(entry.z-sz)*t+nz*bend);
     }
     for(let i=0;i<=24;i++) {
       const section=Math.min(5,Math.floor(i/4)),t=(i-section*4)/4;
@@ -154,19 +155,22 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
       if(i%4) {const kink=(random(seed*17+i*7)-.5)*.13;path[i].x+=nx*kink;path[i].z+=nz*kink;}
 
     }
-    polyline(slot,0,path,.17,.09,seed);
+    polyline(slot,0,path,.19,.085,seed);
     for(let branch=0;branch<5;branch++) {
       const node=2+branch*4+Math.floor(random(seed+branch*37)*3),side=random(seed+branch*43)>.5?1:-1;
       branchPath[0].copy(path[node]);
       const angle=Math.atan2(entry.z-sz,entry.x-sx)+side*(.55+random(seed+branch*7)*.8);
-      const reach=.45+random(seed+branch*53)*1.15;
+      const reach=.28+random(seed+branch*53)*.65;
       for(let j=0;j<6;j++) {
         const t=(j+1)/6,base=path[Math.min(24,node+j+1)];
         branchPath[j+1].set(base.x+Math.cos(angle)*t*reach+(random(seed+j+branch)-.5)*.16,
           base.y+.06*t,base.z+Math.sin(angle)*t*reach+side*(random(seed+j*11)-.5)*.14);
 
       }
-      polyline(slot,24+branch*6,branchPath,.035+random(seed+branch*59)*.025,.003,seed+branch*61);
+      // Two stronger forks carry the discharge; the other three are hairline
+      // leaders, keeping a clear hierarchy instead of a starburst of equal arms.
+      const branchWidth=branch===1||branch===3?.075:.035;
+      polyline(slot,24+branch*6,branchPath,branchWidth+random(seed+branch*59)*.018,.0025,seed+branch*61);
     }
     for(const name of ['position','aTangent','aWidth','aSide'])boltGeometry.attributes[name].needsUpdate=true;
     flash=Math.max(flash,Math.max(0,1-lag*5));paint();
@@ -177,7 +181,10 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
       const boltAge=age/BOLT_SECONDS;
       // A thunderbolt extinguishes between return strokes instead of becoming
       // a lingering translucent line across the field.
-      const energy=s.life>0&&boltAge<1?(age<.14?1:age<.18?0:age<.28?.98:age<.32?0:.90):0;
+      // Return strokes vary per discharge; fixed seeds preserve pause/coarse
+      // frame determinism while neighbouring bolts no longer blink in lockstep.
+      const second=.18+random(s.seed+71)*.045,third=.32+random(s.seed+97)*.025;
+      const energy=s.life>0&&boltAge<1?(age<.12?1:age<second?0:age<second+.065?.98:age<third?0:age<third+.055?.90:0):0;
       s.energy=energy;flash=Math.max(flash,energy*.8);
       energies.fill(energy,i*segments*6,(i+1)*segments*6);
       impactEnergy[i]=s.life>0?Math.pow(s.life/IMPACT_SECONDS,1.3):0;impactAge[i]=age/IMPACT_SECONDS;
@@ -211,7 +218,7 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
       cloudUniforms.uAge.value=age;cloudUniforms.uOpacity.value=opacity;cloudUniforms.uFlash.value=flash;
       footprintMaterial.uniforms.uOpacity.value=opacity;footprintMaterial.uniforms.uFlash.value=flash;footprintMaterial.uniforms.uAge.value=age;},
     get telemetry(){return {style:'compact-storm-eye',cloudShape:'reference-thunderhead',artwork:cloud.artwork,boltStyle:'hierarchical-thunderbolts',visible:group.visible,cloudRadius:cloud.horizontalRadius,
-      finish:'wind-frayed-cloud-grounded-strikes',capacity,bolts:slots.filter(s=>s.energy>0).length,impacts:slots.filter(s=>s.life>0).length,draws:group.visible?5+cloud.meshes.length:0};},
+      finish:'compact-billowing-thunderstorm',capacity,bolts:slots.filter(s=>s.energy>0).length,impacts:slots.filter(s=>s.life>0).length,draws:group.visible?5+cloud.meshes.length:0};},
     dispose(){scene.remove(group);cloud.dispose();for(const mesh of [footprint,bolts,impacts,dust,sparks]){mesh.geometry.dispose();mesh.material.dispose();if(mesh.isInstancedMesh)mesh.dispose();}},
   };
 }
