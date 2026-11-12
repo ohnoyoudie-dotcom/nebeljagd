@@ -5,7 +5,27 @@ import { createCombat } from '../src/combat.js';
 import { createHourglassSpell, HOURGLASS_RULES as rules } from '../src/hourglass-spell.js';
 import { weaponStats, RARITIES } from '../src/loot-tiers.js';
 import { createWeapons } from '../src/weapons.js';
-import { createHourglassVisuals } from '../src/hourglass-visuals.js';
+import { createHourglassVisuals, HOURGLASS_VISUAL_BUDGET } from '../src/hourglass-visuals.js';
+
+test('the sand sea opens in layers, has real height and recycles every buffer through dissolution',()=>{
+ const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules),center=new THREE.Vector3();
+ v.show(center,.3,true);assert.equal(v.telemetry.draws,1);assert.equal(v.telemetry.particles,0);
+ v.show(center,.75,true);const early=v.telemetry.opening;assert.ok(early>0&&early<1);
+ const root=scene.getObjectByName('Sanduhrstab · Zeitfeld'),sand=root.getObjectByName('Sanduhrstab · kreisender Sand');
+ const shards=root.getObjectByName('Sanduhrstab · schwebende Zeitfragmente');
+ const positions=sand.geometry.attributes.position.array,matrices=shards.instanceMatrix.array;
+ v.show(center,2,true);assert.equal(v.telemetry.opening,1);assert.equal(v.telemetry.currents,2);
+ assert.equal(v.telemetry.particles,HOURGLASS_VISUAL_BUDGET.grains);
+ assert.ok(Math.max(...positions.filter((_,i)=>i%3===1))>.9,'sand floats above the ground plane');
+ const drawn=root.children.filter(m=>m.visible);assert.equal(drawn.length,HOURGLASS_VISUAL_BUDGET.draws);
+ assert.equal(drawn.filter(m=>m.isLight).length,0);
+ const frame=Array.from(positions);v.show(center,2,true);assert.deepEqual(Array.from(positions),frame,'simulation time, not wall-clock time');
+ v.show(center,5.25,true);assert.ok(v.telemetry.opacity<.3);assert.equal(sand.geometry.attributes.position.array,positions);assert.equal(shards.instanceMatrix.array,matrices);
+ assert.ok(Math.max(...positions.filter((_,i)=>i%3===1))<.3,'sand falls to the floor');
+ v.show(center,5.45,true);assert.equal(v.telemetry.particles,0);assert.equal(shards.visible,false);
+ let released=0;root.children.forEach(m=>{m.geometry.addEventListener('dispose',()=>released++);m.material.addEventListener('dispose',()=>released++);});
+ v.dispose();v.dispose();assert.equal(released,12);assert.equal(scene.children.length,0);
+});
 
 test('sand follows sloped terrain with cached height samples, including its warning boundary',()=>{
  const scene=new THREE.Scene();let samples=0;const height=(x,z)=>x*.2+z*.3;
@@ -14,7 +34,7 @@ test('sand follows sloped terrain with cached height samples, including its warn
  const count=samples;visuals.show(center,2,true);assert.equal(samples,count,'no terrain queries per animation frame');
  const root=scene.getObjectByName('Sanduhrstab · Zeitfeld');
  const points=root.getObjectByName('Sanduhrstab · kreisender Sand').geometry.attributes.position;
- for(let i=0;i<points.count;i++){const clearance=points.getY(i)+center.y-height(points.getX(i)+center.x,points.getZ(i)+center.z);assert.ok(clearance>=.034&&clearance<.7);}
+ for(let i=0;i<points.count;i++){const clearance=points.getY(i)+center.y-height(points.getX(i)+center.x,points.getZ(i)+center.z);assert.ok(clearance>=.034&&clearance<2);}
  const rim=root.children[0];rim.updateMatrix();
  const p=new THREE.Vector3();for(let i=0;i<rim.geometry.attributes.position.count;i++){p.fromBufferAttribute(rim.geometry.attributes.position,i).applyMatrix4(rim.matrix).add(center);assert.ok(Math.abs(p.y-height(p.x,p.z)-.055)<1e-6);}
  visuals.dispose();
@@ -69,7 +89,7 @@ test('warning, active and dissolution freeze, respect visibility and release res
  const sand=root.getObjectByName('Sanduhrstab · kreisender Sand');
  const frozen=Array.from(sand.geometry.attributes.position.array);s.update(0,caster);assert.deepEqual(Array.from(sand.geometry.attributes.position.array),frozen);
  visible=false;s.update(.1,caster);assert.equal(s.telemetry.visuals.visible,false);
- visible=true;s.update(3.6,caster);assert.equal(s.telemetry.visuals.phase,'dissolve');assert.ok(s.telemetry.visuals.opacity>0);assert.ok(s.telemetry.visuals.draws<=3);
+ visible=true;s.update(3.6,caster);assert.equal(s.telemetry.visuals.phase,'dissolve');assert.ok(s.telemetry.visuals.opacity>0);assert.ok(s.telemetry.visuals.draws<=6);
  s.update(1,caster);assert.equal(s.telemetry.active,false);assert.equal(s.telemetry.visuals.draws,0);
  let disposed=0;sand.geometry.addEventListener('dispose',()=>disposed++);s.dispose();s.dispose();assert.equal(disposed,1);idle.dispose();assert.equal(scene.children.length,0);
 });

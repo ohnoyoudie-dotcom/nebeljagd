@@ -28,12 +28,18 @@ Der gemeinsame Zielindikator verwendet einen klaren Ring mit feinen wandernden
 Funken und weichem Saum, in Grün, Violett, Blitzblau oder Sandgold passend zum Stab. Die
 Zielsteuerung und Vorwarnzeiten vorhandener Waffen bleiben erhalten.
 
-Das Zeitfeld besitzt kreisende goldene Sandbahnen und 360 einzelne Körner.
-Keine Gravitationsbewegung, zentrale Uhr oder schwarzen Flächen. Beim Ausklingen
-wird die Kreisbewegung langsamer, die Körner driften auseinander und sinken.
-Bodenbahnen, Rand und Körner folgen dem Gelände. Höhen werden beim Platzieren
-einmal abgetastet. Maximal drei zusätzliche Zeichenaufrufe, feste Puffer, keine
-zusätzlichen Lichter, Texturen oder Nachbearbeitung. Pause friert die Animation ein.
+Das überarbeitete Zeitfeld öffnet sich mit einer wandernden Lichtwelle und
+aufsteigenden Sandkörnern. Ein gefülltes Bernsteinfeld trägt dichte goldene
+Strömungen; zwei gekrümmte, angehobene Sandschichten geben dem Feld Volumen.
+1.200 unregelmäßig verteilte Körner, einzelne türkisfarbene Funken und 28
+schwebende Kristallsplitter umkreisen den Bereich. Kleine Sanduhrglyphen
+wandern am Rand. Keine zentrale Uhr und keine Bewegung zur Mitte.
+
+Beim Ausklingen brechen die Strömungen körnig auf, die Splitter schrumpfen,
+und der Sand sinkt zu Boden. Gelände wird einmal beim Platzieren abgetastet.
+Maximal sechs zusätzliche Zeichenaufrufe, feste Puffer und Instanzen, keine
+zusätzlichen Lichter, Texturen oder Nachbearbeitung. Pause friert sämtliche
+Bewegung ein. Die Spielwerte, Zielsteuerung und das Stabmodell bleiben erhalten.
 
 - Original unverändert: `assets/inbox/Sanduhrenstab.glb`, SHA-256
   `7da82740306403088148b4f1458b888e11a3bd05dce8d249406678cf8c5e9fbd`.
