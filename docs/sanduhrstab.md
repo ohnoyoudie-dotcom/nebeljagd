@@ -38,6 +38,11 @@ zunächst die Vorwarnung und tritt nach dem Öffnen zurück. Das Feld enthält
 keine blaue Bodenfüllung, Runenscheibe oder Kristallsplitter. Es zieht Gegner
 weiterhin nicht zur Mitte.
 
+Sandböen und Wolken verwenden dieselbe räumliche Staubstruktur und Farbpalette.
+Breite, weich auslaufende Böen gehen in die Wolken über. Körner, Wolken und Böen
+folgen einer gemeinsamen, vom Abstand zur Mitte abhängigen Drehbewegung, damit
+das Feld als zusammenhängende Sandmasse wirkt.
+
 Beim Ausklingen verlieren die Sandböen ihre Höhe, die Staubwolken lockern sich,
 und die Körner sinken zu Boden und verblassen. Gelände wird einmal beim
 Platzieren abgetastet. Die Staubwolken teilen sich einen instanzierten

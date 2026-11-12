@@ -5,11 +5,22 @@ export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 2400, puffs: 64, 
 const TAU = Math.PI * 2;
 const smooth = x => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const random = (i, salt) => { const v = Math.sin((i + 1) * salt) * 43758.5453; return v - Math.floor(v); };
+// Dust, sheets and grains share the same radial shear instead of drifting apart.
+const flowSpeed = radius => .9 + .12 * (1 - radius);
 const noise = `
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
 return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1.),f.x),f.y);}
 float dust(vec2 p){return noise(p)*.57+noise(p*2.03)*.29+noise(p*4.11)*.14;}
+`;
+const sandField = `${noise}
+float sandDensity(vec3 p){
+  float r=clamp(length(p.xz)/uRadius,0.,1.);
+  float a=-uTime*2.15*(.9+.12*(1.-r));
+  vec2 q=vec2(cos(a)*p.x-sin(a)*p.z,sin(a)*p.x+cos(a)*p.z);
+  return dust(q*2.2+vec2(p.y*.55,-p.y*.4+uTime*.12));
+}
+vec3 sandColor(float n){return mix(vec3(.29,.15,.05),vec3(.78,.55,.28),.28+n*.64);}
 `;
 
 /** Rising sand gusts, not a painted ground disc. Fixed pools, five field draws,
@@ -36,7 +47,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     return THREE.MathUtils.lerp(THREE.MathUtils.lerp(terrain[i], terrain[i + 1], u - ix),
       THREE.MathUtils.lerp(terrain[i + 17], terrain[i + 18], u - ix), v - iz);
   }
-  const uniforms = { uTime: { value: 0 }, uOpacity: { value: 0 } };
+  const uniforms = { uTime: { value: 0 }, uOpacity: { value: 0 }, uRadius: { value: rules.radius } };
   const currents = [], SEGMENTS = 112;
   for (let layer = 0; layer < 2; layer++) {
     const geometry = new THREE.BufferGeometry(), positions = new Float32Array((SEGMENTS + 1) * 6), uv = new Float32Array((SEGMENTS + 1) * 4), index = [];
@@ -48,14 +59,13 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     const material = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
       forceSinglePass: true, toneMapped: false, uniforms,
-      vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-      fragmentShader: `varying vec2 vUv;uniform float uTime,uOpacity;${noise}
-        void main(){float n=dust(vec2(vUv.x*19.-uTime*.9,vUv.y*3.));
-          float feather=smoothstep(0.,.22,vUv.y)*(1.-smoothstep(.66,1.,vUv.y));
-          float ends=smoothstep(0.,.12,vUv.x)*(1.-smoothstep(.75,1.,vUv.x));
-          float density=smoothstep(.22,.64,n)*feather*ends;
-          vec3 color=mix(vec3(.29,.15,.045),vec3(.78,.53,.24),n*.8+vUv.y*.2);
-          gl_FragColor=vec4(color,density*.72*uOpacity);
+      vertexShader: 'varying vec2 vUv;varying vec3 vField;void main(){vUv=uv;vField=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader: `varying vec2 vUv;varying vec3 vField;uniform float uTime,uOpacity,uRadius;${sandField}
+        void main(){float n=sandDensity(vField);
+          float feather=pow(max(0.,sin(vUv.y*3.14159265)),2.);
+          float ends=smoothstep(0.,.18,vUv.x)*(1.-smoothstep(.68,1.,vUv.x));
+          float density=smoothstep(.18,.72,n)*feather*ends;
+          gl_FragColor=vec4(sandColor(n),density*.34*uOpacity);
           #include <colorspace_fragment>
         }`,
     });
@@ -72,19 +82,19 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
   puffGeometry.setAttribute('shape', new THREE.InstancedBufferAttribute(puffParams, 4).setUsage(THREE.DynamicDrawUsage));
   puffGeometry.instanceCount = HOURGLASS_VISUAL_BUDGET.puffs;
   const puffMaterial = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, toneMapped: false,
-    uniforms, vertexShader: `attribute vec3 center;attribute vec4 shape;varying vec2 vUv;varying float vSeed,vAlpha;
+    uniforms, vertexShader: `attribute vec3 center;attribute vec4 shape;varying vec2 vUv;varying vec3 vField;varying float vSeed,vAlpha;
       void main(){vUv=position.xy;vSeed=shape.z;vAlpha=shape.w;
         vec4 p=modelViewMatrix*vec4(center,1.);float a=shape.z*6.2831853;
         vec2 q=mat2(cos(a),-sin(a),sin(a),cos(a))*position.xy;
-        p.xy+=q*shape.xy;gl_Position=projectionMatrix*p;}`,
-    fragmentShader: `varying vec2 vUv;varying float vSeed,vAlpha;uniform float uTime,uOpacity;${noise}
-      void main(){vec2 p=vUv;float n=dust(p*2.7+vec2(vSeed*47.+uTime*.18,vSeed*13.));
+        vec3 offset=vec3(q*shape.xy,0.);
+        vField=center+vec3(dot(modelViewMatrix[0].xyz,offset),dot(modelViewMatrix[1].xyz,offset),dot(modelViewMatrix[2].xyz,offset));
+        p.xy+=offset.xy;gl_Position=projectionMatrix*p;}`,
+    fragmentShader: `varying vec2 vUv;varying vec3 vField;varying float vSeed,vAlpha;uniform float uTime,uOpacity,uRadius;${sandField}
+      void main(){vec2 p=vUv;float n=sandDensity(vField);
         float radius=length(p*vec2(1.,1.08));
         float edge=1.-smoothstep(.36+n*.30,.73+n*.25,radius);
         float body=smoothstep(.16,.70,n);
-        float light=clamp(.48-p.y*.22+n*.32,0.,1.);
-        vec3 color=mix(vec3(.25,.12,.032),vec3(.86,.65,.35),light);
-        gl_FragColor=vec4(color,edge*(.22+body*.70)*vAlpha*uOpacity);
+        gl_FragColor=vec4(sandColor(n),edge*(.22+body*.70)*vAlpha*uOpacity);
         #include <colorspace_fragment>
       }`,
   });
@@ -134,10 +144,10 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     for(let layer=0;layer<2;layer++) {
       const a=currents[layer].geometry.attributes.position;
       for(let i=0;i<=SEGMENTS;i++) {
-        const t=i/SEGMENTS,angle=turn+layer*Math.PI+t*TAU*1.8;
+        const t=i/SEGMENTS,angle=turn*flowSpeed(.95-.92*t)+layer*Math.PI+t*TAU*1.8;
         const swell=Math.sin(t*17-time*1.3)*.09;
         const radius=(rules.radius*(.95-.92*t)+swell)*(.4+.6*opening),y=(.18+t*2.25+Math.sin(t*13+time)*.07)*opening*fade;
-        const width=(.55+.4*Math.sin(t*Math.PI))*fade;
+        const width=(1.1+.5*Math.sin(t*Math.PI))*fade;
         for(let side=0;side<2;side++) {
           const offset=(side-.5)*width,x=Math.cos(angle)*(radius+offset*.62),z=Math.sin(angle)*(radius+offset*.62);
           a.setXYZ(i*2+side,x,height(x,z)+Math.max(.035,y+offset*.78),z);
@@ -145,7 +155,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       }a.needsUpdate=true;
     }
     for(const b of billows) {
-      const t=Math.sqrt((b.i+.5)/billows.length),angle=turn*(.75+b.seed*.35)+b.i*2.3999632297;
+      const t=Math.sqrt((b.i+.5)/billows.length),angle=turn*flowSpeed(.93*t)+b.i*2.3999632297;
       const radius=(rules.radius*.93*t)*(.4+.6*opening)+dissolving*.25;
       b.x=Math.cos(angle)*radius;b.z=Math.sin(angle)*radius;
       b.y=height(b.x,b.z)+.08+(.18+b.seed*1.9+.16*Math.sin(time*2+b.seed*TAU))*opening*fade;
@@ -153,8 +163,8 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       b.alpha=.36+.14*b.seed;
     }uploadBillows();
     for(let i=0;i<count;i++) {
-      const seed=seeds[i],t=grainProgress[i],angle=turn*(.75+seed*.45)+t*TAU;
-      const radius=rules.radius*.98*Math.sqrt((i+.5)/count)*(.4+.6*opening)+dissolving*.3;
+      const seed=seeds[i],t=grainProgress[i],radial=.98*Math.sqrt((i+.5)/count),angle=turn*flowSpeed(radial)+t*TAU;
+      const radius=rules.radius*radial*(.4+.6*opening)+dissolving*.3;
       const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
       positions[i*3]=x;positions[i*3+2]=z;
       positions[i*3+1]=height(x,z)+.04+(.1+t*2.2+seed*.17)*opening*fade;

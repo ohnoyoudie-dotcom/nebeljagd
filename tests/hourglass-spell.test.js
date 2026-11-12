@@ -81,6 +81,27 @@ test('rotating sand fills the center, middle and edge in every direction',()=>{
  v.dispose();
 });
 
+test('dust clouds and nearby grains travel together instead of sliding past each other',t=>{
+ const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules),center=new THREE.Vector3();
+ t.after(()=>v.dispose());
+ const sand=scene.getObjectByName('Sanduhrstab · kreisender Sand').geometry.attributes.position;
+ const clouds=scene.getObjectByName('Sanduhrstab · aufgewirbelter Staub').geometry.attributes.center;
+ v.show(center,1.5,true);
+ const beforeSand=sand.array.slice(),beforeClouds=clouds.array.slice();
+ v.show(center,2,true);
+ const turn=(before,after,i)=>Math.atan2(before[i]*after[i+2]-before[i+2]*after[i],before[i]*after[i]+before[i+2]*after[i+2]);
+ for(let i=0;i<beforeClouds.length;i+=3){
+  const radius=Math.hypot(beforeClouds[i],beforeClouds[i+2]);
+  let nearest=0,distance=Infinity;
+  for(let j=0;j<beforeSand.length;j+=3){
+   const delta=Math.abs(Math.hypot(beforeSand[j],beforeSand[j+2])-radius);
+   if(delta<distance){distance=delta;nearest=j;}
+  }
+  assert.ok(Math.abs(turn(beforeClouds,clouds.array,i)-turn(beforeSand,sand.array,nearest))<.005,
+   'clouds and grains at the same radius must belong to one rotating sand mass');
+ }
+});
+
 test('sand follows sloped terrain with cached height samples, including its warning boundary',()=>{
  const scene=new THREE.Scene();let samples=0;const height=(x,z)=>x*.2+z*.3;
  const visuals=createHourglassVisuals(scene,rules,(x,z)=>{samples++;return height(x,z);});
