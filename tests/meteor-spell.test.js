@@ -122,3 +122,11 @@ test('uploaded meteor staff is preserved, textured, visible in the editor and ro
   assert.ok(renderWorldmapSvg(map).includes('id="world-object-meteorStaff"'));
   assert.equal(getVariantAsset('meteorStaff','kit-tripo-meteor-staff').format,'glb');
 });
+
+test('meteor archive and extracted original remain pinned alongside the bounded runtime package', () => {
+  const root = 'assets/imported/tripo-meteor-projectile/';
+  const manifest = JSON.parse(readFileSync(root + 'runtime-manifest.json'));
+  assert.deepEqual(manifest.sources.map(s => s.path).sort(), ['assets/inbox/Meteor Projektil.glb', 'assets/inbox/Meteor Projektil.rar']);
+  for (const source of manifest.sources) assert.equal(createHash('sha256').update(readFileSync(source.path)).digest('hex'), source.sha256);
+  for (const file of manifest.files) assert.equal(createHash('sha256').update(readFileSync(root + file.path)).digest('hex'), file.sha256);
+});

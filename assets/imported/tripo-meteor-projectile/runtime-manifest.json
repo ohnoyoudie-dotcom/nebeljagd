@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "path": "assets/inbox/Meteor Projektil.glb",
+      "sha256": "4f9a1a68931503dac7a122da40a93079a979d809e49e73958346de43e677b67f"
+    },
+    {
+      "path": "assets/inbox/Meteor Projektil.rar",
+      "sha256": "3a1d00a446b1979cec83d4c92fad9289d427c54908e9868be3e18a0a939e4d98"
+    }
+  ],
+  "files": [
+    {
+      "path": "meteor-projectile-inspection.json",
+      "bytes": 2245,
+      "sha256": "635d9187e4c1bb771cf8d9c8f932a7c8f3ad36fab236d3bb94e6bc277c6e1bf9"
+    },
+    {
+      "path": "meteor-projectile-preview.png",
+      "bytes": 479682,
+      "sha256": "73c339a5386af0606746f70b520d32415f6e528ec96960d5f80ac28fed49b92f"
+    },
+    {
+      "path": "runtime/meteor-projectile.glb",
+      "bytes": 282156,
+      "sha256": "de5ab77c7291991ac1c1455f22e0056a0d49fdd380b121d30241c133e10c3454"
+    }
+  ]
+}

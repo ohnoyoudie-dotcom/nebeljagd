@@ -5,11 +5,14 @@ import iceUrl from '../assets/imported/tripo-projectiles/runtime/ice-crystal.glb
 import arrowUrl from '../assets/imported/tripo-projectiles/runtime/feathered-arrow.glb?url&inline';
 import moonUrl from '../assets/imported/tripo-star-moon/runtime/moon-crescent.glb?url&inline';
 import gravityUrl from '../assets/imported/tripo-gravity-projectile/runtime/void-projectile.glb?url&inline';
+import meteorUrl from '../assets/imported/tripo-meteor-projectile/runtime/meteor-projectile.glb?url&inline';
 
 // Ice uses its measured source direction; the arrow uses full 3D endpoints.
 // Both are aligned to gameplay +Z. The crescent retains its XY
 // silhouette here; its flight wrapper lays that decorated face upward.
 const definitions = {
+  meteor: { url: meteorUrl, source: 'Meteor Projektil.glb', runtime: 'meteor-projectile.glb',
+    name: 'Meteor · hochgeladenes Projektil', length: 1, diameter: 1, package: 'tripo-meteor-projectile' },
   ice: { url: iceUrl, source: 'ice crystal 3d model.glb', runtime: 'ice-crystal.glb',
     name: 'Eiskristall · hochgeladenes Projektil', forward: [.982, .614, 0], length: .95 },
   arrow: { url: arrowUrl, source: 'feathered spear 3d model.glb', runtime: 'feathered-arrow.glb',
@@ -40,7 +43,7 @@ export async function loadProjectileModels() {
     if (definition.forward) oriented.quaternion.setFromUnitVectors(new THREE.Vector3(...definition.forward).normalize(), new THREE.Vector3(0, 0, 1));
     const bounds = new THREE.Box3().setFromObject(oriented, true);
     const size = bounds.getSize(new THREE.Vector3());
-    const length = definition.plane === 'XY' ? size.y : size.z;
+    const length = definition.diameter ? Math.max(size.x, size.y, size.z) : definition.plane === 'XY' ? size.y : size.z;
     if (!(length > 0) || !Number.isFinite(length)) throw new Error(`Ungültige Projektilabmessungen für ${key}.`);
     oriented.position.sub(bounds.getCenter(new THREE.Vector3()));
     prototype = new THREE.Group(); prototype.add(oriented);
@@ -51,7 +54,8 @@ export async function loadProjectileModels() {
     if (normalizedBounds.isEmpty() || !normalizedBounds.min.toArray().concat(normalizedBounds.max.toArray()).every(Number.isFinite)) {
       throw new Error(`Ungültige räumliche Ausrichtung für Projektil ${key}.`);
     }
-    prototype.userData = { triangles, nominalLength: definition.length, forwardAxis: definition.plane ? null : '+Z',
+    prototype.userData = { triangles, nominalLength: definition.length, forwardAxis: definition.plane || definition.diameter ? null : '+Z',
+      ...(definition.diameter ? { nominalDiameter: definition.diameter } : {}),
       ...(definition.plane ? { silhouettePlane: definition.plane } : {}),
       source: `assets/inbox/${definition.source}`, runtime: `assets/imported/${definition.package ?? 'tripo-projectiles'}/runtime/${definition.runtime}` };
     return [key, prototype];
