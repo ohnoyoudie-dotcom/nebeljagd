@@ -22,7 +22,7 @@ test('the sand vortex rises, orbits and reuses every buffer through pause and di
  const heightOf=array=>Math.max(...array.filter((_,i)=>i%3===1));
  v.show(center,2,true);assert.equal(v.telemetry.opening,1);assert.equal(v.telemetry.currents,2);
  assert.equal(v.telemetry.particles,HOURGLASS_VISUAL_BUDGET.grains);assert.equal(v.telemetry.puffs,64);
- assert.equal(sand.geometry.attributes.position.count,900);
+ assert.equal(sand.geometry.attributes.position.count,2400);
  assert.ok(heightOf(positions)>1.5&&heightOf(positions)<=2.6,'sand rises visibly above a standing character');
  for(const sheet of sheets)assert.ok(heightOf(sheet.geometry.attributes.position.array)>1.5,'each sandy current has real 3D height');
  assert.ok(heightOf(puffs.geometry.attributes.center.array)>1.5,'billows rise with the sand');
@@ -63,6 +63,22 @@ test('dissolving sand keeps its orbit direction while slowing down',t=>{
   assert.ok(first>0&&second>0,'settling grains must not reverse their active orbit direction');
   assert.ok(second<first,'equal time intervals cover smaller angles as sand settles');
  }
+});
+
+test('rotating sand fills the center, middle and edge in every direction',()=>{
+ const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules);
+ for(const age of [1.2,2.4,4]){
+  v.show(new THREE.Vector3(),age,true);
+  const points=scene.getObjectByName('Sanduhrstab · kreisender Sand').geometry.attributes.position;
+  const bins=new Array(32).fill(0);
+  for(let i=0;i<points.count;i++){
+   const x=points.getX(i),z=points.getZ(i),r=Math.hypot(x,z)/rules.radius;
+   const ring=Math.min(3,Math.floor(r*r*4)),sector=Math.min(7,Math.floor((Math.atan2(z,x)+Math.PI)/(Math.PI*2)*8));
+   bins[ring*8+sector]++;
+  }
+  assert.ok(bins.every(n=>n>=40),'no empty center, annular gaps or missing angular sectors');
+ }
+ v.dispose();
 });
 
 test('sand follows sloped terrain with cached height samples, including its warning boundary',()=>{

@@ -30,9 +30,10 @@ Zielsteuerung und Vorwarnzeiten vorhandener Waffen bleiben erhalten.
 
 Das Zeitfeld baut sich als körperlicher Sandwirbel auf: Zwei schraubenförmige
 Sandböen steigen vom Boden auf und tragen 64 weiche, unregelmäßige Staubwolken.
-900 einzelne Sandkörner kreisen mit den Böen bis etwa 2,5 m über dem Boden.
-Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten. Lücken
-zwischen den Böen lassen Spielfiguren und Boden erkennen. Der Rand markiert
+2.400 einzelne Sandkörner kreisen gleichmäßig über die gesamte Kreisfläche, auch im Zentrum, bis etwa 2,5 m über dem Boden.
+Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten. Durchscheinende
+Staubschichten lassen Spielfiguren und Boden erkennen. Die 64 Wolken verteilen
+sich über die Fläche, statt nur zwei schmale Wirbelbahnen zu besetzen. Der Rand markiert
 zunächst die Vorwarnung und tritt nach dem Öffnen zurück. Das Feld enthält
 keine blaue Bodenfüllung, Runenscheibe oder Kristallsplitter. Es zieht Gegner
 weiterhin nicht zur Mitte.
