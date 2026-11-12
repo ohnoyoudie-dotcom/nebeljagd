@@ -5,11 +5,11 @@ import { createCombat } from '../src/combat.js';
 import { createStormSpell, STORM_RULES } from '../src/storm-spell.js';
 import { createGravitySpell } from '../src/gravity-spell.js';
 
-function setup({ visible = () => true, blocked = false } = {}) {
+function setup({ visible = () => true, blocked = false, random = Math.random } = {}) {
   const scene = new THREE.Scene(), combat = createCombat();
   const world = { heightAt: () => 0, isLand: () => true, isWater: () => false,
     traceProjectile: () => blocked ? { t: .5, point: { x: 0, y: 2, z: 0 } } : null };
-  const storm = createStormSpell(scene, world, combat, 'caster', undefined, visible);
+  const storm = createStormSpell(scene, world, combat, 'caster', undefined, visible, null, { random });
   const origin = new THREE.Vector3();
   const target = combat.addTarget({ id: 'enemy', position: new THREE.Vector3(1, 0, 0) });
   function cast() { storm.beginAim(origin); storm.aimAt(origin, origin); storm.release({ damage: 23 }); }
@@ -92,4 +92,22 @@ test('gravity target crosses solid cover and remains visible; flight still colli
   gravity.release({ damage: 14 }); gravity.update(.2, origin);
   assert.equal(gravity.telemetry.flight, null); assert.equal(gravity.telemetry.center.z, 0);
   gravity.dispose();
+});
+
+test('five random ground strikes per wave are fixed at release and independent of frame rate', () => {
+  function run(steps) {
+    let seed = 42, draws = 0;
+    const s = setup({ random: () => { draws++; seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; } });
+    s.target.targetable = false;
+    const endpoints = [];
+    s.world.traceProjectile = (_from, to) => { endpoints.push({ x: to.x, y: to.y, z: to.z }); return null; };
+    s.cast(); const afterRelease = draws;
+    s.storm.update(0, s.origin); assert.equal(draws, afterRelease); assert.equal(endpoints.length, 0);
+    for (const dt of steps) s.storm.update(dt, s.origin);
+    assert.equal(endpoints.length, 25); assert.equal(draws, afterRelease);
+    assert.equal(s.storm.telemetry.pulses, 5);
+    assert.ok(endpoints.every(p => Math.hypot(p.x, p.z) <= STORM_RULES.radius));
+    s.storm.dispose(); return endpoints;
+  }
+  assert.deepEqual(run([3.5]), run(Array(70).fill(.05)));
 });

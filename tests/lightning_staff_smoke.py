@@ -110,7 +110,8 @@ with sync_playwright() as pw:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             current = state(page); cloud = current['combat']['storm']
             assert cloud['visuals']['style'] == 'compact-storm-eye' and cloud['visuals']['visible']
-            assert cloud['visuals']['cloudRadius'] <= 1.9 < cloud['radius']*.4
+            assert 2.2 <= cloud['visuals']['cloudRadius'] <= 2.5 < cloud['radius']*.55
+            assert cloud['visuals']['bolts'] >= 6, cloud
             assert cloud['visuals']['cloudShape'] == 'reference-thunderhead'
             assert cloud['visuals']['artwork'] == 'thunder-reference-v1'
             assert cloud['visuals']['boltStyle'] == 'hierarchical-thunderbolts'

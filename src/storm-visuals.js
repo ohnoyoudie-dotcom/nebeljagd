@@ -179,7 +179,7 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
       const opacity=Math.min(1,age/rules.warning)*THREE.MathUtils.clamp(1-(age-rules.warning-rules.duration)/rules.fade,0,1);
       cloudUniforms.uAge.value=age;cloudUniforms.uOpacity.value=opacity;cloudUniforms.uFlash.value=flash;
       footprintMaterial.uniforms.uOpacity.value=opacity;footprintMaterial.uniforms.uFlash.value=flash;},
-    get telemetry(){return {style:'compact-storm-eye',cloudShape:'reference-thunderhead',artwork:cloud.artwork,boltStyle:'hierarchical-thunderbolts',visible:group.visible,cloudRadius:1.9,
+    get telemetry(){return {style:'compact-storm-eye',cloudShape:'reference-thunderhead',artwork:cloud.artwork,boltStyle:'hierarchical-thunderbolts',visible:group.visible,cloudRadius:cloud.horizontalRadius,
       capacity,bolts:slots.filter(s=>s.energy>0).length,impacts:slots.filter(s=>s.life>0).length,draws:group.visible?4+cloud.meshes.length:0};},
     dispose(){scene.remove(group);cloud.dispose();for(const mesh of [footprint,bolts,impacts,sparks]){mesh.geometry.dispose();mesh.material.dispose();if(mesh.isInstancedMesh)mesh.dispose();}},
   };
