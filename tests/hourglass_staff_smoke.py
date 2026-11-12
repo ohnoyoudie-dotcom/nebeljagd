@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 BASE = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:4176').rstrip('/')
 OUT = ROOT / 'test-results/hourglass-staff'
 OUT.mkdir(parents=True, exist_ok=True)
+MODE = os.environ.get('NEBELJAGD_HOURGLASS_MODE', 'all')
+assert MODE in ('all', 'mouse', 'touch')
 map_hash = hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()
 fixture = json.loads(subprocess.check_output(['node','--input-type=module','-e',
     "import {createLobbyMap} from './src/lobby-map.js'; console.log(JSON.stringify(createLobbyMap()))"],cwd=ROOT))
@@ -29,6 +31,9 @@ def pause_at(page,age):
     }''',age)
     page.wait_for_function('nebeljagdTestState().phase==="paused"')
 def capture(page,name):
+    if name.endswith('-strong'):
+        normal=page.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]
+        (OUT/(name+'-game-camera.png')).write_bytes(base64.b64decode(normal))
     data=page.evaluate('''()=>{
       const s=nebeljagdTestState(),zoom=s.camera.zoom;
       nebeljagdInspectCamera({zoom:2,focus:s.combat.hourglass.center});
@@ -75,7 +80,7 @@ with sync_playwright() as p:
         assert editor.evaluate('nebeljagdMapTestState().map.objects.at(-1).variant')=='kit-tripo-hourglass-staff'
         passed('Editor placement and saved draft retain the real hourglass variant and all existing objects')
         context.close()
-        for touch in [False,True]:
+        for touch in ([False] if MODE == 'mouse' else [True] if MODE == 'touch' else [False,True]):
             mode='touch' if touch else 'mouse';print('START',mode,flush=True)
             options=dict(viewport=dict(width=960,height=720),has_touch=touch,is_mobile=touch)
             if touch:options.update(device_scale_factor=2,user_agent='Mozilla/5.0 (iPad; CPU OS 17_6 like Mac OS X) AppleWebKit/605.1.15 Version/17.6 Mobile/15E148 Safari/604.1')
