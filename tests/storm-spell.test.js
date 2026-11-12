@@ -52,7 +52,7 @@ test('the active cloud and outline never amplify their designed transparency', (
   const { storm, scene, origin, cast } = setup(); cast();
   for (const dt of [.1, .5, 1, 1, .7, .2]) {
     storm.update(dt, origin);
-    for (const name of ['Gewitterauge · transparente Wolkenfalten', 'Gewitter · dezente Wirkungsfläche']) {
+    for (const name of ['Gewitterauge · plastische Gewitterwolke', 'Gewitter · dezente Wirkungsfläche']) {
       const opacity = scene.getObjectByName(name).material.uniforms.uOpacity.value;
       assert.ok(opacity >= 0 && opacity <= 1, `${name}: ${opacity}`);
     }
