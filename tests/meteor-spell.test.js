@@ -138,9 +138,10 @@ test('fragment scatter varies per cast, has unequal trajectories and bounces onl
   const { spell, caster, cast } = setup({}, { random });
   cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
   const first = spell.telemetry.fragmentStates;
-  assert.equal(first.length, 6);
-  assert.equal(new Set(first.map(f => f.velocity.y)).size, 6);
-  assert.equal(new Set(first.map(f => f.diameter)).size, 6);
+  assert.equal(rules.fragments, 8);
+  assert.equal(first.length, rules.fragments);
+  assert.equal(new Set(first.map(f => f.velocity.y)).size, rules.fragments);
+  assert.equal(new Set(first.map(f => f.diameter)).size, rules.fragments);
   assert.ok(first.every(f => f.diameter >= .24 && f.diameter <= .448));
   let bounced = false;
   for (let i=0;i<80;i++) {
@@ -235,4 +236,28 @@ test('a random mini meteor ignites a hit outside the burning ground independentl
   assert.ok(spell.telemetry.fragmentHitIds.includes(target.id));
   combat.update(2);assert.equal(target.health,93);assert.equal(target.burnRemaining,1);
   spell.dispose();
+});
+
+
+test('fast meteor travel emits a continuous bounded trail and heat stops on pause/reset', () => {
+  const scene = new THREE.Scene(), geometry = new THREE.IcosahedronGeometry(.5), material = new THREE.MeshBasicMaterial();
+  const prototype = new THREE.Group(); prototype.add(new THREE.Mesh(geometry, material));
+  const visuals = createMeteorVisuals(scene, rules, { prototype });
+  visuals.flight(new THREE.Vector3(0, 3, 0), .6, 0); visuals.update(1/60);
+  // A large step must fill the travelled segment, rather than placing one
+  // smoke ball only at its endpoint and leaving gaps at low frame rates.
+  visuals.flight(new THREE.Vector3(0, 5, 4), 1.2, .1); visuals.update(.1);
+  const moving = visuals.telemetry;
+  assert.ok(moving.trail.samples >= 20, 'the full 4m segment is sampled');
+  assert.ok(moving.trail.maxGap > 0 && moving.trail.maxGap <= moving.trail.maxSpacing + 1e-8);
+  assert.ok(moving.trail.maxSpacing <= .18);
+  assert.ok(moving.puffs > 20 && moving.puffs <= METEOR_VISUAL_BUDGET.puffs);
+  assert.ok(moving.heat.visible && moving.heat.samples > 0);
+  visuals.update(0); assert.deepEqual(visuals.telemetry, moving);
+  visuals.reset();
+  assert.equal(visuals.telemetry.heat.visible, false);
+  assert.equal(visuals.telemetry.heat.samples, 0);
+  assert.equal(visuals.telemetry.trail.samples, 0);
+  assert.equal(visuals.telemetry.draws, 0);
+  visuals.dispose(); geometry.dispose(); material.dispose();
 });

@@ -7,7 +7,7 @@ verwenden dieselbe Zielsteuerung wie die anderen Flächenstäbe.
 
 Der Meteor wächst von 0,45 auf 1,75 Meter Durchmesser. Er fliegt in einem
 hohen Bogen (acht Meter zusätzliche Höhe) und hinterlässt heiße Rauchwolken
-und Funken. Beim Einschlag folgen eine kurze Druckwelle, Rauch und sechs
+und Funken. Beim Einschlag folgen eine kurze Druckwelle, Rauch und acht
 brennende Splitter. Die Einschlagsfläche hat denselben Radius wie der
 Sanduhrenstab: 3,2 Meter. Eine aufwallende Feuerexplosion mit hellem Kern geht
 in Rauch über. Die Splitter verwenden das verkleinerte Meteormodell samt
@@ -16,7 +16,7 @@ bei jedem Einschlag. Am Boden prallen sie höchstens einmal kurz ab.
 
 Am Einschlagsort bleibt vier Sekunden lang eine brennende Fläche im Radius
 von 3,2 Metern zurück, anschließend klingt sie in 0,6 Sekunden ab. Glut und
-36 niedrige Flammen folgen der Bodenhöhe. Wer die Fläche betritt, brennt
+48 geschichtete, züngelnde Flammen folgen der Bodenhöhe. Wer die Fläche betritt, brennt
 drei Sekunden mit zwei Schaden pro Sekunde; im Feuer wird diese Dauer
 aufgefrischt. Splittertreffer lösen denselben Brand auch außerhalb der Fläche
 aus. Beide Quellen stapeln keine zusätzlichen Brand-Schadensströme. Mauern,
@@ -66,6 +66,11 @@ eine eigene Übungswiesen-Testkarte.
   tatsächlich erzeugter Editor und Spiel, importierter Stab, Maus/Touch,
   Flugphasen, Einschlag, Schaden und vollständiger Effektabbau.
 
-Rauch und Funken verwenden feste Pools mit jeweils 96 Einträgen; die Feuerexplosion verwendet 18 gebündelte Flammenwolken.
-Die sechs Meteorsplitter teilen Geometrie und Material mit dem Hauptmodell. Es gibt
+Der Rauchschweif wird alle 18 Zentimeter entlang der tatsächlichen Flugbahn
+ergänzt. 160 überlappende Rauchwolken bleiben bis zu 2,2 Sekunden bestehen.
+Ein dezentes Hitzeflimmern um Meteor und jungen Rauch bricht das bereits
+gerenderte Bild; dafür wird ein Bildpuffer kopiert und in einem Zeichenaufruf
+verwendet. Funken und Feuerexplosion bleiben auf 96 beziehungsweise 18
+Elemente begrenzt.
+Die acht Meteorsplitter teilen Geometrie und Material mit dem Hauptmodell. Es gibt
 keine zusätzlichen dynamischen Lichter oder Nachbearbeitungspässe.

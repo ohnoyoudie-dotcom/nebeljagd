@@ -16,8 +16,9 @@ fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e
     "import {createLobbyMap} from './src/lobby-map.js';console.log(JSON.stringify(createLobbyMap()))"], cwd=ROOT))
 fixture['objects'] = [dict(id='meteor', name='Meteorstab', kind='meteorStaff',
     variant='kit-tripo-meteor-staff', position=[0, -14], rotation=0, scale=1, rarity='common')]
-rules = json.loads(subprocess.check_output(['node', '--input-type=module', '-e',
-    "import {METEOR_RULES} from './src/meteor-spell.js';console.log(JSON.stringify(METEOR_RULES))"], cwd=ROOT))
+limits = json.loads(subprocess.check_output(['node', '--input-type=module', '-e',
+    "import {METEOR_RULES} from './src/meteor-spell.js';import {METEOR_VISUAL_BUDGET} from './src/meteor-visuals.js';import {METEOR_GROUND_FLAMES} from './src/meteor-ground-fire.js';console.log(JSON.stringify({rules:METEOR_RULES,visuals:METEOR_VISUAL_BUDGET,groundFlames:METEOR_GROUND_FLAMES}))"], cwd=ROOT))
+rules = limits['rules']
 report = dict(status='running', checks=[], errors=[])
 
 def passed(message):
@@ -34,14 +35,14 @@ def arm_pause(page, condition):
       if(nebeljagdTestState().phase==='paused')document.querySelector('#resumeBtn').click();
     }''', condition)
 
-def capture(page, name):
+def capture(page, name, ground_detail=False):
     (OUT / (name + '.png')).write_bytes(base64.b64decode(page.evaluate('nebeljagdCaptureFrame()').split(',', 1)[1]))
-    if state(page)['combat']['meteor']['flight']:
-        detail = page.evaluate('''()=>{
+    if state(page)['combat']['meteor']['flight'] or ground_detail:
+        detail = page.evaluate('''groundDetail=>{
           const s=nebeljagdTestState(),zoom=s.camera.zoom;
-          nebeljagdInspectCamera({zoom:1.25,focus:s.combat.meteor.flight.position});
+          nebeljagdInspectCamera({zoom:groundDetail?2.5:1.25,focus:groundDetail?s.combat.meteor.center:s.combat.meteor.flight.position});
           const image=nebeljagdCaptureFrame();nebeljagdInspectCamera({zoom});return image;
-        }''')
+        }''', ground_detail)
         (OUT / (name + '-detail.png')).write_bytes(base64.b64decode(detail.split(',', 1)[1]))
     (OUT / (name + '.json')).write_text(json.dumps(state(page), indent=2) + '\n')
 
@@ -112,24 +113,32 @@ with sync_playwright() as p:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             early = state(page)['combat']['meteor']; assert early['casts'] == 1 and early['flight']['position']['y'] > 4
             capture(page, mode + '-early')
+            arm_pause(page, "s.combat.meteor.phase==='flight'&&s.combat.meteor.flight.progress>=.5")
+            page.wait_for_function('nebeljagdTestState().phase==="paused"')
+            capture(page, mode + '-mid-flight')
             arm_pause(page, "s.combat.meteor.phase==='flight'&&s.combat.meteor.flight.progress>=.8")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             late = state(page)['combat']['meteor']
             assert late['flight']['diameter'] > early['flight']['diameter'] * 1.7
             assert late['flight']['diameter'] <= 1.75
-            assert late['visuals']['bodyVisible'] and 0 < late['visuals']['puffs'] <= 96
+            assert late['visuals']['bodyVisible'] and 0 < late['visuals']['puffs'] <= limits['visuals']['puffs']
             assert late['visuals']['model'] == 'uploaded' and late['visuals']['source'] == 'assets/inbox/Meteor Projektil.glb'
-            assert late['visuals']['draws'] <= 3, late['visuals']
+            assert late['visuals']['draws'] <= 4, late['visuals']
+            assert late['visuals']['heat']['visible'] and late['visuals']['heat']['samples'] > 0
+            trail = late['visuals']['trail']
+            assert trail['samples'] > 20 and 0 < trail['maxGap'] <= trail['maxSpacing'] + 1e-8
+            assert trail['maxSpacing'] <= .18
             frozen = state(page)['combat']['meteor']; page.wait_for_timeout(100)
             assert state(page)['combat']['meteor'] == frozen
             capture(page, mode + '-late')
-            passed(mode + ': real input launches the uploaded staff’s growing high-arc meteor; smoke and simulation pause correctly')
+            passed(mode + ': real input launches the uploaded staff’s growing high-arc meteor; continuous smoke, heat haze and simulation pause correctly')
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=.15")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             impact = state(page)['combat']['meteor']; assert impact['radius'] == 3.2 and impact['visuals']['shock']
-            assert 0 < impact['visuals']['fire'] <= 18
+            assert 0 < impact['visuals']['fire'] <= limits['visuals']['fire']
             assert impact['visuals']['fragmentModel'] == 'uploaded'
             assert impact['visuals']['fragments'] > 0
+            assert len(impact['fragmentStates']) == rules['fragments'] == 8
             assert len(set(f['diameter'] for f in impact['fragmentStates'])) > 1
             capture(page, mode + '-impact')
             enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
@@ -152,14 +161,18 @@ with sync_playwright() as p:
             burning = state(page)['combat']['meteor']
             burned_enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
             assert burning['fragments'] == 0 and burning['groundFire']['active']
-            assert burning['visuals']['groundFire']['visible'] and burning['visuals']['groundFire']['flames'] == 36
+            assert burning['visuals']['groundFire']['visible'] and burning['visuals']['groundFire']['flames'] == limits['groundFlames']
             assert burned_enemy['burnRemaining'] > 2.5 and burned_enemy['health'] < enemy['health'] - 2
-            capture(page, mode + '-burning-ground')
+            capture(page, mode + '-burning-ground', ground_detail=True)
             frozen = state(page)['combat']['meteor']; page.wait_for_timeout(100)
             assert state(page)['combat']['meteor'] == frozen
+            arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=2.35")
+            page.wait_for_function('nebeljagdTestState().phase==="paused"')
+            capture(page, mode + '-burning-ground-later', ground_detail=True)
             page.locator('#resumeBtn').click()
             page.wait_for_function('!nebeljagdTestState().combat.meteor.active')
             assert state(page)['combat']['meteor']['visuals']['draws'] == 0
+            assert not state(page)['combat']['meteor']['visuals']['heat']['visible']
             passed(mode + ': impact leaves persistent burning ground; mini meteors and ground ignite targets; pause and cleanup work')
             context.close()
         assert not report['errors'], report['errors']

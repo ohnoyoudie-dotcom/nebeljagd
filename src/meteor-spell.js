@@ -8,7 +8,7 @@ import { createMeteorVisuals } from './meteor-visuals.js';
 export const METEOR_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
   radius: HOURGLASS_RULES.radius, arcHeight: 8, speed: 9, minFlight: 1.25,
   startDiameter: .45, endDiameter: 1.75, aftermath: 4.6, groundFireSeconds: 4, groundFireFade: .6,
-  fragments: 6, fragmentRadius: .16, fragmentSpeed: 5.5, fragmentLife: 1.5,
+  fragments: 8, fragmentRadius: .16, fragmentSpeed: 5.5, fragmentLife: 1.5,
   fragmentDamageRatio: .125, burnSeconds: 3, burnDps: 2 });
 
 export function meteorDiameter(progress) {

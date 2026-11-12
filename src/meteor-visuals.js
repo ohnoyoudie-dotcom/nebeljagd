@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 import { createMeteorGroundFire } from './meteor-ground-fire.js';
+import { createMeteorHeat } from './meteor-heat.js';
 
-export const METEOR_VISUAL_BUDGET = Object.freeze({ puffs: 96, embers: 96, fragments: 6, fire: 18 });
+export const METEOR_VISUAL_BUDGET = Object.freeze({ puffs: 160, embers: 96, fragments: 8, fire: 18 });
 const random = (i, salt) => { const x = Math.sin(i * salt + 1.7) * 43758.5453; return x - Math.floor(x); };
 
 /** Pooled smoke, hot embers and a broad short blast. Imported body geometry and
@@ -12,6 +13,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   const geo = value => (geometries.add(value), value), mat = value => (materials.add(value), value);
   const root = new THREE.Group(); root.name = 'Meteorstab · Flug und Einschlag'; scene.add(root);
   const groundFire = createMeteorGroundFire(root, rules, heightAt);
+  const heat = createMeteorHeat(root, METEOR_VISUAL_BUDGET.puffs + 1);
   const body = new THREE.Group(); body.name = 'Meteorstab · wachsender Meteorkörper'; body.visible = false; root.add(body);
   let bodyDraws = 0;
   if (prototype) {
@@ -99,7 +101,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   fire.frustumCulled = false; root.add(fire);
   const puffGeo = geo(new THREE.InstancedBufferGeometry()); puffGeo.setIndex([0,1,2,0,2,3]);
   puffGeo.setAttribute('position', new THREE.Float32BufferAttribute([-1,-1,0,1,-1,0,1,1,0,-1,1,0], 3));
-  const centers = new Float32Array(96 * 3), shapes = new Float32Array(96 * 4);
+  const centers = new Float32Array(METEOR_VISUAL_BUDGET.puffs * 3), shapes = new Float32Array(METEOR_VISUAL_BUDGET.puffs * 4);
   puffGeo.setAttribute('center', new THREE.InstancedBufferAttribute(centers, 3).setUsage(THREE.DynamicDrawUsage));
   puffGeo.setAttribute('shape', new THREE.InstancedBufferAttribute(shapes, 4).setUsage(THREE.DynamicDrawUsage)); puffGeo.instanceCount = 0;
   const clock = { value: 0 };
@@ -108,21 +110,22 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
       void main(){vUv=position.xy;vShape=shape.yzw;vec4 p=modelViewMatrix*vec4(center,1.);p.xy+=position.xy*shape.x;gl_Position=projectionMatrix*p;}`,
     fragmentShader: `varying vec2 vUv;varying vec3 vShape;uniform float uTime;${noise}
       void main(){vec2 p=vUv;float seed=vShape.y,age=vShape.x;
-        float noise=n(p*3.+seed*37.+vec2(0.,-uTime*.35))*.67+n(p*6.1-seed*19.)*.33;
+        p+=vec2(n(p*2.+seed*9.+uTime*.15),n(p*2.-seed*13.-uTime*.12))*.16-.08;
+        float noise=n(p*3.+seed*37.+vec2(0.,-uTime*.35))*.55+n(p*6.1-seed*19.)*.3+n(p*12.+seed*7.)*.15;
         float edge=1.-smoothstep(.32+noise*.3,.68+noise*.29,length(p));
-        float hot=max(0.,1.-age*3.8);float light=clamp(.47-p.y*.25+noise*.35,0.,1.);
-        vec3 smoke=mix(vec3(.06,.045,.04),vec3(.29,.24,.20),light);
+        float hot=max(0.,1.-age*12.);float light=clamp(.47-p.y*.25+noise*.35,0.,1.);
+        vec3 smoke=mix(vec3(.035,.04,.045),vec3(.27,.29,.31),light);
         vec3 fire=mix(vec3(1.,.16,.008),vec3(1.,.78,.21),noise);
-        gl_FragColor=vec4(mix(smoke,fire,hot),edge*(.42+noise*.4)*vShape.z);
+        gl_FragColor=vec4(mix(smoke,fire,hot),edge*(.64+noise*.3)*vShape.z);
         #include <colorspace_fragment>
       }` }));
   const smoke = new THREE.Mesh(puffGeo, puffMat); smoke.name = 'Meteorstab · heißer Rauchschweif'; smoke.frustumCulled = false; root.add(smoke);
-  const puffs = Array.from({ length: 96 }, (_, i) => ({ age: 99, life: 1.7, position: new THREE.Vector3(), velocity: new THREE.Vector3(), size: 1, seed: random(i, 53.3), depth: 0 }));
+  const puffs = Array.from({ length: METEOR_VISUAL_BUDGET.puffs }, (_, i) => ({ age: 99, life: 2.2, position: new THREE.Vector3(), velocity: new THREE.Vector3(), size: 1, seed: random(i, 53.3), depth: 0 }));
   const sorted = [], cameraMatrix = new THREE.Matrix4();
   function upload() {
     for (let i = 0; i < sorted.length; i++) {
       const p = sorted[i], progress = p.age / p.life;
-      p.position.toArray(centers, i * 3); shapes.set([p.size * (.55 + progress * .85), progress, p.seed, (1 - progress) ** 1.1], i * 4);
+      p.position.toArray(centers, i * 3); shapes.set([p.size * (.8 + progress * 1.3), progress, p.seed, (1 - progress) ** .7], i * 4);
     }
     puffGeo.instanceCount = sorted.length; puffGeo.attributes.center.needsUpdate = puffGeo.attributes.shape.needsUpdate = true;
   }
@@ -137,7 +140,9 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   const sparks = new THREE.Points(sparkGeo, sparkMat); sparks.frustumCulled = false; root.add(sparks);
   const embers = Array.from({ length: 96 }, () => ({ age: 99, life: .8, position: new THREE.Vector3(), velocity: new THREE.Vector3() }));
   const transform = new THREE.Object3D(), instance = new THREE.Matrix4(), lastPosition = new THREE.Vector3();
-  let puffCursor = 0, emberCursor = 0, emission = 0, flying = false, blast = null, diameter = 0, disposed = false;
+  const previousFlight = new THREE.Vector3(), samplePosition = new THREE.Vector3(), previousSample = new THREE.Vector3();
+  const maxSpacing = .18; let trailSamples = 0, maxGap = 0, remainder = 0;
+  let puffCursor = 0, emberCursor = 0, flying = false, blast = null, diameter = 0, disposed = false;
   const visible = p => !isVisible || isVisible(p);
   function puff(position, size, vx = 0, vy = .9, vz = 0) {
     const p = puffs[puffCursor++ % puffs.length]; p.age = 0; p.position.copy(position); p.size = size; p.velocity.set(vx, vy, vz);
@@ -146,6 +151,20 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     const p = embers[emberCursor++ % embers.length]; p.age = 0; p.position.copy(position); p.velocity.set(vx, vy, vz);
   }
   function flight(position, size, age) {
+    const emit = point => {
+      const i = puffCursor, angle = i * 2.399963;
+      if (trailSamples) maxGap = Math.max(maxGap, point.distanceTo(previousSample));
+      previousSample.copy(point); trailSamples++;
+      puff(point, Math.max(.32, size * .62), Math.cos(angle)*.18, .28+random(i,17)*.18, Math.sin(angle)*.18);
+      if (i%3===0) ember(point,Math.cos(angle)*.65,.6,Math.sin(angle)*.65);
+    };
+    if (!flying) { previousFlight.copy(position); previousSample.copy(position); emit(position); }
+    else {
+      const distance = previousFlight.distanceTo(position);
+      for (let d = maxSpacing-remainder; d <= distance; d += maxSpacing) emit(samplePosition.copy(previousFlight).lerp(position,d/distance));
+      remainder = (remainder+distance)%maxSpacing;
+    }
+    previousFlight.copy(position);
     flying = true; diameter = size; body.position.copy(position); lastPosition.copy(position);
     body.scale.setScalar(size); body.rotation.set(age * .7, age * .9, age * .28); body.visible = visible(position);
   }
@@ -172,14 +191,6 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   }
   function update(dt) {
     if (!(dt > 0) || disposed) return; clock.value += dt;
-    if (flying) {
-      emission += dt;
-      while (emission >= .045) {
-        emission -= .045; const i = puffCursor, angle = i * 2.399963;
-        puff(lastPosition, diameter * .42, Math.cos(angle) * .45, .55, Math.sin(angle) * .45);
-        ember(lastPosition, Math.cos(angle) * 1.1, .8, Math.sin(angle) * 1.1);
-      }
-    }
     sorted.length = 0;
     for (const p of puffs) {
       if (p.age >= p.life) continue;
@@ -187,6 +198,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
       if (p.age < p.life && visible(p.position)) sorted.push(p);
     }
     upload();
+    heat.update(clock.value, flying ? { visible: body.visible, position: lastPosition, diameter } : null, flying ? sorted : []);
     let count = 0;
     for (const e of embers) {
       if (e.age >= e.life) continue;
@@ -218,8 +230,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     }
   }
   function reset() {
-    groundFire.reset();
-    flying = false; blast = null; emission = diameter = 0; clock.value = 0;
+    groundFire.reset(); heat.reset(); trailSamples = maxGap = remainder = 0;
+    flying = false; blast = null; diameter = 0; clock.value = 0;
     body.visible = shock.visible = flash.visible = false; for (const chip of chips) chip.mesh.count = 0; fireGeo.instanceCount = 0;
     for (const p of [...puffs, ...embers]) p.age = 99;
     sorted.length = 0; puffGeo.instanceCount = 0; sparkGeo.setDrawRange(0, 0);
@@ -228,8 +240,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     get telemetry() { return { bodyVisible: body.visible, model: prototype ? 'uploaded' : 'procedural-fallback',
       source: prototype?.userData?.source ?? null, diameter,
       puffs: puffGeo.instanceCount, embers: sparkGeo.drawRange.count, fragments: chips[0]?.mesh.count ?? 0, fragmentModel: prototype ? 'uploaded' : 'procedural-fallback', fire: fireGeo.instanceCount,
-      groundFire: groundFire.telemetry, shock: shock.visible, flash: flash.visible, draws: groundFire.telemetry.draws + (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
-    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); groundFire.dispose(); for (const chip of chips) chip.mesh.dispose();
+      heat: heat.telemetry, trail: { samples: trailSamples, maxGap, maxSpacing }, groundFire: groundFire.telemetry, shock: shock.visible, flash: flash.visible, draws: Number(heat.telemetry.visible) + groundFire.telemetry.draws + (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
+    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); groundFire.dispose(); heat.dispose(); for (const chip of chips) chip.mesh.dispose();
       for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); },
   };
 }
