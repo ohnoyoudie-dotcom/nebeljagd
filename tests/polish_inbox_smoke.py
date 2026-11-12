@@ -149,7 +149,7 @@ try:
                 and not urlsplit(request.url).path.endswith('/favicon.ico') else None)
             stage('place and export Sternstab in actual editor')
             editor = context.new_page()
-            editor.goto(URL + '/map-editor.html?start=project', wait_until='domcontentloaded')
+            editor.goto(URL + '/map-editor.html?open=project', wait_until='domcontentloaded')
             editor.wait_for_function('window.nebeljagdMapTestState')
             assert editor.evaluate('nebeljagdMapTestState().map') == json.loads((ROOT / 'worldmap.json').read_text())
             editor.locator('#json-file-input').set_input_files({'name': 'polish-fixture.json', 'mimeType': 'application/json', 'buffer': json.dumps(testmap).encode()})

@@ -2,8 +2,12 @@
 // never writes browser storage or mutates a map: opening the project must not
 // replace someone's saved work.
 export function requestedEditorStart(search = '') {
-  const value = new URLSearchParams(search).get('start');
-  return value === 'project' || value === 'draft' ? value : null;
+  const params = new URLSearchParams(search);
+  const choice = params.get('open');
+  if (choice === 'project' || choice === 'draft') return choice;
+  // Old automatic launcher URLs used start=project. A saved bookmark with
+  // that parameter must resume existing work, not repeatedly open the base map.
+  return params.get('start') === 'draft' ? 'draft' : null;
 }
 
 export function planEditorStart({ project, snapshot = null, draft = null, requested = null }) {

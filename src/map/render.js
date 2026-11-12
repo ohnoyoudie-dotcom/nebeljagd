@@ -18,11 +18,19 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Add these definitions only when their models are actually placed, keeping
 // previously authored SVGs byte-identical when their map has no new weapons.
 const extraWeaponSymbols = {
+  gravityStaff: '<g id="world-object-gravityStaff"><path d="M-.6,1.5 .5,-.85" stroke="#c0a979" stroke-width=".4"/><ellipse cx=".5" cy="-1.25" rx=".85" ry=".6" fill="#38264d" stroke="#d8b7ff" stroke-width=".2"/><path d="M-.25,-1.25Q.5,-2.15 1.25,-1.25Q.5,-.35-.25,-1.25M.5,-1.85Q-.15,-1.25 .5,-.65Q1.15,-1.25 .5,-1.85" fill="none" stroke="#f1dcff" stroke-width=".12"/><circle cx=".5" cy="-1.25" r=".22" fill="#171122"/></g>',
   lightningStaff: '<g id="world-object-lightningStaff"><path d="M-.6,1.5 .5,-.85" stroke="#9d875e" stroke-width=".4"/><path d="M.7,-2.1-.1,-1h.65L.2,-.15l1.05,-1.3H.55Z" fill="#fff5ce" stroke="#68baff" stroke-width=".16"/></g>',
   starStaff: '<g id="world-object-starStaff"><path d="M-.6,1.5 .5,-.85" stroke="#a79c78" stroke-width=".4"/><path d="M.5,-2l.24.58.62.04-.48.4.15.6-.53-.34-.53.34.15-.6-.48-.4.62-.04Z" fill="#fff0b6" stroke="#75bddb" stroke-width=".15"/></g>',
   poisonStaff: '<g id="world-object-poisonStaff"><path d="M-.6,1.5 .5,-.85" stroke="#80764b" stroke-width=".4"/><path d="M.5,-1.9Q-.35,-1 .05,-.6Q.5,-.15 .95,-.6Q1.35,-1 .5,-1.9Z" fill="#7cd76b" stroke="#2b763f" stroke-width=".18"/></g>',
   moonStaff: '<g id="world-object-moonStaff"><path d="M-.6,1.5 .5,-.85" stroke="#a29bb1" stroke-width=".4"/><path d="M.9,-1.9A.78,.78 0 1 0 1,-.5A.65,.65 0 0 1 .9,-1.9Z" fill="#dce0ff" stroke="#8277bc" stroke-width=".16"/></g>',
 };
+
+// Every catalogued weapon needs a visible, selectable map placement, including
+// newly added staffs. Symbol definitions alone do not put it in the map layer.
+for (const kind of WEAPON_TYPES) {
+  objectLayerOrder[kind] = 8;
+  objectHitRadius[kind] = 1.5;
+}
 
 // Symbols use the same metre scale and +z/front direction as the 3D assets.
 // Reusing a symbol preserves every independently editable placement without

@@ -61,9 +61,32 @@ test('the same project document in browser storage does not block normal editing
 
 test('only the explicit supported start parameters request a different map', () => {
   assert.equal(requestedEditorStart('?v=abc&start=draft'), 'draft');
-  assert.equal(requestedEditorStart('?start=project'), 'project');
+  assert.equal(requestedEditorStart('?open=project'), 'project');
+  assert.equal(requestedEditorStart('?open=draft'), 'draft');
+  assert.equal(requestedEditorStart('?start=project'), null);
   assert.equal(requestedEditorStart('?v=9332ab4'), null);
   assert.equal(requestedEditorStart('?start=https://example.invalid/map.json'), null);
+  assert.equal(requestedEditorStart('?open=https://example.invalid/map.json'), null);
+});
+
+test('an old project bookmark resumes placed objects and preserves the saved document', () => {
+  const before = JSON.stringify(draft);
+  const plan = planEditorStart({ project, draft, requested: requestedEditorStart('?v=old&start=project') });
+  assert.equal(plan.map, draft);
+  assert.equal(plan.source, 'draft');
+  assert.equal(plan.pendingDraft, null);
+  assert.equal(JSON.stringify(draft), before);
+});
+
+test('an old project link without a saved draft still opens the project', () => {
+  const plan = planEditorStart({ project, requested: requestedEditorStart('?start=project') });
+  assert.equal(plan.map, project);
+});
+
+test('an explicit current project choice remains available alongside a saved draft', () => {
+  const plan = planEditorStart({ project, draft, requested: requestedEditorStart('?open=project') });
+  assert.equal(plan.map, project);
+  assert.equal(plan.pendingDraft, draft);
 });
 
 test('a released editor shows its build identity and development stays distinguishable', () => {

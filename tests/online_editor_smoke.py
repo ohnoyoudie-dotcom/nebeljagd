@@ -86,26 +86,39 @@ def run(directory: Path) -> None:
             ready(page)
             assert 'start' not in parse_qs(urlsplit(page.url).query)
             page.locator('[data-editor-action="objects"]').click()
-            for kind, variant in [('crate', 'kit-tripo-crate-01'), ('lightningStaff', 'kit-tripo-lightning-staff')]:
+            for kind, variant in [('crate', 'kit-tripo-crate-01'), ('stump', 'kit-tripo-stump-01'), ('stump', 'kit-tripo-stump-02'), ('lightningStaff', 'kit-tripo-lightning-staff'), ('gravityStaff', 'kit-tripo-gravity-staff')]:
                 page.locator('#palette-kind').select_option(kind)
                 page.locator('#palette-variant').select_option(variant)
                 if page.locator('#place-object').get_attribute('aria-pressed') != 'true':
                     page.locator('#place-object').click()
-                visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+                visible = page.locator('#world-objects [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
                 assert set(visible) == {obj['id'] for obj in state(page)['map']['objects']}
                 page.locator('#add-object-center').click()
-                visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+                visible = page.locator('#world-objects [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
                 assert set(visible) == {obj['id'] for obj in state(page)['map']['objects']}, 'Placing a different kind must keep every neighbour on the map'
+                painted = page.locator('#world-objects [data-feature-type="object"] use').evaluate_all('(xs)=>xs.every(x=>x.getBBox().width>0 && x.getBBox().height>0)')
+                assert painted, 'An empty selection ring is not a painted object'
+            page.locator('#tool-select').click()
+            page.locator('#clear-selection').click()
+            page.locator('#world-objects [data-object-kind="gravityStaff"]').click()
+            page.locator('#focus-selection').click()
+            page.screenshot(path=str(out / 'gravity-and-stumps.png'))
+            page.locator('#clear-selection').click()
             edited = state(page)['map']
-            assert edited['objects'][:-2] == project['objects']
+            assert edited['objects'][:-5] == project['objects']
             page.locator('[data-editor-action="more"]').click()
             page.locator('#object-kind-filter').select_option('crate')
-            visible = page.locator('#map-stage [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
+            visible = page.locator('#world-objects [data-feature-type="object"]').evaluate_all('(xs)=>xs.map(x=>x.dataset.featureId)')
             assert set(visible) == {obj['id'] for obj in edited['objects']}, 'A list filter must not hide objects on the canvas'
             page.screenshot(path=str(out / 'placement-neighbours.png'))
             passed('Crate and staff placement and list filtering keep all existing map objects visible')
 
             assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', KEY) == edited
+            with page.expect_download() as saved_placements:
+                page.locator('#export-json').click()
+            saved_path = out / 'placed-models.json'
+            saved_placements.value.save_as(saved_path)
+            assert json.loads(saved_path.read_text()) == edited
             reopen_url = page.url
             with page.expect_popup() as event:
                 page.locator('#playtest-world').click()
@@ -121,8 +134,14 @@ def run(directory: Path) -> None:
             assert state(page)['map'] == edited
             page.goto(base + '/editor.html'); ready(page)
             assert state(page)['map'] == edited
+            # Reusing the original old bookmark (not just the cleaned address)
+            # must resume the saved placements as well.
+            for _ in range(2):
+                page.goto(base + '/map-editor.html?start=project&v=old-bookmark'); ready(page)
+                assert state(page)['map'] == edited
+                assert 'start' not in parse_qs(urlsplit(page.url).query)
             expect(page.locator('#save-status')).to_contain_text('Automatisch im Browser gespeichert')
-            passed('Real game test, closing the editor, reopening its address, reload and stable bookmark retain the complete edited map')
+            passed('Real game test, closing the editor, reload, stable entry and repeated old project bookmarks retain the complete edited map')
 
             draft = copy.deepcopy(project)
             draft['name'] = 'Mein unveröffentlichter Entwurf'
@@ -138,6 +157,7 @@ def run(directory: Path) -> None:
             page.locator('#open-project').click()
             ready(page)
             assert 'start' not in parse_qs(urlsplit(page.url).query)
+            assert 'open' not in parse_qs(urlsplit(page.url).query)
             assert state(page)['map']['name'] == project['name']
             assert page.evaluate('JSON.parse(localStorage.getItem("nebeljagd.worldmap.v1")).name') == draft['name']
             expect(page.locator('#restore-banner')).to_be_visible()
