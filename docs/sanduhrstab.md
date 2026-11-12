@@ -40,8 +40,10 @@ weiterhin nicht zur Mitte.
 
 Sandböen und Wolken verwenden dieselbe räumliche Staubstruktur und Farbpalette.
 Breite, weich auslaufende Böen gehen in die Wolken über. Körner, Wolken und Böen
-folgen einer gemeinsamen, vom Abstand zur Mitte abhängigen Drehbewegung, damit
-das Feld als zusammenhängende Sandmasse wirkt.
+folgen einer gemeinsamen Hauptströmung, drehen aber individuell etwas schneller
+oder langsamer. Sanfte, zeitversetzte Böen verändern das Tempo zusätzlich;
+auch die beiden Sandbahnen verformen sich leicht. So bleibt das Feld zusammenhängend,
+ohne wie ein starrer Block zu rotieren. Beim Absinken klingt die Bewegung weiter ab.
 
 Beim Ausklingen verlieren die Sandböen ihre Höhe, die Staubwolken lockern sich,
 und die Körner sinken zu Boden und verblassen. Gelände wird einmal beim

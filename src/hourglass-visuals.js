@@ -5,8 +5,11 @@ export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 2400, puffs: 64, 
 const TAU = Math.PI * 2;
 const smooth = x => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const random = (i, salt) => { const v = Math.sin((i + 1) * salt) * 43758.5453; return v - Math.floor(v); };
-// Dust, sheets and grains share the same radial shear instead of drifting apart.
+// One prevailing flow, with stable individual speeds and gentle gusts. Using an
+// angle derived from simulation time avoids per-frame randomness and pause jumps.
 const flowSpeed = radius => .9 + .12 * (1 - radius);
+const orbit = (time, radius, seed) => time * 2.15 * flowSpeed(radius) * (.82 + .36 * seed)
+  + .16 * Math.sin(time * 1.4 + seed * TAU);
 const noise = `
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
@@ -140,11 +143,11 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     boundary.visible=true; boundary.userData.update(age,phase==='warning'?.7+.3*smooth(age/rules.warning):fade*(.08+.62*(1-opening)));
     const active=age>=rules.warning&&fade>0; for(const mesh of activeMeshes)mesh.visible=active;
     uniforms.uTime.value=time;uniforms.uOpacity.value=smooth(activeAge/.12)*fade;
-    const turn=time*2.15;
     for(let layer=0;layer<2;layer++) {
       const a=currents[layer].geometry.attributes.position;
       for(let i=0;i<=SEGMENTS;i++) {
-        const t=i/SEGMENTS,angle=turn*flowSpeed(.95-.92*t)+layer*Math.PI+t*TAU*1.8;
+        const t=i/SEGMENTS,seed=.25+layer*.5+.18*Math.sin(t*TAU*1.2+layer*2);
+        const angle=orbit(time,.95-.92*t,seed)+layer*Math.PI+t*TAU*1.8;
         const swell=Math.sin(t*17-time*1.3)*.09;
         const radius=(rules.radius*(.95-.92*t)+swell)*(.4+.6*opening),y=(.18+t*2.25+Math.sin(t*13+time)*.07)*opening*fade;
         const width=(1.1+.5*Math.sin(t*Math.PI))*fade;
@@ -155,7 +158,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       }a.needsUpdate=true;
     }
     for(const b of billows) {
-      const t=Math.sqrt((b.i+.5)/billows.length),angle=turn*flowSpeed(.93*t)+b.i*2.3999632297;
+      const t=Math.sqrt((b.i+.5)/billows.length),angle=orbit(time,.93*t,b.seed)+b.i*2.3999632297;
       const radius=(rules.radius*.93*t)*(.4+.6*opening)+dissolving*.25;
       b.x=Math.cos(angle)*radius;b.z=Math.sin(angle)*radius;
       b.y=height(b.x,b.z)+.08+(.18+b.seed*1.9+.16*Math.sin(time*2+b.seed*TAU))*opening*fade;
@@ -163,7 +166,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       b.alpha=.36+.14*b.seed;
     }uploadBillows();
     for(let i=0;i<count;i++) {
-      const seed=seeds[i],t=grainProgress[i],radial=.98*Math.sqrt((i+.5)/count),angle=turn*flowSpeed(radial)+t*TAU;
+      const seed=seeds[i],t=grainProgress[i],radial=.98*Math.sqrt((i+.5)/count),angle=orbit(time,radial,seed)+t*TAU;
       const radius=rules.radius*radial*(.4+.6*opening)+dissolving*.3;
       const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
       positions[i*3]=x;positions[i*3+2]=z;
