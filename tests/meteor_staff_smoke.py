@@ -34,6 +34,13 @@ def arm_pause(page, condition):
 
 def capture(page, name):
     (OUT / (name + '.png')).write_bytes(base64.b64decode(page.evaluate('nebeljagdCaptureFrame()').split(',', 1)[1]))
+    if state(page)['combat']['meteor']['flight']:
+        detail = page.evaluate('''()=>{
+          const s=nebeljagdTestState(),zoom=s.camera.zoom;
+          nebeljagdInspectCamera({zoom:1.25,focus:s.combat.meteor.flight.position});
+          const image=nebeljagdCaptureFrame();nebeljagdInspectCamera({zoom});return image;
+        }''')
+        (OUT / (name + '-detail.png')).write_bytes(base64.b64decode(detail.split(',', 1)[1]))
     (OUT / (name + '.json')).write_text(json.dumps(state(page), indent=2) + '\n')
 
 with sync_playwright() as p:
@@ -105,6 +112,8 @@ with sync_playwright() as p:
             late = state(page)['combat']['meteor']
             assert late['flight']['diameter'] > early['flight']['diameter'] * 1.7
             assert late['visuals']['bodyVisible'] and 0 < late['visuals']['puffs'] <= 96
+            assert late['visuals']['model'] == 'uploaded' and late['visuals']['source'] == 'assets/inbox/Meteor Projektil.glb'
+            assert late['visuals']['draws'] <= 3, late['visuals']
             frozen = state(page)['combat']['meteor']; page.wait_for_timeout(100)
             assert state(page)['combat']['meteor'] == frozen
             capture(page, mode + '-late')

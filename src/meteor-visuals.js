@@ -17,19 +17,34 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     model.traverse(part => {
       if (!part.isMesh) return;
       bodyDraws++;
-      const clone = source => { const own = mat(source.clone()); return own; };
+      const clone = source => {
+        const own = mat(source.clone());
+        // Reuse the uploaded lava colors as emission: bright fissures glow,
+        // while the dark crust stays dark. The loader still owns the texture.
+        if (own.isMeshStandardMaterial && own.map && !own.emissiveMap) {
+          own.emissiveMap = own.map; own.emissive.set('#ffffff'); own.emissiveIntensity = 1.3;
+          const previousCompile = own.onBeforeCompile;
+          own.onBeforeCompile = function (shader, renderer) {
+            previousCompile.call(this, shader, renderer);
+            shader.fragmentShader = shader.fragmentShader.replace('#include <emissivemap_fragment>',
+              '#include <emissivemap_fragment>\n totalEmissiveRadiance *= smoothstep(.10, .35, totalEmissiveRadiance.g);');
+          };
+          own.customProgramCacheKey = () => 'meteor-lava-fissures-v1';
+        }
+        return own;
+      };
       part.material = Array.isArray(part.material) ? part.material.map(clone) : clone(part.material);
       part.castShadow = false; part.receiveShadow = false;
     });
     body.add(model);
     const bounds = new THREE.Box3().setFromObject(model), size = bounds.getSize(new THREE.Vector3());
     const diameter = Math.max(size.x, size.y, size.z);
-    model.position.sub(bounds.getCenter(new THREE.Vector3())); body.scale.setScalar(1 / diameter);
+    model.position.sub(bounds.getCenter(new THREE.Vector3()));
     // Keep normalization on a child so flight scale is the actual diameter.
     const normalized = new THREE.Group(); body.remove(model); normalized.add(model); normalized.scale.setScalar(1 / diameter); body.add(normalized); body.scale.setScalar(1);
   } else {
-    // Explicit first-animation placeholder while a separate projectile upload
-    // is absent. It is not reported as a Tripo asset.
+    // Lightweight standalone simulation fallback. The game loader supplies
+    // the uploaded meteor template; browser QA checks that it is really used.
     const core = new THREE.Mesh(geo(new THREE.IcosahedronGeometry(.43, 2)), mat(new THREE.MeshBasicMaterial({ color: '#ffba35', toneMapped: false })));
     const crust = mat(new THREE.MeshStandardMaterial({ color: '#34231e', roughness: .96, flatShading: true, emissive: '#3e1407', emissiveIntensity: .3 }));
     const shape = geo(new THREE.DodecahedronGeometry(.23, 0)); body.add(core); bodyDraws++;
@@ -160,7 +175,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     sorted.length = 0; puffGeo.instanceCount = 0; sparkGeo.setDrawRange(0, 0);
   }
   return { flight, impact, fragments, update, reset,
-    get telemetry() { return { bodyVisible: body.visible, model: prototype ? 'uploaded' : 'procedural-prototype', diameter,
+    get telemetry() { return { bodyVisible: body.visible, model: prototype ? 'uploaded' : 'procedural-fallback',
+      source: prototype?.userData?.source ?? null, diameter,
       puffs: puffGeo.instanceCount, embers: sparkGeo.drawRange.count, fragments: chips.count,
       shock: shock.visible, flash: flash.visible, draws: (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + Number(chips.count > 0) + Number(shock.visible) + Number(flash.visible) }; },
     dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); chips.dispose();

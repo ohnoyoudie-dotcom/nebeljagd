@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/Meteor Projektil.glb",
+  "original": {
+    "bytes": 65956192,
+    "sha256": "4f9a1a68931503dac7a122da40a93079a979d809e49e73958346de43e677b67f",
+    "triangles": 1980838,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.4879302978515625,
+          0.0,
+          -0.411773681640625
+        ],
+        "max": [
+          0.4879302978515625,
+          0.9801025390625,
+          0.411773681640625
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 282156,
+    "sha256": "de5ab77c7291991ac1c1455f22e0056a0d49fdd380b121d30241c133e10c3454",
+    "triangles": 6000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.48786354064941406,
+          -0.000270306394668296,
+          -0.4119257628917694
+        ],
+        "max": [
+          0.48779577016830444,
+          0.9798092246055603,
+          0.4096023440361023
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "Meteor_Projektil_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Meteor_Projektil_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Meteor_Projektil_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-meteor-projectile.py -- --execute",
+  "sourceAxisPreserved": true,
+  "preview": "Prepared derivative, front view with source +X to image right.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent license certification."
+}

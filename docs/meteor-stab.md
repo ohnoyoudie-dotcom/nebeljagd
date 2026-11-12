@@ -30,11 +30,17 @@ Reproduktion: `blender -b -t 3 --python scripts/prepare-meteor-staff.py`, dann
 `python scripts/register-meteor-preview.py` (Vorbereitung überschreibt keine
 bestehenden Pakete).
 
-**Das separate hochgeladene Meteorkörper-Modell fehlt im geprüften Inbox-Stand.**
-`Meteorstab.rar` enthält ebenfalls nur `Meteorstab.glb`. Deshalb verwendet
-die erste Animation ausdrücklich einen prozeduralen glühenden Felskörper;
-dieser ist keine importierte Tripo-Datei. Der Renderer nimmt bereits einen
-separaten Projektil-Prototyp an, sobald die entsprechende Datei vorliegt.
+`assets/inbox/Meteor Projektil.rar` und das daraus entpackte Original
+`Meteor Projektil.glb` bleiben ebenfalls unverändert. Die abgeleitete Kopie
+liegt in `assets/imported/tripo-meteor-projectile/`: 6.000 Dreiecke,
+282.156 Byte, drei eingebettete PBR-Texturen. Die ursprüngliche GLB hat
+65.956.192 Byte. Die Hash-Liste schützt sowohl das Archiv als auch die GLB.
+Reproduktion: `blender -b -t 3 --python scripts/prepare-meteor-projectile.py -- --execute`.
+
+Das Spiel verwendet diesen hochgeladenen Meteorkörper. Seine hellen
+Lavafugen leuchten anhand der Originaltextur; dunkle Gesteinsflächen und
+Normalen bleiben erhalten. Die Browserprüfung verlangt ausdrücklich das
+hochgeladene Modell und seinen Originalpfad.
 
 Die bestehende `worldmap.json` wird nicht um Testobjekte ergänzt. Der
 Browsertest setzt den Stab ausschließlich in einen isolierten Entwurf und
