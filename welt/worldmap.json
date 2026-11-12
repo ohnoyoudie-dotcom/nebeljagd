@@ -1150,87 +1150,6 @@
       "rarity": "common"
     },
     {
-      "id": "object-grass-mw7m1aa7-1",
-      "name": "Hohes Versteckgras · Pinsel",
-      "kind": "grass",
-      "variant": "tall",
-      "position": [
-        26.352,
-        -74.817
-      ],
-      "rotation": 3.878,
-      "scale": 1,
-      "radius": 2,
-      "vegetation": {
-        "height": 1,
-        "density": 1,
-        "heightVariation": 0.12,
-        "color": "#799754",
-        "groundColor": false,
-        "groundBlend": 0.55,
-        "brightness": 1,
-        "saturation": 1,
-        "colorVariation": 0.14,
-        "edgeSoftness": 0.3,
-        "seed": 1919463779,
-        "type": "tall"
-      }
-    },
-    {
-      "id": "object-grass-mw7m1bap-2",
-      "name": "Hohes Versteckgras · Pinsel",
-      "kind": "grass",
-      "variant": "tall",
-      "position": [
-        30.987,
-        -59.193
-      ],
-      "rotation": 0.787,
-      "scale": 1,
-      "radius": 2,
-      "vegetation": {
-        "height": 1,
-        "density": 1,
-        "heightVariation": 0.12,
-        "color": "#799754",
-        "groundColor": false,
-        "groundBlend": 0.55,
-        "brightness": 1,
-        "saturation": 1,
-        "colorVariation": 0.14,
-        "edgeSoftness": 0.3,
-        "seed": 1544238810,
-        "type": "tall"
-      }
-    },
-    {
-      "id": "object-grass-mw7m1c0k-3",
-      "name": "Hohes Versteckgras · Pinsel",
-      "kind": "grass",
-      "variant": "tall",
-      "position": [
-        48.392,
-        -60.188
-      ],
-      "rotation": 3.064,
-      "scale": 1,
-      "radius": 2,
-      "vegetation": {
-        "height": 1,
-        "density": 1,
-        "heightVariation": 0.12,
-        "color": "#799754",
-        "groundColor": false,
-        "groundBlend": 0.55,
-        "brightness": 1,
-        "saturation": 1,
-        "colorVariation": 0.14,
-        "edgeSoftness": 0.3,
-        "seed": 719692825,
-        "type": "tall"
-      }
-    },
-    {
       "id": "object-grass-mw7m1cmk-4",
       "name": "Hohes Versteckgras · Pinsel",
       "kind": "grass",
@@ -1258,15 +1177,15 @@
       }
     },
     {
-      "id": "object-grass-mw7m1d3u-5",
+      "id": "object-grass-mw7m7paa-7",
       "name": "Hohes Versteckgras · Pinsel",
       "kind": "grass",
       "variant": "tall",
       "position": [
-        5.958,
-        -52.148
+        22.852,
+        -75.31
       ],
-      "rotation": 0.224,
+      "rotation": 4.028,
       "scale": 1,
       "radius": 2,
       "vegetation": {
@@ -1274,26 +1193,107 @@
         "density": 1,
         "heightVariation": 0.12,
         "color": "#799754",
-        "groundColor": false,
+        "groundColor": true,
         "groundBlend": 0.55,
         "brightness": 1,
         "saturation": 1,
         "colorVariation": 0.14,
         "edgeSoftness": 0.3,
-        "seed": 1815441807,
+        "seed": 4197512275,
         "type": "tall"
       }
     },
     {
-      "id": "object-grass-mw7m1e6n-6",
+      "id": "object-grass-mw7m7sgl-8",
       "name": "Hohes Versteckgras · Pinsel",
       "kind": "grass",
       "variant": "tall",
       "position": [
-        35.546,
-        -71.791
+        22.734,
+        -70.709
       ],
-      "rotation": 3.628,
+      "rotation": 1.484,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 0.78,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 1348649351,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m7uwb-9",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        26.982,
+        -71.181
+      ],
+      "rotation": 2.889,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 0.59,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 2859561380,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m7xn4-a",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        27.572,
+        -75.723
+      ],
+      "rotation": 5.267,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 0.42,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.3,
+        "seed": 1284565457,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m84r8-b",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        28.752,
+        -60.857
+      ],
+      "rotation": 2.586,
       "scale": 1,
       "radius": 2,
       "vegetation": {
@@ -1301,15 +1301,324 @@
         "density": 1,
         "heightVariation": 0.12,
         "color": "#799754",
-        "groundColor": false,
+        "groundColor": true,
         "groundBlend": 0.55,
         "brightness": 1,
         "saturation": 1,
         "colorVariation": 0.14,
         "edgeSoftness": 0.3,
-        "seed": 973042805,
+        "seed": 2524586101,
         "type": "tall"
       }
+    },
+    {
+      "id": "object-grass-mw7m8bve-c",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        32.704,
+        -61.27
+      ],
+      "rotation": 6.195,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.58,
+        "seed": 638348564,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7m8dy7-d",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        31.406,
+        -57.022
+      ],
+      "rotation": 0.186,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.12,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 1,
+        "seed": 1777543905,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7mdwym-e",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        38.485,
+        -68.526
+      ],
+      "rotation": 6.197,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.32,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.46,
+        "seed": 2351795471,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7mdzrz-f",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        41.907,
+        -64.396
+      ],
+      "rotation": 2.517,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.49,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.46,
+        "seed": 2257474040,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-grass-mw7me141-g",
+      "name": "Hohes Versteckgras · Pinsel",
+      "kind": "grass",
+      "variant": "tall",
+      "position": [
+        36.244,
+        -72.655
+      ],
+      "rotation": 0.448,
+      "scale": 1,
+      "radius": 2,
+      "vegetation": {
+        "height": 1,
+        "density": 1,
+        "heightVariation": 0.11,
+        "color": "#799754",
+        "groundColor": true,
+        "groundBlend": 0.55,
+        "brightness": 1,
+        "saturation": 1,
+        "colorVariation": 0.14,
+        "edgeSoftness": 0.46,
+        "seed": 2292767923,
+        "type": "tall"
+      }
+    },
+    {
+      "id": "object-starStaff-mw7zpw4n-1",
+      "name": "Sternstab",
+      "kind": "starStaff",
+      "variant": "kit-tripo-star-staff",
+      "position": [
+        43.8,
+        -50
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-tree-mw8b003s-1",
+      "name": "Baum",
+      "kind": "tree",
+      "variant": "kit-user-tree1",
+      "position": [
+        63.7,
+        -47
+      ],
+      "rotation": 4.8148871174804855,
+      "scale": 1
+    },
+    {
+      "id": "object-chest-mw8toiu9-1",
+      "name": "Holztruhe",
+      "kind": "chest",
+      "variant": "kit-tripo-chest",
+      "position": [
+        34.3,
+        -48.9
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-chest-mw8tok8h-2",
+      "name": "Holztruhe",
+      "kind": "chest",
+      "variant": "kit-tripo-chest",
+      "position": [
+        38.3,
+        -50.8
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-gravityStaff-mwchqiax-1",
+      "name": "Gravitationsstab",
+      "kind": "gravityStaff",
+      "variant": "kit-tripo-gravity-staff",
+      "position": [
+        47,
+        -51
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-lightningStaff-mwd7gy9o-1",
+      "name": "Blitzstab",
+      "kind": "lightningStaff",
+      "variant": "kit-tripo-lightning-staff",
+      "position": [
+        48.2,
+        -51.3
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-gravityStaff-mwd7h6bq-2",
+      "name": "Gravitationsstab",
+      "kind": "gravityStaff",
+      "variant": "kit-tripo-gravity-staff",
+      "position": [
+        41.9,
+        -53.8
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-gravityStaff-mwd7kyib-3",
+      "name": "Gravitationsstab",
+      "kind": "gravityStaff",
+      "variant": "kit-tripo-gravity-staff",
+      "position": [
+        42.1,
+        -53.8
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-gravityStaff-mwd7kzsc-4",
+      "name": "Gravitationsstab",
+      "kind": "gravityStaff",
+      "variant": "kit-tripo-gravity-staff",
+      "position": [
+        46.8,
+        -53.2
+      ],
+      "rotation": 0,
+      "scale": 1,
+      "rarity": "common"
+    },
+    {
+      "id": "object-stump-mwd7pukl-5",
+      "name": "Baumstumpf",
+      "kind": "stump",
+      "variant": "kit-tripo-stump-01",
+      "position": [
+        41.4,
+        -32.1
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-stump-mwd7pzca-6",
+      "name": "Baumstumpf",
+      "kind": "stump",
+      "variant": "kit-tripo-stump-02",
+      "position": [
+        37.6,
+        -31.6
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-stump-mwd7pzsy-7",
+      "name": "Baumstumpf",
+      "kind": "stump",
+      "variant": "kit-tripo-stump-02",
+      "position": [
+        32.6,
+        -31.7
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-stump-mwd7q4wt-8",
+      "name": "Baumstumpf",
+      "kind": "stump",
+      "variant": "kit-tripo-stump-02",
+      "position": [
+        34.5,
+        -34.7
+      ],
+      "rotation": 0,
+      "scale": 1
+    },
+    {
+      "id": "object-stump-mwd7q5dp-9",
+      "name": "Baumstumpf",
+      "kind": "stump",
+      "variant": "kit-tripo-stump-02",
+      "position": [
+        28.3,
+        -33.5
+      ],
+      "rotation": 0,
+      "scale": 1
     }
   ],
   "landscape": {
@@ -2604,6 +2913,36 @@
         ],
         "radius": 2.5,
         "seed": 574225269
+      },
+      {
+        "id": "paint-terrain-mw7vsxkh-1",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#dce7e8",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.08,
+        "position": [
+          69.271,
+          -40.933
+        ],
+        "radius": 21,
+        "seed": 4169989723
+      },
+      {
+        "id": "paint-terrain-mw7vsyb0-3",
+        "name": "Gemalter Boden",
+        "type": "snow",
+        "color": "#dce7e8",
+        "hardness": 0.35,
+        "strength": 0.8,
+        "variation": 0.08,
+        "position": [
+          70.655,
+          -38.579
+        ],
+        "radius": 21,
+        "seed": 1466308327
       }
     ],
     "wind": {
@@ -2760,6 +3099,32 @@
         "strength": 1,
         "softness": 0.65,
         "seed": 2245052550
+      },
+      {
+        "id": "paint-biome-mw7vsxkh-2",
+        "name": "Schnee",
+        "presetId": "snow",
+        "position": [
+          69.271,
+          -40.933
+        ],
+        "radius": 21,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 3755155454
+      },
+      {
+        "id": "paint-biome-mw7vsyb0-4",
+        "name": "Schnee",
+        "presetId": "snow",
+        "position": [
+          70.655,
+          -38.579
+        ],
+        "radius": 21,
+        "strength": 1,
+        "softness": 0.65,
+        "seed": 2521638682
       }
     ],
     "presets": []
