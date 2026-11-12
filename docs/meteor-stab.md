@@ -14,6 +14,14 @@ in Rauch über. Die Splitter verwenden das verkleinerte Meteormodell samt
 Lavatextur; Richtung, Geschwindigkeit, Sprunghöhe, Drehung und Größe variieren
 bei jedem Einschlag. Am Boden prallen sie höchstens einmal kurz ab.
 
+Am Einschlagsort bleibt vier Sekunden lang eine brennende Fläche im Radius
+von 3,2 Metern zurück, anschließend klingt sie in 0,6 Sekunden ab. Glut und
+36 niedrige Flammen folgen der Bodenhöhe. Wer die Fläche betritt, brennt
+drei Sekunden mit zwei Schaden pro Sekunde; im Feuer wird diese Dauer
+aufgefrischt. Splittertreffer lösen denselben Brand auch außerhalb der Fläche
+aus. Beide Quellen stapeln keine zusätzlichen Brand-Schadensströme. Mauern,
+Wasser und große Höhenunterschiede verhindern die Entzündung durch die Fläche.
+
 Vorläufige Spielwerte: 24 Basisschaden für die Explosion, höchstens ein
 zusätzlicher Splittertreffer pro Gegner mit 12,5 Prozent des Explosionsschadens,
 dazu drei Sekunden Brand mit zwei Schaden pro Sekunde. Die Seltenheit skaliert

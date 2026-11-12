@@ -29,25 +29,29 @@ export function createCombat({ onHit, onDefeat } = {}) {
     return target;
   }
 
+  // Status-only ignition has no direct hit, flash or damage event. Ground
+  // hazards can refresh fire without inventing another projectile impact.
+  function applyBurn(targetOrId, burn, sourceId) {
+    const target = typeof targetOrId === 'string' ? targets.get(targetOrId) : targetOrId;
+    if (!target?.alive || target.id === sourceId || !burn) return false;
+    const duration = Math.max(0, finite(burn.duration, 0));
+    const damagePerSecond = Math.max(0, finite(burn.damagePerSecond, 0));
+    if (!(duration > 0 && damagePerSecond > 0)) return false;
+    // A stronger burn owns its ongoing damage; equal-strength refresh belongs
+    // to the latest caster. A weaker refresh cannot steal credit.
+    if (!target.burnRemaining || damagePerSecond >= target.burnDamagePerSecond) target.burnSourceId = sourceId;
+    target.burnRemaining = Math.max(target.burnRemaining, duration);
+    target.burnDamagePerSecond = Math.max(target.burnDamagePerSecond, damagePerSecond);
+    return true;
+  }
+
   function hit(targetOrId, payload = {}) {
     const target = typeof targetOrId === 'string' ? targets.get(targetOrId) : targetOrId;
     if (!target || !target.alive || target.id === payload.sourceId) return null;
     const before = target.health;
     target.health = Math.max(0, target.health - Math.max(0, finite(payload.damage, 0)));
     target.hitFlash = .16;
-    if (payload.burn && target.alive) {
-      const duration = Math.max(0, finite(payload.burn.duration, 0));
-      const damagePerSecond = Math.max(0, finite(payload.burn.damagePerSecond, 0));
-      if (duration > 0 && damagePerSecond > 0) {
-        // A stronger burn owns its ongoing damage; an equal-strength refresh
-        // belongs to the latest caster. A weaker refresh cannot steal credit.
-        if (!target.burnRemaining || damagePerSecond >= target.burnDamagePerSecond) {
-          target.burnSourceId = payload.sourceId;
-        }
-        target.burnRemaining = Math.max(target.burnRemaining, duration);
-        target.burnDamagePerSecond = Math.max(target.burnDamagePerSecond, damagePerSecond);
-      }
-    }
+    if (payload.burn) applyBurn(target, payload.burn, payload.sourceId);
     if (payload.poison && target.alive) {
       const duration = Math.max(0, finite(payload.poison.duration, 0));
       const damagePerSecond = Math.max(0, finite(payload.poison.damagePerSecond, 0));
@@ -186,5 +190,5 @@ export function createCombat({ onHit, onDefeat } = {}) {
     return hits;
   }
 
-  return { targets, addTarget, removeTarget: id => targets.delete(id), hit, setTimeSlow, update, reset, traceSegment, melee };
+  return { targets, addTarget, removeTarget: id => targets.delete(id), hit, applyBurn, setTimeSlow, update, reset, traceSegment, melee };
 }

@@ -150,7 +150,7 @@ test('fragment scatter varies per cast, has unequal trajectories and bounces onl
   }
   assert.ok(bounced, 'at least one shard visibly rebounds from the ground');
   assert.equal(spell.telemetry.fragments, 0);
-  spell.update(3, caster); cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
+  spell.update(rules.aftermath + .1, caster); cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
   assert.notDeepEqual(spell.telemetry.fragmentStates, first);
   spell.dispose();
 });
@@ -181,4 +181,58 @@ test('mini meteors reuse uploaded geometry and lava material; fire blooms and cl
   v.reset(); assert.equal(v.telemetry.draws,0);
   v.dispose(); assert.equal(sharedDisposals,0);
   geometry.dispose(); material.dispose(); texture.dispose();
+});
+
+
+test('ground fire ignites late entrants, refreshes one burn, respects pause and expires', () => {
+  const { spell, combat, caster, cast } = setup();
+  cast(); spell.update(spell.telemetry.flight.duration + 1.7, caster);
+  assert.equal(spell.telemetry.fragments,0);
+  assert.equal(spell.telemetry.groundFire.active,true);
+  assert.equal(spell.telemetry.visuals.groundFire.visible,true);
+  const target=combat.addTarget({id:'late',position:new THREE.Vector3(0,0,12)});
+  const owner=combat.addTarget({id:'player',position:new THREE.Vector3(0,0,12)});
+  spell.update(.21,caster);
+  assert.equal(target.burnRemaining,3);assert.equal(owner.burnRemaining,0);
+  assert.equal(target.health,100);assert.equal(target.burnSourceId,'player');
+  for(let i=0;i<20;i++){combat.update(.05);spell.update(.05,caster);}
+  assert.ok(Math.abs(target.health-98)<1e-8,'one 2 DPS stream, not stacked field/fragment damage');
+  assert.ok(target.burnRemaining>2.7);
+  const frozen=spell.telemetry;spell.update(0,caster);assert.deepEqual(spell.telemetry,frozen);
+  target.position.x=10;
+  const remaining=target.burnRemaining;
+  for(let i=0;i<10;i++){combat.update(.05);spell.update(.05,caster);}
+  assert.ok(Math.abs(target.burnRemaining-(remaining-.5))<1e-8,'leaving stops burn refresh');
+  spell.update(10,caster);assert.equal(spell.telemetry.groundFire,null);assert.equal(spell.telemetry.visuals.draws,0);
+  combat.update(10);assert.equal(target.burnRemaining,0);spell.dispose();
+});
+
+test('ground fire cannot ignite through walls, across water, above the ground or after expiry', () => {
+  const { spell,combat,caster,cast,world }=setup();
+  cast();spell.update(spell.telemetry.flight.duration+1.7,caster);
+  const blocked=combat.addTarget({id:'wall',position:new THREE.Vector3(1,0,12)});
+  const wet=combat.addTarget({id:'water',position:new THREE.Vector3(-1,0,12)});
+  const high=combat.addTarget({id:'high',position:new THREE.Vector3(0,3,12)});
+  world.traceProjectile=(a,b)=>b.x>.5?{point:b,collider:{}}:null;
+  world.isWater=x=>x<-.5;
+  spell.update(.3,caster);
+  for(const target of [blocked,wet,high])assert.equal(target.burnRemaining,0);
+  spell.update(rules.groundFireSeconds-spell.telemetry.age+.05,caster);
+  assert.equal(spell.telemetry.groundFire.active,false);
+  const late=combat.addTarget({id:'expired',position:new THREE.Vector3(0,0,12)});
+  spell.update(.1,caster);assert.equal(late.burnRemaining,0);
+  spell.reset();assert.equal(spell.telemetry.visuals.draws,0);spell.dispose();
+});
+
+test('a random mini meteor ignites a hit outside the burning ground independently', () => {
+  const { spell,combat,caster,cast }=setup({}, {random:()=>.99});
+  cast();spell.update(spell.telemetry.flight.duration+.7,caster);
+  const f=spell.telemetry.fragmentStates.find(f=>f.active && Math.hypot(f.position.x,f.position.z-12)>3.8);
+  assert.ok(f,'a shard has left the ground-fire radius');
+  const target=combat.addTarget({id:'shard-only',position:new THREE.Vector3(f.position.x,0,f.position.z),height:3,radius:.3});
+  spell.update(.05,caster);
+  assert.equal(target.health,97);assert.equal(target.burnRemaining,3);assert.equal(target.burnSourceId,'player');
+  assert.ok(spell.telemetry.fragmentHitIds.includes(target.id));
+  combat.update(2);assert.equal(target.health,93);assert.equal(target.burnRemaining,1);
+  spell.dispose();
 });

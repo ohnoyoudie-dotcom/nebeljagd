@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
+import { createMeteorGroundFire } from './meteor-ground-fire.js';
 
 export const METEOR_VISUAL_BUDGET = Object.freeze({ puffs: 96, embers: 96, fragments: 6, fire: 18 });
 const random = (i, salt) => { const x = Math.sin(i * salt + 1.7) * 43758.5453; return x - Math.floor(x); };
@@ -10,6 +11,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   const geometries = new Set(), materials = new Set();
   const geo = value => (geometries.add(value), value), mat = value => (materials.add(value), value);
   const root = new THREE.Group(); root.name = 'Meteorstab · Flug und Einschlag'; scene.add(root);
+  const groundFire = createMeteorGroundFire(root, rules, heightAt);
   const body = new THREE.Group(); body.name = 'Meteorstab · wachsender Meteorkörper'; body.visible = false; root.add(body);
   let bodyDraws = 0;
   if (prototype) {
@@ -147,7 +149,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     flying = true; diameter = size; body.position.copy(position); lastPosition.copy(position);
     body.scale.setScalar(size); body.rotation.set(age * .7, age * .9, age * .28); body.visible = visible(position);
   }
-  function impact(center) {
+  function impact(center, burningGround = true) {
+    groundFire.ignite(center, burningGround);
     flying = false; body.visible = false; blast = { center: center.clone(), age: 0 };
     for (let i = 0; i < 42; i++) {
       const a = i * 2.399963, speed = 1.4 + random(i, 12.1) * 3.5;
@@ -193,6 +196,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     sparkGeo.setDrawRange(0, count); sparkGeo.attributes.position.needsUpdate = true;
     if (blast) {
       blast.age += dt; const t = blast.age, active = visible(blast.center);
+      groundFire.update(t, active);
       shock.visible = active && t < .75; shock.position.copy(blast.center); shock.position.y += .08;
       shock.scale.setScalar(.1 + .9 * Math.min(1, t / .65)); shock.userData.update(t, Math.max(0, 1 - t / .75));
       flash.visible = active && t < .22; flash.position.copy(blast.center); flash.position.y += .3;
@@ -214,6 +218,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     }
   }
   function reset() {
+    groundFire.reset();
     flying = false; blast = null; emission = diameter = 0; clock.value = 0;
     body.visible = shock.visible = flash.visible = false; for (const chip of chips) chip.mesh.count = 0; fireGeo.instanceCount = 0;
     for (const p of [...puffs, ...embers]) p.age = 99;
@@ -223,8 +228,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     get telemetry() { return { bodyVisible: body.visible, model: prototype ? 'uploaded' : 'procedural-fallback',
       source: prototype?.userData?.source ?? null, diameter,
       puffs: puffGeo.instanceCount, embers: sparkGeo.drawRange.count, fragments: chips[0]?.mesh.count ?? 0, fragmentModel: prototype ? 'uploaded' : 'procedural-fallback', fire: fireGeo.instanceCount,
-      shock: shock.visible, flash: flash.visible, draws: (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
-    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); for (const chip of chips) chip.mesh.dispose();
+      groundFire: groundFire.telemetry, shock: shock.visible, flash: flash.visible, draws: groundFire.telemetry.draws + (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
+    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); groundFire.dispose(); for (const chip of chips) chip.mesh.dispose();
       for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); },
   };
 }

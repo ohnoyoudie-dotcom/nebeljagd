@@ -7,7 +7,7 @@ import { createMeteorVisuals } from './meteor-visuals.js';
 
 export const METEOR_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
   radius: HOURGLASS_RULES.radius, arcHeight: 8, speed: 9, minFlight: 1.25,
-  startDiameter: .45, endDiameter: 1.75, aftermath: 2.8,
+  startDiameter: .45, endDiameter: 1.75, aftermath: 4.6, groundFireSeconds: 4, groundFireFade: .6,
   fragments: 6, fragmentRadius: .16, fragmentSpeed: 5.5, fragmentLife: 1.5,
   fragmentDamageRatio: .125, burnSeconds: 3, burnDps: 2 });
 
@@ -56,7 +56,7 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
     // Move the blast to the incoming side of a wall; radial damage still checks
     // the wall independently, so a blocked meteor cannot hurt its far side.
     if (normal) { center.x += (normal.x ?? 0) * .2; center.z += (normal.z ?? 0) * .2; }
-    center.y = ground(center); flight = null; impact = { center, age: 0 }; blastHits = 0;
+    center.y = ground(center); flight = null; impact = { center, age: 0, nextIgnition: 0, ignited: new Set(), groundFire: !world?.isWater?.(center.x, center.z) }; blastHits = 0;
     for (const target of combat?.targets?.values() ?? []) {
       if (!target.alive || target.id === ownerId || target.targetable === false || !target.position) continue;
       const p = target.position;
@@ -75,7 +75,26 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
         velocity: new THREE.Vector3(Math.cos(angle) * speed, 2.4 + random() * 2.5, Math.sin(angle) * speed),
         radius, spin, bounce: .4 + random() * .2, bounces: 0, age: 0, active: true, payload };
     });
-    visuals.impact(center);
+    igniteGround();
+    visuals.impact(center, impact.groundFire);
+  }
+  function igniteGround() {
+    if (!impact?.groundFire || impact.age >= r.groundFireSeconds || impact.age < impact.nextIgnition) return;
+    impact.nextIgnition = impact.age + .2;
+    for (const target of combat?.targets?.values() ?? []) {
+      if (!target.alive || target.id === ownerId || target.targetable === false || !target.position) continue;
+      const p = target.position, center = impact.center;
+      if (Math.hypot(p.x - center.x, p.z - center.z) > r.radius + Math.min(.3, target.radius ?? 0)
+        || Math.abs((p.y ?? ground(p)) - center.y) > 2 || world?.isWater?.(p.x, p.z)) continue;
+      const wall = world?.traceProjectile?.({ x: center.x, y: center.y + .3, z: center.z },
+        { x: p.x, y: (p.y ?? ground(p)) + .3, z: p.z }, .04);
+      if (wall && wall.collider?.destructibleId !== target.id && wall.collider?.objectId !== target.id) continue;
+      // Refresh the existing burn status: standing in fire does not stack a
+      // second damage stream, and a stronger fire keeps its source/strength.
+      if (target.burnRemaining < r.burnSeconds) {
+        if (combat?.applyBurn?.(target, { duration: r.burnSeconds, damagePerSecond: r.burnDps }, ownerId)) impact.ignited.add(target.id);
+      }
+    }
   }
   function release(payload, origin = null, blocked = null) {
     if (!aim?.valid || flight || impact) { cancelAim(); return false; }
@@ -135,7 +154,7 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
           explode(point, payload, wall?.normal);
         }
       } else {
-        impact.age += step; stepFragments(step);
+        impact.age += step; stepFragments(step); igniteGround();
         visuals.fragments(fragments); visuals.update(step);
         if (impact.age >= r.aftermath) { impact = null; fragments = []; visuals.reset(); }
       }
@@ -151,7 +170,10 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
       radius: r.radius, age: flight?.age ?? impact?.age ?? 0,
       center: flight ? { x: flight.target.x, y: ground(flight.target), z: flight.target.z } : impact ? { ...impact.center } : null,
       flight: flight ? { position: { ...flight.position }, duration: flight.duration, progress: flight.age / flight.duration, diameter: flight.diameter, arcHeight: r.arcHeight } : null,
-      fragments: fragments.filter(f => f.active).length,
+      groundFire: impact ? { active: impact.groundFire && impact.age < r.groundFireSeconds,
+        remaining: impact.groundFire ? Math.max(0, r.groundFireSeconds - impact.age) : 0,
+        radius: r.radius, ignited: impact.ignited.size } : null,
+      fragmentHitIds: [...fragmentHits], fragments: fragments.filter(f => f.active).length,
       fragmentStates: fragments.map(f => ({ position: { ...f.position }, velocity: { ...f.velocity }, diameter: f.radius * 2, bounces: f.bounces, active: f.active })), fragmentHits: fragmentHits.size, visuals: visuals.telemetry }; },
     dispose() { if (disposed) return; disposed = true; reset(); visuals.dispose();
       for (const mesh of [aimRing, rangeRing]) { mesh.removeFromParent(); mesh.geometry.dispose(); mesh.material.dispose(); } },

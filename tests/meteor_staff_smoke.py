@@ -133,22 +133,34 @@ with sync_playwright() as p:
             assert len(set(f['diameter'] for f in impact['fragmentStates'])) > 1
             capture(page, mode + '-impact')
             enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
-            # A fragment also starts burn. Its remaining timer measures actual
-            # combat ticks, independently of the visual frame's impact age.
-            expected_damage = equipped_damage
-            if enemy['burnRemaining'] > 0:
-                expected_damage += equipped_damage * rules['fragmentDamageRatio']
-                expected_damage += rules['burnDps'] * (rules['burnSeconds'] - enemy['burnRemaining'])
-            assert abs(health-enemy['health'] - expected_damage) < .001, dict(enemy=enemy, expectedDamage=expected_damage, impact=impact)
+            # Both the new ground fire and a shard can ignite the target.
+            # The first sample is before refresh; direct damage stays exact,
+            # and only one burn stream can run during these initial frames.
+            expected_direct = equipped_damage
+            if enemy['id'] in impact['fragmentHitIds']:
+                expected_direct += equipped_damage * rules['fragmentDamageRatio']
+            assert expected_direct <= health-enemy['health'] <= expected_direct + rules['burnDps'] * .3, dict(enemy=enemy, impact=impact)
+            assert enemy['burnRemaining'] > 0
+            assert impact['groundFire']['active'] and impact['visuals']['groundFire']['visible']
             assert impact['casts'] == 1
             assert impact['blastHits'] >= 1
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=.6")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             capture(page, mode + '-fragments')
+            arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=2")
+            page.wait_for_function('nebeljagdTestState().phase==="paused"')
+            burning = state(page)['combat']['meteor']
+            burned_enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
+            assert burning['fragments'] == 0 and burning['groundFire']['active']
+            assert burning['visuals']['groundFire']['visible'] and burning['visuals']['groundFire']['flames'] == 36
+            assert burned_enemy['burnRemaining'] > 2.5 and burned_enemy['health'] < enemy['health'] - 2
+            capture(page, mode + '-burning-ground')
+            frozen = state(page)['combat']['meteor']; page.wait_for_timeout(100)
+            assert state(page)['combat']['meteor'] == frozen
             page.locator('#resumeBtn').click()
             page.wait_for_function('!nebeljagdTestState().combat.meteor.active')
             assert state(page)['combat']['meteor']['visuals']['draws'] == 0
-            passed(mode + ': compact fire explosion with uploaded mini meteors damages the real practice target and all effects expire')
+            passed(mode + ': impact leaves persistent burning ground; mini meteors and ground ignite targets; pause and cleanup work')
             context.close()
         assert not report['errors'], report['errors']
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == map_hash
