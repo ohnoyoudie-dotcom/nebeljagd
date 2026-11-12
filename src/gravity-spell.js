@@ -46,19 +46,11 @@ export function createGravitySpell(scene, world, combat, ownerId, onDamage = () 
     aim.caster.copy(position);
     const point = aimPoint.set(position.x + dx * factor, 0, position.z + dz * factor);
     point.y = ground(point);
-    // The same low-cover policy as the other thrown staff projectile.
-    const wall = traceRangedProjectile(world,
-      { x: position.x, y: ground(position) + .7, z: position.z },
-      { x: point.x, y: point.y + .7, z: point.z }, .04);
-    if (wall?.point) {
-      const angle = Math.atan2(dz, dx);
-      point.x = wall.point.x - Math.cos(angle) * .18;
-      point.z = wall.point.z - Math.sin(angle) * .18;
-      point.y = ground(point);
-    }
+    // Placement follows the ground cursor across cover. Only the actual
+    // projectile arc below is tested against scenery, never this flat aim ray.
     if (world?.isLand && !world.isLand(point.x, point.z) || world?.isWater?.(point.x, point.z)) return;
     aim.target.copy(point);
-    visuals.showAim(point, { x: position.x, y: ground(position), z: position.z }, aim.range, aim.age, visibleAt(point));
+    visuals.showAim(point, { x: position.x, y: ground(position), z: position.z }, aim.range, aim.age, true);
   }
   function beginAim(position, direction) {
     if (aim || flight || field || !position) return false;

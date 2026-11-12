@@ -81,7 +81,7 @@ jobs:
             curl -fsS http://127.0.0.1:4174/magebrawl.html >/dev/null && break
             sleep 1
           done
-      - name: Verify uploaded lightning staff, branching projectile and mouse/touch hits
+      - name: Verify lightning storm targeting, mouse/touch strikes, stun and cleanup
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
         run: python tests/lightning_staff_smoke.py
