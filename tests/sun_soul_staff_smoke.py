@@ -32,7 +32,7 @@ with sync_playwright() as pw:
    fixture['objects']=[dict(id='staff',kind=slug+'Staff',variant=variant,name=slug,position=[0,-14],rotation=0,scale=1,rarity='common')]
    ctx=browser.new_context(viewport=dict(width=800,height=600),has_touch=touch,is_mobile=touch)
    ctx.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');')
-   p=ctx.new_page();p.set_default_timeout(120000);p.on('pageerror',lambda e:report['errors'].append(str(e)))
+   p=ctx.new_page();p.set_default_timeout(120000);p.on('pageerror',lambda e:report['errors'].append(e.stack))
    p.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' else None)
    p.route('**/favicon.ico',lambda route:route.fulfill(status=204))
    p.goto(BASE+'/magebrawl.html?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');p.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0')
@@ -65,6 +65,7 @@ with sync_playwright() as pw:
    else:
     for hit in range(1,4):
      p.wait_for_function('nebeljagdTestState().attackCooldown<=0')
+     point=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1')['position']
      p.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z-5,direction:0})',point)
      if hit==1:pause_at(p,'s.combat.effects.importedSoulProjectiles>0')
      p.keyboard.press('f')

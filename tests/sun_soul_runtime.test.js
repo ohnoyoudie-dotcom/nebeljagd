@@ -69,3 +69,11 @@ for (const [slug, label] of [['sun','Sonnenstab'], ['soul','Seelenrichterstab']]
   const normalized=normalizeWorldmap(map);assert.equal(normalized.objects.at(-1).kind,kind);assert.equal(validateWorldmap(normalized).errors.length,0);
   assert.ok(getVariantAsset(kind,variant).sourcePaths.includes(report.source.path));assert.ok(renderWorldmapSvg(normalized).includes(`world-object-${kind}`));
 });
+
+test('sun and soul channel effects leave a valid material on every visible mesh', t => {
+ for (const type of ['sunStaff', 'soulStaff']) {
+  const s=setup(type); t.after(()=>s.dispose()); s.weapons.attack(s.actor.position,0); s.tick(.1);
+  assert.equal(s.weapons.telemetry.effects.channelVisible,true);
+  s.scene.traverseVisible(part=>{ if(part.isMesh || part.isSprite) assert.ok(part.material,`${type}: ${part.name} has a renderable material`); });
+ }
+});

@@ -968,8 +968,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
     swordEffects.sample({ base: swordBase, tip: swordTip, opacity,
       active: heldSword.visible && attackAge >= 0 && swordProgress >= SWORD_STRIKE_START && swordProgress <= SWORD_STRIKE_END });
     if (sun.aiming) spellEffects.channel('sunStaff', getStaffTip(staffTip), characterGroup.rotation.y, sun.telemetry.aimRange.heldSeconds / 3);
-    if (meteor.aiming) spellEffects.channel('fireStaff', getStaffTip(staffTip), characterGroup.rotation.y, meteor.telemetry.aimRange.heldSeconds / 3);
-    if (hourglass.aiming) spellEffects.channel('hourglassStaff', getStaffTip(staffTip), characterGroup.rotation.y, hourglass.telemetry.aimRange.heldSeconds / 3);
+    else if (meteor.aiming) spellEffects.channel('fireStaff', getStaffTip(staffTip), characterGroup.rotation.y, meteor.telemetry.aimRange.heldSeconds / 3);
+    else if (hourglass.aiming) spellEffects.channel('hourglassStaff', getStaffTip(staffTip), characterGroup.rotation.y, hourglass.telemetry.aimRange.heldSeconds / 3);
     else if (equippedType?.endsWith('Staff') && attackAge >= 0 && attackAge < .25 && !shotReleased) {
       spellEffects.channel(equippedType, getStaffTip(staffTip), characterGroup.rotation.y, attackAge / .25);
     } else spellEffects.channel(null);

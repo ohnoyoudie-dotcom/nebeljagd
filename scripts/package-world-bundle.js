@@ -63,9 +63,10 @@ und Teams sind noch nicht implementiert.
     // The offline HTML files stay byte-identical and self-contained. Compress
     // the editor and game more thoroughly to leave room for additional weapons
     // under GitHub's file limit without removing assets or offline features.
-    const compressed = entry.name === 'map-editor.html' || entry.name === 'magebrawl.html'
-      ? Buffer.from(await deflateAsync(entry.bytes, { numiterations: 1 }))
+    const compressed = ['map-editor.html', 'magebrawl.html', 'avatar-preview.html'].includes(entry.name)
+      ? Buffer.from(await deflateAsync(entry.bytes, { numiterations: 5 }))
       : deflateRawSync(entry.bytes, { level: 9, memLevel: 9 });
+    console.log(`ZIP ${entry.name}: ${compressed.length} bytes`);
     const filename = Buffer.from(entry.name), checksum = crc32(entry.bytes);
     const header = Buffer.alloc(30);
     header.writeUInt32LE(0x04034b50); header.writeUInt16LE(20, 4); header.writeUInt16LE(0x800, 6);

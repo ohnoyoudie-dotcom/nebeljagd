@@ -104,8 +104,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   // A fixed material set per element avoids recoloring a fire projectile when
   // its owner swaps to another staff while that earlier shot is still flying.
   const projectileMaterials = {
-    sunStaff: { core: solid(ELEMENTS.sunStaff.core), body: elementMaterial('body', { type: 'sunStaff', opacity: .35 }) },
-    soulStaff: { core: solid('#302537'), body: elementMaterial('body', { type: 'soulStaff', opacity: .35 }) },
+    sunStaff: { core: solid(ELEMENTS.sunStaff.core), tip: additive('#ffe4a0', .5), body: elementMaterial('body', { type: 'sunStaff', opacity: .35 }) },
+    soulStaff: { core: solid('#302537'), tip: additive('#b59cc6', .4), body: elementMaterial('body', { type: 'soulStaff', opacity: .35 }) },
     fireStaff: { core: fireCore, tip: fireTip, body: fireBody },
     iceStaff: { core: iceCore, tip: iceTip, body: iceBody, crystal: crystalMaterial },
     poisonStaff: { core: solid(ELEMENTS.poisonStaff.core), tip: additive(ELEMENTS.poisonStaff.spark, .65),
