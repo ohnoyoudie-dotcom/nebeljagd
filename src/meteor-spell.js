@@ -149,11 +149,19 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
         if (collisionNormal.lengthSq() < 1e-8) collisionNormal.set(-f.velocity.x, 0, -f.velocity.z);
         if (collisionNormal.lengthSq() < 1e-8) collisionNormal.set(1, 0, 0);
         collisionNormal.normalize();
-        // A cast can begin inside a target's footprint. Place the surviving
-        // shard just outside it rather than leaving it buried in the actor.
+        // A cast can begin inside a target's footprint. Clear the actor only
+        // as far as physical barriers allow, including nearby thin walls.
         const clearance = (target.target.radius ?? 0) + f.radius + .025;
-        f.position.x = target.target.position.x + collisionNormal.x * clearance;
-        f.position.z = target.target.position.z + collisionNormal.z * clearance;
+        end.set(target.target.position.x + collisionNormal.x * clearance, f.position.y,
+          target.target.position.z + collisionNormal.z * clearance);
+        const clearanceWall = world?.traceProjectile?.(f.position, end, f.radius);
+        if (clearanceWall?.point) {
+          collisionNormal.set(clearanceWall.normal?.x ?? 0, clearanceWall.normal?.y ?? 0, clearanceWall.normal?.z ?? 0);
+          if (collisionNormal.lengthSq() < 1e-8) collisionNormal.copy(f.position).sub(end);
+          if (collisionNormal.lengthSq() < 1e-8) collisionNormal.set(1, 0, 0);
+          collisionNormal.normalize();
+          f.position.copy(clearanceWall.point).addScaledVector(collisionNormal, .025);
+        } else f.position.copy(end);
         const incoming = f.velocity.dot(collisionNormal);
         if (incoming < 0) f.velocity.addScaledVector(collisionNormal, -1.35 * incoming);
         f.velocity.x *= .7; f.velocity.z *= .7;

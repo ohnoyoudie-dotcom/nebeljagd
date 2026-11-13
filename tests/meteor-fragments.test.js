@@ -2,14 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
+import { createCollisionIndex } from '../src/collision.js';
 import { createMeteorSpell, METEOR_RULES } from '../src/meteor-spell.js';
 
-function fixture(overrides = {}) {
+function fixture(overrides = {}, options = {}) {
   let seed = 1234;
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
   const caster = new THREE.Vector3(), combat = createCombat(), hits = [];
   const world = { heightAt: () => 0, isLand: () => true, isWater: () => false, traceProjectile: () => null, ...overrides };
-  const spell = createMeteorSpell(new THREE.Scene(), world, combat, 'player', result => hits.push(result), null, { random });
+  const spell = createMeteorSpell(new THREE.Scene(), world, combat, 'player', result => hits.push(result), null, { random, ...options });
   function cast() {
     spell.beginAim(caster); spell.aimAt(caster, new THREE.Vector3(0,0,12)); spell.update(3,caster);
     assert.equal(spell.release({ damage: 24 }), true);
@@ -57,6 +58,26 @@ test('a shard survives a target impact visually, while direct hits and burn stay
   assert.ok(spell.telemetry.fragmentStates.some(f => f.active && f.phase==='rolling'));
   assert.equal(enemy.health,73);
   combat.update(3); assert.equal(enemy.health,67); assert.equal(owner.health,100);
+  spell.dispose();
+});
+
+test('clearing an overlapping target cannot teleport a surviving shard through a thin wall', () => {
+  const wall = { minX:1.05, maxX:1.15, minZ:-3, maxZ:3, minY:0, maxY:3 };
+  const collision = createCollisionIndex([], [wall]);
+  const { spell,combat,caster,hits } = fixture({ traceProjectile:(...args)=>collision.traceSegment(...args) }, { random:()=>0 });
+  caster.set(0,0,-5);
+  const enemy = combat.addTarget({ id:'enemy', position:new THREE.Vector3(), radius:1, height:3 });
+  spell.beginAim(caster); spell.aimAt(caster,new THREE.Vector3()); spell.update(3,caster);
+  assert.equal(spell.release({damage:24},null,{point:{x:0,y:0,z:0}}),true);
+  spell.update(1/60,caster);
+  const first = spell.telemetry.fragmentStates[0], incomingSide = wall.minX - first.diameter/2;
+  assert.ok(first.active && first.position.x <= incomingSide,'target clearance stops before the wall');
+  assert.ok(first.velocity.x < 0,'the blocked shard rebounds towards the incoming side');
+  spell.update(.5,caster);
+  const later = spell.telemetry.fragmentStates[0];
+  assert.ok(later.active && later.position.x <= incomingSide,'the surviving shard remains on the incoming side');
+  assert.equal(hits.filter(h=>h.type==='meteor-fragment').length,1);
+  assert.equal(enemy.health,73); assert.equal(enemy.burnRemaining,3);
   spell.dispose();
 });
 
