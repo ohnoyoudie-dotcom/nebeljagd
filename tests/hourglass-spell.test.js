@@ -15,7 +15,8 @@ test('the sand vortex rises, orbits and reuses every buffer through pause and di
  const puffs=root.children.find(m=>m.geometry?.isInstancedBufferGeometry);
  assert.ok(puffs,'dust billows share one instanced draw');
  assert.equal(puffs.geometry.instanceCount,HOURGLASS_VISUAL_BUDGET.puffs);
- const sheets=root.children.filter(m=>m!==root.children[0]&&m!==sand&&m!==puffs);
+ const bed=root.getObjectByName('Sanduhrstab · bodennaher Sand');
+ const sheets=root.children.filter(m=>m!==root.children[0]&&m!==sand&&m!==puffs&&m!==bed);
  assert.equal(sheets.length,2);
  const buffers=root.children.flatMap(m=>Object.values(m.geometry.attributes).map(attribute=>({attribute,array:attribute.array})));
  const positions=sand.geometry.attributes.position.array;
@@ -27,7 +28,7 @@ test('the sand vortex rises, orbits and reuses every buffer through pause and di
  for(const sheet of sheets)assert.ok(heightOf(sheet.geometry.attributes.position.array)>1.5,'each sandy current has real 3D height');
  assert.ok(heightOf(puffs.geometry.attributes.center.array)>1.5,'billows rise with the sand');
  const drawn=root.children.filter(m=>m.visible);assert.equal(drawn.length,HOURGLASS_VISUAL_BUDGET.draws);
- assert.equal(drawn.length,5);assert.equal(drawn.filter(m=>m.isLight).length,0);
+ assert.equal(drawn.length,6);assert.equal(drawn.filter(m=>m.isLight).length,0);
  const before=Array.from(positions);v.show(center,2.2,true);
  let radialMotion=0,verticalMotion=0;
  for(let i=0;i<positions.length;i+=3){
@@ -50,9 +51,27 @@ test('the sand vortex rises, orbits and reuses every buffer through pause and di
  v.show(center,5.45,true);assert.equal(v.telemetry.particles,0);assert.equal(puffs.visible,false);
  const releases=new Map();
  root.children.forEach(m=>{for(const resource of [m.geometry,m.material]){releases.set(resource,0);resource.addEventListener('dispose',()=>releases.set(resource,releases.get(resource)+1));}});
- v.dispose();v.dispose();assert.equal(releases.size,10);
+ v.dispose();v.dispose();assert.equal(releases.size,12);
  for(const count of releases.values())assert.equal(count,1,'each geometry and material is released once');
  assert.equal(scene.children.length,0);
+});
+
+test('the sand bed opens after warning, freezes on pause and fully disappears with the storm',t=>{
+ const scene=new THREE.Scene(),v=createHourglassVisuals(scene,rules),center=new THREE.Vector3();
+ t.after(()=>v.dispose());
+ const bed=scene.getObjectByName('Sanduhrstab · bodennaher Sand'),u=bed.material.uniforms;
+ assert.ok(bed.material.depthTest,'standing characters and walls must occlude the sand bed');
+ assert.equal(bed.material.depthWrite,false,'the effect must not leave an opaque depth footprint');
+ v.show(center,rules.warning*.5,true);assert.equal(bed.visible,false);assert.equal(v.telemetry.ground,false);
+ v.show(center,rules.warning+.2,true);assert.equal(bed.visible,true);assert.ok(u.uOpening.value>0&&u.uOpening.value<1);
+ v.show(center,2,true);assert.equal(u.uOpening.value,1);assert.equal(u.uOpacity.value,1);
+ const frozen=Object.fromEntries(Object.entries(u).map(([key,{value}])=>[key,value]));
+ v.show(center,2,true);for(const key in frozen)assert.equal(u[key].value,frozen[key]);
+ v.show(center,2.2,true);assert.ok(u.uTime.value>frozen.uTime);
+ v.show(center,rules.warning+rules.duration+rules.dissolve*.6,true);
+ assert.ok(u.uDissolve.value>.5);assert.ok(u.uOpacity.value<.5);
+ v.show(center,rules.warning+rules.duration+rules.dissolve+.01,true);
+ assert.equal(bed.visible,false);assert.equal(v.telemetry.ground,false);assert.equal(u.uOpacity.value,0);
 });
 
 test('dissolving sand keeps its orbit direction while slowing down',t=>{
@@ -129,8 +148,16 @@ test('sand follows sloped terrain with cached height samples, including its warn
  const root=scene.getObjectByName('Sanduhrstab · Zeitfeld');
  const points=root.getObjectByName('Sanduhrstab · kreisender Sand').geometry.attributes.position;
  for(let i=0;i<points.count;i++){const clearance=points.getY(i)+center.y-height(points.getX(i)+center.x,points.getZ(i)+center.z);assert.ok(clearance>=.034&&clearance<=2.6);}
- const rim=root.children[0];rim.updateMatrix();
- const p=new THREE.Vector3();for(let i=0;i<rim.geometry.attributes.position.count;i++){p.fromBufferAttribute(rim.geometry.attributes.position,i).applyMatrix4(rim.matrix).add(center);assert.ok(Math.abs(p.y-height(p.x,p.z)-.055)<1e-6);}
+ const surfaces=[[root.children[0],.055],[root.getObjectByName('Sanduhrstab · bodennaher Sand'),.075]];
+ const checkSurfaces=()=>{for(const [mesh,clearance] of surfaces){
+  mesh.updateMatrix();const p=new THREE.Vector3();
+  for(let i=0;i<mesh.geometry.attributes.position.count;i++){
+   p.fromBufferAttribute(mesh.geometry.attributes.position,i).applyMatrix4(mesh.matrix).add(center);
+   assert.ok(Math.abs(p.y-height(p.x,p.z)-clearance)<1e-6,'warning and sand bed must follow the slope');
+  }
+ }};
+ checkSurfaces();center.set(-3,height(-3,7),7);visuals.show(center,2,true);checkSurfaces();
+ assert.equal(samples,count*2,'recasting elsewhere samples the new terrain once');
  visuals.dispose();
 });
 
@@ -183,7 +210,7 @@ test('warning, active and dissolution freeze, respect visibility and release res
  const sand=root.getObjectByName('Sanduhrstab · kreisender Sand');
  const frozen=Array.from(sand.geometry.attributes.position.array);s.update(0,caster);assert.deepEqual(Array.from(sand.geometry.attributes.position.array),frozen);
  visible=false;s.update(.1,caster);assert.equal(s.telemetry.visuals.visible,false);
- visible=true;s.update(3.6,caster);assert.equal(s.telemetry.visuals.phase,'dissolve');assert.ok(s.telemetry.visuals.opacity>0);assert.ok(s.telemetry.visuals.draws<=5);
+ visible=true;s.update(3.6,caster);assert.equal(s.telemetry.visuals.phase,'dissolve');assert.ok(s.telemetry.visuals.opacity>0);assert.ok(s.telemetry.visuals.draws<=6);
  s.update(1,caster);assert.equal(s.telemetry.active,false);assert.equal(s.telemetry.visuals.draws,0);
  let disposed=0;sand.geometry.addEventListener('dispose',()=>disposed++);s.dispose();s.dispose();assert.equal(disposed,1);idle.dispose();assert.equal(scene.children.length,0);
 });

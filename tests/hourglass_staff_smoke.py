@@ -122,6 +122,7 @@ with sync_playwright() as p:
             else:page.keyboard.up('f')
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             g=state(page)['combat']['hourglass'];assert g['visuals']['phase']=='warning' and g['casts']==1,g
+            assert not g['visuals']['ground'],g
             assert actor(page)['speedMultiplier']==1 and actor(page)['health']==health
             assert state(page)['combat']['effects']['activeProjectiles']==0
             center=g['center']
@@ -132,19 +133,20 @@ with sync_playwright() as p:
             frozen=state(page)['combat']['hourglass'];page.wait_for_timeout(150);assert state(page)['combat']['hourglass']==frozen
             pause_at(page,3);capture(page,mode+'-strong')
             coverage=sand_coverage(page)
-            assert coverage['total']==96 and coverage['coverage']>=.65,coverage
+            assert coverage['total']==96 and coverage['coverage']>=.90,coverage
             assert coverage['cyanCoverage']<=.15,coverage
             report.setdefault('sandCoverage',{})[mode]=coverage
             late=actor(page);assert late['speedMultiplier']<early['speedMultiplier'] and late['speedMultiplier']>=.35-1e-8,late
             assert late['travelled']>early['travelled'] and late['health']==health
             visuals=state(page)['combat']['hourglass']['visuals']
-            assert visuals['draws']==5 and visuals['particles']==7200 and visuals['puffs']==64 and visuals['currents']==2,visuals
+            assert visuals['draws']==6 and visuals['ground'] and visuals['particles']==7200 and visuals['puffs']==64 and visuals['currents']==2,visuals
             passed(mode+': actual practice movement slows progressively, stays mobile, deals no damage and freezes on pause')
             pause_at(page,4.95);capture(page,mode+'-dissolve')
             assert state(page)['combat']['hourglass']['visuals']['phase']=='dissolve'
             assert actor(page)['speedMultiplier']==1
             page.locator('#resumeBtn').click();page.wait_for_function('!nebeljagdTestState().combat.hourglass.active')
             assert state(page)['combat']['hourglass']['visuals']['draws']==0
+            assert not state(page)['combat']['hourglass']['visuals']['ground']
             passed(mode+': sand dissolves and all field/status effects expire')
             context.close()
         assert not report['errors'],report['errors']

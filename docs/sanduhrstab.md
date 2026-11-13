@@ -36,6 +36,11 @@ gestreckte Teilchen machen den fliegenden Sand erkennbar.
 Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten.
 Breitere, stärker überlappende Staubschichten verdecken den Boden deutlich;
 die unteren Wolken sind dichter als die oberen, damit Figuren erkennbar bleiben.
+Eine nahezu deckende, bodennahe Sandschicht schließt die Lücken unter den Wolken.
+Sie passt sich dem Gelände an und trägt wandernde Sandrippel in derselben
+Strömung und Farbpalette. Der unregelmäßige Saum läuft weich aus; beim Öffnen
+breitet sich der Sand von innen aus. So ist innerhalb des Sturms fast kein
+ursprünglicher Boden mehr sichtbar, ohne zusätzliche Wolken zu stapeln.
 Die 64 Wolken verteilen sich über die Fläche, statt nur zwei schmale Wirbelbahnen
 zu besetzen. Der Rand markiert
 zunächst die Vorwarnung und tritt nach dem Öffnen zurück. Das Feld enthält
@@ -53,10 +58,12 @@ So bleibt das Feld zusammenhängend, ohne feste Kreisbahnen oder geschlossene
 Bänder zu zeigen. Beim Absinken klingt die Bewegung weiter ab.
 
 Beim Ausklingen verlieren die Sandböen ihre Höhe, die Staubwolken lockern sich,
-und die Körner sinken zu Boden und verblassen. Gelände wird einmal beim
+und die Körner sinken zu Boden und verblassen. Die bodennahe Schicht löst sich
+gleichzeitig fleckenweise auf und hinterlässt keine dauerhafte Sandfläche.
+Gelände wird einmal beim
 Platzieren abgetastet. Die Staubwolken teilen sich einen instanzierten
 Zeichenaufruf und richten sich zur Kamera aus; ihre Reihenfolge berücksichtigt
-die Kameratiefe. Insgesamt benötigt das Feld höchstens fünf zusätzliche
+die Kameratiefe. Insgesamt benötigt das Feld höchstens sechs zusätzliche
 Zeichenaufrufe. Es verwendet feste Puffer, keine zusätzlichen Lichter, Texturen
 oder Nachbearbeitung. Pause friert sämtliche Bewegung ein. Die Spielwerte,
 Zielsteuerung und das Stabmodell bleiben erhalten.
@@ -73,7 +80,8 @@ Zielsteuerung und das Stabmodell bleiben erhalten.
 
 `tests/hourglass-spell.test.js` prüft Vorwarnung, Aufenthaltsdauer, Erholung,
 Eis-Kombination, Mehrfachquellen, Wände, Wasser, Pause, Sichtbarkeit,
-Geländeanpassung, tatsächliche Höhe, begrenzte seitliche und vertikale Bewegung
+Geländeanpassung einschließlich der Sandschicht, vollständiges Verschwinden,
+tatsächliche Höhe, begrenzte seitliche und vertikale Bewegung
 sowie flächendeckende Verteilung der Sandkörner, feste
 Puffer, Freigabe der Ressourcen und die echte Waffensteuerung.
 `tests/hourglass_staff_smoke.py` prüft den erzeugten Editor, gespeicherte

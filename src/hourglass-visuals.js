@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 
-export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 7200, puffs: 64, draws: 5 });
+export const HOURGLASS_VISUAL_BUDGET = Object.freeze({ grains: 7200, puffs: 64, draws: 6 });
 const TAU = Math.PI * 2;
 const smooth = x => { const t = THREE.MathUtils.clamp(x, 0, 1); return t * t * (3 - 2 * t); };
 const random = (i, salt) => { const v = Math.sin((i + 1) * salt) * 43758.5453; return v - Math.floor(v); };
@@ -17,32 +17,59 @@ return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1
 float dust(vec2 p){return noise(p)*.57+noise(p*2.03)*.29+noise(p*4.11)*.14;}
 `;
 const sandField = `${noise}
-float sandDensity(vec3 p){
+vec2 sandFlow(vec3 p){
   float r=clamp(length(p.xz)/uRadius,0.,1.);
   float a=-uTime*2.15*(.9+.12*(1.-r));
   vec2 q=vec2(cos(a)*p.x-sin(a)*p.z,sin(a)*p.x+cos(a)*p.z);
   q+=.18*vec2(sin(q.y*2.4+p.y-uTime*.7),sin(q.x*2.1-p.y+uTime*.6));
-  return dust(q*2.2+vec2(p.y*.55,-p.y*.4+uTime*.12));
+  return q;
 }
+float sandDensity(vec3 p){return dust(sandFlow(p)*2.2+vec2(p.y*.55,-p.y*.4+uTime*.12));}
 vec3 sandColor(float n){return mix(vec3(.29,.15,.05),vec3(.78,.55,.28),.28+n*.64);}
 `;
 
-/** Rising sand gusts, not a painted ground disc. Fixed pools, five field draws,
+/** Rising sand gusts over a moving, terrain-conforming sand bed. Six field draws,
  * no lights/postprocessing/textures. All animation uses simulation time. */
 export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
   const root = new THREE.Group(); root.name = 'Sanduhrstab · Zeitfeld'; root.visible = false; scene.add(root);
   const boundary = createStaffAimRing(rules.radius, { color: '#d9b16c' });
   boundary.geometry.dispose(); boundary.geometry = new THREE.PlaneGeometry(rules.radius * 2.16, rules.radius * 2.16, 16, 16);
   boundary.material.depthTest = true; boundary.position.y = .055; root.add(boundary);
+  const uniforms = { uTime: { value: 0 }, uOpacity: { value: 0 }, uRadius: { value: rules.radius },
+    uOpening: { value: 0 }, uDissolve: { value: 0 } };
+  // Close the gaps beneath the airborne dust with one terrain-following draw.
+  // The opaque-looking interior hides the ground, while a frayed edge and
+  // advected ripples connect it to the billows instead of outlining a flat disc.
+  const bedMaterial = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, toneMapped: false,
+    side: THREE.DoubleSide, forceSinglePass: true, uniforms,
+    vertexShader: 'varying vec3 vField;void main(){vField=vec3(position.x,position.z,-position.y);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader: `varying vec3 vField;uniform float uTime,uOpacity,uRadius,uOpening,uDissolve;${sandField}
+      void main(){
+        float r=length(vField.xz)/(uRadius*(.4+.6*uOpening));
+        if(r>=1.)discard;
+        vec2 q=sandFlow(vField);float n=sandDensity(vField);
+        float fray=noise(q*3.1+uTime*.16);
+        float edge=1.-smoothstep(.82+fray*.07,.99,r);
+        float ripple=sin(q.x*11.+q.y*4.+n*8.+uTime*.4)*.5+.5;
+        vec3 color=sandColor(n)*(.88+.16*ripple);
+        float erosion=1.-smoothstep(.30+n*.35,.68+n*.35,uDissolve);
+        gl_FragColor=vec4(color,(.97+.025*n)*edge*erosion*uOpacity);
+        #include <colorspace_fragment>
+      }`,
+  });
+  const bed = new THREE.Mesh(boundary.geometry.clone(), bedMaterial);
+  bed.name = 'Sanduhrstab · bodennaher Sand'; bed.rotation.x = -Math.PI / 2;
+  bed.position.y = .075; bed.renderOrder = -1; root.add(bed);
   const terrain = new Float32Array(17 * 17), lastCenter = new THREE.Vector3(NaN, NaN, NaN);
   function conform(center) {
     if (lastCenter.equals(center)) return; lastCenter.copy(center);
-    const b = boundary.geometry.attributes.position;
+    const b = boundary.geometry.attributes.position, floor = bed.geometry.attributes.position;
     for (let i = 0; i < b.count; i++) {
       const y = heightAt(center.x + b.getX(i), center.z - b.getY(i)) - center.y;
-      terrain[i] = y; b.setZ(i, y);
+      terrain[i] = y; b.setZ(i, y); floor.setZ(i, y);
     }
-    b.needsUpdate = true; boundary.geometry.computeBoundingSphere();
+    b.needsUpdate = floor.needsUpdate = true;
+    boundary.geometry.computeBoundingSphere(); bed.geometry.computeBoundingSphere();
   }
   function height(x, z) {
     const u = THREE.MathUtils.clamp((x / (rules.radius * 2.16) + .5) * 16, 0, 15.999);
@@ -51,7 +78,6 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     return THREE.MathUtils.lerp(THREE.MathUtils.lerp(terrain[i], terrain[i + 1], u - ix),
       THREE.MathUtils.lerp(terrain[i + 17], terrain[i + 18], u - ix), v - iz);
   }
-  const uniforms = { uTime: { value: 0 }, uOpacity: { value: 0 }, uRadius: { value: rules.radius } };
   const currents = [], SEGMENTS = 112;
   for (let layer = 0; layer < 2; layer++) {
     const geometry = new THREE.BufferGeometry(), positions = new Float32Array((SEGMENTS + 1) * 6), uv = new Float32Array((SEGMENTS + 1) * 4), index = [];
@@ -145,7 +171,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       }`,
   });
   const grains = new THREE.Points(grainGeometry,grainMaterial); grains.name='Sanduhrstab · kreisender Sand'; grains.frustumCulled=false;root.add(grains);
-  const activeMeshes = [...currents, puffs, grains];
+  const activeMeshes = [bed, ...currents, puffs, grains];
   let phase='idle',opening=0,disposed=false;
   function show(center,age,visible) {
     conform(center); root.position.copy(center); root.visible=visible;
@@ -158,6 +184,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
     boundary.visible=true; boundary.userData.update(age,phase==='warning'?.7+.3*smooth(age/rules.warning):fade*(.08+.62*(1-opening)));
     const active=age>=rules.warning&&fade>0; for(const mesh of activeMeshes)mesh.visible=active;
     uniforms.uTime.value=time;uniforms.uOpacity.value=smooth(activeAge/.12)*fade;
+    uniforms.uOpening.value=opening;uniforms.uDissolve.value=dissolve;
     for(let layer=0;layer<2;layer++) {
       const a=currents[layer].geometry.attributes.position;
       for(let i=0;i<=SEGMENTS;i++) {
@@ -198,8 +225,8 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
   }
   return {show,hide(){root.visible=false;phase='idle';},
     get telemetry(){const active=root.visible&&grains.visible;return {visible:root.visible,phase,particles:active?count:0,puffs:active?billows.length:0,
-      currents:active?2:0,opening,opacity:root.visible?uniforms.uOpacity.value:0,draws:root.visible?1+4*Number(grains.visible):0};},
+      currents:active?2:0,ground:active,opening,opacity:root.visible?uniforms.uOpacity.value:0,draws:root.visible?1+5*Number(grains.visible):0};},
     dispose(){if(disposed)return;disposed=true;root.removeFromParent();puffs.onBeforeRender=()=>{};
-      for(const mesh of [boundary,...currents,puffs,grains]){mesh.geometry.dispose();mesh.material.dispose();}}
+      for(const mesh of [boundary,...activeMeshes]){mesh.geometry.dispose();mesh.material.dispose();}}
   };
 }
