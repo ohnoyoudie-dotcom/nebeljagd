@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { createCombat } from '../src/combat.js';
 import { createMeteorSpell, METEOR_RULES as rules, meteorDiameter } from '../src/meteor-spell.js';
 import { createMeteorVisuals, METEOR_VISUAL_BUDGET } from '../src/meteor-visuals.js';
+import { createMeteorGroundFire, METEOR_FIRE_SLICES } from '../src/meteor-ground-fire.js';
 import { HOURGLASS_RULES } from '../src/hourglass-spell.js';
 import { makeWorldObject, normalizeWorldmap } from '../src/map/objects.js';
 import { validateWorldmap } from '../src/map/model.js';
@@ -102,6 +103,51 @@ test('meteor effects use fixed pools, respect visibility and dispose only owned 
   for(const {a,array} of arrays)assert.equal(a.array,array);
   v.dispose();v.dispose();assert.equal(sharedDisposals,0);assert.equal(scene.children.length,0);
   geometry.dispose();material.dispose();
+});
+
+test('continuous ground fire reuses its volume and terrain textures across casts and disposes them once', () => {
+  const scene = new THREE.Scene();
+  const fire = createMeteorGroundFire(scene, rules, (x, z) => x * .08 + z * .03);
+  const resources = new Set(), textures = new Set();
+  scene.traverse(object => {
+    if (object.geometry) resources.add(object.geometry);
+    for (const material of [object.material].flat().filter(Boolean)) {
+      resources.add(material);
+      for (const uniform of Object.values(material.uniforms ?? {})) {
+        if (uniform.value?.isTexture) textures.add(uniform.value);
+      }
+    }
+  });
+  assert.equal(textures.size, 2, 'one shared noise volume and one terrain height texture');
+  assert.equal([...textures].filter(texture => texture.isData3DTexture).length, 1);
+  const buffers = [...textures].map(texture => ({ texture, data: texture.image.data }));
+  for (const { texture, data } of buffers) {
+    assert.ok(data.byteLength <= 32 ** 3, 'generated textures remain small');
+    resources.add(texture);
+  }
+  const disposals = new Map([...resources].map(resource => [resource, 0]));
+  for (const resource of resources) resource.addEventListener('dispose', () => disposals.set(resource, disposals.get(resource) + 1));
+  for (let cast = 0; cast < 3; cast++) {
+    fire.ignite(new THREE.Vector3(cast * 4, 0, cast * -2));
+    fire.update(.5);
+    assert.deepEqual(fire.telemetry, { visible: true, mode: 'volume', slices: METEOR_FIRE_SLICES, draws: 2 });
+    for (let frame = 0; frame < 120; frame++) fire.update(.5 + frame / 60);
+    scene.traverse(object => {
+      for (const material of [object.material].flat().filter(Boolean)) {
+        for (const uniform of Object.values(material.uniforms ?? {})) {
+          if (uniform.value?.isTexture) assert.ok(textures.has(uniform.value), 'casts keep the original pooled textures');
+        }
+      }
+    });
+    for (const { texture, data } of buffers) assert.equal(texture.image.data, data);
+    fire.reset();
+    assert.equal(fire.telemetry.visible, false);
+    assert.equal(fire.telemetry.slices, 0);
+    assert.ok([...disposals.values()].every(count => count === 0), 'reset keeps pooled GPU resources reusable');
+  }
+  fire.dispose(); fire.dispose();
+  assert.equal(scene.children.length, 0);
+  assert.ok([...disposals.values()].every(count => count === 1), 'all owned textures, materials and geometry are disposed exactly once');
 });
 
 test('uploaded meteor staff is preserved, textured, visible in the editor and roundtrips as its own variant', () => {

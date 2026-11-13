@@ -19,10 +19,12 @@ der tatsächlich zurückgelegten Strecke. Auch ein Treffer lässt den Stein
 sichtbar weiterlaufen, ohne weitere Treffer durch denselben Splitter auszulösen.
 
 Am Einschlagsort bleibt vier Sekunden lang eine brennende Fläche im Radius
-von 3,2 Metern zurück, anschließend klingt sie in 0,6 Sekunden ab. Glut und
-48 geschichtete, turbulente Flammen folgen der Bodenhöhe. Ein dunkles
-verkohltes Glutbett verdeckt das Gras; normal überblendete, dichte orange
-Flammenkerne verhindern den bisherigen grünen Durchschein. Wer die Fläche betritt, brennt
+von 3,2 Metern zurück, anschließend klingt sie in 0,6 Sekunden ab. Ein
+zusammenhängendes Feuerfeld folgt der Bodenhöhe: 24 Tiefenschichten tasten
+dieselbe bewegte, räumliche Flammendichte ab. So gehen die Flammen ineinander
+über. Der teilweise durchsichtige Brandfleck lässt etwas Gras erkennen und
+läuft an einem weichen, asymmetrischen Rand aus. Die Flammen selbst behalten
+ihre warmen orangefarbenen Kerne. Wer die Fläche betritt, brennt
 drei Sekunden mit zwei Schaden pro Sekunde; im Feuer wird diese Dauer
 aufgefrischt. Splittertreffer lösen denselben Brand auch außerhalb der Fläche
 aus. Beide Quellen stapeln keine zusätzlichen Brand-Schadensströme. Mauern,
@@ -80,5 +82,8 @@ Ein dezentes Hitzeflimmern um Meteor und jungen Rauch bricht das bereits
 gerenderte Bild; dafür wird ein Bildpuffer kopiert und in einem Zeichenaufruf
 verwendet. Funken und Feuerexplosion bleiben auf 96 beziehungsweise 18
 Elemente begrenzt.
-Die acht Meteorsplitter teilen Geometrie und Material mit dem Hauptmodell. Es gibt
-keine zusätzlichen dynamischen Lichter oder Nachbearbeitungspässe.
+Die acht Meteorsplitter teilen Geometrie und Material mit dem Hauptmodell.
+Das Bodenfeuer benötigt zwei Zeichenaufrufe und zwei kleine, wiederverwendete
+Texturen für Flammendichte und Geländehöhe. Seine Tiefenprüfung erhält die
+Verdeckung durch Figuren und Splitter. Es gibt keine zusätzlichen dynamischen
+Lichter oder Nachbearbeitungspässe.

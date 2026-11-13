@@ -17,7 +17,7 @@ fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e
 fixture['objects'] = [dict(id='meteor', name='Meteorstab', kind='meteorStaff',
     variant='kit-tripo-meteor-staff', position=[0, -14], rotation=0, scale=1, rarity='common')]
 limits = json.loads(subprocess.check_output(['node', '--input-type=module', '-e',
-    "import {METEOR_RULES} from './src/meteor-spell.js';import {METEOR_VISUAL_BUDGET} from './src/meteor-visuals.js';import {METEOR_GROUND_FLAMES} from './src/meteor-ground-fire.js';console.log(JSON.stringify({rules:METEOR_RULES,visuals:METEOR_VISUAL_BUDGET,groundFlames:METEOR_GROUND_FLAMES}))"], cwd=ROOT))
+    "import {METEOR_RULES} from './src/meteor-spell.js';import {METEOR_VISUAL_BUDGET} from './src/meteor-visuals.js';import {METEOR_FIRE_SLICES} from './src/meteor-ground-fire.js';console.log(JSON.stringify({rules:METEOR_RULES,visuals:METEOR_VISUAL_BUDGET,fireSlices:METEOR_FIRE_SLICES}))"], cwd=ROOT))
 rules = limits['rules']
 report = dict(status='running', checks=[], errors=[])
 
@@ -173,7 +173,10 @@ with sync_playwright() as p:
             assert burning['fragments'] > 0 and burning['groundFire']['active']
             assert burning['visuals']['fragments'] > 0
             assert any(f['active'] and f['phase'] == 'rolling' for f in burning['fragmentStates'])
-            assert burning['visuals']['groundFire']['visible'] and burning['visuals']['groundFire']['flames'] == limits['groundFlames']
+            ground_fire = burning['visuals']['groundFire']
+            assert ground_fire['visible'] and ground_fire['mode'] == 'volume'
+            assert ground_fire['slices'] == limits['fireSlices'] <= 32
+            assert ground_fire['draws'] == 2
             assert burned_enemy['burnRemaining'] > 2.5 and burned_enemy['health'] < enemy['health'] - 2
             capture(page, mode + '-burning-ground', ground_detail=True, fragment_detail=True)
             frozen = state(page)['combat']['meteor']; page.wait_for_timeout(100)
@@ -196,6 +199,7 @@ with sync_playwright() as p:
             page.wait_for_function('!nebeljagdTestState().combat.meteor.active')
             assert state(page)['combat']['meteor']['visuals']['draws'] == 0
             assert not state(page)['combat']['meteor']['visuals']['heat']['visible']
+            assert state(page)['combat']['meteor']['visuals']['groundFire']['slices'] == 0
             passed(mode + ': mini meteors visibly fly, bounce and roll through the burning ground; damage caps, pause and cleanup work')
             context.close()
         assert not report['errors'], report['errors']
