@@ -33,9 +33,11 @@ Sandböen steigen vom Boden auf und tragen 64 weiche, unregelmäßige Staubwolke
 7.200 einzelne Sandkörner bewegen sich über die gesamte Kreisfläche, auch im Zentrum,
 bis etwa 2,5 m über dem Boden. Feine Körner und kurze, in Bewegungsrichtung
 gestreckte Teilchen machen den fliegenden Sand erkennbar.
-Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten. Durchscheinende
-Staubschichten lassen Spielfiguren und Boden erkennen. Die 64 Wolken verteilen
-sich über die Fläche, statt nur zwei schmale Wirbelbahnen zu besetzen. Der Rand markiert
+Beige, Ocker und warme Goldtöne geben dem Staub Licht und Schatten.
+Breitere, stärker überlappende Staubschichten verdecken den Boden deutlich;
+die unteren Wolken sind dichter als die oberen, damit Figuren erkennbar bleiben.
+Die 64 Wolken verteilen sich über die Fläche, statt nur zwei schmale Wirbelbahnen
+zu besetzen. Der Rand markiert
 zunächst die Vorwarnung und tritt nach dem Öffnen zurück. Das Feld enthält
 keine blaue Bodenfüllung, Runenscheibe oder Kristallsplitter. Es zieht Gegner
 weiterhin nicht zur Mitte.

@@ -70,7 +70,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
           float ends=smoothstep(0.,.18,vUv.x)*(1.-smoothstep(.68,1.,vUv.x));
           float breakup=smoothstep(.25,.7,noise(vec2(vUv.x*11.-uTime*.35,vUv.y*2.)));
           float density=smoothstep(.28,.72,n)*feather*ends*(.25+.75*breakup);
-          gl_FragColor=vec4(sandColor(n),density*.25*uOpacity);
+          gl_FragColor=vec4(sandColor(n),density*.38*uOpacity);
           #include <colorspace_fragment>
         }`,
     });
@@ -99,7 +99,7 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
         float radius=length(p*vec2(1.,1.08));
         float edge=1.-smoothstep(.36+n*.30,.73+n*.25,radius);
         float body=smoothstep(.16,.70,n);
-        gl_FragColor=vec4(sandColor(n),edge*(.22+body*.70)*vAlpha*uOpacity);
+        gl_FragColor=vec4(sandColor(n),edge*(.36+body*.60)*vAlpha*uOpacity);
         #include <colorspace_fragment>
       }`,
   });
@@ -178,8 +178,9 @@ export function createHourglassVisuals(scene, rules, heightAt = () => 0) {
       const radius=(rules.radius*(.93*t+drift))*(.4+.6*opening)+dissolving*.25;
       b.x=Math.cos(angle)*radius;b.z=Math.sin(angle)*radius;
       b.y=height(b.x,b.z)+.08+Math.max(.04,.25+b.seed*1.65+.27*Math.sin(time*2+b.seed*TAU))*opening*fade;
-      b.width=(.85+.35*b.seed)*(.45+.55*opening)*(1+dissolve*.3)*(1+.14*Math.sin(time*1.6+b.seed*TAU));
-      b.height=b.width*(.4+.3*b.seed);b.alpha=.27+.1*b.seed;
+      b.width=(1.05+.4*b.seed)*(.45+.55*opening)*(1+dissolve*.3)*(1+.14*Math.sin(time*1.6+b.seed*TAU));
+      // Denser overlapping dust near the floor; upper billows leave silhouettes readable.
+      b.height=b.width*(.45+.3*b.seed);b.alpha=.72-.18*b.seed;
     }uploadBillows();
     for(let i=0;i<count;i++) {
       const seed=seeds[i],t=grainProgress[i],radial=.98*Math.sqrt((i+.5)/count);
