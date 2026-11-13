@@ -923,7 +923,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     specials.update(delta, position, time);
     gravity.update(delta, position, time); hourglass.update(delta, position);
     storm.update(delta, position); meteor.update(delta, position); sun.update(delta, position);
-    soulJudgment.update(delta); soulMarks.update(soulJudgment.marks);
+    soulJudgment.update(delta);
     for (const item of items) {
       if (item.collected) continue;
       const wave = Math.sin(time * 2.2 + item.phase);
@@ -1031,6 +1031,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     if (isVisible) for (const arrow of arrows) arrow.group.visible = arrow.life > 0 && isVisible(arrow.group.position);
     updateSpells(delta, time);
+    soulMarks.update(soulJudgment.marks);
     spellEffects.update(delta, time);
     let particlesChanged = false;
     impactParticles.forEach((particle, index) => {

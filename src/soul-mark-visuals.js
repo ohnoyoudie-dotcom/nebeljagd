@@ -44,10 +44,10 @@ export function createSoulMarkVisuals(scene, combat, isVisible, world) {
         scene.add(root); entry = { root, pieces }; entries.set(id, entry);
       }
       const p = target.position;
-      entry.root.position.set(p.x, (p.y ?? 0) + (target.height ?? 2.3) + .55, p.z);
+      entry.root.position.set(p.x, (p.y ?? 0) + (target.height ?? 2.3) + 1.45, p.z);
       const concealed = !(target.revealRemaining > 0) && (target.concealed || world?.concealmentAt?.(p.x, p.z) > .01);
       entry.root.visible = !concealed && (!isVisible || isVisible(p, { concealed: false }));
-      const pulse = mark.count === 3 ? .88 + Math.sin(mark.remaining * 15) * .08 : .8;
+      const pulse = mark.count === 3 ? 1.10 + Math.sin(mark.remaining * 15) * .08 : .98;
       entry.root.scale.setScalar(pulse);
       entry.pieces.forEach((piece, i) => {
         piece.visible = i < mark.count;

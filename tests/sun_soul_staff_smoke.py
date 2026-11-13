@@ -28,6 +28,7 @@ with sync_playwright() as pw:
   edited=p.evaluate('nebeljagdMapTestState().map.objects');assert edited[:-2]==original
   assert [o['kind'] for o in edited[-2:]]==['sunStaff','soulStaff'];passed('Both real staff entries place and persist in the generated editor, preserving existing map objects');ctx.close()
   for slug,touch in [('sun',False),('sun',True),('soul',False)]:
+   if os.environ.get('NEBELJAGD_STAFF_ONLY') and slug != os.environ['NEBELJAGD_STAFF_ONLY']: continue
    mode=slug+('-touch' if touch else '-mouse');variant='kit-tripo-'+slug+'-staff'
    fixture['objects']=[dict(id='staff',kind=slug+'Staff',variant=variant,name=slug,position=[0,-14],rotation=0,scale=1,rarity='common')]
    ctx=browser.new_context(viewport=dict(width=800,height=600),has_touch=touch,is_mobile=touch)
