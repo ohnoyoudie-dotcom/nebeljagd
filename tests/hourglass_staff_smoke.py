@@ -132,7 +132,7 @@ with sync_playwright() as p:
             frozen=state(page)['combat']['hourglass'];page.wait_for_timeout(150);assert state(page)['combat']['hourglass']==frozen
             pause_at(page,3);capture(page,mode+'-strong')
             coverage=sand_coverage(page)
-            assert coverage['total']==96 and coverage['coverage']>=.18,coverage
+            assert coverage['total']==96 and coverage['coverage']>=.65,coverage
             assert coverage['cyanCoverage']<=.15,coverage
             report.setdefault('sandCoverage',{})[mode]=coverage
             late=actor(page);assert late['speedMultiplier']<early['speedMultiplier'] and late['speedMultiplier']>=.35-1e-8,late
