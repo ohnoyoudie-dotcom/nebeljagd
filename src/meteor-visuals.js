@@ -114,18 +114,18 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
         float noise=n(p*3.+seed*37.+vec2(0.,-uTime*.35))*.55+n(p*6.1-seed*19.)*.3+n(p*12.+seed*7.)*.15;
         float edge=1.-smoothstep(.32+noise*.3,.68+noise*.29,length(p));
         float hot=max(0.,1.-age*12.);float light=clamp(.47-p.y*.25+noise*.35,0.,1.);
-        vec3 smoke=mix(vec3(.035,.04,.045),vec3(.27,.29,.31),light);
+        vec3 smoke=mix(vec3(.006,.006,.007),vec3(.065,.061,.058),light);
         vec3 fire=mix(vec3(1.,.16,.008),vec3(1.,.78,.21),noise);
         gl_FragColor=vec4(mix(smoke,fire,hot),edge*(.64+noise*.3)*vShape.z);
         #include <colorspace_fragment>
       }` }));
   const smoke = new THREE.Mesh(puffGeo, puffMat); smoke.name = 'Meteorstab · heißer Rauchschweif'; smoke.frustumCulled = false; root.add(smoke);
-  const puffs = Array.from({ length: METEOR_VISUAL_BUDGET.puffs }, (_, i) => ({ age: 99, life: 2.2, position: new THREE.Vector3(), velocity: new THREE.Vector3(), size: 1, seed: random(i, 53.3), depth: 0 }));
+  const puffs = Array.from({ length: METEOR_VISUAL_BUDGET.puffs }, (_, i) => ({ age: 99, life: 2.2, position: new THREE.Vector3(), velocity: new THREE.Vector3(), size: 1, opacity: 1, seed: random(i, 53.3), depth: 0 }));
   const sorted = [], cameraMatrix = new THREE.Matrix4();
   function upload() {
     for (let i = 0; i < sorted.length; i++) {
       const p = sorted[i], progress = p.age / p.life;
-      p.position.toArray(centers, i * 3); shapes.set([p.size * (.8 + progress * 1.3), progress, p.seed, (1 - progress) ** .7], i * 4);
+      p.position.toArray(centers, i * 3); shapes.set([p.size * (.8 + progress * 1.3), progress, p.seed, (1 - progress) ** .7 * p.opacity], i * 4);
     }
     puffGeo.instanceCount = sorted.length; puffGeo.attributes.center.needsUpdate = puffGeo.attributes.shape.needsUpdate = true;
   }
@@ -144,8 +144,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   const maxSpacing = .18; let trailSamples = 0, maxGap = 0, remainder = 0;
   let puffCursor = 0, emberCursor = 0, flying = false, blast = null, diameter = 0, disposed = false;
   const visible = p => !isVisible || isVisible(p);
-  function puff(position, size, vx = 0, vy = .9, vz = 0) {
-    const p = puffs[puffCursor++ % puffs.length]; p.age = 0; p.position.copy(position); p.size = size; p.velocity.set(vx, vy, vz);
+  function puff(position, size, vx = 0, vy = .9, vz = 0, life = 2.2, opacity = 1) {
+    const p = puffs[puffCursor++ % puffs.length]; p.age = 0; p.life = life; p.opacity = opacity; p.position.copy(position); p.size = size; p.velocity.set(vx, vy, vz);
   }
   function ember(position, vx, vy, vz) {
     const p = embers[emberCursor++ % embers.length]; p.age = 0; p.position.copy(position); p.velocity.set(vx, vy, vz);
@@ -174,7 +174,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     for (let i = 0; i < 42; i++) {
       const a = i * 2.399963, speed = 1.4 + random(i, 12.1) * 3.5;
       const origin = new THREE.Vector3(center.x + Math.cos(a) * .4, center.y + .35, center.z + Math.sin(a) * .4);
-      puff(origin, .65 + random(i, 2.1) * .9, Math.cos(a) * speed, .8 + random(i, 7.3), Math.sin(a) * speed);
+      // Lift dark impact smoke clear of the ground so fire and stones remain readable.
+      if (i % 2 === 0) puff(origin, .48 + random(i, 2.1) * .52, Math.cos(a) * speed * .5, 2.2 + random(i, 7.3), Math.sin(a) * speed * .5, 1.45, .65);
       ember(origin, Math.cos(a) * speed * 1.7, 1.6 + random(i, 17.7) * 3, Math.sin(a) * speed * 1.7);
     }
   }
@@ -182,7 +183,11 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     let count = 0;
     for (const f of items) {
       if (!f.active || !visible(f.position)) continue;
-      transform.position.copy(f.position); transform.rotation.set(f.age * (f.spin?.x ?? 6), f.age * (f.spin?.y ?? 8), f.age * (f.spin?.z ?? 3)); transform.scale.setScalar((f.radius ?? rules.fragmentRadius) * 2);
+      transform.position.copy(f.position);
+      if (f.orientation) transform.quaternion.copy(f.orientation);
+      else transform.rotation.set(f.age * (f.spin?.x ?? 6), f.age * (f.spin?.y ?? 8), f.age * (f.spin?.z ?? 3));
+      const fade = THREE.MathUtils.clamp((rules.fragmentLife - f.age) / .3, 0, 1);
+      transform.scale.setScalar((f.radius ?? rules.fragmentRadius) * 2 * fade);
       transform.updateMatrix();
       for (const chip of chips) chip.mesh.setMatrixAt(count, instance.multiplyMatrices(transform.matrix, chip.local));
       count++;

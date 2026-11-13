@@ -8,7 +8,7 @@ import { createMeteorVisuals } from './meteor-visuals.js';
 export const METEOR_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
   radius: HOURGLASS_RULES.radius, arcHeight: 8, speed: 9, minFlight: 1.25,
   startDiameter: .45, endDiameter: 1.75, aftermath: 4.6, groundFireSeconds: 4, groundFireFade: .6,
-  fragments: 8, fragmentRadius: .16, fragmentSpeed: 5.5, fragmentLife: 1.5,
+  fragments: 8, fragmentRadius: .24, fragmentSpeed: 4.3, fragmentLife: 3.4,
   fragmentDamageRatio: .125, burnSeconds: 3, burnDps: 2 });
 
 export function meteorDiameter(progress) {
@@ -25,6 +25,7 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
   const visuals = createMeteorVisuals(scene, r, { prototype, isVisible, heightAt: world?.heightAt?.bind(world) });
   let aim = null, flight = null, impact = null, fragments = [], fragmentHits = new Set(), casts = 0, blastHits = 0;
   const start = new THREE.Vector3(), end = new THREE.Vector3();
+  const collisionNormal = new THREE.Vector3(), rotationAxis = new THREE.Vector3(), rotationStep = new THREE.Quaternion();
   function refresh(position) {
     if (!aim) return;
     aim.caster.copy(position); aim.range = chargedStaffRange(aim.age, r.range);
@@ -69,14 +70,17 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
     const rotation = random() * Math.PI * 2;
     fragments = Array.from({ length: r.fragments }, (_, i) => {
       const angle = rotation + (i + (random() - .5) * .85) * Math.PI * 2 / r.fragments;
-      const speed = r.fragmentSpeed * (.55 + random() * .6), radius = r.fragmentRadius * (.75 + random() * .65);
+      const speed = r.fragmentSpeed * (.7 + random() * .35), radius = r.fragmentRadius * (.9 + random() * .45);
       const spin = new THREE.Vector3((random() - .5) * 15, (random() - .5) * 18, (random() - .5) * 15);
-      return { position: center.clone().add(new THREE.Vector3(Math.cos(angle) * .25, .55, Math.sin(angle) * .25)),
-        velocity: new THREE.Vector3(Math.cos(angle) * speed, 2.4 + random() * 2.5, Math.sin(angle) * speed),
-        radius, spin, bounce: .4 + random() * .2, bounces: 0, age: 0, active: true, payload };
+      return { position: center.clone().add(new THREE.Vector3(Math.cos(angle) * .3, .65, Math.sin(angle) * .3)),
+        velocity: new THREE.Vector3(Math.cos(angle) * speed, 3.2 + random() * 2, Math.sin(angle) * speed),
+        radius, spin, orientation: new THREE.Quaternion().setFromEuler(new THREE.Euler(random() * 6, random() * 6, random() * 6)),
+        bounce: .32 + random() * .16, maxBounces: 1 + Math.floor(random() * 2),
+        bounces: 0, phase: 'airborne', age: 0, active: true, canHit: true, payload };
     });
     igniteGround();
     visuals.impact(center, impact.groundFire);
+    visuals.fragments(fragments);
   }
   function igniteGround() {
     if (!impact?.groundFire || impact.age >= r.groundFireSeconds || impact.age < impact.nextIgnition) return;
@@ -113,24 +117,81 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
   function stepFragments(dt) {
     for (const f of fragments) {
       if (!f.active) continue;
-      start.copy(f.position); end.copy(start).addScaledVector(f.velocity, dt); end.y -= 5 * dt * dt;
-      const wall = traceRangedProjectile(world, start, end, f.radius);
-      const target = combat?.traceSegment(start, end, f.radius, ownerId, fragmentHits);
+      f.age += dt;
+      if (f.age >= r.fragmentLife) { f.active = false; continue; }
+      if (f.phase === 'resting') continue;
+      start.copy(f.position);
+      const rolling = f.phase === 'rolling';
+      if (rolling) {
+        // Ground friction slows the rock while terrain gradient nudges it
+        // downhill. Geometry stays above the sampled ground even on slopes.
+        const e = .12;
+        const gx = ((world?.heightAt?.(start.x + e, start.z) ?? 0) - (world?.heightAt?.(start.x - e, start.z) ?? 0)) / (2 * e);
+        const gz = ((world?.heightAt?.(start.x, start.z + e) ?? 0) - (world?.heightAt?.(start.x, start.z - e) ?? 0)) / (2 * e);
+        f.velocity.x -= gx * 4 * dt; f.velocity.z -= gz * 4 * dt;
+        const speed = Math.hypot(f.velocity.x, f.velocity.z);
+        const damping = Math.max(0, speed * Math.exp(-1.35 * dt) - .25 * dt) / (speed || 1);
+        f.velocity.x *= damping; f.velocity.z *= damping; f.velocity.y = 0;
+      }
+      end.copy(start).addScaledVector(f.velocity, dt);
+      if (rolling) end.y = ground(end) + f.radius;
+      else end.y -= 5 * dt * dt;
+      // Rolling rocks meet physical low barriers; an airborne fragment uses
+      // the same ranged collision contract as the parent meteor.
+      const wall = rolling ? world?.traceProjectile?.(start, end, f.radius) : traceRangedProjectile(world, start, end, f.radius);
+      const target = f.canHit ? combat?.traceSegment(start, end, f.radius, ownerId, fragmentHits) : null;
       if (target && (!wall || target.t < (wall.t ?? 0) - .0001)) {
         hit(target.target, { damage: f.payload.damage * r.fragmentDamageRatio, sourceId: ownerId, type: 'meteor-fragment',
           burn: { duration: r.burnSeconds, damagePerSecond: r.burnDps } });
-        fragmentHits.add(target.target.id); f.active = false; f.position.copy(target.point);
-      } else if (wall?.point) { f.active = false; f.position.copy(wall.point); }
-      else f.position.copy(end);
-      f.velocity.y -= 10 * dt; f.age += dt;
-      if (f.active && f.position.y <= ground(f.position) + f.radius) {
-        f.position.y = ground(f.position) + f.radius;
-        if (f.bounces++ === 0 && !world?.isWater?.(f.position.x, f.position.z)) {
-          f.velocity.y = Math.abs(f.velocity.y) * f.bounce;
-          f.velocity.x *= .55; f.velocity.z *= .55;
-        } else f.active = false;
+        fragmentHits.add(target.target.id); f.canHit = false;
+        f.position.copy(target.point);
+        collisionNormal.set(f.position.x - target.target.position.x, 0, f.position.z - target.target.position.z);
+        if (collisionNormal.lengthSq() < 1e-8) collisionNormal.set(-f.velocity.x, 0, -f.velocity.z);
+        if (collisionNormal.lengthSq() < 1e-8) collisionNormal.set(1, 0, 0);
+        collisionNormal.normalize();
+        // A cast can begin inside a target's footprint. Place the surviving
+        // shard just outside it rather than leaving it buried in the actor.
+        const clearance = (target.target.radius ?? 0) + f.radius + .025;
+        f.position.x = target.target.position.x + collisionNormal.x * clearance;
+        f.position.z = target.target.position.z + collisionNormal.z * clearance;
+        const incoming = f.velocity.dot(collisionNormal);
+        if (incoming < 0) f.velocity.addScaledVector(collisionNormal, -1.35 * incoming);
+        f.velocity.x *= .7; f.velocity.z *= .7;
+      } else if (wall?.point) {
+        f.position.copy(wall.point);
+        collisionNormal.set(wall.normal?.x ?? 0, wall.normal?.y ?? 0, wall.normal?.z ?? 0);
+        if (collisionNormal.lengthSq() < 1e-8) collisionNormal.copy(start).sub(end);
+        if (collisionNormal.lengthSq() < 1e-8) collisionNormal.set(1, 0, 0);
+        collisionNormal.normalize(); f.position.addScaledVector(collisionNormal, .025);
+        const incoming = f.velocity.dot(collisionNormal);
+        if (incoming < 0) f.velocity.addScaledVector(collisionNormal, -1.4 * incoming);
+        f.velocity.x *= .72; f.velocity.z *= .72;
+      } else f.position.copy(end);
+      if (!rolling) f.velocity.y -= 10 * dt;
+      const floor = ground(f.position) + f.radius;
+      if (rolling || f.position.y <= floor) {
+        if (world?.isWater?.(f.position.x, f.position.z)) { f.active = false; continue; }
+        f.position.y = floor;
+        if (!rolling && f.bounces < f.maxBounces && Math.abs(f.velocity.y) > 1.2) {
+          f.bounces++; f.velocity.y = Math.abs(f.velocity.y) * f.bounce;
+          f.velocity.x *= .68; f.velocity.z *= .68;
+        } else {
+          f.phase = 'rolling'; f.velocity.y = 0;
+          if (Math.hypot(f.velocity.x, f.velocity.z) < .12) {
+            f.phase = 'resting'; f.velocity.set(0, 0, 0);
+          }
+        }
       }
-      if (f.age >= r.fragmentLife) f.active = false;
+      if (f.phase === 'rolling') {
+        const dx = f.position.x - start.x, dz = f.position.z - start.z, distance = Math.hypot(dx, dz);
+        if (distance > 1e-8) {
+          rotationAxis.set(dz, 0, -dx).normalize();
+          f.orientation.premultiply(rotationStep.setFromAxisAngle(rotationAxis, distance / f.radius)).normalize();
+        }
+      } else if (f.phase === 'airborne') {
+        const angularSpeed = f.spin.length();
+        if (angularSpeed > 1e-8) f.orientation.premultiply(rotationStep.setFromAxisAngle(rotationAxis.copy(f.spin).divideScalar(angularSpeed), angularSpeed * dt)).normalize();
+      }
     }
   }
   function update(dt, position) {
@@ -174,7 +235,7 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
         remaining: impact.groundFire ? Math.max(0, r.groundFireSeconds - impact.age) : 0,
         radius: r.radius, ignited: impact.ignited.size } : null,
       fragmentHitIds: [...fragmentHits], fragments: fragments.filter(f => f.active).length,
-      fragmentStates: fragments.map(f => ({ position: { ...f.position }, velocity: { ...f.velocity }, diameter: f.radius * 2, bounces: f.bounces, active: f.active })), fragmentHits: fragmentHits.size, visuals: visuals.telemetry }; },
+      fragmentStates: fragments.map(f => ({ position: { ...f.position }, velocity: { ...f.velocity }, diameter: f.radius * 2, bounces: f.bounces, phase: f.phase, age: f.age, orientation: { x: f.orientation.x, y: f.orientation.y, z: f.orientation.z, w: f.orientation.w }, active: f.active })), fragmentHits: fragmentHits.size, visuals: visuals.telemetry }; },
     dispose() { if (disposed) return; disposed = true; reset(); visuals.dispose();
       for (const mesh of [aimRing, rangeRing]) { mesh.removeFromParent(); mesh.geometry.dispose(); mesh.material.dispose(); } },
   };

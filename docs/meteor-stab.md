@@ -12,11 +12,17 @@ brennende Splitter. Die Einschlagsfläche hat denselben Radius wie der
 Sanduhrenstab: 3,2 Meter. Eine aufwallende Feuerexplosion mit hellem Kern geht
 in Rauch über. Die Splitter verwenden das verkleinerte Meteormodell samt
 Lavatextur; Richtung, Geschwindigkeit, Sprunghöhe, Drehung und Größe variieren
-bei jedem Einschlag. Am Boden prallen sie höchstens einmal kurz ab.
+bei jedem Einschlag. Die acht Splitter sind etwa 0,43–0,65 Meter groß.
+Sie fliegen auseinander, hüpfen ein- bis zweimal und rollen dann mit Reibung
+aus. Sie bleiben bis zu 3,4 Sekunden sichtbar; ihre Drehung folgt beim Rollen
+der tatsächlich zurückgelegten Strecke. Auch ein Treffer lässt den Stein
+sichtbar weiterlaufen, ohne weitere Treffer durch denselben Splitter auszulösen.
 
 Am Einschlagsort bleibt vier Sekunden lang eine brennende Fläche im Radius
 von 3,2 Metern zurück, anschließend klingt sie in 0,6 Sekunden ab. Glut und
-48 geschichtete, züngelnde Flammen folgen der Bodenhöhe. Wer die Fläche betritt, brennt
+48 geschichtete, turbulente Flammen folgen der Bodenhöhe. Ein dunkles
+verkohltes Glutbett verdeckt das Gras; normal überblendete, dichte orange
+Flammenkerne verhindern den bisherigen grünen Durchschein. Wer die Fläche betritt, brennt
 drei Sekunden mit zwei Schaden pro Sekunde; im Feuer wird diese Dauer
 aufgefrischt. Splittertreffer lösen denselben Brand auch außerhalb der Fläche
 aus. Beide Quellen stapeln keine zusätzlichen Brand-Schadensströme. Mauern,
@@ -67,7 +73,9 @@ eine eigene Übungswiesen-Testkarte.
   Flugphasen, Einschlag, Schaden und vollständiger Effektabbau.
 
 Der Rauchschweif wird alle 18 Zentimeter entlang der tatsächlichen Flugbahn
-ergänzt. 160 überlappende Rauchwolken bleiben bis zu 2,2 Sekunden bestehen.
+ergänzt. 160 überlappende Rauchwolken bleiben bis zu 2,2 Sekunden bestehen. Schweif und Einschlagsrauch sind dunkel rußgrau.
+Der Einschlagsrauch steigt schneller auf und löst sich nach 1,45 Sekunden
+auf, damit Bodenfeuer und ausrollende Meteorsplitter sichtbar bleiben.
 Ein dezentes Hitzeflimmern um Meteor und jungen Rauch bricht das bereits
 gerenderte Bild; dafür wird ein Bildpuffer kopiert und in einem Zeichenaufruf
 verwendet. Funken und Feuerexplosion bleiben auf 96 beziehungsweise 18

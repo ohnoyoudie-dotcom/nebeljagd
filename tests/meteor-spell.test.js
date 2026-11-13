@@ -132,7 +132,7 @@ test('meteor archive and extracted original remain pinned alongside the bounded 
 });
 
 
-test('fragment scatter varies per cast, has unequal trajectories and bounces only once', () => {
+test('fragment scatter varies per cast, rebounds and stays visible while rolling before expiry', () => {
   let seed = 1234;
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
   const { spell, caster, cast } = setup({}, { random });
@@ -142,7 +142,7 @@ test('fragment scatter varies per cast, has unequal trajectories and bounces onl
   assert.equal(first.length, rules.fragments);
   assert.equal(new Set(first.map(f => f.velocity.y)).size, rules.fragments);
   assert.equal(new Set(first.map(f => f.diameter)).size, rules.fragments);
-  assert.ok(first.every(f => f.diameter >= .24 && f.diameter <= .448));
+  assert.ok(first.every(f => f.diameter >= .432 && f.diameter <= .648));
   let bounced = false;
   for (let i=0;i<80;i++) {
     spell.update(.02, caster);
@@ -150,6 +150,9 @@ test('fragment scatter varies per cast, has unequal trajectories and bounces onl
     assert.ok(spell.telemetry.fragmentStates.every(f => f.bounces <= 2));
   }
   assert.ok(bounced, 'at least one shard visibly rebounds from the ground');
+  assert.ok(spell.telemetry.fragments > 0, 'shards remain visible after the initial flight');
+  assert.ok(spell.telemetry.fragmentStates.some(f => f.active && f.phase === 'rolling'));
+  spell.update(rules.fragmentLife + .05, caster);
   assert.equal(spell.telemetry.fragments, 0);
   spell.update(rules.aftermath + .1, caster); cast(); spell.update(spell.telemetry.flight.duration + .001, caster);
   assert.notDeepEqual(spell.telemetry.fragmentStates, first);
@@ -188,7 +191,7 @@ test('mini meteors reuse uploaded geometry and lava material; fire blooms and cl
 test('ground fire ignites late entrants, refreshes one burn, respects pause and expires', () => {
   const { spell, combat, caster, cast } = setup();
   cast(); spell.update(spell.telemetry.flight.duration + 1.7, caster);
-  assert.equal(spell.telemetry.fragments,0);
+  assert.ok(spell.telemetry.fragments > 0, 'rolling debris coexists with the ground fire');
   assert.equal(spell.telemetry.groundFire.active,true);
   assert.equal(spell.telemetry.visuals.groundFire.visible,true);
   const target=combat.addTarget({id:'late',position:new THREE.Vector3(0,0,12)});
@@ -227,7 +230,7 @@ test('ground fire cannot ignite through walls, across water, above the ground or
 
 test('a random mini meteor ignites a hit outside the burning ground independently', () => {
   const { spell,combat,caster,cast }=setup({}, {random:()=>.99});
-  cast();spell.update(spell.telemetry.flight.duration+.7,caster);
+  cast();spell.update(spell.telemetry.flight.duration+1.1,caster);
   const f=spell.telemetry.fragmentStates.find(f=>f.active && Math.hypot(f.position.x,f.position.z-12)>3.8);
   assert.ok(f,'a shard has left the ground-fire radius');
   const target=combat.addTarget({id:'shard-only',position:new THREE.Vector3(f.position.x,0,f.position.z),height:3,radius:.3});

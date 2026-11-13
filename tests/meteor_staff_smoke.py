@@ -35,7 +35,7 @@ def arm_pause(page, condition):
       if(nebeljagdTestState().phase==='paused')document.querySelector('#resumeBtn').click();
     }''', condition)
 
-def capture(page, name, ground_detail=False):
+def capture(page, name, ground_detail=False, fragment_detail=False):
     (OUT / (name + '.png')).write_bytes(base64.b64decode(page.evaluate('nebeljagdCaptureFrame()').split(',', 1)[1]))
     if state(page)['combat']['meteor']['flight'] or ground_detail:
         detail = page.evaluate('''groundDetail=>{
@@ -44,6 +44,13 @@ def capture(page, name, ground_detail=False):
           const image=nebeljagdCaptureFrame();nebeljagdInspectCamera({zoom});return image;
         }''', ground_detail)
         (OUT / (name + '-detail.png')).write_bytes(base64.b64decode(detail.split(',', 1)[1]))
+    if fragment_detail:
+        wide = page.evaluate('''()=>{
+          const s=nebeljagdTestState(),zoom=s.camera.zoom;
+          nebeljagdInspectCamera({zoom:1.3,focus:s.combat.meteor.center});
+          const image=nebeljagdCaptureFrame();nebeljagdInspectCamera({zoom});return image;
+        }''')
+        (OUT / (name + '-field.png')).write_bytes(base64.b64decode(wide.split(',', 1)[1]))
     (OUT / (name + '.json')).write_text(json.dumps(state(page), indent=2) + '\n')
 
 with sync_playwright() as p:
@@ -155,25 +162,41 @@ with sync_playwright() as p:
             assert impact['blastHits'] >= 1
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=.6")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
-            capture(page, mode + '-fragments')
+            airborne = state(page)['combat']['meteor']
+            assert airborne['visuals']['fragments'] > 0
+            assert any(f['active'] and f['phase'] == 'airborne' for f in airborne['fragmentStates'])
+            capture(page, mode + '-fragments', fragment_detail=True)
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=2")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             burning = state(page)['combat']['meteor']
             burned_enemy = next(a for a in state(page)['practiceActors'] if a['id'] == 'practice-1')
-            assert burning['fragments'] == 0 and burning['groundFire']['active']
+            assert burning['fragments'] > 0 and burning['groundFire']['active']
+            assert burning['visuals']['fragments'] > 0
+            assert any(f['active'] and f['phase'] == 'rolling' for f in burning['fragmentStates'])
             assert burning['visuals']['groundFire']['visible'] and burning['visuals']['groundFire']['flames'] == limits['groundFlames']
             assert burned_enemy['burnRemaining'] > 2.5 and burned_enemy['health'] < enemy['health'] - 2
-            capture(page, mode + '-burning-ground', ground_detail=True)
+            capture(page, mode + '-burning-ground', ground_detail=True, fragment_detail=True)
             frozen = state(page)['combat']['meteor']; page.wait_for_timeout(100)
             assert state(page)['combat']['meteor'] == frozen
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=2.35")
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
-            capture(page, mode + '-burning-ground-later', ground_detail=True)
+            rolled = state(page)['combat']['meteor']
+            assert rolled['visuals']['fragments'] > 0
+            # Translation and orientation must both advance on the ground:
+            # spinning airborne shards or a fixed glowing sprite do not pass.
+            def rolled_on_ground(a, b):
+                if not (a['active'] and b['active'] and a['phase'] == 'rolling' and b['phase'] in ['rolling', 'resting']):
+                    return False
+                displacement = sum((b['position'][k]-a['position'][k])**2 for k in ['x', 'z'])
+                rotation = sum((b['orientation'][k]-a['orientation'][k])**2 for k in ['x', 'y', 'z', 'w'])
+                return displacement > .02**2 and rotation > 1e-5
+            assert any(rolled_on_ground(a, b) for a, b in zip(burning['fragmentStates'], rolled['fragmentStates'])), dict(before=burning, after=rolled)
+            capture(page, mode + '-burning-ground-later', ground_detail=True, fragment_detail=True)
             page.locator('#resumeBtn').click()
             page.wait_for_function('!nebeljagdTestState().combat.meteor.active')
             assert state(page)['combat']['meteor']['visuals']['draws'] == 0
             assert not state(page)['combat']['meteor']['visuals']['heat']['visible']
-            passed(mode + ': impact leaves persistent burning ground; mini meteors and ground ignite targets; pause and cleanup work')
+            passed(mode + ': mini meteors visibly fly, bounce and roll through the burning ground; damage caps, pause and cleanup work')
             context.close()
         assert not report['errors'], report['errors']
         assert hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest() == map_hash
