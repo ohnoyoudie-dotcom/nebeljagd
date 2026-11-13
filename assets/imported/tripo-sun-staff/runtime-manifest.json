@@ -16,8 +16,8 @@
   "files": [
     {
       "path": "inspections/sun-staff.json",
-      "bytes": 2863,
-      "sha256": "e7abf2f4e78e918a1871ddac363f19365657a881db25fa357612cb122f59df1f"
+      "bytes": 3077,
+      "sha256": "1dd0524e03c0018d0c62c11266454f7e90513a3d82a4ddad9ab891708c4a922e"
     },
     {
       "path": "previews/sun-staff-runtime.png",
@@ -31,8 +31,8 @@
     },
     {
       "path": "runtime/sun-staff.glb",
-      "bytes": 232908,
-      "sha256": "25dbda639e2583fb70b155e31a0e14a6baf029957b1e4a9c2c3f9debfcb5f132"
+      "bytes": 232880,
+      "sha256": "43a9a0ed84264bf7d538c1df040860c95de1cb967747d48c30f8d78f0ad50012"
     }
   ]
 }

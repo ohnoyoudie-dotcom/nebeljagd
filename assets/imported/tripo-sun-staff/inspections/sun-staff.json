@@ -15,8 +15,8 @@
   },
   "runtime": {
     "path": "assets/imported/tripo-sun-staff/runtime/sun-staff.glb",
-    "bytes": 232908,
-    "sha256": "25dbda639e2583fb70b155e31a0e14a6baf029957b1e4a9c2c3f9debfcb5f132",
+    "bytes": 232880,
+    "sha256": "43a9a0ed84264bf7d538c1df040860c95de1cb967747d48c30f8d78f0ad50012",
     "triangles": 4996,
     "materials": 1,
     "externalUris": [],
@@ -139,5 +139,12 @@
       0.5
     ],
     "triangles": 5000
+  },
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
   }
 }

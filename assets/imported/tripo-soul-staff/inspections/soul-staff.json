@@ -15,8 +15,8 @@
   },
   "runtime": {
     "path": "assets/imported/tripo-soul-staff/runtime/soul-staff.glb",
-    "bytes": 211980,
-    "sha256": "cb255df6be02a0418d46fab5d25df80ccf99f3f5e28f329adf082c5dd1e6776a",
+    "bytes": 211948,
+    "sha256": "36cb743e70cab56b88448b2fbab22b99249daed3da6709bbf0bd22aabea1c5d3",
     "triangles": 5000,
     "materials": 1,
     "externalUris": [],
@@ -139,5 +139,12 @@
       0.5
     ],
     "triangles": 5000
+  },
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
   }
 }

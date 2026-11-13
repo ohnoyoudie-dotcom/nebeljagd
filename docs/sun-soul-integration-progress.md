@@ -3,12 +3,15 @@
 Die drei Originalmodelle sind seit `900dec1` in `assets/inbox` vorhanden und
 bleiben unverändert. Die getrennten Laufzeitpakete verwenden die Originalfarben,
 PBR-Texturen, normalisierte Griffpunkte und die gemessene Projektilachse.
+Die Vertexattribute bleiben Standard-Float32 und werden auf ein Float16-Raster
+gerundet (maximal 0,00025 Abweichung), damit die ZIP-Kompression keine
+bedeutungslosen Nachkommastellen speichern muss; Topologie und Texturen bleiben gleich.
 
 | Modell | Laufzeitgröße | Dreiecke |
 | --- | ---: | ---: |
-| Sonnenstab | 232.908 Bytes | 4.996 |
-| Seelenrichterstab | 211.980 Bytes | 5.000 |
-| Seelenflamme | 226.468 Bytes | 4.000 |
+| Sonnenstab | 232.880 Bytes | 4.996 |
+| Seelenrichterstab | 211.948 Bytes | 5.000 |
+| Seelenflamme | 226.436 Bytes | 4.000 |
 
 Aufbereitung: `scripts/prepare-sun-staff.py`, `prepare-soul-staff.py` und
 `prepare-soul-projectile.py`, mit lokalem Blender. Inspektionen und Hashlisten

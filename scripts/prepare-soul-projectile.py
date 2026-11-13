@@ -3,6 +3,8 @@ from pathlib import Path
 import importlib.util
 import json
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from glb_float_precision import refresh_package
 
 spec = importlib.util.spec_from_file_location('projectiles', Path(__file__).with_name('prepare-tripo-projectiles.py'))
 pipeline = importlib.util.module_from_spec(spec)
@@ -20,6 +22,7 @@ if __name__ == '__main__':
     assert pipeline.digest(pipeline.ROOT / ARCHIVE) == ARCHIVE_SHA
     if '--execute' in sys.argv:
         pipeline.execute()
+        refresh_package(pipeline.OUTPUT, pipeline.OUTPUT / 'runtime/soul-projectile.glb', 'soul-projectile-inspection.json')
         manifest = pipeline.OUTPUT / 'runtime-manifest.json'
         data = json.loads(manifest.read_text())
         data['sources'].append({'path': ARCHIVE, 'sha256': ARCHIVE_SHA})

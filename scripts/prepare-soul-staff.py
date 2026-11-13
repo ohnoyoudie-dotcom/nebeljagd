@@ -10,6 +10,8 @@ import importlib.util
 import json
 import struct
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from glb_float_precision import snap_glb
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/inbox/Seelenrichterstab.glb'
@@ -105,6 +107,7 @@ def run():
         use_selection=True, export_yup=True, export_texcoords=True, export_normals=True,
         export_materials='EXPORT', export_animations=False, export_cameras=False,
         export_lights=False, export_image_format='AUTO')
+    precision = snap_glb(DESTINATION)
     runtime = inspect(DESTINATION)
     if runtime['triangles'] > 9000 or runtime['bytes'] > 1_800_000 or runtime['externalUris'] or runtime['requiredExtensions']:
         DESTINATION.unlink(missing_ok=True)
@@ -119,7 +122,7 @@ def run():
     write_json(OUTPUT / 'inspections/soul-staff.json', {
         'source': original, 'runtime': runtime, 'normalization': normalization,
         'textures': textures, 'preparation': 'local Blender; original preserved',
-        'policy': policy})
+        'policy': policy, 'precision': precision})
     write_json(OUTPUT / 'provenance.json', {
         'original': original['path'], 'sourceSha256': original['sha256'],
         'method': 'Blender texture reduction and decimation using existing Tripo weapon helpers',

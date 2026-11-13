@@ -16,8 +16,8 @@
   "files": [
     {
       "path": "inspections/soul-staff.json",
-      "bytes": 2897,
-      "sha256": "1f1d0309e4f3630ce814bfdf5d933734a5766ce4f70c38ded4440748eaa93e93"
+      "bytes": 3111,
+      "sha256": "3e14f75186bb4e2986e5e269e82d0f239acd52baa61cb2e5cd0fa17b4b7ea586"
     },
     {
       "path": "previews/soul-staff-runtime.png",
@@ -31,8 +31,8 @@
     },
     {
       "path": "runtime/soul-staff.glb",
-      "bytes": 211980,
-      "sha256": "cb255df6be02a0418d46fab5d25df80ccf99f3f5e28f329adf082c5dd1e6776a"
+      "bytes": 211948,
+      "sha256": "36cb743e70cab56b88448b2fbab22b99249daed3da6709bbf0bd22aabea1c5d3"
     }
   ]
 }

@@ -27,8 +27,8 @@
     ]
   },
   "runtime": {
-    "bytes": 226468,
-    "sha256": "d936067d73d98a9263fc9272f545db6d741ecce5afe19d56bb426f90e5644bd8",
+    "bytes": 226436,
+    "sha256": "50cb3e6da2f2749b0c0a071382c09e944810562c7377ae0f412815455c6d33cc",
     "triangles": 4000,
     "images": 3,
     "attributes": [
@@ -40,14 +40,14 @@
     "bounds": [
       {
         "min": [
-          -0.48872101306915283,
-          -0.0009609147091396153,
-          -0.22611482441425323
+          -0.48876953125,
+          -0.0009608268737792969,
+          -0.22607421875
         ],
         "max": [
-          0.48768654465675354,
-          0.5690867900848389,
-          0.22654293477535248
+          0.48779296875,
+          0.56884765625,
+          0.2265625
         ]
       }
     ]
@@ -101,5 +101,12 @@
   "preview": "Prepared derivative, front view with source +X to image right.",
   "providerInvoked": false,
   "canonicalGameDevPackage": false,
-  "rights": "User-supplied asset requested for this project; no independent license certification."
+  "rights": "User-supplied asset requested for this project; no independent license certification.",
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
+  }
 }

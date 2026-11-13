@@ -66,7 +66,8 @@ with sync_playwright() as pw:
     for hit in range(1,4):
      p.wait_for_function('nebeljagdTestState().attackCooldown<=0')
      point=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1')['position']
-     p.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z-5,direction:0})',point)
+     # Shoot along its patrol line, so a moving target remains on the flight axis.
+     p.evaluate('p=>nebeljagdInspect({x:p.x-5,z:p.z,direction:Math.PI/2})',point)
      if hit==1:pause_at(p,'s.combat.effects.importedSoulProjectiles>0')
      p.keyboard.press('f')
      if hit==1:
