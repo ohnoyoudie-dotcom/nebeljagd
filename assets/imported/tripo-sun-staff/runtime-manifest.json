@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Sonnenstab.glb",
+    "bytes": 70923488,
+    "sha256": "6875e9bd7f244552f66b563f6570a94705e9862d8929ce36f0510c65f2ef41cd",
+    "triangles": 1982312,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/sun-staff.json",
+      "bytes": 2863,
+      "sha256": "e7abf2f4e78e918a1871ddac363f19365657a881db25fa357612cb122f59df1f"
+    },
+    {
+      "path": "previews/sun-staff-runtime.png",
+      "bytes": 299253,
+      "sha256": "fdc708d29d376547d7d300da981094280af6541e4594a15d6ebc3962e9e0eaa6"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 355,
+      "sha256": "86b1550f90f68d49639785155d55263e846d4637aacebd626cb273f8883a65f5"
+    },
+    {
+      "path": "runtime/sun-staff.glb",
+      "bytes": 232908,
+      "sha256": "25dbda639e2583fb70b155e31a0e14a6baf029957b1e4a9c2c3f9debfcb5f132"
+    }
+  ]
+}

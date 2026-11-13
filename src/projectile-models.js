@@ -1,3 +1,4 @@
+import soulUrl from '../assets/imported/tripo-soul-projectile/runtime/soul-projectile.glb?url&inline';
 import { alignArrowModel, ARROW_LENGTH } from './arrow-alignment.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -11,6 +12,9 @@ import meteorUrl from '../assets/imported/tripo-meteor-projectile/runtime/meteor
 // Both are aligned to gameplay +Z. The crescent retains its XY
 // silhouette here; its flight wrapper lays that decorated face upward.
 const definitions = {
+  soul: { url: soulUrl, source: 'Seelenrichterstab Projektil.glb', runtime: 'soul-projectile.glb',
+    name: 'Seelenflamme · hochgeladenes Seelenrichterprojektil', forward: [-1, 0, 0], length: .95,
+    package: 'tripo-soul-projectile' },
   meteor: { url: meteorUrl, source: 'Meteor Projektil.glb', runtime: 'meteor-projectile.glb',
     name: 'Meteor · hochgeladenes Projektil', length: 1, diameter: 1, package: 'tripo-meteor-projectile' },
   ice: { url: iceUrl, source: 'ice crystal 3d model.glb', runtime: 'ice-crystal.glb',

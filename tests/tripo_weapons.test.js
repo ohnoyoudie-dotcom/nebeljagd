@@ -144,7 +144,7 @@ test('both imported staffs follow the palm socket through motion and cast from t
       assert.equal(weapons.telemetry.heldGrip.error, 0);
     }
     weapons.attack(actor.position, actor.rotation.y);
-    if (type === 'meteorStaff' || type === 'poisonStaff' || type === 'gravityStaff' || type === 'hourglassStaff' || type === 'lightningStaff') weapons.releaseAttack(actor.position);
+    if (type === 'sunStaff' || type === 'meteorStaff' || type === 'poisonStaff' || type === 'gravityStaff' || type === 'hourglassStaff' || type === 'lightningStaff') weapons.releaseAttack(actor.position);
     else for (let frame = 0; frame < 3; frame++) weapons.update(.1, .4 + frame * .1, actor.position);
     const flash = weapons.telemetry.effects.bursts.find(burst => burst.kind === 'muzzle');
     assert.ok(flash, 'the moved staff still releases a visible cast effect');
@@ -212,7 +212,7 @@ test('Tripo sword and staffs retain real melee, ranged damage, burn and slow beh
     if (kind === 'bow') weapons.releaseAttack(actor.position);
     if (kind === 'poisonStaff') { weapons.aimAt(actor.position, target.position); weapons.update(1.2, 0, actor.position); weapons.releaseAttack(actor.position); }
     if (kind === 'hourglassStaff') { weapons.aimAt(actor.position, target.position); weapons.update(1.2, 0, actor.position); weapons.releaseAttack(actor.position); }
-    if (kind === 'meteorStaff' || kind === 'gravityStaff' || kind === 'lightningStaff') {
+    if (kind === 'sunStaff' || kind === 'meteorStaff' || kind === 'gravityStaff' || kind === 'lightningStaff') {
       weapons.aimAt(actor.position, target.position);
       for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);
       weapons.releaseAttack(actor.position);
@@ -223,11 +223,12 @@ test('Tripo sword and staffs retain real melee, ranged damage, burn and slow beh
     }
     const gravityFrames = kind === 'gravityStaff' ? Math.ceil(((weapons.telemetry.gravity.flight?.duration ?? 0)
       + GRAVITY_RULES.warning + GRAVITY_RULES.pullDuration + GRAVITY_RULES.afterglow + .05) / .04) : 0;
-    for (let i = 0; i < (kind === 'meteorStaff' ? 0 : kind === 'poisonStaff' || kind === 'lightningStaff' ? 110 : kind === 'gravityStaff' ? gravityFrames : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
+    for (let i = 0; i < (kind === 'meteorStaff' ? 0 : kind === 'sunStaff' || kind === 'poisonStaff' || kind === 'lightningStaff' ? 110 : kind === 'gravityStaff' ? gravityFrames : 24); i++) { weapons.update(.04, i * .04); tips.push(weapons.telemetry.heldPose.swordTip.x); }
     const expected = weaponStats(kind, 'legendary');
     assert.ok(Math.abs(target.health - (500 - expected.damage)) < 1e-6, `${variant} deals the tier damage, spread over the cloud lifetime for poison`);
     if (kind === 'poisonStaff') assert.ok(weapons.telemetry.damageHits > 1);
     else if (kind === 'hourglassStaff') { assert.equal(weapons.telemetry.damageHits, 0); assert.ok(target.speedMultiplier < 1); }
+    else if (kind === 'sunStaff') assert.equal(weapons.telemetry.damageHits, 8);
     else if (kind === 'lightningStaff') assert.equal(weapons.telemetry.damageHits, 5);
     else assert.equal(weapons.telemetry.damageHits, 1);
     assert.equal(weapons.equippedItem.variant, variant);

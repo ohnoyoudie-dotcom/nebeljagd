@@ -1,3 +1,7 @@
+import sunStaffUrl from '../assets/imported/tripo-sun-staff/runtime/sun-staff.glb?url&inline';
+import sunStaffInspection from '../assets/imported/tripo-sun-staff/inspections/sun-staff.json' with { type: 'json' };
+import soulStaffUrl from '../assets/imported/tripo-soul-staff/runtime/soul-staff.glb?url&inline';
+import soulStaffInspection from '../assets/imported/tripo-soul-staff/inspections/soul-staff.json' with { type: 'json' };
 import meteorStaffUrl from '../assets/imported/tripo-meteor-staff/runtime/meteor-staff.glb?url&inline';
 import meteorStaffInspection from '../assets/imported/tripo-meteor-staff/inspections/meteor-staff.json' with { type: 'json' };
 import hourglassStaffUrl from '../assets/imported/tripo-hourglass-staff/runtime/hourglass-staff.glb?url&inline';
@@ -23,6 +27,8 @@ import lightningStaffUrl from '../assets/imported/tripo-lightning-staff/runtime/
 import lightningStaffInspection from '../assets/imported/tripo-lightning-staff/inspections/lightning-staff.json' with { type: 'json' };
 
 const SOURCES = {
+  'kit-tripo-soul-staff': { url: soulStaffUrl, name: 'Seelenrichterstab · Tripo', tip: soulStaffInspection.normalization.tipPoint, source: 'assets/inbox/Seelenrichterstab.glb' },
+  'kit-tripo-sun-staff': { url: sunStaffUrl, name: 'Sonnenstab · Tripo', tip: sunStaffInspection.normalization.tipPoint, source: 'assets/inbox/Sonnenstab.glb' },
   'kit-tripo-meteor-staff': { url: meteorStaffUrl, name: 'Meteorstab · Tripo', tip: meteorStaffInspection.normalization.tipPoint, source: 'assets/inbox/Meteorstab.glb' },
   'kit-tripo-hourglass-staff': { url: hourglassStaffUrl, name: 'Sanduhrstab · Tripo', tip: hourglassStaffInspection.normalization.tipPoint, source: 'assets/inbox/Sanduhrenstab.glb' },
   'kit-tripo-lightning-staff': { url: lightningStaffUrl, name: 'Blitzstab · Tripo', tip: lightningStaffInspection.normalization.tipPoint,

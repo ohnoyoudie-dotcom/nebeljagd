@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Seelenrichterstab.glb",
+    "bytes": 68912596,
+    "sha256": "2a1c5ced8b782faa5793c29f97a73763b8a4a6db638ad26ee197d458310e72cf",
+    "triangles": 1933976,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/soul-staff.json",
+      "bytes": 2897,
+      "sha256": "1f1d0309e4f3630ce814bfdf5d933734a5766ce4f70c38ded4440748eaa93e93"
+    },
+    {
+      "path": "previews/soul-staff-runtime.png",
+      "bytes": 291487,
+      "sha256": "3557a30d4f7306c629fcc711786aee0ca03d243bb5ded5bbaae1925d346ffd95"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 362,
+      "sha256": "d25b3a038db123ce1cae9e054010a9a32bc4a0ae097e6d7ca44bb721374bf5e1"
+    },
+    {
+      "path": "runtime/soul-staff.glb",
+      "bytes": 211980,
+      "sha256": "cb255df6be02a0418d46fab5d25df80ccf99f3f5e28f329adf082c5dd1e6776a"
+    }
+  ]
+}

@@ -48,9 +48,9 @@ test('individual placement only offers approved Tripo assets; old trees remain l
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
     'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
     'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff',
-    'lightningStaff:kit-tripo-lightning-staff', 'meteorStaff:kit-tripo-meteor-staff', 'hourglassStaff:kit-tripo-hourglass-staff', 'gravityStaff:kit-tripo-gravity-staff', 'stump:kit-tripo-stump-01', 'stump:kit-tripo-stump-02',
+    'lightningStaff:kit-tripo-lightning-staff', 'sunStaff:kit-tripo-sun-staff', 'soulStaff:kit-tripo-soul-staff', 'meteorStaff:kit-tripo-meteor-staff', 'hourglassStaff:kit-tripo-hourglass-staff', 'gravityStaff:kit-tripo-gravity-staff', 'stump:kit-tripo-stump-01', 'stump:kit-tripo-stump-02',
     'log:kit-tripo-log-01', 'log:kit-tripo-log-02', 'crate:kit-tripo-crate-01', 'crate:kit-tripo-crate-02'];
-  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'starStaff', 'lightningStaff', 'meteorStaff', 'hourglassStaff', 'gravityStaff', 'stump', 'log', 'crate']);
+  assert.deepEqual(PLACEMENT_OBJECT_CATALOG.map(definition => definition.kind), ['house', 'rock', 'wagon', 'barrel', 'well', 'chest', 'bow', 'sword', 'fireStaff', 'iceStaff', 'poisonStaff', 'moonStaff', 'starStaff', 'lightningStaff', 'sunStaff', 'soulStaff', 'meteorStaff', 'hourglassStaff', 'gravityStaff', 'stump', 'log', 'crate']);
   assert.deepEqual(PLACEMENT_OBJECT_CATALOG.flatMap(definition => definition.variants.map(variant => variant.assetId)), expected);
   for (const definition of PLACEMENT_OBJECT_CATALOG) {
     assert.equal(isObjectPlaceable(definition.kind), true);

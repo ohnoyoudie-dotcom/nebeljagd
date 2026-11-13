@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Seelenrichterstab.glb",
+  "sourceSha256": "2a1c5ced8b782faa5793c29f97a73763b8a4a6db638ad26ee197d458310e72cf",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

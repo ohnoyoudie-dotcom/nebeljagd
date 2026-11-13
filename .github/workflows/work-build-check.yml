@@ -81,6 +81,10 @@ jobs:
             curl -fsS http://127.0.0.1:4174/magebrawl.html >/dev/null && break
             sleep 1
           done
+      - name: Verify sun and soul staffs, editor placement, blindness and execution
+        env:
+          NEBELJAGD_URL: http://127.0.0.1:4174
+        run: python tests/sun_soul_staff_smoke.py
       - name: Verify lightning storm targeting, mouse/touch strikes, stun and cleanup
         env:
           NEBELJAGD_URL: http://127.0.0.1:4174
@@ -260,6 +264,7 @@ jobs:
             test-results/hourglass-staff
             test-results/meteor-staff
             test-results/lightning-staff
+            test-results/sun-soul
             test-results/woodland-details
             test-results/tripo-woodland
             test-results/bow-alignment

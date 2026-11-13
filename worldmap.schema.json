@@ -535,7 +535,9 @@
             "log",
             "lightningStaff",
             "hourglassStaff",
-            "meteorStaff"
+            "meteorStaff",
+            "sunStaff",
+            "soulStaff"
           ]
         },
         "variant": {
@@ -1070,7 +1072,9 @@
                   "gravityStaff",
                   "lightningStaff",
                   "hourglassStaff",
-                  "meteorStaff"
+                  "meteorStaff",
+                  "sunStaff",
+                  "soulStaff"
                 ]
               }
             }
@@ -1334,6 +1338,48 @@
               "variant": {
                 "enum": [
                   "kit-tripo-meteor-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "sunStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-sun-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "soulStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-soul-staff"
                 ]
               }
             }

@@ -1,0 +1,143 @@
+{
+  "source": {
+    "path": "assets/inbox/Sonnenstab.glb",
+    "bytes": 70923488,
+    "sha256": "6875e9bd7f244552f66b563f6570a94705e9862d8929ce36f0510c65f2ef41cd",
+    "triangles": 1982312,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-sun-staff/runtime/sun-staff.glb",
+    "bytes": 232908,
+    "sha256": "25dbda639e2583fb70b155e31a0e14a6baf029957b1e4a9c2c3f9debfcb5f132",
+    "triangles": 4996,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.17414093017578125,
+        -0.06543731689453125,
+        0.0
+      ],
+      [
+        0.17414093017578125,
+        0.06543731689453125,
+        0.9786376953125
+      ]
+    ],
+    "sourceGripPointGltf": [
+      0.0012321658432483673,
+      0.4200000762939453,
+      4.007294774055481e-05
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.0001767070934874937,
+      0.9999992847442627,
+      -0.0011791823199018836
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999998211860657,
+      0.0005895912763662636,
+      -8.835356129566208e-05,
+      0.0
+    ],
+    "uniformScale": 1.7371079155445464,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.30475711822509766,
+        -0.7295851707458496,
+        -0.1130039170384407
+      ],
+      [
+        0.3002423942089081,
+        0.9704148173332214,
+        0.11442273110151291
+      ]
+    ],
+    "tipPoint": [
+      -0.01008598692715168,
+      0.9715366959571838,
+      -0.004659429658204317
+    ],
+    "gltfBounds": [
+      [
+        -0.3042026162147522,
+        -0.7297709584236145,
+        -0.113009512424469
+      ],
+      [
+        0.30098825693130493,
+        0.9715366959571838,
+        0.11441981792449951
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Sonnenstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Sonnenstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Sonnenstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "sun-staff",
+    "length": 1.7,
+    "gripHeight": 0.42,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 5000
+  }
+}

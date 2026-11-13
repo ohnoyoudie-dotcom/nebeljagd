@@ -4,7 +4,8 @@ import { RARITIES, WEAPON_TYPES, rollLootRarity } from './loot-tiers.js';
 import { createChestWoodMaterial } from './chest-wood.js';
 
 const TIERS = Object.keys(RARITIES);
-const TYPES = WEAPON_TYPES;
+// The special execute weapon is explicitly placed; its quest/drop design is still open.
+const TYPES = WEAPON_TYPES.filter(type => type !== 'soulStaff');
 function hash(text) { let value = 2166136261; for (const c of text) value = Math.imul(value ^ c.charCodeAt(0), 16777619); return value >>> 0; }
 
 /** Contents are rolled once per round and kept until the chest is opened. */

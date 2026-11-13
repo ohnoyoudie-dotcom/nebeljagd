@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "path": "assets/inbox/Seelenrichterstab Projektil.glb",
+      "sha256": "b34ecf234e3d67d2b9108933e14c224168697ae09c3e811c38bcc8f781df158c"
+    },
+    {
+      "path": "assets/inbox/Seelenrichterstab Projektil.rar",
+      "sha256": "c90b3f56274e4fa9345e20f833e16d05e99226f985f33c3a30672e1c30b1cd6d"
+    }
+  ],
+  "files": [
+    {
+      "path": "runtime/soul-projectile.glb",
+      "bytes": 226468,
+      "sha256": "d936067d73d98a9263fc9272f545db6d741ecce5afe19d56bb426f90e5644bd8"
+    },
+    {
+      "path": "soul-projectile-inspection.json",
+      "bytes": 2293,
+      "sha256": "666657a0d56d8160356ac696aad58e22ecf71f43be9d752443d385114e990d39"
+    },
+    {
+      "path": "soul-projectile-preview.png",
+      "bytes": 306574,
+      "sha256": "dddee9fc9a5d5a70a138c804970ba2bc86a68ea50126266f57bfdcea17390221"
+    }
+  ]
+}

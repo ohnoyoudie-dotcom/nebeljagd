@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Sonnenstab.glb",
+  "sourceSha256": "6875e9bd7f244552f66b563f6570a94705e9862d8929ce36f0510c65f2ef41cd",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

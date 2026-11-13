@@ -1,0 +1,143 @@
+{
+  "source": {
+    "path": "assets/inbox/Seelenrichterstab.glb",
+    "bytes": 68912596,
+    "sha256": "2a1c5ced8b782faa5793c29f97a73763b8a4a6db638ad26ee197d458310e72cf",
+    "triangles": 1933976,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-soul-staff/runtime/soul-staff.glb",
+    "bytes": 211980,
+    "sha256": "cb255df6be02a0418d46fab5d25df80ccf99f3f5e28f329adf082c5dd1e6776a",
+    "triangles": 5000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.13421630859375,
+        -0.09283828735351562,
+        0.0
+      ],
+      [
+        0.13421630859375,
+        0.09283828735351562,
+        0.979827880859375
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -0.0001258663833141327,
+      0.42000389099121094,
+      3.053620457649231e-05
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.0004892735159955919,
+      0.9999990463256836,
+      -0.0012640521163120866
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999997615814209,
+      0.000632026232779026,
+      0.00024463681620545685,
+      -0.0
+    ],
+    "uniformScale": 1.7349985300873156,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.23227372765541077,
+        -0.7287057042121887,
+        -0.16014881432056427
+      ],
+      [
+        0.23345640301704407,
+        0.9712942838668823,
+        0.16200017929077148
+      ]
+    ],
+    "tipPoint": [
+      0.001113461097702384,
+      0.9719999432563782,
+      0.0008757965988479555
+    ],
+    "gltfBounds": [
+      [
+        -0.2324773073196411,
+        -0.7293853163719177,
+        -0.16007505357265472
+      ],
+      [
+        0.23379942774772644,
+        0.9719999432563782,
+        0.16218671202659607
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Seelenrichterstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Seelenrichterstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Seelenrichterstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "soul-staff",
+    "length": 1.7,
+    "gripHeight": 0.42,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 5000
+  }
+}

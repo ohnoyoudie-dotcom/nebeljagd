@@ -1,3 +1,4 @@
+import { applySolarStatus, updateSolarStatus, resetSolarStatus } from './solar-status.js';
 /** Renderer-independent combat. Health/status belong to entities, not visuals. */
 export function createCombat({ onHit, onDefeat } = {}) {
   const targets = new Map();
@@ -24,6 +25,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
       },
       get canAct() { return this.alive && this.stunRemaining <= 0; },
     };
+    resetSolarStatus(target);
     target.initialHealth = target.health;
     targets.set(target.id, target);
     return target;
@@ -70,9 +72,11 @@ export function createCombat({ onHit, onDefeat } = {}) {
       target.slowFactor = Math.min(target.slowFactor, clamp(finite(payload.slow.multiplier, 1), .1, 1));
     }
     if (target.alive && !target.destructible) target.stunRemaining = Math.max(target.stunRemaining, Math.max(0, finite(payload.stun, 0)));
+    applySolarStatus(target, payload);
     const result = { targetId: target.id, damage: before - target.health, health: target.health,
       killed: !target.alive, sourceId: payload.sourceId, type: payload.type ?? 'direct' };
     if (result.killed) {
+      resetSolarStatus(target);
       target.timeSlows.clear();
       target.stunRemaining = 0;
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = 0;
@@ -97,6 +101,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
   function update(dt) {
     const delta = Math.max(0, finite(dt, 0));
     for (const target of targets.values()) {
+      updateSolarStatus(target, delta);
       for (const [source, slow] of target.timeSlows) {
         slow.remaining -= delta;
         if (slow.remaining <= 0 || !target.alive) target.timeSlows.delete(source);
@@ -125,6 +130,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
     for (const target of targets.values()) {
       target.timeSlows.clear();
       target.health = target.initialHealth;
+      resetSolarStatus(target);
       target.stunRemaining = 0;
       target.burnRemaining = target.burnDamagePerSecond = target.slowRemaining = target.hitFlash = 0;
       target.burnSourceId = undefined;

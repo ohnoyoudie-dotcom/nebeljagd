@@ -1145,6 +1145,24 @@
           0.2133651226758957
         ]
       }
+    },
+    {
+      "kind": "sunStaff",
+      "variant": "kit-tripo-sun-staff",
+      "label": "Sonnenstab · Tripo",
+      "file": "assets/catalog/sunStaff-kit-tripo-sun-staff.webp",
+      "bytes": 3516,
+      "sha256": "851db543e49e389a226a69e3687d76bc51bf78335624e427945d2d8fe500f173",
+      "method": "Blender render of normalized runtime GLB"
+    },
+    {
+      "kind": "soulStaff",
+      "variant": "kit-tripo-soul-staff",
+      "label": "Seelenrichterstab · Tripo",
+      "file": "assets/catalog/soulStaff-kit-tripo-soul-staff.webp",
+      "bytes": 2894,
+      "sha256": "5c21fd3f068bc3790e3682c8f2c6952c0b35189b7dc9489b2edfced127e79928",
+      "method": "Blender render of normalized runtime GLB"
     }
   ],
   "errors": []

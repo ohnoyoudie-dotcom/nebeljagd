@@ -1,0 +1,105 @@
+{
+  "source": "assets/inbox/Seelenrichterstab Projektil.glb",
+  "original": {
+    "bytes": 62220356,
+    "sha256": "b34ecf234e3d67d2b9108933e14c224168697ae09c3e811c38bcc8f781df158c",
+    "triangles": 1906020,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.488922119140625,
+          0.0,
+          -0.22634124755859375
+        ],
+        "max": [
+          0.488922119140625,
+          0.56793212890625,
+          0.22634124755859375
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "bytes": 226468,
+    "sha256": "d936067d73d98a9263fc9272f545db6d741ecce5afe19d56bb426f90e5644bd8",
+    "triangles": 4000,
+    "images": 3,
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ],
+    "externalUris": [],
+    "bounds": [
+      {
+        "min": [
+          -0.48872101306915283,
+          -0.0009609147091396153,
+          -0.22611482441425323
+        ],
+        "max": [
+          0.48768654465675354,
+          0.5690867900848389,
+          0.22654293477535248
+        ]
+      }
+    ]
+  },
+  "textures": [
+    {
+      "name": "Seelenrichterstab_Projektil_basecolor.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Seelenrichterstab_Projektil_normal.png",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Seelenrichterstab_Projektil_rm.jpg",
+      "originalSize": [
+        4096,
+        4096
+      ],
+      "runtimeSize": [
+        256,
+        256
+      ]
+    }
+  ],
+  "validation": {
+    "sourceUnchanged": true,
+    "triangleBudget": true,
+    "fileBudget": true,
+    "textureBudget": true,
+    "uvAndNormals": true,
+    "embeddedOnly": true,
+    "imageCountPreserved": true
+  },
+  "command": "blender -b -t 3 --python scripts/prepare-soul-projectile.py -- --execute",
+  "sourceAxisPreserved": true,
+  "preview": "Prepared derivative, front view with source +X to image right.",
+  "providerInvoked": false,
+  "canonicalGameDevPackage": false,
+  "rights": "User-supplied asset requested for this project; no independent license certification."
+}

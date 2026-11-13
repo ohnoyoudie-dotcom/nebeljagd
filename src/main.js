@@ -161,6 +161,7 @@ const combat = createCombat({ onHit: (result, target) => {
     if (result.killed) world.destroyDestructible(target.id);
   }
   damageFeedback.addHit(result, target);
+  if (target.local && result.killed && state.phase === 'playing') setPhase('dead');
 }, onDefeat: (result, target) => {
   if (state.phase !== 'playing') return;
   const advancement = awardDefeat(state, result, target);
@@ -174,6 +175,14 @@ const combat = createCombat({ onHit: (result, target) => {
   levelUpEffect.trigger({ position: player, level: state.level,
     reducedMotion });
 } });
+// The local avatar shares combat statuses with every other actor. Health stays
+// authoritative in progression state, including healing, zone damage and level-ups.
+const localCombatTarget = combat.addTarget({ id: 'player', position: player, radius: .42, height: 2.3,
+  health: state.health, maxHealth: state.maxHealth, local: true });
+Object.defineProperties(localCombatTarget, {
+  health: { get: () => state.health, set: value => { state.health = value; } },
+  maxHealth: { get: () => state.maxHealth, set: value => { state.maxHealth = value; } },
+});
 for (const object of world.destructibles ?? []) {
   const target = combat.addTarget({ id: object.id, name: object.name, position: object.position, radius: object.radius,
     height: object.height, maxHealth: object.maxHealth, health: object.health, destructible: true });
@@ -495,6 +504,7 @@ document.querySelector('#game').addEventListener('webglcontextlost', (event) => 
 
 window.nebeljagdTestState = () => ({
   mode: lobbyMode ? 'lobby' : 'game',
+  solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -559,6 +569,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
     camera.updateMatrixWorld();
   };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
+  window.nebeljagdInspectSolarHit = () => combat.hit(localCombatTarget, { sourceId: 'inspect-enemy', type: 'sunStaff', damage: 3, blind: { duration: 2, radius: 3 }, reveal: 2.5 });
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
     direction = state.direction } = {}) => {
@@ -606,9 +617,10 @@ function frame(now) {
   previousTime = now; time += dt; accumulator += dt;
   while (accumulator >= 1 / 60) { simulate(1 / 60); accumulator -= 1 / 60; }
   world.update(dt, time, player, currentZone.radius, state.phase === 'playing' ? dt : 0);
+  vision.setSightLimit(localCombatTarget.blindRemaining > 0 ? localCombatTarget.blindRadius : Infinity);
   vision.update(player, time);
   state.shelter = world.shelter;
-  state.hiddenInGrass = world.concealmentAt(player.x, player.z) > 0.01;
+  state.hiddenInGrass = localCombatTarget.revealRemaining <= 0 && world.concealmentAt(player.x, player.z) > 0.01;
   if (state.shelter !== lastShelter) {
     if (state.shelter) ui.toast(`Du betrittst ${state.shelter}. Wände bieten Deckung vor fremden Blicken.`, 'success');
     else if (lastShelter) ui.toast('Du verlässt das Haus.');

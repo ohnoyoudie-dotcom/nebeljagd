@@ -13,7 +13,7 @@ export function createDamageFeedbackState({ capacity = 32, isVisible = () => tru
   const pending = new Map();
   let cursor = 0, visible = isVisible, emitted = 0;
   const canSee = (target, point = target.position) => Boolean(target.local)
-    || (!target.concealed && visible(target.position, { concealed: target.concealed, local: false })
+    || ((target.revealRemaining > 0 || !target.concealed) && visible(target.position, { concealed: target.revealRemaining > 0 ? false : target.concealed, local: false })
       && visible(point, { concealed: false, local: false }));
 
   function emit(amount, type, target, position = copyPosition(target.position)) {

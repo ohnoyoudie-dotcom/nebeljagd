@@ -37,7 +37,7 @@ function attackOnce(instance, seconds = .9) {
   weapons.attack(actor.position, 0);
   if (weapons.equipped === 'bow') weapons.releaseAttack(actor.position);
   if (weapons.equipped === 'poisonStaff') { weapons.aimAt(actor.position, instance.target.position); weapons.update(1.2, 0, actor.position); weapons.releaseAttack(actor.position); seconds = 4.1; }
-  if (weapons.equipped === 'lightningStaff') {
+  if (weapons.equipped === 'lightningStaff' || weapons.equipped === 'sunStaff') {
     weapons.aimAt(actor.position, instance.target.position);
     for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);
     weapons.releaseAttack(actor.position); seconds = 3.6;
@@ -69,6 +69,7 @@ test('all five tiers increase the actual damage dealt for each damaging weapon',
       assert.ok(Math.abs(damage - weaponStats(type, rarity).damage) < 1e-6, `${type}/${rarity} real hit`);
       assert.ok(damage > previous, `${type}/${rarity} increases damage`);
       if (type === 'poisonStaff') assert.ok(instance.weapons.telemetry.damageHits > 1, 'cloud applies damage while inside');
+      else if (type === 'sunStaff') assert.equal(instance.weapons.telemetry.damageHits, 8);
       else if (type === 'lightningStaff') assert.equal(instance.weapons.telemetry.damageHits, 5);
       else assert.equal(instance.weapons.telemetry.damageHits, 1, 'single outbound shot hits only once');
       assert.equal(instance.weapons.equippedItem.rarity, rarity);
@@ -97,7 +98,7 @@ test('walls stop both elemental spells and melee, nearer targets intercept arrow
   for (const type of WEAPON_TYPES) {
     const blocked = setup(type, 'legendary', { wallZ: .8, targetZ: type === 'sword' ? 1.6 : 4 });
     attackOnce(blocked);
-    if (type === 'lightningStaff') {
+    if (type === 'lightningStaff' || type === 'sunStaff') {
       assert.ok(Math.abs(blocked.target.health - (1000 - weaponStats(type, 'legendary').damage)) < 1e-8,
         'an aimed storm beyond the wall strikes downwards on its own side');
     } else assert.equal(blocked.target.health, 1000, `${type} cannot damage through a wall`);

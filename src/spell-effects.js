@@ -6,6 +6,8 @@ import { createFireballMaterial } from './fireball-material.js';
 const GRAVITY_PROJECTILE_SCALE = .8;
 const PARTICLES = 160, BURSTS = 12, HISTORY = 32, SAMPLE_DISTANCE = .14, TRAIL_AGE = .38, TRAIL_RELEASE = .22;
 const ELEMENTS = {
+  sunStaff: { core: '#fff8dc', glow: '#edc574', spark: '#fff2b5', edge: '#9a702f' },
+  soulStaff: { core: '#a28cba', glow: '#584366', spark: '#8c709d', edge: '#211b29' },
   hourglassStaff: { core: '#fff0bd', glow: '#d29d43', spark: '#ffe1a0', edge: '#a46f26' },
   lightningStaff: { core: '#fff5cf', glow: '#58adff', spark: '#bfeaff', edge: '#4b83dc' },
   fireStaff: { core: '#fff3bf', glow: '#ff681c', spark: '#ffb52d', edge: '#ff360d' },
@@ -22,7 +24,7 @@ const crystalline = type => type === 'iceStaff' || type === 'moonStaff' || type 
 
 /** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
 export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null, iceProjectilePrototype = null,
-  gravityProjectilePrototype = null } = {}) {
+  gravityProjectilePrototype = null, soulProjectilePrototype = null } = {}) {
   const roots = [], geometries = new Set(), materials = new Set(), projectiles = [];
   const clock = { value: 0 };
   const ownGeometry = geometry => (geometries.add(geometry), geometry);
@@ -102,6 +104,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   // A fixed material set per element avoids recoloring a fire projectile when
   // its owner swaps to another staff while that earlier shot is still flying.
   const projectileMaterials = {
+    sunStaff: { core: solid(ELEMENTS.sunStaff.core), body: elementMaterial('body', { type: 'sunStaff', opacity: .35 }) },
+    soulStaff: { core: solid('#302537'), body: elementMaterial('body', { type: 'soulStaff', opacity: .35 }) },
     fireStaff: { core: fireCore, tip: fireTip, body: fireBody },
     iceStaff: { core: iceCore, tip: iceTip, body: iceBody, crystal: crystalMaterial },
     poisonStaff: { core: solid(ELEMENTS.poisonStaff.core), tip: additive(ELEMENTS.poisonStaff.spark, .65),
@@ -157,6 +161,21 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     if (disposed) throw new Error('Disposed spell effects cannot create projectiles.');
     const group = addRoot(new THREE.Group()); group.name = 'Zauberprojektil'; group.visible = false;
     const lightning = createLightningVisual({ ownGeometry, ownMaterial }); group.add(lightning.group);
+    const soul = new THREE.Group(); soul.name = 'Seelenrichter · Seelenflamme'; group.add(soul);
+    const soulModel = soulProjectilePrototype?.clone(true) ?? null;
+    if (soulModel) {
+      soulModel.traverse(part => {
+        if (!part.isMesh) return;
+        const prepare = source => {
+          const copy = ownMaterial(source.clone());
+          if (copy.emissive) { copy.emissive.set('#33203f'); copy.emissiveIntensity = .06; }
+          return copy;
+        };
+        part.material = Array.isArray(part.material) ? part.material.map(prepare) : prepare(part.material);
+        part.castShadow = part.receiveShadow = false;
+      });
+      soul.add(soulModel);
+    } else mesh(soul, octahedron, projectileMaterials.soulStaff.core).scale.set(.14, .14, .3);
     const gravity = new THREE.Group(); gravity.name = 'Gravitationsprojektil · dunkler Kern'; group.add(gravity);
     const gravityCore = mesh(gravity, sphere, projectileMaterials.gravityStaff.core);
     gravityCore.scale.set(.29, .32, .29);
@@ -241,7 +260,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, lightning, fire, ice, star, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, lightning, fire, ice, star, soul, soulModel, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -275,18 +294,19 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       visual.trail.visible = false; return;
     }
     const positions = visual.trailPositions, fades = visual.trailFades, uvs = visual.trailUvs;
+    const trailAge = visual.type === 'soulStaff' ? .16 : TRAIL_AGE;
     const residual = visual.active ? 1 : visual.trailRemaining / TRAIL_RELEASE;
     let ax = visual.group.position.x, ay = visual.group.position.y, az = visual.group.position.z, birthA = visual.headBirth;
     for (let segment = 0; segment < visual.historyCount; segment++) {
       const at = segment * 3, bx = visual.history[at], by = visual.history[at + 1], bz = visual.history[at + 2];
       const birthB = visual.births[segment], dx = bx - ax, dz = bz - az, horizontal = Math.hypot(dx, dz);
-      const ageA = THREE.MathUtils.clamp((clock.value - birthA) / TRAIL_AGE, 0, 1);
-      const ageB = THREE.MathUtils.clamp((clock.value - birthB) / TRAIL_AGE, 0, 1);
+      const ageA = THREE.MathUtils.clamp((clock.value - birthA) / trailAge, 0, 1);
+      const ageB = THREE.MathUtils.clamp((clock.value - birthB) / trailAge, 0, 1);
       pointA.set(ax, ay, az); pointB.set(bx, by, bz);
       let visible = ageA < 1 && ageB < 1 && Math.hypot(dx, by - ay, dz) > .0001 && canSee(pointA) && canSee(pointB);
       if (visible) { pointA.add(pointB).multiplyScalar(.5); visible = canSee(pointA); }
       if (visible) visual.visibleTrailSegments++;
-      const radius = crystalline(visual.type) ? .22 : .25;
+      const radius = visual.type === 'soulStaff' ? .13 : crystalline(visual.type) ? .22 : .25;
       const taperA = 1 - segment / visual.historyCount, taperB = 1 - (segment + 1) / visual.historyCount;
       const widthA = radius * (.06 + (1 - ageA) * taperA * .94), widthB = radius * (.06 + (1 - ageB) * taperB * .94);
       const nx = horizontal > .00001 ? -dz / horizontal : 1, nz = horizontal > .00001 ? dx / horizontal : 0;
@@ -356,7 +376,9 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     visual.group.position.copy(position); visual.group.rotation.set(0, direction, 0);
     const appearance = projectileMaterials[type];
     visual.group.scale.setScalar(type === 'gravityStaff' ? GRAVITY_PROJECTILE_SCALE : 1);
-    visual.fire.visible = !crystalline(type) && type !== 'gravityStaff' && type !== 'lightningStaff';
+    visual.fire.visible = !crystalline(type) && type !== 'gravityStaff' && type !== 'lightningStaff' && type !== 'soulStaff';
+    visual.soul.visible = type === 'soulStaff';
+    visual.halo.material.opacity = type === 'soulStaff' ? .08 : .32;
     visual.lightning.group.visible = type === 'lightningStaff'; visual.lightning.update(0);
     visual.gravity.visible = type === 'gravityStaff';
     visual.gravityCore.visible = !visual.gravityModel;
@@ -625,6 +647,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
         activeSmoke: smoke.filter(p => p.life > 0).length,
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
+        soulModel: soulProjectilePrototype ? { ...soulProjectilePrototype.userData } : null,
+        importedSoulProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff' && p.soulModel).length,
         importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,
         importedIceProjectiles: projectiles.filter(p => p.active && p.type === 'iceStaff' && p.iceModel).length,
         importedGravityProjectiles: projectiles.filter(p => p.active && p.type === 'gravityStaff' && p.gravityModel).length,
