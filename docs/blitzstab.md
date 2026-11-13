@@ -21,7 +21,7 @@ Der Hauptblitz läuft von einer kräftigen Basis zu einer schmalen Spitze aus un
 hat unregelmäßige Knicke. Zwei kräftigere Gabelungen und drei feine Nebenäste
 variieren in Ansatzpunkt, Länge, Richtung und Stärke. Kurze, versetzte
 Entladungen mit dunklen Pausen beleben die Einschläge. Auslaufende
-Bodenentladungen, flach wegsprühende Funken und kurze erdige Staubstöße markieren
+Bodenentladungen mit rund 36 Prozent kleinerer Ausdehnung und gedämpften Ausläufern, flach wegsprühende Funken und kurze erdige Staubstöße markieren
 die Treffer. Ein weicher, leicht bewegter Schatten verbindet die Wolke mit dem
 Boden. Der aktive Flächenrand bleibt dezent; die runde Zielanzeige behält ihren
 gewohnten Stil und zeigt den verkleinerten Wirkungsradius an.

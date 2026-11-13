@@ -78,11 +78,11 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
       void main(){vUv=uv;vEnergy=aEnergy;vAge=aAge;vSeed=aSeed;gl_Position=projectionMatrix*modelViewMatrix*instanceMatrix*vec4(position,1.);}`,
     fragmentShader:`varying vec2 vUv;varying float vEnergy,vAge,vSeed;
       void main(){vec2 p=vUv*2.-1.;float r=length(p),a=atan(p.y,p.x);
-        float blast=exp(-r*r*7.)*pow(1.-vAge,3.)*.7;
+        float blast=exp(-r*r*7.)*pow(1.-vAge,3.)*.5;
         float jag=abs(sin(a*(5.+floor(vSeed*4.))+vSeed*19.+sin(r*24.+a*3.)*.8));
         float reach=mix(.2,.95,smoothstep(0.,.45,vAge));
         float roots=(1.-smoothstep(.02,.10,jag))*(1.-smoothstep(reach-.18,reach,r));
-        float center=exp(-r*r*45.);float alpha=(center+blast+roots)*vEnergy;
+        float center=exp(-r*r*45.);float alpha=(center+blast+roots*.55)*vEnergy;
         gl_FragColor=vec4(mix(vec3(.18,.53,1.),vec3(.88,.97,1.),center),alpha);
         #include <colorspace_fragment>
       }`,
@@ -188,7 +188,7 @@ export function createStormVisuals(scene, rules, ground, isVisible, texture = nu
       s.energy=energy;flash=Math.max(flash,energy*.8);
       energies.fill(energy,i*segments*6,(i+1)*segments*6);
       impactEnergy[i]=s.life>0?Math.pow(s.life/IMPACT_SECONDS,1.3):0;impactAge[i]=age/IMPACT_SECONDS;
-      transform.position.set(s.x,s.y+.025,s.z);transform.scale.setScalar(.9+age*.8);transform.updateMatrix();impacts.setMatrixAt(i,transform.matrix);
+      transform.position.set(s.x,s.y+.025,s.z);transform.scale.setScalar(.58+age*.48);transform.updateMatrix();impacts.setMatrixAt(i,transform.matrix);
       transform.position.set(s.x+(random(s.seed+8)-.5)*age*.4,s.y+.12+age*.55,s.z);
       transform.scale.set(.18+age*.85,.13+age*.50,1);transform.updateMatrix();dust.setMatrixAt(i,transform.matrix);
       for(let j=0;j<6;j++) {
