@@ -164,6 +164,7 @@ with sync_playwright() as p:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             airborne = state(page)['combat']['meteor']
             assert airborne['visuals']['fragments'] > 0
+            assert 0 < airborne['visuals']['fragmentFire']['flames'] <= 88
             assert any(f['active'] and f['phase'] == 'airborne' for f in airborne['fragmentStates'])
             capture(page, mode + '-fragments', fragment_detail=True)
             arm_pause(page, "s.combat.meteor.phase==='impact'&&s.combat.meteor.age>=2")
@@ -185,6 +186,7 @@ with sync_playwright() as p:
             page.wait_for_function('nebeljagdTestState().phase==="paused"')
             rolled = state(page)['combat']['meteor']
             assert rolled['visuals']['fragments'] > 0
+            assert rolled['visuals']['fragmentFire']['flames'] > 0
             # Translation and orientation must both advance on the ground:
             # spinning airborne shards or a fixed glowing sprite do not pass.
             def rolled_on_ground(a, b):

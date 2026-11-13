@@ -13,6 +13,9 @@ Sanduhrenstab: 3,2 Meter. Eine aufwallende Feuerexplosion mit hellem Kern geht
 in Rauch über. Die Splitter verwenden das verkleinerte Meteormodell samt
 Lavatextur; Richtung, Geschwindigkeit, Sprunghöhe, Drehung und Größe variieren
 bei jedem Einschlag. Die acht Splitter sind etwa 0,43–0,65 Meter groß.
+Kleine Flammen umgeben die Splitter; ein kurzer Feuerschweif folgt ihrer
+Bewegung und klingt innerhalb von 0,32 Sekunden ab. Die Lavakruste bleibt
+sichtbar. Diese Effekte verändern weder Treffer noch Brandschaden.
 Sie fliegen auseinander, hüpfen ein- bis zweimal und rollen dann mit Reibung
 aus. Sie bleiben bis zu 3,4 Sekunden sichtbar; ihre Drehung folgt beim Rollen
 der tatsächlich zurückgelegten Strecke. Auch ein Treffer lässt den Stein

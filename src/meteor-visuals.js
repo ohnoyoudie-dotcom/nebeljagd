@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 import { createMeteorGroundFire } from './meteor-ground-fire.js';
 import { createMeteorHeat } from './meteor-heat.js';
+import { createMeteorFragmentFire } from './meteor-fragment-fire.js';
 
 export const METEOR_VISUAL_BUDGET = Object.freeze({ puffs: 160, embers: 96, fragments: 8, fire: 18 });
 const random = (i, salt) => { const x = Math.sin(i * salt + 1.7) * 43758.5453; return x - Math.floor(x); };
@@ -179,7 +180,9 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
       ember(origin, Math.cos(a) * speed * 1.7, 1.6 + random(i, 17.7) * 3, Math.sin(a) * speed * 1.7);
     }
   }
+  const fragmentFire = createMeteorFragmentFire(root, rules.fragments, rules.fragmentLife, visible);
   function fragments(items) {
+    fragmentFire.sync(items);
     let count = 0;
     for (const f of items) {
       if (!f.active || !visible(f.position)) continue;
@@ -196,6 +199,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
   }
   function update(dt) {
     if (!(dt > 0) || disposed) return; clock.value += dt;
+    fragmentFire.update(dt);
     sorted.length = 0;
     for (const p of puffs) {
       if (p.age >= p.life) continue;
@@ -235,7 +239,7 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     }
   }
   function reset() {
-    groundFire.reset(); heat.reset(); trailSamples = maxGap = remainder = 0;
+    groundFire.reset(); heat.reset(); fragmentFire.reset(); trailSamples = maxGap = remainder = 0;
     flying = false; blast = null; diameter = 0; clock.value = 0;
     body.visible = shock.visible = flash.visible = false; for (const chip of chips) chip.mesh.count = 0; fireGeo.instanceCount = 0;
     for (const p of [...puffs, ...embers]) p.age = 99;
@@ -245,8 +249,8 @@ export function createMeteorVisuals(scene, rules, { prototype = null, isVisible 
     get telemetry() { return { bodyVisible: body.visible, model: prototype ? 'uploaded' : 'procedural-fallback',
       source: prototype?.userData?.source ?? null, diameter,
       puffs: puffGeo.instanceCount, embers: sparkGeo.drawRange.count, fragments: chips[0]?.mesh.count ?? 0, fragmentModel: prototype ? 'uploaded' : 'procedural-fallback', fire: fireGeo.instanceCount,
-      heat: heat.telemetry, trail: { samples: trailSamples, maxGap, maxSpacing }, groundFire: groundFire.telemetry, shock: shock.visible, flash: flash.visible, draws: Number(heat.telemetry.visible) + groundFire.telemetry.draws + (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
-    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); groundFire.dispose(); heat.dispose(); for (const chip of chips) chip.mesh.dispose();
+      fragmentFire: fragmentFire.telemetry, heat: heat.telemetry, trail: { samples: trailSamples, maxGap, maxSpacing }, groundFire: groundFire.telemetry, shock: shock.visible, flash: flash.visible, draws: fragmentFire.telemetry.draws + Number(heat.telemetry.visible) + groundFire.telemetry.draws + (body.visible ? bodyDraws : 0) + Number(puffGeo.instanceCount > 0) + Number(sparkGeo.drawRange.count > 0) + chips.filter(chip => chip.mesh.count > 0).length + Number(fireGeo.instanceCount > 0) + Number(shock.visible) + Number(flash.visible) }; },
+    dispose() { if (disposed) return; disposed = true; reset(); root.removeFromParent(); groundFire.dispose(); heat.dispose(); fragmentFire.dispose(); for (const chip of chips) chip.mesh.dispose();
       for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); },
   };
 }
