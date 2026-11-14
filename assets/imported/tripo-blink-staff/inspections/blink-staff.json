@@ -1,0 +1,150 @@
+{
+  "source": {
+    "path": "assets/inbox/Teleportationstab.glb",
+    "bytes": 68256812,
+    "sha256": "100d9951648e6a3fb11f9180bdfa0aed52170bc8ac6b5bc6476d3f77a0541e52",
+    "triangles": 1959752,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-blink-staff/runtime/blink-staff.glb",
+    "bytes": 213764,
+    "sha256": "cf8c1e518753db6b1d49c362f8f66b7d018a5a4b3708e415a4d7e133b441703d",
+    "triangles": 5000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.134246826171875,
+        -0.06023407727479935,
+        0.0
+      ],
+      [
+        0.134246826171875,
+        0.06023407727479935,
+        0.98095703125
+      ]
+    ],
+    "sourceGripPointGltf": [
+      0.0004539676010608673,
+      0.4199981689453125,
+      3.053247928619385e-05
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.0008807231206446886,
+      0.9999996423721313,
+      -0.00019826708012260497
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999998807907104,
+      9.913354006130248e-05,
+      0.00044036158942617476,
+      -0.0
+    ],
+    "uniformScale": 1.7329784579279162,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.23281031847000122,
+        -0.727854311466217,
+        -0.10429272055625916
+      ],
+      [
+        0.23247858881950378,
+        0.972145676612854,
+        0.10443632304668427
+      ]
+    ],
+    "tipPoint": [
+      -0.025483552366495132,
+      0.972136378288269,
+      0.0028411175590008497
+    ],
+    "gltfBounds": [
+      [
+        -0.23296229541301727,
+        -0.727774977684021,
+        -0.10449749231338501
+      ],
+      [
+        0.2323906272649765,
+        0.972136378288269,
+        0.10452256351709366
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Teleportationstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Teleportationstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Teleportationstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "blink-staff",
+    "length": 1.7,
+    "gripHeight": 0.42,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 5000
+  },
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
+  }
+}

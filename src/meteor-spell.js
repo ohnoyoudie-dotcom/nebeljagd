@@ -50,7 +50,7 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
   }
   function cancelAim() { aim = null; aimRing.visible = rangeRing.visible = false; }
   function hit(target, payload) {
-    const result = combat?.hit(target, payload); if (result) onDamage(result); return result;
+    const result = combat?.hit(target, payload); if (result && !result.blocked) onDamage(result); return result;
   }
   function explode(position, payload, normal = null) {
     const center = position.clone();
@@ -139,9 +139,13 @@ export function createMeteorSpell(scene, world, combat, ownerId, onDamage = () =
       // Rolling rocks meet physical low barriers; an airborne fragment uses
       // the same ranged collision contract as the parent meteor.
       const wall = rolling ? world?.traceProjectile?.(start, end, f.radius) : traceRangedProjectile(world, start, end, f.radius);
-      const target = f.canHit ? combat?.traceSegment(start, end, f.radius, ownerId, fragmentHits) : null;
+      let target = f.canHit ? combat?.traceSegment(start, end, f.radius, ownerId, fragmentHits) : null;
+      const shield=f.canHit?combat?.traceShield?.(start,end,f.radius,ownerId):null;
+      if(shield&&(!target||shield.t<=target.t)&&(!wall||shield.t<(wall.t??0))){
+        combat.blockProjectile(shield.target,f.payload,shield.point,shield.normal);f.position.copy(shield.point);f.velocity.reflect(new THREE.Vector3(shield.normal.x,shield.normal.y,shield.normal.z)).multiplyScalar(.55);f.canHit=false;continue;
+      }
       if (target && (!wall || target.t < (wall.t ?? 0) - .0001)) {
-        hit(target.target, { damage: f.payload.damage * r.fragmentDamageRatio, sourceId: ownerId, type: 'meteor-fragment',
+        hit(target.target, { damage: f.payload.damage * r.fragmentDamageRatio, sourceId: ownerId, type: 'meteor-fragment', delivery:'projectile',
           burn: { duration: r.burnSeconds, damagePerSecond: r.burnDps } });
         fragmentHits.add(target.target.id); f.canHit = false;
         f.position.copy(target.point);

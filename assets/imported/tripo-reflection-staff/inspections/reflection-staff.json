@@ -1,0 +1,150 @@
+{
+  "source": {
+    "path": "assets/inbox/Schutzstab.glb",
+    "bytes": 69178464,
+    "sha256": "ea41717a0200e9d44093c48a8da5355453a599ee7eddaf65d06da2eaa3fabdfc",
+    "triangles": 1988950,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-reflection-staff/runtime/reflection-staff.glb",
+    "bytes": 213360,
+    "sha256": "2901874554af1912fcd28f306ea20fee996318addb927f258c37f912ff5746c6",
+    "triangles": 5000,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.13211822509765625,
+        -0.072113037109375,
+        0.0
+      ],
+      [
+        0.13211822509765625,
+        0.072113037109375,
+        0.98065185546875
+      ]
+    ],
+    "sourceGripPointGltf": [
+      0.00012494903057813644,
+      0.4199981689453125,
+      -7.341522723436356e-05
+    ],
+    "sourceLongitudinalAxisGltf": [
+      0.0007099537760950625,
+      0.9999997615814209,
+      3.4398643038002774e-05
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999999403953552,
+      -1.719932333799079e-05,
+      -0.0003549769171513617,
+      0.0
+    ],
+    "uniformScale": 1.7335390658474197,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.2298438996076584,
+        -0.7280852198600769,
+        -0.1249096542596817
+      ],
+      [
+        0.22822031378746033,
+        0.9719148278236389,
+        0.1251118779182434
+      ]
+    ],
+    "tipPoint": [
+      0.0016762415179982781,
+      0.9718717932701111,
+      -0.009976555593311787
+    ],
+    "gltfBounds": [
+      [
+        -0.22966085374355316,
+        -0.7285722494125366,
+        -0.125124990940094
+      ],
+      [
+        0.2280682921409607,
+        0.9718717932701111,
+        0.1252448856830597
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Schutzstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Schutzstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Schutzstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "reflection-staff",
+    "length": 1.7,
+    "gripHeight": 0.42,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 5000
+  },
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
+  }
+}

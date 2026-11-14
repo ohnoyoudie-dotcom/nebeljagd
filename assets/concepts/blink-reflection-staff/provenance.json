@@ -1,0 +1,18 @@
+{
+  "provider": "host-native image_gen",
+  "purpose": "Two independent concept references for user-operated Tripo image-to-3D",
+  "prompts": "prompts.json",
+  "stage": "Generated 2D references only; no 3D generation or game integration performed",
+  "images": [
+    {
+      "file": "teleport-staff.png",
+      "source": "/workspace/generated_images/exec-cdab7d76-f264-4273-a6e8-ab5326835c8c.png",
+      "sha256": "cdae82cb080eb1e66016d518083a8c99b4742786700021564fd87548793a9dc8"
+    },
+    {
+      "file": "protection-staff.png",
+      "source": "/workspace/generated_images/exec-5081531f-c148-4957-b8f2-864db418072a.png",
+      "sha256": "55b14ae94ec362ce7bdae40784ddffde0012f4d6fa69b252aad012fbefb3373f"
+    }
+  ]
+}

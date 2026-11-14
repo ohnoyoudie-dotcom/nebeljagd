@@ -1163,6 +1163,58 @@
       "bytes": 2894,
       "sha256": "5c21fd3f068bc3790e3682c8f2c6952c0b35189b7dc9489b2edfced127e79928",
       "method": "Blender render of normalized runtime GLB"
+    },
+    {
+      "kind": "blinkStaff",
+      "variant": "kit-tripo-blink-staff",
+      "label": "Teleportationsstab · Tripo",
+      "file": "assets/catalog/blinkStaff-kit-tripo-blink-staff.webp",
+      "bytes": 4104,
+      "sha256": "419ac123bb3b324024b9383d3621f305f0f825d8dd3e49ad01a06a310e526f7f",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-blink-staff/previews/blink-staff-runtime.png",
+      "model": "assets/imported/tripo-blink-staff/runtime/blink-staff.glb",
+      "modelSha256": "cf8c1e518753db6b1d49c362f8f66b7d018a5a4b3708e415a4d7e133b441703d",
+      "originalSourceSha256": "100d9951648e6a3fb11f9180bdfa0aed52170bc8ac6b5bc6476d3f77a0541e52",
+      "generator": "scripts/prepare-blink-staff.py; scripts/register-blink-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.23296229541301727,
+          -0.727774977684021,
+          -0.10449749231338501
+        ],
+        "max": [
+          0.2323906272649765,
+          0.972136378288269,
+          0.10452256351709366
+        ]
+      }
+    },
+    {
+      "kind": "reflectionStaff",
+      "variant": "kit-tripo-reflection-staff",
+      "label": "Schutzstab · Tripo",
+      "file": "assets/catalog/reflectionStaff-kit-tripo-reflection-staff.webp",
+      "bytes": 3782,
+      "sha256": "79abffdc2fc7cca571fc9f08ede44a08c6e577147e492d87de35d313f51d632d",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-reflection-staff/previews/reflection-staff-runtime.png",
+      "model": "assets/imported/tripo-reflection-staff/runtime/reflection-staff.glb",
+      "modelSha256": "2901874554af1912fcd28f306ea20fee996318addb927f258c37f912ff5746c6",
+      "originalSourceSha256": "ea41717a0200e9d44093c48a8da5355453a599ee7eddaf65d06da2eaa3fabdfc",
+      "generator": "scripts/prepare-reflection-staff.py; scripts/register-reflection-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.22966085374355316,
+          -0.7285722494125366,
+          -0.125124990940094
+        ],
+        "max": [
+          0.2280682921409607,
+          0.9718717932701111,
+          0.1252448856830597
+        ]
+      }
     }
   ],
   "errors": []

@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Schutzstab.glb",
+    "bytes": 69178464,
+    "sha256": "ea41717a0200e9d44093c48a8da5355453a599ee7eddaf65d06da2eaa3fabdfc",
+    "triangles": 1988950,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/reflection-staff.json",
+      "bytes": 3097,
+      "sha256": "368e5f667f574b41e6bb15b8d93f1bb670072fc56617b47f801685270cddc149"
+    },
+    {
+      "path": "previews/reflection-staff-runtime.png",
+      "bytes": 294096,
+      "sha256": "56c00a364f61b906b200d3b0a1e97811f2f91e4deb4d2014955730e970c67d01"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 355,
+      "sha256": "b4bd54458d1961960062eaa8572d2a18bc61b9cdb6704ed540cbc2158bccb057"
+    },
+    {
+      "path": "runtime/reflection-staff.glb",
+      "bytes": 213360,
+      "sha256": "2901874554af1912fcd28f306ea20fee996318addb927f258c37f912ff5746c6"
+    }
+  ]
+}

@@ -19,6 +19,8 @@ const icon = (name, className = '') => {
     iceStaff: '<path d="m5 22 9-14M14 1v12M8 4l12 6M8 10l12-6M11 2l3 2 3-2m-6 10 3-2 3 2"/>',
     poisonStaff: '<path d="m5 22 9-13m-5 6 4 2M14 2c-1 3-5 5-5 8a5 5 0 0 0 10 0c0-3-4-5-5-8Z"/><path d="M12 10h.01M16 10h.01m-4 3 2 1 2-1"/>',
     lightningStaff: '<path d="m4 22 9-14M17 1l-6 9h5l-3 9L23 7h-6l3-6Z"/>',
+    blinkStaff: '<path d="m6 22 7-12"/><ellipse cx="15" cy="7" rx="6" ry="5"/>',
+    reflectionStaff: '<path d="m6 22 6-10M7 3l6-2 6 2v6l-6 5-6-5Z"/>',
     sunStaff: '<path d="m4 22 8-12M12 1v2m0 12v2M4 8H2m20 0h-2M5 1l2 2m10 10 2 2M19 1l-2 2M7 13l-2 2"/><circle cx="12" cy="8" r="4"/>',
     soulStaff: '<path d="m5 22 8-11M7 7a6 6 0 1 1 12 0v3l-3 1v3h-5v-3l-4-1Z M10 7h1m4 0h1m-3 3v2"/>',
     meteorStaff: '<path d="m3 22 10-12M10 5l5-3 6 3 1 6-5 4-6-3Z M15 2l-1 7 7 2M14 9l-3 3"/>',
@@ -500,15 +502,15 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     if (weaponKey !== lastWeaponType) {
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
-      const effectDetail = { sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Drücken zum Schießen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
+      const effectDetail = { blinkStaff:' · Halten, Landestelle wählen, loslassen', reflectionStaff:' · 1,8 Sekunden Projektilschutz', sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Drücken zum Schießen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
         poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz', lightningStaff: ' · Gewitter zielen und loslassen' }[weaponType] || '';
-      weaponDetail.textContent = weaponType === 'soulStaff' ? '3 Treffer · Hinrichtung nach 2 s' : weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
+      weaponDetail.textContent = weaponType === 'blinkStaff' ? 'Teleport bis 8 m · 4 s Abklingzeit' : weaponType === 'reflectionStaff' ? 'Projektilschutz 1,8 s · 8 s Abklingzeit' : weaponType === 'soulStaff' ? '3 Treffer · Hinrichtung nach 2 s' : weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
       weaponIcon.innerHTML = icon(weaponType || 'shield');
       weaponStatus.setAttribute('aria-label', weaponType ? `${weapon.name}, ${weapon.rarityLabel}, ${weapon.damage} Schaden` : 'Keine Waffe ausgerüstet');
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
-      const attackLabel = { sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Drücken zum Schießen', sword: 'Mit dem Schwert angreifen',
+      const attackLabel = { blinkStaff:'Halten für mehr Reichweite, kleinen Landekreis wählen, loslassen zum Teleportieren', reflectionStaff:'Schutzkuppel aktivieren · lässt direkte Geschosse abprallen', sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Drücken zum Schießen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
         poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken', lightningStaff: 'Halten, Gewitterfläche wählen, loslassen · Blitze betäuben' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');

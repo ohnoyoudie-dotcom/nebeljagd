@@ -1,0 +1,11 @@
+# Teleportationsstab und Schutzstab
+
+Beide eigenen Tripo-Modelle sind im Editor platzierbar, aufhebbar und im Spiel benutzbar. Originale bleiben in `assets/inbox/Teleportationstab.glb` und `assets/inbox/Schutzstab.glb` unverändert; die Browserkopien enthalten jeweils 5.000 Dreiecke. Die lokalen Blender-Skripte `prepare-blink-staff.py` und `prepare-reflection-staff.py` sowie die zugehörigen `register-*-preview.py` erzeugen Modelle und echte Modellvorschauen.
+
+Der Teleportationsstab verwendet dieselben Halten/Zielen/Loslassen-Eingaben wie die Flächenstäbe. Seine Reichweite wächst in 1,5 Sekunden von null auf 8 Meter; der Landekreis bleibt 0,6 Meter groß. Beim Loslassen springt der tatsächliche Avatar sofort. Zwei kurze violett-türkise Portale markieren Start und Ankunft. Körperbreite, niedrige und hohe Barrieren, Wasser/Kartenrand, Bodenhöhen und andere Figuren werden geprüft. Die Landestelle wird bei der Freigabe erneut validiert; ein ungültiger Sprung kostet keine Abklingzeit. Gültige Sprünge haben 4 Sekunden Abklingzeit.
+
+Der Schutzstab aktiviert durch Drücken eine mitbewegte blaue Schutzkuppel für 1,8 Sekunden, mit 8 Sekunden Abklingzeit. Direkte Pfeile, Feuer-/Eis-/Stern-/Seelenprojektile, Mondsicheln und Meteorsplitter werden abgefangen. Direkte Geschosse prallen sichtbar ab, ein Lichtimpuls läuft über die Trefferstelle; abgelenkte Geschosse verursachen keinen weiteren Schaden. Nahkampf, bereits bestehende Statuseffekte und Boden-/Flächenzauber bleiben wirksam. Der Schutz heilt nicht, entfernt keine bestehenden Seelenfragmente und verhindert keine bereits besiegelte Hinrichtung.
+
+Beide Abklingzeiten bleiben beim Waffenwechsel bestehen. Pause stoppt Effekte und Zeiten; Rollen oder Waffenwechsel brechen eine laufende Zielauswahl ab. Ein Neustart entfernt Schutz und Portale. Seltenheit verändert weder Teleportreichweite noch Schutzdauer.
+
+Verifikation: `tests/utility_staffs.test.js` prüft Bewegung, Landeflächen, Kollisionen, Pausen, Schaden und tatsächliche abprallende Geschosse. `tests/utility_staffs_smoke.py` prüft die erzeugten Browserdateien, beide GLBs im Editor, Maus-/Touch-Teleport und die Schutzkuppel. Für Vite zusätzlich `NEBELJAGD_GAME_ENTRY=game.html` setzen. Die vorhandene `worldmap.json` wird nicht verändert.

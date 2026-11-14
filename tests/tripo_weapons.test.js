@@ -143,6 +143,8 @@ test('both imported staffs follow the palm socket through motion and cast from t
       assert.ok(held.position.distanceTo(wrist) > .06);
       assert.equal(weapons.telemetry.heldGrip.error, 0);
     }
+    // Utility staffs share the grip contract; their non-projectile actions have dedicated integration tests.
+    if (['blinkStaff','reflectionStaff'].includes(type)) { weapons.dispose(); continue; }
     weapons.attack(actor.position, actor.rotation.y);
     if (type === 'sunStaff' || type === 'meteorStaff' || type === 'poisonStaff' || type === 'gravityStaff' || type === 'hourglassStaff' || type === 'lightningStaff') weapons.releaseAttack(actor.position);
     else for (let frame = 0; frame < 3; frame++) weapons.update(.1, .4 + frame * .1, actor.position);
@@ -204,7 +206,7 @@ test('held imported material arrays conceal independently and restore their orig
 });
 
 test('Tripo sword and staffs retain real melee, ranged damage, burn and slow behavior', () => {
-  for (const [variant, kind] of variants) {
+  for (const [variant, kind] of variants.filter(([,kind])=>!['blinkStaff','reflectionStaff'].includes(kind))) {
     const combat = createCombat();
     const target = combat.addTarget({ id: 'target', position: { x: 0, y: 0, z: kind === 'sword' ? 1.6 : 4 }, radius: .65, maxHealth: 500 });
     const { weapons, actor } = setup([placement(kind, variant, { rarity: 'legendary' })], { combat });

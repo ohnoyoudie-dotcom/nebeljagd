@@ -39,6 +39,8 @@ export function rarityVisual(rarity = 'common') {
 }
 
 export const WEAPON_DEFINITIONS = Object.freeze({
+  blinkStaff: Object.freeze({type:'blinkStaff',label:'Teleportationsstab',damage:0,cooldown:4,range:8,effect:'blink'}),
+  reflectionStaff: Object.freeze({type:'reflectionStaff',label:'Schutzstab',damage:0,cooldown:8,range:1.4,effect:'reflection'}),
   bow: Object.freeze({ type: 'bow', label: 'Holzbogen', damage: 22, cooldown: .62, range: 25, effect: null }),
   sword: Object.freeze({ type: 'sword', label: 'Eisenschwert', damage: 27, cooldown: .58, range: 2.35, effect: null }),
   fireStaff: Object.freeze({ type: 'fireStaff', label: 'Feuerstab', damage: 16, cooldown: .8, range: 23, effect: 'burn' }),

@@ -1,7 +1,9 @@
+import { createReflectionGuards } from './reflection-guard.js';
 import { applySolarStatus, updateSolarStatus, resetSolarStatus } from './solar-status.js';
 /** Renderer-independent combat. Health/status belong to entities, not visuals. */
 export function createCombat({ onHit, onDefeat } = {}) {
   const targets = new Map();
+  const guards = createReflectionGuards(targets);
   const finite = (value, fallback) => Number.isFinite(value) ? value : fallback;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -50,6 +52,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
   function hit(targetOrId, payload = {}) {
     const target = typeof targetOrId === 'string' ? targets.get(targetOrId) : targetOrId;
     if (!target || !target.alive || target.id === payload.sourceId) return null;
+    if (payload.delivery === 'projectile' && guards.block(target, payload, payload.point, payload.normal)) return { targetId: target.id, damage: 0, health: target.health, killed: false, blocked: true, sourceId: payload.sourceId, type: payload.type };
     const before = target.health;
     target.health = Math.max(0, target.health - Math.max(0, finite(payload.damage, 0)));
     target.hitFlash = .16;
@@ -76,6 +79,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
     const result = { targetId: target.id, damage: before - target.health, health: target.health,
       killed: !target.alive, sourceId: payload.sourceId, type: payload.type ?? 'direct' };
     if (result.killed) {
+      guards.clear(target.id);
       resetSolarStatus(target);
       target.timeSlows.clear();
       target.stunRemaining = 0;
@@ -100,6 +104,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
 
   function update(dt) {
     const delta = Math.max(0, finite(dt, 0));
+    guards.update(delta);
     for (const target of targets.values()) {
       updateSolarStatus(target, delta);
       for (const [source, slow] of target.timeSlows) {
@@ -127,6 +132,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
   }
 
   function reset() {
+    guards.reset();
     for (const target of targets.values()) {
       target.timeSlows.clear();
       target.health = target.initialHealth;
@@ -196,5 +202,5 @@ export function createCombat({ onHit, onDefeat } = {}) {
     return hits;
   }
 
-  return { targets, addTarget, removeTarget: id => targets.delete(id), hit, applyBurn, setTimeSlow, update, reset, traceSegment, melee };
+  return { activateShield: guards.activate, shieldState: guards.state, clearShield: guards.clear, traceShield: guards.trace, blockProjectile: guards.block, targets, addTarget, removeTarget: id => targets.delete(id), hit, applyBurn, setTimeSlow, update, reset, traceSegment, melee };
 }

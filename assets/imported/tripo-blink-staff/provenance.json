@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Teleportationstab.glb",
+  "sourceSha256": "100d9951648e6a3fb11f9180bdfa0aed52170bc8ac6b5bc6476d3f77a0541e52",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

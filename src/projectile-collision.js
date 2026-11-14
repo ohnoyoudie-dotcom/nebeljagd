@@ -21,7 +21,9 @@ export function colliderTarget(combat, collider, excludeId) {
 
 export function traceCombatProjectile(world, combat, start, end, radius, excludeId) {
   const terrain = traceRangedProjectile(world, start, end, radius);
-  const entity = combat?.traceSegment(start, end, radius, excludeId);
+  const body = combat?.traceSegment(start, end, radius, excludeId);
+  const shield = combat?.traceShield?.(start, end, radius, excludeId);
+  const entity = shield && (!body || shield.t <= body.t) ? shield : body;
   if (!terrain) return entity;
   const target = colliderTarget(combat, terrain.collider, excludeId);
   const contact = target ? { ...terrain, target } : terrain;

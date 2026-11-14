@@ -192,6 +192,7 @@ const pickups = createPickups(world.root, { placements: world.map.objects, heigh
 const weapons = createWeapons(world.root, character.group, world, character,
   { placements: world.map.objects, heightAt: world.heightAt, combat, ownerId: 'player', isVisible, revealSceneryThroughFog: false,
     rollRarity: rollLootRarity,
+    onTeleport: (_from,to) => { character.group.position.copy(to);state.moving=false;state.actualSpeed=0;state.rollRemaining=0;character.resetMotion?.(state.direction); },
     tripoPrototypes: await loadTripoWeapons(world.map.objects), fireProjectilePrototype: await loadFireballModel(),
     projectilePrototypes: await loadProjectileModels(), gravityTextures: await loadGravityTextures(), stormTexture: await loadStormTexture() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
@@ -569,6 +570,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
     camera.updateMatrixWorld();
   };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
+  window.nebeljagdInspectGuardHit = (delivery='projectile') => combat.hit(localCombatTarget,{sourceId:'inspect-enemy',type:'fireStaff',damage:12,delivery,normal:{x:0,y:0,z:1}});
   window.nebeljagdInspectSolarHit = () => combat.hit(localCombatTarget, { sourceId: 'inspect-enemy', type: 'sunStaff', damage: 3, blind: { duration: 2, radius: 3 }, reveal: 2.5 });
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,

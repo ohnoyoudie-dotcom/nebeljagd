@@ -59,7 +59,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
   const moonImpacts = createImpactSparks(scene, canSee);
   const poisonVisuals = createPoisonVisuals(scene, SPECIAL_RULES.cloudRadius, canSee);
   const ground = p => world?.heightAt?.(p.x, p.z) ?? 0;
-  const hit = (target, payload) => { const result = combat?.hit(target, payload); if (result) onDamage(result); };
+  const hit = (target, payload) => { const result = combat?.hit(target, payload); if (result && !result.blocked) onDamage(result); };
   function aimAt(position, point) {
     if (!aim || !point || !Number.isFinite(point.x) || !Number.isFinite(point.z)) return;
     aim.requested.set(point.x, 0, point.z);
@@ -111,7 +111,7 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
     for (let i = 0; i < (combat?.targets?.size ?? 0); i++) {
       const collision = combat.traceSegment(start, end, .3, ownerId, ignored);
       if (!collision) break;
-      ignored.add(collision.target.id); hits.add(collision.target.id); hit(collision.target, payload);
+      ignored.add(collision.target.id); hits.add(collision.target.id); hit(collision.target, {...payload,delivery:'projectile'});
     }
     const target = colliderTarget(combat, solidHit?.collider, ownerId);
     if (target && !hits.has(target.id)) { hits.add(target.id); hit(target, payload); }
@@ -142,7 +142,9 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
       if (moon.mode === 'outbound') {
         const step = Math.min(SPECIAL_RULES.moonSpeed * dt, SPECIAL_RULES.moonRange - moon.distance);
         end.x += Math.sin(moon.direction) * step; end.z += Math.cos(moon.direction) * step;
-        const wall = traceRangedProjectile(world, start, end, .15);
+        let wall = traceRangedProjectile(world, start, end, .15);
+        const shield=combat?.traceShield?.(start,end,.15,ownerId);
+        if(shield&&(!wall||shield.t<(wall.t??0))) {wall=shield;combat.blockProjectile(shield.target,moon.payload,shield.point,shield.normal);moon.outboundHits.add(shield.target.id);moon.returnHits.add(shield.target.id);}
         if (wall) { end.copy(wall.point); moonImpacts.emit(wall.point, wall.normal, moon.direction); }
         pierce(start, end, moon.outboundHits, moon.payload, wall);
         moon.distance += start.distanceTo(end);
@@ -151,7 +153,10 @@ export function createSpecialWeapons(scene, world, combat, ownerId, onDamage, is
         const hand = new THREE.Vector3(position.x, position.y + 1.4, position.z);
         const step = Math.min(SPECIAL_RULES.returnSpeed * dt, start.distanceTo(hand));
         end.addScaledVector(hand.clone().sub(start).normalize(), step);
-        pierce(start, end, moon.returnHits, moon.payload, traceRangedProjectile(world, start, end, .15));
+        const shield=combat?.traceShield?.(start,end,.15,ownerId);
+        const wall=traceRangedProjectile(world,start,end,.15);
+        if(shield&&(!wall||shield.t<(wall.t??0))){combat.blockProjectile(shield.target,moon.payload,shield.point,shield.normal);end.copy(shield.point);moon.returnHits.add(shield.target.id);moon.age=16;moonImpacts.emit(shield.point,shield.normal,moon.direction);}
+        pierce(start,end,moon.returnHits,moon.payload,wall);
         if (end.distanceTo(hand) < .25) { moon = null; moonMesh.visible = false; }
       }
       moonMesh.position.copy(end); moonMesh.rotation[moonProjectilePrototype ? 'y' : 'z'] += dt * 12;

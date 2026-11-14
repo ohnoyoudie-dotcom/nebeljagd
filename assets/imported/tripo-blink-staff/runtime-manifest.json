@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Teleportationstab.glb",
+    "bytes": 68256812,
+    "sha256": "100d9951648e6a3fb11f9180bdfa0aed52170bc8ac6b5bc6476d3f77a0541e52",
+    "triangles": 1959752,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/blink-staff.json",
+      "bytes": 3108,
+      "sha256": "1b92c59e909f33f9e104d50b00551031c10cd5c93c6e72f3cf4bf4117d368435"
+    },
+    {
+      "path": "previews/blink-staff-runtime.png",
+      "bytes": 291099,
+      "sha256": "37e5bea537e794183b9a971249ade1bf77922854f5a2d20538bbc5017dc15d9f"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 362,
+      "sha256": "fb23142a712d36f2cc761a13223899a758de7d605178e1142a224cae339c7e1b"
+    },
+    {
+      "path": "runtime/blink-staff.glb",
+      "bytes": 213764,
+      "sha256": "cf8c1e518753db6b1d49c362f8f66b7d018a5a4b3708e415a4d7e133b441703d"
+    }
+  ]
+}

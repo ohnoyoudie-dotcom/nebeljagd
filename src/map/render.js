@@ -18,6 +18,8 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Add these definitions only when their models are actually placed, keeping
 // previously authored SVGs byte-identical when their map has no new weapons.
 const extraWeaponSymbols = {
+  blinkStaff: '<g id="world-object-blinkStaff"><path d="M0 1.8V-.6" stroke="#956431" stroke-width=".35"/><ellipse cx="0" cy="-1.2" rx=".7" ry=".8" fill="none" stroke="#b78de9" stroke-width=".25"/></g>',
+  reflectionStaff: '<g id="world-object-reflectionStaff"><path d="M0 1.8V-.6" stroke="#956431" stroke-width=".35"/><path d="M-.8-1.8H.8V-.9L0-.3-.8-.9Z" fill="#55bfee" stroke="#d8b55c" stroke-width=".2"/></g>',
   sunStaff: '<g id="world-object-sunStaff"><path d="M-.6 1.5 .4-.8" stroke="#d6a955" stroke-width=".4"/><circle cx=".4" cy="-1.3" r=".7" fill="#fff1b4" stroke="#cd9137" stroke-width=".25"/></g>',
   soulStaff: '<g id="world-object-soulStaff"><path d="M-.6 1.5 .4-.8" stroke="#594361" stroke-width=".4"/><path d="M-.5-1.7 .4-2 1.2-1.6 1-.6 .6-.4 .1-.4-.3-.8Z" fill="#ece2ed" stroke="#5c4169" stroke-width=".2"/></g>',
   meteorStaff: '<g id="world-object-meteorStaff"><path d="M-.6 1.5 .5-.85" stroke="#72503c" stroke-width=".4"/><path d="M-.3-1.7 .4-2.1 1.2-1.7 1.4-.9 .7-.4-.2-.8Z" fill="#403430" stroke="#ffad47" stroke-width=".18"/><path d="M.4-2.1 .2-1.3 .9-1.1 .7-.4M.2-1.3-.2-.8" fill="none" stroke="#ff741f" stroke-width=".17"/></g>',

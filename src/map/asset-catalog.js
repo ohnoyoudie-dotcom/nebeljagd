@@ -126,6 +126,8 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein texturierter Sternstab. Verschießt einen geraden Sternenblitz mit funkelnder Lichtspur.', 'tripo-star-moon'),
   tripo('lightningStaff', 'kit-tripo-lightning-staff', 'Blitzstab · Tripo', 'lightning-staff', 'fantasy thunder staff 3d model',
     'Schnelles Blitzprojektil mit verzweigten Lichtbögen und elektrischem Einschlag. Direkter Einzeltreffer; Seltenheit zufällig je Runde.', 'tripo-lightning-staff'),
+  tripo('blinkStaff','kit-tripo-blink-staff','Teleportationsstab · Tripo','blink-staff','Teleportationstab','Halten erweitert die Reichweite bis 8 Meter; loslassen teleportiert zum kleinen Landekreis. Hindernisse blockieren den Sprung.','tripo-blink-staff'),
+  tripo('reflectionStaff','kit-tripo-reflection-staff','Schutzstab · Tripo','reflection-staff','Schutzstab','Kurzzeitige Schutzkuppel: direkte feindliche Geschosse prallen ab. Nahkampf und Flächenzauber bleiben wirksam.','tripo-reflection-staff'),
   tripo('sunStaff', 'kit-tripo-sun-staff', 'Sonnenstab · Tripo', 'sun-staff', 'Sonnenstab',
     'Lichtstrahl von oben: halten, Fläche wählen, loslassen. Verursacht regelmäßigen Schaden, deckt auf und blendet kurz.', 'tripo-sun-staff'),
   tripo('soulStaff', 'kit-tripo-soul-staff', 'Seelenrichterstab · Tripo', 'soul-staff', 'Seelenrichterstab',
