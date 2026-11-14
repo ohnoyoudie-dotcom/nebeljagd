@@ -10,7 +10,7 @@ eigenem Vorschaubild in der Objektauswahl des Editors und unterstützen dessen
 
 Angreifen löst eine gerichtete Felswelle aus. Nach 0,38 Sekunden Vorwarnung
 brechen versetzt spitze Steine aus dem Boden; Risse, Staub und kleine
-Steinsplitter begleiten die Bewegung. Reichweite: 11 m, Grundschaden: 18,
+Steinsplitter begleiten die Bewegung. Reichweite: 22 m; die Welle verbreitert sich von 1,35 auf 2,8 m, Grundschaden: 18,
 Abklingzeit: 1,8 Sekunden. Jeder Gegner wird pro Welle höchstens einmal getroffen.
 Wasser, abrupte Geländestufen und feste Hindernisse stoppen die Welle. Deckung
 zwischen Welle und Gegner schützt ebenfalls; zerstörbare Hindernisse nehmen
@@ -18,14 +18,14 @@ Schaden. Der Schaden skaliert mit der bestehenden Seltenheitslogik.
 
 ## Runenmauerstab
 
-Angriff halten erweitert die Reichweite in 1,5 Sekunden auf 10 m. Ein rechteckiger
-Grundriss zeigt die 3,5 m breite Mauer quer zur Zielrichtung; ungültige Stellen
-werden rot angezeigt. Loslassen stellt sie nach einer kurzen Vorwarnung auf.
+Angriff halten erweitert die Reichweite in 0,8 Sekunden auf 10 m. Ein rechteckiger
+Grundriss zeigt die 7 m breite Mauer quer zur Zielrichtung; ungültige Stellen
+werden rot angezeigt. Loslassen stellt sie nach 0,08 Sekunden Vorwarnung auf; der Aufbau dauert etwa 0,18 Sekunden.
 Die 2,3 m hohe Mauer bleibt nach dem Aufrichten 3 Sekunden stehen, besitzt 50
 Lebenspunkte und hat 6 Sekunden Abklingzeit. Sie blockiert Bewegung und direkte
 Geschosse aus beiden Richtungen. Ihr Besitzer kann durch sie sehen.
 
-Gemeißelte Steinblöcke steigen versetzt auf, blaue Runen leuchten auf beiden
+Blaue, gemeißelte Steinblöcke steigen versetzt auf, blaue Runen leuchten auf beiden
 Seiten. Beim Ablauf oder Zerstören sinken und zerfallen die Blöcke mit begrenztem
 Staub und Geröll. Kollision und Kampfziel verschwinden sofort beim Zerstören.
 Wasser, Hindernisse, zu starke Neigung und überlappende Figuren verhindern die
@@ -35,7 +35,7 @@ Abklingzeit. Pause, Neustart und Tod räumen den Effekt korrekt auf.
 
 ## Prüfung
 
-- `npm test`: 749 erfolgreiche Tests, darunter sechs neue Tests für beide
+- `npm test`: 750 erfolgreiche Tests, darunter sieben neue Tests für beide
   Zauber, Schadenszählung, Platzierungsgrenzen, Sicht, gedrehte Kollision,
   Waffenwechsel und Aufräumen.
 - `npm run verify:assets`: Quellen, Hashes, Laufzeitmodelle und Vorschauen.

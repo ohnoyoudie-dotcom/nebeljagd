@@ -3,7 +3,7 @@ import { temporaryObstacles } from './temporary-obstacles.js';
 import { createRuneWallVisuals } from './stone-spell-visuals.js';
 import { createStaffAimRing } from './staff-aim.js';
 
-export const RUNE_WALL_RULES=Object.freeze({range:10,chargeSeconds:1.5,width:3.5,depth:.65,height:2.3,warning:.35,rise:.25,duration:3,fade:.65,cooldown:6,health:50});
+export const RUNE_WALL_RULES=Object.freeze({range:10,chargeSeconds:.8,width:7,depth:.65,height:2.3,warning:.08,rise:.14,duration:3,fade:.65,cooldown:6,health:50});
 let nextWallId=0;
 export function createRuneWallSpell(scene,world,combat,ownerId,isVisible=null){
   const r=RUNE_WALL_RULES,barriers=temporaryObstacles(world),ground=p=>world?.heightAt?.(p.x,p.z)??0;
@@ -60,7 +60,7 @@ export function createRuneWallSpell(scene,world,combat,ownerId,isVisible=null){
     release(position){if(!aim)return false;refresh(position);if(!aim.valid){cancelAim();return false;}
       field={id:'rune-wall-'+ownerId+'-'+(++nextWallId),origin:position.clone(),center:aim.center.clone(),angle:aim.angle,age:0,collapseAge:null,target:null};casts++;cancelAim();visuals.show(field.center,field.angle,0,null,1);return true;},
     update,reset,get aiming(){return!!aim;},get busy(){return!!field;},
-    get telemetry(){return{aiming:!!aim,valid:aim?.valid??false,aim:aim?{...aim.center}:null,aimRange:aim?{radius:aim.range,maximum:r.range}:null,casts,active:!!field,solid:!!field?.target?.alive,health:field?.target?.health??0,center:field?{...field.center}:null,age:field?.age??0,collapseAge:field?.collapseAge??null,barriers:barriers.size,visuals:visuals.telemetry};},
+    get telemetry(){return{width:r.width,warning:r.warning,rise:r.rise,aiming:!!aim,valid:aim?.valid??false,aim:aim?{...aim.center}:null,aimRange:aim?{radius:aim.range,maximum:r.range}:null,casts,active:!!field,solid:!!field?.target?.alive,health:field?.target?.health??0,center:field?{...field.center}:null,age:field?.age??0,collapseAge:field?.collapseAge??null,barriers:barriers.size,visuals:visuals.telemetry};},
     dispose(){reset();visuals.dispose();reach.removeFromParent();reach.geometry.dispose();reach.material.dispose();},
   };
 }
