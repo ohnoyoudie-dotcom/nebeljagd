@@ -28,7 +28,7 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
       varying vec3 vLocal;uniform vec3 uEye,uDirection;uniform float uTime,uFade,uSeed,uOrtho,uImpact;
       ${noiseGLSL}
       float density(vec3 p) {
-        float t=uTime*.70;
+        float t=uTime*(uImpact>.5?.70:1.45);
         vec3 q=p*vec3(2.7,2.8,2.3)+vec3(uSeed,-t*.55,uSeed*.7+t*.36);
         q.xz+=vec2(sin(q.y*1.8+q.z+t),cos(q.x*1.5-q.y-t))*.44;
         float broad=noise3(q),detail=noise3(q*2.03+13.2),wisps=noise3(q*4.11+27.4);
@@ -45,17 +45,20 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
           return envelope*smoothstep(.23+loose*.05,.68,field+.20*(1.-radial));
         }
         // A shadow head leads, while separate eddies peel away into a tapering wake.
-        vec3 head=body-vec3(0.,0.,.22);
-        float nose=length(head*vec3(1.36,1.58,1.10));
+        float breath=sin(uTime*7.2+uSeed)*.075+sin(uTime*11.3+uSeed*.7)*.025;
+        vec3 head=body-vec3(sin(uTime*5.1+p.z*4.)*.045,cos(uTime*4.3+p.x*5.)*.045,.22);
+        float nose=length(head*vec3(1.36-breath,1.58+breath*.65,1.10-breath*.4));
         float headDensity=(1.-smoothstep(.36+field*.18,.88,nose))*smoothstep(.19,.57,field);
         float trail=clamp((-p.z+.12)/3.15,0.,1.);
-        vec2 flow=vec2(sin(p.z*2.5+t*3.1),cos(p.z*3.2+t*2.6))*(.035+trail*.13);
-        float width=.54*pow(1.-trail,.74)+.025;
+        vec2 flow=vec2(sin(p.z*2.8+t*2.7),cos(p.z*3.1+t*2.3))*(.035+trail*.20);
+        float width=(.54+sin(p.z*5.+uTime*5.)*.055)*pow(1.-trail,.74)+.025;
         float wakeRadius=length((p.xy-flow)/vec2(width,width*.66));
-        vec2 fork=flow+vec2(sin(p.z*3.4+t*3.8)*.24,.13)*sin(trail*3.14159);
+        vec2 fork=flow+vec2(sin(p.z*3.4+t*3.2)*.33,cos(p.z*3.+t*2.8)*.22)*sin(trail*3.14159);
         float forkRadius=length((p.xy-fork)/vec2(width*.60,width*.48));
-        float wake=max(1.-smoothstep(.12+field*.35,1.3,wakeRadius),
-          (1.-smoothstep(.16,1.15,forkRadius))*.60)*(1.-smoothstep(-.30,.28,p.z));
+        vec2 torn=flow-vec2(cos(p.z*4.+t*2.6)*.29,sin(p.z*3.8+t*3.4)*.19)*sin(trail*3.14159);
+        float tornRadius=length((p.xy-torn)/vec2(width*.46,width*.43));
+        float fringes=max((1.-smoothstep(.16,1.15,forkRadius))*.70,(1.-smoothstep(.10,1.10,tornRadius))*.48);
+        float wake=max(1.-smoothstep(.12+field*.35,1.3,wakeRadius),fringes)*(1.-smoothstep(-.30,.28,p.z));
         wake*=pow(1.-trail,.65)*smoothstep(.16,.60,field+.07*sin(p.z*7.-t*6.));
         float bounds=(1.-smoothstep(2.70,3.12,-p.z))*(1.-smoothstep(.94,1.12,p.z));
         return max(headDensity,wake*.78)*bounds;
@@ -78,13 +81,15 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
           float light=clamp(.46+p.y*.22-p.x*.13-d*.34,0.,1.);
           vec3 smoke=mix(vec3(.005,.008,.014),vec3(.105,.125,.140),light);
           if(uImpact<.5){
-            vec2 drift=vec2(sin(p.z*4.+uTime*3.2),cos(p.z*3.-uTime*2.6))*.045;
-            float heart=exp(-dot((p.xy-drift)*vec2(2.6,3.4),(p.xy-drift)*vec2(2.6,3.4)));
+            vec2 drift=vec2(sin(p.z*4.+uTime*5.2),cos(p.z*3.-uTime*4.6))*.075;
+            float heart=exp(-dot((p.xy-drift)*vec2(2.15,2.7),(p.xy-drift)*vec2(2.15,2.7)));
             heart*=smoothstep(-.95,-.15,p.z)*(1.-smoothstep(.43,.82,p.z));
-            float thread=noise3(p*vec3(8.,6.,2.)+vec3(uSeed,uTime*.7,-uTime*3.));
-            float vein=pow(.5+.5*sin(p.x*12.+p.y*4.+sin(p.z*7.-uTime*4.8)*1.5),4.);
-            float soul=heart*(.18+vein*.82)*(.55+thread*.45);
-            smoke=mix(smoke,vec3(.36,.25,.47),soul*.86);
+            float thread=noise3(p*vec3(8.,6.,2.)+vec3(uSeed,uTime*1.4,-uTime*5.));
+            float vein=pow(.5+.5*sin(p.x*11.+p.y*5.+sin(p.z*7.-uTime*6.2)*1.8),5.);
+            float pulse=.74+.26*sin(uTime*7.2+uSeed);
+            float soul=heart*(.08+vein*.92)*(.66+thread*.34)*pulse;
+            vec3 spirit=mix(vec3(.34,.19,.45),vec3(.38,.43,.52),vein*thread*.62);
+            smoke=mix(smoke*.73,spirit,soul*.94);
           }
           color+=(1.-opacity)*alpha*smoke;opacity+=(1.-opacity)*alpha;
         }
@@ -106,10 +111,10 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
     material.uniforms.uFade.value = THREE.MathUtils.clamp(opacity, 0, 1);
     if (impact) mesh.scale.set(1, 1, 1);
     else {
-      const t=time*.8+seed;
-      mesh.scale.set(.94+Math.sin(t*2.1)*.035,.86+Math.cos(t*1.7)*.04,1.+Math.sin(t*1.3)*.025);
-      mesh.position.set(Math.sin(t*.9)*.025,Math.sin(t*1.2)*.025,-.04);
-      mesh.rotation.set(Math.sin(t*.7)*.035,Math.sin(t*.5)*.025,Math.sin(t*.8)*.05);
+      const t=time*1.3+seed, breath=Math.sin(time*7.2+seed);
+      mesh.scale.set(.94+breath*.075,.86-breath*.055,1.+Math.sin(t*2.7)*.045);
+      mesh.position.set(Math.sin(t*2.3)*.045,Math.sin(t*2.8)*.05,-.04);
+      mesh.rotation.set(Math.sin(t*1.7)*.065,Math.sin(t*1.5)*.035,Math.sin(t*2.1)*.16);
     }
   }
   update(0);

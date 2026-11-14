@@ -19,9 +19,12 @@ test('the solar footprint grows with brightness, drops motes at peak and slowly 
   sun.show(point,1);root.updateMatrixWorld(true);assert.equal(new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).y,height);
   assert.ok(new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).x>size.x*5,'the visible column itself widens');
   assert.equal(sun.telemetry.particleDirection,'down');assert.ok(sun.telemetry.fallingParticles>0);
+  assert.equal(sun.telemetry.beamLayers,1,'the light uses one continuous radial profile');
+  assert.ok(sun.telemetry.particleSpeedMin>30 && sun.telemetry.particleSpeedMax<50,'rain crosses the column quickly');
   const particles=root.getObjectByName('Fallende Sonnenfunken'),m=new THREE.Matrix4();
   sun.show(point,1);particles.getMatrixAt(0,m);const y=m.elements[13];
-  sun.show(point,1.1);particles.getMatrixAt(0,m);assert.ok(m.elements[13]<y);
+  sun.show(point,1.04);particles.getMatrixAt(0,m);assert.ok(y-m.elements[13]>1.5,'the rain falls over 1.5m in 40ms');
+  assert.ok(m.elements[5]>m.elements[0]*10,'fast droplets have long slender downward trails');
   sun.show(point,SUN_RULES.warning+SUN_RULES.duration+SUN_RULES.fade*.5);
   assert.equal(sun.telemetry.phase,'fade');assert.equal(sun.telemetry.damageEligible,false);
   assert.ok(Math.abs(sun.telemetry.brightness-.5)<1e-8);assert.equal(sun.telemetry.effectiveRadius,SUN_RULES.radius);
@@ -31,53 +34,42 @@ test('the solar footprint grows with brightness, drops motes at peak and slowly 
   sun.dispose();assert.equal(scene.children.length,0);
 });
 
-test('three skull fragments call the reaper; only a confirmed execution produces an aftermath, which freezes on pause', () => {
-  const scene = new THREE.Scene(), target = { id: 'v', alive: true, position: new THREE.Vector3(), height: 2.3 };
-  const visuals = createSoulMarkVisuals(scene, { targets: new Map([['v', target]]) });
-  const mark = { targetId: 'v', count: 1, remaining: 8 };
-  visuals.update([mark]); assert.equal(visuals.telemetry[0].phase, 'marks');
-  const root = scene.children[0];
-  assert.equal(root.children.slice(0, 3).filter(p => p.visible).length, 1);
-  mark.count = 2; visuals.update([mark]); assert.equal(root.children.slice(0, 3).filter(p => p.visible).length, 2);
-  mark.count = 3; mark.remaining = 1; visuals.update([mark]); assert.equal(visuals.telemetry[0].phase, 'raised');
-  mark.remaining = .12; visuals.update([mark]); assert.equal(visuals.telemetry[0].phase, 'strike');
-  target.alive = false;
-  visuals.executed({ targetId: 'v', killed: true, type: 'soul-judgment' }); visuals.update([], .1);
-  assert.equal(visuals.telemetry[0].phase, 'executed'); assert.equal(visuals.count, 0);
-  const cloak = root.getObjectByName('Sensenmann').children.find(p=>p.isMesh);
-  const opacity = cloak.material.opacity;
-  visuals.update([], 0); assert.equal(cloak.material.opacity, opacity);
-  visuals.update([], .5); assert.equal(scene.children.length, 0);
-  target.alive = true; visuals.update([mark]); target.alive = false;
-  visuals.executed({ targetId: 'v', killed: true, type: 'direct' }); visuals.update([], .01);
-  assert.equal(scene.children.length, 0);
+test('three skull fragments charge a living jaw; only confirmed execution produces a pause-safe aftermath', () => {
+  const scene=new THREE.Scene(),target={id:'v',alive:true,position:new THREE.Vector3(),height:2.3};
+  const visuals=createSoulMarkVisuals(scene,{targets:new Map([['v',target]])});
+  const mark={targetId:'v',count:1,remaining:8};visuals.update([mark]);
+  const root=scene.children[0];assert.equal(root.children.filter(p=>p.visible).length,1);
+  mark.count=2;visuals.update([mark]);assert.equal(root.children.filter(p=>p.visible).length,2);
+  mark.count=3;mark.remaining=1;visuals.update([mark]);assert.equal(visuals.telemetry[0].phase,'charging');
+  assert.equal(root.getObjectByName('Sensenmann'),undefined);assert.equal(root.getObjectByName('Sense'),undefined);
+  mark.remaining=.12;visuals.update([mark]);assert.equal(visuals.telemetry[0].phase,'clamp');
+  target.alive=false;visuals.executed({targetId:'v',killed:true,type:'soul-judgment'});visuals.update([],.1);
+  assert.equal(visuals.telemetry[0].phase,'executed');assert.equal(visuals.count,0);
+  const frozen=visuals.telemetry;visuals.update([],0);assert.deepEqual(visuals.telemetry,frozen);
+  visuals.update([],1);assert.equal(scene.children.length,0);
+  target.alive=true;visuals.update([mark]);target.alive=false;
+  visuals.executed({targetId:'v',killed:true,type:'direct'});visuals.update([],.01);assert.equal(scene.children.length,0);
   visuals.dispose();
 });
 
-test('apparitions respect concealment, revelation and visibility and reset without lingering sprites', () => {
-  const scene = new THREE.Scene(), target = { id: 'v', alive: true, concealed: true, position: new THREE.Vector3() };
-  let inSight = true;
-  const visuals = createSoulMarkVisuals(scene, { targets: new Map([['v', target]]) }, () => inSight);
-  const marks = [{ targetId: 'v', count: 3, remaining: 1 }];
-  visuals.update(marks); assert.equal(visuals.telemetry[0].visible, false);
-  target.revealRemaining = 2; visuals.update(marks); assert.equal(visuals.telemetry[0].visible, true);
-  inSight = false; visuals.update(marks); assert.equal(visuals.telemetry[0].visible, false);
-  visuals.reset(); assert.equal(scene.children.length, 0); visuals.dispose();
+test('skull and execution respect concealment, revelation and visibility and reset without lingering effects', () => {
+  const scene=new THREE.Scene(),target={id:'v',alive:true,concealed:true,position:new THREE.Vector3()};let inSight=true;
+  const visuals=createSoulMarkVisuals(scene,{targets:new Map([['v',target]])},()=>inSight);
+  const marks=[{targetId:'v',count:3,remaining:1}];visuals.update(marks);assert.equal(visuals.telemetry[0].visible,false);
+  target.revealRemaining=2;visuals.update(marks);assert.equal(visuals.telemetry[0].visible,true);
+  inSight=false;visuals.update(marks);assert.equal(visuals.telemetry[0].visible,false);
+  visuals.reset();assert.equal(scene.children.length,0);visuals.dispose();
 });
 
-test('sculpted skull and compact reaper share bounded geometry and release it only on disposal', () => {
-  const scene = new THREE.Scene(), target = {id:'v',alive:true,position:new THREE.Vector3(),height:2.3};
-  const visuals = createSoulMarkVisuals(scene,{targets:new Map([['v',target]])});
-  visuals.update([{targetId:'v',count:3,remaining:1}]);
-  const root=scene.children[0], reaper=root.getObjectByName('Sensenmann');
-  assert.ok(reaper.isGroup && !reaper.isSprite);
-  root.updateMatrixWorld(true);
-  const size=new THREE.Box3().setFromObject(reaper).getSize(new THREE.Vector3());
-  assert.ok(size.y>1.5 && size.y<2.5, 'the reaper is smaller than the former 3.8-metre sprite');
-  const geometries=new Set();root.traverse(p=>{if(p.geometry)geometries.add(p.geometry);});
+test('detailed skull geometry stays shared and is released only on disposal', () => {
+  const scene=new THREE.Scene(),target={id:'v',alive:true,position:new THREE.Vector3(),height:2.3};
+  const visuals=createSoulMarkVisuals(scene,{targets:new Map([['v',target]])});visuals.update([{targetId:'v',count:3,remaining:1}]);
+  const root=scene.children[0];assert.ok(root.getObjectByName('Beweglicher Unterkiefer').isGroup);
+  root.updateMatrixWorld(true);const size=new THREE.Box3().setFromObject(root).getSize(new THREE.Vector3());
+  assert.ok(size.x>1 && size.x<1.5 && size.y<2,'the detailed skull stays compact at gameplay scale');
+  const geometries=new Set();scene.traverse(p=>{if(p.geometry)geometries.add(p.geometry);});
   let disposed=0;geometries.forEach(g=>g.addEventListener('dispose',()=>disposed++));
-  visuals.reset();assert.equal(disposed,0);
-  visuals.update([{targetId:'v',count:1,remaining:8}]);
-  scene.children[0].traverse(p=>{if(p.geometry)assert.ok(geometries.has(p.geometry));});
+  visuals.reset();assert.equal(disposed,0);visuals.update([{targetId:'v',count:1,remaining:8}]);
+  scene.traverse(p=>{if(p.geometry)assert.ok(geometries.has(p.geometry));});
   visuals.dispose();assert.equal(disposed,geometries.size);
 });

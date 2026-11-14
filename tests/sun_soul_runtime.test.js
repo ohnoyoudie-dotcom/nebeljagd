@@ -44,7 +44,7 @@ test('integrated soul projectile marks three real hits, pauses its countdown, ex
     const rune=s.scene.getObjectByName('Seelenrichter · Dreiteiliger Totenkopf');
     assert.ok(rune.visible && rune.position.y>=3.5,'rune clears the health bar and practice label');
     assert.equal(rune.children.slice(0,3).filter(piece=>piece.visible).length,hit,'every confirmed hit is visible immediately');
-    if(hit===3)assert.ok(rune.getObjectByName('Sensenmann').isGroup, 'the apparition is sculpted geometry');
+    if(hit===3){assert.ok(rune.getObjectByName('Beweglicher Unterkiefer').isGroup);assert.equal(rune.getObjectByName('Sensenmann'),undefined);assert.ok(s.weapons.telemetry.soul.apparitions[0].redHeat>0);}
   }
   const before = s.weapons.telemetry.soul; s.weapons.update(0, 100); assert.deepEqual(s.weapons.telemetry.soul, before);
   s.tick(1.5); assert.equal(s.target.health, 0); assert.equal(s.defeats.length, 1); assert.equal(s.defeats[0].sourceId, 'player');

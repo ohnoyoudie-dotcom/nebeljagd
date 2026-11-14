@@ -1,4 +1,4 @@
-"""Real generated editor/game: both imported staffs, input, damage, skull/reaper and blindness."""
+"""Real generated editor/game: both staffs, solar rain, living skull execution and blindness."""
 import base64, hashlib, json, os, subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -68,6 +68,8 @@ with sync_playwright() as pw:
     assert s['combat']['sun']['visuals']['density']>=.97 and s['combat']['sun']['visuals']['groundFill']==1
     assert s['combat']['sun']['visuals']['effectiveRadius']==sun_rules['radius']
     assert s['combat']['sun']['visuals']['particleDirection']=='down' and s['combat']['sun']['visuals']['fallingParticles']>0
+    assert s['combat']['sun']['visuals']['particleSpeed']>=30
+    assert s['combat']['sun']['visuals']['edgeProfile']=='continuous'
     ground_pixels=p.evaluate("""async center=>{
      const img=new Image();img.src=nebeljagdCaptureFrame();await img.decode();
      const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
@@ -91,7 +93,7 @@ with sync_playwright() as pw:
     hits=s['combat']['sun']['hits'];assert s['combat']['sun']['pulses']==len(sun_rules['pulses'])
     assert (6<=hits<=8 if touch else hits==8)
     assert abs(health-enemy['health']-damage*hits/len(sun_rules['pulses']))<1e-5
-    passed(mode+': growing footprint and brightness, falling peak particles, long smooth fade, eight damage pulses, reveal/blind status, pause and cleanup')
+    passed(mode+': continuous solar column, fast downward rain, growing footprint, smooth fade, eight pulses, reveal/blind status, pause and cleanup')
     p.evaluate('nebeljagdInspectSolarHit()');p.wait_for_function('nebeljagdTestState().vision.blindRadius===3');capture(p,mode+'-blinded')
     pos=state(p)['position'];assert not p.evaluate('p=>nebeljagdInspectVisibility({x:p.x+8,z:p.z})',pos)
     p.wait_for_function('nebeljagdTestState().vision.blindRadius===null');passed(mode+': affected avatar sight contracts to 3 metres and recovers')
@@ -111,10 +113,16 @@ with sync_playwright() as pw:
      pause_at(p,'s.combat.soul.apparitions.some(a=>a.markReveal>=1)');p.wait_for_function('nebeljagdTestState().phase==="paused"')
      assert state(p)['combat']['soul']['apparitions'][0]['height']>=4.4;capture(p,mode+'-skull-'+str(hit))
      if hit<3:p.locator('#resumeBtn').click()
-    for phase in ['raised','strike','executed']:
-     pause_at(p,'s.combat.soul.apparitions.some(a=>a.phase==="'+phase+'")');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-reaper-'+phase)
+    pause_at(p,'s.combat.soul.apparitions.some(a=>a.phase==="charging" && a.redHeat>.35 && a.jawOpen>.3)')
+    p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);capture(p,mode+'-execution-charging')
+    assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health
+    frozen=s['combat']['soul'];p.wait_for_timeout(100);assert state(p)['combat']['soul']==frozen
+    for phase in ['clamp','executed']:
+     pause_at(p,'s.combat.soul.apparitions.some(a=>a.phase==="'+phase+'")');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);capture(p,mode+'-execution-'+phase)
+     if phase=='clamp':assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health
+     else:assert s['combat']['soul']['apparitions'][0]['pulseActive']
     p.locator('#resumeBtn').click()
-    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: shadow projectile with smoke envelops victim before raised skull fragments; existing execution and level-up credit preserved')
+    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: animated shadow projectile, three-piece crimson skull with moving jaw, confirmed execution pulse and level-up credit')
    ctx.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original_hash;report.update(status='passed',mapSha256=original_hash)
  except BaseException as e:

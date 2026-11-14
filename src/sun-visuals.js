@@ -15,68 +15,83 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
     geometries.push(geometry); materials.push(material);
     const part = new THREE.Mesh(geometry, material); root.add(part); return part;
   }
-  const beamVertex = `varying vec2 vUv; varying vec3 vNormal,vView,vAxis; uniform float uTime,uLayer;
-    void main(){vUv=uv;vNormal=normalize(normalMatrix*normal);vAxis=normalize(normalMatrix*vec3(0.,1.,0.));
-      vec3 pos=position;float wave=sin(uv.x*31.416+uv.y*5.+uTime*.6)*.006+sin(uv.x*18.85-uv.y*4.+uTime*.3)*.004;
-      pos.xz*=1.+wave*(uLayer>.5?1.:.2);
-      vec4 p=modelViewMatrix*vec4(pos,1.);vView=-p.xyz;gl_Position=projectionMatrix*p;}`;
-  function beamMaterial(layer) {
+  const beamVertex = `varying vec3 vLocal;
+    void main(){vLocal=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
+  function beamMaterial() {
     return new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, side: THREE.FrontSide, toneMapped: false,
-      blending: layer === 2 ? THREE.AdditiveBlending : THREE.NormalBlending,
-      uniforms: {uTime:clock,uStrength:strength,uLayer:{value:layer}}, vertexShader:beamVertex,
-      fragmentShader:`varying vec2 vUv; varying vec3 vNormal,vView,vAxis; uniform float uTime,uStrength,uLayer;
+      blending: THREE.NormalBlending,
+      uniforms: {uTime:clock,uStrength:strength,uRadius:{value:rules.radius},uOrtho:{value:1},
+        uEye:{value:new THREE.Vector3()},uDirection:{value:new THREE.Vector3()}}, vertexShader:beamVertex,
+      fragmentShader:`varying vec3 vLocal;uniform float uTime,uStrength,uRadius,uOrtho;uniform vec3 uEye,uDirection;
         ${noise}
         void main(){
-          vec3 axis=normalize(vAxis),view=normalize(vView);
-          vec3 radial=view-axis*dot(view,axis);
-          float face=abs(dot(normalize(vNormal),radial/max(length(radial),.0001)));
-          float angle=vUv.x*6.283185;
-          float n=mist(vec2(sin(angle)*3.+cos(angle)*1.2+sin(vUv.y*3.+uTime*.3)*.06,cos(angle)*3.+vUv.y*7.+uTime*.80));
+          vec3 ray=uOrtho>.5?uDirection:normalize(vLocal-uEye);
+          float a=dot(ray.xz,ray.xz),b=dot(vLocal.xz,ray.xz);
+          float c=dot(vLocal.xz,vLocal.xz)-pow(uRadius*1.22,2.);
+          float farCircle=a>.00001?(-b+sqrt(max(0.,b*b-a*c)))/a:100000.;
+          float farY=abs(ray.y)>.00001?((ray.y<0.?-10.:10.)-vLocal.y)/ray.y:100000.;
+          float path=max(0.,min(farCircle,farY));
+          if(path<=.0001)discard;
+          vec3 middle=vLocal+ray*path*.5;
+          float height=(middle.y+10.)/20.;
+          float n=mist(vec2(middle.x*.8+middle.z*.31,height*7.+uTime*.80));
           float plume=smoothstep(.30,.70,n);
-          float stream=pow(.5+.5*sin(angle*9.+n*.85+sin(vUv.y*2.+uTime*.6)*.15),6.);
-          float foot=smoothstep(0.,.012,vUv.y), sky=1.-smoothstep(.72,1.,vUv.y);
-          float core=uLayer<.5?1.:0.;
-          float alpha=smoothstep(.06,core>0.?.65:.88,face)*foot*sky;
-          alpha*=pow(uStrength,core>0.?1.9:1.25)*(core>0.?.995:.60)*(core>0.?.97+plume*.03:.65+plume*.25+stream*.10);
+          float stream=pow(.5+.5*sin(middle.x*4.1+middle.z*3.7+n*.85+sin(height*2.+uTime*.6)*.15),6.);
+          // Integrate one continuous radial field, clipping each ray at the ground.
+          // A surface-only chord would leave a hard bright hem at the cylinder foot.
+          float stepLength=path/12.,density=0.,core=0.;
+          for(int i=0;i<12;i++){
+            vec3 p=vLocal+ray*(float(i)+.5)*stepLength;
+            float r=length(p.xz)/uRadius;
+            float d=exp(-2.8*pow(r,4.))*(1.-smoothstep(1.10,1.22,r));
+            d*=1.-smoothstep(.72,1.,(p.y+10.)/20.);
+            density+=d*stepLength;core+=d*stepLength*max(0.,1.-r*r);
+          }
+          float alpha=1.-exp(-density*2.4*pow(uStrength,2.8));
           vec3 gold=vec3(1.,.57,.095), ivory=vec3(1.,.98,.88);
-          float heat=clamp(uStrength*(core>0.?.65+plume*.22+stream*.13:.24+plume*.25+stream*.16),0.,1.);
+          float heat=clamp(uStrength*(.68+.21*core/max(density,.0001)+plume*.08+stream*.03),0.,1.);
           vec3 color=mix(gold,ivory,heat);
           color*=.96+stream*.04;
-          if(uLayer>1.5){alpha*=.15*(.7+stream*.3);color=mix(vec3(1.,.64,.12),ivory,stream*.5);}
           if(alpha<.002)discard;gl_FragColor=vec4(color,alpha);
           #include <colorspace_fragment>
         }`,
     });
   }
-  // A compact soft rim keeps the beam vertical without the old flame-like wisps.
-  for (const [layer, radius] of [[2,1.08],[1,1.015],[0,.91]]) {
-    const beam=mesh(new THREE.CylinderGeometry(rules.radius*radius*.97,rules.radius*radius,20,64,32,true),beamMaterial(layer));
-    beam.position.y=10; beam.name=layer===0?'Sonnenkern':layer===1?'Goldener Lichtvorhang':'Weicher Lichtsaum';
-  }
-  function groundMaterial(halo) {
+  const beam=mesh(new THREE.CylinderGeometry(rules.radius*1.22,rules.radius*1.22,20,64,1,false),beamMaterial());
+  beam.position.y=10;beam.name='Sonnenkern';
+  const beamInverse=new THREE.Matrix4(),beamEye=new THREE.Vector3();
+  beam.onBeforeRender=(_renderer,_scene,camera)=>{
+    beamInverse.copy(beam.matrixWorld).invert();camera.getWorldPosition(beamEye);
+    beam.material.uniforms.uEye.value.copy(beamEye).applyMatrix4(beamInverse);
+    camera.getWorldDirection(beam.material.uniforms.uDirection.value).transformDirection(beamInverse);
+    beam.material.uniforms.uOrtho.value=camera.isOrthographicCamera?1:0;
+  };
+  function groundMaterial() {
     return new THREE.ShaderMaterial({transparent:true,depthWrite:false,toneMapped:false,
-      blending:halo?THREE.AdditiveBlending:THREE.NormalBlending,
+      blending:THREE.NormalBlending,
       uniforms:{uTime:clock,uStrength:strength},
       vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
       fragmentShader:`varying vec2 vUv;uniform float uTime,uStrength;${noise}
-        void main(){vec2 p=vUv*2.-1.;float r=length(p);
+        void main(){vec2 p=vUv*2.-1.;float r=length(p)*1.28;
           float n=mist(p*3.+vec2(uTime*.2,-uTime*.28));
-          float edge=1.-smoothstep(${halo?'.15,1.':'.72,1.'},r);
-          float alpha=edge*${halo?'.27*uStrength': 'pow(uStrength,1.7)'};
+          float edge=exp(-2.8*pow(r,4.))*(1.-smoothstep(1.10,1.28,r));
+          float alpha=1.-exp(-7.5*edge*pow(uStrength,2.4));
           vec3 color=mix(vec3(1.,.66,.22),vec3(1.,.97,.83),uStrength*(.93+n*.07));
           if(alpha<.002)discard;gl_FragColor=vec4(color,alpha);
           #include <colorspace_fragment>
         }`});
   }
-  const halo=mesh(new THREE.CircleGeometry(rules.radius*1.18,64),groundMaterial(true));
-  halo.rotation.x=-Math.PI/2;halo.position.y=.045;
-  const disk=mesh(new THREE.CircleGeometry(rules.radius,64),groundMaterial(false));
+  const disk=mesh(new THREE.CircleGeometry(rules.radius*1.28,64),groundMaterial());
   disk.name='Wachsende Sonnenhelligkeit';disk.rotation.x=-Math.PI/2;disk.position.y=.055;
 
   // Falling gold motes have a bright lower head and a soft tail above it.
   // One bounded instanced draw retains the same geometry through every cast.
-  const count=64, particleGeometry=new THREE.PlaneGeometry(1,1);
+  const count=80, particleGeometry=new THREE.PlaneGeometry(1,1);
+  const rain=Array.from({length:count},(_,i)=>({duration:.43+(i%7)*.024,height:18+(i%5)*.45}));
+  const rainSpeeds=rain.map(p=>p.height/p.duration);
+  const particleSpeed=rainSpeeds.reduce((sum,v)=>sum+v,0)/count,
+    particleSpeedMin=Math.min(...rainSpeeds),particleSpeedMax=Math.max(...rainSpeeds);
   const particleMaterial=new THREE.ShaderMaterial({transparent:true,depthWrite:false,toneMapped:false,
     blending:THREE.AdditiveBlending,uniforms:{uStrength:strength},
     vertexShader:`varying vec2 vUv;varying float vFade;attribute float aFade;
@@ -92,6 +107,7 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
       }`});
   materials.push(particleMaterial);geometries.push(particleGeometry);
   const particles=new THREE.InstancedMesh(particleGeometry,particleMaterial,count);particles.name='Fallende Sonnenfunken';
+  particles.renderOrder=2;
   particles.frustumCulled=false;particles.instanceMatrix.setUsage(THREE.DynamicDrawUsage);root.add(particles);
   const fades=new Float32Array(count);particleGeometry.setAttribute('aFade',new THREE.InstancedBufferAttribute(fades,1));
   const transform=new THREE.Object3D();let state={phase:'idle',brightness:0,radiusScale:0,effectiveRadius:0,damageEligible:false}, visibleParticles=0;
@@ -102,15 +118,15 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
     strength.value=state.brightness;visibleParticles=0;
     const exit=state.fading?state.brightness:1;
     for(let i=0;i<count;i++) {
-      const duration=1.5+(i%7)*.17, cycle=((age/duration+i*.618034)%1+1)%1;
+      const {duration,height}=rain[i],cycle=((age/duration+i*.618034)%1+1)%1;
       const angle=i*2.399963+Math.sin(age*.4+i)*.012;
-      const radius=rules.radius*(.78+(i%9)*.052);
-      const y=.10+(1-cycle)*(15+(i%5)*.75);
+      const radius=rules.radius*(.74+(i%9)*.052);
+      const y=.10+(1-cycle)*height;
       transform.position.set(Math.cos(angle)*radius+Math.sin(age*.7+i)*.025,y,Math.sin(angle)*radius);
-      const size=.10+(i%4)*.02;transform.scale.set(size,size*(3.1+(i%3)*.7),1);transform.updateMatrix();
+      transform.scale.set(.065+(i%4)*.009,.90+(i%4)*.16,1);transform.updateMatrix();
       particles.setMatrixAt(i,transform.matrix);
       const emerge=THREE.MathUtils.smoothstep(age,rules.rise*.78,rules.rise);
-      fades[i]=Math.sin(cycle*Math.PI)*exit*emerge;
+      fades[i]=THREE.MathUtils.smoothstep(cycle,0,.08)*(1-THREE.MathUtils.smoothstep(cycle,.88,1))*exit*emerge;
       if(fades[i]>.02)visibleParticles++;
     }
     particles.instanceMatrix.needsUpdate=true;particleGeometry.attributes.aFade.needsUpdate=true;
@@ -118,6 +134,7 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
   function hide(){root.visible=false;strength.value=0;visibleParticles=0;state={phase:'idle',brightness:0,radiusScale:0,effectiveRadius:0,damageEligible:false};}
   return {start(center){show(center,0);},show,hide,
     get telemetry(){return {visible:root.visible,...state,intensity:state.brightness,density:.98*state.brightness,
-      groundFill:state.brightness,seedRadius:state.effectiveRadius,particleDirection:'down',fallingParticles:visibleParticles,meshes:root.children.length};},
+      groundFill:state.brightness,seedRadius:state.effectiveRadius,particleDirection:'down',fallingParticles:visibleParticles,
+      particleSpeed,particleSpeedMin,particleSpeedMax,edgeProfile:'continuous',beamLayers:1,meshes:root.children.length};},
     dispose(){scene.remove(root);particles.dispose();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
 }
