@@ -70,11 +70,12 @@ test('real weapon integration casts both staffs, cancels invalid aims, and prese
 test('long earth wave widens gradually and the wider blue wall deploys promptly across its entire footprint',()=>{
  const s=setup(),spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');
  const near=s.combat.addTarget({id:'near-edge',radius:.3,position:new THREE.Vector3(1.5,0,2)});
- const far=s.combat.addTarget({id:'far-edge',radius:.3,position:new THREE.Vector3(1.5,0,20)});
- const outside=s.combat.addTarget({id:'outside',radius:.3,position:new THREE.Vector3(2,0,20)});
- const end=s.combat.addTarget({id:'end',radius:.3,position:new THREE.Vector3(0,0,21.5)});
- spell.cast(s.player,0,{damage:18});assert.ok(spell.telemetry.nodes.at(-1).z>21);
- spell.update(1.15);assert.equal(near.health,100);assert.equal(far.health,82);assert.equal(outside.health,100);assert.equal(end.health,82);
+ const far=s.combat.addTarget({id:'far-edge',radius:.3,position:new THREE.Vector3(1.5,0,17)});
+ const outside=s.combat.addTarget({id:'outside',radius:.3,position:new THREE.Vector3(2,0,17)});
+ const end=s.combat.addTarget({id:'end',radius:.3,position:new THREE.Vector3(0,0,17.5)});
+ const beyond=s.combat.addTarget({id:'beyond-reduced-range',radius:.3,position:new THREE.Vector3(0,0,20)});
+ spell.cast(s.player,0,{damage:18});assert.ok(spell.telemetry.nodes.at(-1).z>17 && spell.telemetry.nodes.at(-1).z<=18);
+ spell.update(1.15);assert.equal(near.health,100);assert.equal(far.health,82);assert.equal(outside.health,100);assert.equal(end.health,82);assert.equal(beyond.health,100);
  const rocks=s.scene.getObjectByName('Erdbrecher · wandernde Felswelle').children.find(o=>o.isInstancedMesh);
  assert.equal(rocks.count,spell.telemetry.nodes.length*3,'long-range geometry must not retain the old ten-node cap');spell.dispose();
  const w=setup(),wall=createRuneWallSpell(w.scene,w.world,w.combat,'player');
@@ -82,7 +83,7 @@ test('long earth wave widens gradually and the wider blue wall deploys promptly 
  wall.update(.079,w.player);assert.equal(wall.telemetry.solid,false);wall.update(.002,w.player);assert.equal(wall.telemetry.solid,true);
  assert.equal(w.world.traceProjectile({x:3.2,y:1,z:2},{x:3.2,y:1,z:8},.05)?.type,'runeWall');
  assert.equal(w.world.traceProjectile({x:3.9,y:1,z:2},{x:3.9,y:1,z:8},.05),null);
- wall.update(.2,w.player);assert.equal(wall.telemetry.visuals.phase,'standing');assert.equal(wall.telemetry.visuals.stoneColor,'#508bd7');wall.dispose();
+ wall.update(.2,w.player);assert.equal(wall.telemetry.visuals.phase,'standing');assert.equal(wall.telemetry.visuals.stoneColor,'#6089ba');wall.dispose();
  const edge=setup({isWater:x=>x>2.8}),blocked=createRuneWallSpell(edge.scene,edge.world,edge.combat,'player');
  blocked.beginAim(edge.player,0);blocked.update(.8,edge.player);assert.equal(blocked.release(edge.player),false,'water under the newly added wall ends prevents placement');blocked.dispose();
 });

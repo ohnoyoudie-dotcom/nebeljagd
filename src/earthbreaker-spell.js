@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createEarthbreakerVisuals } from './stone-spell-visuals.js';
 import { colliderTarget } from './projectile-collision.js';
 
-export const EARTHBREAKER_RULES=Object.freeze({range:22,width:1.35,endWidth:2.8,warning:.38,spacing:1.1,step:.04,fade:.62,cooldown:1.8,damage:18});
+export const EARTHBREAKER_RULES=Object.freeze({range:18,width:1.35,endWidth:2.8,warning:.38,spacing:1.1,step:.04,fade:.62,cooldown:1.8,damage:18});
 export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>{},isVisible=null){
   const r=EARTHBREAKER_RULES,ground=p=>world?.heightAt?.(p.x,p.z)??0;
   const visuals=createEarthbreakerVisuals(scene,r,isVisible);let wave=null,casts=0,hits=0;

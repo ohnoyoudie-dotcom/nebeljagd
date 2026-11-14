@@ -13,6 +13,9 @@ def pause_at(p,condition):
  p.evaluate('''condition=>{const reached=new Function('s','return '+condition);function frame(){if(reached(nebeljagdTestState()))document.querySelector('#pauseBtn').click();else requestAnimationFrame(frame);}requestAnimationFrame(frame);if(nebeljagdTestState().phase==='paused')document.querySelector('#resumeBtn').click();}''',condition)
 def capture(p,name):
  (OUT/(name+'.png')).write_bytes(base64.b64decode(p.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]));(OUT/(name+'.json')).write_text(json.dumps(state(p),indent=2))
+def closeup(p,name,center):
+ data=p.evaluate('center=>{nebeljagdInspectCamera({zoom:2.5,focus:center});const data=nebeljagdCaptureFrame();nebeljagdInspectCamera({zoom:1});return data;}',center)
+ (OUT/(name+'.png')).write_bytes(base64.b64decode(data.split(',',1)[1]))
 with sync_playwright() as pw:
  browser=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
  try:
@@ -28,7 +31,7 @@ with sync_playwright() as pw:
    p.on('pageerror',lambda e:(report['errors'].append(str(e)),print('PAGEERROR',str(e),flush=True)));p.on('console',lambda m:(report['errors'].append(m.text),print('CONSOLEERROR',m.text,flush=True)) if m.type=='error' else None);p.route('**/favicon.ico',lambda r:r.fulfill(status=204))
    p.goto(BASE+'/'+os.environ.get('NEBELJAGD_GAME_ENTRY','magebrawl.html')+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');p.wait_for_function('window.nebeljagdInspect&&nebeljagdTestState().rendering.calls>0');p.locator('#startBtn').click();p.wait_for_function('t=>nebeljagdTestState().equippedWeapon===t',arg=kind);assert state(p)['combat']['heldModel']['model']=='tripo'
    if slug=='earthbreaker':
-    target=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');health=target['health'];damage=state(p)['equippedItem']['damage'];p.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z-4,direction:0})',target['position']);capture(p,mode+'-held');pause_at(p,'s.combat.earthbreaker.active && s.combat.earthbreaker.age>=.2');p.keyboard.press('f');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['combat']['earthbreaker']['hits']==0;assert state(p)['combat']['earthbreaker']['range']==22 and state(p)['combat']['earthbreaker']['endWidth']==2.8;capture(p,mode+'-warning')
+    target=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');health=target['health'];damage=state(p)['equippedItem']['damage'];p.evaluate('p=>nebeljagdInspect({x:p.x,z:p.z-4,direction:0})',target['position']);capture(p,mode+'-held');pause_at(p,'s.combat.earthbreaker.active && s.combat.earthbreaker.age>=.2');p.keyboard.press('f');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['combat']['earthbreaker']['hits']==0;assert state(p)['combat']['earthbreaker']['range']==18 and state(p)['combat']['earthbreaker']['endWidth']==2.8;capture(p,mode+'-warning')
     frozen=state(p)['combat']['earthbreaker'];p.wait_for_timeout(100);assert state(p)['combat']['earthbreaker']==frozen
     pause_at(p,'s.combat.earthbreaker.age>=.72');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['combat']['earthbreaker']['erupting']>0;capture(p,mode+'-eruption')
     pause_at(p,'s.combat.earthbreaker.age>=.99');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-widening');p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.earthbreaker.active');enemy=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');assert health-enemy['health']==damage,(health,enemy['health']);passed('Earthbreaker: real model, warning, staggered stone eruption, exactly one hit, pause and cleanup')
@@ -42,13 +45,13 @@ with sync_playwright() as pw:
     if touch:cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
     else:p.keyboard.up('f')
     p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['combat']['runeWall']['solid'] and state(p)['combat']['runeWall']['age']<=.22;capture(p,mode+'-rising')
-    pause_at(p,'s.combat.runeWall.solid && s.combat.runeWall.age>=.3');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);assert s['combat']['runeWall']['health']==50 and s['combat']['runeWall']['barriers']==1;assert s['combat']['runeWall']['width']==7 and s['combat']['runeWall']['visuals']['stoneColor']=='#508bd7';capture(p,mode+'-standing');probe=p.evaluate('nebeljagdInspectStoneBarrier()');assert probe['hit']=='runeWall' and probe['movementShift']>.5,probe
+    pause_at(p,'s.combat.runeWall.solid && s.combat.runeWall.age>=.3');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);assert s['combat']['runeWall']['health']==50 and s['combat']['runeWall']['barriers']==1;assert s['combat']['runeWall']['width']==7 and s['combat']['runeWall']['visuals']['stoneColor']=='#6089ba';assert s['combat']['runeWall']['visuals']['glyphs']==0 and s['combat']['runeWall']['visuals']['visualStyle']=='arcane-ashlar-lit-joints';capture(p,mode+'-standing');closeup(p,mode+'-detail',s['combat']['runeWall']['center']);probe=p.evaluate('nebeljagdInspectStoneBarrier()');assert probe['hit']=='runeWall' and probe['movementShift']>.5,probe
     frozen=state(p)['combat']['runeWall'];p.wait_for_timeout(100);assert state(p)['combat']['runeWall']==frozen
     if touch:
      level=state(p)['level'];probe=p.evaluate('nebeljagdInspectStoneBarrier({damage:50})');assert probe['result']['killed'];pause_at(p,'s.combat.runeWall.visuals.phase==="crumbling"');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['level']==level
     else:pause_at(p,'s.combat.runeWall.visuals.phase==="crumbling"');p.wait_for_function('nebeljagdTestState().phase==="paused"')
     capture(p,mode+'-crumbling');assert state(p)['combat']['runeWall']['barriers']==0
-    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.runeWall.active');assert p.evaluate('nebeljagdInspectStoneBarrier()') is None;passed(mode+': real model, charged wall footprint, warning, stone blocks/runes, solid movement/projectile cover, pause and '+('destruction' if touch else 'natural expiry')+' cleanup')
+    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.runeWall.active');assert p.evaluate('nebeljagdInspectStoneBarrier()') is None;passed(mode+': real model, charged wall footprint, warning, arcane ashlar and glowing joints, solid movement/projectile cover, pause and '+('destruction' if touch else 'natural expiry')+' cleanup')
    c.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original_hash;report.update(status='passed',mapSha256=original_hash)
  except BaseException as e:

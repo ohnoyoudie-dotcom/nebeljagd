@@ -10,7 +10,7 @@ eigenem Vorschaubild in der Objektauswahl des Editors und unterstützen dessen
 
 Angreifen löst eine gerichtete Felswelle aus. Nach 0,38 Sekunden Vorwarnung
 brechen versetzt spitze Steine aus dem Boden; Risse, Staub und kleine
-Steinsplitter begleiten die Bewegung. Reichweite: 22 m; die Welle verbreitert sich von 1,35 auf 2,8 m, Grundschaden: 18,
+Steinsplitter begleiten die Bewegung. Reichweite: 18 m; die Welle verbreitert sich von 1,35 auf 2,8 m, Grundschaden: 18,
 Abklingzeit: 1,8 Sekunden. Jeder Gegner wird pro Welle höchstens einmal getroffen.
 Wasser, abrupte Geländestufen und feste Hindernisse stoppen die Welle. Deckung
 zwischen Welle und Gegner schützt ebenfalls; zerstörbare Hindernisse nehmen
@@ -25,8 +25,10 @@ Die 2,3 m hohe Mauer bleibt nach dem Aufrichten 3 Sekunden stehen, besitzt 50
 Lebenspunkte und hat 6 Sekunden Abklingzeit. Sie blockiert Bewegung und direkte
 Geschosse aus beiden Richtungen. Ihr Besitzer kann durch sie sehen.
 
-Blaue, gemeißelte Steinblöcke steigen versetzt auf, blaue Runen leuchten auf beiden
-Seiten. Beim Ablauf oder Zerstören sinken und zerfallen die Blöcke mit begrenztem
+Breite, facettierte blaue Quader mit Steinvariationen, Sockel, Decksteinen und
+Endpfeilern steigen versetzt auf. Licht sitzt zurückversetzt in den Fugen; ein
+schwacher Bodenschein und wenige aufsteigende Lichtsplitter zeigen die arkane
+Energie. Die früheren Runensymbole entfallen vollständig. Beim Ablauf oder Zerstören sinken und zerfallen die Blöcke mit begrenztem
 Staub und Geröll. Kollision und Kampfziel verschwinden sofort beim Zerstören.
 Wasser, Hindernisse, zu starke Neigung und überlappende Figuren verhindern die
 Platzierung. Auch während der Vorwarnung hineinlaufende Figuren werden nicht

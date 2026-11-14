@@ -39,7 +39,7 @@ export function rarityVisual(rarity = 'common') {
 }
 
 export const WEAPON_DEFINITIONS = Object.freeze({
-  earthbreakerStaff: Object.freeze({type:'earthbreakerStaff',label:'Erdbrecherstab',damage:18,cooldown:1.8,range:22,effect:'earthbreaker'}),
+  earthbreakerStaff: Object.freeze({type:'earthbreakerStaff',label:'Erdbrecherstab',damage:18,cooldown:1.8,range:18,effect:'earthbreaker'}),
   runeWallStaff: Object.freeze({type:'runeWallStaff',label:'Runenmauerstab',damage:0,cooldown:6,range:10,effect:'runeWall'}),
   blinkStaff: Object.freeze({type:'blinkStaff',label:'Teleportationsstab',damage:0,cooldown:4,range:12,effect:'blink'}),
   reflectionStaff: Object.freeze({type:'reflectionStaff',label:'Schutzstab',damage:0,cooldown:8,range:1.4,effect:'reflection'}),

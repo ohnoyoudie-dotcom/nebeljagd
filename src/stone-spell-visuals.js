@@ -74,54 +74,99 @@ export function createEarthbreakerVisuals(scene,r,isVisible){
 }
 
 export function createRuneWallVisuals(scene,r,ownerView,isVisible){
-  const root=new THREE.Group();root.name='Runenmauer · gemeißelter Stein';root.visible=false;scene.add(root);
+  const root=new THREE.Group();root.name='Runenmauer · arkanes Mauerwerk';root.visible=false;scene.add(root);
   const preview=new THREE.Mesh(new THREE.PlaneGeometry(r.width+.25,r.depth+.25),shader(`varying vec2 vUv;uniform vec3 uColor;uniform float uOpacity;
     void main(){vec2 p=abs(vUv*2.-1.);float edge=max(p.x,p.y);float line=exp(-pow((edge-.90)/.035,2.));
-      gl_FragColor=vec4(uColor,(line*.9+.06)*uOpacity);#include <colorspace_fragment>
-    }`.replace(';#include',';\n#include'),{uColor:{value:new THREE.Color('#83efff')},uOpacity:{value:1}}));
-  preview.rotation.x=-Math.PI/2;preview.position.y=.07;preview.material.depthTest=false;preview.renderOrder=30;root.add(preview);
-  const blocks=[];
-  for(let row=0;row<4;row++)for(let x=-r.width/2-(row%2)*.25;x<r.width/2-.01;x+=.5){
-    const left=Math.max(-r.width/2,x),right=Math.min(r.width/2,x+.5);blocks.push({x:(left+right)/2,y:.07+row*.49+.235,width:right-left-.025,height:.46,depth:r.depth-.045,row});
-  }
-  for(let i=0;i<Math.round(r.width/.5);i++)blocks.push({x:-r.width/2+.25+i*.5,y:2.12,width:.46,height:i%2?.18:.32,depth:r.depth+.04,row:4});
-  const mat=stone('#508bd7');mat.emissive.set('#163965');mat.emissiveIntensity=.18;mat.transparent=ownerView;mat.opacity=ownerView?.78:1;mat.depthWrite=!ownerView;
-  const mesh=new THREE.InstancedMesh(new RoundedBoxGeometry(1,1,1,2,.085),mat,blocks.length);mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;root.add(mesh);
-  blocks.forEach((_,i)=>mesh.setColorAt(i,new THREE.Color().setHSL(.56+(i%3)*.015,.18,.76+(i%5)*.035)));
-  const glyphMaterial=shader(`varying vec2 vUv;uniform float uOpacity,uTime;
-    float segment(vec2 p,vec2 a,vec2 b){vec2 d=b-a;return length(p-a-d*clamp(dot(p-a,d)/dot(d,d),0.,1.));}
-    void main(){vec2 p=vUv*2.-1.;float d=min(min(segment(p,vec2(0.,.85),vec2(.65,0.)),segment(p,vec2(.65,0.),vec2(0.,-.85))),min(segment(p,vec2(0.,-.85),vec2(-.65,0.)),segment(p,vec2(-.65,0.),vec2(0.,.85))));
-      d=min(d,segment(p,vec2(-.35,0.),vec2(.35,0.)));d=min(d,segment(p,vec2(0.,-.4),vec2(0.,.4)));
-      float a=(exp(-d*d*1600.)+exp(-d*d*160.)*.2)*uOpacity*(.9+.1*sin(uTime*3.));gl_FragColor=vec4(.38,.9,1.,a);
+      gl_FragColor=vec4(uColor,(line*.9+.06)*uOpacity);
       #include <colorspace_fragment>
-    }`,{uOpacity:{value:0},uTime:{value:0}});
-  const glyphs=[];for(const z of [-r.depth/2-.01,r.depth/2+.01])for(const x of [-.36,-.18,0,.18,.36].map(n=>n*r.width)){
-    const glyph=new THREE.Mesh(new THREE.PlaneGeometry(.55,.92),glyphMaterial);glyph.position.set(x,1.15,z);if(z<0)glyph.rotation.y=Math.PI;root.add(glyph);glyphs.push(glyph);
+    }`,{uColor:{value:new THREE.Color('#83efff')},uOpacity:{value:1}}));
+  preview.rotation.x=-Math.PI/2;preview.position.y=.07;preview.material.depthTest=false;preview.renderOrder=30;root.add(preview);
+
+  // Broad, staggered ashlar instead of a grid of identical small tiles. The
+  // plinth, dressed coping and end piers give the spell a coherent silhouette.
+  const blocks=[],half=r.width/2,inner=half-.52;
+  const add=(x,y,width,height,depth,row,kind='body')=>blocks.push({x,y,width,height,depth,row,kind});
+  const widths=[1.05,.84,1.2,.96,1.12];
+  for(let row=0;row<3;row++){
+    let x=-inner,index=0;
+    while(x<inner-.02){const w=Math.min(inner-x,index===0&&row%2?.57:widths[(index+row*2)%widths.length]);
+      add(x+w/2,.45+row*.55,w-.045,.505,r.depth-.085-(index%3)*.012,row);x+=w;index++;}
   }
-  const dust=new THREE.Mesh(new THREE.PlaneGeometry(r.width+.7,1.1),dustMaterial());dust.position.y=.2;faceCamera(dust);root.add(dust);
-  const rubble=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.13,0),stone('#508bd7'),18);rubble.frustumCulled=false;root.add(rubble);
+  for(let x=-inner;x<inner-.02;){const w=Math.min(1.15,inner-x);add(x+w/2,.105,w-.025,.20,r.depth,0,'plinth');x+=w;}
+  for(let x=-inner;x<inner-.02;){const w=Math.min(.98,inner-x);add(x+w/2,1.98,w-.035,.29,r.depth,3,'coping');x+=w;}
+  for(const sign of [-1,1]){
+    const x=sign*(half-.26);
+    for(let row=0;row<3;row++)add(x,.42+row*.58,.49,.54,r.depth,row,'pier');
+    add(x,.1,.52,.19,r.depth,0,'plinth');add(x,2.12,.52,.34,r.depth,3,'coping');
+  }
+  const mat=stone('#6089ba');mat.roughness=.63;mat.metalness=.16;mat.emissive.set('#254f83');mat.emissiveIntensity=.14;
+  mat.transparent=ownerView;mat.opacity=ownerView?.87:1;mat.depthWrite=true;
+  const glow={value:0},baseCompile=mat.onBeforeCompile;
+  mat.onBeforeCompile=s=>{baseCompile(s);s.uniforms.uArcaneGlow=glow;
+    s.fragmentShader='uniform float uArcaneGlow;\n'+s.fragmentShader;
+    s.fragmentShader=s.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+      vec3 edgeP=abs(vStone);float edge=min(max(edgeP.x,edgeP.y),min(max(edgeP.x,edgeP.z),max(edgeP.y,edgeP.z)));
+      float bevel=smoothstep(.425,.495,edge);
+      totalEmissiveRadiance+=vec3(.035,.27,.55)*bevel*uArcaneGlow;
+    `);
+  };mat.customProgramCacheKey=()=> 'arcane-ashlar-bevel-v1';
+  const blockGeometry=new RoundedBoxGeometry(1,1,1,3,.075),face=blockGeometry.attributes.position;
+  // Shallow hand-cut planes catch light across the stone faces; keep the
+  // perimeter and the physical dimensions intact rather than adding decals.
+  for(let i=0;i<face.count;i++){
+    const x=face.getX(i),y=face.getY(i),z=face.getZ(i);
+    const inset=Math.max(0,1-Math.pow(x/.46,2))*Math.max(0,1-Math.pow(y/.46,2));
+    if(Math.abs(z)>.45)face.setZ(i,z+Math.sign(z)*inset*(.055+Math.sin(x*9+y*6)*.025));
+  }
+  blockGeometry.computeVertexNormals();
+  const mesh=new THREE.InstancedMesh(blockGeometry,mat,blocks.length);mesh.name='Facettierte blaue Quader';mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;root.add(mesh);
+  const shades=['#bfd5ed','#88aace','#b1c9df','#94b2d9','#d2dfed'];
+  blocks.forEach((b,i)=>mesh.setColorAt(i,new THREE.Color(b.kind==='coping'?'#d4e4f5':b.kind==='pier'?'#9bbde3':shades[(i*3)%shades.length])));
+
+  // Recessed light lives inside the masonry and is visible through its joints.
+  // There are deliberately no freestanding glyphs or symbol decals.
+  const coreMat=new THREE.MeshStandardMaterial({color:'#267ab6',emissive:'#46caff',emissiveIntensity:1.2,roughness:.3,transparent:true,opacity:.8,depthWrite:false});
+  const core=new THREE.Mesh(new RoundedBoxGeometry(r.width-.16,1.88,r.depth-.25,2,.06),coreMat);core.name='Licht in den Fugen';root.add(core);
+  const haloMat=shader(`varying vec2 vUv;uniform float uOpacity;
+    void main(){vec2 p=vUv*2.-1.;float a=exp(-p.y*p.y*10.)*(1.-smoothstep(.72,1.,abs(p.x)))*uOpacity;
+      gl_FragColor=vec4(.12,.56,1.,a);
+      #include <colorspace_fragment>
+    }`,{uOpacity:{value:0}});
+  const halo=new THREE.Mesh(new THREE.PlaneGeometry(r.width+.5,2.4),haloMat);halo.rotation.x=-Math.PI/2;halo.position.y=.035;root.add(halo);
+  const moteMat=new THREE.MeshBasicMaterial({color:'#95dfff',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});
+  const motes=new THREE.InstancedMesh(new THREE.OctahedronGeometry(.035,0),moteMat,16);motes.frustumCulled=false;root.add(motes);
+  const dust=new THREE.Mesh(new THREE.PlaneGeometry(r.width+.7,1.1),dustMaterial());dust.material.uniforms.uColor.value.set('#86a9bf');dust.position.y=.2;faceCamera(dust);root.add(dust);
+  const rubble=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.13,0),stone('#46668c'),18);rubble.frustumCulled=false;root.add(rubble);
   const dummy=new THREE.Object3D();let aiming=false,phase='idle';
   function place(center,angle){root.position.copy(center);root.rotation.y=angle;root.visible=!isVisible||isVisible(center);}
   function show(center,angle,age,collapseAge,health){
     aiming=false;place(center,angle);const falling=collapseAge!==null,emerge=smooth(age,r.warning,r.warning+r.rise);
+    const energy=falling?1-smooth(collapseAge,0,.22):emerge;
     phase=falling?'crumbling':age<r.warning?'warning':age<r.warning+r.rise?'rising':'standing';
     preview.visible=!falling&&age<r.warning+r.rise;preview.material.uniforms.uColor.value.set('#86edff');preview.material.uniforms.uOpacity.value=1-emerge;
-    mesh.visible=age>=r.warning;glyphMaterial.uniforms.uOpacity.value=falling?1-smooth(collapseAge,0,.18):emerge*(.65+health*.25);glyphMaterial.uniforms.uTime.value=age;
-    glyphs.forEach(g=>g.visible=mesh.visible);
+    mesh.visible=age>=r.warning;
+    glow.value=energy*(.35+.10*Math.sin(age*2.4)+.3*(1-smooth(age,.25,.65)));
+    core.visible=energy>.001;core.position.y=.99;core.scale.y=Math.max(.001,emerge);coreMat.opacity=energy*.8;coreMat.emissiveIntensity=.85+glow.value*.75;
+    halo.visible=motes.visible=energy>.001;haloMat.uniforms.uOpacity.value=energy*.16;moteMat.opacity=energy*(.5+health*.15);
     blocks.forEach((b,i)=>{
       const rise=smooth(age,r.warning+b.row*.01,r.warning+r.rise+b.row*.01),fall=falling?collapseAge:0;
       dummy.position.set(b.x+Math.sin(i*12.3)*fall*.55,b.y-2.5*(1-rise)-fall*fall*5.4,Math.cos(i*9.1)*fall*.65);
       dummy.rotation.set(fall*Math.sin(i)*1.8,fall*Math.cos(i)*1.4,fall*Math.sin(i*2)*.8);
       dummy.scale.set(b.width,b.height,b.depth).multiplyScalar(falling?1-smooth(fall,.3,r.fade):1);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
     });mesh.instanceMatrix.needsUpdate=true;
-    dust.visible=age>=r.warning;dust.material.uniforms.uOpacity.value=falling?(1-smooth(collapseAge,.05,r.fade))*.35:(1-smooth(age,r.warning+.1,r.warning+.5))*.28;
+    for(let i=0;i<16;i++){
+      const t=(age*.38+i*.618)%1;dummy.position.set(Math.sin(i*4.31)*half*.95,.12+t*2.4,Math.cos(i*2.17)*.42);
+      dummy.rotation.set(0,age+i,Math.PI/4);dummy.scale.setScalar(Math.sin(t*Math.PI)*(.55+(i%3)*.3));dummy.updateMatrix();motes.setMatrixAt(i,dummy.matrix);
+    }motes.instanceMatrix.needsUpdate=true;
+    dust.visible=age>=r.warning;dust.material.uniforms.uOpacity.value=falling?(1-smooth(collapseAge,.05,r.fade))*.25:(1-smooth(age,r.warning+.1,r.warning+.5))*.2;
     for(let i=0;i<18;i++){
       const t=falling?collapseAge:age-r.warning,a=i*2.4,live=t>=0&&t<.6;
       dummy.position.set((i%7-3)*(r.width/7)+Math.cos(a)*Math.max(0,t),.12+Math.max(0,t)*2.2-t*t*4,Math.sin(a)*Math.max(0,t)*1.1);
       dummy.rotation.set(t*4+i,t*6,i);dummy.scale.setScalar(live?(1-smooth(t,.25,.6))*(.5+i%3*.25):0);dummy.updateMatrix();rubble.setMatrixAt(i,dummy.matrix);
     }rubble.instanceMatrix.needsUpdate=true;rubble.visible=age>=r.warning;
   }
-  return{aim(center,angle,valid){aiming=true;phase='aim';place(center,angle);mesh.visible=dust.visible=rubble.visible=false;glyphs.forEach(g=>g.visible=false);preview.visible=true;preview.material.uniforms.uOpacity.value=1;preview.material.uniforms.uColor.value.set(valid?'#83efff':'#ff6655');},
+  function hideBody(){mesh.visible=core.visible=halo.visible=motes.visible=dust.visible=rubble.visible=false;}
+  return{aim(center,angle,valid){aiming=true;phase='aim';place(center,angle);hideBody();preview.visible=true;preview.material.uniforms.uOpacity.value=1;preview.material.uniforms.uColor.value.set(valid?'#83efff':'#ff6655');},
     cancelAim(){if(aiming){root.visible=false;aiming=false;}},show,reset(){root.visible=false;aiming=false;phase='idle';},
-    get telemetry(){return{phase,stoneColor:'#508bd7',width:r.width,visible:root.visible,blocks:blocks.length,ownerTransparent:ownerView};},dispose(){dispose(root);}};
+    get telemetry(){return{phase,visualStyle:'arcane-ashlar-lit-joints',glyphs:0,stoneColor:'#6089ba',width:r.width,visible:root.visible,blocks:blocks.length,ownerTransparent:ownerView};},dispose(){dispose(root);}};
 }
