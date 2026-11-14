@@ -802,7 +802,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     lastDamage = result; damageHits++;
   }, isVisible, { prototype: projectilePrototypes.meteor });
   const sun = createSunSpell(scene, world, combat, ownerId, result => { lastDamage = result; damageHits++; }, isVisible);
-  const soulJudgment = createSoulJudgment(combat, result => { lastDamage = result; damageHits++; });
+  const soulJudgment = createSoulJudgment(combat, result => { lastDamage = result; damageHits++; soulMarks.executed(result); });
   const soulMarks = createSoulMarkVisuals(scene, combat, isVisible, world);
   const staffTip = new THREE.Vector3();
   function cancelAim() {
@@ -1031,7 +1031,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     if (isVisible) for (const arrow of arrows) arrow.group.visible = arrow.life > 0 && isVisible(arrow.group.position);
     updateSpells(delta, time);
-    soulMarks.update(soulJudgment.marks);
+    soulMarks.update(soulJudgment.marks, delta);
     spellEffects.update(delta, time);
     let particlesChanged = false;
     impactParticles.forEach((particle, index) => {
@@ -1154,7 +1154,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           remaining: swordComboRemaining },
         swordTrail: swordEffects.inspect(), swordBlade: { base: point(swordBase), tip: point(swordTip) },
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, storm: storm.telemetry, meteor: meteor.telemetry, sun: sun.telemetry, soul: { marks: soulJudgment.marks, visibleRunes: soulMarks.count }, heldGrip, hands, lastSpellLaunch,
+        effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, storm: storm.telemetry, meteor: meteor.telemetry, sun: sun.telemetry, soul: { marks: soulJudgment.marks, visibleRunes: soulMarks.count, apparitions: soulMarks.telemetry }, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,
         staffTip: equippedType?.endsWith('Staff') ? point(getStaffTip(new THREE.Vector3())) : null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,

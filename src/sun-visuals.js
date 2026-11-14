@@ -1,72 +1,88 @@
 import * as THREE from 'three';
 
-/** Warm warning light opens into a brief, strong column from above. */
+/** A growing solar seed opens into a descending, continuously flowing lightfall. */
 export function createSunVisuals(scene, rules, ground, isVisible) {
-  const root = new THREE.Group(); root.name = 'Sonnenstrahl'; root.visible = false;
-  scene.add(root);
-  const materials = [], geometries = [];
-  function add(geometry, color, opacity = 0) {
-    const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity,
+  const root = new THREE.Group(); root.name = 'Sonnenstrahl'; root.visible = false; scene.add(root);
+  const materials = [], geometries = [], clock = { value: 0 }, front = { value: 18 };
+  function add(geometry, color) {
+    const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0,
       depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, toneMapped: false });
     materials.push(material); geometries.push(geometry);
     const mesh = new THREE.Mesh(geometry, material); root.add(mesh); return mesh;
   }
-  const disk = add(new THREE.CircleGeometry(rules.radius, 64), '#ffdc8d');
-  disk.rotation.x = -Math.PI / 2; disk.position.y = .05;
-  const ring = add(new THREE.RingGeometry(rules.radius - .05, rules.radius, 96), '#fff1ba');
+  const disk = add(new THREE.CircleGeometry(rules.radius, 64), '#ffe4a1');
+  disk.name = 'Wachsender Sonnenkern'; disk.rotation.x = -Math.PI / 2; disk.position.y = .05;
+  disk.material.onBeforeCompile = shader => {
+    shader.vertexShader = 'varying vec2 vSolarDisk;\n' + shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvSolarDisk = uv;');
+    shader.fragmentShader = 'varying vec2 vSolarDisk;\n' + shader.fragmentShader.replace('#include <opaque_fragment>',
+      'float r = length(vSolarDisk * 2.0 - 1.0); diffuseColor.a *= (1.0 - smoothstep(.45, 1.0, r)) * (.42 + .58 * exp(-r*r*8.0));\n#include <opaque_fragment>');
+  };
+  disk.material.customProgramCacheKey = () => 'solar-seed-v2';
+  const ring = add(new THREE.RingGeometry(rules.radius - .04, rules.radius, 96), '#fff1ba');
   ring.rotation.x = -Math.PI / 2; ring.position.y = .06;
-  const shaft = add(new THREE.CylinderGeometry(.7, rules.radius * .95, 18, 48, 1, true), '#ffe4a0');
+  const shaft = add(new THREE.CylinderGeometry(rules.radius * .76, rules.radius * .96, 18, 64, 1, true), '#ffe4a0');
   shaft.position.y = 9;
-  const core = add(new THREE.CylinderGeometry(rules.radius * .28, rules.radius * .68, 18, 48, 1, true), '#fff4cf');
+  const core = add(new THREE.CylinderGeometry(rules.radius * .24, rules.radius * .50, 18, 48, 1, true), '#fff9e6');
   core.position.y = 9;
-  // Fade both ends and the cylinder silhouette so sunlight reads as a volume,
-  // without the hard upper rim of a transparent cone.
+  // Traveling filaments run downward; their leading edge reaches the ground
+  // before the first damage pulse. Both rims and cylinder silhouettes stay soft.
   for (const beam of [shaft, core]) {
     beam.material.onBeforeCompile = shader => {
+      shader.uniforms.uSolarTime = clock; shader.uniforms.uSolarFront = front;
       const varyings = 'varying vec2 vSunUv; varying vec3 vSunNormal; varying vec3 vSunView;\n';
       shader.vertexShader = varyings + shader.vertexShader.replace('#include <begin_vertex>',
         '#include <begin_vertex>\nvSunUv = uv; vSunNormal = normalize(normalMatrix * normal); vSunView = -(modelViewMatrix * vec4(position, 1.0)).xyz;');
-      shader.fragmentShader = varyings + shader.fragmentShader.replace('#include <opaque_fragment>',
-        'float beamEdge = pow(abs(dot(normalize(vSunNormal), normalize(vSunView))), 1.4);\n' +
-        'diffuseColor.a *= beamEdge * smoothstep(0.0, .08, vSunUv.y) * (1.0 - smoothstep(.48, 1.0, vSunUv.y));\n#include <opaque_fragment>');
+      shader.fragmentShader = 'uniform float uSolarTime, uSolarFront;\n' + varyings + shader.fragmentShader.replace('#include <opaque_fragment>',
+        `float beamEdge = pow(abs(dot(normalize(vSunNormal), normalize(vSunView))), 1.5);
+         float strands = pow(.5 + .5 * sin(vSunUv.x * 314.159 + sin(vSunUv.x * 81.681) * 2.0), 6.0);
+         float flow = .5 + .5 * sin(vSunUv.y * 22.0 + uSolarTime * 27.0 + vSunUv.x * 75.398);
+         float fall = smoothstep(uSolarFront - .7, uSolarFront + .25, vSunUv.y * 18.0);
+         diffuseColor.a *= beamEdge * fall * smoothstep(0.0, .025, vSunUv.y)
+           * (1.0 - smoothstep(.55, 1.0, vSunUv.y)) * (.28 + strands * (.8 + flow * .7));
+         #include <opaque_fragment>`);
     };
-    beam.material.customProgramCacheKey = () => 'soft-solar-column-v1';
+    beam.material.customProgramCacheKey = () => 'solar-waterfall-v2';
   }
   const rays = [];
-  for (let i = 0; i < 12; i++) {
-    const ray = add(new THREE.CylinderGeometry(.012, .026, 1.2 + (i % 4) * .3, 5), '#fff4c4');
-    rays.push(ray);
+  for (let i = 0; i < 22; i++) {
+    const ray = add(new THREE.CylinderGeometry(.007, .024, 2.0 + (i % 5) * .6, 5, 1, true), '#fff5d5');
+    ray.material.onBeforeCompile = shader => {
+      shader.vertexShader = 'varying float vRayY;\n' + shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvRayY = uv.y;');
+      shader.fragmentShader = 'varying float vRayY;\n' + shader.fragmentShader.replace('#include <opaque_fragment>', 'diffuseColor.a *= pow(sin(vRayY * 3.14159), 2.0);\n#include <opaque_fragment>');
+    };
+    ray.material.customProgramCacheKey = () => 'solar-flow-strand-v2'; rays.push(ray);
   }
-  let phase = 'idle', intensity = 0;
+  let phase = 'idle', intensity = 0, seedRadius = 0, descent = 0;
   function show(center, age) {
     root.position.set(center.x, ground(center), center.z);
-    root.visible = !isVisible || isVisible(center, { concealed: false });
+    root.visible = !isVisible || isVisible(center, { concealed: false }); clock.value = age;
     const active = age - rules.warning;
-    const warning = Math.min(1, age / rules.warning);
-    const exit = Math.max(0, Math.min(1, (rules.duration + rules.fade - active) / rules.fade));
+    const warning = THREE.MathUtils.clamp(age / rules.warning, 0, 1);
+    const bloom = warning * warning * (3 - 2 * warning);
+    const exit = THREE.MathUtils.clamp((rules.duration + rules.fade - active) / rules.fade, 0, 1);
     phase = active < 0 ? 'warning' : active < rules.duration ? 'beam' : 'fade';
-    const onset = active < 0 ? 0 : Math.min(1, active / .09);
-    const flash = active >= 0 ? Math.exp(-active * 12) : 0;
-    intensity = onset * exit;
-    disk.material.opacity = active < 0 ? .06 + warning * .13 : (.12 + flash * .16) * exit;
-    ring.material.opacity = active < 0 ? .3 + warning * .4 : .38 * exit;
-    shaft.material.opacity = active < 0 ? .025 + warning * .035 : (.26 + flash * .12) * exit;
-    core.material.opacity = (.28 + flash * .15) * intensity;
-    core.visible = active >= 0;
-    const breadth = active < 0 ? .65 + warning * .35 : 1 + flash * .08;
-    shaft.scale.set(breadth, 1, breadth);
+    descent = THREE.MathUtils.clamp(active / .13, 0, 1); front.value = 18 * (1 - descent);
+    const flash = active >= .13 ? Math.exp(-(active - .13) * 10) : 0;
+    intensity = Math.min(1, Math.max(0, active) / .055) * exit;
+    seedRadius = rules.radius * (active < 0 ? .025 + bloom * .975 : 1);
+    disk.scale.setScalar(seedRadius / rules.radius);
+    disk.material.opacity = active < 0 ? .48 + bloom * .42 : (.40 + flash * .48) * exit;
+    ring.scale.setScalar(active < 0 ? .025 + bloom * .975 : 1 + flash * .025);
+    ring.material.opacity = active < 0 ? .10 + bloom * .40 : (.22 + flash * .34) * exit;
+    shaft.visible = core.visible = active >= 0;
+    shaft.material.opacity = (.55 + flash * .20) * intensity;
+    core.material.opacity = (.75 + flash * .20) * intensity;
     for (let i = 0; i < rays.length; i++) {
-      const angle = i * Math.PI * 2 / rays.length + age * .12;
-      const radius = rules.radius * (.35 + (i % 3) * .19);
-      const cycle = ((age * .7 + i * .173) % 1 + 1) % 1;
-      const ray = rays[i];
-      ray.visible = active >= 0;
-      ray.position.set(Math.cos(angle) * radius, 1 + (1 - cycle) * 8, Math.sin(angle) * radius);
-      ray.material.opacity = Math.sin(cycle * Math.PI) * .45 * intensity;
+      const angle = i * 2.399963, radius = rules.radius * (.20 + (i % 7) * .105);
+      const cycle = ((active * 1.45 + i * .173) % 1 + 1) % 1;
+      const y = 1.9 + (1 - cycle) * 10;
+      const ray = rays[i]; ray.visible = active >= .13;
+      ray.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+      ray.material.opacity = Math.sin(cycle * Math.PI) * .62 * intensity;
     }
   }
-  function hide() { root.visible = false; phase = 'idle'; intensity = 0; }
+  function hide() { root.visible = false; phase = 'idle'; intensity = seedRadius = descent = 0; }
   return { start(center) { show(center, 0); }, show, hide,
-    get telemetry() { return { visible: root.visible, phase, intensity, meshes: root.children.length }; },
+    get telemetry() { return { visible: root.visible, phase, intensity, seedRadius, descent, meshes: root.children.length }; },
     dispose() { scene.remove(root); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); } };
 }

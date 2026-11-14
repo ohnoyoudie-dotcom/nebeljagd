@@ -40,9 +40,9 @@ test('integrated soul projectile marks three real hits, pauses its countdown, ex
   for (let hit = 1; hit <= 3; hit++) {
     assert.ok(s.weapons.attack(s.actor.position, 0)); s.tick(1.22);
     assert.equal(s.weapons.telemetry.soul.marks[0].count, hit); assert.equal(s.target.health, 300);
-    const rune=s.scene.getObjectByName('Seelenrichter · Dreiteilige Rune');
+    const rune=s.scene.getObjectByName('Seelenrichter · Dreiteiliger Totenkopf');
     assert.ok(rune.visible && rune.position.y>=3.5,'rune clears the health bar and practice label');
-    assert.equal(rune.children.filter(piece=>piece.visible).length,hit,'every confirmed hit is visible immediately');
+    assert.equal(rune.children.slice(0,3).filter(piece=>piece.visible).length,hit,'every confirmed hit is visible immediately');
     if(hit===3)assert.equal(rune.children[0].material.color.getHex(),0xffffff);
   }
   const before = s.weapons.telemetry.soul; s.weapons.update(0, 100); assert.deepEqual(s.weapons.telemetry.soul, before);

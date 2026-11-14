@@ -31,7 +31,7 @@ test('soul projectile preserves the uploaded GLB and archive and meets the runti
   assert.ok(gltf.images.every(image => image.bufferView != null && !image.uri));
 });
 
-test('the soul model flies visibly with a restrained halo and keeps shared textures intact', () => {
+test('the soul model flies inside shadow wisps and keeps shared textures intact', () => {
   const geometry = new THREE.ConeGeometry(.2, 1), texture = new THREE.Texture();
   const material = new THREE.MeshStandardMaterial({ map: texture });
   const prototype = new THREE.Group(); prototype.add(new THREE.Mesh(geometry, material));
@@ -43,13 +43,17 @@ test('the soul model flies visibly with a restrained halo and keeps shared textu
   effects.launch(visual, 'soulStaff', new THREE.Vector3(), Math.PI / 2);
   assert.equal(visual.type, 'soulStaff'); assert.equal(visual.soul.visible, true);
   assert.equal(visual.fire.visible, false); assert.equal(visual.ice.visible, false);
-  assert.equal(visual.halo.material.opacity, .08);
+  assert.ok(visual.halo.material.opacity <= .15, 'the dark projectile is not hidden by a bright halo');
+  assert.ok(visual.soulShroud.children.length > 0);
   const copy = visual.soulModel.children[0];
   assert.notEqual(copy.material, material); assert.notEqual(copy.material, second.soulModel.children[0].material);
+  assert.ok(copy.material.transparent && copy.material.opacity < 1);
+  assert.equal(material.opacity, 1, 'shared source material stays opaque');
   assert.equal(copy.geometry, geometry); assert.equal(copy.material.map, texture);
   effects.advance(visual, new THREE.Vector3(), new THREE.Vector3(1, 0, 0), .1, .1);
   assert.ok(new THREE.Vector3(0, 0, 1).applyQuaternion(visual.group.quaternion).x > .999);
   assert.equal(effects.telemetry.importedSoulProjectiles, 1);
+  assert.ok(effects.telemetry.activeSmoke > 0);
   effects.end(visual); effects.launch(visual, 'fireStaff', new THREE.Vector3());
   assert.equal(visual.soul.visible, false); assert.equal(visual.halo.material.opacity, .32);
   effects.dispose(); effects.dispose();

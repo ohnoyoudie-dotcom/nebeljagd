@@ -64,11 +64,13 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     return { sprite, life: 0, duration: .5, size: .18, seed: 0 };
   });
   let smokeCursor = 0;
-  function emitSmoke(point, impact = false) {
+  function emitSmoke(point, impact = false, shadow = false) {
     const entry = smoke[smokeCursor++ % smoke.length];
     entry.duration = entry.life = (impact ? .95 : .65) + smokeCursor % 4 * .06;
+    entry.sprite.material.color.set(shadow ? '#101923' : '#796b60');
     entry.seed = smokeCursor; entry.size = (impact ? .48 : .30) + smokeCursor % 3 * .05;
-    entry.opacity = impact ? .34 : .26;
+    entry.opacity = shadow ? .75 : impact ? .34 : .26;
+    if (shadow) { entry.size = .68 + smokeCursor % 4 * .12; entry.duration = entry.life = .56; }
     entry.sprite.position.copy(point); entry.sprite.scale.setScalar(entry.size);
     entry.sprite.material.opacity = entry.opacity; entry.sprite.visible = canSee(point);
   }
@@ -168,7 +170,8 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         if (!part.isMesh) return;
         const prepare = source => {
           const copy = ownMaterial(source.clone());
-          if (copy.emissive) { copy.emissive.set('#33203f'); copy.emissiveIntensity = .06; }
+          copy.transparent = true; copy.opacity = .78; copy.depthWrite = false;
+          if (copy.emissive) { copy.emissive.set('#344650'); copy.emissiveIntensity = .20; }
           return copy;
         };
         part.material = Array.isArray(part.material) ? part.material.map(prepare) : prepare(part.material);
@@ -176,6 +179,13 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       });
       soul.add(soulModel);
     } else mesh(soul, octahedron, projectileMaterials.soulStaff.core).scale.set(.14, .14, .3);
+    const soulShroud = new THREE.Group(); soulShroud.name = 'Geisterhafter Schattenschweif';
+    soulShroud.rotation.x = Math.PI / 2; soulShroud.position.z = -.65; soul.add(soulShroud);
+    const shadowMaterial = elementMaterial('body', { type: 'soulStaff', opacity: .83 });
+    for (let i = 0; i < 3; i++) {
+      const veil = mesh(soulShroud, planeGeometry, shadowMaterial);
+      veil.rotation.y = i * Math.PI / 3; veil.scale.set(.85 + i * .11, 2.5 + i * .2, 1);
+    }
     const gravity = new THREE.Group(); gravity.name = 'Gravitationsprojektil · dunkler Kern'; group.add(gravity);
     const gravityCore = mesh(gravity, sphere, projectileMaterials.gravityStaff.core);
     gravityCore.scale.set(.29, .32, .29);
@@ -260,7 +270,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, lightning, fire, ice, star, soul, soulModel, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, lightning, fire, ice, star, soul, soulModel, soulShroud, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -294,7 +304,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       visual.trail.visible = false; return;
     }
     const positions = visual.trailPositions, fades = visual.trailFades, uvs = visual.trailUvs;
-    const trailAge = visual.type === 'soulStaff' ? .16 : TRAIL_AGE;
+    const trailAge = visual.type === 'soulStaff' ? .43 : TRAIL_AGE;
     const residual = visual.active ? 1 : visual.trailRemaining / TRAIL_RELEASE;
     let ax = visual.group.position.x, ay = visual.group.position.y, az = visual.group.position.z, birthA = visual.headBirth;
     for (let segment = 0; segment < visual.historyCount; segment++) {
@@ -306,7 +316,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       let visible = ageA < 1 && ageB < 1 && Math.hypot(dx, by - ay, dz) > .0001 && canSee(pointA) && canSee(pointB);
       if (visible) { pointA.add(pointB).multiplyScalar(.5); visible = canSee(pointA); }
       if (visible) visual.visibleTrailSegments++;
-      const radius = visual.type === 'soulStaff' ? .13 : crystalline(visual.type) ? .22 : .25;
+      const radius = visual.type === 'soulStaff' ? .48 : crystalline(visual.type) ? .22 : .25;
       const taperA = 1 - segment / visual.historyCount, taperB = 1 - (segment + 1) / visual.historyCount;
       const widthA = radius * (.06 + (1 - ageA) * taperA * .94), widthB = radius * (.06 + (1 - ageB) * taperB * .94);
       const nx = horizontal > .00001 ? -dz / horizontal : 1, nz = horizontal > .00001 ? dx / horizontal : 0;
@@ -378,7 +388,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     visual.group.scale.setScalar(type === 'gravityStaff' ? GRAVITY_PROJECTILE_SCALE : 1);
     visual.fire.visible = !crystalline(type) && type !== 'gravityStaff' && type !== 'lightningStaff' && type !== 'soulStaff';
     visual.soul.visible = type === 'soulStaff';
-    visual.halo.material.opacity = type === 'soulStaff' ? .08 : .32;
+    visual.halo.material.opacity = type === 'soulStaff' ? .12 : .32;
     visual.lightning.group.visible = type === 'lightningStaff'; visual.lightning.update(0);
     visual.gravity.visible = type === 'gravityStaff';
     visual.gravityCore.visible = !visual.gravityModel;
@@ -444,12 +454,12 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     visual.headBirth = clock.value + delta;
     const distance = Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z);
     if (distance < .00001) return;
-    if (visual.type === 'fireStaff') {
-      const total = visual.smokeDistance + distance, spacing = .38;
+    if (visual.type === 'fireStaff' || visual.type === 'soulStaff') {
+      const total = visual.smokeDistance + distance, spacing = visual.type === 'soulStaff' ? .24 : .38;
       const count = Math.min(16, Math.floor(total / spacing));
       for (let i = 0; i < count; i++) {
         const t = THREE.MathUtils.clamp((spacing - visual.smokeDistance + i * spacing) / distance, 0, 1);
-        pointA.copy(from).lerp(to, t); emitSmoke(pointA);
+        pointA.copy(from).lerp(to, t); emitSmoke(pointA, false, visual.type === 'soulStaff');
       }
       visual.smokeDistance = total % spacing;
     }
@@ -599,6 +609,11 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       visual.group.visible = visual.active && canSee(visual.group.position);
       if (visual.active) {
         visual.lightning.update(visual.age);
+        if (visual.type === 'soulStaff') {
+          visual.soulShroud.rotation.y = Math.sin(time * 4.1) * .12;
+          visual.soulShroud.scale.set(1 + Math.sin(time * 7) * .13, 1, 1 + Math.cos(time * 5) * .10);
+          if (visual.soulModel) visual.soulModel.position.y = Math.sin(time * 9) * .035;
+        }
         const pulse = 1 + Math.sin(time * 17) * .035;
         visual.fire.scale.set(pulse, pulse, 1); visual.fire.rotation.z = Math.sin(time * 6) * .10;
         visual.hotCore.scale.set(.065 * pulse, .065 * pulse, .15);
@@ -647,6 +662,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
         activeSmoke: smoke.filter(p => p.life > 0).length,
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
+        soulStyle: 'spectral-shadow-and-torn-wisps',
         soulModel: soulProjectilePrototype ? { ...soulProjectilePrototype.userData } : null,
         importedSoulProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff' && p.soulModel).length,
         importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,

@@ -1,4 +1,4 @@
-"""Real generated editor/game: both imported staffs, input, damage, rune and blindness."""
+"""Real generated editor/game: both imported staffs, input, damage, skull/reaper and blindness."""
 import base64, hashlib, json, os, subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -51,10 +51,13 @@ with sync_playwright() as pw:
     else:
      pixel=p.evaluate('p=>nebeljagdProjectPoint(p)',point);p.mouse.move(pixel['x'],pixel['y']);p.keyboard.down('f');p.wait_for_function('nebeljagdTestState().combat.sun.aimRange?.radius===20')
     assert state(p)['combat']['shotsFired']==0
-    pause_at(p,"s.combat.sun.active && s.combat.sun.age>=.3")
+    pause_at(p,"s.combat.sun.active && s.combat.sun.age>=.05")
     if touch:cdp.send('Input.dispatchTouchEvent',dict(type='touchEnd',touchPoints=[]))
     else:p.keyboard.up('f')
-    p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);assert s['combat']['sun']['visuals']['phase']=='warning';assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health;capture(p,mode+'-warning')
+    p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);assert s['combat']['sun']['visuals']['phase']=='warning';assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health;capture(p,mode+'-seed')
+    seed_radius=s['combat']['sun']['visuals']['seedRadius']
+    pause_at(p,'s.combat.sun.age>=.5');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p)
+    assert s['combat']['sun']['visuals']['seedRadius']>seed_radius;capture(p,mode+'-warning')
     pause_at(p,'s.combat.sun.age>=1.1');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1')
     assert enemy['health']<health and enemy['blindRemaining']>0 and enemy['revealRemaining']>0;capture(p,mode+'-beam')
     frozen=s['combat']['sun'];p.wait_for_timeout(100);assert state(p)['combat']['sun']==frozen
@@ -74,9 +77,12 @@ with sync_playwright() as pw:
      if hit==1:
       p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-projectile');assert state(p)['combat']['effects']['soulModel'];p.locator('#resumeBtn').click()
      pause_at(p,'s.combat.soul.marks.some(m=>m.count==='+str(hit)+')');p.wait_for_function('nebeljagdTestState().phase==="paused"')
-     s=state(p);assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health;capture(p,mode+'-rune-'+str(hit))
-     p.locator('#resumeBtn').click()
-    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: real imported projectile, three separate rune hits, delayed execution and level-up credit')
+     s=state(p);assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health;capture(p,mode+'-skull-'+str(hit))
+     if hit<3:p.locator('#resumeBtn').click()
+    for phase in ['raised','strike','executed']:
+     pause_at(p,'s.combat.soul.apparitions.some(a=>a.phase==="'+phase+'")');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-reaper-'+phase)
+    p.locator('#resumeBtn').click()
+    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: real imported projectile, three skull fragments, raised/striking reaper, confirmed execution and level-up credit')
    ctx.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original_hash;report.update(status='passed',mapSha256=original_hash)
  except BaseException as e:

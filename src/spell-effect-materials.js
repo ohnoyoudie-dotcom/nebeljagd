@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 const COLORS = {
   sunStaff: ['#8c6325', '#eac171', '#fff6d4'],
-  soulStaff: ['#16131c', '#32243f', '#776080'],
+  soulStaff: ['#080c13', '#1b2530', '#a3bbc2'],
   hourglassStaff: ['#725023', '#d29d43', '#fff0bd'],
   fireStaff: ['#a61908', '#f15a0d', '#ffd16b'],
   iceStaff: ['#14578d', '#36b9e0', '#c2f4ff'],
@@ -20,7 +20,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
     name: `Element ${kind}`, transparent: true, depthWrite: false, depthTest: true,
     side: THREE.DoubleSide, blending: THREE.NormalBlending, toneMapped: false,
     defines: { ...(kind === 'trail' ? { ELEMENT_TRAIL: 1 } : {}), ...(billboard ? { ELEMENT_BILLBOARD: 1 } : {}) },
-    uniforms: { uTime: clock, uOpacity: { value: opacity }, uIce: { value: 0 }, uCloudTint: { value: 0 },
+    uniforms: { uTime: clock, uOpacity: { value: opacity }, uIce: { value: 0 }, uCloudTint: { value: 0 }, uSoul: { value: 0 },
       uMode: { value: MODES[kind] }, uDark: { value: new THREE.Color() },
       uMid: { value: new THREE.Color() }, uLight: { value: new THREE.Color() } },
     vertexShader: `
@@ -45,7 +45,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
         #endif
       }`,
     fragmentShader: `
-      uniform float uTime, uOpacity, uIce, uCloudTint, uMode;
+      uniform float uTime, uOpacity, uIce, uCloudTint, uMode, uSoul;
       uniform vec3 uDark, uMid, uLight;
       varying vec2 vUv;
       varying float vFade;
@@ -82,6 +82,16 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
           color = mix(uDark, uMid, smoothstep(.02, .72, heat));
           color = mix(color, uLight, smoothstep(.76, 1.0, heat) * mix(.80, .40, uIce));
           alpha *= mix(.95, .48, uIce);
+          if (uSoul > .5) {
+            // Dark, torn smoke with a cold hairline edge, never a luminous fire ribbon.
+            float mist = turbulence(vec2(vUv.x * 7.0 + sin(vUv.y * 13.0 + uTime * 3.0), vUv.y * 11.0 + uTime * 2.4));
+            float torn = smoothstep(.24, .65, mist + longitudinal * .20);
+            float rim = pow(max(0.0, 1.0 - abs(edge - .68) * 7.0), 3.0);
+            color = mix(uDark, uMid, mist * .65);
+            color = mix(color, uLight, rim * torn * .43);
+            alpha = body * (.40 + torn * .60) * .92;
+            if (uMode < .5) alpha *= smoothstep(.02, .32, longitudinal) * (1.0 - smoothstep(.85, 1.0, longitudinal));
+          }
         } else {
           float radius = length(p), angle = radius > .00001 ? atan(p.y, p.x) : 0.0;
           float cloud = turbulence(p * 3.2 + vec2(uTime * .65, -uTime * .85));
@@ -115,6 +125,7 @@ export function createElementMaterial(kind, clock, { type = 'fireStaff', opacity
 
 export function setElementMaterial(material, type) {
   const colors = COLORS[type] ?? COLORS.fireStaff;
+  material.uniforms.uSoul.value = type === 'soulStaff' ? 1 : 0;
   material.uniforms.uIce.value = type === 'iceStaff' || type === 'moonStaff' || type === 'starStaff' ? 1 : 0;
   material.uniforms.uCloudTint.value = type === 'fireStaff' ? 0 : 1;
   material.uniforms.uDark.value.set(colors[0]); material.uniforms.uMid.value.set(colors[1]);
