@@ -60,6 +60,19 @@ with sync_playwright() as pw:
     assert s['combat']['sun']['visuals']['seedRadius']>seed_radius;capture(p,mode+'-warning')
     pause_at(p,'s.combat.sun.age>=1.1');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1')
     assert enemy['health']<health and enemy['blindRemaining']>0 and enemy['revealRemaining']>0;capture(p,mode+'-beam')
+    assert s['combat']['sun']['visuals']['density']>=.97 and s['combat']['sun']['visuals']['groundFill']==1
+    ground_pixels=p.evaluate("""async center=>{
+     const img=new Image();img.src=nebeljagdCaptureFrame();await img.decode();
+     const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
+     const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+     const rect=document.querySelector('canvas').getBoundingClientRect();
+     return [[.9,.2],[-.9,.2],[0,1]].map(([dx,dz])=>{
+      const p=nebeljagdProjectPoint({x:center.x+dx,z:center.z+dz});
+      return [...ctx.getImageData(Math.round((p.x-rect.left)*img.width/rect.width),Math.round((p.y-rect.top)*img.height/rect.height),1,1).data];
+     });
+    }""",s['combat']['sun']['center'])
+    assert all(r>220 and g>210 and b>180 for r,g,b,a in ground_pixels),ground_pixels
+    passed(mode+': dense light column hides the green ground in captured pixels')
     frozen=s['combat']['sun'];p.wait_for_timeout(100);assert state(p)['combat']['sun']==frozen
     p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.sun.active');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1');assert abs(health-enemy['health']-damage)<1e-5
     passed(mode+': real input, warning, eight damage pulses, reveal/blind status, pause and cleanup')
@@ -72,7 +85,7 @@ with sync_playwright() as pw:
      point=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1')['position']
      # Shoot along its patrol line, so a moving target remains on the flight axis.
      p.evaluate('p=>nebeljagdInspect({x:p.x-5,z:p.z,direction:Math.PI/2})',point)
-     if hit==1:pause_at(p,'s.combat.effects.importedSoulProjectiles>0')
+     if hit==1:pause_at(p,'s.combat.effects.soulCloudProjectiles>0')
      p.keyboard.press('f')
      if hit==1:
       p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-projectile');assert state(p)['combat']['effects']['soulModel'];p.locator('#resumeBtn').click()
@@ -82,7 +95,7 @@ with sync_playwright() as pw:
     for phase in ['raised','strike','executed']:
      pause_at(p,'s.combat.soul.apparitions.some(a=>a.phase==="'+phase+'")');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-reaper-'+phase)
     p.locator('#resumeBtn').click()
-    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: real imported projectile, three skull fragments, raised/striking reaper, confirmed execution and level-up credit')
+    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: dark cloud projectile, three skull fragments, raised/striking reaper, confirmed execution and level-up credit')
    ctx.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original_hash;report.update(status='passed',mapSha256=original_hash)
  except BaseException as e:

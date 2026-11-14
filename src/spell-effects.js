@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createSoulCloudVisual } from './soul-cloud-visual.js';
 import { createLightningVisual } from './lightning-visual.js';
 import { createElementMaterial, setElementMaterial } from './spell-effect-materials.js';
 import { createFireballMaterial } from './fireball-material.js';
@@ -177,8 +178,9 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         part.material = Array.isArray(part.material) ? part.material.map(prepare) : prepare(part.material);
         part.castShadow = part.receiveShadow = false;
       });
-      soul.add(soulModel);
-    } else mesh(soul, octahedron, projectileMaterials.soulStaff.core).scale.set(.14, .14, .3);
+      soulModel.visible = false; soul.add(soulModel);
+    }
+    const soulCloud = createSoulCloudVisual(planeGeometry, clock, ownMaterial); soul.add(soulCloud.root);
     const soulShroud = new THREE.Group(); soulShroud.name = 'Geisterhafter Schattenschweif';
     soulShroud.rotation.x = Math.PI / 2; soulShroud.position.z = -.65; soul.add(soulShroud);
     const shadowMaterial = elementMaterial('body', { type: 'soulStaff', opacity: .83 });
@@ -270,7 +272,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, lightning, fire, ice, star, soul, soulModel, soulShroud, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, lightning, fire, ice, star, soul, soulModel, soulShroud, soulCloud, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -610,6 +612,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       if (visual.active) {
         visual.lightning.update(visual.age);
         if (visual.type === 'soulStaff') {
+          visual.soulCloud.update(clock.value);
           visual.soulShroud.rotation.y = Math.sin(time * 4.1) * .12;
           visual.soulShroud.scale.set(1 + Math.sin(time * 7) * .13, 1, 1 + Math.cos(time * 5) * .10);
           if (visual.soulModel) visual.soulModel.position.y = Math.sin(time * 9) * .035;
@@ -662,9 +665,10 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
         activeSmoke: smoke.filter(p => p.life > 0).length,
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
-        soulStyle: 'spectral-shadow-and-torn-wisps',
+        soulStyle: 'roiling-dark-cloud-and-torn-wisps',
         soulModel: soulProjectilePrototype ? { ...soulProjectilePrototype.userData } : null,
-        importedSoulProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff' && p.soulModel).length,
+        soulCloudProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff').length,
+        importedSoulProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff' && p.soulModel?.visible).length,
         importedFireProjectiles: projectiles.filter(p => p.active && p.type === 'fireStaff' && p.fireModel).length,
         importedIceProjectiles: projectiles.filter(p => p.active && p.type === 'iceStaff' && p.iceModel).length,
         importedGravityProjectiles: projectiles.filter(p => p.active && p.type === 'gravityStaff' && p.gravityModel).length,

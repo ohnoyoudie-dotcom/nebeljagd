@@ -1,15 +1,10 @@
 import * as THREE from 'three';
-import { createSoulApparitionTextures } from './soul-apparition-textures.js';
+import { createSoulApparitionModels } from './soul-apparition-models.js';
 import { SOUL_JUDGMENT_RULES } from './soul-judgment.js';
 
 /** Three hits assemble a skull; the existing judgment clock conducts the scythe. */
 export function createSoulMarkVisuals(scene, combat, isVisible, world) {
-  const entries = new Map(), textures = createSoulApparitionTextures();
-  function sprite(map, order) {
-    const part = new THREE.Sprite(new THREE.SpriteMaterial({ map, transparent: true,
-      depthWrite: false, depthTest: false, toneMapped: false }));
-    part.renderOrder = order; return part;
-  }
+  const entries = new Map(), models = createSoulApparitionModels();
   function remove(id, entry) {
     scene.remove(entry.root); entry.root.traverse(p => p.material?.dispose()); entries.delete(id);
   }
@@ -22,15 +17,15 @@ export function createSoulMarkVisuals(scene, combat, isVisible, world) {
     const arrival = THREE.MathUtils.smoothstep(progress, 0, .22);
     const stroke = THREE.MathUtils.smoothstep(progress, .77, 1);
     entry.reaper.visible = entry.scythe.visible = true;
-    entry.reaper.position.y = 1.6 + arrival * .4 - stroke * .3;
-    entry.reaper.scale.set(2.6 * arrival, 3.8 * arrival, 1);
-    entry.reaper.material.opacity = arrival * fade * .88;
-    entry.reaper.material.rotation = Math.sin(progress * 7) * .025;
-    entry.scythe.position.set(.85, 1.1 + arrival * .6 - stroke * 1.5, .02);
-    entry.scythe.scale.setScalar(3.5 * arrival);
-    entry.scythe.material.rotation = -.55 - progress * .35 + stroke * 2.15;
-    entry.scythe.material.opacity = arrival * fade;
-    entry.scythe.renderOrder = stroke > .1 ? 13 : 11;
+    entry.reaper.position.y = 1.0 + arrival * .10 - stroke * .15;
+    entry.reaper.scale.setScalar(.96 * arrival);
+    entry.reaper.rotation.z = Math.sin(progress * 7) * .035;
+    models.fade(entry.reaper, arrival * fade * .94);
+    entry.scythe.position.set(.48, .75 - stroke * .82, .18);
+    entry.scythe.scale.set(-.92 * arrival, .92 * arrival, .92 * arrival);
+    entry.scythe.rotation.z = .10 - progress * .10 - stroke * 2.30;
+    entry.scythe.traverse(p => { if (p.isMesh) p.renderOrder = stroke > .1 ? 13 : 11; });
+    models.fade(entry.scythe, arrival * fade);
     entry.phase = progress < .22 ? 'appearing' : progress < .77 ? 'raised' : 'strike';
   }
   function executed(result) {
@@ -60,9 +55,7 @@ export function createSoulMarkVisuals(scene, combat, isVisible, world) {
       let entry = entries.get(id);
       if (!entry) {
         const root = new THREE.Group(); root.name = 'Seelenrichter · Dreiteiliger Totenkopf';
-        const pieces = textures.pieces.map(map => { const p = sprite(map, 14); root.add(p); return p; });
-        const reaper = sprite(textures.reaper, 12), scythe = sprite(textures.scythe, 13);
-        reaper.name = 'Sensenmann'; scythe.name = 'Sense'; root.add(reaper, scythe); scene.add(root);
+        const { pieces, reaper, scythe } = models.create(root); scene.add(root);
         entry = { root, pieces, reaper, scythe, aftermath: 0, phase: 'marks' }; entries.set(id, entry);
       }
       const p = target.position;
@@ -74,9 +67,9 @@ export function createSoulMarkVisuals(scene, combat, isVisible, world) {
       if (sealed) apparition(entry, THREE.MathUtils.clamp(progress, 0, 1));
       entry.pieces.forEach((piece, i) => {
         piece.visible = i < mark.count;
-        piece.scale.setScalar(sealed ? 1.30 : 1.15);
+        piece.scale.setScalar(sealed ? .82 : .76);
         piece.position.y = 0;
-        piece.material.opacity = sealed ? .90 : Math.min(1, mark.remaining / .4);
+        models.fade(piece, sealed ? .95 - THREE.MathUtils.smoothstep(progress, .1, .5) * .25 : Math.min(1, mark.remaining / .4));
       });
     }
   }
@@ -84,5 +77,5 @@ export function createSoulMarkVisuals(scene, combat, isVisible, world) {
   return { update, executed, reset,
     get count() { return [...entries.values()].filter(e => !e.aftermath).length; },
     get telemetry() { return [...entries].map(([targetId, e]) => ({ targetId, phase: e.phase, visible: e.root.visible })); },
-    dispose() { reset(); textures.dispose(); } };
+    dispose() { reset(); models.dispose(); } };
 }

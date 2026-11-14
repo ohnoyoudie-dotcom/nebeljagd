@@ -31,7 +31,7 @@ test('soul projectile preserves the uploaded GLB and archive and meets the runti
   assert.ok(gltf.images.every(image => image.bufferView != null && !image.uri));
 });
 
-test('the soul model flies inside shadow wisps and keeps shared textures intact', () => {
+test('a rounded cloud replaces the hard soul model while preserving shared source assets', () => {
   const geometry = new THREE.ConeGeometry(.2, 1), texture = new THREE.Texture();
   const material = new THREE.MeshStandardMaterial({ map: texture });
   const prototype = new THREE.Group(); prototype.add(new THREE.Mesh(geometry, material));
@@ -52,7 +52,10 @@ test('the soul model flies inside shadow wisps and keeps shared textures intact'
   assert.equal(copy.geometry, geometry); assert.equal(copy.material.map, texture);
   effects.advance(visual, new THREE.Vector3(), new THREE.Vector3(1, 0, 0), .1, .1);
   assert.ok(new THREE.Vector3(0, 0, 1).applyQuaternion(visual.group.quaternion).x > .999);
-  assert.equal(effects.telemetry.importedSoulProjectiles, 1);
+  assert.equal(effects.telemetry.importedSoulProjectiles, 0);
+  assert.equal(visual.soulModel.visible, false);
+  assert.equal(effects.telemetry.soulCloudProjectiles, 1);
+  assert.equal(visual.soulCloud.root.children.length, 5);
   assert.ok(effects.telemetry.activeSmoke > 0);
   effects.end(visual); effects.launch(visual, 'fireStaff', new THREE.Vector3());
   assert.equal(visual.soul.visible, false); assert.equal(visual.halo.material.opacity, .32);
