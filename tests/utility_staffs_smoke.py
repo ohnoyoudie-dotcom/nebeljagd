@@ -36,7 +36,7 @@ with sync_playwright() as pw:
     if touch:
      box=p.locator('#attackBtn').bounding_box();cdp=c.new_cdp_session(p);cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':box['x']+box['width']/2,'y':box['y']+box['height']/2,'id':1}]})
     else:
-     pixel=p.evaluate('nebeljagdProjectPoint({x:-8,z:0})');p.mouse.move(pixel['x'],pixel['y']);p.keyboard.down('f')
+     pixel=p.evaluate('nebeljagdProjectPoint({x:5,z:-12})');assert 0<pixel['x']<900 and 0<pixel['y']<700,pixel;p.mouse.move(pixel['x'],pixel['y']);p.keyboard.down('f')
     p.wait_for_function('nebeljagdTestState().combat.blink.aimRange?.radius>0');first=state(p)['combat']['blink']['aimRange']['radius']
     p.wait_for_function('nebeljagdTestState().combat.blink.aimRange?.radius===12');s=state(p);assert first<=12;assert s['combat']['blink']['targetRadius']==.6;assert s['combat']['blink']['valid'];assert s['position']==start;capture(p,mode+'-aim')
     pause_at(p,'s.combat.blink.casts===1 && s.combat.blink.visuals.age>=.075')
