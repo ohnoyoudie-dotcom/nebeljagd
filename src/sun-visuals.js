@@ -15,8 +15,8 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
     geometries.push(geometry); materials.push(material);
     const part = new THREE.Mesh(geometry, material); root.add(part); return part;
   }
-  const beamVertex = `varying vec2 vUv; varying vec3 vNormal,vView; uniform float uTime,uLayer;
-    void main(){vUv=uv;vNormal=normalize(normalMatrix*normal);
+  const beamVertex = `varying vec2 vUv; varying vec3 vNormal,vView,vAxis; uniform float uTime,uLayer;
+    void main(){vUv=uv;vNormal=normalize(normalMatrix*normal);vAxis=normalize(normalMatrix*vec3(0.,1.,0.));
       vec3 pos=position;float wave=sin(uv.x*31.416+uv.y*20.-uTime*1.8)*.055+sin(uv.x*18.85-uv.y*12.+uTime*.7)*.045;
       pos.xz*=1.+wave*(uLayer>.5?1.:.35);
       vec4 p=modelViewMatrix*vec4(pos,1.);vView=-p.xyz;gl_Position=projectionMatrix*p;}`;
@@ -25,10 +25,12 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
       transparent: true, depthWrite: false, side: THREE.FrontSide, toneMapped: false,
       blending: layer === 2 ? THREE.AdditiveBlending : THREE.NormalBlending,
       uniforms: {uTime:clock,uStrength:strength,uLayer:{value:layer}}, vertexShader:beamVertex,
-      fragmentShader:`varying vec2 vUv; varying vec3 vNormal,vView; uniform float uTime,uStrength,uLayer;
+      fragmentShader:`varying vec2 vUv; varying vec3 vNormal,vView,vAxis; uniform float uTime,uStrength,uLayer;
         ${noise}
         void main(){
-          float face=abs(dot(normalize(vNormal),normalize(vView)));
+          vec3 axis=normalize(vAxis),view=normalize(vView);
+          vec3 radial=view-axis*dot(view,axis);
+          float face=abs(dot(normalize(vNormal),radial/max(length(radial),.0001)));
           float angle=vUv.x*6.283185;
           float n=mist(vec2(sin(angle)*3.+cos(angle)*1.2+sin(vUv.y*14.-uTime*.8)*.7,cos(angle)*3.+vUv.y*8.-uTime*.45));
           float plume=smoothstep(.30,.70,n);
