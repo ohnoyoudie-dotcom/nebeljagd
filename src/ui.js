@@ -504,7 +504,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
       const effectDetail = { blinkStaff:' · Halten, Landestelle wählen, loslassen', reflectionStaff:' · 1,8 Sekunden Projektilschutz', sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Drücken zum Schießen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
         poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz', lightningStaff: ' · Gewitter zielen und loslassen' }[weaponType] || '';
-      weaponDetail.textContent = weaponType === 'blinkStaff' ? 'Teleport bis 8 m · 4 s Abklingzeit' : weaponType === 'reflectionStaff' ? 'Projektilschutz 1,8 s · 8 s Abklingzeit' : weaponType === 'soulStaff' ? '3 Treffer · Hinrichtung nach 2 s' : weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
+      weaponDetail.textContent = weaponType === 'blinkStaff' ? 'Teleport bis 12 m · 4 s Abklingzeit' : weaponType === 'reflectionStaff' ? 'Projektilschutz 1,8 s · 8 s Abklingzeit' : weaponType === 'soulStaff' ? '3 Treffer · Hinrichtung nach 2 s' : weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
       weaponStatus.dataset.rarity = weapon.rarity;
       weaponIcon.innerHTML = icon(weaponType || 'shield');
