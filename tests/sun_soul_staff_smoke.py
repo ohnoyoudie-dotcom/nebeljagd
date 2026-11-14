@@ -85,7 +85,12 @@ with sync_playwright() as pw:
     pause_at(p,'s.combat.sun.age>='+str(fade_age));p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p)
     assert s['combat']['sun']['pulses']==8 and not s['combat']['sun']['visuals']['damageEligible']
     assert 0<s['combat']['sun']['visuals']['brightness']<1;capture(p,mode+'-fade')
-    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.sun.active');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1');assert abs(health-enemy['health']-damage)<1e-5
+    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.sun.active');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1')
+    # Touch charge can place the patrolling target outside the first narrow pulse.
+    # The cast still emits all eight pulses; only actual overlaps deal damage.
+    hits=s['combat']['sun']['hits'];assert s['combat']['sun']['pulses']==len(sun_rules['pulses'])
+    assert (6<=hits<=8 if touch else hits==8)
+    assert abs(health-enemy['health']-damage*hits/len(sun_rules['pulses']))<1e-5
     passed(mode+': growing footprint and brightness, falling peak particles, long smooth fade, eight damage pulses, reveal/blind status, pause and cleanup')
     p.evaluate('nebeljagdInspectSolarHit()');p.wait_for_function('nebeljagdTestState().vision.blindRadius===3');capture(p,mode+'-blinded')
     pos=state(p)['position'];assert not p.evaluate('p=>nebeljagdInspectVisibility({x:p.x+8,z:p.z})',pos)
