@@ -56,3 +56,7 @@ einschließlich Maus-/Touch-Zielen und eingehender Blendung am lokalen Avatar.
 Die Blendung nutzt den gemeinsamen Combat-Status des betroffenen Akteurs. Der
 lokale Avatar teilt seine Lebenspunkte mit dem bestehenden Fortschrittssystem.
 Das ergänzt keinen neuen Netzwerk-Mehrspielermodus.
+
+## Sonnenlicht auf unebenem Boden
+
+Die Bodenhelligkeit folgt nun dem Gelände statt auf einer flachen Scheibe zu liegen. Ein einmal pro Zielort abgetastetes Höhenfeld führt außerdem die Unterkante des Lichtvolumens; der Strahl reicht bis unter den niedrigsten Bodenpunkt seiner Fläche. Dadurch entstehen beim Überschneiden mit Hängen keine schrägen, harten Schnittkanten mehr. Wachstum, Helligkeit, fallende Partikel, Schaden und Zielregeln bleiben gleich. `tests/sun_terrain.test.js` prüft den Geländeabstand während Wachstum, Ausblenden und beim Wechsel des Zielortes. Ein Browservergleich auf einem geneigten Testgelände reproduziert die vorherige Kante und zeigt den weich auslaufenden korrigierten Strahl.

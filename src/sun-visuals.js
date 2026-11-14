@@ -5,6 +5,13 @@ import { solarEnvelope } from './sun-envelope.js';
 export function createSunVisuals(scene, rules, ground, isVisible) {
   const root = new THREE.Group(); root.name = 'Sonnenstrahl'; root.visible = false; scene.add(root);
   const materials = [], geometries = [], clock = { value: 0 }, strength = { value: 0 };
+  const terrainSize = 49, terrainExtent = rules.radius * 1.28, terrainData = new Uint8Array(terrainSize * terrainSize * 4);
+  // Two-byte heights in a linearly filtered RGBA texture work without optional
+  // float-texture filtering. The same sampled surface carries the ground light.
+  const terrainTexture = new THREE.DataTexture(terrainData, terrainSize, terrainSize, THREE.RGBAFormat);
+  terrainTexture.minFilter = terrainTexture.magFilter = THREE.LinearFilter;
+  const terrainRange = { value: new THREE.Vector2() }, footprintScale = { value: 1 }, beamFloor = { value: -4 };
+  let terrainCenter = null;
   const noise = `
     float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
@@ -22,19 +29,27 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
       transparent: true, depthWrite: false, side: THREE.FrontSide, toneMapped: false,
       blending: THREE.NormalBlending,
       uniforms: {uTime:clock,uStrength:strength,uRadius:{value:rules.radius},uOrtho:{value:1},
+        uTerrain:{value:terrainTexture},uTerrainRange:terrainRange,uFootprint:footprintScale,uFloor:beamFloor,
         uEye:{value:new THREE.Vector3()},uDirection:{value:new THREE.Vector3()}}, vertexShader:beamVertex,
-      fragmentShader:`varying vec3 vLocal;uniform float uTime,uStrength,uRadius,uOrtho;uniform vec3 uEye,uDirection;
+      fragmentShader:`varying vec3 vLocal;uniform float uTime,uStrength,uRadius,uOrtho,uFootprint,uFloor;uniform vec3 uEye,uDirection;
+        uniform sampler2D uTerrain;uniform vec2 uTerrainRange;
         ${noise}
+        float terrainHeight(vec2 p){
+          vec2 uv=clamp(p*uFootprint/(uRadius*2.56)+.5,0.,1.);
+          vec2 packedHeight=texture2D(uTerrain,(uv*48.+.5)/49.).rg;
+          float h=dot(packedHeight,vec2(65280.,255.))/65535.;
+          return mix(uTerrainRange.x,uTerrainRange.y,h);
+        }
         void main(){
           vec3 ray=uOrtho>.5?uDirection:normalize(vLocal-uEye);
           float a=dot(ray.xz,ray.xz),b=dot(vLocal.xz,ray.xz);
           float c=dot(vLocal.xz,vLocal.xz)-pow(uRadius*1.22,2.);
           float farCircle=a>.00001?(-b+sqrt(max(0.,b*b-a*c)))/a:100000.;
-          float farY=abs(ray.y)>.00001?((ray.y<0.?-10.:10.)-vLocal.y)/ray.y:100000.;
+          float farY=abs(ray.y)>.00001?((ray.y<0.?uFloor:20.)-vLocal.y)/ray.y:100000.;
           float path=max(0.,min(farCircle,farY));
           if(path<=.0001)discard;
           vec3 middle=vLocal+ray*path*.5;
-          float height=(middle.y+10.)/20.;
+          float height=middle.y/20.;
           float n=mist(vec2(middle.x*.8+middle.z*.31,height*7.+uTime*.80));
           float plume=smoothstep(.30,.70,n);
           float stream=pow(.5+.5*sin(middle.x*4.1+middle.z*3.7+n*.85+sin(height*2.+uTime*.6)*.15),6.);
@@ -45,7 +60,9 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
             vec3 p=vLocal+ray*(float(i)+.5)*stepLength;
             float r=length(p.xz)/uRadius;
             float d=exp(-2.8*pow(r,4.))*(1.-smoothstep(1.10,1.22,r));
-            d*=1.-smoothstep(.72,1.,(p.y+10.)/20.);
+            d*=1.-smoothstep(.72,1.,p.y/20.);
+            float floorY=terrainHeight(p.xz);
+            d*=smoothstep(floorY-.04,floorY+.12,p.y);
             density+=d*stepLength;core+=d*stepLength*max(0.,1.-r*r);
           }
           float alpha=1.-exp(-density*2.4*pow(uStrength,2.8));
@@ -58,8 +75,9 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
         }`,
     });
   }
-  const beam=mesh(new THREE.CylinderGeometry(rules.radius*1.22,rules.radius*1.22,20,64,1,false),beamMaterial());
-  beam.position.y=10;beam.name='Sonnenkern';
+  const beamGeometry=new THREE.CylinderGeometry(rules.radius*1.22,rules.radius*1.22,24,64,1,false);
+  beamGeometry.translate(0,8,0);
+  const beam=mesh(beamGeometry,beamMaterial());beam.name='Sonnenkern';
   const beamInverse=new THREE.Matrix4(),beamEye=new THREE.Vector3();
   beam.onBeforeRender=(_renderer,_scene,camera)=>{
     beamInverse.copy(beam.matrixWorld).invert();camera.getWorldPosition(beamEye);
@@ -70,10 +88,10 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
   function groundMaterial() {
     return new THREE.ShaderMaterial({transparent:true,depthWrite:false,toneMapped:false,
       blending:THREE.NormalBlending,
-      uniforms:{uTime:clock,uStrength:strength},
+      uniforms:{uTime:clock,uStrength:strength,uFootprint:footprintScale},
       vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-      fragmentShader:`varying vec2 vUv;uniform float uTime,uStrength;${noise}
-        void main(){vec2 p=vUv*2.-1.;float r=length(p)*1.28;
+      fragmentShader:`varying vec2 vUv;uniform float uTime,uStrength,uFootprint;${noise}
+        void main(){vec2 p=(vUv*2.-1.)/uFootprint;float r=length(p)*1.28;
           float n=mist(p*3.+vec2(uTime*.2,-uTime*.28));
           float edge=exp(-2.8*pow(r,4.))*(1.-smoothstep(1.10,1.28,r));
           float alpha=1.-exp(-7.5*edge*pow(uStrength,2.4));
@@ -82,8 +100,33 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
           #include <colorspace_fragment>
         }`});
   }
-  const disk=mesh(new THREE.CircleGeometry(rules.radius*1.28,64),groundMaterial());
-  disk.name='Wachsende Sonnenhelligkeit';disk.rotation.x=-Math.PI/2;disk.position.y=.055;
+  const diskGeometry=new THREE.PlaneGeometry(terrainExtent*2,terrainExtent*2,terrainSize-1,terrainSize-1);
+  diskGeometry.rotateX(-Math.PI/2);
+  const disk=mesh(diskGeometry,groundMaterial());disk.name='Wachsende Sonnenhelligkeit';
+  // Ground light is behind the volume in transparent sorting, and follows the
+  // terrain instead of intersecting it as a single flat disk on hills.
+  disk.renderOrder=-1;
+  function fitTerrain(center) {
+    if(terrainCenter?.x===center.x && terrainCenter?.z===center.z)return;
+    terrainCenter={x:center.x,z:center.z};const base=ground(center),heights=[];
+    let min=Infinity,max=-Infinity;
+    const positions=diskGeometry.attributes.position;
+    for(let i=0;i<positions.count;i++){
+      const h=ground({x:center.x+positions.getX(i),z:center.z+positions.getZ(i)})-base;
+      heights.push(h);min=Math.min(min,h);max=Math.max(max,h);positions.setY(i,h+.065);
+    }
+    positions.needsUpdate=true;diskGeometry.computeBoundingSphere();
+    terrainRange.value.set(min,max);const span=max-min||1;
+    for(let i=0;i<heights.length;i++){
+      const packed=Math.round((heights[i]-min)/span*65535);
+      terrainData[i*4]=packed>>8;terrainData[i*4+1]=packed&255;terrainData[i*4+3]=255;
+    }
+    terrainTexture.needsUpdate=true;
+    beamFloor.value=min-.35;
+    const vertices=beamGeometry.attributes.position;
+    for(let i=0;i<vertices.count;i++)if(vertices.getY(i)<19)vertices.setY(i,beamFloor.value);
+    vertices.needsUpdate=true;beamGeometry.computeBoundingSphere();
+  }
 
   // Falling gold motes have a bright lower head and a soft tail above it.
   // One bounded instanced draw retains the same geometry through every cast.
@@ -112,9 +155,11 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
   const fades=new Float32Array(count);particleGeometry.setAttribute('aFade',new THREE.InstancedBufferAttribute(fades,1));
   const transform=new THREE.Object3D();let state={phase:'idle',brightness:0,radiusScale:0,effectiveRadius:0,damageEligible:false}, visibleParticles=0;
   function show(center,age) {
+    fitTerrain(center);
     root.position.set(center.x,ground(center),center.z);
     root.visible=!isVisible||isVisible(center,{concealed:false});clock.value=age;state=solarEnvelope(age,rules);
     root.scale.set(state.radiusScale,1,state.radiusScale);
+    footprintScale.value=state.radiusScale;disk.scale.set(1/state.radiusScale,1,1/state.radiusScale);
     strength.value=state.brightness;visibleParticles=0;
     const exit=state.fading?state.brightness:1;
     for(let i=0;i<count;i++) {
@@ -135,6 +180,6 @@ export function createSunVisuals(scene, rules, ground, isVisible) {
   return {start(center){show(center,0);},show,hide,
     get telemetry(){return {visible:root.visible,...state,intensity:state.brightness,density:.98*state.brightness,
       groundFill:state.brightness,seedRadius:state.effectiveRadius,particleDirection:'down',fallingParticles:visibleParticles,
-      particleSpeed,particleSpeedMin,particleSpeedMax,edgeProfile:'continuous',beamLayers:1,meshes:root.children.length};},
-    dispose(){scene.remove(root);particles.dispose();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
+      particleSpeed,particleSpeedMin,particleSpeedMax,edgeProfile:'continuous',groundProfile:'terrain-following',terrainHeightRange:terrainRange.value.toArray(),beamLayers:1,meshes:root.children.length};},
+    dispose(){scene.remove(root);particles.dispose();terrainTexture.dispose();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
 }

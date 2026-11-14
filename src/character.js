@@ -204,6 +204,8 @@ export async function createCharacter(scene) {
 
   return {
     group, update, setLevelUpGlow, inspectLevelUpGlow: levelGlow.inspect,
+    // Original skin meshes only; concealment overlays and held gear are excluded.
+    effectMeshes: Object.freeze([...meshes]),
     resetMotion(direction = group.rotation.y) {
       setLevelUpGlow(0);
       concealed = false; opacity = 1; concealmentAppearance.reset();

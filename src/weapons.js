@@ -824,7 +824,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const sun = createSunSpell(scene, world, combat, ownerId, result => { lastDamage = result; damageHits++; }, isVisible);
   const soulJudgment = createSoulJudgment(combat, result => { lastDamage = result; damageHits++; soulMarks.executed(result); });
   const soulMarks = createSoulMarkVisuals(scene, combat, isVisible, world);
-  const blink = createBlinkSpell(scene,world,combat,ownerId,isVisible,onTeleport);
+  const blink = createBlinkSpell(scene,world,combat,ownerId,isVisible,onTeleport,{avatarRoot:characterGroup,avatarMeshes:character?.effectMeshes??[]});
   const reflection = createReflectionSpell(scene,combat,ownerId,isVisible);
   const staffTip = new THREE.Vector3();
   function cancelAim() {

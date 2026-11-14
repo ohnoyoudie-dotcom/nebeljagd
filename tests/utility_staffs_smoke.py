@@ -39,12 +39,13 @@ with sync_playwright() as pw:
      pixel=p.evaluate('nebeljagdProjectPoint({x:-8,z:-4})');p.mouse.move(pixel['x'],pixel['y']);p.keyboard.down('f')
     p.wait_for_function('nebeljagdTestState().combat.blink.aimRange?.radius>0');first=state(p)['combat']['blink']['aimRange']['radius']
     p.wait_for_function('nebeljagdTestState().combat.blink.aimRange?.radius===8');s=state(p);assert first<=8;assert s['combat']['blink']['targetRadius']==.6;assert s['combat']['blink']['valid'];assert s['position']==start;capture(p,mode+'-aim')
-    pause_at(p,'s.combat.blink.casts===1')
+    pause_at(p,'s.combat.blink.casts===1 && s.combat.blink.visuals.age>=.075')
     if touch:cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
     else:p.keyboard.up('f')
     p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);distance=((s['position']['x']-start['x'])**2+(s['position']['z']-start['z'])**2)**.5;assert 6<distance<=8.01;assert s['attackCooldown']>3.5
-    assert s['combat']['blink']['visuals']['active'];capture(p,mode+'-portals');frozen=state(p)['combat']['blink'];p.wait_for_timeout(100);assert state(p)['combat']['blink']==frozen
-    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.blink.visuals.active');passed(mode+': growing 8m reach, fixed small landing ring, real teleport, portals, cooldown and pause')
+    assert s['combat']['blink']['visuals']['active'];assert s['combat']['blink']['visuals']['style']=='light-impulse';assert s['combat']['blink']['visuals']['silhouetteMeshes']>0;capture(p,mode+'-impulse');frozen=state(p)['combat']['blink'];p.wait_for_timeout(100);assert state(p)['combat']['blink']==frozen
+    pause_at(p,'s.combat.blink.visuals.age>=.24');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-fade')
+    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.blink.visuals.active');passed(mode+': growing 8m reach, fixed small landing ring, real teleport, light impulse with avatar silhouette, cooldown and pause')
    else:
     hp=state(p)['health'];pause_at(p,'s.combat.reflection.active && s.combat.reflection.remaining<1.5');p.keyboard.press('f');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['combat']['reflection']['visible'];capture(p,mode+'-shield')
     result=p.evaluate('nebeljagdInspectGuardHit()');assert result['blocked'] and state(p)['health']==hp

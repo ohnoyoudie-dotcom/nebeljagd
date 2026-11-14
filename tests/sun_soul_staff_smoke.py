@@ -70,6 +70,7 @@ with sync_playwright() as pw:
     assert s['combat']['sun']['visuals']['particleDirection']=='down' and s['combat']['sun']['visuals']['fallingParticles']>0
     assert s['combat']['sun']['visuals']['particleSpeed']>=30
     assert s['combat']['sun']['visuals']['edgeProfile']=='continuous'
+    assert s['combat']['sun']['visuals']['groundProfile']=='terrain-following'
     ground_pixels=p.evaluate("""async center=>{
      const img=new Image();img.src=nebeljagdCaptureFrame();await img.decode();
      const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;

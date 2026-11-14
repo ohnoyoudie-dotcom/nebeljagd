@@ -17,9 +17,9 @@ export function blinkLanding(world,combat,ownerId,origin,requested,range) {
   for(const t of combat?.targets?.values()??[])if(t.alive&&t.id!==ownerId&&t.targetable!==false&&Math.abs((t.position.y??0)-p.y)<2.3&&Math.hypot(t.position.x-p.x,t.position.z-p.z)<r.bodyRadius+(t.radius??.45)+.08)valid=false;
   return {point:p,valid,blocked:!!wall};
 }
-export function createBlinkSpell(scene,world,combat,ownerId,isVisible,onTeleport) {
+export function createBlinkSpell(scene,world,combat,ownerId,isVisible,onTeleport,visualOptions) {
   const r=BLINK_RULES,ring=createStaffAimRing(r.radius,{color:'#81e9ff'}),rangeRing=createStaffAimRing(r.range,{range:true});
-  scene.add(ring,rangeRing);const visuals=createBlinkVisuals(scene,isVisible);let aim=null,casts=0,last=null;
+  scene.add(ring,rangeRing);const visuals=createBlinkVisuals(scene,isVisible,visualOptions);let aim=null,casts=0,last=null;
   function refresh(position){if(!aim)return;aim.origin.copy(position);aim.range=r.range*Math.min(1,aim.age/r.chargeSeconds);
     const landing=blinkLanding(world,combat,ownerId,position,aim.requested,aim.range);Object.assign(aim,landing);
     ring.position.copy(aim.point);ring.position.y+=.07;ring.visible=!isVisible||isVisible(aim.point);ring.userData.update(aim.age);
