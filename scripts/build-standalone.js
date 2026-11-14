@@ -1,3 +1,4 @@
+import { packInlineModels } from './pack-inline-models.js';
 import { copyFile, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -12,7 +13,9 @@ async function inlineEntry(source, destination) {
   const script = html.match(/<script\b[^>]*\bsrc="([^"]+)"[^>]*><\/script>/);
   const stylesheet = html.match(/<link\b[^>]*\brel="stylesheet"[^>]*\bhref="([^"]+)"[^>]*>/);
   if (!script || !stylesheet) throw new Error(`Expected one bundled script and stylesheet in dist/${source}`);
-  const javascript = await readFile(resolve(root, script[1]), 'utf8');
+  const packed = packInlineModels(await readFile(resolve(root, script[1]), 'utf8'));
+  const javascript = packed.javascript;
+  if(packed.models) console.log(`Lossless GLB storage ${destination}: ${packed.models} models, ${packed.originalBytes-packed.packedBytes} compressed bytes saved`);
   const css = await readFile(resolve(root, stylesheet[1]), 'utf8');
   // Fail rather than silently producing a file that needs a neighbouring chunk.
   if (/\b(?:from\s*|import\s*\()\s*["']\.\.?\//.test(javascript)) {

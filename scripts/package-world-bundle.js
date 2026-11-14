@@ -64,7 +64,7 @@ und Teams sind noch nicht implementiert.
     // the editor and game more thoroughly to leave room for additional weapons
     // under GitHub's file limit without removing assets or offline features.
     const compressed = ['map-editor.html', 'magebrawl.html', 'avatar-preview.html'].includes(entry.name)
-      ? Buffer.from(await deflateAsync(entry.bytes, { numiterations: 30 }))
+      ? Buffer.from(await deflateAsync(entry.bytes, { numiterations: 5 }))
       : deflateRawSync(entry.bytes, { level: 9, memLevel: 9 });
     console.log(`ZIP ${entry.name}: ${compressed.length} bytes`);
     const filename = Buffer.from(entry.name), checksum = crc32(entry.bytes);
