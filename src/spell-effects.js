@@ -668,7 +668,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
         activeSmoke: smoke.filter(p => p.life > 0).length,
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
-        soulStyle: 'turbulent-gas-volume', soulImpacts: soulImpacts.telemetry,
+        soulStyle: 'spectral-shadow-and-gas-wake', soulImpacts: soulImpacts.telemetry,
         soulModel: soulProjectilePrototype ? { ...soulProjectilePrototype.userData } : null,
         soulCloudProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff').length,
         importedSoulProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff' && p.soulModel?.visible).length,

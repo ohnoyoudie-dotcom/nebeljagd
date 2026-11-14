@@ -7,6 +7,7 @@ BASE=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:5240').rstrip('/')
 OUT=ROOT/'test-results/sun-soul';OUT.mkdir(parents=True,exist_ok=True)
 original_hash=hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()
 fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {createLobbyMap} from './src/lobby-map.js';console.log(JSON.stringify(createLobbyMap()))"],cwd=ROOT))
+sun_rules=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {SUN_RULES} from './src/sun-spell.js';console.log(JSON.stringify(SUN_RULES))"],cwd=ROOT))
 report=dict(checks=[],errors=[])
 def state(p):return p.evaluate('nebeljagdTestState()')
 def passed(s):report['checks'].append(s);print('PASS',s,flush=True)
@@ -56,13 +57,17 @@ with sync_playwright() as pw:
     else:p.keyboard.up('f')
     p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);assert s['combat']['sun']['visuals']['phase']=='warning';assert next(a for a in s['practiceActors'] if a['id']=='practice-1')['health']==health;capture(p,mode+'-seed')
     seed_brightness=s['combat']['sun']['visuals']['brightness']
+    seed_radius=s['combat']['sun']['visuals']['effectiveRadius']
     pause_at(p,'s.combat.sun.age>=.28');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p)
-    assert s['combat']['sun']['visuals']['brightness']>seed_brightness and s['combat']['sun']['pulses']==0;capture(p,mode+'-warning')
+    assert s['combat']['sun']['visuals']['brightness']>seed_brightness and s['combat']['sun']['pulses']==0
+    assert seed_radius<s['combat']['sun']['visuals']['effectiveRadius']<sun_rules['radius'];capture(p,mode+'-warning')
     pause_at(p,'s.combat.sun.age>=.42');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p)
     assert s['combat']['sun']['pulses']==1 and s['combat']['sun']['visuals']['damageEligible'];capture(p,mode+'-damage-onset')
     pause_at(p,'s.combat.sun.age>=1.1');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1')
     assert enemy['health']<health and enemy['blindRemaining']>0 and enemy['revealRemaining']>0;capture(p,mode+'-beam')
     assert s['combat']['sun']['visuals']['density']>=.97 and s['combat']['sun']['visuals']['groundFill']==1
+    assert s['combat']['sun']['visuals']['effectiveRadius']==sun_rules['radius']
+    assert s['combat']['sun']['visuals']['particleDirection']=='down' and s['combat']['sun']['visuals']['fallingParticles']>0
     ground_pixels=p.evaluate("""async center=>{
      const img=new Image();img.src=nebeljagdCaptureFrame();await img.decode();
      const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
@@ -76,11 +81,12 @@ with sync_playwright() as pw:
     assert all(r>220 and g>210 and b>180 for r,g,b,a in ground_pixels),ground_pixels
     passed(mode+': dense light column hides the green ground in captured pixels')
     frozen=s['combat']['sun'];p.wait_for_timeout(100);assert state(p)['combat']['sun']==frozen
-    pause_at(p,'s.combat.sun.age>=2.90');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p)
+    fade_age=sun_rules['warning']+sun_rules['duration']+sun_rules['fade']*.5
+    pause_at(p,'s.combat.sun.age>='+str(fade_age));p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p)
     assert s['combat']['sun']['pulses']==8 and not s['combat']['sun']['visuals']['damageEligible']
     assert 0<s['combat']['sun']['visuals']['brightness']<1;capture(p,mode+'-fade')
     p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.sun.active');s=state(p);enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1');assert abs(health-enemy['health']-damage)<1e-5
-    passed(mode+': real input, brightness threshold at .4s, smooth fade, eight damage pulses, reveal/blind status, pause and cleanup')
+    passed(mode+': growing footprint and brightness, falling peak particles, long smooth fade, eight damage pulses, reveal/blind status, pause and cleanup')
     p.evaluate('nebeljagdInspectSolarHit()');p.wait_for_function('nebeljagdTestState().vision.blindRadius===3');capture(p,mode+'-blinded')
     pos=state(p)['position'];assert not p.evaluate('p=>nebeljagdInspectVisibility({x:p.x+8,z:p.z})',pos)
     p.wait_for_function('nebeljagdTestState().vision.blindRadius===null');passed(mode+': affected avatar sight contracts to 3 metres and recovers')
@@ -103,7 +109,7 @@ with sync_playwright() as pw:
     for phase in ['raised','strike','executed']:
      pause_at(p,'s.combat.soul.apparitions.some(a=>a.phase==="'+phase+'")');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-reaper-'+phase)
     p.locator('#resumeBtn').click()
-    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: dark gas projectile envelops victim before raised skull fragments, raised/striking reaper, confirmed execution and level-up credit')
+    p.wait_for_function('!nebeljagdTestState().practiceActors.find(a=>a.id==="practice-1").alive');assert state(p)['lastDefeat']['type']=='soul-judgment';capture(p,mode+'-judgment');passed('Soul: shadow projectile with smoke envelops victim before raised skull fragments; existing execution and level-up credit preserved')
    ctx.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original_hash;report.update(status='passed',mapSha256=original_hash)
  except BaseException as e:

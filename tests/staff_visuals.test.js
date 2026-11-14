@@ -5,23 +5,26 @@ import { createSoulMarkVisuals } from '../src/soul-mark-visuals.js';
 import { createSunVisuals } from '../src/sun-visuals.js';
 import { SUN_RULES } from '../src/sun-spell.js';
 
-test('the full-height solar column brightens in place, raises motes and fades without new allocations', () => {
+test('the solar footprint grows with brightness, drops motes at peak and slowly fades without allocations', () => {
   const scene=new THREE.Scene(),sun=createSunVisuals(scene,SUN_RULES,()=>0),point=new THREE.Vector3(2,0,4);
-  const values=[];
-  for(const age of [0,.1,.28,.4,.6]){sun.show(point,age);values.push(sun.telemetry.brightness);}
+  const values=[],radii=[];
+  for(const age of [0,.1,.28,.4,SUN_RULES.rise]){sun.show(point,age);values.push(sun.telemetry.brightness);radii.push(sun.telemetry.effectiveRadius);}
   assert.equal(values[0],0);assert.equal(values.at(-1),1);
   assert.ok(values.every((v,i)=>!i||v>values[i-1]));
+  assert.ok(radii[0]<.3 && radii.every((v,i)=>!i||v>radii[i-1]));assert.equal(radii.at(-1),SUN_RULES.radius);
   assert.equal(sun.telemetry.damageEligible,true);assert.ok(sun.telemetry.density>=.97);
   const root=scene.children[0],beam=root.getObjectByName('Sonnenkern');
-  sun.show(point,.1);const height=new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).y;
-  sun.show(point,1);assert.equal(new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).y,height);
-  assert.equal(sun.telemetry.particleDirection,'up');assert.ok(sun.telemetry.risingParticles>0);
-  const particles=root.getObjectByName('Aufsteigende Sonnenfunken'),m=new THREE.Matrix4();
-  sun.show(point,.2);particles.getMatrixAt(0,m);const y=m.elements[13];
-  sun.show(point,.3);particles.getMatrixAt(0,m);assert.ok(m.elements[13]>y);
-  sun.show(point,SUN_RULES.warning+SUN_RULES.duration+.1);
+  sun.show(point,.1);root.updateMatrixWorld(true);const size=new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()),height=size.y;
+  assert.equal(sun.telemetry.fallingParticles,0,'particles wait for high brightness');
+  sun.show(point,1);root.updateMatrixWorld(true);assert.equal(new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).y,height);
+  assert.ok(new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).x>size.x*5,'the visible column itself widens');
+  assert.equal(sun.telemetry.particleDirection,'down');assert.ok(sun.telemetry.fallingParticles>0);
+  const particles=root.getObjectByName('Fallende Sonnenfunken'),m=new THREE.Matrix4();
+  sun.show(point,1);particles.getMatrixAt(0,m);const y=m.elements[13];
+  sun.show(point,1.1);particles.getMatrixAt(0,m);assert.ok(m.elements[13]<y);
+  sun.show(point,SUN_RULES.warning+SUN_RULES.duration+SUN_RULES.fade*.5);
   assert.equal(sun.telemetry.phase,'fade');assert.equal(sun.telemetry.damageEligible,false);
-  assert.ok(sun.telemetry.brightness>0&&sun.telemetry.brightness<1);
+  assert.ok(Math.abs(sun.telemetry.brightness-.5)<1e-8);assert.equal(sun.telemetry.effectiveRadius,SUN_RULES.radius);
   const count=root.children.length;
   for(let i=0;i<100;i++){sun.start(point);sun.show(point,1);sun.hide();}
   assert.equal(root.children.length,count);assert.equal(sun.telemetry.visible,false);

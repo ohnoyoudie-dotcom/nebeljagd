@@ -30,7 +30,7 @@ test('sunlight warns before damage, reveals grass targets, blinds them and respe
   assert.equal(spell.telemetry.visuals.phase, 'beam');
   assert.equal(spell.telemetry.visuals.damageEligible, true);
   assert.equal(enemy.blindRadius, 3); assert.ok(enemy.revealRemaining > 2);
-  spell.update(3, position);
+  spell.update(SUN_RULES.duration + SUN_RULES.fade + .01, position);
   assert.equal(enemy.health, 76);
   assert.equal(combat.targets.get('covered').health, 100);
   assert.equal(combat.targets.get('caster').health, 100);
@@ -71,9 +71,9 @@ test('sun aiming rejects an invalid landing point instead of reusing the last va
   spell.dispose();
 });
 
-test('brightness and damage use one threshold; the shorter fade cannot deal additional damage', () => {
+test('brightness and damage use one threshold; the lingering fade cannot deal additional damage', () => {
   const {combat,spell,position}=fixture(), target=combat.targets.get('enemy');
-  assert.ok(SUN_RULES.warning<.85);assert.ok(SUN_RULES.fade<SUN_RULES.rise);
+  assert.ok(SUN_RULES.warning<.85);assert.ok(SUN_RULES.fade>=.8);
   assert.equal(solarEnvelope(SUN_RULES.warning-.001,SUN_RULES).damageEligible,false);
   const threshold=solarEnvelope(SUN_RULES.warning,SUN_RULES);
   assert.equal(threshold.brightness,threshold.damageThreshold);assert.equal(threshold.damageEligible,true);
@@ -83,4 +83,26 @@ test('brightness and damage use one threshold; the shorter fade cannot deal addi
   const before=spell.telemetry.visuals;spell.update(0,position);assert.deepEqual(spell.telemetry.visuals,before);
   spell.update(SUN_RULES.fade,position);assert.equal(target.health,76);assert.equal(spell.busy,false);
   spell.dispose();
+});
+
+test('growing sunlight only hits inside its illuminated footprint, even when frames cross several pulses', () => {
+  function run(coarse) {
+    const {combat,spell,position}=fixture();
+    const edge=combat.addTarget({id:'edge',position:new THREE.Vector3(2.5,0,4),maxHealth:100});
+    const rim=combat.addTarget({id:'rim',position:new THREE.Vector3(3.05,0,4),maxHealth:100});
+    if(coarse)spell.update(4,position);
+    else {
+      spell.update(.4,position);
+      assert.ok(spell.telemetry.visuals.effectiveRadius<2.5);
+      for(const target of [edge,rim]) {
+        assert.equal(target.health,100);
+        assert.ok(!(target.blindRemaining>0) && !(target.revealRemaining>0),'unlit targets get no status effects');
+      }
+      spell.update(.3,position);assert.equal(edge.health,97);assert.equal(rim.health,100);
+      spell.update(.3,position);assert.equal(edge.health,94);assert.equal(rim.health,97);
+      spell.update(3,position);
+    }
+    const healths=[edge.health,rim.health];spell.dispose();return healths;
+  }
+  assert.deepEqual(run(false),[79,82]);assert.deepEqual(run(true),[79,82]);
 });

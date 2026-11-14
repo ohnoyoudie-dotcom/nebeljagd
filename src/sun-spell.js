@@ -6,7 +6,7 @@ import { solarEnvelope } from './sun-envelope.js';
 import { traceRangedProjectile } from './projectile-collision.js';
 
 export const SUN_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
-  radius: 3.2, warning: .4, rise: .6, duration: 2.4, fade: .26, blindSeconds: 2, revealSeconds: 2.5, blindRadius: 3,
+  radius: 3.2, warning: .4, rise: .9, expansion: .9, duration: 2.4, fade: .85, blindSeconds: 2, revealSeconds: 2.5, blindRadius: 3,
   pulses: Object.freeze([0, .3, .6, .9, 1.2, 1.5, 1.8, 2.1]) });
 
 /** An aimed solar beam, using simulation time for charge, strikes and cleanup. */
@@ -49,13 +49,14 @@ export function createSunSpell(scene, world, combat, ownerId, onDamage = () => {
     visuals.start(field.center); return true;
   }
   function strike(at) {
-    if (!solarEnvelope(at, r).damageEligible) return;
+    const envelope = solarEnvelope(at, r);
+    if (!envelope.damageEligible) return;
     pulses++;
     const center = field.center;
     for (const target of combat?.targets?.values() ?? []) {
       const p = target.position;
       if (!target.alive || target.id === ownerId || target.targetable === false || !p) continue;
-      if (Math.hypot(p.x - center.x, p.z - center.z) > r.radius || Math.abs((p.y ?? ground(p)) - center.y) > 2) continue;
+      if (Math.hypot(p.x - center.x, p.z - center.z) > envelope.effectiveRadius || Math.abs((p.y ?? ground(p)) - center.y) > 2) continue;
       // The sunlight falls vertically: roofs shield targets; hiding grass does not.
       origin.set(p.x, center.y + 18, p.z);
       point.set(p.x, (p.y ?? ground(p)) + Math.min(1, target.height ?? 1), p.z);

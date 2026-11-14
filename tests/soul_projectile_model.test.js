@@ -31,7 +31,7 @@ test('soul projectile preserves the uploaded GLB and archive and meets the runti
   assert.ok(gltf.images.every(image => image.bufferView != null && !image.uri));
 });
 
-test('a rounded cloud replaces the hard soul model while preserving shared source assets', () => {
+test('a spectral head and smoky wake replace the hard soul model while preserving shared source assets', () => {
   const geometry = new THREE.ConeGeometry(.2, 1), texture = new THREE.Texture();
   const material = new THREE.MeshStandardMaterial({ map: texture });
   const prototype = new THREE.Group(); prototype.add(new THREE.Mesh(geometry, material));
@@ -56,6 +56,7 @@ test('a rounded cloud replaces the hard soul model while preserving shared sourc
   assert.equal(visual.soulModel.visible, false);
   assert.equal(effects.telemetry.soulCloudProjectiles, 1);
   assert.equal(visual.soulCloud.root.children.length, 1);
+  assert.equal(visual.soulCloud.telemetry.presentation, 'spectral-head-and-wake');
   assert.equal(effects.telemetry.activeSmoke, 0);
   assert.equal(visual.trail.visible, false);
   effects.end(visual); effects.launch(visual, 'fireStaff', new THREE.Vector3());
@@ -63,4 +64,31 @@ test('a rounded cloud replaces the hard soul model while preserving shared sourc
   effects.dispose(); effects.dispose();
   assert.equal(scene.children.length, 0); assert.equal(sharedDisposed, 0);
   geometry.dispose(); material.dispose(); texture.dispose();
+});
+
+test('the attached shadow wake freezes on pause, disappears with its head and reuses its owned resources', () => {
+  const scene = new THREE.Scene(); let inSight = true;
+  const effects = createSpellEffects(scene, { isVisible: () => inSight });
+  const visual = effects.createProjectile(), mesh = visual.soulCloud.root.children[0];
+  const geometry = mesh.geometry, material = mesh.material;
+  effects.launch(visual, 'soulStaff', new THREE.Vector3(2, 1, 3), Math.PI / 2);
+  effects.update(.1, .1);
+  const matrix = mesh.matrix.clone(), position = mesh.position.clone(), scale = mesh.scale.clone();
+  const time = material.uniforms.uTime.value;
+  effects.update(0, 999);
+  assert.equal(material.uniforms.uTime.value, time);
+  assert.deepEqual(mesh.position, position); assert.deepEqual(mesh.scale, scale); assert.deepEqual(mesh.matrix, matrix);
+  inSight = false; effects.update(.01, .11);
+  assert.equal(visual.group.visible, false, 'the wake has no independent world-space history outside vision');
+  effects.end(visual); inSight = true;
+  for (let i = 0; i < 20; i++) {
+    effects.launch(visual, i % 2 ? 'fireStaff' : 'soulStaff', new THREE.Vector3());
+    assert.equal(visual.soul.visible, i % 2 === 0);
+    assert.equal(mesh.geometry, geometry); assert.equal(mesh.material, material);
+    effects.end(visual);
+  }
+  effects.reset(); assert.equal(visual.group.visible, false);
+  let disposed = 0;
+  geometry.addEventListener('dispose', () => disposed++); material.addEventListener('dispose', () => disposed++);
+  effects.dispose(); effects.dispose(); assert.equal(disposed, 2);
 });
