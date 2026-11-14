@@ -539,7 +539,9 @@
             "sunStaff",
             "soulStaff",
             "blinkStaff",
-            "reflectionStaff"
+            "reflectionStaff",
+            "earthbreakerStaff",
+            "runeWallStaff"
           ]
         },
         "variant": {
@@ -1078,7 +1080,9 @@
                   "sunStaff",
                   "soulStaff",
                   "blinkStaff",
-                  "reflectionStaff"
+                  "reflectionStaff",
+                  "earthbreakerStaff",
+                  "runeWallStaff"
                 ]
               }
             }
@@ -1426,6 +1430,48 @@
               "variant": {
                 "enum": [
                   "kit-tripo-reflection-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "earthbreakerStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-earthbreaker-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "runeWallStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-rune-wall-staff"
                 ]
               }
             }
