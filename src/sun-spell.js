@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 import { STAFF_CHARGE_SECONDS, STAFF_THROW_RANGE, chargedStaffRange } from './staff-charge.js';
 import { createSunVisuals } from './sun-visuals.js';
+import { solarEnvelope } from './sun-envelope.js';
 import { traceRangedProjectile } from './projectile-collision.js';
 
 export const SUN_RULES = Object.freeze({ range: STAFF_THROW_RANGE, chargeSeconds: STAFF_CHARGE_SECONDS,
-  radius: 3.2, warning: .7, duration: 2.4, fade: .3, blindSeconds: 2, revealSeconds: 2.5, blindRadius: 3,
-  pulses: Object.freeze([.15, .45, .75, 1.05, 1.35, 1.65, 1.95, 2.25]) });
+  radius: 3.2, warning: .4, rise: .6, duration: 2.4, fade: .26, blindSeconds: 2, revealSeconds: 2.5, blindRadius: 3,
+  pulses: Object.freeze([0, .3, .6, .9, 1.2, 1.5, 1.8, 2.1]) });
 
 /** An aimed solar beam, using simulation time for charge, strikes and cleanup. */
 export function createSunSpell(scene, world, combat, ownerId, onDamage = () => {}, isVisible = null) {
@@ -48,6 +49,7 @@ export function createSunSpell(scene, world, combat, ownerId, onDamage = () => {
     visuals.start(field.center); return true;
   }
   function strike(at) {
+    if (!solarEnvelope(at, r).damageEligible) return;
     pulses++;
     const center = field.center;
     for (const target of combat?.targets?.values() ?? []) {
@@ -72,7 +74,7 @@ export function createSunSpell(scene, world, combat, ownerId, onDamage = () => {
     if (aim && position) { aim.age += dt; refresh(position); }
     if (!field) return;
     field.age += dt;
-    while (field.next < r.pulses.length && field.age >= r.warning + r.pulses[field.next]) {
+    while (field.next < r.pulses.length && field.age + 1e-9 >= r.warning + r.pulses[field.next]) {
       strike(r.warning + r.pulses[field.next++]);
     }
     visuals.show(field.center, field.age);

@@ -44,7 +44,7 @@ test('a rounded cloud replaces the hard soul model while preserving shared sourc
   assert.equal(visual.type, 'soulStaff'); assert.equal(visual.soul.visible, true);
   assert.equal(visual.fire.visible, false); assert.equal(visual.ice.visible, false);
   assert.ok(visual.halo.material.opacity <= .15, 'the dark projectile is not hidden by a bright halo');
-  assert.ok(visual.soulShroud.children.length > 0);
+  assert.equal(visual.soulShroud, undefined, 'no sharp ribbon geometry remains');
   const copy = visual.soulModel.children[0];
   assert.notEqual(copy.material, material); assert.notEqual(copy.material, second.soulModel.children[0].material);
   assert.ok(copy.material.transparent && copy.material.opacity < 1);
@@ -55,8 +55,9 @@ test('a rounded cloud replaces the hard soul model while preserving shared sourc
   assert.equal(effects.telemetry.importedSoulProjectiles, 0);
   assert.equal(visual.soulModel.visible, false);
   assert.equal(effects.telemetry.soulCloudProjectiles, 1);
-  assert.equal(visual.soulCloud.root.children.length, 5);
-  assert.ok(effects.telemetry.activeSmoke > 0);
+  assert.equal(visual.soulCloud.root.children.length, 1);
+  assert.equal(effects.telemetry.activeSmoke, 0);
+  assert.equal(visual.trail.visible, false);
   effects.end(visual); effects.launch(visual, 'fireStaff', new THREE.Vector3());
   assert.equal(visual.soul.visible, false); assert.equal(visual.halo.material.opacity, .32);
   effects.dispose(); effects.dispose();

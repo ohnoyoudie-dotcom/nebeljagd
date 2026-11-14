@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
 import { createSunSpell, SUN_RULES } from '../src/sun-spell.js';
+import { solarEnvelope } from '../src/sun-envelope.js';
 import { createVision } from '../src/vision.js';
 
 function fixture() {
@@ -22,9 +23,12 @@ function fixture() {
 test('sunlight warns before damage, reveals grass targets, blinds them and respects roof cover', () => {
   const { combat, spell, position, scene } = fixture();
   const enemy = combat.targets.get('enemy');
-  spell.update(.7, position); assert.equal(enemy.health, 100);
+  spell.update(.399, position); assert.equal(enemy.health, 100);
+  assert.equal(spell.telemetry.visuals.damageEligible, false);
+  assert.ok(spell.telemetry.visuals.brightness > 0);
+  spell.update(.001, position); assert.equal(enemy.health, 97);
   assert.equal(spell.telemetry.visuals.phase, 'beam');
-  spell.update(.15, position); assert.equal(enemy.health, 97);
+  assert.equal(spell.telemetry.visuals.damageEligible, true);
   assert.equal(enemy.blindRadius, 3); assert.ok(enemy.revealRemaining > 2);
   spell.update(3, position);
   assert.equal(enemy.health, 76);
@@ -64,5 +68,19 @@ test('sun aiming rejects an invalid landing point instead of reusing the last va
   const spell = createSunSpell(scene, world, combat, 'caster'), p = new THREE.Vector3();
   spell.beginAim(p); spell.update(3, p); water = true; spell.aimAt(p, {x: 3, z: 4});
   assert.equal(spell.release({damage: 24}), false); assert.equal(spell.aiming, false); assert.equal(spell.busy, false);
+  spell.dispose();
+});
+
+test('brightness and damage use one threshold; the shorter fade cannot deal additional damage', () => {
+  const {combat,spell,position}=fixture(), target=combat.targets.get('enemy');
+  assert.ok(SUN_RULES.warning<.85);assert.ok(SUN_RULES.fade<SUN_RULES.rise);
+  assert.equal(solarEnvelope(SUN_RULES.warning-.001,SUN_RULES).damageEligible,false);
+  const threshold=solarEnvelope(SUN_RULES.warning,SUN_RULES);
+  assert.equal(threshold.brightness,threshold.damageThreshold);assert.equal(threshold.damageEligible,true);
+  spell.update(SUN_RULES.warning+SUN_RULES.duration+.01,position);
+  assert.equal(target.health,76);assert.equal(spell.telemetry.pulses,8);
+  assert.equal(spell.telemetry.visuals.phase,'fade');assert.equal(spell.telemetry.visuals.damageEligible,false);
+  const before=spell.telemetry.visuals;spell.update(0,position);assert.deepEqual(spell.telemetry.visuals,before);
+  spell.update(SUN_RULES.fade,position);assert.equal(target.health,76);assert.equal(spell.busy,false);
   spell.dispose();
 });

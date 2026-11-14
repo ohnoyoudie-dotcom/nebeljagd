@@ -1,43 +1,90 @@
 import * as THREE from 'three';
 
-/** A rounded, roiling smoke volume. No hard model or blade silhouette at its head. */
-export function createSoulCloudVisual(geometry, clock, ownMaterial) {
-  const root = new THREE.Group(); root.name = 'Seelenrichter · dunkle Wolke';
-  const lobes = [];
-  for (let i=0;i<5;i++) {
-    const material = ownMaterial(new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false, toneMapped: false,
-      uniforms: { uTime: clock, uSeed: { value: i*2.17 },
-        uDark: {value: new THREE.Color('#080c13')}, uRim: {value: new THREE.Color('#46535e')} },
-      vertexShader: `varying vec2 vUv;
-        void main(){vUv=uv;vec4 p=modelViewMatrix*vec4(0.,0.,0.,1.);
-          p.xy+=position.xy*vec2(length(modelMatrix[0].xyz),length(modelMatrix[1].xyz));gl_Position=projectionMatrix*p;}`,
-      fragmentShader: `varying vec2 vUv; uniform float uTime,uSeed; uniform vec3 uDark,uRim;
-        float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-        float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
-          return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1)),f.x),f.y);}
-        float mist(vec2 p){return noise(p)*.55+noise(p*2.1+3.)*.30+noise(p*4.3+7.)*.15;}
-        void main(){vec2 p=vUv*2.-1.;float t=uTime*.75+uSeed;
-          float n=mist(p*3.2+vec2(sin(t)*.7,-t*.9));
-          float r=length(p),edge=r+(n-.5)*.25;
-          float a=(1.-smoothstep(.46,.98,edge))*.94;
-          float rolls=mist(p*4.5+vec2(t*.5,t*.35));
-          float lit=pow(max(0.,.65+dot(p,normalize(vec2(-.5,.8)))*.35),2.);
-          vec3 col=mix(uDark,uRim,(.15+rolls*.65)*lit);
-          col+=vec3(.035,.045,.055)*pow(n,5.)*(1.-smoothstep(.5,.9,r));
-          if(a<.004)discard;gl_FragColor=vec4(col,a);
-          #include <colorspace_fragment>
-        }`,
-    }));
-    const cloud = new THREE.Mesh(geometry,material); cloud.frustumCulled=false; root.add(cloud); lobes.push(cloud);
+const VOLUME_STEPS = 14;
+const noiseGLSL = `
+  float hash3(vec3 p) { p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z); }
+  float noise3(vec3 p) {
+    vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+    return mix(mix(mix(hash3(i),hash3(i+vec3(1,0,0)),f.x),mix(hash3(i+vec3(0,1,0)),hash3(i+vec3(1,1,0)),f.x),f.y),
+      mix(mix(hash3(i+vec3(0,0,1)),hash3(i+vec3(1,0,1)),f.x),mix(hash3(i+vec3(0,1,1)),hash3(i+vec3(1,1,1)),f.x),f.y),f.z);
   }
-  function update(time) {
-    lobes.forEach((p,i)=>{
-      const a=i*2.39996+time*.6;
-      p.position.set(Math.cos(a)*.20,Math.sin(a*1.3)*.14,.12-i*.12);
-      const breadth=1.12+Math.sin(time*2.3+i)*.13;
-      p.scale.set(breadth,breadth*(.87+Math.sin(time*1.7+i)*.06),1);
-    });
+`;
+
+/** The poison gas's bounded volume technique, with dense charcoal smoke and
+ * flowing, diffuse edges. Its proxy box is never a visible projectile shape. */
+export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeometry, seed = 3.71, impact = false } = {}) {
+  const root = new THREE.Group(); root.name = 'Seelenrichter · waberndes Rauchvolumen';
+  const box = new THREE.BoxGeometry(2.3, 2.3, 2.3);
+  ownGeometry?.(box);
+  const material = ownMaterial(new THREE.ShaderMaterial({
+    name: 'Seelennebel · dunkles turbulentes Volumen', side: THREE.FrontSide,
+    transparent: true, depthWrite: false, depthTest: true, toneMapped: false,
+    uniforms: { uTime: clock, uFade: { value: 1 }, uSeed: { value: seed }, uImpact: { value: impact ? 1 : 0 },
+      uEye: { value: new THREE.Vector3() }, uDirection: { value: new THREE.Vector3() }, uOrtho: { value: 1 } },
+    vertexShader: `varying vec3 vLocal;void main(){vLocal=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader: `
+      varying vec3 vLocal;uniform vec3 uEye,uDirection;uniform float uTime,uFade,uSeed,uOrtho,uImpact;
+      ${noiseGLSL}
+      float density(vec3 p) {
+        float t=uTime*.70;
+        vec3 q=p*vec3(2.7,2.8,2.3)+vec3(uSeed,-t*.55,uSeed*.7+t*.36);
+        q.xz+=vec2(sin(q.y*1.8+q.z+t),cos(q.x*1.5-q.y-t))*.44;
+        float broad=noise3(q),detail=noise3(q*2.03+13.2),wisps=noise3(q*4.11+27.4);
+        float field=broad*.58+detail*.28+wisps*.14;
+        vec3 drift=vec3(sin(p.z*3.+t),cos(p.x*3.-t*.7),sin(p.y*3.+t*.8))*.12;
+        vec3 body=p+drift;
+        // The rear loosens into eddies instead of narrowing to a pointed tail.
+        body.z-=.12*(1.-uImpact);
+        float radial=length(body*vec3(1.,1.,.88));
+        float envelope=1.-smoothstep(.47+field*.24,1.03,radial);
+        envelope*=1.-smoothstep(.80,1.03,max(max(abs(p.x),abs(p.y)),abs(p.z)));
+        float loose=1.-smoothstep(-.55,.3,p.z);
+        return envelope*smoothstep(.23+loose*.05,.68,field+.20*(1.-radial));
+      }
+      void main(){
+        vec3 origin=uOrtho>.5?vLocal-uDirection*5.:uEye;
+        vec3 ray=uOrtho>.5?uDirection:normalize(vLocal-origin);
+        vec3 inv=1./(sign(ray+.000001)*max(abs(ray),vec3(.00001)));
+        vec3 a=(-1.15-origin)*inv,b=(1.15-origin)*inv;
+        vec3 lo=min(a,b),hi=max(a,b);
+        float nearT=max(0.,max(max(lo.x,lo.y),lo.z)),farT=min(min(hi.x,hi.y),hi.z);
+        if(farT<=nearT)discard;
+        float stepLength=(farT-nearT)/${VOLUME_STEPS}.;
+        float jitter=hash3(floor(vLocal*210.))*.50+.25;
+        vec3 color=vec3(0.);float opacity=0.;
+        for(int i=0;i<${VOLUME_STEPS};i++){
+          vec3 p=origin+ray*(nearT+(float(i)+jitter)*stepLength);
+          float d=density(p),alpha=(1.-exp(-d*stepLength*8.4))*uFade;
+          float light=clamp(.46+p.y*.22-p.x*.13-d*.34,0.,1.);
+          vec3 smoke=mix(vec3(.005,.008,.014),vec3(.105,.125,.140),light);
+          color+=(1.-opacity)*alpha*smoke;opacity+=(1.-opacity)*alpha;
+        }
+        if(opacity<.005)discard;
+        gl_FragColor=vec4(color/max(opacity,.001),opacity);
+        #include <colorspace_fragment>
+      }`,
+  }));
+  const mesh = new THREE.Mesh(box, material); mesh.name = 'Seelenwolke · fließendes Gas'; mesh.frustumCulled = false;
+  const inverse = new THREE.Matrix4(), eye = new THREE.Vector3();
+  mesh.onBeforeRender = (_renderer, _scene, camera) => {
+    inverse.copy(mesh.matrixWorld).invert(); camera.getWorldPosition(eye);
+    material.uniforms.uEye.value.copy(eye).applyMatrix4(inverse);
+    camera.getWorldDirection(material.uniforms.uDirection.value).transformDirection(inverse);
+    material.uniforms.uOrtho.value = camera.isOrthographicCamera ? 1 : 0;
+  };
+  root.add(mesh);
+  function update(time, opacity = 1) {
+    material.uniforms.uFade.value = THREE.MathUtils.clamp(opacity, 0, 1);
+    if (impact) mesh.scale.set(1, 1, 1);
+    else {
+      const t=time*.8+seed;
+      mesh.scale.set(.84+Math.sin(t*1.3)*.07,.73+Math.cos(t*1.1)*.055,1.15+Math.sin(t*.9)*.075);
+      mesh.position.set(Math.sin(t*.9)*.045,Math.sin(t*1.2)*.045,-.22);
+      mesh.rotation.set(Math.sin(t*.7)*.075,Math.sin(t*.5)*.055,Math.sin(t*.8)*.09);
+    }
   }
-  update(0); return { root, update };
+  update(0);
+  return { root, update, get telemetry() { return { volumeSteps: VOLUME_STEPS, draws: 1, opacity: material.uniforms.uFade.value }; },
+    // Legacy callers without an ownership callback can explicitly release the proxy.
+    disposeGeometry() { if (!ownGeometry) box.dispose(); } };
 }

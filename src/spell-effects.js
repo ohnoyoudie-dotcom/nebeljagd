@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createSoulCloudImpacts } from './soul-cloud-impact.js';
 import { createSoulCloudVisual } from './soul-cloud-visual.js';
 import { createLightningVisual } from './lightning-visual.js';
 import { createElementMaterial, setElementMaterial } from './spell-effect-materials.js';
@@ -25,9 +26,10 @@ const crystalline = type => type === 'iceStaff' || type === 'moonStaff' || type 
 
 /** Visuals only. Swept hits, flight time and damage remain owned by weapons.js. */
 export function createSpellEffects(scene, { isVisible = null, fireProjectilePrototype = null, iceProjectilePrototype = null,
-  gravityProjectilePrototype = null, soulProjectilePrototype = null } = {}) {
+  gravityProjectilePrototype = null, soulProjectilePrototype = null, isTargetVisible = null } = {}) {
   const roots = [], geometries = new Set(), materials = new Set(), projectiles = [];
   const clock = { value: 0 };
+  const soulImpacts = createSoulCloudImpacts(scene, { isVisible, isTargetVisible });
   const ownGeometry = geometry => (geometries.add(geometry), geometry);
   const ownMaterial = material => (materials.add(material), material);
   const addRoot = group => { roots.push(group); scene.add(group); return group; };
@@ -180,14 +182,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
       });
       soulModel.visible = false; soul.add(soulModel);
     }
-    const soulCloud = createSoulCloudVisual(planeGeometry, clock, ownMaterial); soul.add(soulCloud.root);
-    const soulShroud = new THREE.Group(); soulShroud.name = 'Geisterhafter Schattenschweif';
-    soulShroud.rotation.x = Math.PI / 2; soulShroud.position.z = -.65; soul.add(soulShroud);
-    const shadowMaterial = elementMaterial('body', { type: 'soulStaff', opacity: .83 });
-    for (let i = 0; i < 3; i++) {
-      const veil = mesh(soulShroud, planeGeometry, shadowMaterial);
-      veil.rotation.y = i * Math.PI / 3; veil.scale.set(.85 + i * .11, 2.5 + i * .2, 1);
-    }
+    const soulCloud = createSoulCloudVisual(planeGeometry, clock, ownMaterial, { ownGeometry }); soul.add(soulCloud.root);
     const gravity = new THREE.Group(); gravity.name = 'Gravitationsprojektil · dunkler Kern'; group.add(gravity);
     const gravityCore = mesh(gravity, sphere, projectileMaterials.gravityStaff.core);
     gravityCore.scale.set(.29, .32, .29);
@@ -272,7 +267,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     const halo = glow('#ff681c', .32); halo.scale.setScalar(1.15); group.add(halo);
     const haze = glow('#ff8c34', .20); haze.name = 'Feuerball · weicher Glühsaum';
     haze.scale.setScalar(1.85); group.add(haze);
-    const visual = { group, lightning, fire, ice, star, soul, soulModel, soulShroud, soulCloud, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
+    const visual = { group, lightning, fire, ice, star, soul, soulModel, soulCloud, gravity, gravityCore, gravityModel, gravityOrbits, gravityParticles, haze, hotCore, fireModel, iceModel, coldCore, crystal, fireTongues, iceMists, iceFins, glints, halo, active: false,
       type: 'fireStaff', direction: 0, ...makeTrail() };
     projectiles.push(visual); return visual;
   }
@@ -302,6 +297,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function updateTrail(visual, delta) {
     if (!visual.active) visual.trailRemaining = Math.max(0, visual.trailRemaining - delta);
     visual.visibleTrailSegments = 0;
+    if (visual.type === 'soulStaff') { visual.trail.visible = false; visual.trailGeometry.setDrawRange(0, 0); return; }
     if ((!visual.active && !visual.trailRemaining) || !visual.historyCount) {
       visual.trail.visible = false; return;
     }
@@ -390,7 +386,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     visual.group.scale.setScalar(type === 'gravityStaff' ? GRAVITY_PROJECTILE_SCALE : 1);
     visual.fire.visible = !crystalline(type) && type !== 'gravityStaff' && type !== 'lightningStaff' && type !== 'soulStaff';
     visual.soul.visible = type === 'soulStaff';
-    visual.halo.material.opacity = type === 'soulStaff' ? .12 : .32;
+    visual.halo.material.opacity = type === 'soulStaff' ? 0 : .32;
     visual.lightning.group.visible = type === 'lightningStaff'; visual.lightning.update(0);
     visual.gravity.visible = type === 'gravityStaff';
     visual.gravityCore.visible = !visual.gravityModel;
@@ -456,15 +452,16 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     visual.headBirth = clock.value + delta;
     const distance = Math.hypot(to.x - from.x, to.y - from.y, to.z - from.z);
     if (distance < .00001) return;
-    if (visual.type === 'fireStaff' || visual.type === 'soulStaff') {
-      const total = visual.smokeDistance + distance, spacing = visual.type === 'soulStaff' ? .24 : .38;
+    if (visual.type === 'fireStaff') {
+      const total = visual.smokeDistance + distance, spacing = .38;
       const count = Math.min(16, Math.floor(total / spacing));
       for (let i = 0; i < count; i++) {
         const t = THREE.MathUtils.clamp((spacing - visual.smokeDistance + i * spacing) / distance, 0, 1);
-        pointA.copy(from).lerp(to, t); emitSmoke(pointA, false, visual.type === 'soulStaff');
+        pointA.copy(from).lerp(to, t); emitSmoke(pointA);
       }
       visual.smokeDistance = total % spacing;
     }
+    if (visual.type === 'soulStaff') return;
     const historyTotal = visual.sampleDistance + distance, sampleCount = Math.floor(historyTotal / SAMPLE_DISTANCE);
     for (let i = Math.max(0, sampleCount - HISTORY); i < sampleCount; i++) {
       const t = THREE.MathUtils.clamp((SAMPLE_DISTANCE - visual.sampleDistance + i * SAMPLE_DISTANCE) / distance, 0, 1);
@@ -515,9 +512,15 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         Math.cos(angle) * .8, Math.cos(direction) * .7 + Math.cos(angle) * .9, .055, .24 + i % 3 * .04);
     }
   }
-  function impact(type, point, normal = null, direction = 0) {
+  function impact(type, point, normal = null, direction = 0, target = null) {
     if (disposed || !valid(point)) return;
     type = typeOf(type); direction = finite(direction);
+    if (type === 'soulStaff') {
+      soulImpacts.impact(point, target?.destructible ? null : target);
+      (emitted[type] ??= { launches: 0, impacts: 0 }).impacts++;
+      latestImpact = { type, point: { x: point.x, y: point.y, z: point.z } };
+      return;
+    }
     burst(type, point, direction, 'impact', normal); (emitted[type] ??= { launches: 0, impacts: 0 }).impacts++;
     latestImpact = { type, point: { x: point.x, y: point.y, z: point.z } };
     if (type === 'fireStaff') for (let i = 0; i < 10; i++) {
@@ -535,6 +538,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   function update(delta, time) {
     if (disposed) return;
     delta = Math.max(0, Math.min(.25, finite(delta))); clock.value += delta; time = clock.value;
+    soulImpacts.update(delta);
     for (const entry of smoke) {
       entry.life = Math.max(0, entry.life - delta);
       entry.sprite.visible = entry.life > 0 && canSee(entry.sprite.position);
@@ -613,8 +617,6 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         visual.lightning.update(visual.age);
         if (visual.type === 'soulStaff') {
           visual.soulCloud.update(clock.value);
-          visual.soulShroud.rotation.y = Math.sin(time * 4.1) * .12;
-          visual.soulShroud.scale.set(1 + Math.sin(time * 7) * .13, 1, 1 + Math.cos(time * 5) * .10);
           if (visual.soulModel) visual.soulModel.position.y = Math.sin(time * 9) * .035;
         }
         const pulse = 1 + Math.sin(time * 17) * .035;
@@ -631,6 +633,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
     }
   }
   function reset() {
+    soulImpacts.reset();
     for (const visual of projectiles) {
       end(visual); visual.historyCount = 0; visual.trailRemaining = 0; visual.visibleTrailSegments = 0;
       visual.trail.visible = false; visual.trailGeometry.setDrawRange(0, 0);
@@ -645,7 +648,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
   }
   function dispose() {
     if (disposed) return;
-    reset(); disposed = true;
+    reset(); disposed = true; soulImpacts.dispose();
     for (const visual of projectiles) visual.gravityParticles.dispose();
     for (const root of roots) {
       if (root.isInstancedMesh) root.dispose();
@@ -665,7 +668,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         activeParticles: particles.filter(p => p.life > 0).length, visibleParticles,
         activeSmoke: smoke.filter(p => p.life > 0).length,
         visibleSmoke: smoke.filter(p => p.sprite.visible).length,
-        soulStyle: 'roiling-dark-cloud-and-torn-wisps',
+        soulStyle: 'turbulent-gas-volume', soulImpacts: soulImpacts.telemetry,
         soulModel: soulProjectilePrototype ? { ...soulProjectilePrototype.userData } : null,
         soulCloudProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff').length,
         importedSoulProjectiles: projectiles.filter(p => p.active && p.type === 'soulStaff' && p.soulModel?.visible).length,
@@ -686,7 +689,7 @@ export function createSpellEffects(scene, { isVisible = null, fireProjectileProt
         latestImpact: latestImpact ? { type: latestImpact.type, point: { ...latestImpact.point } } : null,
         bursts: bursts.filter(b => b.life > 0).map(b => ({ kind: b.kind, type: b.type,
           visible: b.halo.visible || b.ring.visible || b.cloud.visible || b.rays.visible || b.connectors.some(p => p.visible), position: { x: b.x, y: b.y, z: b.z } })),
-        activeTrails: projectiles.filter(v => v.historyCount > 1 && (v.active || v.trailRemaining > 0)).length,
+        activeTrails: projectiles.filter(v => v.type !== 'soulStaff' && v.historyCount > 1 && (v.active || v.trailRemaining > 0)).length,
         visibleTrailSegments: projectiles.reduce((sum, visual) => sum + visual.visibleTrailSegments, 0),
         presentation: 'flowing-elements-v2',
         capacity: { particles: PARTICLES, bursts: BURSTS, historySamplesPerProjectile: HISTORY } };

@@ -29,9 +29,10 @@ test('integrated sun weapon requires release, charges range, pulses eight times 
   const s = setup('sunStaff'); t.after(() => s.dispose());
   s.weapons.attack(s.actor.position, 0); s.weapons.aimAt(s.actor.position, s.target.position); s.tick(3);
   assert.equal(s.weapons.telemetry.shotsFired, 0); assert.equal(s.target.health, 300);
-  assert.equal(s.weapons.releaseAttack(s.actor.position), true); s.tick(.7); assert.equal(s.target.health, 300);
+  assert.equal(s.weapons.releaseAttack(s.actor.position), true); s.tick(.399); assert.equal(s.target.health, 300);
+  s.tick(.001); assert.equal(s.target.health, 297);
   s.tick(2.4); assert.equal(s.target.health, 276); assert.equal(s.weapons.telemetry.sun.hits, 8);
-  assert.ok(s.target.blindRemaining > 1.7); assert.ok(s.target.revealRemaining > 2.2);
+  assert.ok(Math.abs(s.target.blindRemaining - 1.7) < .025); assert.ok(Math.abs(s.target.revealRemaining - 2.2) < .025);
   s.weapons.reset(); s.combat.reset(); assert.equal(s.weapons.telemetry.sun.active, false); assert.equal(s.target.blindRemaining, 0);
 });
 

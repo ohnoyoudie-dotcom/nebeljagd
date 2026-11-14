@@ -787,6 +787,11 @@ export function createWeapons(scene, characterGroup, world, character = null,
   }
 
   const spellEffects = createSpellEffects(scene, { isVisible, fireProjectilePrototype,
+    isTargetVisible: target => {
+      const p = target.position;
+      const concealed = !(target.revealRemaining > 0) && (target.concealed || world?.concealmentAt?.(p.x, p.z) > .01);
+      return !concealed && (!isVisible || isVisible(p, { concealed: false }));
+    },
     soulProjectilePrototype: projectilePrototypes.soul, iceProjectilePrototype: projectilePrototypes.ice, gravityProjectilePrototype: projectilePrototypes.gravity });
   const specials = createSpecialWeapons(scene, world, combat, ownerId, result => {
     lastDamage = result; damageHits++;
@@ -890,7 +895,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function spellImpact(spell, collision) {
     spell.group.position.copy(collision.point); spell.mode = 'inactive'; spell.life = 0;
     spellEffects.end(spell.visual);
-    spellEffects.impact(spell.payload.type, collision.point, collision.normal, spell.direction);
+    spellEffects.impact(spell.payload.type, collision.point, collision.normal, spell.direction, collision.target ?? null);
     impactCount++;
     lastImpact = { type: collision.type ?? 'terrain', point: { ...collision.point } };
   }

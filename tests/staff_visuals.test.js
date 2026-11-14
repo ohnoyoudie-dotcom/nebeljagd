@@ -5,19 +5,27 @@ import { createSoulMarkVisuals } from '../src/soul-mark-visuals.js';
 import { createSunVisuals } from '../src/sun-visuals.js';
 import { SUN_RULES } from '../src/sun-spell.js';
 
-test('solar seed expands from a point; descending light reaches its target before the first damage pulse', () => {
-  const scene = new THREE.Scene(), sun = createSunVisuals(scene, SUN_RULES, () => 0);
-  const point = new THREE.Vector3(2, 0, 4), radii = [];
-  for (const age of [0, .15, .35, .60, .7]) { sun.show(point, age); radii.push(sun.telemetry.seedRadius); }
-  assert.ok(radii[0] < .1); assert.equal(radii.at(-1), SUN_RULES.radius);
-  assert.ok(radii.every((r, i) => !i || r > radii[i-1]));
-  sun.show(point, .75); assert.ok(sun.telemetry.descent > 0 && sun.telemetry.descent < 1);
-  sun.show(point, .85); assert.equal(sun.telemetry.descent, 1);
-  assert.ok(sun.telemetry.density >= .97); assert.equal(sun.telemetry.groundFill, 1);
-  const children = scene.children[0].children.length;
-  for (let i = 0; i < 100; i++) { sun.start(point); sun.show(point, 1); sun.hide(); }
-  assert.equal(scene.children[0].children.length, children);
-  assert.equal(sun.telemetry.visible, false); sun.dispose(); assert.equal(scene.children.length, 0);
+test('the full-height solar column brightens in place, raises motes and fades without new allocations', () => {
+  const scene=new THREE.Scene(),sun=createSunVisuals(scene,SUN_RULES,()=>0),point=new THREE.Vector3(2,0,4);
+  const values=[];
+  for(const age of [0,.1,.28,.4,.6]){sun.show(point,age);values.push(sun.telemetry.brightness);}
+  assert.equal(values[0],0);assert.equal(values.at(-1),1);
+  assert.ok(values.every((v,i)=>!i||v>values[i-1]));
+  assert.equal(sun.telemetry.damageEligible,true);assert.ok(sun.telemetry.density>=.97);
+  const root=scene.children[0],beam=root.getObjectByName('Sonnenkern');
+  sun.show(point,.1);const height=new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).y;
+  sun.show(point,1);assert.equal(new THREE.Box3().setFromObject(beam).getSize(new THREE.Vector3()).y,height);
+  assert.equal(sun.telemetry.particleDirection,'up');assert.ok(sun.telemetry.risingParticles>0);
+  const particles=root.getObjectByName('Aufsteigende Sonnenfunken'),m=new THREE.Matrix4();
+  sun.show(point,.2);particles.getMatrixAt(0,m);const y=m.elements[13];
+  sun.show(point,.3);particles.getMatrixAt(0,m);assert.ok(m.elements[13]>y);
+  sun.show(point,SUN_RULES.warning+SUN_RULES.duration+.1);
+  assert.equal(sun.telemetry.phase,'fade');assert.equal(sun.telemetry.damageEligible,false);
+  assert.ok(sun.telemetry.brightness>0&&sun.telemetry.brightness<1);
+  const count=root.children.length;
+  for(let i=0;i<100;i++){sun.start(point);sun.show(point,1);sun.hide();}
+  assert.equal(root.children.length,count);assert.equal(sun.telemetry.visible,false);
+  sun.dispose();assert.equal(scene.children.length,0);
 });
 
 test('three skull fragments call the reaper; only a confirmed execution produces an aftermath, which freezes on pause', () => {
