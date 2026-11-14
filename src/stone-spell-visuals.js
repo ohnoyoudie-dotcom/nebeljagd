@@ -119,7 +119,7 @@ export function createRuneWallVisuals(scene,r,ownerView,isVisible){
     if(Math.abs(z)>.45)face.setZ(i,z+Math.sign(z)*inset*(.055+Math.sin(x*9+y*6)*.025));
   }
   blockGeometry.computeVertexNormals();
-  const mesh=new THREE.InstancedMesh(blockGeometry,mat,blocks.length);mesh.name='Facettierte blaue Quader';mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;root.add(mesh);
+  const mesh=new THREE.InstancedMesh(blockGeometry,mat,blocks.length);mesh.name='Facettierte blaue Quader';mesh.castShadow=true;mesh.receiveShadow=false;mesh.frustumCulled=false;root.add(mesh);
   const shades=['#bfd5ed','#88aace','#b1c9df','#94b2d9','#d2dfed'];
   blocks.forEach((b,i)=>mesh.setColorAt(i,new THREE.Color(b.kind==='coping'?'#d4e4f5':b.kind==='pier'?'#9bbde3':shades[(i*3)%shades.length])));
 
