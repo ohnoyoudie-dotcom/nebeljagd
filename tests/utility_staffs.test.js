@@ -17,11 +17,11 @@ function setup(type='blinkStaff',extra={}){
 }
 test('blink charges only reach, moves the real actor on release and honors pause/cancel/cooldown',t=>{
  const s=setup();t.after(()=>s.dispose());s.weapons.attack(s.actor.position,0);s.weapons.aimAt(s.actor.position,{x:0,z:20});s.tick(.75);
- assert.equal(s.actor.position.z,0);assert.ok(Math.abs(s.weapons.telemetry.blink.aimRange.radius-4)<.001);assert.equal(s.weapons.telemetry.blink.targetRadius,.6);
+ assert.equal(s.actor.position.z,0);assert.ok(Math.abs(s.weapons.telemetry.blink.aimRange.radius-6)<.001);assert.equal(s.weapons.telemetry.blink.targetRadius,.6);
  const frozen=s.weapons.telemetry.blink;s.weapons.update(0,50);assert.deepEqual(s.weapons.telemetry.blink,frozen);
- s.tick(.75);assert.equal(s.weapons.releaseAttack(s.actor.position),true);assert.equal(s.actor.position.z,8);assert.equal(s.weapons.attackCooldown,4);
+ s.tick(.75);assert.equal(s.weapons.releaseAttack(s.actor.position),true);assert.equal(s.actor.position.z,12);assert.equal(s.weapons.attackCooldown,4);
  assert.ok(s.weapons.telemetry.blink.visuals.active);assert.equal(s.weapons.attack(s.actor.position,0),null);s.tick(4);
- s.weapons.attack(s.actor.position,0);s.tick(.7);s.weapons.cancelAim();assert.equal(s.weapons.releaseAttack(s.actor.position),false);assert.equal(s.actor.position.z,8);
+ s.weapons.attack(s.actor.position,0);s.tick(.7);s.weapons.cancelAim();assert.equal(s.weapons.releaseAttack(s.actor.position),false);assert.equal(s.actor.position.z,12);
  s.weapons.reset();assert.equal(s.weapons.telemetry.blink.visuals.active,false);
 });
 test('blink cannot cross low walls or land in water, actors, cliffs, props or outside the map',()=>{

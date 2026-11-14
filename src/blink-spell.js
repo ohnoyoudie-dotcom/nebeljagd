@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createStaffAimRing } from './staff-aim.js';
 import { createBlinkVisuals } from './utility-staff-visuals.js';
-export const BLINK_RULES=Object.freeze({range:8,chargeSeconds:1.5,radius:.6,bodyRadius:.42,cooldown:4});
+export const BLINK_RULES=Object.freeze({range:12,chargeSeconds:1.5,radius:.6,bodyRadius:.42,cooldown:4});
 /** Swept body clearance prevents crossing walls, including low fences. Landing must fit the whole avatar. */
 export function blinkLanding(world,combat,ownerId,origin,requested,range) {
   const r=BLINK_RULES,dx=requested.x-origin.x,dz=requested.z-origin.z,length=Math.hypot(dx,dz),factor=Math.min(1,Math.max(0,range)/(length||1));
