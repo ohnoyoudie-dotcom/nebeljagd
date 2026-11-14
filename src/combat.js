@@ -153,6 +153,7 @@ export function createCombat({ onHit, onDefeat } = {}) {
     const epsilon = 1e-9;
     let nearest = null;
     for (const target of targets.values()) {
+      if (target.projectileColliderOnly) continue;
       if (!target.alive || target.id === excludeId || target.targetable === false || ignoredTargets?.has(target.id)) continue;
       const tx = start.x - target.position.x, tz = start.z - target.position.z;
       const reach = target.radius + projectileRadius;

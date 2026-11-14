@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Runenmauerstab.glb",
+    "bytes": 70304324,
+    "sha256": "369d277b53c4c0a8195f9a6ea159f7154b1b31a0938e8244d39b3e603fd48a08",
+    "triangles": 1979136,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/rune-wall-staff.json",
+      "bytes": 3116,
+      "sha256": "56cabcf62ea098c5f2ddd086de3dd2a929d7b72830bcd28e06482ebd5b54c620"
+    },
+    {
+      "path": "previews/rune-wall-staff-runtime.png",
+      "bytes": 289131,
+      "sha256": "610b1d85b5034c33cf63aeefdabad329e02c5a4c26e0bf6b603bcc7625670e4c"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 359,
+      "sha256": "ffb6c3053fd91df2838f7711246b6103c5daa0be8a6740cb14fe1a61789363e9"
+    },
+    {
+      "path": "runtime/rune-wall-staff.glb",
+      "bytes": 217676,
+      "sha256": "c419e8b7333c070fab2f912a114842ff89768e36a0e892bf9981e8f0b25b3b15"
+    }
+  ]
+}

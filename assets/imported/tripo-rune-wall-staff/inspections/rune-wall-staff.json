@@ -1,0 +1,150 @@
+{
+  "source": {
+    "path": "assets/inbox/Runenmauerstab.glb",
+    "bytes": 70304324,
+    "sha256": "369d277b53c4c0a8195f9a6ea159f7154b1b31a0938e8244d39b3e603fd48a08",
+    "triangles": 1979136,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-rune-wall-staff/runtime/rune-wall-staff.glb",
+    "bytes": 217676,
+    "sha256": "c419e8b7333c070fab2f912a114842ff89768e36a0e892bf9981e8f0b25b3b15",
+    "triangles": 4999,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.1424407958984375,
+        -0.06435014307498932,
+        0.0
+      ],
+      [
+        0.1424407958984375,
+        0.06435014307498932,
+        0.979339599609375
+      ]
+    ],
+    "sourceGripPointGltf": [
+      -1.524016261100769e-05,
+      0.4200000762939453,
+      -0.0007982067763805389
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.0004450070555321872,
+      0.9999984502792358,
+      -0.001707397517748177
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999995827674866,
+      0.000853699108120054,
+      0.00022250361507758498,
+      -0.0
+    ],
+    "uniformScale": 1.735819171045473,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.24688372015953064,
+        -0.7290576100349426,
+        -0.10900750756263733
+      ],
+      [
+        0.24762216210365295,
+        0.9709424376487732,
+        0.1143985390663147
+      ]
+    ],
+    "tipPoint": [
+      -0.006323226727545261,
+      0.9708507061004639,
+      0.015333790332078934
+    ],
+    "gltfBounds": [
+      [
+        -0.24737754464149475,
+        -0.7288293242454529,
+        -0.10908033698797226
+      ],
+      [
+        0.24751527607440948,
+        0.9708507061004639,
+        0.11444785445928574
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Runenmauerstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Runenmauerstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Runenmauerstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "rune-wall-staff",
+    "length": 1.7,
+    "gripHeight": 0.42,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 5000
+  },
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
+  }
+}

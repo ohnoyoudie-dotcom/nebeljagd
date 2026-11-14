@@ -1,3 +1,7 @@
+import earthbreakerStaffUrl from '../assets/imported/tripo-earthbreaker-staff/runtime/earthbreaker-staff.glb?url&inline';
+import earthbreakerStaffInspection from '../assets/imported/tripo-earthbreaker-staff/inspections/earthbreaker-staff.json' with {type:'json'};
+import runeWallStaffUrl from '../assets/imported/tripo-rune-wall-staff/runtime/rune-wall-staff.glb?url&inline';
+import runeWallStaffInspection from '../assets/imported/tripo-rune-wall-staff/inspections/rune-wall-staff.json' with {type:'json'};
 import blinkStaffUrl from '../assets/imported/tripo-blink-staff/runtime/blink-staff.glb?url&inline';
 import blinkStaffInspection from '../assets/imported/tripo-blink-staff/inspections/blink-staff.json' with {type:'json'};
 import reflectionStaffUrl from '../assets/imported/tripo-reflection-staff/runtime/reflection-staff.glb?url&inline';
@@ -31,6 +35,8 @@ import lightningStaffUrl from '../assets/imported/tripo-lightning-staff/runtime/
 import lightningStaffInspection from '../assets/imported/tripo-lightning-staff/inspections/lightning-staff.json' with { type: 'json' };
 
 const SOURCES = {
+  'kit-tripo-earthbreaker-staff': {url:earthbreakerStaffUrl,name:'Erdbrecherstab · Tripo',tip:earthbreakerStaffInspection.normalization.tipPoint,source:'assets/inbox/Erdbrecherstab.glb'},
+  'kit-tripo-rune-wall-staff': {url:runeWallStaffUrl,name:'Runenmauerstab · Tripo',tip:runeWallStaffInspection.normalization.tipPoint,source:'assets/inbox/Runenmauerstab.glb'},
   'kit-tripo-blink-staff': {url:blinkStaffUrl,name:'Teleportationsstab · Tripo',tip:blinkStaffInspection.normalization.tipPoint,source:'assets/inbox/Teleportationstab.glb'},
   'kit-tripo-reflection-staff': {url:reflectionStaffUrl,name:'Schutzstab · Tripo',tip:reflectionStaffInspection.normalization.tipPoint,source:'assets/inbox/Schutzstab.glb'},
 

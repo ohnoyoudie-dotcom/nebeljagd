@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Runenmauerstab.glb",
+  "sourceSha256": "369d277b53c4c0a8195f9a6ea159f7154b1b31a0938e8244d39b3e603fd48a08",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

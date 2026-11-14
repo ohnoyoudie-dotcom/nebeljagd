@@ -1215,6 +1215,58 @@
           0.1252448856830597
         ]
       }
+    },
+    {
+      "kind": "earthbreakerStaff",
+      "variant": "kit-tripo-earthbreaker-staff",
+      "label": "Erdbrecherstab · Tripo",
+      "file": "assets/catalog/earthbreakerStaff-kit-tripo-earthbreaker-staff.webp",
+      "bytes": 3726,
+      "sha256": "299481777ce13d2e9f1a2f623d4d915044344c17973fd430849d87005974a39b",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-earthbreaker-staff/previews/earthbreaker-staff-runtime.png",
+      "model": "assets/imported/tripo-earthbreaker-staff/runtime/earthbreaker-staff.glb",
+      "modelSha256": "6626671e6d4d9a229045ee871d9d790fa7faffa6de6b723b855a42ab54f12ded",
+      "originalSourceSha256": "66a8a20d68489e521ce9dd462c488d3cea7950cc655680e850f0a2b49dbe2cee",
+      "generator": "scripts/prepare-earthbreaker-staff.py; scripts/register-earthbreaker-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.2431831806898117,
+          -0.7286049127578735,
+          -0.1800576150417328
+        ],
+        "max": [
+          0.25076916813850403,
+          0.9715508222579956,
+          0.18427430093288422
+        ]
+      }
+    },
+    {
+      "kind": "runeWallStaff",
+      "variant": "kit-tripo-rune-wall-staff",
+      "label": "Runenmauerstab · Tripo",
+      "file": "assets/catalog/runeWallStaff-kit-tripo-rune-wall-staff.webp",
+      "bytes": 3576,
+      "sha256": "c71e2be255d1702d1787bb78e769dab864027e5adfc62585b67aa91fca700ece",
+      "method": "Blender Cycles PBR of the actual prepared staff, transparent 640x640 -> 192x192 thumbnail",
+      "source": "assets/imported/tripo-rune-wall-staff/previews/rune-wall-staff-runtime.png",
+      "model": "assets/imported/tripo-rune-wall-staff/runtime/rune-wall-staff.glb",
+      "modelSha256": "c419e8b7333c070fab2f912a114842ff89768e36a0e892bf9981e8f0b25b3b15",
+      "originalSourceSha256": "369d277b53c4c0a8195f9a6ea159f7154b1b31a0938e8244d39b3e603fd48a08",
+      "generator": "scripts/prepare-rune-wall-staff.py; scripts/register-rune-wall-preview.py",
+      "modelBounds": {
+        "min": [
+          -0.24737754464149475,
+          -0.7288293242454529,
+          -0.10908033698797226
+        ],
+        "max": [
+          0.24751527607440948,
+          0.9708507061004639,
+          0.11444785445928574
+        ]
+      }
     }
   ],
   "errors": []

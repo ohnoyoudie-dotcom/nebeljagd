@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Erdbrecherstab.glb",
+    "bytes": 69990928,
+    "sha256": "66a8a20d68489e521ce9dd462c488d3cea7950cc655680e850f0a2b49dbe2cee",
+    "triangles": 1970049,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/earthbreaker-staff.json",
+      "bytes": 3114,
+      "sha256": "d7cd727e0b166e215b309ec1bd2b894dc4f6fb852543baa00d663aad4eda2b6c"
+    },
+    {
+      "path": "previews/earthbreaker-staff-runtime.png",
+      "bytes": 288553,
+      "sha256": "f29bab2b5db49a9966496385049f93cec19f4e945fc8b1532e72201098cf5d9f"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 359,
+      "sha256": "613b5c624cea25d3ba9d6e9f98eb8d29fe34e0d031d9daca8f737174516f560f"
+    },
+    {
+      "path": "runtime/earthbreaker-staff.glb",
+      "bytes": 213292,
+      "sha256": "6626671e6d4d9a229045ee871d9d790fa7faffa6de6b723b855a42ab54f12ded"
+    }
+  ]
+}

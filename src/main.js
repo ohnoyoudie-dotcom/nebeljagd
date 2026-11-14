@@ -156,7 +156,7 @@ const damageFeedback = createDamageFeedback(world.root, {
 });
 const combat = createCombat({ onHit: (result, target) => {
   healthBars.set(target.id, { health: target.health, maxHealth: target.maxHealth });
-  if (target.destructible) {
+  if (target.destructible && target.destructibleRef) {
     target.destructibleRef.health = target.health;
     if (result.killed) world.destroyDestructible(target.id);
   }
@@ -571,6 +571,14 @@ if (new URLSearchParams(location.search).has('inspect')) {
   };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
   window.nebeljagdInspectGuardHit = (delivery='projectile') => combat.hit(localCombatTarget,{sourceId:'inspect-enemy',type:'fireStaff',damage:12,delivery,normal:{x:0,y:0,z:1}});
+  window.nebeljagdInspectStoneBarrier = ({damage=0}={}) => {
+    const body=world.temporaryObstacles?.list()[0];if(!body)return null;
+    const target=combat.targets.get(body.objectId),center=target.position;
+    const from={x:center.x,y:center.y+1,z:center.z-3},to={x:center.x,y:center.y+1,z:center.z+3};
+    const collision=world.traceProjectile(from,to,.05),probe=center.clone();world.resolveMovement(probe,.42);
+    const result=damage>0?combat.hit(target,{sourceId:'inspect-enemy',type:'bow',damage,delivery:'projectile'}):null;
+    return {hit:collision?.type??null,movementShift:Math.hypot(probe.x-center.x,probe.z-center.z),result};
+  };
   window.nebeljagdInspectSolarHit = () => combat.hit(localCombatTarget, { sourceId: 'inspect-enemy', type: 'sunStaff', damage: 3, blind: { duration: 2, radius: 3 }, reveal: 2.5 });
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,

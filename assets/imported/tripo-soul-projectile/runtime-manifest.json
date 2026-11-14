@@ -5,8 +5,10 @@
       "sha256": "b34ecf234e3d67d2b9108933e14c224168697ae09c3e811c38bcc8f781df158c"
     },
     {
-      "path": "assets/inbox/Seelenrichterstab Projektil.rar",
-      "sha256": "c90b3f56274e4fa9345e20f833e16d05e99226f985f33c3a30672e1c30b1cd6d"
+      "path": "assets/inbox/source-history/Seelenrichterstab-Projektil-c90b3f56.rar",
+      "sha256": "c90b3f56274e4fa9345e20f833e16d05e99226f985f33c3a30672e1c30b1cd6d",
+      "originalInboxPath": "assets/inbox/Seelenrichterstab Projektil.rar",
+      "preservedFromCommit": "1f48b632bf418a51f546cb10cc0b5bf76edc10be"
     }
   ],
   "files": [

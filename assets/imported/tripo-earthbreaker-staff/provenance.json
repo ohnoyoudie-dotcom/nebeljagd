@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Erdbrecherstab.glb",
+  "sourceSha256": "66a8a20d68489e521ce9dd462c488d3cea7950cc655680e850f0a2b49dbe2cee",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

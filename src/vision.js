@@ -4,7 +4,8 @@ import { createSightModel } from './visibility-model.js';
 /** Obstacle shadows on the scenery plus geometric line of sight for actors,
  * health bars, loot and interactions. */
 export function createVision(scene, world, { radius = 18, samples = 512 } = {}) {
-  const sight = createSightModel({ obstacles: world.projectileObstacles, radius, samples });
+  const sight = createSightModel({ obstacles: world.projectileObstacles, radius, samples,
+    dynamicObstacles: () => world.temporaryObstacles?.list() ?? [] });
   // Half-float preserves the sight distance without visible 8-bit depth bands
   // at the large match radius.
   const pixels = new Uint16Array(samples * 4);

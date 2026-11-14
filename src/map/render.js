@@ -18,6 +18,9 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Add these definitions only when their models are actually placed, keeping
 // previously authored SVGs byte-identical when their map has no new weapons.
 const extraWeaponSymbols = {
+  earthbreakerStaff: '<g id="world-object-earthbreakerStaff"><path d="M0 1.8V-.7" stroke="#986637" stroke-width=".35"/><path d="M-.8-.7-.5-2 .1-1.6 .6-2.1 .9-.8 0-.3Z" fill="#78654a" stroke="#ffc269" stroke-width=".18"/></g>',
+  runeWallStaff: '<g id="world-object-runeWallStaff"><path d="M0 1.8V-.5" stroke="#627c8a" stroke-width=".35"/><path d="M-.8-.6V-2H-.3V-1.7H.3V-2H.8V-.6Z" fill="#809599" stroke="#95f5ff" stroke-width=".18"/></g>',
+
   blinkStaff: '<g id="world-object-blinkStaff"><path d="M0 1.8V-.6" stroke="#956431" stroke-width=".35"/><ellipse cx="0" cy="-1.2" rx=".7" ry=".8" fill="none" stroke="#b78de9" stroke-width=".25"/></g>',
   reflectionStaff: '<g id="world-object-reflectionStaff"><path d="M0 1.8V-.6" stroke="#956431" stroke-width=".35"/><path d="M-.8-1.8H.8V-.9L0-.3-.8-.9Z" fill="#55bfee" stroke="#d8b55c" stroke-width=".2"/></g>',
   sunStaff: '<g id="world-object-sunStaff"><path d="M-.6 1.5 .4-.8" stroke="#d6a955" stroke-width=".4"/><circle cx=".4" cy="-1.3" r=".7" fill="#fff1b4" stroke="#cd9137" stroke-width=".25"/></g>',
