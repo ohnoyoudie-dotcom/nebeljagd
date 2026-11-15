@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createEarthbreakerVisuals } from './stone-spell-visuals.js';
 import { colliderTarget } from './projectile-collision.js';
 
-export const EARTHBREAKER_RULES=Object.freeze({range:18,width:1.35,endWidth:2.8,warning:.38,spacing:1.1,step:.04,fade:.62,cooldown:1.8,damage:18});
+export const EARTHBREAKER_RULES=Object.freeze({range:18,width:1.35,endWidth:2.8,warning:0,spacing:1.1,step:.04,fade:.95,cooldown:1.8,damage:18});
 export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>{},isVisible=null){
   const r=EARTHBREAKER_RULES,ground=p=>world?.heightAt?.(p.x,p.z)??0;
   const visuals=createEarthbreakerVisuals(scene,r,isVisible);let wave=null,casts=0,hits=0;
@@ -23,23 +23,13 @@ export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>
   function cast(position,direction,payload){
     if(wave)return false;
     const origin=position.clone(),{nodes,contact}=planRoute(origin,direction);
-    // Even a blocked cast announces and impacts the first solid object.
-    wave={origin,direction,nodes,age:0,next:0,launched:false,hitIds:new Set(),payload:{...payload,type:'earthbreakerStaff',sourceId:ownerId,delivery:'area'},contact};
-    casts++;visuals.begin(nodes,origin,direction,nodes.map(widthAt));return true;
+    // Even a blocked cast immediately impacts the first solid object.
+    wave={origin,direction,nodes,age:0,next:0,launched:true,hitIds:new Set(),payload:{...payload,type:'earthbreakerStaff',sourceId:ownerId,delivery:'area'},contact};
+    casts++;visuals.begin(nodes,origin,direction,nodes.map(widthAt));advance();return true;
   }
   function damage(target){if(!target?.alive||target.id===ownerId||wave.hitIds.has(target.id))return;
     wave.hitIds.add(target.id);const result=combat?.hit(target,wave.payload);if(result){hits++;onDamage(result);}}
-  function update(dt,position){
-    if(!(dt>0)||!wave)return;
-    // Follow the caster through the anticipation, including the eruption frame.
-    // Recheck terrain/cover from that position; never drag an erupted wave.
-    if(!wave.launched&&position&&wave.origin.distanceToSquared(position)>1e-10){
-      wave.origin.copy(position);
-      Object.assign(wave,planRoute(wave.origin,wave.direction));
-      visuals.begin(wave.nodes,wave.origin,wave.direction,wave.nodes.map(widthAt));
-    }
-    wave.age+=dt;
-    if(wave.age>=r.warning)wave.launched=true;
+  function advance(){
     while(wave.next<wave.nodes.length&&wave.age>=r.warning+wave.next*r.step){
       const index=wave.next++,p=wave.nodes[index],previous=index?wave.nodes[index-1]:wave.origin;
       const obstruction=solid(previous,p);
@@ -56,6 +46,10 @@ export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>
     if(wave.next>=wave.nodes.length&&wave.age>=r.warning+wave.nodes.length*r.step&&wave.contact){
       damage(colliderTarget(combat,wave.contact.collider,ownerId));wave.contact=null;
     }
+  }
+  function update(dt){
+    if(!(dt>0)||!wave)return;
+    wave.age+=dt;advance();
     visuals.update(wave.age);
     if(wave.age>=r.warning+Math.max(1,wave.nodes.length)*r.step+r.fade){wave=null;visuals.reset();}
   }

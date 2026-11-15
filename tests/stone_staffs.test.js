@@ -15,16 +15,16 @@ function setup(extra={}){
  return{world,combat,scene,player};
 }
 function raise(s,controller,goal={x:0,z:5}){assert.ok(controller.beginAim(s.player,0));controller.aimAt(s.player,goal);controller.update(1.5,s.player);assert.ok(controller.release(s.player));controller.update(.65,s.player);}
-test('earthbreaker warns, freezes on pause, progresses and hits each opponent only once per cast',()=>{
+test('earthbreaker starts immediately, freezes on pause, progresses and hits each opponent only once per cast',()=>{
  for(const dt of [.02,.25]){
   const s=setup(),near=s.combat.addTarget({id:'near',position:new THREE.Vector3(0,0,2)}),far=s.combat.addTarget({id:'far',position:new THREE.Vector3(0,0,8)});
   const spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');assert.ok(spell.cast(s.player,0,{damage:18}));
-  spell.update(.3);assert.equal(near.health,100);const frozen=spell.telemetry;spell.update(0);assert.deepEqual(spell.telemetry,frozen);
+  spell.update(.03);assert.equal(near.health,100);const frozen=spell.telemetry;spell.update(0);assert.deepEqual(spell.telemetry,frozen);
   for(let t=0;t<2;t+=dt)spell.update(dt);
   assert.equal(near.health,82);assert.equal(far.health,82);assert.equal(spell.telemetry.hits,2);assert.equal(spell.busy,false);spell.dispose();assert.equal(s.scene.children.length,0);
  }
 });
-test('earthbreaker cannot cross solid cover, water gaps, cliffs or a wall raised after the warning',()=>{
+test('earthbreaker cannot cross solid cover, water gaps, cliffs or a wall raised after casting',()=>{
  const index=createCollisionIndex([],[{minX:-2,maxX:2,minZ:3,maxZ:3.4,minY:0,maxY:2}]);
  for(const extra of [{traceProjectile:(...args)=>index.traceSegment(...args)},{isWater:(_x,z)=>z>3&&z<3.6},{heightAt:(_x,z)=>z>3?3:0}]){
   const s=setup(extra),enemy=s.combat.addTarget({id:'enemy',position:new THREE.Vector3(0,0,5)}),spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');
@@ -88,29 +88,24 @@ test('long earth wave widens gradually and the wider blue wall deploys promptly 
  blocked.beginAim(edge.player,0);blocked.update(.8,edge.player);assert.equal(blocked.release(edge.player),false,'water under the newly added wall ends prevents placement');blocked.dispose();
 });
 
-test('earthbreaker follows the caster until eruption, then keeps its own path and committed direction',()=>{
+test('earthbreaker immediately launches at the current caster position and does not follow subsequent movement',()=>{
  const s=setup(),actor=new THREE.Group();s.scene.add(actor);
  const prototype=new THREE.Group();prototype.add(new THREE.Mesh(new THREE.BoxGeometry(.1,1.7,.1),new THREE.MeshStandardMaterial()));
- const oldLane=s.combat.addTarget({id:'old-lane',position:new THREE.Vector3(0,0,2)});
- const newLane=s.combat.addTarget({id:'new-lane',position:new THREE.Vector3(4,0,2)});
+ const oldLane=s.combat.addTarget({id:'old-lane',position:new THREE.Vector3(0,0,.65)});
+ const newLane=s.combat.addTarget({id:'new-lane',position:new THREE.Vector3(4,0,.65)});
  const weapons=createWeapons(s.scene,actor,s.world,null,{combat:s.combat,placements:[{id:'earth',kind:'earthbreakerStaff',position:[0,0],rarity:'common'}],tripoPrototypes:{'kit-tripo-earthbreaker-staff':prototype}});
- weapons.tryAutoPickup(s.player);assert.ok(weapons.attack(s.player,0));
- s.player.x=2;weapons.update(.2,.2,s.player,Math.PI/2);
- assert.equal(weapons.telemetry.earthbreaker.origin.x,2);assert.equal(weapons.telemetry.earthbreaker.launched,false);
- const frozen=weapons.telemetry.earthbreaker;s.player.x=4;weapons.update(0,.2,s.player,Math.PI/2);
- assert.deepEqual(weapons.telemetry.earthbreaker,frozen,'pause does not shift the windup');
- weapons.update(.2,.4,s.player,Math.PI/2);
+ weapons.tryAutoPickup(s.player);s.player.x=4;assert.ok(weapons.attack(s.player,0));
  const eruption=weapons.telemetry.earthbreaker;
- assert.equal(eruption.origin.x,4);assert.equal(eruption.direction,0);assert.equal(eruption.launched,true);
- assert.ok(eruption.nodes.every(p=>p.x===4));
- const cracks=s.scene.getObjectByName('Erdbrecher · wandernde Felswelle').children.filter(o=>o.isMesh&&!o.isInstancedMesh&&o.material.uniforms?.uAge);
- assert.ok(cracks.filter(o=>o.visible).every(o=>o.position.x===4),'rendered cracks and damage share the current origin');
- s.player.set(8,0,0);weapons.update(.2,.6,s.player,Math.PI);
- assert.deepEqual(weapons.telemetry.earthbreaker.origin,eruption.origin,'an erupted wave does not move with the caster');
- assert.equal(oldLane.health,100);assert.equal(newLane.health,82);weapons.dispose();prototype.children[0].geometry.dispose();prototype.children[0].material.dispose();
+ assert.equal(eruption.age,0);assert.equal(eruption.origin.x,4);assert.equal(eruption.launched,true);
+ assert.equal(newLane.health,82,'first node deals damage on cast without a warning delay');assert.equal(oldLane.health,100);
+ assert.equal(eruption.openCracks,1);assert.equal(eruption.erupting,1);
+ s.player.x=8;weapons.update(0,0,s.player,Math.PI);assert.deepEqual(weapons.telemetry.earthbreaker,eruption);
+ weapons.update(.2,.2,s.player,Math.PI);
+ assert.deepEqual(weapons.telemetry.earthbreaker.origin,eruption.origin);assert.equal(weapons.telemetry.earthbreaker.direction,0);
+ assert.equal(newLane.health,82);weapons.dispose();prototype.children[0].geometry.dispose();prototype.children[0].material.dispose();
 });
 
-test('moving earthbreaker windup replans water, cliffs and cover from its actual release position',()=>{
+test('earthbreaker validates water, cliffs and cover at the current release position',()=>{
  const index=createCollisionIndex([],[{minX:3,maxX:5,minZ:3,maxZ:3.4,minY:0,maxY:2}]);
  for(const extra of [
   {traceProjectile:(...args)=>index.traceSegment(...args)},
@@ -118,13 +113,32 @@ test('moving earthbreaker windup replans water, cliffs and cover from its actual
   {heightAt:(x,z)=>x>3&&z>3?3:0},
  ]){
   const s=setup(extra),enemy=s.combat.addTarget({id:'covered',position:new THREE.Vector3(4,0,5)});
-  const spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');spell.cast(s.player,0,{damage:18});
-  s.player.x=4;spell.update(.4,s.player);
-  assert.ok(spell.telemetry.nodes.every(p=>p.x===4&&p.z<3));
-  spell.update(2,s.player);assert.equal(enemy.health,100);spell.dispose();
+  const spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');s.player.x=4;spell.cast(s.player,0,{damage:18});
+  assert.ok(spell.telemetry.nodes.every(p=>p.x===4&&p.z<3));spell.update(2,s.player);assert.equal(enemy.health,100);spell.dispose();
  }
- // Moving away from old cover must also restore the full unobstructed route.
- const s=setup({traceProjectile:(...args)=>index.traceSegment(...args)}),spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');
- s.player.x=4;spell.cast(s.player,0,{damage:18});assert.ok(spell.telemetry.nodes.at(-1).z<3);
- s.player.x=0;spell.update(.4,s.player);assert.ok(spell.telemetry.nodes.at(-1).z>17);spell.dispose();
+});
+
+test('fissures travel with the spikes and remain open behind the advancing wave',()=>{
+ const s=setup(),spell=createEarthbreakerSpell(s.scene,s.world,s.combat,'player');spell.cast(s.player,0,{damage:18});
+ const root=s.scene.getObjectByName('Erdbrecher · wandernde Felswelle');
+ const cracks=root.children.filter(o=>o.material?.uniforms?.uOpen),rocks=root.children.find(o=>o.isInstancedMesh),matrix=new THREE.Matrix4(),scale=new THREE.Vector3();
+ assert.equal(cracks.filter(c=>c.visible).length,1);rocks.getMatrixAt(0,matrix);assert.ok(scale.setFromMatrixScale(matrix).y>0);
+ rocks.getMatrixAt(3,matrix);assert.equal(scale.setFromMatrixScale(matrix).y,0,'future spikes are hidden with their fissure');
+ spell.update(.08);assert.equal(cracks.filter(c=>c.visible).length,3);assert.equal(cracks.at(-1).visible,false);
+ spell.update(.55);rocks.getMatrixAt(0,matrix);assert.equal(scale.setFromMatrixScale(matrix).y,0);
+ assert.ok(cracks[0].visible&&cracks[0].material.uniforms.uOpen.value>0,'opening outlives its stone spike');
+ spell.update(2);assert.equal(root.visible,false);spell.dispose();
+});
+
+test('arcane dissolution keeps masonry still, removes collision promptly and fades its light dust completely',()=>{
+ const s=setup(),spell=createRuneWallSpell(s.scene,s.world,s.combat,'player');raise(s,spell);
+ const root=s.scene.getObjectByName('Runenmauer · arkanes Mauerwerk'),mesh=root.getObjectByName('Facettierte blaue Quader');
+ const matrices=Array.from(mesh.instanceMatrix.array);
+ const target=[...s.combat.targets.values()].find(t=>t.destructible);s.combat.hit(target,{damage:50,sourceId:'enemy',delivery:'projectile'});
+ spell.update(.1,s.player);assert.equal(s.world.temporaryObstacles.size,0);assert.equal(spell.telemetry.visuals.phase,'dissolving');
+ assert.ok(spell.telemetry.visuals.liveMotes>0);const first=spell.telemetry.visuals.dissolve;
+ spell.update(.3,s.player);assert.ok(spell.telemetry.visuals.dissolve>first);assert.deepEqual(Array.from(mesh.instanceMatrix.array),matrices,'blocks dissolve in place rather than falling');
+ const frozen=spell.telemetry;spell.update(0,s.player);assert.deepEqual(spell.telemetry,frozen);
+ spell.update(.4,s.player);assert.ok(spell.telemetry.visuals.dissolve>1.15,'all masonry has dissolved before the remaining light dust fades');
+ spell.update(.4,s.player);assert.equal(spell.busy,false);assert.equal(root.visible,false);assert.equal(spell.telemetry.visuals.liveMotes,0);spell.dispose();
 });

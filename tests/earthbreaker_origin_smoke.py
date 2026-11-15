@@ -1,4 +1,4 @@
-"""Generated game: moving cast starts at the caster when the earth wave erupts."""
+"""Generated game: moving cast erupts immediately at the current caster position."""
 import base64,hashlib,json,os,subprocess,math
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -14,8 +14,9 @@ with sync_playwright() as pw:
   c=browser.new_context(viewport={'width':900,'height':700});c.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');')
   p=c.new_page();p.set_default_timeout(120000);p.on('pageerror',lambda e:report['errors'].append(str(e)));p.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' else None);p.route('**/favicon.ico',lambda r:r.fulfill(status=204))
   p.goto(BASE+'/'+ENTRY+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');p.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0');p.locator('#startBtn').click();p.wait_for_function('nebeljagdTestState().equippedWeapon==="earthbreakerStaff"')
-  p.evaluate('nebeljagdInspect({x:0,z:-14,direction:0})');p.wait_for_function('nebeljagdTestState().elapsed>.4');point=p.evaluate('nebeljagdProjectPoint({x:0,z:-8})');p.mouse.move(point['x'],point['y']);p.keyboard.down('f');p.keyboard.down('d')
+  p.evaluate('nebeljagdInspect({x:0,z:-14,direction:0})');p.wait_for_function('nebeljagdTestState().elapsed>.4');point=p.evaluate('nebeljagdProjectPoint({x:0,z:-8})');p.mouse.move(point['x'],point['y']);p.keyboard.down('f');p.keyboard.down('d');elapsed=p.evaluate('nebeljagdTestState().elapsed');p.wait_for_function('t=>nebeljagdTestState().elapsed>t+.3',arg=elapsed)
   p.evaluate('''()=>{window.earthFrames=[];window.earthDone=false;window.earthCapture=null;
+   window.addEventListener('keyup',e=>{if(e.code==='KeyF'){window.releasePosition=nebeljagdTestState().position;queueMicrotask(()=>{const s=nebeljagdTestState();earthFrames.push({position:s.position,wave:s.combat.earthbreaker});});}},{capture:true,once:true});
    function frame(){const s=nebeljagdTestState(),w=s.combat.earthbreaker;
     if(w.active){earthFrames.push({position:s.position,wave:w});
      if(w.age>=.48&&!earthCapture)earthCapture=nebeljagdCaptureFrame();
@@ -24,12 +25,13 @@ with sync_playwright() as pw:
    }requestAnimationFrame(frame);
   }''');p.keyboard.up('f');p.wait_for_function('window.earthDone');p.keyboard.up('d')
   frames=p.evaluate('earthFrames');(OUT/'frames.json').write_text(json.dumps(frames,indent=2));png=p.evaluate('earthCapture');assert png;(OUT/'moving-eruption.png').write_bytes(base64.b64decode(png.split(',',1)[1]))
-  warning=[f for f in frames if not f['wave']['launched']];launched=[f for f in frames if f['wave']['launched']];assert len(warning)>=2 and launched
+  launched=frames;assert launched and all(f['wave']['launched'] for f in frames)
   distance=lambda a,b:math.hypot(a['x']-b['x'],a['z']-b['z'])
-  for f in warning+[launched[0]]:assert distance(f['position'],f['wave']['origin'])<1e-6
-  assert distance(launched[0]['wave']['origin'],warning[0]['wave']['origin'])>.8
-  passed('Moving windup and first eruption use the current avatar position')
-  origin=launched[0]['wave']['origin'];direction=warning[0]['wave']['direction']
+  release=p.evaluate('releasePosition');assert release['x']>.5
+  assert launched[0]['wave']['age']==0 and launched[0]['wave']['openCracks']==1 and launched[0]['wave']['erupting']==1
+  assert distance(release,launched[0]['wave']['origin'])<1e-6
+  passed('Moving cast produces its first spike and fissure immediately at the current avatar position')
+  origin=launched[0]['wave']['origin'];direction=launched[0]['wave']['direction']
   for f in launched:assert f['wave']['origin']==origin and f['wave']['direction']==direction
   assert distance(launched[-1]['position'],origin)>.5
   first=launched[0]['wave']['nodes'][0];assert abs(distance(first,origin)-.65)<1e-6
