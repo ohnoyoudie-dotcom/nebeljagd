@@ -41,7 +41,7 @@ with sync_playwright() as pw:
      b=p.locator('#attackBtn').bounding_box();cdp=c.new_cdp_session(p);cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':b['x']+b['width']/2,'y':b['y']+b['height']/2,'id':1}]})
     else:
      elapsed=state(p)['elapsed'];p.wait_for_function('t=>nebeljagdTestState().elapsed>=t',arg=elapsed+.8);pixel=p.evaluate('nebeljagdProjectPoint({x:-8,z:-7})');p.mouse.move(pixel['x'],pixel['y']);p.keyboard.down('f')
-    p.wait_for_function('nebeljagdTestState().combat.runeWall.aimRange?.radius===10');assert state(p)['combat']['runeWall']['valid'];capture(p,mode+'-aim');pause_at(p,'s.combat.runeWall.solid && s.combat.runeWall.age>=.1')
+    p.wait_for_function('nebeljagdTestState().combat.runeWall.aimRange?.radius===14');assert state(p)['combat']['runeWall']['valid'];capture(p,mode+'-aim');pause_at(p,'s.combat.runeWall.solid && s.combat.runeWall.age>=.1')
     if touch:cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
     else:p.keyboard.up('f')
     p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['combat']['runeWall']['solid'] and state(p)['combat']['runeWall']['age']<=.22;capture(p,mode+'-rising')

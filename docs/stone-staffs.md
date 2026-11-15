@@ -19,7 +19,7 @@ Schaden. Der Schaden skaliert mit der bestehenden Seltenheitslogik.
 
 ## Runenmauerstab
 
-Angriff halten erweitert die Reichweite in 0,8 Sekunden auf 10 m. Ein rechteckiger
+Angriff halten erweitert die Reichweite in 0,8 Sekunden auf 14 m. Ein rechteckiger
 Grundriss zeigt die 7 m breite Mauer quer zur Zielrichtung; ungültige Stellen
 werden rot angezeigt. Loslassen stellt sie nach 0,08 Sekunden Vorwarnung auf; der Aufbau dauert etwa 0,14 Sekunden.
 Die 2,3 m hohe Mauer bleibt nach dem Aufrichten 3 Sekunden stehen, besitzt 50

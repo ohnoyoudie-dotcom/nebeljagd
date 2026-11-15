@@ -79,7 +79,7 @@ test('long earth wave widens gradually and the wider blue wall deploys promptly 
  const rocks=s.scene.getObjectByName('Erdbrecher · wandernde Felswelle').children.find(o=>o.isInstancedMesh);
  assert.equal(rocks.count,spell.telemetry.nodes.length*3,'long-range geometry must not retain the old ten-node cap');spell.dispose();
  const w=setup(),wall=createRuneWallSpell(w.scene,w.world,w.combat,'player');
- wall.beginAim(w.player,0);wall.aimAt(w.player,{x:0,z:5});wall.update(.8,w.player);assert.equal(wall.telemetry.aimRange.radius,10);assert.ok(wall.release(w.player));
+ wall.beginAim(w.player,0);wall.aimAt(w.player,{x:0,z:5});wall.update(.8,w.player);assert.equal(wall.telemetry.aimRange.radius,14);assert.ok(wall.release(w.player));
  wall.update(.079,w.player);assert.equal(wall.telemetry.solid,false);wall.update(.002,w.player);assert.equal(wall.telemetry.solid,true);
  assert.equal(w.world.traceProjectile({x:3.2,y:1,z:2},{x:3.2,y:1,z:8},.05)?.type,'runeWall');
  assert.equal(w.world.traceProjectile({x:3.9,y:1,z:2},{x:3.9,y:1,z:8},.05),null);
