@@ -5,8 +5,8 @@ const damp = (current, target, response, dt) => target + (current - target) * Ma
  * Keep the gait running during its fade-out instead of freezing a lifted foot.
  */
 export function createLocomotionController({ referenceSpeed = 5.6 } = {}) {
-  let smoothedSpeed = 0, walkWeight = 0, forwardLean = 0, sideLean = 0;
-  const reset = () => { smoothedSpeed = walkWeight = forwardLean = sideLean = 0; };
+  let smoothedSpeed = 0, walkWeight = 0, forwardLean = 0, sideLean = 0, gaitX = 0, gaitZ = 1;
+  const reset = () => { smoothedSpeed = walkWeight = forwardLean = sideLean = gaitX = 0; gaitZ = 1; };
   function update(dt, { moving = false, speed = 0, direction = 0, currentYaw = direction, travelDirection = direction,
     rolling = false, dead = false } = {}) {
     const delta = clamp(Number.isFinite(dt) ? dt : 0, 0, .1);
@@ -20,6 +20,9 @@ export function createLocomotionController({ referenceSpeed = 5.6 } = {}) {
     const yaw = currentYaw + turn;
     const turnRate = delta > 0 ? turn / delta : 0;
     const active = !dead && !rolling;
+    // Cartesian blending crosses the +/-pi seam without a gait-time flip.
+    if(active&&moving){gaitX=damp(gaitX,Math.sin(travelDirection-yaw),12,delta);gaitZ=damp(gaitZ,Math.cos(travelDirection-yaw),12,delta);}
+    else if(walkWeight<.001){gaitX=0;gaitZ=1;}
     // A small weight shift reads clearly from above without swinging the camera
     // or moving the collision capsule. Combat IK still follows the actual hands.
     const desiredForwardLean = active ? clamp(smoothedSpeed / referenceSpeed, 0, 1) * .035 * Math.cos(travelDirection-yaw) : 0;
@@ -27,7 +30,7 @@ export function createLocomotionController({ referenceSpeed = 5.6 } = {}) {
     forwardLean = damp(forwardLean, desiredForwardLean, 9, delta);
     sideLean = damp(sideLean, desiredSideLean, 12, delta);
     return { speed: smoothedSpeed, walkWeight, playbackSpeed: clamp(smoothedSpeed / referenceSpeed, .42, 1.65),
-      yaw, turnRate, backward:Math.cos(travelDirection-yaw)<-.35, forwardLean, sideLean };
+      yaw, turnRate, gaitX, gaitZ, backward:Math.cos(travelDirection-yaw)<-.35, forwardLean, sideLean };
   }
   return { update, reset };
 }

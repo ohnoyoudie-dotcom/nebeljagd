@@ -1,3 +1,4 @@
+import { createDirectionalGait } from './directional-gait.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import playerModelUrl from '../assets/characters/nebeljagd_player_base_v1.glb?url&inline';
@@ -121,6 +122,7 @@ export async function createCharacter(scene) {
       findBone([`mixamorig${label}Leg`, `${label}Leg`, `Shin${suffix}`]),
       findBone([`mixamorig${label}Foot`, `${label}Foot`, `Foot${suffix}`])]];
   }));
+  const directionalGait = createDirectionalGait(group, legBones);
   const combatPose = createCombatPoseController(group, { chest, hips: findBone(['mixamorigHips', 'Hips']), arms: armBones, legs: legBones, gripSockets });
   const restoreAnimatedPose = () => combatPose.restore();
   function setCombatState(next) {
@@ -152,7 +154,7 @@ export async function createCharacter(scene) {
   };
 
   function update(dt, time, { moving = false, speed = 5.6, direction = 0, travelDirection = direction, inDanger = false, snowWeight = 0, snowSurfaceY = null } = {}) {
-    restoreAnimatedPose();
+    restoreAnimatedPose(); directionalGait.restore();
     const delta = Math.max(0, Math.min(dt, 0.1));
     const smoothing = 1 - Math.exp(-delta * 12);
     const targetSnowSink = THREE.MathUtils.clamp(snowWeight, 0, 1) * .22;
@@ -178,7 +180,8 @@ export async function createCharacter(scene) {
       presentationPivot.rotation.z = movement.sideLean;
       presentationPivot.position.y = dead ? THREE.MathUtils.lerp(presentationPivot.position.y, 0.35 - snowSink * .35, smoothing) : pelvisHeight - snowSink;
     }
-    group.userData.locomotion = { ...movement };
+    directionalGait.apply({ ...movement, groundOffset: -snowSink, active: !dead && !animator.rolling });
+    group.userData.locomotion = { ...movement, directionalGait: directionalGait.telemetry };
     group.userData.rolling = animator.rolling;
     Object.assign(group.userData.characterAsset, animation, {
       presentationRotation: presentationPivot.rotation.toArray().slice(0, 3),
@@ -211,7 +214,7 @@ export async function createCharacter(scene) {
       concealed = false; opacity = 1; concealmentAppearance.reset();
       group.userData.hiddenFromOtherPlayers = false;
       group.userData.concealmentOpacity = 1; group.userData.localSilhouetteOpacity = .045;
-      restoreAnimatedPose(); animator.reset();
+      restoreAnimatedPose(); directionalGait.restore(); animator.reset();
       locomotion.reset(); attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
       if (Number.isFinite(direction)) group.rotation.y = direction;
       presentationPivot.rotation.set(0, 0, 0); presentationPivot.position.y = pelvisHeight;
@@ -235,8 +238,10 @@ export async function createCharacter(scene) {
     },
     get opacity() { return opacity; },
     roll(direction = group.rotation.y) {
-      if (dead || !animator.startRoll()) return;
-      restoreAnimatedPose(); attackRemaining = 0;
+      if (dead) return;
+      restoreAnimatedPose(); directionalGait.restore();
+      if (!animator.startRoll()) return;
+      attackRemaining = 0;
       rollYaw = Number.isFinite(direction) ? direction : group.rotation.y;
       group.rotation.y = rollYaw;
       presentationPivot.rotation.set(0, 0, 0);

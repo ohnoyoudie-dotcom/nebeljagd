@@ -1,5 +1,4 @@
 import { aimKind, touchAimVector, directionTo } from './aim-input.js';
-import { createAimPreview } from './aim-preview.js';
 import * as THREE from 'three';
 import './style.css';
 import './lobby.css';
@@ -142,7 +141,6 @@ ui.setLoading?.('Die Figur wird vorbereitet …');
 const character = await createCharacter(world.root);
 character.group.scale.setScalar(1.2);
 const player = character.group.position;
-const targetPreview=createAimPreview(world.root,world);
 const attackControl=document.querySelector('#attackBtn');
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
@@ -311,7 +309,7 @@ function interactWeapon() {
 
 function facingDirection(){return weapons?.firingDirection ?? aimDirection ?? state.direction;}
 function faceTarget(){character.group.rotation.y=facingDirection();}
-function cancelAttackAim(){aimDrag=null;weapons?.cancelAim();targetPreview.hide();attackControl.classList.remove('aiming');}
+function cancelAttackAim(){aimDrag=null;weapons?.cancelAim();attackControl.classList.remove('aiming');}
 function attackWeapon(event) {
   if(state.phase!=='playing'||aimDrag||state.rollRemaining>0||weapons.attackCooldown>0)return;
   if(!weapons.equipped){ui.toast('Heb zuerst eine Waffe auf.');return;}
@@ -342,9 +340,6 @@ function refreshAttackAim(){
     const p=groundPointer(mouseAimPointer);
     if(p){aimDirection=directionTo(player,p,facingDirection());if(weapons.aiming)weapons.aimAt(player,p);}
   }
-  const kind=aimKind(weapons.equipped),preview=weapons.aimPreview;
-  if(state.phase!=='playing'||state.rollRemaining>0||!weapons.equipped||(!aimDrag&&!mouseAimPointer)){targetPreview.hide();return;}
-  targetPreview.update(player,facingDirection(),kind,weapons.equippedItem?.range,preview?.target,preview?.arcHeight);
 }
 function moveAttackAim(event){
   if(state.phase!=='playing')return;
@@ -362,7 +357,7 @@ function releaseWeapon(event){
     if(weapons.aiming)weapons.releaseAttack(player,facingDirection());
     else weapons.attack(player,facingDirection());
   }
-  aimDrag=null;attackControl.classList.remove('aiming');targetPreview.hide();
+  aimDrag=null;attackControl.classList.remove('aiming');
 }
 
 function simulate(dt) {
@@ -510,7 +505,7 @@ window.nebeljagdTestState = () => ({
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
   position: { x: player.x, y: player.y, z: player.z }, direction: state.direction,
-  targeting:{direction:aimDirection,facing:facingDirection(),gesture:aimDrag?{kind:aimDrag.kind,touch:aimDrag.touch,ratio:aimDrag.ratio}:null,preview:targetPreview.mode},
+  targeting:{direction:aimDirection,facing:facingDirection(),gesture:aimDrag?{kind:aimDrag.kind,touch:aimDrag.touch,ratio:aimDrag.ratio}:null,preview:null},
   rollCooldown: state.rollCooldown, dashCooldown: state.rollCooldown,
   rollRemaining: state.rollRemaining, gold: state.gold, quality: state.quality,
   equippedWeapon: weapons.equipped, equippedItem: weapons.equippedItem, attackCooldown: weapons.attackCooldown,
