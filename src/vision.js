@@ -15,7 +15,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
   mask.generateMipmaps = false;
   const origin = { value: new THREE.Vector2(world.spawn.x, world.spawn.z) };
   const radiusUniform = { value: radius }, textureUniform = { value: mask };
-  const blindUniform = { value: 0 };
+  const blindUniform = { value: 0 }, smokeUniform={value:0}, timeUniform={value:0};
   const hooks = new Map();
   const objectHooks = new Map();
   let lastSampleTime = -Infinity, lastRegistrationTime = -Infinity;
@@ -26,6 +26,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     uniform vec2 uTacticalOrigin;
     uniform float uTacticalRadius;
     uniform float uBlindRadius;
+    uniform float uBlindSmoke,uSightTime;
     uniform float uTacticalBlockerSurface;
     vec3 applyTacticalSight(vec3 color, vec2 point) {
       vec2 delta = point - uTacticalOrigin;
@@ -41,7 +42,8 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
       vec3 shadow = mix(color, vec3(0.0), .50);
       vec3 shaded = mix(shadow, color, visibility);
       if (uBlindRadius > 0.) {
-        float blind = smoothstep(uBlindRadius - .25, uBlindRadius + .25, distanceToViewer);
+        float smoke=uBlindSmoke*(sin(angle*31.+uSightTime*.9)+.5*sin(angle*67.-uSightTime*1.4))*.09;
+        float blind = smoothstep(uBlindRadius - .3 + smoke, uBlindRadius + .3 + smoke, distanceToViewer);
         shaded = mix(shaded, vec3(.018, .016, .022), blind);
       }
       return shaded;
@@ -79,6 +81,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           shader.uniforms.uTacticalOrigin = origin;
           shader.uniforms.uTacticalRadius = radiusUniform;
           shader.uniforms.uBlindRadius = blindUniform;
+          shader.uniforms.uBlindSmoke=smokeUniform;shader.uniforms.uSightTime=timeUniform;
           shader.uniforms.uTacticalBlockerSurface = blockerUniform;
           let position = 'vWorld.xz';
           if (standard) {
@@ -95,7 +98,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
           }
           shader.fragmentShader = `${declaration}\n${shader.fragmentShader}`.replace('#include <tonemapping_fragment>', `gl_FragColor.rgb = applyTacticalSight(gl_FragColor.rgb, ${position});\n#include <tonemapping_fragment>`);
         };
-        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v18-solar-blindness`;
+        material.customProgramCacheKey = () => `${baseKey}|tactical-sight-v19-darkened`;
         material.needsUpdate = true;
         hooks.set(material, { original, originalKey, blockerUniform });
       }
@@ -110,6 +113,7 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     }
   }
   function update(player, timeSeconds = 0) {
+    timeUniform.value=timeSeconds;
     if (timeSeconds - lastRegistrationTime > 1 || timeSeconds < lastRegistrationTime) { register(); lastRegistrationTime = timeSeconds; }
     const distance = Math.hypot(player.x - sight.observer.x, player.z - sight.observer.z);
     if (timeSeconds - lastSampleTime < .065 && timeSeconds >= lastSampleTime && distance < .16) return;
@@ -119,7 +123,8 @@ export function createVision(scene, world, { radius = 18, samples = 512 } = {}) 
     }
     mask.needsUpdate = true; lastSampleTime = timeSeconds; updates++;
   }
-  function setSightLimit(limit = Infinity) {
+  function setSightLimit(limit = Infinity,{smoke=false}={}) {
+    smokeUniform.value=smoke?1:0;
     blindUniform.value = Number.isFinite(limit) && limit > 0 && limit < radius ? limit : 0;
   }
   function isVisible(point, { concealed, local = false } = {}) {

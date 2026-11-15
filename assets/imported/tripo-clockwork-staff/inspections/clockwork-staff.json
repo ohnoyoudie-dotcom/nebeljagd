@@ -1,0 +1,150 @@
+{
+  "source": {
+    "path": "assets/inbox/Uhrwerkstab.glb",
+    "bytes": 68713948,
+    "sha256": "1643e4e02d4de5e3f51fac2ff07eaf925de90f11434d7b499eb70d866dbb0790",
+    "triangles": 1992219,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-clockwork-staff/runtime/clockwork-staff.glb",
+    "bytes": 273008,
+    "sha256": "84472224ca3630376c2bd42d7b7d723051e99f94259883c35c3febbf57a3a390",
+    "triangles": 4998,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "normalization": {
+    "sourceBoundsBlender": [
+      [
+        -0.1829986572265625,
+        -0.10004425048828125,
+        0.0
+      ],
+      [
+        0.1829986572265625,
+        0.10004425048828125,
+        0.9786376953125
+      ]
+    ],
+    "sourceGripPointGltf": [
+      0.0016298475675284863,
+      0.4200000762939453,
+      0.001617449801415205
+    ],
+    "sourceLongitudinalAxisGltf": [
+      -0.0013530426658689976,
+      0.9999958276748657,
+      0.0025294478982686996
+    ],
+    "normalizingRotationQuaternionBlenderWxyz": [
+      0.9999989867210388,
+      -0.0012647253461182117,
+      0.0006765220314264297,
+      0.0
+    ],
+    "uniformScale": 1.7371236897875701,
+    "axes": "glTF +Y towards blade/crystal, +Z source front; physical grip centered at (0,0,0)",
+    "gripPoint": [
+      0,
+      0,
+      0
+    ],
+    "nominalLengthMetres": 1.7,
+    "normalizedSourceBoundsGltf": [
+      [
+        -0.31977254152297974,
+        -0.7295918464660645,
+        -0.17834311723709106
+      ],
+      [
+        0.3160092830657959,
+        0.9704081416130066,
+        0.16923463344573975
+      ]
+    ],
+    "tipPoint": [
+      -0.0016437568701803684,
+      0.9704660177230835,
+      -0.005768678151071072
+    ],
+    "gltfBounds": [
+      [
+        -0.32314828038215637,
+        -0.7319177389144897,
+        -0.17820492386817932
+      ],
+      [
+        0.31929340958595276,
+        0.9704660177230835,
+        0.1679803878068924
+      ]
+    ]
+  },
+  "textures": [
+    {
+      "name": "Uhrwerkstab_basecolor.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    },
+    {
+      "name": "Uhrwerkstab_normal.png",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        128,
+        128
+      ]
+    },
+    {
+      "name": "Uhrwerkstab_rm.jpg",
+      "before": [
+        4096,
+        4096
+      ],
+      "after": [
+        256,
+        256
+      ]
+    }
+  ],
+  "preparation": "local Blender; original preserved",
+  "policy": {
+    "id": "clockwork-staff",
+    "length": 1.7,
+    "gripHeight": 0.42,
+    "axisRange": [
+      0.1,
+      0.5
+    ],
+    "triangles": 5000
+  },
+  "precision": {
+    "method": "float16 grid retained in float32 attributes",
+    "maxAbsoluteError": 0.000244140625,
+    "topologyUnchanged": true,
+    "texturesUnchanged": true,
+    "decoderRequired": false
+  }
+}

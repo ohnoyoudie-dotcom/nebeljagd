@@ -1267,6 +1267,56 @@
           0.11444785445928574
         ]
       }
+    },
+    {
+      "kind": "shadowStaff",
+      "variant": "kit-tripo-shadow-staff",
+      "file": "assets/catalog/shadowStaff-kit-tripo-shadow-staff.webp",
+      "bytes": 4918,
+      "sha256": "8eabfdfc4a4ef83815e41f30a44980695b0fd398211d011102340fc6eee6ff4e",
+      "method": "Blender Cycles PBR of actual normalized runtime GLB, 640px render to 256px WebP",
+      "source": "assets/imported/tripo-shadow-staff/previews/shadow-staff-runtime.png",
+      "model": "assets/imported/tripo-shadow-staff/runtime/shadow-staff.glb",
+      "modelSha256": "483e4f2f3932dce7f8324894eb1e373e910d30111b25fb2e9c4972c57fc1a93f",
+      "originalSourceSha256": "7206e3424de826e41597269960895f72c5bca372fcfd869d81fa3efa28f116cc",
+      "generator": "scripts/prepare-shadow-staff.py; scripts/register-control-staff-previews.py",
+      "modelBounds": {
+        "min": [
+          -0.3140299618244171,
+          -0.7245407104492188,
+          -0.1712738275527954
+        ],
+        "max": [
+          0.25691816210746765,
+          0.9745147824287415,
+          0.10924163460731506
+        ]
+      }
+    },
+    {
+      "kind": "clockworkStaff",
+      "variant": "kit-tripo-clockwork-staff",
+      "file": "assets/catalog/clockworkStaff-kit-tripo-clockwork-staff.webp",
+      "bytes": 5664,
+      "sha256": "7535de0e5d01af0c42b9b86f7bdc18ed63c9554d7d1b123c3c06e9ba44e6b551",
+      "method": "Blender Cycles PBR of actual normalized runtime GLB, 640px render to 256px WebP",
+      "source": "assets/imported/tripo-clockwork-staff/previews/clockwork-staff-runtime.png",
+      "model": "assets/imported/tripo-clockwork-staff/runtime/clockwork-staff.glb",
+      "modelSha256": "84472224ca3630376c2bd42d7b7d723051e99f94259883c35c3febbf57a3a390",
+      "originalSourceSha256": "1643e4e02d4de5e3f51fac2ff07eaf925de90f11434d7b499eb70d866dbb0790",
+      "generator": "scripts/prepare-clockwork-staff.py; scripts/register-control-staff-previews.py",
+      "modelBounds": {
+        "min": [
+          -0.32314828038215637,
+          -0.7319177389144897,
+          -0.17820492386817932
+        ],
+        "max": [
+          0.31929340958595276,
+          0.9704660177230835,
+          0.1679803878068924
+        ]
+      }
     }
   ],
   "errors": []

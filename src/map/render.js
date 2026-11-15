@@ -18,6 +18,8 @@ const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1
 // Add these definitions only when their models are actually placed, keeping
 // previously authored SVGs byte-identical when their map has no new weapons.
 const extraWeaponSymbols = {
+  clockworkStaff:'<g id="world-object-clockworkStaff"><path d="M0 2V-1" stroke="#9b743e" stroke-width=".35"/><circle cy="-1.4" r=".75" fill="#266c8c" stroke="#e8bd67" stroke-width=".3"/></g>',
+  shadowStaff:'<g id="world-object-shadowStaff"><path d="M0 2V-1" stroke="#725080" stroke-width=".35"/><circle cy="-1.4" r=".7" fill="#2c124b" stroke="#ba87ef" stroke-width=".2"/></g>',
   earthbreakerStaff: '<g id="world-object-earthbreakerStaff"><path d="M0 1.8V-.7" stroke="#986637" stroke-width=".35"/><path d="M-.8-.7-.5-2 .1-1.6 .6-2.1 .9-.8 0-.3Z" fill="#78654a" stroke="#ffc269" stroke-width=".18"/></g>',
   runeWallStaff: '<g id="world-object-runeWallStaff"><path d="M0 1.8V-.5" stroke="#627c8a" stroke-width=".35"/><path d="M-.8-.6V-2H-.3V-1.7H.3V-2H.8V-.6Z" fill="#809599" stroke="#95f5ff" stroke-width=".18"/></g>',
 

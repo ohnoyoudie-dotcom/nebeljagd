@@ -126,6 +126,8 @@ export const ASSET_CATALOG = Object.freeze([
     'Dein texturierter Sternstab. Verschießt einen geraden Sternenblitz mit funkelnder Lichtspur.', 'tripo-star-moon'),
   tripo('lightningStaff', 'kit-tripo-lightning-staff', 'Blitzstab · Tripo', 'lightning-staff', 'fantasy thunder staff 3d model',
     'Schnelles Blitzprojektil mit verzweigten Lichtbögen und elektrischem Einschlag. Direkter Einzeltreffer; Seltenheit zufällig je Runde.', 'tripo-lightning-staff'),
+  tripo('shadowStaff','kit-tripo-shadow-staff','Schattenstab · Tripo','shadow-staff','Schattenstab','Schattenkugel im Bogen werfen. Ein dunkles Feld begrenzt die Sicht getroffener Gegner für 2 s auf 2,5 m.','tripo-shadow-staff'),
+  tripo('clockworkStaff','kit-tripo-clockwork-staff','Uhrwerkstab · Tripo','clockwork-staff','Uhrwerkstab','Mechanische Kapsel werfen. Ein zerstörbarer Wächter bewacht 4 s lang einen Bereich von 6 m.','tripo-clockwork-staff'),
   tripo('earthbreakerStaff','kit-tripo-earthbreaker-staff','Erdbrecherstab · Tripo','earthbreaker-staff','Erdbrecherstab','Felswelle in Zielrichtung: Riss und Felszacken brechen sofort gemeinsam auf. Hindernisse stoppen die Welle.','tripo-earthbreaker-staff'),
   tripo('runeWallStaff','kit-tripo-rune-wall-staff','Runenmauerstab · Tripo','rune-wall-staff','Runenmauerstab','Halten und eine freie Stelle wählen. Eine zerstörbare Runenmauer blockiert kurz Bewegung und Geschosse beider Seiten.','tripo-rune-wall-staff'),
   tripo('blinkStaff','kit-tripo-blink-staff','Teleportationsstab · Tripo','blink-staff','Teleportationstab','Halten erweitert die Reichweite bis 12 Meter; loslassen teleportiert zum kleinen Landekreis. Hindernisse blockieren den Sprung.','tripo-blink-staff'),

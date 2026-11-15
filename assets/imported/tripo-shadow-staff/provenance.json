@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Schattenstab.glb",
+  "sourceSha256": "7206e3424de826e41597269960895f72c5bca372fcfd869d81fa3efa28f116cc",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

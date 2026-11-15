@@ -541,7 +541,9 @@
             "blinkStaff",
             "reflectionStaff",
             "earthbreakerStaff",
-            "runeWallStaff"
+            "runeWallStaff",
+            "shadowStaff",
+            "clockworkStaff"
           ]
         },
         "variant": {
@@ -1472,6 +1474,48 @@
               "variant": {
                 "enum": [
                   "kit-tripo-rune-wall-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "shadowStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-shadow-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "clockworkStaff"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "kit-tripo-clockwork-staff"
                 ]
               }
             }

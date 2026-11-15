@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Uhrwerkstab.glb",
+    "bytes": 68713948,
+    "sha256": "1643e4e02d4de5e3f51fac2ff07eaf925de90f11434d7b499eb70d866dbb0790",
+    "triangles": 1992219,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/clockwork-staff.json",
+      "bytes": 3101,
+      "sha256": "cf28ce5b3be7ebb37984d8d14495fc39f0cda1a919cf0751b6e5a4375ee72c92"
+    },
+    {
+      "path": "previews/clockwork-staff-runtime.png",
+      "bytes": 296572,
+      "sha256": "45ebf164b4c4a12da0bb0cb48f8c7e37771899890bdd294ea626848de95a1131"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 356,
+      "sha256": "e770a395f913270e2f77852b557512b8c423be477be8142aae558936550c231c"
+    },
+    {
+      "path": "runtime/clockwork-staff.glb",
+      "bytes": 273008,
+      "sha256": "84472224ca3630376c2bd42d7b7d723051e99f94259883c35c3febbf57a3a390"
+    }
+  ]
+}

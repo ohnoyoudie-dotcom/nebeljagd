@@ -15,6 +15,8 @@ function setup(placements = [{ id: 'bow', kind: 'bow', rarity: 'common', positio
 
 const PROCEDURAL_WEAPON_TYPES = ['bow', 'fireStaff', 'iceStaff'];
 const IMPORTED_WEAPONS = [
+  {kind:'shadowStaff',variant:'kit-tripo-shadow-staff'},
+  {kind:'clockworkStaff',variant:'kit-tripo-clockwork-staff'},
   {kind:'earthbreakerStaff',variant:'kit-tripo-earthbreaker-staff'},
   {kind:'runeWallStaff',variant:'kit-tripo-rune-wall-staff'},
   {kind:'blinkStaff',variant:'kit-tripo-blink-staff'},

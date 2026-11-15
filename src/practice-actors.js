@@ -266,7 +266,7 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
     root, update, reset, resolvePlayerMovement, appendGrassInteractors, appendFootprintSources,
     inspect: () => actors.map(({ id, target, group, pivot, gravityResponse, visible, travelled, speed }) => ({ id, name: group.name, practice: true,
       position: { x: group.position.x, y: group.position.y, z: group.position.z }, health: target.health, maxHealth: target.maxHealth,
-      alive: target.alive, visible, blindRemaining: target.blindRemaining, revealRemaining: target.revealRemaining, burnRemaining: target.burnRemaining, poisonRemaining: target.poisonRemaining, slowRemaining: target.slowRemaining,
+      alive: target.alive, visible, darkenedRemaining:target.darkenedRemaining, blindRemaining: target.blindRemaining, revealRemaining: target.revealRemaining, burnRemaining: target.burnRemaining, poisonRemaining: target.poisonRemaining, slowRemaining: target.slowRemaining,
       speedMultiplier: target.speedMultiplier, stunRemaining: target.stunRemaining, canAct: target.canAct, baseSpeed: speed, travelled, gravityResponse,
       gravityLean: { x: pivot.rotation.x, z: pivot.rotation.z } })),
     dispose() {

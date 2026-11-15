@@ -42,6 +42,11 @@ function attackOnce(instance, seconds = .9) {
     for (let held = 0; held < 3; held += .1) weapons.update(.1, held, actor.position);
     weapons.releaseAttack(actor.position); seconds = 3.6;
   }
+  if (['shadowStaff','clockworkStaff'].includes(weapons.equipped)) {
+    const point={...instance.target.position,z:instance.target.position.z-(weapons.equipped==='clockworkStaff'?2:0)};
+    weapons.aimAt(actor.position,point);for(let i=0;i<30;i++)weapons.update(.1,i*.1,actor.position);weapons.releaseAttack(actor.position);
+    for(let i=0;i<600&&weapons.telemetry.damageHits===0;i++)weapons.update(.01,i*.01,actor.position);return;
+  }
   if (weapons.equipped === 'meteorStaff') {
     weapons.aimAt(actor.position, instance.target.position); weapons.update(3, 0, actor.position);
     weapons.releaseAttack(actor.position);

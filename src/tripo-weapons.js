@@ -1,3 +1,7 @@
+import shadowStaffUrl from '../assets/imported/tripo-shadow-staff/runtime/shadow-staff.glb?url&inline';
+import clockworkStaffUrl from '../assets/imported/tripo-clockwork-staff/runtime/clockwork-staff.glb?url&inline';
+import shadowStaffInspection from '../assets/imported/tripo-shadow-staff/inspections/shadow-staff.json' with {type:'json'};
+import clockworkStaffInspection from '../assets/imported/tripo-clockwork-staff/inspections/clockwork-staff.json' with {type:'json'};
 import earthbreakerStaffUrl from '../assets/imported/tripo-earthbreaker-staff/runtime/earthbreaker-staff.glb?url&inline';
 import earthbreakerStaffInspection from '../assets/imported/tripo-earthbreaker-staff/inspections/earthbreaker-staff.json' with {type:'json'};
 import runeWallStaffUrl from '../assets/imported/tripo-rune-wall-staff/runtime/rune-wall-staff.glb?url&inline';
@@ -35,6 +39,8 @@ import lightningStaffUrl from '../assets/imported/tripo-lightning-staff/runtime/
 import lightningStaffInspection from '../assets/imported/tripo-lightning-staff/inspections/lightning-staff.json' with { type: 'json' };
 
 const SOURCES = {
+  'kit-tripo-shadow-staff':{url:shadowStaffUrl,name:'Schattenstab · Tripo',tip:shadowStaffInspection.normalization.tipPoint,source:'assets/inbox/Schattenstab.glb'},
+  'kit-tripo-clockwork-staff':{url:clockworkStaffUrl,name:'Uhrwerkstab · Tripo',tip:clockworkStaffInspection.normalization.tipPoint,source:'assets/inbox/Uhrwerkstab.glb'},
   'kit-tripo-earthbreaker-staff': {url:earthbreakerStaffUrl,name:'Erdbrecherstab · Tripo',tip:earthbreakerStaffInspection.normalization.tipPoint,source:'assets/inbox/Erdbrecherstab.glb'},
   'kit-tripo-rune-wall-staff': {url:runeWallStaffUrl,name:'Runenmauerstab · Tripo',tip:runeWallStaffInspection.normalization.tipPoint,source:'assets/inbox/Runenmauerstab.glb'},
   'kit-tripo-blink-staff': {url:blinkStaffUrl,name:'Teleportationsstab · Tripo',tip:blinkStaffInspection.normalization.tipPoint,source:'assets/inbox/Teleportationstab.glb'},

@@ -1,0 +1,26 @@
+# Schattenstab und Uhrwerkstab
+
+Beide Waffen verwenden die vom Nutzer gelieferten Tripo-GLBs aus `assets/inbox`. Die Originale werden nicht verändert; die Ableitungen stehen in eigenen `assets/imported/tripo-…-staff`-Verzeichnissen. Das bleibt der vorhandene projektlokale Importweg, keine externe Asset-Zertifizierung.
+
+| Waffe | Gewöhnlicher Schaden | Verhalten | Abklingzeit |
+| --- | --- | --- | --- |
+| Schattenstab | 8 pro Gegner und Feld | 2,5 m Feld, 3 s Lebensdauer; 2 s Verdunkelung auf 2,5 m Sicht | 5,5 s |
+| Uhrwerkstab | 5 pro Geschoss | 4 s aktiver Wächter nach 0,4 s Entfaltung, 25 Leben, 6 m Schussweite, 1 s Schussintervall | 8 s |
+
+Beide Zielkreise wachsen mit der üblichen Ladereichweite bis 20 m. Maus/F bzw. der rechte Touch-Zielstick wählen unabhängig von der Laufrichtung; Loslassen wirft das Geschoss. Der Schattenkreis hat den Feldradius, der Kapselkreis markiert den Platzbedarf des Wächters. Seltenheit skaliert den tatsächlichen Schaden. Individuelle Abklingzeiten bleiben beim Waffenwechsel erhalten.
+
+`staff-lob.js` teilt nur die Bodenwahl und den in kleinen Schritten auf Kollision geprüften Bogenflug. Feld, Status, Wächter und Effekte besitzen eigene Controller. Eine ungültige Landestelle wird vor dem Wurf und beim Auftreffen erneut geprüft. Hindernisse können einen Wurf abfangen.
+
+`darkened-status.js` hält Verdunkelung getrennt von der Sonnenblendung; die engere aktive Sichtgrenze gilt in der geometrischen Sichtprüfung und im Gelände-Shader. Die Schattenfläche merkt sich getroffene IDs. Erneutes Betreten desselben Feldes erneuert weder Schaden noch Status. Der Status beeinflusst weder Bewegung noch Angriff und deckt keine Figuren auf. Augensymbol, schwacher Radiusring und Körperpartikel beachten normale Sicht und Versteckgras.
+
+Der Uhrwerkwächter ist ein temporäres, zerstörbares Kampfziel ohne Fortschrittsbelohnung. Er wählt lebende gegnerische Figuren nach Entfernung, Deckung und Versteckstatus. Ein Schuss behält seine Flugrichtung; auch später auftauchende Deckung und Projektilschilde fangen ihn ab. Der Wächter ist ortsfest und bleibt beim Waffenwechsel aktiv. Besitzer-Tod, Ablauf, Zerstörung und Neustart räumen Ziele/Effekte kontrolliert auf. Die Team-ID-Prüfung nutzt den vorhandenen Combat-Vertrag; sie führt keinen Netzwerk-Mehrspielermodus ein.
+
+## Aufbereitung und Nachprüfung
+
+- `scripts/prepare-shadow-staff.py`, `scripts/prepare-clockwork-staff.py`: Blender-Aufbereitung, gemessener Griff, 1,7 m Modelllänge, höchstens 5.000 Dreiecke und eingebettete Texturen; verweigern das Überschreiben vorhandener Ableitungen.
+- `scripts/register-control-staff-previews.py`: WebP-Vorschaubilder aus echten Laufzeitmodell-Renderings; aktualisiert nur die zwei Katalogeinträge.
+- `npm run verify:assets`: Original-Prüfsummen, vollständige Dateilisten und Ableitungs-Prüfsummen.
+- `npm test`: Kampflogik, Sichtbegrenzung, Versteckregeln, Deckung, ausweichbare Geschosse, Zerstörung, Seltenheit, Waffenwechsel, Cooldowns, Reset und Asset-Verträge.
+- `python tests/control_staffs_smoke.py`: tatsächliche generierte Editor-/Spiel-Dateien; Platzierung und erneutes Laden, Maus und Touch, beide Effekte, Verdunkelung samt Bewegung/Erholung, Wächter-Treffer und -Zerstörung, Pause und Neustart. Berichte und Bilder liegen unter dem ignorierten `test-results/control-staffs/`.
+
+Browserprüfungen laufen mit Chromium und Software-WebGL. Sie ersetzen keine Leistungsmessung auf einem echten iPad. Autorisierte Veröffentlichung erfolgt nach erfolgreichem Build und Browserprüfung über `work` → `main/preview` → GitHub Pages; dabei bleiben die Benutzerkarte und das Hauptportal erhalten.

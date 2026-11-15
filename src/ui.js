@@ -19,6 +19,8 @@ const icon = (name, className = '') => {
     iceStaff: '<path d="m5 22 9-14M14 1v12M8 4l12 6M8 10l12-6M11 2l3 2 3-2m-6 10 3-2 3 2"/>',
     poisonStaff: '<path d="m5 22 9-13m-5 6 4 2M14 2c-1 3-5 5-5 8a5 5 0 0 0 10 0c0-3-4-5-5-8Z"/><path d="M12 10h.01M16 10h.01m-4 3 2 1 2-1"/>',
     lightningStaff: '<path d="m4 22 9-14M17 1l-6 9h5l-3 9L23 7h-6l3-6Z"/>',
+    clockworkStaff:'<path d="M12 22V12m0-11v2m7 4h-2M5 7H3"/><circle cx="12" cy="7" r="5"/><path d="M12 4v3l2 1"/>',
+    shadowStaff:'<path d="M12 22V10M6 8C1-3 23-3 18 8l-6 4Z"/><circle cx="12" cy="5" r="3"/>',
     earthbreakerStaff: '<path d="m7 22 7-13-5-3 4-5 3 3 3-2 3 6-8 1"/>',
     runeWallStaff: '<path d="M12 22V10M6 10V2h3v3h6V2h3v8Z"/>',
     blinkStaff: '<path d="m6 22 7-12"/><ellipse cx="15" cy="7" rx="6" ry="5"/>',
@@ -504,7 +506,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     if (weaponKey !== lastWeaponType) {
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
-      const effectDetail = { earthbreakerStaff:' · Aufbrechende Felswelle · 18 m', runeWallStaff:' · 3 s Steinmauer · 50 Haltbarkeit', blinkStaff:' · Halten, Landestelle wählen, loslassen', reflectionStaff:' · 1,8 Sekunden Projektilschutz', sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Zielen und loslassen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
+      const effectDetail = { clockworkStaff:' · Wächter 4 s · 6 m Reichweite · 25 Leben', shadowStaff:' · Schattenfeld · Verdunkelt 2 s · 2,5 m Sicht', earthbreakerStaff:' · Aufbrechende Felswelle · 18 m', runeWallStaff:' · 3 s Steinmauer · 50 Haltbarkeit', blinkStaff:' · Halten, Landestelle wählen, loslassen', reflectionStaff:' · 1,8 Sekunden Projektilschutz', sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Zielen und loslassen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
         poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz', lightningStaff: ' · Gewitter zielen und loslassen' }[weaponType] || '';
       weaponDetail.textContent = weaponType === 'runeWallStaff' ? 'Runenmauer 7 m · 3 s · 6 s Abklingzeit' : weaponType === 'blinkStaff' ? 'Teleport bis 12 m · 4 s Abklingzeit' : weaponType === 'reflectionStaff' ? 'Projektilschutz 1,8 s · 8 s Abklingzeit' : weaponType === 'soulStaff' ? '3 Treffer · Hinrichtung nach 2 s' : weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
@@ -512,7 +514,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponIcon.innerHTML = icon(weaponType || 'shield');
       weaponStatus.setAttribute('aria-label', weaponType ? `${weapon.name}, ${weapon.rarityLabel}, ${weapon.damage} Schaden` : 'Keine Waffe ausgerüstet');
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
-      const attackLabel = { earthbreakerStaff:'Felswelle zielen und loslassen', runeWallStaff:'Halten, freie Stelle für die Mauer wählen, loslassen', blinkStaff:'Halten für mehr Reichweite, kleinen Landekreis wählen, loslassen zum Teleportieren', reflectionStaff:'Schutzkuppel aktivieren · lässt direkte Geschosse abprallen', sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Zielen und loslassen', sword: 'Mit dem Schwert angreifen',
+      const attackLabel = { clockworkStaff:'Halten, freie Stelle wählen, loslassen · Uhrwerkwächter beschwören', shadowStaff:'Halten, Schattenfeld zielen, loslassen · begrenzt die Sicht für 2 Sekunden', earthbreakerStaff:'Felswelle zielen und loslassen', runeWallStaff:'Halten, freie Stelle für die Mauer wählen, loslassen', blinkStaff:'Halten für mehr Reichweite, kleinen Landekreis wählen, loslassen zum Teleportieren', reflectionStaff:'Schutzkuppel aktivieren · lässt direkte Geschosse abprallen', sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Zielen und loslassen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
         poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken', lightningStaff: 'Halten, Gewitterfläche wählen, loslassen · Blitze betäuben' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');

@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "assets/inbox/Schattenstab.glb",
+    "bytes": 64252748,
+    "sha256": "7206e3424de826e41597269960895f72c5bca372fcfd869d81fa3efa28f116cc",
+    "triangles": 1863338,
+    "materials": 1,
+    "externalUris": [],
+    "requiredExtensions": [],
+    "attributes": [
+      "NORMAL",
+      "POSITION",
+      "TEXCOORD_0"
+    ]
+  },
+  "files": [
+    {
+      "path": "inspections/shadow-staff.json",
+      "bytes": 3080,
+      "sha256": "8b5bdaef82dac26c9198fd24a09990e9b244fdcac974d2a7e30f4bfbfcd5dc68"
+    },
+    {
+      "path": "previews/shadow-staff-runtime.png",
+      "bytes": 287338,
+      "sha256": "4a6ea3b85a9904d42e17d369e8e8381c0cb907c16e77d7558240a514d9e87ce9"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 357,
+      "sha256": "45ec81560b30678c60d77cbb515102887007cf57e4b63a6ca48cf7374df1d88f"
+    },
+    {
+      "path": "runtime/shadow-staff.glb",
+      "bytes": 220336,
+      "sha256": "483e4f2f3932dce7f8324894eb1e373e910d30111b25fb2e9c4972c57fc1a93f"
+    }
+  ]
+}

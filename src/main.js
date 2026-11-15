@@ -1,3 +1,4 @@
+import { effectiveSightRadius } from './darkened-status.js';
 import { aimKind, touchAimVector, directionTo } from './aim-input.js';
 import * as THREE from 'three';
 import './style.css';
@@ -500,6 +501,7 @@ document.querySelector('#game').addEventListener('webglcontextlost', (event) => 
 
 window.nebeljagdTestState = () => ({
   mode: lobbyMode ? 'lobby' : 'game',
+  darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
@@ -575,6 +577,8 @@ if (new URLSearchParams(location.search).has('inspect')) {
     const result=damage>0?combat.hit(target,{sourceId:'inspect-enemy',type:'bow',damage,delivery:'projectile'}):null;
     return {hit:collision?.type??null,movementShift:Math.hypot(probe.x-center.x,probe.z-center.z),result};
   };
+  window.nebeljagdInspectClockworkHit = (damage=25) => {const t=[...combat.targets.values()].find(t=>t.summoned&&t.ownerId==='player');return t?combat.hit(t,{sourceId:'inspect-enemy',type:'bow',delivery:'projectile',damage}):null;};
+  window.nebeljagdInspectShadowHit = () => combat.hit(localCombatTarget,{sourceId:'inspect-enemy',type:'shadowStaff',damage:8,darken:{duration:2,radius:2.5}});
   window.nebeljagdInspectSolarHit = () => combat.hit(localCombatTarget, { sourceId: 'inspect-enemy', type: 'sunStaff', damage: 3, blind: { duration: 2, radius: 3 }, reveal: 2.5 });
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
@@ -623,7 +627,7 @@ function frame(now) {
   previousTime = now; time += dt; accumulator += dt;
   while (accumulator >= 1 / 60) { simulate(1 / 60); accumulator -= 1 / 60; }
   world.update(dt, time, player, currentZone.radius, state.phase === 'playing' ? dt : 0);
-  vision.setSightLimit(localCombatTarget.blindRemaining > 0 ? localCombatTarget.blindRadius : Infinity);
+  vision.setSightLimit(effectiveSightRadius(localCombatTarget),{smoke:localCombatTarget.darkenedRemaining>0});
   vision.update(player, time);
   state.shelter = world.shelter;
   state.hiddenInGrass = localCombatTarget.revealRemaining <= 0 && world.concealmentAt(player.x, player.z) > 0.01;

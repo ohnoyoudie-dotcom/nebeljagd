@@ -1,3 +1,6 @@
+import { createClockworkSpell } from './clockwork-spell.js';
+import { createShadowSpell } from './shadow-spell.js';
+import { createDarkenedIndicators } from './shadow-visuals.js';
 import { createEarthbreakerSpell } from './earthbreaker-spell.js';
 import { createRuneWallSpell, RUNE_WALL_RULES } from './rune-wall-spell.js';
 import { createBlinkSpell, BLINK_RULES } from './blink-spell.js';
@@ -35,9 +38,11 @@ export const TRIPO_WEAPON_VARIANTS = Object.freeze({
   'kit-tripo-sun-staff': 'sunStaff', 'kit-tripo-soul-staff': 'soulStaff',
   'kit-tripo-gravity-staff': 'gravityStaff',
   'kit-tripo-ornate-bow': 'bow',
+  'kit-tripo-shadow-staff': 'shadowStaff',
+  'kit-tripo-clockwork-staff': 'clockworkStaff',
   'kit-tripo-earthbreaker-staff': 'earthbreakerStaff', 'kit-tripo-rune-wall-staff': 'runeWallStaff',
 });
-export const DEFAULT_WEAPON_VARIANTS = Object.freeze({earthbreakerStaff:'kit-tripo-earthbreaker-staff',runeWallStaff:'kit-tripo-rune-wall-staff', blinkStaff: 'kit-tripo-blink-staff', reflectionStaff: 'kit-tripo-reflection-staff', bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
+export const DEFAULT_WEAPON_VARIANTS = Object.freeze({clockworkStaff:'kit-tripo-clockwork-staff',shadowStaff:'kit-tripo-shadow-staff',earthbreakerStaff:'kit-tripo-earthbreaker-staff',runeWallStaff:'kit-tripo-rune-wall-staff', blinkStaff: 'kit-tripo-blink-staff', reflectionStaff: 'kit-tripo-reflection-staff', bow: 'wood', sword: 'kit-tripo-sword', fireStaff: 'ember', iceStaff: 'frost',
   sunStaff: 'kit-tripo-sun-staff', soulStaff: 'kit-tripo-soul-staff', meteorStaff: 'kit-tripo-meteor-staff', hourglassStaff: 'kit-tripo-hourglass-staff', poisonStaff: 'kit-tripo-poison-staff', moonStaff: 'kit-tripo-moon-staff', starStaff: 'kit-tripo-star-staff', gravityStaff: 'kit-tripo-gravity-staff', lightningStaff: 'kit-tripo-lightning-staff' });
 const DEFAULT_VARIANTS = DEFAULT_WEAPON_VARIANTS;
 const WOOD_BOW_DRAW = .18;
@@ -46,7 +51,7 @@ export function resolveWeaponVariant(type, variant) {
 }
 // Separate readability on the ground from proportions at the hand.
 // Keep the grip origin, measured tip and bow rig in source coordinates.
-export const WEAPON_PRESENTATION_SCALE = Object.freeze({earthbreakerStaff:.82,runeWallStaff:.82, blinkStaff:.82, reflectionStaff:.82, sword: .8, bow: .88,
+export const WEAPON_PRESENTATION_SCALE = Object.freeze({clockworkStaff:.82,shadowStaff:.82,earthbreakerStaff:.82,runeWallStaff:.82, blinkStaff:.82, reflectionStaff:.82, sword: .8, bow: .88,
   sunStaff: .82, soulStaff: .82, meteorStaff: .82, hourglassStaff: .82, fireStaff: .82, iceStaff: .82, poisonStaff: .82, moonStaff: .82, starStaff: .82, gravityStaff: .82, lightningStaff: .82 });
 export const GROUND_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * 1.20])));
 export const HELD_WEAPON_SCALE = Object.freeze(Object.fromEntries(Object.entries(WEAPON_PRESENTATION_SCALE).map(([type, size]) => [type, size * (type === 'bow' ? 1.18 : .88)])));
@@ -119,8 +124,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const moonCore = material('#eee6ff', { emissive: '#ac8bff', emissiveIntensity: 1.5 });
   const starCore = material('#fff0b8', { emissive: '#6ebfe3', emissiveIntensity: 1.4 });
   const gravityCore = material('#ba86ff', { emissive: '#743bc7', emissiveIntensity: 1.6 });
-  const utilityCooldowns = {earthbreakerStaff:0,runeWallStaff:0,blinkStaff:0, reflectionStaff:0};
-  const staffCores = {earthbreakerStaff:material('#ffc078'),runeWallStaff:material('#8eeaff'),blinkStaff: material('#a5e9ff'), reflectionStaff: material('#74bfff'), sunStaff: material('#fff4c4', { emissive: '#ffd168', emissiveIntensity: .8 }), soulStaff: material('#ddccea', { emissive: '#79558a', emissiveIntensity: .5 }), meteorStaff: material('#ffb246', { emissive: '#ff6417', emissiveIntensity: 1.2 }), hourglassStaff: material('#ffd177', { emissive: '#af7623', emissiveIntensity: .6 }), fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore, gravityStaff: gravityCore, lightningStaff: material('#fff4cb', { emissive: '#68baff', emissiveIntensity: 1.2 }) };
+  const utilityCooldowns = {clockworkStaff:0,shadowStaff:0,earthbreakerStaff:0,runeWallStaff:0,blinkStaff:0, reflectionStaff:0};
+  const staffCores = {clockworkStaff:material('#72dbff'),shadowStaff:material('#9b64cb'),earthbreakerStaff:material('#ffc078'),runeWallStaff:material('#8eeaff'),blinkStaff: material('#a5e9ff'), reflectionStaff: material('#74bfff'), sunStaff: material('#fff4c4', { emissive: '#ffd168', emissiveIntensity: .8 }), soulStaff: material('#ddccea', { emissive: '#79558a', emissiveIntensity: .5 }), meteorStaff: material('#ffb246', { emissive: '#ff6417', emissiveIntensity: 1.2 }), hourglassStaff: material('#ffd177', { emissive: '#af7623', emissiveIntensity: .6 }), fireStaff: fireCore, iceStaff: iceCore, poisonStaff: poisonCore, moonStaff: moonCore, starStaff: starCore, gravityStaff: gravityCore, lightningStaff: material('#fff4cb', { emissive: '#68baff', emissiveIntensity: 1.2 }) };
   function makeStaff(type) {
     const group = new THREE.Group();
     group.name = weaponStats(type).label;
@@ -596,8 +601,8 @@ export function createWeapons(scene, characterGroup, world, character = null,
       cooldown=utilityCooldowns.reflectionStaff=equippedItem.cooldown;attackAge=0;attackDuration=.6;attackPhase='release';shotReleased=true;shotCount++;
       return {type:equippedType,message:'Schutzkuppel aktiviert'};
     }
-    if (equippedType === 'runeWallStaff' || equippedType === 'blinkStaff' || equippedType === 'sunStaff' || equippedType === 'meteorStaff' || equippedType === 'poisonStaff' || equippedType === 'gravityStaff' || equippedType === 'hourglassStaff' || equippedType === 'lightningStaff') {
-      const controller = equippedType === 'runeWallStaff' ? runeWall : equippedType === 'blinkStaff' ? blink : equippedType === 'sunStaff' ? sun : equippedType === 'meteorStaff' ? meteor : equippedType === 'hourglassStaff' ? hourglass : equippedType === 'lightningStaff' ? storm : equippedType === 'gravityStaff' ? gravity : specials;
+    if (equippedType === 'clockworkStaff' || equippedType === 'shadowStaff' || equippedType === 'runeWallStaff' || equippedType === 'blinkStaff' || equippedType === 'sunStaff' || equippedType === 'meteorStaff' || equippedType === 'poisonStaff' || equippedType === 'gravityStaff' || equippedType === 'hourglassStaff' || equippedType === 'lightningStaff') {
+      const controller = equippedType === 'clockworkStaff' ? clockwork : equippedType === 'shadowStaff' ? shadow : equippedType === 'runeWallStaff' ? runeWall : equippedType === 'blinkStaff' ? blink : equippedType === 'sunStaff' ? sun : equippedType === 'meteorStaff' ? meteor : equippedType === 'hourglassStaff' ? hourglass : equippedType === 'lightningStaff' ? storm : equippedType === 'gravityStaff' ? gravity : specials;
       if (!controller.beginAim(position, direction)) return null;
       return { type: equippedType, message: 'Ziel wählen und loslassen' };
     }
@@ -832,15 +837,20 @@ export function createWeapons(scene, characterGroup, world, character = null,
   const sun = createSunSpell(scene, world, combat, ownerId, result => { lastDamage = result; damageHits++; }, isVisible);
   const soulJudgment = createSoulJudgment(combat, result => { lastDamage = result; damageHits++; soulMarks.executed(result); });
   const soulMarks = createSoulMarkVisuals(scene, combat, isVisible, world);
+  const clockwork=createClockworkSpell(scene,world,combat,ownerId,result=>{lastDamage=result;damageHits++;},isVisible);
+  const shadow = createShadowSpell(scene,world,combat,ownerId,result=>{lastDamage=result;damageHits++;},isVisible);
+  const darkenedIndicators = createDarkenedIndicators(scene,combat??{targets:new Map()},world,isVisible,ownerId);
   const earthbreaker = createEarthbreakerSpell(scene,world,combat,ownerId,result=>{lastDamage=result;damageHits++;},isVisible);
   const runeWall = createRuneWallSpell(scene,world??{},combat,ownerId,isVisible);
   const blink = createBlinkSpell(scene,world,combat,ownerId,isVisible,onTeleport,{avatarRoot:characterGroup,avatarMeshes:character?.effectMeshes??[]});
   const reflection = createReflectionSpell(scene,combat,ownerId,isVisible);
   const staffTip = new THREE.Vector3();
   function cancelAim() {
-    runeWall.cancelAim(); blink.cancelAim(); specials.cancelAim(); gravity.cancelAim(); storm.cancelAim(); hourglass.cancelAim(); meteor.cancelAim(); sun.cancelAim();
+    clockwork.cancelAim(); shadow.cancelAim(); runeWall.cancelAim(); blink.cancelAim(); specials.cancelAim(); gravity.cancelAim(); storm.cancelAim(); hourglass.cancelAim(); meteor.cancelAim(); sun.cancelAim();
   }
   function releaseAttack(position) {
+    const isClockwork=equippedType==='clockworkStaff';
+    const isShadow = equippedType === 'shadowStaff';
     const isWall = equippedType === 'runeWallStaff';
     const isBlink = equippedType === 'blinkStaff';
     const isSun = equippedType === 'sunStaff';
@@ -849,12 +859,18 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const isHourglass = equippedType === 'hourglassStaff';
     const isGravity = equippedType === 'gravityStaff';
     const isStorm = equippedType === 'lightningStaff';
-    const controller = isWall ? runeWall : isBlink ? blink : isSun ? sun : isMeteor ? meteor : isHourglass ? hourglass : isStorm ? storm : isGravity ? gravity : specials;
-    if ((!isWall && !isBlink && !isSun && !isMeteor && !isPoison && !isGravity && !isHourglass && !isStorm) || !controller.aiming || characterGroup.userData.rolling) { cancelAim(); return false; }
+    const controller = isClockwork ? clockwork : isShadow ? shadow : isWall ? runeWall : isBlink ? blink : isSun ? sun : isMeteor ? meteor : isHourglass ? hourglass : isStorm ? storm : isGravity ? gravity : specials;
+    if ((!isClockwork && !isShadow && !isWall && !isBlink && !isSun && !isMeteor && !isPoison && !isGravity && !isHourglass && !isStorm) || !controller.aiming || characterGroup.userData.rolling) { cancelAim(); return false; }
     cooldown = equippedItem.cooldown; attackAge = 0; attackDuration = cooldown;
     attackPhase = 'release'; shotReleased = true;
     getStaffTip(staffTip);
-    if (isWall) {
+    if (isClockwork) {
+      if(!clockwork.release(position,equippedItem,staffTip)){cooldown=0;attackAge=-1;attackPhase='idle';return false;}
+      utilityCooldowns.clockworkStaff=cooldown;
+    } else if (isShadow) {
+      if(!shadow.release(position,equippedItem,staffTip)){cooldown=0;attackAge=-1;attackPhase='idle';return false;}
+      utilityCooldowns.shadowStaff=cooldown;
+    } else if (isWall) {
       if(!runeWall.release(position)){cooldown=0;attackAge=-1;attackPhase='idle';return false;}
       utilityCooldowns.runeWallStaff=cooldown;
     } else if (isBlink) {
@@ -961,7 +977,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const delta = Math.max(0, Math.min(.25, Number.isFinite(dt) ? dt : 0));
     cooldown = Math.max(0, cooldown - delta);
     for(const key of Object.keys(utilityCooldowns))utilityCooldowns[key]=Math.max(0,utilityCooldowns[key]-delta);
-    earthbreaker.update(delta,position);runeWall.update(delta,position);blink.update(delta,position);reflection.update(delta);
+    clockwork.update(delta,position);shadow.update(delta,position);earthbreaker.update(delta,position);runeWall.update(delta,position);blink.update(delta,position);reflection.update(delta);
     swordComboRemaining = Math.max(0, swordComboRemaining - delta);
     if (swordComboRemaining === 0 && attackAge < 0) swordIndex = -1;
     swordEffects.update(delta);
@@ -1077,7 +1093,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     if (isVisible) for (const arrow of arrows) arrow.group.visible = arrow.life > 0 && isVisible(arrow.group.position);
     updateSpells(delta, time);
-    soulMarks.update(soulJudgment.marks, delta);
+    soulMarks.update(soulJudgment.marks, delta); darkenedIndicators.update(delta);
     spellEffects.update(delta, time);
     let particlesChanged = false;
     impactParticles.forEach((particle, index) => {
@@ -1123,7 +1139,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     }
     for (const spell of spells) { spell.life = 0; spell.mode = 'inactive'; spell.payload = null; }
     spellEffects.reset();
-    earthbreaker.reset();runeWall.reset();blink.reset();reflection.reset();for(const key of Object.keys(utilityCooldowns))utilityCooldowns[key]=0; specials.reset(); gravity.reset(); hourglass.reset(); storm.reset(); meteor.reset(); sun.reset(); soulJudgment.reset(); soulMarks.reset();
+    clockwork.reset();shadow.reset();darkenedIndicators.reset();earthbreaker.reset();runeWall.reset();blink.reset();reflection.reset();for(const key of Object.keys(utilityCooldowns))utilityCooldowns[key]=0; specials.reset(); gravity.reset(); hourglass.reset(); storm.reset(); meteor.reset(); sun.reset(); soulJudgment.reset(); soulMarks.reset();
     damageHits = 0; lastDamage = null;
     for (const arrow of arrows) { arrow.life = 0; arrow.mode = 'inactive'; arrow.group.visible = false; }
     impactParticles.forEach((particle, index) => {
@@ -1139,7 +1155,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     disposed = true;
     reset({ reroll: false });
     spellEffects.dispose();
-    earthbreaker.dispose();runeWall.dispose();blink.dispose();reflection.dispose(); specials.dispose(); gravity.dispose(); hourglass.dispose(); storm.dispose(); meteor.dispose(); sun.dispose(); soulMarks.dispose();
+    clockwork.dispose();shadow.dispose();darkenedIndicators.dispose();earthbreaker.dispose();runeWall.dispose();blink.dispose();reflection.dispose(); specials.dispose(); gravity.dispose(); hourglass.dispose(); storm.dispose(); meteor.dispose(); sun.dispose(); soulMarks.dispose();
     swordEffects.dispose();
     items.forEach(item => item.aura.dispose());
     const roots = [...items.map(item => item.group), ...Object.values(heldByType), nockedArrow,
@@ -1166,13 +1182,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get firingDirection(){return attackAge>=0&&!shotReleased?committedBowDirection:null;},
     get chargedAimRange(){const p=this.aimPreview;return p?.range??this.aimRange;},
     get aimPreview(){
-      const controller=runeWall.aiming?runeWall:blink.aiming?blink:sun.aiming?sun:meteor.aiming?meteor:hourglass.aiming?hourglass:storm.aiming?storm:gravity.aiming?gravity:specials.aiming?specials:null;
+      const controller=clockwork.aiming?clockwork:shadow.aiming?shadow:runeWall.aiming?runeWall:blink.aiming?blink:sun.aiming?sun:meteor.aiming?meteor:hourglass.aiming?hourglass:storm.aiming?storm:gravity.aiming?gravity:specials.aiming?specials:null;
       if(!controller)return null;const t=controller.telemetry;
-      return {target:t.aim??t.target,range:t.aimRange?.radius??0,arcHeight:meteor.aiming?8:gravity.aiming?3.2:specials.aiming?4:0};
+      return {target:t.aim??t.target,range:t.aimRange?.radius??0,arcHeight:clockwork.aiming?2.7:shadow.aiming?2.7:meteor.aiming?8:gravity.aiming?3.2:specials.aiming?4:0};
     },
-    get aiming() { return runeWall.aiming || blink.aiming || specials.aiming || gravity.aiming || hourglass.aiming || storm.aiming || meteor.aiming || sun.aiming; },
-    get aimRange() { return runeWall.aiming ? RUNE_WALL_RULES.range : blink.aiming ? BLINK_RULES.range : sun.aiming ? SUN_RULES.range : meteor.aiming ? METEOR_RULES.range : hourglass.aiming ? HOURGLASS_RULES.range : storm.aiming ? STORM_RULES.range : gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
-    get attackCooldown() { return (equippedType==='earthbreakerStaff'&&earthbreaker.busy) || (equippedType==='runeWallStaff'&&runeWall.busy) || specials.moonBusy || gravity.busy || storm.busy || meteor.busy || sun.busy ? Math.max(.05, cooldown) : cooldown; },
+    get aiming() { return clockwork.aiming || shadow.aiming || runeWall.aiming || blink.aiming || specials.aiming || gravity.aiming || hourglass.aiming || storm.aiming || meteor.aiming || sun.aiming; },
+    get aimRange() { return clockwork.aiming ? 20 : shadow.aiming ? 20 : runeWall.aiming ? RUNE_WALL_RULES.range : blink.aiming ? BLINK_RULES.range : sun.aiming ? SUN_RULES.range : meteor.aiming ? METEOR_RULES.range : hourglass.aiming ? HOURGLASS_RULES.range : storm.aiming ? STORM_RULES.range : gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
+    get attackCooldown() { return (equippedType==='clockworkStaff'&&clockwork.busy) || (equippedType==='shadowStaff'&&shadow.busy) || (equippedType==='earthbreakerStaff'&&earthbreaker.busy) || (equippedType==='runeWallStaff'&&runeWall.busy) || specials.moonBusy || gravity.busy || storm.busy || meteor.busy || sun.busy ? Math.max(.05, cooldown) : cooldown; },
     get telemetry() {
       bladeTip.fromArray(heldSword.userData.weaponTipPoint ?? [0, heldSword.userData.weaponTipY ?? 0, 0])
         .multiply(heldSword.scale).applyQuaternion(heldSword.quaternion).add(heldSword.position);
@@ -1207,7 +1223,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
           remaining: swordComboRemaining },
         swordTrail: swordEffects.inspect(), swordBlade: { base: point(swordBase), tip: point(swordTip) },
         equippedItem, spellsActive: spells.filter(spell => spell.life > 0).length,
-        earthbreaker:earthbreaker.telemetry, runeWall:runeWall.telemetry, blink:blink.telemetry, reflection:reflection.telemetry, effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, storm: storm.telemetry, meteor: meteor.telemetry, sun: sun.telemetry, soul: { marks: soulJudgment.marks, visibleRunes: soulMarks.count, apparitions: soulMarks.telemetry }, heldGrip, hands, lastSpellLaunch,
+        clockwork:clockwork.telemetry, shadow:{...shadow.telemetry,indicators:darkenedIndicators.telemetry}, earthbreaker:earthbreaker.telemetry, runeWall:runeWall.telemetry, blink:blink.telemetry, reflection:reflection.telemetry, effects: spellEffects.telemetry, special: specials.telemetry, gravity: gravity.telemetry, hourglass: hourglass.telemetry, storm: storm.telemetry, meteor: meteor.telemetry, sun: sun.telemetry, soul: { marks: soulJudgment.marks, visibleRunes: soulMarks.count, apparitions: soulMarks.telemetry }, heldGrip, hands, lastSpellLaunch,
         rigPose: character?.inspectCombatPose?.() ?? null,
         staffTip: equippedType?.endsWith('Staff') ? point(getStaffTip(new THREE.Vector3())) : null,
         spells: spells.filter(spell => spell.life > 0).map(spell => ({ type: spell.payload.type, mode: spell.mode,
@@ -1229,7 +1245,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     },
     nearest, interact, tryAutoPickup, attack, releaseAttack,
     appendGrassInteractors: target => gravity.appendGrassInteractors(target),
-    aimAt: (position, point) => { runeWall.aimAt(position,point); blink.aimAt(position,point); specials.aimAt(position, point); gravity.aimAt(position, point); hourglass.aimAt(position, point); storm.aimAt(position, point); meteor.aimAt(position, point); sun.aimAt(position, point); }, cancelAim,
+    aimAt: (position, point) => { clockwork.aimAt(position,point); shadow.aimAt(position,point); runeWall.aimAt(position,point); blink.aimAt(position,point); specials.aimAt(position, point); gravity.aimAt(position, point); hourglass.aimAt(position, point); storm.aimAt(position, point); meteor.aimAt(position, point); sun.aimAt(position, point); }, cancelAim,
     update, reset, addDrop, dispose,
   };
 }

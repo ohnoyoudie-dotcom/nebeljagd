@@ -1,0 +1,8 @@
+{
+  "original": "assets/inbox/Uhrwerkstab.glb",
+  "sourceSha256": "1643e4e02d4de5e3f51fac2ff07eaf925de90f11434d7b499eb70d866dbb0790",
+  "method": "Blender texture reduction and decimation using existing Tripo weapon helpers",
+  "toolInvoked": "Blender",
+  "providerInvoked": false,
+  "rights": "User-provided asset; no independent license certification"
+}

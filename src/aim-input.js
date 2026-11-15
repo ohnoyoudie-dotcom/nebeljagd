@@ -1,4 +1,4 @@
-const ARCS=new Set(['meteorStaff','poisonStaff','gravityStaff']);
+const ARCS=new Set(['clockworkStaff','shadowStaff','meteorStaff','poisonStaff','gravityStaff']);
 const FIELDS=new Set(['sunStaff','hourglassStaff','lightningStaff','blinkStaff','runeWallStaff']);
 export function aimKind(type){return ARCS.has(type)?'arc':FIELDS.has(type)?'area':type==='earthbreakerStaff'?'wave':type==='reflectionStaff'?'self':'direction';}
 export function touchAimVector(dx,dy,radius=64,deadZone=8){
