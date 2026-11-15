@@ -16,7 +16,7 @@ with sync_playwright() as pw:
   p.goto(BASE+'/'+ENTRY+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');p.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0');p.locator('#startBtn').click();p.wait_for_function('nebeljagdTestState().equippedWeapon==="earthbreakerStaff"')
   p.evaluate('nebeljagdInspect({x:0,z:-14,direction:0})');p.wait_for_function('nebeljagdTestState().elapsed>.4');point=p.evaluate('nebeljagdProjectPoint({x:0,z:-8})');p.mouse.move(point['x'],point['y']);p.keyboard.down('f');p.keyboard.down('d');elapsed=p.evaluate('nebeljagdTestState().elapsed');p.wait_for_function('t=>nebeljagdTestState().elapsed>t+.3',arg=elapsed)
   p.evaluate('''()=>{window.earthFrames=[];window.earthDone=false;window.earthCapture=null;
-   window.addEventListener('keyup',e=>{if(e.code==='KeyF'){window.releasePosition=nebeljagdTestState().position;queueMicrotask(()=>{const s=nebeljagdTestState();earthFrames.push({position:s.position,wave:s.combat.earthbreaker});});}},{capture:true,once:true});
+   window.addEventListener('keyup',e=>{if(e.code==='KeyF'){const s=nebeljagdTestState();window.releasePosition=s.position;earthFrames.push({position:s.position,wave:s.combat.earthbreaker});}},{once:true});
    function frame(){const s=nebeljagdTestState(),w=s.combat.earthbreaker;
     if(w.active){earthFrames.push({position:s.position,wave:w});
      if(w.age>=.48&&!earthCapture)earthCapture=nebeljagdCaptureFrame();
