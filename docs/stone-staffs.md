@@ -28,8 +28,9 @@ Geschosse aus beiden Richtungen. Ihr Besitzer kann durch sie sehen.
 Breite, facettierte blaue Quader mit Steinvariationen, Sockel, Decksteinen und
 Endpfeilern steigen versetzt auf. Licht sitzt zurückversetzt in den Fugen; ein
 schwacher Bodenschein und wenige aufsteigende Lichtsplitter zeigen die arkane
-Energie. Die früheren Runensymbole entfallen vollständig. Beim Ablauf oder Zerstören sinken und zerfallen die Blöcke mit begrenztem
-Staub und Geröll. Kollision und Kampfziel verschwinden sofort beim Zerstören.
+Energie. Die früheren Runensymbole entfallen vollständig. Beim Ablauf oder Zerstören lösen sich die feststehenden Blöcke in 0,85 Sekunden
+mit leuchtenden Auflösungskanten und aufsteigenden Lichtpartikeln auf. Dabei
+fallen weder Steine noch Geröll nach unten. Kollision und Kampfziel verschwinden sofort beim Zerstören.
 Wasser, Hindernisse, zu starke Neigung und überlappende Figuren verhindern die
 Platzierung. Auch während der Vorwarnung hineinlaufende Figuren werden nicht
 eingeschlossen. Ein Waffenwechsel entfernt weder die aktive Mauer noch ihre

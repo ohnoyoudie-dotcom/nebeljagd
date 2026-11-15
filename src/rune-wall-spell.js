@@ -3,7 +3,7 @@ import { temporaryObstacles } from './temporary-obstacles.js';
 import { createRuneWallVisuals } from './stone-spell-visuals.js';
 import { createStaffAimRing } from './staff-aim.js';
 
-export const RUNE_WALL_RULES=Object.freeze({range:10,chargeSeconds:.8,width:7,depth:.65,height:2.3,warning:.08,rise:.14,duration:3,fade:.65,cooldown:6,health:50});
+export const RUNE_WALL_RULES=Object.freeze({range:10,chargeSeconds:.8,width:7,depth:.65,height:2.3,warning:.08,rise:.14,duration:3,fade:.85,cooldown:6,health:50});
 let nextWallId=0;
 export function createRuneWallSpell(scene,world,combat,ownerId,isVisible=null){
   const r=RUNE_WALL_RULES,barriers=temporaryObstacles(world),ground=p=>world?.heightAt?.(p.x,p.z)??0;

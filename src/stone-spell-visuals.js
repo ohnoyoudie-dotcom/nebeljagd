@@ -101,15 +101,19 @@ export function createRuneWallVisuals(scene,r,ownerView,isVisible){
   }
   const mat=stone('#6089ba');mat.roughness=.63;mat.metalness=.16;mat.emissive.set('#254f83');mat.emissiveIntensity=.14;
   mat.transparent=ownerView;mat.opacity=ownerView?.87:1;mat.depthWrite=true;
-  const glow={value:0},baseCompile=mat.onBeforeCompile;
-  mat.onBeforeCompile=s=>{baseCompile(s);s.uniforms.uArcaneGlow=glow;
-    s.fragmentShader='uniform float uArcaneGlow;\n'+s.fragmentShader;
+  const dissolve={value:0},glow={value:0},baseCompile=mat.onBeforeCompile;
+  mat.onBeforeCompile=s=>{baseCompile(s);s.uniforms.uArcaneGlow=glow;s.uniforms.uDissolve=dissolve;
+    s.fragmentShader='uniform float uArcaneGlow,uDissolve;\n'+s.fragmentShader;
     s.fragmentShader=s.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
+      float field=.5+.22*sin(vStone.x*19.+sin(vStone.y*13.))+.17*sin(vStone.y*23.+vStone.z*17.);
+      if(uDissolve>0. && field<uDissolve) discard;
+      float dissolveEdge=uDissolve>0. ? 1.-smoothstep(0.,.09,field-uDissolve) : 0.;
+      totalEmissiveRadiance+=vec3(.3,.9,1.7)*dissolveEdge;
       vec3 edgeP=abs(vStone);float edge=min(max(edgeP.x,edgeP.y),min(max(edgeP.x,edgeP.z),max(edgeP.y,edgeP.z)));
       float bevel=smoothstep(.425,.495,edge);
       totalEmissiveRadiance+=vec3(.035,.27,.55)*bevel*uArcaneGlow;
     `);
-  };mat.customProgramCacheKey=()=> 'arcane-ashlar-bevel-v1';
+  };mat.customProgramCacheKey=()=> 'arcane-ashlar-dissolve-v2';
   const blockGeometry=new RoundedBoxGeometry(1,1,1,3,.075),face=blockGeometry.attributes.position;
   // Shallow hand-cut planes catch light across the stone faces; keep the
   // perimeter and the physical dimensions intact rather than adding decals.
@@ -134,36 +138,38 @@ export function createRuneWallVisuals(scene,r,ownerView,isVisible){
     }`,{uOpacity:{value:0}});
   const halo=new THREE.Mesh(new THREE.PlaneGeometry(r.width+.5,2.4),haloMat);halo.rotation.x=-Math.PI/2;halo.position.y=.035;root.add(halo);
   const moteMat=new THREE.MeshBasicMaterial({color:'#95dfff',transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});
-  const motes=new THREE.InstancedMesh(new THREE.OctahedronGeometry(.035,0),moteMat,16);motes.frustumCulled=false;root.add(motes);
+  const motes=new THREE.InstancedMesh(new THREE.OctahedronGeometry(.035,0),moteMat,48);motes.frustumCulled=false;root.add(motes);
   const dust=new THREE.Mesh(new THREE.PlaneGeometry(r.width+.7,1.1),dustMaterial());dust.material.uniforms.uColor.value.set('#86a9bf');dust.position.y=.2;faceCamera(dust);root.add(dust);
   const rubble=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.13,0),stone('#46668c'),18);rubble.frustumCulled=false;root.add(rubble);
   const dummy=new THREE.Object3D();let aiming=false,phase='idle';
   function place(center,angle){root.position.copy(center);root.rotation.y=angle;root.visible=!isVisible||isVisible(center);}
   function show(center,angle,age,collapseAge,health){
-    aiming=false;place(center,angle);const falling=collapseAge!==null,emerge=smooth(age,r.warning,r.warning+r.rise);
-    const energy=falling?1-smooth(collapseAge,0,.22):emerge;
-    phase=falling?'crumbling':age<r.warning?'warning':age<r.warning+r.rise?'rising':'standing';
-    preview.visible=!falling&&age<r.warning+r.rise;preview.material.uniforms.uColor.value.set('#86edff');preview.material.uniforms.uOpacity.value=1-emerge;
-    mesh.visible=age>=r.warning;
+    aiming=false;place(center,angle);const dissolving=collapseAge!==null,emerge=smooth(age,r.warning,r.warning+r.rise);
+    const energy=dissolving?1-smooth(collapseAge,.15,r.fade):emerge;
+    dissolve.value=dissolving?smooth(collapseAge,0,r.fade):0;
+    phase=dissolving?'dissolving':age<r.warning?'warning':age<r.warning+r.rise?'rising':'standing';
+    preview.visible=!dissolving&&age<r.warning+r.rise;preview.material.uniforms.uColor.value.set('#86edff');preview.material.uniforms.uOpacity.value=1-emerge;
+    mesh.visible=age>=r.warning;mesh.castShadow=!dissolving;
     glow.value=energy*(.35+.10*Math.sin(age*2.4)+.3*(1-smooth(age,.25,.65)));
-    core.visible=energy>.001;core.position.y=.99;core.scale.y=Math.max(.001,emerge);coreMat.opacity=energy*.8;coreMat.emissiveIntensity=.85+glow.value*.75;
+    core.visible=energy>.001;core.position.y=.99;core.scale.y=Math.max(.001,emerge);coreMat.opacity=(dissolving?1-smooth(collapseAge,0,.25):energy)*.8;coreMat.emissiveIntensity=.85+glow.value*.75;
     halo.visible=motes.visible=energy>.001;haloMat.uniforms.uOpacity.value=energy*.16;moteMat.opacity=energy*(.5+health*.15);
     blocks.forEach((b,i)=>{
-      const rise=smooth(age,r.warning+b.row*.01,r.warning+r.rise+b.row*.01),fall=falling?collapseAge:0;
-      dummy.position.set(b.x+Math.sin(i*12.3)*fall*.55,b.y-2.5*(1-rise)-fall*fall*5.4,Math.cos(i*9.1)*fall*.65);
-      dummy.rotation.set(fall*Math.sin(i)*1.8,fall*Math.cos(i)*1.4,fall*Math.sin(i*2)*.8);
-      dummy.scale.set(b.width,b.height,b.depth).multiplyScalar(falling?1-smooth(fall,.3,r.fade):1);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
+      const rise=smooth(age,r.warning+b.row*.01,r.warning+r.rise+b.row*.01);
+      dummy.position.set(b.x,b.y-2.5*(1-rise),0);
+      dummy.rotation.set(0,0,0);
+      dummy.scale.set(b.width,b.height,b.depth);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);
     });mesh.instanceMatrix.needsUpdate=true;
-    for(let i=0;i<16;i++){
-      const t=(age*.38+i*.618)%1;dummy.position.set(Math.sin(i*4.31)*half*.95,.12+t*2.4,Math.cos(i*2.17)*.42);
+    motes.count=dissolving?48:16;
+    for(let i=0;i<motes.count;i++){
+      const t=(age*.38+i*.618)%1,lift=dissolving?collapseAge*1.7:0;dummy.position.set(Math.sin(i*4.31)*half*.95+Math.sin(age*3+i)*lift*.12,.12+t*2.4+lift,Math.cos(i*2.17)*.42);
       dummy.rotation.set(0,age+i,Math.PI/4);dummy.scale.setScalar(Math.sin(t*Math.PI)*(.55+(i%3)*.3));dummy.updateMatrix();motes.setMatrixAt(i,dummy.matrix);
     }motes.instanceMatrix.needsUpdate=true;
-    dust.visible=age>=r.warning;dust.material.uniforms.uOpacity.value=falling?(1-smooth(collapseAge,.05,r.fade))*.25:(1-smooth(age,r.warning+.1,r.warning+.5))*.2;
+    dust.visible=!dissolving&&age>=r.warning;dust.material.uniforms.uOpacity.value=dissolving?(1-smooth(collapseAge,.05,r.fade))*.25:(1-smooth(age,r.warning+.1,r.warning+.5))*.2;
     for(let i=0;i<18;i++){
-      const t=falling?collapseAge:age-r.warning,a=i*2.4,live=t>=0&&t<.6;
+      const t=dissolving?collapseAge:age-r.warning,a=i*2.4,live=t>=0&&t<.6;
       dummy.position.set((i%7-3)*(r.width/7)+Math.cos(a)*Math.max(0,t),.12+Math.max(0,t)*2.2-t*t*4,Math.sin(a)*Math.max(0,t)*1.1);
       dummy.rotation.set(t*4+i,t*6,i);dummy.scale.setScalar(live?(1-smooth(t,.25,.6))*(.5+i%3*.25):0);dummy.updateMatrix();rubble.setMatrixAt(i,dummy.matrix);
-    }rubble.instanceMatrix.needsUpdate=true;rubble.visible=age>=r.warning;
+    }rubble.instanceMatrix.needsUpdate=true;rubble.visible=!dissolving&&age>=r.warning;
   }
   function hideBody(){mesh.visible=core.visible=halo.visible=motes.visible=dust.visible=rubble.visible=false;}
   return{aim(center,angle,valid){aiming=true;phase='aim';place(center,angle);hideBody();preview.visible=true;preview.material.uniforms.uOpacity.value=1;preview.material.uniforms.uColor.value.set(valid?'#83efff':'#ff6655');},

@@ -51,7 +51,7 @@ test('runemauer allows owner vision, blocks enemy vision, is destructible withou
  const shot=traceCombatProjectile(s.world,s.combat,{x:1.5,y:1,z:2},{x:1.5,y:1,z:8},.05,'player');assert.ok(shot.target?.destructible);
  assert.equal(traceCombatProjectile(s.world,s.combat,{x:-3,y:1,z:3.6},{x:3,y:1,z:3.6},.05,'player'),null,'the large target circle must not catch shots passing outside the wall');
  s.combat.hit(shot.target,{damage:50,sourceId:'enemy',delivery:'projectile'});assert.equal(s.world.traceProjectile({x:0,y:1,z:2},{x:0,y:1,z:8}),null,'destroyed cover stops blocking immediately');
- spell.update(.01,s.player);assert.equal(spell.telemetry.visuals.phase,'crumbling');spell.update(1,s.player);assert.equal(s.combat.targets.size,1);spell.dispose();
+ spell.update(.01,s.player);assert.equal(spell.telemetry.visuals.phase,'dissolving');spell.update(1,s.player);assert.equal(s.combat.targets.size,1);spell.dispose();
 });
 test('wall placement rejects occupied or wet ground and revalidates when it becomes solid',()=>{
  for(const extra of [{isWater:()=>true},{heightAt:(x)=>x>1?3:0}]){const s=setup(extra),spell=createRuneWallSpell(s.scene,s.world,s.combat,'player');spell.beginAim(s.player,0);spell.update(1.5,s.player);assert.equal(spell.release(s.player),false);spell.dispose();}

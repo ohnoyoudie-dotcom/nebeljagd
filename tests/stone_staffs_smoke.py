@@ -48,9 +48,9 @@ with sync_playwright() as pw:
     pause_at(p,'s.combat.runeWall.solid && s.combat.runeWall.age>=.3');p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);assert s['combat']['runeWall']['health']==50 and s['combat']['runeWall']['barriers']==1;assert s['combat']['runeWall']['width']==7 and s['combat']['runeWall']['visuals']['stoneColor']=='#6089ba';assert s['combat']['runeWall']['visuals']['glyphs']==0 and s['combat']['runeWall']['visuals']['visualStyle']=='arcane-ashlar-lit-joints';capture(p,mode+'-standing');closeup(p,mode+'-detail',s['combat']['runeWall']['center']);probe=p.evaluate('nebeljagdInspectStoneBarrier()');assert probe['hit']=='runeWall' and probe['movementShift']>.5,probe
     frozen=state(p)['combat']['runeWall'];p.wait_for_timeout(100);assert state(p)['combat']['runeWall']==frozen
     if touch:
-     level=state(p)['level'];probe=p.evaluate('nebeljagdInspectStoneBarrier({damage:50})');assert probe['result']['killed'];pause_at(p,'s.combat.runeWall.visuals.phase==="crumbling"');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['level']==level
-    else:pause_at(p,'s.combat.runeWall.visuals.phase==="crumbling"');p.wait_for_function('nebeljagdTestState().phase==="paused"')
-    capture(p,mode+'-crumbling');assert state(p)['combat']['runeWall']['barriers']==0
+     level=state(p)['level'];probe=p.evaluate('nebeljagdInspectStoneBarrier({damage:50})');assert probe['result']['killed'];pause_at(p,'s.combat.runeWall.visuals.phase==="dissolving" && s.combat.runeWall.collapseAge>=.35');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['level']==level
+    else:pause_at(p,'s.combat.runeWall.visuals.phase==="dissolving" && s.combat.runeWall.collapseAge>=.35');p.wait_for_function('nebeljagdTestState().phase==="paused"')
+    capture(p,mode+'-dissolving');assert state(p)['combat']['runeWall']['barriers']==0
     p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.runeWall.active');assert p.evaluate('nebeljagdInspectStoneBarrier()') is None;passed(mode+': real model, charged wall footprint, warning, arcane ashlar and glowing joints, solid movement/projectile cover, pause and '+('destruction' if touch else 'natural expiry')+' cleanup')
    c.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==original_hash;report.update(status='passed',mapSha256=original_hash)
