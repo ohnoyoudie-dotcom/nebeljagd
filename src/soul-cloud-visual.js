@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const IMPACT_STEPS = 14, FLIGHT_STEPS = 20;
+const IMPACT_STEPS = 14, FLIGHT_STEPS = 24;
 const noiseGLSL = `
   float hash3(vec3 p) { p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z); }
   float noise3(vec3 p) {
@@ -12,8 +12,8 @@ const noiseGLSL = `
 
 /** A directional shadow wrapped in turbulent gas. Impact clouds retain the
  * round, expanding envelope; flight has a denser head and loose spectral wake. */
-export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeometry, seed = 3.71, impact = false } = {}) {
-  const root = new THREE.Group(); root.name = 'Seelenrichter · Schattenkern mit Nebelschweif';
+export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeometry, seed = 3.71, impact = false, comet = false } = {}) {
+  const root = new THREE.Group(); root.name = comet ? 'Finsterniskomet · dichter Rauchkern' : 'Seelenrichter · Geisternebel';
   const steps = impact ? IMPACT_STEPS : FLIGHT_STEPS;
   const box = new THREE.BoxGeometry(2.3, 2.3, impact ? 2.3 : 4.3);
   if (!impact) box.translate(0, 0, -1.0);
@@ -21,11 +21,11 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
   const material = ownMaterial(new THREE.ShaderMaterial({
     name: 'Seelennebel · dunkles turbulentes Volumen', side: THREE.FrontSide,
     transparent: true, depthWrite: false, depthTest: true, toneMapped: false,
-    uniforms: { uTime: clock, uFade: { value: 1 }, uSeed: { value: seed }, uImpact: { value: impact ? 1 : 0 },
+    uniforms: { uTime: clock, uFade: { value: 1 }, uSeed: { value: seed }, uImpact: { value: impact ? 1 : 0 }, uComet: { value: comet ? 1 : 0 },
       uEye: { value: new THREE.Vector3() }, uDirection: { value: new THREE.Vector3() }, uOrtho: { value: 1 } },
     vertexShader: `varying vec3 vLocal;void main(){vLocal=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
     fragmentShader: `
-      varying vec3 vLocal;uniform vec3 uEye,uDirection;uniform float uTime,uFade,uSeed,uOrtho,uImpact;
+      varying vec3 vLocal;uniform vec3 uEye,uDirection;uniform float uTime,uFade,uSeed,uOrtho,uImpact,uComet;
       ${noiseGLSL}
       float density(vec3 p) {
         float t=uTime*(uImpact>.5?.70:1.45);
@@ -47,7 +47,7 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
         // A shadow head leads, while separate eddies peel away into a tapering wake.
         float breath=sin(uTime*7.2+uSeed)*.075+sin(uTime*11.3+uSeed*.7)*.025;
         vec3 head=body-vec3(sin(uTime*5.1+p.z*4.)*.045,cos(uTime*4.3+p.x*5.)*.045,.22);
-        float nose=length(head*vec3(1.36-breath,1.58+breath*.65,1.10-breath*.4));
+        float nose=length(head*vec3(1.20-breath,1.35+breath*.65,1.02-breath*.4));
         float headDensity=(1.-smoothstep(.36+field*.18,.88,nose))*smoothstep(.19,.57,field);
         float trail=clamp((-p.z+.12)/3.15,0.,1.);
         vec2 flow=vec2(sin(p.z*2.8+t*2.7),cos(p.z*3.1+t*2.3))*(.035+trail*.20);
@@ -61,7 +61,7 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
         float wake=max(1.-smoothstep(.12+field*.35,1.3,wakeRadius),fringes)*(1.-smoothstep(-.30,.28,p.z));
         wake*=pow(1.-trail,.65)*smoothstep(.16,.60,field+.07*sin(p.z*7.-t*6.));
         float bounds=(1.-smoothstep(2.70,3.12,-p.z))*(1.-smoothstep(.94,1.12,p.z));
-        return max(headDensity,wake*.78)*bounds;
+        return max(headDensity,wake*mix(.78,1.05,uComet))*bounds;
       }
       void main(){
         vec3 origin=uOrtho>.5?vLocal-uDirection*5.:uEye;
@@ -73,13 +73,13 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
         float nearT=max(0.,max(max(lo.x,lo.y),lo.z)),farT=min(min(hi.x,hi.y),hi.z);
         if(farT<=nearT)discard;
         float stepLength=(farT-nearT)/${steps}.;
-        float jitter=hash3(floor(vLocal*210.))*.50+.25;
+        float jitter=hash3(floor(vLocal*210.))*.20+.40;
         vec3 color=vec3(0.);float opacity=0.;
         for(int i=0;i<${steps};i++){
           vec3 p=origin+ray*(nearT+(float(i)+jitter)*stepLength);
           float d=density(p),alpha=(1.-exp(-d*stepLength*8.4))*uFade;
           float light=clamp(.46+p.y*.22-p.x*.13-d*.34,0.,1.);
-          vec3 smoke=mix(vec3(.005,.008,.014),vec3(.105,.125,.140),light);
+          vec3 smoke=mix(vec3(.005,.008,.014),vec3(.060,.052,.085),light);
           if(uImpact<.5){
             vec2 drift=vec2(sin(p.z*4.+uTime*5.2),cos(p.z*3.-uTime*4.6))*.075;
             float heart=exp(-dot((p.xy-drift)*vec2(2.15,2.7),(p.xy-drift)*vec2(2.15,2.7)));
@@ -89,7 +89,21 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
             float pulse=.74+.26*sin(uTime*7.2+uSeed);
             float soul=heart*(.08+vein*.92)*(.66+thread*.34)*pulse;
             vec3 spirit=mix(vec3(.34,.19,.45),vec3(.38,.43,.52),vein*thread*.62);
-            smoke=mix(smoke*.73,spirit,soul*.94);
+            smoke=mix(smoke*.62,spirit,soul*mix(.30,.20,uComet));
+            // A spectral face is sculpted inside the gas, never a hard skull mesh.
+            // It faces along local +Z, the actual flight direction.
+            vec3 face=p-vec3(0.,.03,.53);
+            float faceShell=exp(-pow(face.z/.19,2.));
+            vec2 eyes=vec2(abs(face.x)-.22,face.y-.12+abs(face.x)*.12);
+            float socket=exp(-dot(eyes/vec2(.15,.12),eyes/vec2(.15,.12)))*faceShell;
+            float gaze=exp(-dot(eyes/vec2(.095,.055),eyes/vec2(.095,.055)))*faceShell;
+            float mouth=exp(-pow(face.x/.23,4.)-pow((face.y+.23+.06*cos(face.x*12.))/.08,2.))*faceShell;
+            float ghost=(1.-uComet)*(.88+.12*sin(uTime*5.+uSeed));
+            smoke*=1.-ghost*max(socket*.88,mouth*.94);
+            smoke+=vec3(.32,.25,.43)*gaze*ghost;
+            // The comet keeps its solid dark nose, with sparse dim embers in its wake.
+            float ember=pow(noise3(p*8.+vec3(0.,uTime*2.,-uTime*7.)),24.);
+            smoke+=uComet*vec3(.17,.055,.24)*ember*4.;
           }
           color+=(1.-opacity)*alpha*smoke;opacity+=(1.-opacity)*alpha;
         }
@@ -119,7 +133,7 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
   }
   update(0);
   return { root, update, get telemetry() { return { volumeSteps: steps, draws: 1, opacity: material.uniforms.uFade.value,
-    presentation: impact ? 'enveloping-gas' : 'spectral-head-and-wake' }; },
+    presentation: impact ? 'enveloping-gas' : 'spectral-head-and-wake', variant: impact ? 'impact' : comet ? 'dark-comet' : 'ghost-mist' }; },
     // Legacy callers without an ownership callback can explicitly release the proxy.
     disposeGeometry() { if (!ownGeometry) box.dispose(); } };
 }

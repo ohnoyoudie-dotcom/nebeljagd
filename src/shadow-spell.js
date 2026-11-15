@@ -1,7 +1,7 @@
 import { createStaffLob } from './staff-lob.js';
 import { createShadowVisuals } from './shadow-visuals.js';
 import { applyDarkened } from './darkened-status.js';
-export const SHADOW_RULES=Object.freeze({range:20,radius:4,duration:3,fade:.55,blindSeconds:2,blindRadius:2.5,damage:8,cooldown:5.5});
+export const SHADOW_RULES=Object.freeze({range:20,radius:4,duration:3,fade:.95,blindSeconds:2,blindRadius:2.5,damage:8,cooldown:5.5});
 export function createShadowSpell(scene,world,combat,ownerId,onDamage=()=>{},isVisible=null){
  const r=SHADOW_RULES,visuals=createShadowVisuals(scene,r,isVisible,world);let field=null,hits=0;
  const lob=createStaffLob(scene,world,{range:r.range,radius:r.radius,color:'#ab76e3',canBegin:()=>!field,

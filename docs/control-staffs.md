@@ -24,3 +24,9 @@ Der Uhrwerkwächter ist ein temporäres, zerstörbares Kampfziel ohne Fortschrit
 - `python tests/control_staffs_smoke.py`: tatsächliche generierte Editor-/Spiel-Dateien; Platzierung und erneutes Laden, Maus und Touch, beide Effekte, Verdunkelung samt Bewegung/Erholung, Wächter-Treffer und -Zerstörung, Pause und Neustart. Berichte und Bilder liegen unter dem ignorierten `test-results/control-staffs/`.
 
 Browserprüfungen laufen mit Chromium und Software-WebGL. Sie ersetzen keine Leistungsmessung auf einem echten iPad. Autorisierte Veröffentlichung erfolgt nach erfolgreichem Build und Browserprüfung über `work` → `main/preview` → GitHub Pages; dabei bleiben die Benutzerkarte und das Hauptportal erhalten.
+
+## Gewählte dunkle Effekte
+
+- Schattenstab: Finsterniskomet mit dichtem Rauchkern statt harter Kugel. 28 erhöhte Nebelschichten, weiche Bodenkontakte und zeitversetztes Auflösen über 0,95 Sekunden. Die Wirkzeit bleibt bei 3 Sekunden, die Verdunkelung bei 2 Sekunden nach Verlassen.
+- Seelenrichterstab: Geisternebel mit angedeuteten Augen und Mund im Rauch, bewegten Konturen und auslaufendem Schweif. Trefferhülle, drei Schädelteile und Hinrichtung bleiben erhalten.
+- Uhrwerkstab: unverändert 8 Sekunden Wächterdauer und 14 m/s Geschossgeschwindigkeit.
