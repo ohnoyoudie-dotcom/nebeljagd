@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createStaffLob } from './staff-lob.js';
 import { createClockworkVisuals } from './clockwork-visuals.js';
 import { traceRangedProjectile, colliderTarget } from './projectile-collision.js';
-export const CLOCKWORK_RULES=Object.freeze({range:20,radius:.6,duration:4,deploy:.4,attackRange:6,interval:1,damage:5,health:25,cooldown:8,speed:7});
+export const CLOCKWORK_RULES=Object.freeze({range:20,radius:.6,duration:8,deploy:.4,attackRange:6,interval:1,damage:5,health:25,cooldown:8,speed:14,shotRange:8});
 export function guardianLanding(world,combat,p){
  if(!Number.isFinite(p.y))return false;
  for(let i=0;i<9;i++){const a=i*Math.PI/4,r=i===8?0:.55,x=p.x+Math.cos(a)*r,z=p.z+Math.sin(a)*r;
@@ -38,17 +38,17 @@ export function createClockworkSpell(scene,world,combat,ownerId,onDamage=()=>{},
    distance=d;best=t;
   }return best;
  }
- function moveBullets(dt){for(let i=bullets.length-1;i>=0;i--){const b=bullets[i],next=b.position.clone().addScaledVector(b.velocity,dt);
+ function moveBullets(dt){for(let i=bullets.length-1;i>=0;i--){const b=bullets[i],step=Math.min(dt,Math.max(0,r.shotRange/r.speed-b.age)),next=b.position.clone().addScaledVector(b.velocity,step);
   const ignored=new Set([b.guardianId]);for(const t of combat.targets.values())if(ally(t))ignored.add(t.id);
   const terrain=traceRangedProjectile(world,b.position,next,.1),body=combat.traceSegment(b.position,next,.1,ownerId,ignored),shield=combat.traceShield?.(b.position,next,.1,ownerId);
   let hit=shield&&(!body||shield.t<=body.t)?shield:body;
   if(terrain&&(!hit||(terrain.t??0)<=hit.t))hit={...terrain,target:colliderTarget(combat,terrain.collider,ownerId)};
-  b.age+=dt;
+  b.age+=step;
   if(hit){if(hit.target&&!ally(hit.target)){
     const result=combat.hit(hit.target,{...b.payload,type:'clockworkStaff',sourceId:ownerId,damage:b.payload.damage??r.damage,delivery:'projectile',point:hit.point,normal:hit.normal});
     if(result&&!result.blocked){hits++;onDamage(result);}
    }bullets.splice(i,1);
-  }else if(b.age>1.15)bullets.splice(i,1);else b.position.copy(next);
+  }else if(b.age>=r.shotRange/r.speed-1e-8)bullets.splice(i,1);else b.position.copy(next);
  }}
  function update(dt,position){if(!(dt>0))return;if(owner()?.alive===false){reset();return;}
   // Substeps make targeting, lifetime and swept bolts independent of frame rate.
@@ -60,8 +60,10 @@ export function createClockworkSpell(scene,world,combat,ownerId,onDamage=()=>{},
      if(target){guardian.direction=Math.atan2(target.position.x-guardian.position.x,target.position.z-guardian.position.z);
       if(guardian.age+1e-8>=guardian.nextShot){
        origin.copy(guardian.position);origin.y+=.88;aimPoint.copy(target.position);aimPoint.y+=(target.height??2.3)*.45;
+       // Snapshot once at the muzzle. Flight never reads a target position:
+       // later turret turns and target changes cannot steer an emitted bolt.
        const velocity=aimPoint.clone().sub(origin).normalize().multiplyScalar(r.speed);
-       bullets.push({position:origin.clone(),velocity,age:0,payload:{...guardian.payload},guardianId:guardian.target.id});shots++;guardian.nextShot=guardian.age+r.interval;visuals.fire();
+       bullets.push({id:shots+1,origin:origin.clone(),position:origin.clone(),velocity,age:0,payload:{...guardian.payload},guardianId:guardian.target.id});shots++;guardian.nextShot=guardian.age+r.interval;visuals.fire();
       }
      }
     }
@@ -73,6 +75,6 @@ export function createClockworkSpell(scene,world,combat,ownerId,onDamage=()=>{},
  function reset(){if(guardian)combat.removeTarget(guardian.target.id);guardian=null;bullets.length=0;shots=hits=0;lastEnd=null;lob.reset();visuals.reset();}
  return{beginAim:lob.beginAim,aimAt:lob.aimAt,release:lob.release,cancelAim:lob.cancelAim,update,reset,
   get aiming(){return lob.aiming;},get busy(){return lob.flying||!!guardian||visuals.fading;},
-  get telemetry(){return{...lob.telemetry,active:!!guardian,guardian:guardian?{id:guardian.target.id,position:{...guardian.position},health:guardian.target.health,age:guardian.age,targetId:guardian.targetId}:null,shots,hits,bullets:bullets.map(b=>({position:{...b.position},velocity:{...b.velocity}})),lastEnd,visuals:visuals.telemetry};},
+  get telemetry(){return{...lob.telemetry,active:!!guardian,duration:r.duration,projectileSpeed:r.speed,homing:false,guardian:guardian?{id:guardian.target.id,position:{...guardian.position},health:guardian.target.health,age:guardian.age,targetId:guardian.targetId}:null,shots,hits,bullets:bullets.map(b=>({id:b.id,origin:{...b.origin},position:{...b.position},velocity:{...b.velocity}})),lastEnd,visuals:visuals.telemetry};},
   dispose(){reset();lob.dispose();visuals.dispose();}};
 }

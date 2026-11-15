@@ -13,14 +13,14 @@ function fixture(){
  function cast(){assert.equal(spell.beginAim(p),true);spell.aimAt(p,{x:0,z:4});spell.update(3,p);assert.equal(spell.release(p,{damage:5}),true);for(let i=0;i<100&&!spell.telemetry.guardian;i++)spell.update(.01,p);assert.ok(spell.telemetry.guardian);}
  return{scene,combat,p,world,owner,enemy,spell,cast};
 }
-test('guardian unfolds, stays put, fires slow committed bolts and expires after four seconds',()=>{
+test('guardian unfolds, stays put, fires fast committed bolts and expires after eight seconds',()=>{
  const f=fixture();f.cast();const id=f.spell.telemetry.guardian.id;assert.equal(f.combat.targets.get(id).health,25);
  f.spell.update(.3,f.p);assert.equal(f.spell.telemetry.shots,0);
  f.spell.update(.15,f.p);assert.equal(f.spell.telemetry.shots,1);assert.equal(f.enemy.health,100);
- const bolt=f.spell.telemetry.bullets[0];assert.ok(Math.abs(Math.hypot(...Object.values(bolt.velocity))-7)<1e-6);
+ const bolt=f.spell.telemetry.bullets[0];assert.ok(Math.abs(Math.hypot(...Object.values(bolt.velocity))-14)<1e-6);
  f.enemy.position.x=3;f.spell.update(.75,f.p);assert.equal(f.enemy.health,100,'first bolt can be dodged');
  f.p.set(30,0,30);f.spell.update(2.9,f.p);assert.ok(f.enemy.health<100);assert.equal(f.spell.telemetry.guardian.position.z,4);
- f.spell.update(.4,f.p);assert.equal(f.spell.telemetry.guardian,null);assert.equal(f.combat.targets.has(id),false);assert.equal(f.spell.telemetry.shots,4);
+ f.spell.update(.4,f.p);assert.ok(f.spell.telemetry.guardian);f.spell.update(4,f.p);assert.equal(f.spell.telemetry.guardian,null);assert.equal(f.combat.targets.has(id),false);assert.equal(f.spell.telemetry.shots,8);
  f.spell.update(2,f.p);assert.equal(f.spell.telemetry.bullets.length,0);assert.equal(f.spell.busy,false);f.spell.dispose();assert.equal(f.scene.children.length,0);
 });
 test('guardian refuses allies, props, concealed targets and solid cover; no local-viewer-dependent AI',()=>{
@@ -69,4 +69,13 @@ test('normal bow and staff attacks can destroy the compact guardian with yaw-onl
   for(let i=0;i<60;i++)weapons.update(.02,i*.02,actor.position,0);
   assert.ok(guardian.health<25,kind+' hits through the normal projectile pipeline');weapons.dispose();f.spell.dispose();
  }
+});
+
+test('emitted bolts remain perfectly straight after targets move, disappear or switch',()=>{
+ const f=fixture();f.cast();f.spell.update(.41,f.p);const first=f.spell.telemetry.bullets[0];assert.ok(first);
+ f.enemy.position.set(3,0,9);f.combat.addTarget({id:'other',position:new THREE.Vector3(-4,0,4)});
+ f.spell.update(.05,f.p);const next=f.spell.telemetry.bullets.find(b=>b.id===first.id);assert.ok(next);assert.deepEqual(next.velocity,first.velocity);
+ for(const axis of ['x','y','z'])assert.ok(Math.abs(next.position[axis]-first.position[axis]-first.velocity[axis]*.05)<1e-7);
+ f.enemy.health=0;f.spell.update(.05,f.p);const last=f.spell.telemetry.bullets.find(b=>b.id===first.id);assert.ok(last);assert.deepEqual(last.velocity,first.velocity);
+ assert.equal(f.spell.telemetry.homing,false);assert.equal(f.spell.telemetry.projectileSpeed,14);assert.equal(f.spell.telemetry.duration,8);f.spell.dispose();
 });

@@ -4,14 +4,14 @@ Beide Waffen verwenden die vom Nutzer gelieferten Tripo-GLBs aus `assets/inbox`.
 
 | Waffe | Gewöhnlicher Schaden | Verhalten | Abklingzeit |
 | --- | --- | --- | --- |
-| Schattenstab | 8 pro Gegner und Feld | 2,5 m Feld, 3 s Lebensdauer; 2 s Verdunkelung auf 2,5 m Sicht | 5,5 s |
-| Uhrwerkstab | 5 pro Geschoss | 4 s aktiver Wächter nach 0,4 s Entfaltung, 25 Leben, 6 m Schussweite, 1 s Schussintervall | 8 s |
+| Schattenstab | 8 pro Gegner und Feld | 4 m Feldradius, 3 s Lebensdauer; 2,5 m Sicht im Feld und noch 2 s danach | 5,5 s |
+| Uhrwerkstab | 5 pro Geschoss | 8 s aktiver Wächter nach 0,4 s Entfaltung, 25 Leben, 6 m Schussweite, 1 s Schussintervall, gerade Geschosse mit 14 m/s | 8 s |
 
 Beide Zielkreise wachsen mit der üblichen Ladereichweite bis 20 m. Maus/F bzw. der rechte Touch-Zielstick wählen unabhängig von der Laufrichtung; Loslassen wirft das Geschoss. Der Schattenkreis hat den Feldradius, der Kapselkreis markiert den Platzbedarf des Wächters. Seltenheit skaliert den tatsächlichen Schaden. Individuelle Abklingzeiten bleiben beim Waffenwechsel erhalten.
 
 `staff-lob.js` teilt nur die Bodenwahl und den in kleinen Schritten auf Kollision geprüften Bogenflug. Feld, Status, Wächter und Effekte besitzen eigene Controller. Eine ungültige Landestelle wird vor dem Wurf und beim Auftreffen erneut geprüft. Hindernisse können einen Wurf abfangen.
 
-`darkened-status.js` hält Verdunkelung getrennt von der Sonnenblendung; die engere aktive Sichtgrenze gilt in der geometrischen Sichtprüfung und im Gelände-Shader. Die Schattenfläche merkt sich getroffene IDs. Erneutes Betreten desselben Feldes erneuert weder Schaden noch Status. Der Status beeinflusst weder Bewegung noch Angriff und deckt keine Figuren auf. Augensymbol, schwacher Radiusring und Körperpartikel beachten normale Sicht und Versteckgras.
+`darkened-status.js` hält Verdunkelung getrennt von der Sonnenblendung; die engere aktive Sichtgrenze gilt in der geometrischen Sichtprüfung und im Gelände-Shader. Die Schattenfläche merkt sich getroffene IDs. Im Feld wird die Verdunkelung ohne neue Trefferereignisse aufgefrischt. Nach Verlassen oder Feldende läuft sie noch 2 s. Erneutes Betreten erneuert den Status, aber keinen Schaden. Der Status beeinflusst weder Bewegung noch Angriff und deckt keine Figuren auf. Augensymbol, schwacher Radiusring und Körperpartikel beachten normale Sicht und Versteckgras.
 
 Der Uhrwerkwächter ist ein temporäres, zerstörbares Kampfziel ohne Fortschrittsbelohnung. Er wählt lebende gegnerische Figuren nach Entfernung, Deckung und Versteckstatus. Ein Schuss behält seine Flugrichtung; auch später auftauchende Deckung und Projektilschilde fangen ihn ab. Der Wächter ist ortsfest und bleibt beim Waffenwechsel aktiv. Besitzer-Tod, Ablauf, Zerstörung und Neustart räumen Ziele/Effekte kontrolliert auf. Die Team-ID-Prüfung nutzt den vorhandenen Combat-Vertrag; sie führt keinen Netzwerk-Mehrspielermodus ein.
 

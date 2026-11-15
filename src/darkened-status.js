@@ -12,7 +12,7 @@ export function applyDarkened(target, payload = {}) {
 }
 export function updateDarkened(target, dt) {
   target.darkenedRemaining = Math.max(0, target.darkenedRemaining - positive(dt));
-  if (!target.alive || !target.darkenedRemaining) resetDarkened(target);
+  if (!target.alive || target.darkenedRemaining <= 1e-8) resetDarkened(target);
 }
 export function effectiveSightRadius(target) {
   return Math.min(target?.blindRemaining > 0 ? target.blindRadius : Infinity,
