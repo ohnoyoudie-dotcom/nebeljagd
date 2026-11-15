@@ -12,9 +12,10 @@ test('Waldhaus produces finite, compact geometry without a browser canvas', () =
       for (const value of node.geometry.attributes.position.array) assert.ok(Number.isFinite(value));
     });
     const bounds = new Box3().setFromObject(model.group);
-    assert.ok(bounds.min.x >= -6.05 && bounds.max.x <= 6.05, 'wall trim must stay near the shared footprint');
-    assert.ok(bounds.min.z >= -5.3 && bounds.max.z <= 5.3, 'only the two threshold steps extend beyond the floor');
-    assert.ok(model.stats.drawCalls <= 20, 'static furnishings should stay batched by material');
+    assert.ok(bounds.min.x >= -WALDHAUS_DEFINITION.footprint.halfWidth - .05 && bounds.max.x <= WALDHAUS_DEFINITION.footprint.halfWidth + .05, 'wall trim must stay near the shared footprint');
+    assert.ok(bounds.min.z >= -WALDHAUS_DEFINITION.footprint.halfDepth - .8 && bounds.max.z <= WALDHAUS_DEFINITION.footprint.halfDepth + .8, 'only the two threshold steps extend beyond the floor');
+    assert.ok(bounds.max.y < WALDHAUS_DEFINITION.floorHeight + WALDHAUS_DEFINITION.wallHeight + .11, 'larger floor area must not scale up wall height');
+    assert.ok(model.stats.drawCalls <= 20, 'architecture should stay batched by material');
     assert.ok(model.stats.triangles < 75000);
     assert.equal(model.roof.visible, false);
   } finally { model.dispose(); }
@@ -32,6 +33,20 @@ test('Waldhaus visible frames and stonework leave both exits and room doors clea
         const ray = new Raycaster(from, direction.clone().normalize(), .001, direction.length());
         const hits = ray.intersectObject(model.group, true);
         assert.equal(hits.length, 0, `${route.name} should remain visibly clear at ${height} m`);
+      }
+    }
+  } finally { model.dispose(); }
+});
+
+test('Waldhaus rooms contain no baked-in furniture or decorations', () => {
+  const model = createWaldhausModel();
+  model.group.updateMatrixWorld(true);
+  try {
+    for (const room of WALDHAUS_DEFINITION.rooms) {
+      for (let x = room.minX + .45; x < room.maxX - .45; x += .4) {
+        const origin = new Vector3(x, WALDHAUS_DEFINITION.floorHeight + .65, room.minZ + .45);
+        const ray = new Raycaster(origin, new Vector3(0, 0, 1), .001, room.maxZ - room.minZ - .9);
+        assert.equal(ray.intersectObject(model.group, true).length, 0, `${room.name} must have an empty floor at x=${x}`);
       }
     }
   } finally { model.dispose(); }

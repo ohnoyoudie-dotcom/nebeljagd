@@ -8,7 +8,7 @@ import { validateWorldmap } from '../src/map/model.js';
 import { renderWorldmapSvg } from '../src/map/render.js';
 import { removeNonTripoObjects } from '../src/map/tripo-object-cleanup.js';
 import { removeRetiredBuildings } from '../src/map/retired-buildings.js';
-import { WALDHAUS_DEFINITION, WALDHAUS_FURNITURE } from '../src/map/waldhaus-definition.js';
+import { WALDHAUS_DEFINITION } from '../src/map/waldhaus-definition.js';
 
 const base = JSON.parse(readFileSync(new URL('./fixtures/editor-project-worldmap.json', import.meta.url)));
 const schema = JSON.parse(readFileSync(new URL('../worldmap.schema.json', import.meta.url)));
@@ -21,7 +21,7 @@ test('Waldhaus is a named, placeable project model with the actual playable foot
   assert.equal(house().name, 'Waldhaus');
   assert.equal(variant.footprintWidth, WALDHAUS_DEFINITION.footprint.halfWidth * 2);
   assert.equal(variant.footprintDepth, WALDHAUS_DEFINITION.footprint.halfDepth * 2);
-  assert.equal(getObjectFootprintRadius('house', 'waldhaus'), 7.5);
+  assert.equal(getObjectFootprintRadius('house', 'waldhaus'), 10);
   const asset = getVariantAsset('house', 'waldhaus');
   assert.equal(asset.label, 'Waldhaus');
   assert.equal(asset.format, 'procedural');
@@ -46,7 +46,7 @@ test('Waldhaus survives rotated, scaled save/import and both old-model cleanup a
   assert.match(svg, /<title>Haus am Waldrand · waldhaus-editor-test<\/title>/);
 });
 
-test('placed Waldhaus floor plans show three rooms, two real entrances and their shared furniture layout', () => {
+test('placed Waldhaus floor plans show an empty 16 by 12 metre shell with three rooms and two entrances', () => {
   const map = { ...structuredClone(base), objects: [house(), house({ id: 'waldhaus-second', rotation: .7 })] };
   const svg = renderWorldmapSvg(map);
   assert.equal((svg.match(/id="world-object-house-waldhaus"/g) ?? []).length, 1);
@@ -54,8 +54,12 @@ test('placed Waldhaus floor plans show three rooms, two real entrances and their
   assert.equal((svg.match(/data-waldhaus-room=/g) ?? []).length, 3);
   assert.equal((svg.match(/data-waldhaus-entrance=/g) ?? []).length, 2);
   assert.equal((svg.match(/data-waldhaus-wall=/g) ?? []).length, WALDHAUS_DEFINITION.architecturalWalls.length);
-  assert.equal((svg.match(/data-waldhaus-fixture=/g) ?? []).length, WALDHAUS_FURNITURE.length);
-  assert.match(svg, /<g id="world-object-house-waldhaus"><rect x="-6" y="-4\.5" width="12" height="9"/);
-  assert.match(svg, /<circle r="7\.5" fill="transparent" pointer-events="all"\/><use href="#world-object-house-waldhaus"/);
+  assert.equal((svg.match(/data-waldhaus-window=/g) ?? []).length, WALDHAUS_DEFINITION.windows.length);
+  assert.match(svg, /data-waldhaus-room="Hauptraum"/);
+  assert.match(svg, /data-waldhaus-room="Nebenraum 1"/);
+  assert.match(svg, /data-waldhaus-room="Nebenraum 2"/);
+  assert.doesNotMatch(svg, /data-waldhaus-fixture=/);
+  assert.match(svg, /<g id="world-object-house-waldhaus"><rect x="-8" y="-6" width="16" height="12"/);
+  assert.match(svg, /<circle r="10" fill="transparent" pointer-events="all"\/><use href="#world-object-house-waldhaus"/);
   assert.doesNotMatch(renderWorldmapSvg(base), /world-object-house-waldhaus/, 'registering the house does not change an existing map until it is placed');
 });

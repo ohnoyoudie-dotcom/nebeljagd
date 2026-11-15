@@ -44,7 +44,7 @@ export const ASSET_CATALOG = Object.freeze([
   project('house', 'herbal', 'Kräuterhaus', ['src/houses.js', 'src/world-object-renderer.js'], 'Offenes Holzhaus mit Einrichtung und Kräuterdetails.'),
   project('house', 'inn', 'Waldgasthaus', ['src/houses.js', 'src/world-object-renderer.js'], 'Offenes Gasthaus mit eigener Farbgebung und Einrichtung.'),
   project('house', 'waldhaus', 'Waldhaus', ['src/waldhaus-model.js', 'src/map/waldhaus-definition.js', 'src/world-object-renderer.js'],
-    'Begehbares Fachwerkhaus mit Wohnraum, Schlafkammer und Vorratsraum. Zwei offene Eingänge verbinden Vorder- und Rückseite; frei platzierbar, drehbar und skalierbar.'),
+    'Geräumiges, leeres Fachwerkhaus (16 × 12 m) mit drei frei einrichtbaren Räumen und zwei offenen Eingängen. Interieur kann später einzeln ergänzt werden; frei platzierbar, drehbar und skalierbar.'),
   project('house', 'hunter', 'Jägerhaus', ['src/houses.js', 'src/world-object-renderer.js'], 'Offenes Holzhaus mit Jägermotiv.'),
   rei('flower', 'rei-white', 'Rei-Blumen · Weiß', 'flowers.glb', 'Rei_flowersGN_sample.blend', 'Weiße Blüten als gemeinsam verschiebbares Beet.', { node: 'Rei_Flower_White', companion: 'assets/imported/rei/runtime/bed-ground.glb' }),
   rei('flower', 'rei-red', 'Rei-Blumen · Rot', 'flowers.glb', 'Rei_flowersGN_sample.blend', 'Rote Blüten als gemeinsam verschiebbares Beet.', { node: 'Rei_Flower_Red', companion: 'assets/imported/rei/runtime/bed-ground.glb' }),

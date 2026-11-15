@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { WALDHAUS_DEFINITION as house } from '../src/map/waldhaus-definition.js';
+import { WALDHAUS_DEFINITION as house, WALDHAUS_FURNITURE } from '../src/map/waldhaus-definition.js';
 import { createCollisionIndex } from '../src/collision.js';
 import { houseFloorFactorAt } from '../src/map/house-floor.js';
 import { createGroundGrassExclusion } from '../src/meadow-ground.js';
@@ -17,12 +17,13 @@ function placement(rotation,scale){
  };
 }
 
-test('Waldhaus has two real exterior entrances and full-capsule access to each room after rotation and scale',()=>{
+test('the roomy 16 by 12 metre Waldhaus shell has two exterior entrances and full-capsule access to each room after rotation and scale',()=>{
  const snapshot=structuredClone(house),index=createCollisionIndex([],house.walls);
+ assert.deepEqual(house.footprint,{halfWidth:8,halfDepth:6});
  assert.equal(house.entrances.length,2);assert.equal(house.qaRoutes.entrances.length,2);assert.ok(house.qaRoutes.rooms.length>=2);
  for(const [rotation,scale]of [[0,1],[Math.PI/2,1.25],[Math.PI/3,.8]]){
   const {toWorld,toLocal}=placement(rotation,scale);
-  for(const route of [...house.qaRoutes.entrances,...house.qaRoutes.rooms]){
+  for(const route of [...house.qaRoutes.entrances,...house.qaRoutes.rooms,...(house.qaRoutes.clearedFurniture??[])]){
    const start=toWorld(point(route.from)),end=toWorld(point(route.to));
    assert.equal(index.traceSegment(toLocal(start),toLocal(end),.42/scale),null,`${route.name}: continuous capsule passage`);
    for(let i=0;i<=48;i++){
@@ -35,10 +36,12 @@ test('Waldhaus has two real exterior entrances and full-capsule access to each r
  assert.deepEqual(house,snapshot,'Collision queries must not mutate the shared house definition');
 });
 
-test('Waldhaus solid walls, room partitions and furniture stop movement and projectiles',()=>{
+test('empty Waldhaus has no leftover furniture collision while exterior and room walls still stop movement and projectiles',()=>{
  const index=createCollisionIndex([],house.walls),walls=house.walls.filter(w=>w.type==='house-wall'),furniture=house.walls.filter(w=>w.type==='furniture');
- assert.ok(walls.length>=9&&furniture.length>=6,'Multi-room architecture and visible furnishing need separate collision bodies');
- for(const body of [...walls,...furniture]){
+ assert.ok(walls.length>=9,'The empty shell keeps exterior walls and separate room partitions');
+ assert.equal(furniture.length,0);assert.deepEqual(WALDHAUS_FURNITURE,[]);
+ assert.ok(house.walls.every(body=>!body.fixtureId),'No invisible furnishing remains in the collision data');
+ for(const body of walls){
   const p={x:(body.minX+body.maxX)/2,y:Math.min(1,body.maxY-.1),z:(body.minZ+body.maxZ)/2};
   const alone=createCollisionIndex([],[body]);const before={...p};alone.resolve(p,.42);
   assert.ok(Math.hypot(p.x-before.x,p.z-before.z)>.42,body.name);
@@ -47,6 +50,14 @@ test('Waldhaus solid walls, room partitions and furniture stop movement and proj
   const end={...before,[horizontal?'z':'x']:(horizontal?body.maxZ:body.maxX)+1};
   assert.ok(index.traceSegment(start,end,.06),`${body.name}: low shot must collide`);
   const top=(body.maxY??4)+.2;assert.equal(alone.traceSegment({...start,y:top},{...end,y:top},.06),null,`${body.name}: no invisible full-height wall`);
+ }
+ // These original fixture centres must now be ordinary walkable floor, even
+ // for a full player capsule. Crossing them also catches invisible shot blockers.
+ const formerFixtures=[['Kamin',-5.24,-.65],['Anrichte',-4.5,-3.65],['Tisch',-.6,.25],
+  ['Bett',4.65,-2.05],['Truhe',3.65,3.55],['Fass',3.35,.8]];
+ for(const scale of [1,.8,1.25])for(const [name,x,z]of formerFixtures){
+  const p={x,y:.7,z};index.resolve(p,.42/scale);assert.deepEqual(p,{x,y:.7,z},`${name}: removed fixture must not stop movement`);
+  assert.equal(index.traceSegment({x:x-.25,y:.7,z},{x:x+.25,y:.7,z},.06/scale),null,`${name}: removed fixture must not stop shots`);
  }
 });
 

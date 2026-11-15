@@ -1,4 +1,4 @@
-"""Place/save/reopen Waldhaus in the real editor, then traverse its real runtime.
+"""Place/save/reopen the empty Waldhaus shell, then traverse its real runtime.
 
 NEBELJAGD_URL=http://127.0.0.1:5360 python3 tests/waldhaus_smoke.py
 Only isolated browser fixture documents change; the authored map is read-only.
@@ -19,10 +19,10 @@ from playwright.sync_api import expect, sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5360').rstrip('/')
 EDITOR_URL = os.environ.get('NEBELJAGD_EDITOR_URL', URL).rstrip('/')
-OUT = ROOT / 'test-results/waldhaus'
+OUT = ROOT / 'test-results/waldhaus-shell'
 OUT.mkdir(parents=True, exist_ok=True)
 REPORT = {'status': 'running', 'url': URL, 'editorUrl': EDITOR_URL,
-          'checks': [], 'errors': [], 'screenshots': [],
+          'checks': [], 'errors': [], 'failedRequests': [], 'screenshots': [],
           'limits': 'Chromium/SwiftShader with real keyboard input; no physical iPad or file:// measurement.'}
 MAP_HASH = hashlib.sha256((ROOT / 'worldmap.json').read_bytes()).hexdigest()
 INPUT = json.loads(subprocess.check_output(['node', '--input-type=module', '-e',
@@ -42,9 +42,8 @@ def passed(name, evidence=None):
 def monitor(page):
     page.set_default_timeout(120000)
     page.route_web_socket('**', lambda ws: None)
-    page.route('**/favicon.ico', lambda route: route.fulfill(status=204))
     page.on('pageerror', lambda error: REPORT['errors'].append(str(error)))
-    page.on('console', lambda message: REPORT['errors'].append(message.text)
+    page.on('console', lambda message: REPORT['errors'].append({'text':message.text,'location':message.location})
             if message.type == 'error' else None)
 
 
@@ -149,13 +148,14 @@ def walk_route(page, obj, route):
     assert remaining < .85, {'object': obj, 'route': route, 'position': local, 'remaining': remaining}
     assert current['shelter'] == obj['name'], current
     assert_floor(current, obj)
+    print('PASS passage', obj['name'], route['name'], flush=True)
     return {'name': route['name'], 'remaining': remaining, 'position': local}
 
 
-def capture(page, name, canvas=False):
+def capture(page, name, canvas=False, focus=None):
     path = OUT / (name + '.png')
     if canvas:
-        value = page.evaluate('nebeljagdCaptureFrame()')
+        value = page.evaluate('p=>{if(p) nebeljagdInspectCamera({zoom:1,focus:p}); return nebeljagdCaptureFrame();}', focus)
         path.write_bytes(base64.b64decode(value.split(',', 1)[1]))
     else:
         page.screenshot(path=str(path))
@@ -168,9 +168,17 @@ try:
             args=['--no-sandbox', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
         context = browser.new_context(viewport={'width': 1360, 'height': 900}, accept_downloads=True)
         context.add_init_script("Object.defineProperty(window,'showSaveFilePicker',{value:undefined,configurable:true});")
-        editor = context.new_page(); monitor(editor)
+        context.route('**/favicon.ico', lambda route: route.fulfill(status=204))
+        context.on('page', monitor)
+        context.on('response', lambda response: REPORT['failedRequests'].append({'url':response.url,'status':response.status}) if response.status>=400 else None)
+        manifest_response=context.request.get(EDITOR_URL+'/release.json')
+        assert manifest_response.status==200, 'Run only after the full build has written release.json.'
+        manifest=manifest_response.json()
+        editor = context.new_page()
         editor.goto(EDITOR_URL+'/map-editor.html', wait_until='domcontentloaded')
         editor.wait_for_function('window.nebeljagdMapTestState')
+        REPORT['buildId']=editor_state(editor)['startup']['buildId']
+        assert REPORT['buildId']==manifest['buildId']
         import_map(editor, FIXTURE)
         open_control(editor, 'palette-kind').select_option('house')
         variants = editor.locator('#palette-variant option').evaluate_all('(xs)=>xs.map(x=>({value:x.value,label:x.textContent}))')
@@ -198,8 +206,8 @@ try:
         passed('Waldhaus is selectable and placeable; two placements preserve rotation/scale through JSON and saved browser draft', snapshot['objects'])
 
         with editor.expect_popup() as popup: editor.locator('#playtest-world').click()
-        game = popup.value; monitor(game)
-        game.set_viewport_size({'width': 1000, 'height': 700})
+        game = popup.value
+        game.set_viewport_size({'width': 720, 'height': 504})
         game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
         game.goto(game.url+'&inspect=1&quality=low', wait_until='domcontentloaded')
         game.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0')
@@ -208,23 +216,28 @@ try:
         current = game_state(game)
         assert current['world']['source'] == 'editor' and current['world']['objects'] == snapshot['objects']
         assert len(current['houses']) == 2 and all(h['interiorVisible'] for h in current['houses'])
+        for house,placement in zip(current['houses'], [obj,rotated]):
+            assert abs(house['halfWidth']-8*placement['scale'])<1e-8 and abs(house['halfDepth']-6*placement['scale'])<1e-8, house
         assert current['rendering']['triangles'] > 10000 and current['rendering']['calls'] > 0, current['rendering']
         assert current['shelter'] == obj['name']; assert_floor(current, obj)
         capture(game, 'interior', canvas=True)
-        passed('Editor playtest instantiates two rendered furnished Waldhäuser with correct floors and shelter',
+        passed('Editor playtest instantiates two spacious 16 by 12 metre Waldhaus shells with correct floors and shelter',
                {'houses': current['houses'], 'rendering': current['rendering']})
 
-        routes = DEFINITION['qaRoutes']['entrances']+DEFINITION['qaRoutes']['rooms']
+        cleared = DEFINITION['qaRoutes']['clearedFurniture']
+        assert len(cleared)>=2, 'Keep actual movement coverage through the former furnishing areas.'
+        routes = DEFINITION['qaRoutes']['entrances']+DEFINITION['qaRoutes']['rooms']+cleared
         results = {}
         for placement in [obj, rotated]:
             results[placement['name']] = [walk_route(game, placement, route) for route in routes]
-        passed('Real keyboard movement crosses both exterior doors and all internal passages at normal and rotated/scaled placement', results)
+        passed('Real keyboard movement crosses both exterior doors, all room passages and former furnishing areas at normal and rotated/scaled placement', results)
 
         facade = next(w for w in DEFINITION['walls'] if w['name'] == 'south facade east')
-        table = next(w for w in DEFINITION['walls'] if w.get('fixtureId') == 'table')
+        partition = next(w for w in DEFINITION['walls'] if w['name'] == 'side room partition')
         stops = []
         for placement in [obj, rotated]:
-            for body, x in [(facade, 3), (table, table['maxX']-.1)]:
+            for body in [facade, partition]:
+                x=(body['minX']+body['maxX'])/2
                 start = world_point(placement, [x, body['maxZ']+1.6])
                 end = world_point(placement, [x, body['minZ']-1])
                 inspect(game, start)
@@ -233,10 +246,14 @@ try:
                 radius = .42/placement['scale']
                 assert abs(stopped['z']-body['maxZ']-radius) < .1, (placement, body, stopped)
                 stops.append({'object': placement['name'], 'obstacle': body['name'], 'position': stopped})
-        passed('Actual movement stops at the facade and dining table at both scales/rotations', stops)
-        inspect(game, world_point(rotated, DEFINITION['qaRoutes']['openFloor']))
-        capture(game, 'rotated-interior', canvas=True)
+                print('PASS solid wall', placement['name'], body['name'], flush=True)
+        passed('Actual movement stops at the exterior facade and interior room partition at both scales/rotations', stops)
+        game.set_viewport_size({'width':1200,'height':900})
+        for placement,name in [(obj,'shell-review'),(rotated,'rotated-shell-review')]:
+            inspect(game, world_point(placement, DEFINITION['qaRoutes']['openFloor']))
+            capture(game,name,canvas=True,focus={'x':placement['position'][0],'z':placement['position'][1]})
         assert not REPORT['errors'], REPORT['errors']
+        assert not REPORT['failedRequests'], REPORT['failedRequests']
         browser.close()
     assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest() == MAP_HASH
     REPORT['sourceMapUnchanged'] = MAP_HASH

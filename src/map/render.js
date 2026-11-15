@@ -5,7 +5,7 @@ import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
 import { getObjectFootprintRadius } from './objects.js';
 import { barrierSections, getBarrierStyle } from './barriers.js';
 import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
-import { WALDHAUS_DEFINITION, WALDHAUS_FURNITURE } from './waldhaus-definition.js';
+import { WALDHAUS_DEFINITION } from './waldhaus-definition.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
@@ -63,8 +63,8 @@ function measuredHouseMapSymbol(variant, symbol) {
   return pieces.join('');
 }
 
-/** A roofless floor plan in world metres, drawn from the same room, doorway
- * and furniture bounds used by the playable house. */
+/** The empty architectural shell in world metres, drawn from the same room,
+ * doorway and window bounds used by the playable house. */
 function waldhausMapSymbol() {
   const house = WALDHAUS_DEFINITION, { halfWidth, halfDepth } = house.footprint;
   const rect = (minX, minZ, maxX, maxZ, attributes) => `<rect x="${number(minX)}" y="${number(minZ)}" width="${number(maxX - minX)}" height="${number(maxZ - minZ)}" ${attributes}/>`;
@@ -82,32 +82,18 @@ function waldhausMapSymbol() {
     Math.min(entrance.boundary, entrance.innerBoundary), entrance.max,
     Math.max(entrance.boundary, entrance.innerBoundary),
     `data-waldhaus-entrance="${escape(entrance.name)}" fill="#d0bb8d"`));
-  pieces.push('<rect x="-1.8" y="-1.05" width="2.4" height="2.6" rx=".15" fill="#456a54" stroke="#c4ad73" stroke-width=".09"/>');
   for (const wall of house.architecturalWalls) pieces.push(rect(wall.minX, wall.minZ, wall.maxX, wall.maxZ,
     'data-waldhaus-wall="true" fill="#e2d1a4" stroke="#4e3c2b" stroke-width=".075"'));
-  for (const fixture of WALDHAUS_FURNITURE) {
-    const x = fixture.x - fixture.width / 2, z = fixture.z - fixture.depth / 2;
-    pieces.push(`<g data-waldhaus-fixture="${escape(fixture.id)}">`);
-    if (fixture.type === 'barrel' || fixture.type === 'stool') {
-      pieces.push(`<circle cx="${number(fixture.x)}" cy="${number(fixture.z)}" r="${number(fixture.width / 2)}" fill="#ad8554" stroke="${fixture.type === 'barrel' ? '#49534b' : '#59452f'}" stroke-width=".09"/>`);
-    } else {
-      pieces.push(rect(x, z, x + fixture.width, z + fixture.depth,
-        `rx=".07" fill="${fixture.type === 'fireplace' ? '#6c7163' : '#8b633c'}" stroke="#493b2b" stroke-width=".1"`));
-      if (fixture.type === 'bed') {
-        pieces.push(rect(x + .12, z + .65, x + fixture.width - .12, z + fixture.depth - .14, 'rx=".06" fill="#526e5c" stroke="#9fa878" stroke-width=".06"'),
-          rect(x + .25, z + .14, x + fixture.width - .25, z + .62, 'rx=".12" fill="#e2d3ac"'));
-      } else if (fixture.type === 'fireplace') {
-        pieces.push(rect(x + .15, z + .32, x + fixture.width - .1, z + fixture.depth - .32, 'fill="#303b35"'),
-          `<path d="M${number(x + .3)},${number(z + .9)}l.26,-.3 .2,.45-.27,.25Z" fill="#e3a44d"/>`);
-      } else {
-        const divisions = fixture.type === 'shelves' ? 3 : 1;
-        for (let i = 1; i <= divisions; i++) {
-          const seamZ = z + fixture.depth * i / (divisions + 1);
-          pieces.push(`<path d="M${number(x + .1)},${number(seamZ)}H${number(x + fixture.width - .1)}" stroke="#c6a16c" stroke-width=".06"/>`);
-        }
-      }
-    }
-    pieces.push('</g>');
+  // Glazing sits against the continuous walls, so windows never read as doors.
+  for (const window of house.windows) {
+    const horizontal = window.side === 'north' || window.side === 'south';
+    const x = horizontal ? window.center : window.boundary, z = horizontal ? window.boundary : window.center;
+    const halfWidth = horizontal ? window.width / 2 : .09, halfDepth = horizontal ? .09 : window.width / 2;
+    pieces.push(rect(x - halfWidth, z - halfDepth, x + halfWidth, z + halfDepth,
+      `data-waldhaus-window="${escape(window.name)}" fill="#a2c6c3" stroke="#674c32" stroke-width=".06"`));
+    const mullion = horizontal ? `M${number(x)},${number(z - halfDepth)}V${number(z + halfDepth)}`
+      : `M${number(x - halfWidth)},${number(z)}H${number(x + halfWidth)}`;
+    pieces.push(`<path d="${mullion}" stroke="#674c32" stroke-width=".05"/>`);
   }
   pieces.push('</g>');
   return pieces.join('');

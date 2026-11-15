@@ -23,7 +23,7 @@ window.previewVariants=definitions;
 window.captureVariant=(kind,variant)=>{
  const index=definitions.findIndex(item=>item.kind===kind&&item.variant===variant);if(index<0)throw Error('Unknown variant');
  const x=index*80;const spans={tree:10,house:23,flower:4.6,grass:9,rock:4.3,bush:3.3,ruin:16,mound:17,wall:4.7,fence:4.7,crate:2.1,wagon:4.3,barrel:2.1,well:3.8,shrine:4.8,heart:2.7,chest:3,bow:2.5,sword:2.5,fireStaff:3,iceStaff:3};
- const kitFraming={'waldhaus':[13.5,1.15],'kit-pine-high':[6.7,1.8],'kit-pine-young':[5,1.25],'kit-oak-green':[7.2,1.8],'kit-oak-autumn':[7.2,1.8],'kit-timber':[7,.9],'kit-tall':[8,.8],'kit-cluster':[3.5,.35],'kit-single':[3.2,.35],'kit-arch':[5.5,.8],'kit-stone':[4.7,.5],'kit-wood':[kind==='crate'?2.1:4.7,kind==='crate'?.3:.55]};
+ const kitFraming={'waldhaus':[18,1.15],'kit-pine-high':[6.7,1.8],'kit-pine-young':[5,1.25],'kit-oak-green':[7.2,1.8],'kit-oak-autumn':[7.2,1.8],'kit-timber':[7,.9],'kit-tall':[8,.8],'kit-cluster':[3.5,.35],'kit-single':[3.2,.35],'kit-arch':[5.5,.8],'kit-stone':[4.7,.5],'kit-wood':[kind==='crate'?2.1:4.7,kind==='crate'?.3:.55]};
  const framing=kitFraming[variant];let span=framing?.[0]??spans[kind];
  const point=new THREE.Vector3(x,0,0);time+=1;scenery.update(0,time,point);weapons.update(0,time,point);chests.update(0,time,point);pickups.update(0,time,new THREE.Vector3(-99999,0,0),{viewerPosition:point,canCollect:false});
  // All variants share this inspection scene. A large castle's wider camera
