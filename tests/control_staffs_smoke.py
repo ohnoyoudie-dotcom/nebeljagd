@@ -26,10 +26,10 @@ with sync_playwright() as pw:
   modes=[('shadowStaff','shadow',False),('clockworkStaff','clockwork',False),('shadowStaff','shadow',True),('clockworkStaff','clockwork',True)]
   if os.getenv('DESKTOP_ONLY'):modes=modes[:2]
   for kind,slug,touch in modes:
-   mode=slug+('-touch' if touch else '-mouse');fixture['objects']=[dict(id='staff',name=slug,kind=kind,variant='kit-tripo-'+slug+'-staff',position=[0,-14],rarity='common',rotation=0,scale=1)]
+   mode=slug+('-touch' if touch else '-mouse');print('CHECK',mode,flush=True);fixture['objects']=[dict(id='staff',name=slug,kind=kind,variant='kit-tripo-'+slug+'-staff',position=[0,-14],rarity='common',rotation=0,scale=1)]
    c=browser.new_context(viewport={'width':800,'height':600},has_touch=touch,is_mobile=touch);c.add_init_script('localStorage.setItem("nebeljagd.worldmap.playtest.v1",'+json.dumps(json.dumps(fixture))+');');p=c.new_page();watch(p)
    p.goto(BASE+'/'+ENTRY+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');p.wait_for_function('window.nebeljagdTestState&&nebeljagdTestState().rendering.calls>0');p.locator('#startBtn').click();p.wait_for_function('type=>nebeljagdTestState().equippedWeapon===type',arg=kind);assert state(p)['combat']['heldModel']['model']=='tripo'
-   target=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');health=target['health'];position=target['position'];origin=dict(x=position['x'],z=position['z']-7)
+   target=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');health=target['health'];damage=state(p)['equippedItem']['damage'];position=target['position'];origin=dict(x=position['x'],z=position['z']-7)
    p.evaluate('p=>nebeljagdInspect({...p,direction:0})',origin);elapsed=state(p)['elapsed'];p.wait_for_function('t=>nebeljagdTestState().elapsed>t+.8',arg=elapsed);capture(p,mode+'-held')
    if touch:
     b=p.locator('#attackBtn').bounding_box();x=b['x']+b['width']/2;y=b['y']+b['height']/2;cdp=c.new_cdp_session(p);cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x,'y':y,'id':1}]});ratio=(7 if slug=='shadow' else 3.5)/20
@@ -43,8 +43,8 @@ with sync_playwright() as pw:
    p.wait_for_function('nebeljagdTestState().phase==="paused"');s=state(p);effect=s['combat'][slug];center=effect['center'] if slug=='shadow' else effect['guardian']['position'];capture(p,mode+'-active');capture(p,mode+'-detail',center)
    frozen=state(p)['combat'][slug];p.wait_for_timeout(100);assert state(p)['combat'][slug]==frozen
    if slug=='shadow':
-    enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1');assert enemy['health']==health-8,(health,enemy);assert enemy['darkenedRemaining']>1;assert 'practice-1' in effect['indicators']['visibleTargets'];assert effect['visuals']['visible'];passed(mode+': charged aim, real GLB, lob, visible smoke field, one damage hit and darkened marker')
-    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.shadow.active');enemy=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');assert enemy['health']==health-8;assert enemy['darkenedRemaining']==0
+    enemy=next(a for a in s['practiceActors'] if a['id']=='practice-1');assert enemy['health']==health-damage,(health,enemy);assert enemy['darkenedRemaining']>1;assert 'practice-1' in effect['indicators']['visibleTargets'];assert effect['visuals']['visible'];passed(mode+': charged aim, real GLB, lob, visible smoke field, one damage hit and darkened marker')
+    p.locator('#resumeBtn').click();p.wait_for_function('!nebeljagdTestState().combat.shadow.active');enemy=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');assert enemy['health']==health-damage;assert enemy['darkenedRemaining']==0
     p.evaluate('nebeljagdInspectShadowHit()');pause_at(p,'s.darkenedStatus.remaining>1 && s.vision.blindRadius===2.5');p.wait_for_function('nebeljagdTestState().phase==="paused"');capture(p,mode+'-darkened');pos=state(p)['position'];assert p.evaluate('p=>nebeljagdInspectVisibility({x:p.x+2,z:p.z})',pos);assert not p.evaluate('p=>nebeljagdInspectVisibility({x:p.x+4,z:p.z})',pos)
     p.locator('#resumeBtn').click();p.keyboard.down('d');elapsed=state(p)['elapsed'];p.wait_for_function('t=>nebeljagdTestState().elapsed>t+.4',arg=elapsed);p.keyboard.up('d');assert state(p)['position']['x']>pos['x']+.5;p.wait_for_function('nebeljagdTestState().darkenedStatus.remaining===0');assert p.evaluate('p=>nebeljagdInspectVisibility({x:p.x+4,z:p.z})',state(p)['position']);passed(mode+': real sight restriction, movement while darkened, exact expiry and normal vision restored')
    else:
@@ -52,7 +52,7 @@ with sync_playwright() as pw:
     if touch:
      level=s['level'];result=p.evaluate('nebeljagdInspectClockworkHit(25)');assert result['killed'];pause_at(p,'s.combat.clockwork.lastEnd==="destroyed"');p.wait_for_function('nebeljagdTestState().phase==="paused"');assert state(p)['level']==level;capture(p,mode+'-destroyed');p.locator('#resumeBtn').click()
     else:
-     pause_at(p,'s.combat.clockwork.hits>0');p.wait_for_function('nebeljagdTestState().phase==="paused"');enemy=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');assert enemy['health']<=health-5;capture(p,mode+'-hit');p.locator('#resumeBtn').click()
+     pause_at(p,'s.combat.clockwork.hits>0');p.wait_for_function('nebeljagdTestState().phase==="paused"');enemy=next(a for a in state(p)['practiceActors'] if a['id']=='practice-1');assert enemy['health']<=health-damage;capture(p,mode+'-hit');p.locator('#resumeBtn').click()
     p.wait_for_function('!nebeljagdTestState().combat.clockwork.active && nebeljagdTestState().combat.clockwork.visuals.phase==="idle" && nebeljagdTestState().combat.clockwork.bullets.length===0');passed(mode+': '+('destruction without level reward' if touch else 'automatic damage and lifetime expiry')+'; no remaining guardian or bolts')
    p.locator('#pauseBtn').click();p.locator('#restartBtn').click();p.wait_for_function('nebeljagdTestState().combat.shadow.casts===0 && nebeljagdTestState().combat.clockwork.casts===0');assert state(p)['darkenedStatus']['remaining']==0;passed(mode+': restart clears both spells and status');c.close()
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==report['mapSha256'];report['status']='passed'
