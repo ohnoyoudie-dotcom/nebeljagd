@@ -8,9 +8,8 @@ export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>
   const visuals=createEarthbreakerVisuals(scene,r,isVisible);let wave=null,casts=0,hits=0;
   const widthAt=p=>r.width+(r.endWidth-r.width)*Math.min(1,Math.hypot(p.x-wave.origin.x,p.z-wave.origin.z)/r.range);
   const solid=(a,b)=>world?.traceProjectile?.({...a,y:ground(a)+.35},{...b,y:ground(b)+.35},.12);
-  function cast(position,direction,payload){
-    if(wave)return false;
-    const origin=position.clone(),dx=Math.sin(direction),dz=Math.cos(direction),nodes=[];
+  function planRoute(origin,direction){
+    const dx=Math.sin(direction),dz=Math.cos(direction),nodes=[];
     let previous=origin,contact=null;
     for(let distance=.65;distance<=r.range;distance+=.22){
       const p=new THREE.Vector3(origin.x+dx*distance,0,origin.z+dz*distance);p.y=ground(p);
@@ -19,14 +18,28 @@ export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>
       if(!nodes.length||distance>=.65+nodes.length*r.spacing-.01)nodes.push(p);
       previous=p;
     }
+    return {nodes,contact};
+  }
+  function cast(position,direction,payload){
+    if(wave)return false;
+    const origin=position.clone(),{nodes,contact}=planRoute(origin,direction);
     // Even a blocked cast announces and impacts the first solid object.
-    wave={origin,direction,nodes,age:0,next:0,hitIds:new Set(),payload:{...payload,type:'earthbreakerStaff',sourceId:ownerId,delivery:'area'},contact};
+    wave={origin,direction,nodes,age:0,next:0,launched:false,hitIds:new Set(),payload:{...payload,type:'earthbreakerStaff',sourceId:ownerId,delivery:'area'},contact};
     casts++;visuals.begin(nodes,origin,direction,nodes.map(widthAt));return true;
   }
   function damage(target){if(!target?.alive||target.id===ownerId||wave.hitIds.has(target.id))return;
     wave.hitIds.add(target.id);const result=combat?.hit(target,wave.payload);if(result){hits++;onDamage(result);}}
-  function update(dt){
-    if(!(dt>0)||!wave)return;wave.age+=dt;
+  function update(dt,position){
+    if(!(dt>0)||!wave)return;
+    // Follow the caster through the anticipation, including the eruption frame.
+    // Recheck terrain/cover from that position; never drag an erupted wave.
+    if(!wave.launched&&position&&wave.origin.distanceToSquared(position)>1e-10){
+      wave.origin.copy(position);
+      Object.assign(wave,planRoute(wave.origin,wave.direction));
+      visuals.begin(wave.nodes,wave.origin,wave.direction,wave.nodes.map(widthAt));
+    }
+    wave.age+=dt;
+    if(wave.age>=r.warning)wave.launched=true;
     while(wave.next<wave.nodes.length&&wave.age>=r.warning+wave.next*r.step){
       const index=wave.next++,p=wave.nodes[index],previous=index?wave.nodes[index-1]:wave.origin;
       const obstruction=solid(previous,p);
@@ -47,5 +60,5 @@ export function createEarthbreakerSpell(scene,world,combat,ownerId,onDamage=()=>
     if(wave.age>=r.warning+Math.max(1,wave.nodes.length)*r.step+r.fade){wave=null;visuals.reset();}
   }
   function reset(){wave=null;casts=hits=0;visuals.reset();}
-  return {cast,update,reset,get busy(){return !!wave;},get telemetry(){return{casts,hits,range:r.range,startWidth:r.width,endWidth:r.endWidth,active:!!wave,age:wave?.age??0,nodes:wave?.nodes.map(p=>({...p}))??[],...visuals.telemetry};},dispose(){reset();visuals.dispose();}};
+  return {cast,update,reset,get busy(){return !!wave;},get telemetry(){return{casts,hits,range:r.range,startWidth:r.width,endWidth:r.endWidth,active:!!wave,age:wave?.age??0,origin:wave?{...wave.origin}:null,direction:wave?.direction??null,launched:wave?.launched??false,nodes:wave?.nodes.map(p=>({...p}))??[],...visuals.telemetry};},dispose(){reset();visuals.dispose();}};
 }

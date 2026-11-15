@@ -961,7 +961,7 @@ export function createWeapons(scene, characterGroup, world, character = null,
     const delta = Math.max(0, Math.min(.25, Number.isFinite(dt) ? dt : 0));
     cooldown = Math.max(0, cooldown - delta);
     for(const key of Object.keys(utilityCooldowns))utilityCooldowns[key]=Math.max(0,utilityCooldowns[key]-delta);
-    earthbreaker.update(delta);runeWall.update(delta,position);blink.update(delta,position);reflection.update(delta);
+    earthbreaker.update(delta,position);runeWall.update(delta,position);blink.update(delta,position);reflection.update(delta);
     swordComboRemaining = Math.max(0, swordComboRemaining - delta);
     if (swordComboRemaining === 0 && attackAge < 0) swordIndex = -1;
     swordEffects.update(delta);
