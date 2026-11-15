@@ -8,9 +8,10 @@ eigenem Vorschaubild in der Objektauswahl des Editors und unterstützen dessen
 
 ## Erdbrecherstab
 
-Angreifen löst eine gerichtete Felswelle aus. Nach 0,38 Sekunden Vorwarnung
-brechen versetzt spitze Steine aus dem Boden; Risse, Staub und kleine
-Steinsplitter begleiten die Bewegung. Reichweite: 18 m; die Welle verbreitert sich von 1,35 auf 2,8 m, Grundschaden: 18,
+Loslassen löst sofort eine gerichtete Felswelle an der aktuellen Position aus.
+Riss und Felszacken brechen gemeinsam auf und wandern nach vorne. Dahinter bleibt
+eine dunkle Spalte bis zu 0,95 Sekunden offen und schließt sich weich. Staub und
+kleine Steinsplitter begleiten die Bewegung. Reichweite: 18 m; die Welle verbreitert sich von 1,35 auf 2,8 m, Grundschaden: 18,
 Abklingzeit: 1,8 Sekunden. Jeder Gegner wird pro Welle höchstens einmal getroffen.
 Wasser, abrupte Geländestufen und feste Hindernisse stoppen die Welle. Deckung
 zwischen Welle und Gegner schützt ebenfalls; zerstörbare Hindernisse nehmen
@@ -20,7 +21,7 @@ Schaden. Der Schaden skaliert mit der bestehenden Seltenheitslogik.
 
 Angriff halten erweitert die Reichweite in 0,8 Sekunden auf 10 m. Ein rechteckiger
 Grundriss zeigt die 7 m breite Mauer quer zur Zielrichtung; ungültige Stellen
-werden rot angezeigt. Loslassen stellt sie nach 0,08 Sekunden Vorwarnung auf; der Aufbau dauert etwa 0,18 Sekunden.
+werden rot angezeigt. Loslassen stellt sie nach 0,08 Sekunden Vorwarnung auf; der Aufbau dauert etwa 0,14 Sekunden.
 Die 2,3 m hohe Mauer bleibt nach dem Aufrichten 3 Sekunden stehen, besitzt 50
 Lebenspunkte und hat 6 Sekunden Abklingzeit. Sie blockiert Bewegung und direkte
 Geschosse aus beiden Richtungen. Ihr Besitzer kann durch sie sehen.
@@ -28,8 +29,10 @@ Geschosse aus beiden Richtungen. Ihr Besitzer kann durch sie sehen.
 Breite, facettierte blaue Quader mit Steinvariationen, Sockel, Decksteinen und
 Endpfeilern steigen versetzt auf. Licht sitzt zurückversetzt in den Fugen; ein
 schwacher Bodenschein und wenige aufsteigende Lichtsplitter zeigen die arkane
-Energie. Die früheren Runensymbole entfallen vollständig. Beim Ablauf oder Zerstören lösen sich die feststehenden Blöcke in 0,85 Sekunden
-mit leuchtenden Auflösungskanten und aufsteigenden Lichtpartikeln auf. Dabei
+Energie. Die früheren Runensymbole entfallen vollständig. Beim Ablauf oder Zerstören leuchten die Fugen kurz auf. Eine unregelmäßige,
+weißblaue Auflösungskante wandert über die feststehenden Blöcke von oben nach
+unten. Die Steinfläche verschwindet in etwa 0,76 Sekunden, weicher Lichtstaub
+klingt bis 1,1 Sekunden aus. Dabei
 fallen weder Steine noch Geröll nach unten. Kollision und Kampfziel verschwinden sofort beim Zerstören.
 Wasser, Hindernisse, zu starke Neigung und überlappende Figuren verhindern die
 Platzierung. Auch während der Vorwarnung hineinlaufende Figuren werden nicht
@@ -38,7 +41,7 @@ Abklingzeit. Pause, Neustart und Tod räumen den Effekt korrekt auf.
 
 ## Prüfung
 
-- `npm test`: 750 erfolgreiche Tests, darunter sieben neue Tests für beide
+- `npm test`: 759 erfolgreiche Tests, darunter elf Tests für beide
   Zauber, Schadenszählung, Platzierungsgrenzen, Sicht, gedrehte Kollision,
   Waffenwechsel und Aufräumen.
 - `npm run verify:assets`: Quellen, Hashes, Laufzeitmodelle und Vorschauen.
