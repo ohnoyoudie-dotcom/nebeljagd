@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="de">
   <head>
-    <script id="editor-build-info" type="application/json">{"buildId":"be44b19ccf55","builtAt":"2026-11-15T19:08:56.961Z","sourceCommit":"fed72b0dd186dacd7b91dc2d183f233b47e7448a","mapSha256":"c950ae35fc0d06aef4ca9c8a6ad5b6bce7147ff4faa18e84d0da6dfdc8f724c8"}</script>
+    <script id="editor-build-info" type="application/json">{"buildId":"ab3fb698ce0f","builtAt":"2026-11-15T20:05:07.771Z","sourceCommit":"cb8a13bc36ed2b6ad92717723ba2f6bc7551c807","mapSha256":"c950ae35fc0d06aef4ca9c8a6ad5b6bce7147ff4faa18e84d0da6dfdc8f724c8"}</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="theme-color" content="#173c32" />
@@ -7540,6 +7540,8 @@ vGeneratedWorld = (modelMatrix * generatedPosition).xyz;`),e.fragmentShader=`${i
             float ember=pow(noise3(p*8.+vec3(0.,uTime*2.,-uTime*7.)),24.);
             smoke+=uComet*vec3(.17,.055,.24)*ember*4.;
           }
+          // Only the shadow comet becomes near-black; the soul ghost keeps its own palette.
+          smoke=mix(smoke,smoke*vec3(.18,.20,.17),uComet);
           color+=(1.-opacity)*alpha*smoke;opacity+=(1.-opacity)*alpha;
         }
         if(opacity<.005)discard;
@@ -7556,7 +7558,7 @@ vGeneratedWorld = (modelMatrix * generatedPosition).xyz;`),e.fragmentShader=`${i
   vec2 warp=vec2(fbm(p*2.4+drift),fbm(p*2.4-drift+7.3));
   float billow=fbm(p*3.1+warp*1.8+drift),shape=1.-smoothstep(.36,.98,length(p)+(.5-billow)*.23);
   float crest=smoothstep(.38,.76,billow),cloud=shape*smoothstep(.08,.70,billow)*1.95;
-  vec3 color=mix(vec3(.006,.007,.013),vec3(.055,.043,.080),crest);
+  vec3 color=mix(vec3(.0008,.0010,.0015),vec3(.008,.009,.012),crest);
   gl_FragColor=vec4(color,cloud*uOpacity*smoothstep(.03,.55,vHeight-uGround));
   #include <colorspace_fragment>
  }`,{uTime:{value:0},uOpacity:{value:0},uSeed:{value:0},uGround:{value:0}});return e.vertexShader=`varying vec2 vUv;varying float vHeight;void main(){vUv=uv;vec4 p=modelMatrix*vec4(position,1.);vHeight=p.y;gl_Position=projectionMatrix*viewMatrix*p;}`,e}function Cx(e,t,n,r){let i=new K;i.name=`Schattenfeld · lebender Nebel`,e.add(i),i.visible=!1;let a=new Y(new ps(t.radius*2.4,t.radius*2.4,24,24),vx(`varying vec2 vUv;uniform float uTime,uOpacity;
@@ -7570,10 +7572,10 @@ vGeneratedWorld = (modelMatrix * generatedPosition).xyz;`),e.fragmentShader=`${i
    float density=feather*mix(.57,.94,smoothstep(.12,.8,cloud));
    float filaments=exp(-pow((cloud-.47)/.018,2.))*smoothstep(.43,.75,detail);
    float arrival=exp(-pow((radius-uTime*3.2)/.12,2.))*(1.-smoothstep(.12,.48,uTime));
-   vec3 color=mix(vec3(.012,.015,.026),vec3(.055,.041,.085),cloud);
-   color+=vec3(.055,.018,.10)*filaments*.45+vec3(.09,.035,.16)*arrival;
+   vec3 color=mix(vec3(.001,.0012,.0018),vec3(.007,.008,.011),cloud);
+   color+=vec3(.009,.008,.013)*filaments*.25+vec3(.012,.011,.018)*arrival;
    // A subdued boundary defines gameplay range without neon contour rings.
-   color+=vec3(.025,.012,.045)*(1.-boundary)*feather;
+   color+=vec3(.004,.004,.006)*(1.-boundary)*feather;
    gl_FragColor=vec4(color,density*uOpacity);
    #include <colorspace_fragment>
   }`,{uTime:{value:0},uOpacity:{value:0}}));a.rotation.x=-Math.PI/2,a.position.y=.045,a.renderOrder=2,i.add(a);let o=Array.from({length:28},(e,t)=>{let n=new Y(new ps(t<20?3.35:2.1,t<20?3.1:2.6),Sx());return n.name=`Schattennebel · Schwade `+t,n.renderOrder=3,n.material.uniforms.uSeed.value=t*1.7,yx(n),i.add(n),n}),s={value:0},c=hx(null,s,e=>e,{ownGeometry:()=>{},seed:8.31,comet:!0}),l=c.root;e.add(l),l.visible=!1,l.scale.setScalar(.82);let u=new G,d=new G,f=new G(0,0,1),p=!1,m=0,h=0,g=!1;function _(e,t){p?(d.copy(e).sub(u),d.lengthSq()>1e-8&&l.quaternion.setFromUnitVectors(f,d.normalize())):l.quaternion.identity(),u.copy(e),p=!0,l.position.copy(e),l.visible=!n||n(e),c.update(m)}function v(){p=!1,l.visible=!1}function y(e,s){if(h=s,i.position.copy(e),i.visible=(!n||n(e))&&s<t.duration+t.fade,!g){let t=a.geometry.attributes.position;for(let n=0;n<t.count;n++)t.setZ(n,(r?.heightAt?.(e.x+t.getX(n),e.z-t.getY(n))??e.y)-e.y);t.needsUpdate=!0,a.geometry.computeBoundingSphere(),g=!0}let c=gx(s,0,.22)*(1-gx(s,t.duration+.1,t.duration+t.fade)),l=.65+.35*gx(s,0,.22);Math.max(0,s-t.duration),a.material.uniforms.uTime.value=s,a.material.uniforms.uOpacity.value=c,o.forEach((n,i)=>{let a=i*2.399+s*(i%2?.09:-.07),o=(i<20?.12+i%5*.135:.72)*t.radius,c=Math.cos(a)*o,u=Math.sin(a)*o,d=(r?.heightAt?.(e.x+c,e.z+u)??e.y)-e.y,f=i*11%28/27*.44,p=gx(s,t.duration+f,t.duration+Math.min(t.fade,f+.48)),m=Math.max(0,s-t.duration-f);n.position.set(c,d+.85+i%4*.3+Math.sin(s*1.6+i)*.12+m*(i<20?.65:1.1),u),n.scale.set((.9+i%3*.1)*l*(1+m*.25),(.84+i%4*.11)*(1+m*.38),1),n.material.uniforms.uGround.value=e.y+d,n.material.uniforms.uTime.value=s,n.material.uniforms.uOpacity.value=gx(s,0,.22)*(1-p)*(i<20?.86:.48)})}function b(){i.visible=!1,v(),h=m=s.value=0,g=!1}return{flying:_,endFlight:v,field:y,update(e){m+=e,s.value=m},reset:b,get telemetry(){return{style:`layered-rising-dark-mist`,projectile:`dark-comet`,staggeredFade:!0,layerOpacities:o.map(e=>e.material.uniforms.uOpacity.value),visible:i.visible,age:h,cloudLayers:o.length,terrainFollowing:!0,flightVisible:l.visible}},dispose(){bx(i),bx(l)}}}function wx(e,t,n,r,i=`player`){let a=new Map,o=[],s=[],c=new Hn,l=0;function u(){let t=new K;e.add(t);let n=new Y(new ps(.58,.42),vx(`varying vec2 vUv;
