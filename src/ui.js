@@ -116,7 +116,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         ${practice ? '<button class="lobby-intro-exit lobby-leave" type="button">Zurück zur Startseite</button>' : ''}
         <div class="world-map-actions"><button id="loadMapBtn" class="map-load-button" type="button" disabled>Eigene Karte laden</button><a href="./map-editor.html" target="_blank" rel="noopener">Im Karteneditor gestalten ${icon('arrow')}</a></div>
         <input id="worldMapFile" type="file" accept=".json,application/json" hidden>
-        <div class="intro-controls"><span class="desktop-hint">WASD / PFEILE <b>BEWEGEN</b><span>·</span> LEERTASTE <b>ROLLE</b><span>·</span> F <b>ANGRIFF</b><span>·</span> E <b>WECHSELN / ÖFFNEN</b><br>ERSTE WAFFE <b>AUTOMATISCH BEIM DARÜBERLAUFEN</b></span><span class="touch-hint">JOYSTICK ZUM BEWEGEN · TASTEN FÜR ROLLE UND ANGRIFF</span></div>
+        <div class="intro-controls"><span class="desktop-hint">WASD / PFEILE <b>BEWEGEN</b><span>·</span> LEERTASTE <b>ROLLE</b><span>·</span> F <b>ANGRIFF</b><span>·</span> E <b>WECHSELN / ÖFFNEN</b><br>ERSTE WAFFE <b>AUTOMATISCH BEIM DARÜBERLAUFEN</b></span><span class="touch-hint">LINKS LAUFEN · RECHTS ZIEHEN ZUM ZIELEN · LOSLASSEN ZUM ANGREIFEN</span></div>
       </div>
       <div class="intro-location"><span>01</span><div>Magebrawl<small>Eine Welt voller Magie</small></div></div>
     </section>
@@ -127,7 +127,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         <button id="restartBtn" class="secondary-button">Neu beginnen</button>
         ${practice ? '<button class="secondary-button lobby-leave" type="button">Übungswiese verlassen</button>' : ''}
         ${onQualityChange ? '<label class="quality-option" for="qualityMode">Darstellung<select id="qualityMode"><option value="high">Detailreich</option><option value="low">Leistung / iPad</option></select></label>' : ''}
-        <p class="pause-help desktop-hint">WASD / Pfeile · Bewegen<br>Leertaste · Rolle &nbsp; F · Angriff &nbsp; E · Aufheben / Truhe öffnen<br>Esc · Pause</p>
+        <p class="pause-help desktop-hint">WASD / Pfeile · Bewegen<br>Leertaste · Rolle &nbsp; Maus · Zielen &nbsp; Klick / F · Angriff &nbsp; E · Aufheben / Truhe öffnen<br>Esc · Zielen abbrechen / Pause</p>
       </div>
     </section>
     <section class="modal-screen" id="deathScreen" aria-labelledby="deathTitle" hidden>
@@ -504,7 +504,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     if (weaponKey !== lastWeaponType) {
       weaponName.textContent = weapon.name;
       weaponTier.textContent = weaponType ? weapon.rarityLabel.toUpperCase() : 'WAFFE';
-      const effectDetail = { earthbreakerStaff:' · Aufbrechende Felswelle · 18 m', runeWallStaff:' · 3 s Steinmauer · 50 Haltbarkeit', blinkStaff:' · Halten, Landestelle wählen, loslassen', reflectionStaff:' · 1,8 Sekunden Projektilschutz', sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Drücken zum Schießen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
+      const effectDetail = { earthbreakerStaff:' · Aufbrechende Felswelle · 18 m', runeWallStaff:' · 3 s Steinmauer · 50 Haltbarkeit', blinkStaff:' · Halten, Landestelle wählen, loslassen', reflectionStaff:' · 1,8 Sekunden Projektilschutz', sunStaff: ' · Sonnenstrahl, Aufdeckung und Blendung', soulStaff: ' · Drei Treffer → Hinrichtung nach 2 s', meteorStaff: ' · Halten, Einschlag zielen, loslassen', bow: ' · Zielen und loslassen', fireStaff: ' · Verbrennung', iceStaff: ' · Verlangsamung',
         poisonStaff: ' · Länger halten = weiter werfen', moonStaff: ' · Sichel kehrt zurück', starStaff: ' · Sternenblitz', lightningStaff: ' · Gewitter zielen und loslassen' }[weaponType] || '';
       weaponDetail.textContent = weaponType === 'runeWallStaff' ? 'Runenmauer 7 m · 3 s · 6 s Abklingzeit' : weaponType === 'blinkStaff' ? 'Teleport bis 12 m · 4 s Abklingzeit' : weaponType === 'reflectionStaff' ? 'Projektilschutz 1,8 s · 8 s Abklingzeit' : weaponType === 'soulStaff' ? '3 Treffer · Hinrichtung nach 2 s' : weaponType ? `${weapon.damage} Schaden${effectDetail}` : 'Erste Waffe automatisch';
       weaponStatus.style.setProperty('--rarity-color', weapon.color);
@@ -512,14 +512,14 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponIcon.innerHTML = icon(weaponType || 'shield');
       weaponStatus.setAttribute('aria-label', weaponType ? `${weapon.name}, ${weapon.rarityLabel}, ${weapon.damage} Schaden` : 'Keine Waffe ausgerüstet');
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
-      const attackLabel = { earthbreakerStaff:'Felswelle in Blickrichtung auslösen', runeWallStaff:'Halten, freie Stelle für die Mauer wählen, loslassen', blinkStaff:'Halten für mehr Reichweite, kleinen Landekreis wählen, loslassen zum Teleportieren', reflectionStaff:'Schutzkuppel aktivieren · lässt direkte Geschosse abprallen', sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Drücken zum Schießen', sword: 'Mit dem Schwert angreifen',
+      const attackLabel = { earthbreakerStaff:'Felswelle zielen und loslassen', runeWallStaff:'Halten, freie Stelle für die Mauer wählen, loslassen', blinkStaff:'Halten für mehr Reichweite, kleinen Landekreis wählen, loslassen zum Teleportieren', reflectionStaff:'Schutzkuppel aktivieren · lässt direkte Geschosse abprallen', sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Zielen und loslassen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
         poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken', lightningStaff: 'Halten, Gewitterfläche wählen, loslassen · Blitze betäuben' }[weaponType];
       attackButton.setAttribute('aria-label', attackLabel || 'Angriff: keine Waffe ausgerüstet');
       lastWeaponType = weaponKey;
     }
-    $('joystick').classList.toggle('aiming', Boolean(state.touchAiming));
-    $('joystick').setAttribute('aria-label', state.touchAiming ? 'Zielstick: Richtung; Halten bestimmt die Entfernung' : 'Virtueller Bewegungsjoystick');
+    $('attackBtn').classList.toggle('aiming', Boolean(state.touchAiming));
+    $('joystick').setAttribute('aria-label', 'Virtueller Bewegungsjoystick');
     const attackCooldown = Math.max(0, state.attackCooldown ?? 0);
     attackButton.disabled = !WEAPON_TYPES.includes(weaponType) || attackCooldown > 0 || currentPhase !== 'playing';
     attackButton.classList.toggle('on-cooldown', attackCooldown > 0);

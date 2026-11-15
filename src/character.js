@@ -151,7 +151,7 @@ export async function createCharacter(scene) {
     ...animator.snapshot(),
   };
 
-  function update(dt, time, { moving = false, speed = 5.6, direction = 0, inDanger = false, snowWeight = 0, snowSurfaceY = null } = {}) {
+  function update(dt, time, { moving = false, speed = 5.6, direction = 0, travelDirection = direction, inDanger = false, snowWeight = 0, snowSurfaceY = null } = {}) {
     restoreAnimatedPose();
     const delta = Math.max(0, Math.min(dt, 0.1));
     const smoothing = 1 - Math.exp(-delta * 12);
@@ -165,7 +165,7 @@ export async function createCharacter(scene) {
       ? snowSurfaceY - THREE.MathUtils.lerp(.025, .005, snowClip)
       : -10000;
     const movement = locomotion.update(delta, { moving, speed, direction: animator.rolling ? rollYaw : direction,
-      currentYaw: group.rotation.y, rolling: animator.rolling, dead });
+      travelDirection, currentYaw: group.rotation.y, rolling: animator.rolling, dead });
     const animation = animator.update(delta, { ...movement, frozen: dead });
     group.rotation.y = movement.yaw;
     if (animator.rolling && !dead) {

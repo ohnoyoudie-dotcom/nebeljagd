@@ -165,10 +165,10 @@ export function createAvatarAnimator(model, clips, { rollDuration = ROLL_DURATIO
     mixer.update(0);
   }
 
-  function update(dt, { walkWeight = 0, playbackSpeed = 1, frozen = false } = {}) {
+  function update(dt, { walkWeight = 0, playbackSpeed = 1, backward = false, frozen = false } = {}) {
     const delta = frozen ? 0 : THREE.MathUtils.clamp(Number.isFinite(dt) ? dt : 0, 0, .1);
     runWeight = THREE.MathUtils.clamp(walkWeight, 0, 1);
-    run.setEffectiveTimeScale(THREE.MathUtils.clamp(playbackSpeed, .55, 1.8));
+    run.setEffectiveTimeScale(THREE.MathUtils.clamp(playbackSpeed, .55, 1.8)*(backward?-1:1));
 
     if (elapsed !== null) {
       elapsed = Math.min(rollDuration, elapsed + delta);

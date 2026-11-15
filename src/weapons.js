@@ -900,14 +900,14 @@ export function createWeapons(scene, characterGroup, world, character = null,
   function releaseSpell(position) {
     getStaffTip(staffTip); launchCenter.copy(staffTip);
     if (equippedType === 'moonStaff') {
-      const angle = characterGroup.rotation.y;
+      const angle = committedBowDirection;
       const blocked = traceRangedProjectile(world, { x: position.x, y: position.y + 1.4, z: position.z }, launchCenter, .15);
       specials.launchMoon(launchCenter, angle, equippedItem, blocked); shotCount++;
       lastSpellLaunch = { type: equippedType, direction: angle, tip: { ...staffTip }, flightHeight: launchCenter.y };
       spellEffects.fire(equippedType, staffTip, angle); return;
     }
     const spell = spells.find(entry => entry.life <= 0) ?? spells[0];
-    const angle = characterGroup.rotation.y;
+    const angle = committedBowDirection;
     const speed = equippedType === 'lightningStaff' ? 32 : equippedType === 'soulStaff' ? 14 : 18;
     spell.mode = 'flying'; spell.life = ['lightningStaff', 'soulStaff'].includes(equippedType) ? equippedItem.range / speed : 1.35; spell.direction = angle;
     // The crystal fixes the shot's height for its whole flight. Facing sets
@@ -1163,6 +1163,13 @@ export function createWeapons(scene, characterGroup, world, character = null,
     get equipped() { return equippedType; },
     get equippedItem() { return equippedItem ? { ...equippedItem } : null; },
     get bowHolding() { return false; },
+    get firingDirection(){return attackAge>=0&&!shotReleased?committedBowDirection:null;},
+    get chargedAimRange(){const p=this.aimPreview;return p?.range??this.aimRange;},
+    get aimPreview(){
+      const controller=runeWall.aiming?runeWall:blink.aiming?blink:sun.aiming?sun:meteor.aiming?meteor:hourglass.aiming?hourglass:storm.aiming?storm:gravity.aiming?gravity:specials.aiming?specials:null;
+      if(!controller)return null;const t=controller.telemetry;
+      return {target:t.aim??t.target,range:t.aimRange?.radius??0,arcHeight:meteor.aiming?8:gravity.aiming?3.2:specials.aiming?4:0};
+    },
     get aiming() { return runeWall.aiming || blink.aiming || specials.aiming || gravity.aiming || hourglass.aiming || storm.aiming || meteor.aiming || sun.aiming; },
     get aimRange() { return runeWall.aiming ? RUNE_WALL_RULES.range : blink.aiming ? BLINK_RULES.range : sun.aiming ? SUN_RULES.range : meteor.aiming ? METEOR_RULES.range : hourglass.aiming ? HOURGLASS_RULES.range : storm.aiming ? STORM_RULES.range : gravity.aiming ? GRAVITY_RULES.range : specials.aiming ? 20 : 0; },
     get attackCooldown() { return (equippedType==='earthbreakerStaff'&&earthbreaker.busy) || (equippedType==='runeWallStaff'&&runeWall.busy) || specials.moonBusy || gravity.busy || storm.busy || meteor.busy || sun.busy ? Math.max(.05, cooldown) : cooldown; },

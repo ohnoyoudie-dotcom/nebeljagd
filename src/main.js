@@ -1,3 +1,5 @@
+import { aimKind, touchAimVector, directionTo } from './aim-input.js';
+import { createAimPreview } from './aim-preview.js';
 import * as THREE from 'three';
 import './style.css';
 import './lobby.css';
@@ -52,8 +54,8 @@ const stick = new THREE.Vector2();
 let ready = false;
 let inputPointer = null;
 let aimDrag = null;
-let touchAim = null;
-let mouseAimPointer = null, aimUsesMouse = false;
+let aimDirection = null;
+let mouseAimPointer = null;
 let canvasAttackPointer = null;
 const frameSamples = [];
 
@@ -70,10 +72,10 @@ const ui = createUI({
   onResume: () => { if (state.phase === 'paused') setPhase('playing'); },
   onRestart: () => { if (ready) reset(); },
   onDash: () => roll(),
-  onAttack: event => { attackWeapon(event); beginAimDrag(event); },
-  onAttackMove: event => moveAttackAim(event, event.pointerType === 'touch'),
-  onAttackRelease: () => releaseWeapon(),
-  onAttackCancel: () => { aimDrag = null; touchAim = null; aimUsesMouse = false; weapons?.cancelAim(); },
+  onAttack: event => attackWeapon(event),
+  onAttackMove: event => moveAttackAim(event),
+  onAttackRelease: event => releaseWeapon(event),
+  onAttackCancel: () => cancelAttackAim(),
   onInteract: () => interactWeapon(),
   onQualityChange: (quality) => setQuality(quality),
 });
@@ -140,6 +142,8 @@ ui.setLoading?.('Die Figur wird vorbereitet …');
 const character = await createCharacter(world.root);
 character.group.scale.setScalar(1.2);
 const player = character.group.position;
+const targetPreview=createAimPreview(world.root,world);
+const attackControl=document.querySelector('#attackBtn');
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
@@ -219,13 +223,13 @@ let lastShelter = null;
 let lastConcealment = false;
 
 function clearInput() {
-  keys.clear(); stick.set(0, 0); inputPointer = null; touchAim = null; aimUsesMouse = false;
+  keys.clear(); stick.set(0, 0); inputPointer = null; cancelAttackAim();
   if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
 }
 
 function setPhase(phase) {
   state.phase = phase;
-  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); weapons.cancelAim(); aimDrag = null; canvasAttackPointer = null; }
+  if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); cancelAttackAim(); canvasAttackPointer = null; }
   clearInput();
   state.moving = false;
   ui.setPhase(phase);
@@ -234,6 +238,7 @@ function setPhase(phase) {
 }
 
 function reset() {
+  aimDirection=null;mouseAimPointer=null;
   Object.assign(state, { ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0, gold: 0, inDanger: false,
     distance: 0, moving: false, actualSpeed: 0, snowWeight: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
     hiddenInGrass: false, shelter: null });
@@ -282,6 +287,7 @@ function resize() {
 
 function roll() {
   if (state.phase !== 'playing' || state.rollCooldown > 0) return;
+  cancelAttackAim();
   rollDirection.set(Math.sin(state.direction), 0, Math.cos(state.direction));
   state.rollRemaining = ROLL_DURATION;
   state.rollCooldown = ROLL_COOLDOWN;
@@ -296,25 +302,28 @@ function nearbyInteraction() {
 }
 
 function interactWeapon() {
+  cancelAttackAim();
   if (state.phase !== 'playing') return;
   const nearby = nearbyInteraction();
   const result = nearby.chest ? chests.interact(player) : weapons.interact(player);
   if (result) { ui.toast(result.message, 'success'); updateUI(); }
 }
 
+function facingDirection(){return weapons?.firingDirection ?? aimDirection ?? state.direction;}
+function faceTarget(){character.group.rotation.y=facingDirection();}
+function cancelAttackAim(){aimDrag=null;weapons?.cancelAim();targetPreview.hide();attackControl.classList.remove('aiming');}
 function attackWeapon(event) {
-  if (state.phase !== 'playing') return;
-  const result = weapons.attack(player, state.direction);
-  if (!result && !weapons.equipped) ui.toast('Heb zuerst eine Waffe mit E auf oder öffne eine Truhe.');
-  if (result && weapons.aiming) {
-    aimUsesMouse = event?.pointerType !== 'touch';
-    // Use the current cursor on the first frame, including F presses without
-    // a fresh mouse move and presses on the on-screen attack button.
-    const pointer = Number.isFinite(event?.clientX) ? event : mouseAimPointer;
-    if (pointer && (aimUsesMouse || event?.target === renderer.domElement)) moveAttackAim(pointer);
-  }
+  if(state.phase!=='playing'||aimDrag||state.rollRemaining>0||weapons.attackCooldown>0)return;
+  if(!weapons.equipped){ui.toast('Heb zuerst eine Waffe auf.');return;}
+  const type=weapons.equipped,kind=aimKind(type),touch=event?.pointerType==='touch';
+  if(!touch&&event?.target===renderer.domElement)mouseAimPointer={clientX:event.clientX,clientY:event.clientY};
+  if(!touch&&mouseAimPointer){const p=groundPointer(mouseAimPointer);if(p)aimDirection=directionTo(player,p,facingDirection());}
+  if(kind==='self'){faceTarget();weapons.attack(player,facingDirection());return;}
+  aimDrag={type,kind,touch,startX:event?.clientX??0,startY:event?.clientY??0,ratio:1,direction:facingDirection()};
+  if(kind==='arc'||kind==='area'){faceTarget();if(!weapons.attack(player,facingDirection())){cancelAttackAim();return;}}
+  if(touch){mouseAimPointer=null;attackControl.style.setProperty('--aim-x','0px');attackControl.style.setProperty('--aim-y','0px');attackControl.classList.add('aiming');}
+  refreshAttackAim();
 }
-
 function groundPointer(event) {
   if (!event || !Number.isFinite(event.clientX)) return null;
   const rect = renderer.domElement.getBoundingClientRect();
@@ -324,29 +333,36 @@ function groundPointer(event) {
   const point = ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -player.y * visualScale), new THREE.Vector3());
   return point ? world.root.worldToLocal(point) : null;
 }
-function beginAimDrag(event) {
-  aimDrag = null; touchAim = null;
-  if (!weapons.aiming || event?.pointerType !== 'touch') return;
-  const direction = new THREE.Vector2(Math.sin(state.direction), Math.cos(state.direction));
-  touchAim = { stickUsed: false, movement: stick.clone(), direction };
-  const start = groundPointer(event);
-  if (start) aimDrag = { start, target: new THREE.Vector3(player.x + direction.x * weapons.aimRange,
-    player.y, player.z + direction.y * weapons.aimRange) };
-}
-function moveAttackAim(event, relative = false) {
-  if (state.phase !== 'playing' || !weapons.aiming || (relative && touchAim?.stickUsed)) return;
-  const point = groundPointer(event); if (!point) return;
-  if (relative && aimDrag) point.sub(aimDrag.start).add(new THREE.Vector3(aimDrag.target.x, aimDrag.target.y, aimDrag.target.z));
-  weapons.aimAt(player, point);
-  if (touchAim) {
-    const dx = point.x - player.x, dz = point.z - player.z;
-    if (Math.hypot(dx, dz) > .05) touchAim.direction.set(dx, dz).normalize();
+function refreshAttackAim(){
+  if(aimDrag&&aimDrag.type!==weapons.equipped){cancelAttackAim();return;}
+  if(aimDrag?.touch){
+    aimDirection=aimDrag.direction;
+    if(weapons.aiming){const range=weapons.chargedAimRange*aimDrag.ratio;weapons.aimAt(player,{x:player.x+Math.sin(aimDirection)*range,z:player.z+Math.cos(aimDirection)*range});}
+  }else if(mouseAimPointer){
+    const p=groundPointer(mouseAimPointer);
+    if(p){aimDirection=directionTo(player,p,facingDirection());if(weapons.aiming)weapons.aimAt(player,p);}
   }
+  const kind=aimKind(weapons.equipped),preview=weapons.aimPreview;
+  if(state.phase!=='playing'||state.rollRemaining>0||!weapons.equipped||(!aimDrag&&!mouseAimPointer)){targetPreview.hide();return;}
+  targetPreview.update(player,facingDirection(),kind,weapons.equippedItem?.range,preview?.target,preview?.arcHeight);
 }
-function releaseWeapon() {
-  if (state.phase === 'playing') weapons.releaseAttack(player, state.direction);
-  else weapons.cancelAim();
-  aimDrag = null; touchAim = null; aimUsesMouse = false;
+function moveAttackAim(event){
+  if(state.phase!=='playing')return;
+  if(aimDrag?.touch&&event?.pointerType==='touch'){
+    const v=touchAimVector(event.clientX-aimDrag.startX,event.clientY-aimDrag.startY);
+    if(v){aimDrag.direction=Math.atan2(v.x,v.z);aimDrag.ratio=v.ratio;attackControl.style.setProperty('--aim-x',v.x*Math.min(32,v.distance)+'px');attackControl.style.setProperty('--aim-y',v.z*Math.min(32,v.distance)+'px');}
+  }
+  refreshAttackAim();
+}
+function releaseWeapon(event){
+  if(!aimDrag)return;
+  if(event?.pointerType==='touch')moveAttackAim(event);
+  if(state.phase==='playing'&&aimDrag.type===weapons.equipped&&state.rollRemaining<=0){
+    refreshAttackAim();faceTarget();
+    if(weapons.aiming)weapons.releaseAttack(player,facingDirection());
+    else weapons.attack(player,facingDirection());
+  }
+  aimDrag=null;attackControl.classList.remove('aiming');targetPreview.hide();
 }
 
 function simulate(dt) {
@@ -355,8 +371,7 @@ function simulate(dt) {
   combat.update(dt);
   state.rollCooldown = Math.max(0, state.rollCooldown - dt);
   state.rollRemaining = Math.max(0, state.rollRemaining - dt);
-  if (!weapons.aiming) { touchAim = null; aimUsesMouse = false; }
-  const movementStick = touchAim?.movement ?? stick;
+  const movementStick = stick;
   moveDirection.set(
     (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + movementStick.x,
     0,
@@ -372,9 +387,7 @@ function simulate(dt) {
   practiceActors.resolvePlayerMovement(player, 0.42);
   world.resolveMovement(player, 0.42);
   player.y = world.heightAt(player.x, player.z);
-  if (touchAim) weapons.aimAt(player, { x: player.x + touchAim.direction.x * weapons.aimRange,
-    z: player.z + touchAim.direction.y * weapons.aimRange });
-  else if (aimUsesMouse && mouseAimPointer) moveAttackAim(mouseAimPointer);
+  refreshAttackAim();
   const travelled = Math.hypot(player.x - lastPosition.x, player.z - lastPosition.z);
   state.actualSpeed = travelled / dt;
   state.moving = travelled > 0.0005;
@@ -404,7 +417,7 @@ function onCollect(item) {
 
 function updateUI() {
   const nearby = nearbyInteraction();
-  ui.update({ ...state, touchAiming: Boolean(touchAim && weapons.aiming), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
+  ui.update({ ...state, touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
     zoneProgress: currentZone.progress, zoneShrinking: currentZone.shrinking,
     rollCooldownDuration: ROLL_COOLDOWN, equippedWeapon: weapons.equipped,
     equippedItem: weapons.equippedItem, nearWeapon: nearby.weapon, nearChest: nearby.chest, attackCooldown: weapons.attackCooldown,
@@ -423,6 +436,7 @@ function updateUI() {
 
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Escape') {
+    if(state.phase==='playing'&&aimDrag){cancelAttackAim();return;}
     if (state.phase === 'playing') setPhase('paused');
     else if (state.phase === 'paused') setPhase('playing');
     return;
@@ -436,15 +450,9 @@ window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyF' && !event.repeat) attackWeapon();
 });
 window.addEventListener('keyup', event => { keys.delete(event.code); if (event.code === 'KeyF') releaseWeapon(); });
-// A click (for example Start) also establishes the cursor position when the
-// pointer has not moved since the document loaded.
-window.addEventListener('pointerdown', event => {
-  if (event.pointerType !== 'touch') mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
-});
 window.addEventListener('pointermove', event => {
-  if (event.pointerType !== 'touch') {
-    mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
-    if (aimUsesMouse) moveAttackAim(mouseAimPointer);
+  if(event.pointerType!=='touch'&&(event.target===renderer.domElement||aimDrag&&!aimDrag.touch)){
+    mouseAimPointer={clientX:event.clientX,clientY:event.clientY};refreshAttackAim();
   }
 });
 renderer.domElement.addEventListener('pointerdown', event => {
@@ -454,9 +462,9 @@ renderer.domElement.addEventListener('pointerdown', event => {
   attackWeapon(event);
 });
 renderer.domElement.addEventListener('pointermove', event => { if (canvasAttackPointer === event.pointerId) moveAttackAim(event); });
-renderer.domElement.addEventListener('pointerup', event => { if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; releaseWeapon(); } });
+renderer.domElement.addEventListener('pointerup', event => { if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; releaseWeapon(event); } });
 for (const name of ['pointercancel', 'lostpointercapture']) renderer.domElement.addEventListener(name, event => {
-  if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; aimDrag = null; weapons.cancelAim(); }
+  if (canvasAttackPointer === event.pointerId) { canvasAttackPointer = null; cancelAttackAim(); }
 });
 window.addEventListener('blur', () => {
   clearInput();
@@ -473,13 +481,6 @@ function moveStick(event) {
   stick.set((event.clientX - rect.left - rect.width / 2) / limit,
     (event.clientY - rect.top - rect.height / 2) / limit);
   if (stick.length() > 1) stick.normalize();
-  if (touchAim && weapons.aiming) {
-    touchAim.stickUsed = true;
-    // Stick chooses direction; hold duration alone controls throw distance.
-    if (stick.length() > .08) touchAim.direction.copy(stick).normalize();
-    weapons.aimAt(player, { x: player.x + touchAim.direction.x * weapons.aimRange,
-      z: player.z + touchAim.direction.y * weapons.aimRange });
-  }
   if (ui.joystickKnob) ui.joystickKnob.style.transform = `translate(-50%, -50%) translate(${stick.x * limit}px, ${stick.y * limit}px)`;
 }
 ui.joystick.addEventListener('pointerdown', (event) => {
@@ -492,7 +493,6 @@ for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) {
   ui.joystick.addEventListener(eventName, (event) => {
     if (event.pointerId !== inputPointer) return;
     inputPointer = null; stick.set(0, 0);
-    if (touchAim) touchAim.movement.set(0, 0);
     if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
   });
 }
@@ -510,6 +510,7 @@ window.nebeljagdTestState = () => ({
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
   position: { x: player.x, y: player.y, z: player.z }, direction: state.direction,
+  targeting:{direction:aimDirection,facing:facingDirection(),gesture:aimDrag?{kind:aimDrag.kind,touch:aimDrag.touch,ratio:aimDrag.ratio}:null,preview:targetPreview.mode},
   rollCooldown: state.rollCooldown, dashCooldown: state.rollCooldown,
   rollRemaining: state.rollRemaining, gold: state.gold, quality: state.quality,
   equippedWeapon: weapons.equipped, equippedItem: weapons.equippedItem, attackCooldown: weapons.attackCooldown,
@@ -583,7 +584,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
     direction = state.direction } = {}) => {
-    clearInput();
+    clearInput();aimDirection=null;mouseAimPointer=null;
     player.set(x, world.heightAt(x, z), z);
     world.resolveMovement(player, .42);
     practiceActors.resolvePlayerMovement(player, .42);
@@ -643,7 +644,7 @@ function frame(now) {
   character.setConcealed(state.hiddenInGrass);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
-    direction: state.direction, health: state.health, inDanger: state.inDanger, snowWeight: state.snowWeight,
+    direction: state.rollRemaining>0?state.direction:facingDirection(), travelDirection:state.direction, health: state.health, inDanger: state.inDanger, snowWeight: state.snowWeight,
     snowSurfaceY: world.snowSurfaceAt?.(player.x, player.z) ?? player.y });
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
@@ -677,7 +678,8 @@ function frame(now) {
   practiceActors.appendFootprintSources?.(footprintSources);
   snowFootprints.update(state.elapsed, footprintSources);
   chests.update(playDelta, time, player);
-  weapons.update(playDelta, time, player, state.direction);
+  weapons.update(playDelta, time, player, facingDirection());
+  if(playDelta>0)refreshAttackAim();
   if (state.phase === 'playing') {
     const automaticPickup = weapons.tryAutoPickup(player);
     if (automaticPickup) { ui.toast(automaticPickup.message, 'success'); updateUI(); }

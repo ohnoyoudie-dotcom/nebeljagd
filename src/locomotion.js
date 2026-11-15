@@ -7,7 +7,7 @@ const damp = (current, target, response, dt) => target + (current - target) * Ma
 export function createLocomotionController({ referenceSpeed = 5.6 } = {}) {
   let smoothedSpeed = 0, walkWeight = 0, forwardLean = 0, sideLean = 0;
   const reset = () => { smoothedSpeed = walkWeight = forwardLean = sideLean = 0; };
-  function update(dt, { moving = false, speed = 0, direction = 0, currentYaw = direction,
+  function update(dt, { moving = false, speed = 0, direction = 0, currentYaw = direction, travelDirection = direction,
     rolling = false, dead = false } = {}) {
     const delta = clamp(Number.isFinite(dt) ? dt : 0, 0, .1);
     const targetSpeed = moving && !dead && !rolling ? clamp(Number.isFinite(speed) ? speed : 0, 0, referenceSpeed * 2) : 0;
@@ -22,12 +22,12 @@ export function createLocomotionController({ referenceSpeed = 5.6 } = {}) {
     const active = !dead && !rolling;
     // A small weight shift reads clearly from above without swinging the camera
     // or moving the collision capsule. Combat IK still follows the actual hands.
-    const desiredForwardLean = active ? clamp(smoothedSpeed / referenceSpeed, 0, 1) * .035 : 0;
-    const desiredSideLean = active ? clamp(-turnRate * .008 * walkWeight, -.055, .055) : 0;
+    const desiredForwardLean = active ? clamp(smoothedSpeed / referenceSpeed, 0, 1) * .035 * Math.cos(travelDirection-yaw) : 0;
+    const desiredSideLean = active ? clamp(-turnRate * .008 * walkWeight-Math.sin(travelDirection-yaw)*walkWeight*.035, -.055, .055) : 0;
     forwardLean = damp(forwardLean, desiredForwardLean, 9, delta);
     sideLean = damp(sideLean, desiredSideLean, 12, delta);
     return { speed: smoothedSpeed, walkWeight, playbackSpeed: clamp(smoothedSpeed / referenceSpeed, .42, 1.65),
-      yaw, turnRate, forwardLean, sideLean };
+      yaw, turnRate, backward:Math.cos(travelDirection-yaw)<-.35, forwardLean, sideLean };
   }
   return { update, reset };
 }
