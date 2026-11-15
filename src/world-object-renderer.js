@@ -1,3 +1,5 @@
+import { WALDHAUS_DEFINITION } from './map/waldhaus-definition.js';
+import { createWaldhausModel } from './waldhaus-model.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -380,6 +382,20 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     chunkFor(x, z).count++;
     if (object.kind === 'chest' && variant === 'kit-tripo-chest') {
       addStructure(object, TRIPO_CHEST_MOVEMENT_WALLS, null);
+      continue;
+    }
+    if (object.kind === 'house' && variant === 'waldhaus') {
+      const definition=WALDHAUS_DEFINITION,{group,roof,frontFacade,interior}=createWaldhausModel();
+      group.name=`Waldhaus · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;
+      group.position.set(x,groundHeightAt(x,z),z);group.rotation.y=object.rotation;group.scale.setScalar(scale);
+      chunkFor(x,z).group.add(group);
+      const structure=addStructure(object,definition.walls,group,true);
+      const record={id:object.id,name:object.name||'Waldhaus',kind:'Waldhaus',variant,x,z,y:structure.y,
+        halfWidth:definition.footprint.halfWidth*scale,halfDepth:definition.footprint.halfDepth*scale,
+        rotation:object.rotation,scale,floorHeight:definition.floorHeight*scale,group,roof,frontFacade,interior,
+        localInterior:definition.interior,localFloorBounds:definition.floorBounds,localEntrances:definition.entrances,
+        rooms:definition.rooms,kit:true,procedural:true};
+      structure.record=record;houses.push(record);
       continue;
     }
     if (kit && object.kind === 'house') {

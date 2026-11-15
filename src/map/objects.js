@@ -5,6 +5,7 @@ import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
 import { TRIPO_PROP_DEFINITIONS } from './tripo-prop-definitions.js';
 import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
 import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
+import { WALDHAUS_DEFINITION } from './waldhaus-definition.js';
 
 const woodlandVariants = kind => TRIPO_WOODLAND_DEFINITIONS.filter(prop => prop.kind === kind)
   .map(({ variant, label, footprint }) => ({ id: variant, label,
@@ -24,6 +25,9 @@ export const OBJECT_CATALOG = Object.freeze([
       { id: 'kit-tripo-tavern', label: 'Wirtshaus · Tripo (neu)', footprintRadius: 14.5 },
       ...TRIPO_HOUSE_DEFINITIONS.map(({ variant, label, footprint }) => ({ id: variant, label,
         footprintRadius: Math.hypot(footprint.halfWidth, footprint.halfDepth) })),
+      { id: WALDHAUS_DEFINITION.variant, label: WALDHAUS_DEFINITION.label, defaultName: WALDHAUS_DEFINITION.label,
+        footprintRadius: Math.hypot(WALDHAUS_DEFINITION.footprint.halfWidth, WALDHAUS_DEFINITION.footprint.halfDepth),
+        footprintWidth: WALDHAUS_DEFINITION.footprint.halfWidth * 2, footprintDepth: WALDHAUS_DEFINITION.footprint.halfDepth * 2 },
       { id: 'kit-tripo-castle', label: 'Kleines Schloss · Tripo', footprintRadius: 43, retired: true }] },
   { kind: 'flower', label: 'Blumenbeet', defaultVariant: 'rei-white', defaultScale: 1, footprintRadius: 1.3, defaultRadius: 1.5,
     variants: [{ id: 'rei-white', label: 'Rei-Blumen · Weiß' }, { id: 'rei-red', label: 'Rei-Blumen · Rot' }, { id: 'rei-gold', label: 'Rei-Blumen · Gold' }] },
@@ -121,7 +125,7 @@ export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(defi
 const placementAssetIds = new Set([
   // Old GLB trees are excluded; the user's real GLB is included only if installed.
   ...(USER_TREE1_AVAILABLE ? ['tree:kit-user-tree1'] : []),
-  'house:kit-tripo-tavern', 'house:kit-tripo-house-02',
+  'house:kit-tripo-tavern', 'house:kit-tripo-house-02', 'house:waldhaus',
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
@@ -172,11 +176,12 @@ export function getObjectFootprintRadius(kind, variant) {
 export function makeWorldObject(kind, position, options = {}) {
   const definition = getObjectDefinition(kind);
   if (!definition) throw new Error(`Unbekannte Objektart: ${kind}`);
+  const variant = options.variant ?? definition.defaultVariant;
   return {
     id: options.id ?? `object-${kind}-${Date.now().toString(36)}-${(++objectCounter).toString(36)}`,
-    name: options.name ?? definition.label,
+    name: options.name ?? definition.variants.find(entry => entry.id === variant)?.defaultName ?? definition.label,
     kind,
-    variant: options.variant ?? definition.defaultVariant,
+    variant,
     position: [...position],
     rotation: options.rotation ?? 0,
     scale: options.scale ?? definition.defaultScale,

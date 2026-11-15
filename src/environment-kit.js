@@ -193,7 +193,7 @@ function removeMirroredFaces(geometry) {
  * Only variants present in the saved map are parsed. */
 export async function loadEnvironmentKit(map, { wind } = {}) {
   const wanted = [...new Set((map.objects ?? []).filter(object => urls[`${object.kind}:${object.variant}`]
-    || getEnvironmentKitDefinition(object.kind, object.variant)?.procedural).map(object => `${object.kind}:${object.variant}`))];
+    || (getEnvironmentKitDefinition(object.kind, object.variant)?.procedural && !getEnvironmentKitDefinition(object.kind, object.variant)?.proceduralHouse)).map(object => `${object.kind}:${object.variant}`))];
   const result = new Map();
   await Promise.all(wanted.map(async key => {
     const [kind, variant] = key.split(':'), definition = getEnvironmentKitDefinition(kind, variant);

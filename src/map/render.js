@@ -5,6 +5,7 @@ import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
 import { getObjectFootprintRadius } from './objects.js';
 import { barrierSections, getBarrierStyle } from './barriers.js';
 import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
+import { WALDHAUS_DEFINITION, WALDHAUS_FURNITURE } from './waldhaus-definition.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
@@ -58,6 +59,56 @@ function measuredHouseMapSymbol(variant, symbol) {
     + '" y="' + number(wall.minZ) + '" width="' + number(wall.maxX - wall.minX)
     + '" height="' + number(wall.maxZ - wall.minZ) + '" fill="'
     + (wall.type === 'furniture' ? '#80694b' : '#ece0bd') + '"/>');
+  pieces.push('</g>');
+  return pieces.join('');
+}
+
+/** A roofless floor plan in world metres, drawn from the same room, doorway
+ * and furniture bounds used by the playable house. */
+function waldhausMapSymbol() {
+  const house = WALDHAUS_DEFINITION, { halfWidth, halfDepth } = house.footprint;
+  const rect = (minX, minZ, maxX, maxZ, attributes) => `<rect x="${number(minX)}" y="${number(minZ)}" width="${number(maxX - minX)}" height="${number(maxZ - minZ)}" ${attributes}/>`;
+  const pieces = ['<g id="world-object-house-waldhaus">',
+    rect(-halfWidth, -halfDepth, halfWidth, halfDepth, 'fill="#74583b"')];
+  for (const [index, room] of house.rooms.entries()) {
+    pieces.push(rect(room.minX, room.minZ, room.maxX, room.maxZ,
+      `data-waldhaus-room="${escape(room.name)}" fill="${['#b49160', '#a78a61', '#9c865e'][index]}"`));
+    for (let z = room.minZ + .65; z < room.maxZ; z += .65) {
+      pieces.push(`<path d="M${number(room.minX)},${number(z)}H${number(room.maxX)}" stroke="#70563b" stroke-opacity=".32" stroke-width=".045"/>`);
+    }
+  }
+  // Light thresholds identify the two openings without closing either gap.
+  for (const entrance of house.entrances) pieces.push(rect(entrance.min,
+    Math.min(entrance.boundary, entrance.innerBoundary), entrance.max,
+    Math.max(entrance.boundary, entrance.innerBoundary),
+    `data-waldhaus-entrance="${escape(entrance.name)}" fill="#d0bb8d"`));
+  pieces.push('<rect x="-1.8" y="-1.05" width="2.4" height="2.6" rx=".15" fill="#456a54" stroke="#c4ad73" stroke-width=".09"/>');
+  for (const wall of house.architecturalWalls) pieces.push(rect(wall.minX, wall.minZ, wall.maxX, wall.maxZ,
+    'data-waldhaus-wall="true" fill="#e2d1a4" stroke="#4e3c2b" stroke-width=".075"'));
+  for (const fixture of WALDHAUS_FURNITURE) {
+    const x = fixture.x - fixture.width / 2, z = fixture.z - fixture.depth / 2;
+    pieces.push(`<g data-waldhaus-fixture="${escape(fixture.id)}">`);
+    if (fixture.type === 'barrel' || fixture.type === 'stool') {
+      pieces.push(`<circle cx="${number(fixture.x)}" cy="${number(fixture.z)}" r="${number(fixture.width / 2)}" fill="#ad8554" stroke="${fixture.type === 'barrel' ? '#49534b' : '#59452f'}" stroke-width=".09"/>`);
+    } else {
+      pieces.push(rect(x, z, x + fixture.width, z + fixture.depth,
+        `rx=".07" fill="${fixture.type === 'fireplace' ? '#6c7163' : '#8b633c'}" stroke="#493b2b" stroke-width=".1"`));
+      if (fixture.type === 'bed') {
+        pieces.push(rect(x + .12, z + .65, x + fixture.width - .12, z + fixture.depth - .14, 'rx=".06" fill="#526e5c" stroke="#9fa878" stroke-width=".06"'),
+          rect(x + .25, z + .14, x + fixture.width - .25, z + .62, 'rx=".12" fill="#e2d3ac"'));
+      } else if (fixture.type === 'fireplace') {
+        pieces.push(rect(x + .15, z + .32, x + fixture.width - .1, z + fixture.depth - .32, 'fill="#303b35"'),
+          `<path d="M${number(x + .3)},${number(z + .9)}l.26,-.3 .2,.45-.27,.25Z" fill="#e3a44d"/>`);
+      } else {
+        const divisions = fixture.type === 'shelves' ? 3 : 1;
+        for (let i = 1; i <= divisions; i++) {
+          const seamZ = z + fixture.depth * i / (divisions + 1);
+          pieces.push(`<path d="M${number(x + .1)},${number(seamZ)}H${number(x + fixture.width - .1)}" stroke="#c6a16c" stroke-width=".06"/>`);
+        }
+      }
+    }
+    pieces.push('</g>');
+  }
   pieces.push('</g>');
   return pieces.join('');
 }
@@ -118,6 +169,7 @@ function objectSymbol(item) {
   if (item.kind === 'fence' && item.variant === 'kit-cross-wood') return 'fence-cross-wood';
   if (item.kind === 'house' && item.variant === 'kit-tripo-castle') return 'house-tripo-castle';
   if (item.kind === 'house' && item.variant === 'kit-tripo-house-02') return 'house-tripo-02';
+  if (item.kind === 'house' && item.variant === 'waldhaus') return 'house-waldhaus';
   if (item.kind === 'rock' && /^kit-tripo-0[123]$/.test(item.variant)) return `rock-tripo-${item.variant.slice(-2)}`;
   if (item.kind === 'house' && item.variant === 'kit-tripo-tavern') return 'house-tripo-tavern';
   if (item.kind === 'house' && item.variant === 'kit-taverne') return 'house-taverne';
@@ -135,7 +187,7 @@ function objectSymbol(item) {
 
 function objectSvg(item) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
-  const radius = item.radius ?? (woodlandById.has(`${item.kind}:${item.variant}`) || ['kit-tripo-castle', 'kit-tripo-house-02'].includes(item.variant) ? getObjectFootprintRadius(item.kind, item.variant)
+  const radius = item.radius ?? (woodlandById.has(`${item.kind}:${item.variant}`) || ['kit-tripo-castle', 'kit-tripo-house-02', 'waldhaus'].includes(item.variant) ? getObjectFootprintRadius(item.kind, item.variant)
     : item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
   const patch = item.kind === 'grass' || item.kind === 'flower';
   const tint = item.kind === 'flower' ? ({ 'rei-red': '#c77c7c', 'rei-gold': '#e0bd64' }[item.variant] ?? '#e7e4cb') : undefined;
@@ -221,6 +273,7 @@ export function renderWorldmapSvg(map, options = {}) {
     '    <pattern id="world-pattern-ash" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M8,57 30,22 54,57Z M69,88 84,59 105,88Z" fill="#514e4b" opacity=".22"/><path d="M31,24 26,41 37,47 29,57" fill="none" stroke="#ce976a" stroke-width="2" opacity=".55"/></pattern>',
     '    <pattern id="world-pattern-dune" width="115" height="95" patternUnits="userSpaceOnUse"><path d="M9,35Q28,14 50,35 M60,80Q82,57 106,80" fill="none" stroke="#a78651" stroke-width="2" opacity=".35"/></pattern>',
     ...objectSymbols.map(symbol => `    ${symbol}`),
+    ...((map.objects ?? []).some(item => item.kind === 'house' && item.variant === 'waldhaus') ? [`    ${waldhausMapSymbol()}`] : []),
     ...TRIPO_WOODLAND_DEFINITIONS.filter(prop => (map.objects ?? []).some(item => `${item.kind}:${item.variant}` === prop.id)).map(woodlandSymbol),
     ...Object.entries(extraWeaponSymbols).filter(([kind]) => (map.objects ?? []).some(item => item.kind === kind))
       .map(([, symbol]) => `    ${symbol}`),

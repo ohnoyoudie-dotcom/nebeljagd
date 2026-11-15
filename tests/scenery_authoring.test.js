@@ -42,8 +42,8 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
   for (const variant of ['kit-tripo-01', 'kit-tripo-02', 'kit-tripo-03']) assert.equal(isObjectAvailable('rock', variant), true);
 });
 
-test('individual placement only offers approved Tripo assets; old trees remain legacy objects', () => {
-  const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02',
+test('individual placement offers approved assets including the new Waldhaus; old trees remain legacy objects', () => {
+  const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02', 'house:waldhaus',
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
     'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
     'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',

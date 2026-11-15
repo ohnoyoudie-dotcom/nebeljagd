@@ -18,7 +18,7 @@ from playwright.sync_api import expect, sync_playwright
 ROOT=Path(__file__).resolve().parents[1]
 URL=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:4174').rstrip('/')
 DEFINITIONS=json.loads(subprocess.check_output(['node','--input-type=module','-e',
-    "import {ENVIRONMENT_KIT_DEFINITIONS} from './src/map/environment-kit-definitions.js';console.log(JSON.stringify(ENVIRONMENT_KIT_DEFINITIONS));"],cwd=ROOT))
+    "import {ENVIRONMENT_KIT_DEFINITIONS} from './src/map/environment-kit-definitions.js';console.log(JSON.stringify(ENVIRONMENT_KIT_DEFINITIONS.filter(item=>!item.proceduralHouse)));"],cwd=ROOT))
 BY_ID={item['id']:item for item in DEFINITIONS}
 FIXTURE=json.loads((ROOT/'worldmap.json').read_text())
 FIXTURE['gameplay']['spawnPosition']=[30,-42]
