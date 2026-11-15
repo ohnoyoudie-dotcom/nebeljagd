@@ -1,6 +1,6 @@
 # Statussymbole – Codeabgleich
 
-Stand: 2026-11-15. Entwürfe, noch keine eingebauten UI-Assets.
+Stand: 2026-11-15. Acht freigegebene Vektorsymbole sind als Statuszeile über den Figuren eingebaut.
 
 | Stab | Benötigte Statusanzeige |
 | --- | --- |
@@ -22,4 +22,10 @@ Stand: 2026-11-15. Entwürfe, noch keine eingebauten UI-Assets.
 | Schattenstab | Verdunkelt; im Feld erneuert, danach Restdauer |
 | Uhrwerkstab | Wächter-Lebensdauer als Fähigkeitsanzeige, kein Zielstatus |
 
-Die zwölf Symbolfelder zeigen neun gewöhnliche Zustände und drei Stufen des Seelensiegels. Farbton und Silhouette unterscheiden Lichtblendung von Schattenverdunkelung. Abklingzeiten und beschworene Objekte gehören separat zur Fähigkeitsanzeige.
+Die letzte Freigabe umfasst acht vereinfachte Statussymbole. Lichtblendung und Schattenverdunkelung verwenden dasselbe durchgestrichene Auge. Abklingzeiten und beschworene Objekte gehören separat zur Fähigkeitsanzeige.
+
+## Laufzeitdarstellung
+
+Brennen (Flamme), Vergiftet (Tropfen), Kälte (nur Schneeflocke), Verlangsamung (nur Sanduhr), Betäubt (drei Sterne), Aufgedeckt (offenes Auge), Blind (durchgestrichenes Auge), Projektilschutz (nur Schild). Lichtblendung und Schattenverdunkelung teilen sich ein Symbol und verschwinden erst, wenn beide abgelaufen sind.
+
+Die Zeile liest aktive Kampfzustände, bleibt bei Pause stehen und verschwindet bei Tod, Neustart, Ablauf oder Verdeckung. Maximal vier Symbole pro Zeile; weitere werden in einer zweiten Zeile angezeigt. Der vorhandene dreiteilige Hinrichtungs-Schädel bleibt eine separate Anzeige.

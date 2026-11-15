@@ -1,3 +1,4 @@
+import { createStatusIndicators } from './status-indicators.js';
 import { effectiveSightRadius } from './darkened-status.js';
 import { aimKind, touchAimVector, directionTo } from './aim-input.js';
 import * as THREE from 'three';
@@ -206,6 +207,7 @@ const chests = createChests(world.root, { placements: world.map.objects, heightA
   },
 });
 const practiceActors = createPracticeActors(world.root, { world, combat, healthBars, vision });
+const statusIndicators=createStatusIndicators(document.querySelector('#ui'),{combat,world,isVisible});
 const snowFootprints = createSnowFootprints(world.root, world);
 const grassInteractors = [];
 const footprintSources = [];
@@ -249,6 +251,7 @@ function reset() {
   levelUpEffect.reset(); ui.clearLevelUp();
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, snap: true });
   healthBars.reset();
+  statusIndicators.reset();
   character.resetMotion?.(state.direction);
   playerGrassStrength = 0; playerGrassDirX = Math.sin(state.direction); playerGrassDirZ = Math.cos(state.direction);
   lastConcealment = false; lastShelter = null; currentZone = zoneAt(0);
@@ -502,6 +505,7 @@ document.querySelector('#game').addEventListener('webglcontextlost', (event) => 
 window.nebeljagdTestState = () => ({
   mode: lobbyMode ? 'lobby' : 'game',
   darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
+  statusIndicators:statusIndicators.inspect(),
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
@@ -578,6 +582,14 @@ if (new URLSearchParams(location.search).has('inspect')) {
     return {hit:collision?.type??null,movementShift:Math.hypot(probe.x-center.x,probe.z-center.z),result};
   };
   window.nebeljagdInspectClockworkHit = (damage=25) => {const t=[...combat.targets.values()].find(t=>t.summoned&&t.ownerId==='player');return t?combat.hit(t,{sourceId:'inspect-enemy',type:'bow',delivery:'projectile',damage}):null;};
+  window.nebeljagdInspectStatuses = ({id='player',duration=2,clear=false}={}) => {
+    const target=combat.targets.get(id);if(!target)return false;
+    if(clear){combat.reset();statusIndicators.reset();return true;}
+    const sourceId='inspect-status-source';
+    combat.hit(target,{sourceId,damage:0,burn:{duration,damagePerSecond:.01},poison:{duration,damagePerSecond:.01},
+      slow:{duration,multiplier:.5},stun:duration,blind:{duration,radius:3},darken:{duration,radius:2.5},reveal:duration});
+    combat.setTimeSlow(target,sourceId,.5,duration);combat.activateShield(id);return true;
+  };
   window.nebeljagdInspectShadowHit = () => combat.hit(localCombatTarget,{sourceId:'inspect-enemy',type:'shadowStaff',damage:8,darken:{duration:2,radius:2.5}});
   window.nebeljagdInspectSolarHit = () => combat.hit(localCombatTarget, { sourceId: 'inspect-enemy', type: 'sunStaff', damage: 3, blind: { duration: 2, radius: 3 }, reveal: 2.5 });
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
@@ -694,6 +706,7 @@ function frame(now) {
   sun.target.updateMatrixWorld();
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level });
   healthBars.update(camera, { isVisible, dt: playDelta });
+  statusIndicators.update(camera,{width:window.innerWidth,height:window.innerHeight,phase:state.phase});
   damageFeedback.update(playDelta, camera);
   levelUpEffect.update(playDelta, player);
   renderer.render(scene, camera);

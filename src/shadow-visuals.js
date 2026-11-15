@@ -83,7 +83,7 @@ export function createDarkenedIndicators(scene,combat,world,isVisible,viewerId='
     float slash=exp(-pow((p.x+p.y*.95)/.085,2.))*(1.-smoothstep(.6,.9,length(p)));
     float iris=1.-smoothstep(.13,.23,length(p));float a=max(max(eye,iris*.7),slash);
     gl_FragColor=vec4(.84,.76,1.,a);#include <colorspace_fragment>
-   }`.replace(';#include',';\n#include'),{}));icon.position.y=3.7;billboard(icon);root.add(icon);
+   }`.replace(';#include',';\n#include'),{}));icon.position.y=3.7;icon.visible=false;/* The shared status row now supplies the eye glyph. */billboard(icon);root.add(icon);
   const ring=new THREE.Mesh(new THREE.RingGeometry(2.46,2.5,64),new THREE.MeshBasicMaterial({color:'#8e70c3',transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.y=.055;root.add(ring);
   const smoke=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.075,1),new THREE.MeshBasicMaterial({color:'#392047',transparent:true,opacity:.5,depthWrite:false}),8);smoke.frustumCulled=false;root.add(smoke);const entry={root,icon,ring,smoke};allocated.push(entry);return entry;}
  function update(dt){time+=Math.max(0,dt);const live=new Set();
