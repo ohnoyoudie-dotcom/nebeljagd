@@ -17,7 +17,7 @@ function fogMaterial(){const material=shader(`varying vec2 vUv;varying float vHe
   vec2 warp=vec2(fbm(p*2.4+drift),fbm(p*2.4-drift+7.3));
   float billow=fbm(p*3.1+warp*1.8+drift),shape=1.-smoothstep(.36,.98,length(p)+(.5-billow)*.23);
   float crest=smoothstep(.38,.76,billow),cloud=shape*smoothstep(.08,.70,billow)*1.95;
-  vec3 color=mix(vec3(.006,.007,.013),vec3(.055,.043,.080),crest);
+  vec3 color=mix(vec3(.0008,.0010,.0015),vec3(.008,.009,.012),crest);
   gl_FragColor=vec4(color,cloud*uOpacity*smoothstep(.03,.55,vHeight-uGround));
   #include <colorspace_fragment>
  }`,{uTime:{value:0},uOpacity:{value:0},uSeed:{value:0},uGround:{value:0}});
@@ -35,10 +35,10 @@ export function createShadowVisuals(scene,r,isVisible,world){
    float density=feather*mix(.57,.94,smoothstep(.12,.8,cloud));
    float filaments=exp(-pow((cloud-.47)/.018,2.))*smoothstep(.43,.75,detail);
    float arrival=exp(-pow((radius-uTime*3.2)/.12,2.))*(1.-smoothstep(.12,.48,uTime));
-   vec3 color=mix(vec3(.012,.015,.026),vec3(.055,.041,.085),cloud);
-   color+=vec3(.055,.018,.10)*filaments*.45+vec3(.09,.035,.16)*arrival;
+   vec3 color=mix(vec3(.001,.0012,.0018),vec3(.007,.008,.011),cloud);
+   color+=vec3(.009,.008,.013)*filaments*.25+vec3(.012,.011,.018)*arrival;
    // A subdued boundary defines gameplay range without neon contour rings.
-   color+=vec3(.025,.012,.045)*(1.-boundary)*feather;
+   color+=vec3(.004,.004,.006)*(1.-boundary)*feather;
    gl_FragColor=vec4(color,density*uOpacity);
    #include <colorspace_fragment>
   }`,{uTime:{value:0},uOpacity:{value:0}}));surface.rotation.x=-Math.PI/2;surface.position.y=.045;surface.renderOrder=2;root.add(surface);

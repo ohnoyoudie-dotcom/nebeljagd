@@ -105,6 +105,8 @@ export function createSoulCloudVisual(_geometry, clock, ownMaterial, { ownGeomet
             float ember=pow(noise3(p*8.+vec3(0.,uTime*2.,-uTime*7.)),24.);
             smoke+=uComet*vec3(.17,.055,.24)*ember*4.;
           }
+          // Only the shadow comet becomes near-black; the soul ghost keeps its own palette.
+          smoke=mix(smoke,smoke*vec3(.18,.20,.17),uComet);
           color+=(1.-opacity)*alpha*smoke;opacity+=(1.-opacity)*alpha;
         }
         if(opacity<.005)discard;
