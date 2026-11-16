@@ -38,6 +38,37 @@ test('Waldhaus visible frames and stonework leave both exits and room doors clea
   } finally { model.dispose(); }
 });
 
+test('Interior doors read as open wall gaps from above and from the game camera', () => {
+  for (const rotation of [0, Math.PI / 2]) {
+    const model = createWaldhausModel({ rotation });
+    model.group.rotation.y = rotation;
+    model.group.updateMatrixWorld(true);
+    try {
+      for (const door of WALDHAUS_DEFINITION.interiorDoorways) {
+        // The central opening must remain unbridged across its useful width.
+        for (const fraction of [-.3, 0, .3]) {
+          const point = new Vector3(door.x + (door.axis === 'x' ? fraction * door.width : 0),
+            WALDHAUS_DEFINITION.floorHeight + .06,
+            door.z + (door.axis === 'z' ? fraction * door.width : 0));
+          model.group.localToWorld(point);
+          const origin = point.clone().add(new Vector3(0, 6, 0));
+          const ray = new Raycaster(origin, new Vector3(0, -1, 0), .001, 6);
+          assert.equal(ray.intersectObject(model.group, true).length, 0,
+            `interior doorway at ${door.x},${door.z} must have no overhead beam at yaw ${rotation}`);
+        }
+        // Check the readable upper opening from the actual fixed camera bearing.
+        const opening = model.group.localToWorld(new Vector3(door.x,
+          WALDHAUS_DEFINITION.floorHeight + 2.2, door.z));
+        const camera = opening.clone().add(new Vector3(0, 29, 18));
+        const direction = opening.clone().sub(camera);
+        const ray = new Raycaster(camera, direction.clone().normalize(), .001, direction.length());
+        assert.equal(ray.intersectObject(model.group, true).length, 0,
+          `interior opening must stay visually open from the game camera at yaw ${rotation}`);
+      }
+    } finally { model.dispose(); }
+  }
+});
+
 test('Waldhaus rooms contain no baked-in furniture or decorations', () => {
   const model = createWaldhausModel();
   model.group.updateMatrixWorld(true);

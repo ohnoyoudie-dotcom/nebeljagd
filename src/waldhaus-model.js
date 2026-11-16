@@ -3,69 +3,16 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { WALDHAUS_DEFINITION } from './map/waldhaus-definition.js';
 import { createWaldhausWindowLight } from './waldhaus-window-light.js';
+import { createWaldhausSurface } from './waldhaus-materials.js';
 
 const palettes = {
-  stone: ['#7f8172', '#91917f', '#888b79', '#9a9883', '#7a8171'],
-  plaster: ['#c2af91', '#c5b296', '#bcaa8d'],
+  stone: ['#929383', '#a19e8b', '#878b7e', '#aaa18b', '#919382'],
+  plaster: ['#d4c7a9', '#cebea0', '#d7c9ad'],
 };
 const seeded = () => {
   let state = 87123;
   return () => { state = (Math.imul(state, 1664525) + 1013904223) | 0; return (state >>> 0) / 4294967296; };
 };
-function surface(kind) {
-  if (typeof document === 'undefined') return null;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 256;
-  const context = canvas.getContext('2d');
-  if (!context) return null;
-  const random = seeded();
-  context.fillStyle = kind === 'stone' ? '#d3d0c2' : '#e2d5bd';
-  context.fillRect(0, 0, 256, 256);
-  if (kind === 'wood' || kind === 'floor') {
-    for (let i = 0; i < 90; i++) {
-      const x = random() * 256;
-      context.strokeStyle = `rgba(47,30,16,${.035 + random() * .09})`;
-      context.lineWidth = .45 + random();
-      context.beginPath(); context.moveTo(x, -4);
-      context.bezierCurveTo(x + 8, 65, x - 10, 180, x + 3, 260); context.stroke();
-    }
-    for (let i = 0; i < 5; i++) {
-      const x = random() * 256, y = random() * 256;
-      context.strokeStyle = '#5e432e30'; context.lineWidth = 1;
-      for (let ring = 0; ring < 3; ring++) {
-        context.beginPath(); context.ellipse(x, y, 2 + ring * 2, 6 + ring * 4, .07, 0, Math.PI * 2); context.stroke();
-      }
-    }
-    if (kind === 'floor') {
-      for (let i = 0; i < 24; i++) {
-        const x=random()*256, y=random()*256;
-        const fade=context.createRadialGradient(x,y,0,x,y,12+random()*20);
-        fade.addColorStop(0, i%4 ? '#eadcc52a' : '#473a2422'); fade.addColorStop(1,'#ac967100');
-        context.fillStyle=fade;context.fillRect(x-35,y-35,70,70);
-      }
-      for(let i=0;i<32;i++) {
-        context.strokeStyle=i%3?'#eadcc52b':'#59462f24';context.lineWidth=.6;
-        const x=random()*256,y=random()*256;
-        context.beginPath();context.moveTo(x,y);context.lineTo(x+(random()-.5)*3,y+4+random()*15);context.stroke();
-      }
-    }
-  } else if (kind === 'plaster') {
-    for (let i = 0; i < 80; i++) {
-      context.fillStyle = `rgba(97,83,61,${random() * .045})`;
-      context.beginPath(); context.ellipse(random() * 256, random() * 256, 5 + random() * 24, 3 + random() * 18, random() * 6, 0, Math.PI * 2); context.fill();
-    }
-  }
-  for (let i = 0; i < 2200; i++) {
-    context.fillStyle = random() > .5 ? '#fff8df18' : '#342e2514';
-    context.fillRect(random() * 256, random() * 256, .6 + random() * 2, .5 + random() * 2);
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.anisotropy = 4;
-  return texture;
-}
-
 /** Architecture only: all footprint, door and window locations belong to the
  * shared collision plan. The wall height is independent of the floor area. */
 export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirection } = {}) {
@@ -79,9 +26,11 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
   const textures = new Set(), materials = new Map(), batches = new Map();
   const dummy = new THREE.Object3D(), color = new THREE.Color();
   const mat = (id, kind, options = {}) => {
-    const map = kind ? surface(kind) : null;
+    const { map, bumpMap } = kind ? createWaldhausSurface(kind) : {};
     if (map) textures.add(map);
-    const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .86, ...(map ? { map } : {}), ...options });
+    if (bumpMap) textures.add(bumpMap);
+    const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .9,
+      ...(map ? { map, bumpMap, bumpScale: {wood:.055,floor:.022,plaster:.035,stone:.065}[kind] } : {}), ...options });
     material.name = 'Waldhaus · ' + id; materials.set(id, material); return material;
   };
   const wood = mat('Holz', 'wood'), stone = mat('Stein', 'stone'), plaster = mat('Kalkputz', 'plaster');
@@ -90,13 +39,16 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
   const iron = mat('Eisen', null, { metalness: .65, roughness: .55 });
   const glass = mat('Glas', null, { emissive: '#75816b', emissiveIntensity: .12, metalness: .15, roughness: .4 });
   let parts = 0, floorBoards = 0;
-  function geometry(parent, material, geo, x, y, z, tint, rotation = [0, 0, 0]) {
+  function geometry(parent, material, geo, x, y, z, tint, rotation = [0, 0, 0], grainAxis = 'y') {
     const position = geo.attributes.position, normal = geo.attributes.normal, uv = geo.attributes.uv;
     if (uv) for (let i = 0; i < position.count; i++) {
       const ax = Math.abs(normal.getX(i)), ay = Math.abs(normal.getY(i)), az = Math.abs(normal.getZ(i));
-      if (ay >= ax && ay >= az) uv.setXY(i, (position.getX(i) + (material === floorWood ? x : 0)) * .65, (position.getZ(i) + (material === floorWood ? z : 0)) * .65);
+      if (ay >= ax && ay >= az) {
+        const u=position.getX(i)+(material===floorWood?x:0), v=position.getZ(i)+(material===floorWood?z:0);
+        uv.setXY(i, (grainAxis==='x'?v:u)*.65, (grainAxis==='x'?u:v)*.65);
+      }
       else if (ax > az) uv.setXY(i, position.getZ(i) * .65, position.getY(i) * .65);
-      else uv.setXY(i, position.getX(i) * .65, position.getY(i) * .65);
+      else uv.setXY(i, (grainAxis==='x'?position.getY(i):position.getX(i))*.65, (grainAxis==='x'?position.getX(i):position.getY(i))*.65);
     }
     dummy.position.set(x, y, z); dummy.rotation.set(rotation[0] ?? 0, rotation[1] ?? 0, rotation[2] ?? 0);
     dummy.updateMatrix(); geo.applyMatrix4(dummy.matrix);
@@ -113,6 +65,11 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
         // Soft continuous wear varies across the room, never along an entire plank.
         shade*=.975+.025*Math.sin(px*.91+pz*.37)*Math.cos(pz*.73-px*.23);
       }
+      if(material===plaster) {
+        // Broad ambient shading at the masonry and timber joins, visible at game zoom.
+        const py=geo.attributes.position.getY(i/3)-floor;
+        shade*=.76+.24*THREE.MathUtils.smoothstep(py,.55,1.3);
+      }
       colors[i] = color.r*shade; colors[i + 1] = color.g*shade; colors[i + 2] = color.b*shade;
     }
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -122,29 +79,53 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
     byMaterial.get(material).push(geo); parts++;
   }
   function box(parent, material, x, y, z, w, h, d, tint, rotation = [0, 0, 0], round = .025) {
-    geometry(parent, material, new RoundedBoxGeometry(w, h, d, 1, Math.min(round, w * .2, h * .2, d * .2)), x, y, z, tint, rotation);
+    const geo=new RoundedBoxGeometry(w,h,d,1,Math.min(round,w*.2,h*.2,d*.2));
+    const axis=w>h&&w>d?'x':d>h?'z':'y';
+    if(material===wood||material===stone) {
+      // A continuous deformation keeps shared vertices together: no cracks or
+      // hard random noise, just a subtly hewn silhouette and softened corners.
+      const p=geo.attributes.position, extent={x:w,y:h,z:d}[axis];
+      const amount=material===wood?.009:.013;
+      const seed=x*1.37+y*2.13+z*.83;
+      for(let i=0;i<p.count;i++) {
+        const px=p.getX(i),py=p.getY(i),pz=p.getZ(i);
+        const along=(axis==='x'?px:axis==='y'?py:pz)/Math.max(.01,extent);
+        const swell=Math.sin(along*7+seed)*Math.cos(along*3-seed*.71)*amount;
+        p.setXYZ(i,px+(axis==='x'?0:px/(w*.5)*swell),py+(axis==='y'?0:py/(h*.5)*swell*.5),pz+(axis==='z'?0:pz/(d*.5)*swell));
+      }
+      geo.computeVertexNormals();
+    }
+    geometry(parent,material,geo,x,y,z,tint,rotation,axis);
   }
   const choose = kind => palettes[kind][Math.floor(random() * palettes[kind].length)];
   const bounds = def.floorBounds, width = bounds.maxX - bounds.minX, depth = bounds.maxZ - bounds.minZ;
   const centerX = (bounds.minX + bounds.maxX) / 2, centerZ = (bounds.minZ + bounds.maxZ) / 2;
   box(outer, stone, centerX, floor * .42, centerZ, width, .12, depth, '#6c7063');
-  // Narrow boards have separate, staggered end joints. Close tones keep the
-  // grain and joinery readable without the old checkerboard appearance.
-  let boardEdge=bounds.minX;
-  while (boardEdge < bounds.maxX-.001) {
-    let boardWidth=Math.min(bounds.maxX-boardEdge,.29+random()*.13);
-    if(bounds.maxX-boardEdge-boardWidth<.18)boardWidth=bounds.maxX-boardEdge;
-    const x=boardEdge+boardWidth/2;boardEdge+=boardWidth;
-    let edge = bounds.minZ;
-    let length = .75 + random() * 2.2;
-    while (edge < bounds.maxZ - .001) {
-      let end = Math.min(bounds.maxZ, edge + length);
-      if (bounds.maxZ - end < .5) end = bounds.maxZ;
-      const z = (edge + end) / 2, variation = random();
-      const tint = new THREE.Color('#9b805e').lerp(new THREE.Color('#a38966'), variation).getHex();
-      box(interior, floorWood, x, floor - .026, z, boardWidth - .007, .052, end - edge - .009, tint, [], .005);
-      floorBoards++;
-      edge = end; length = 2.2 + random() * 1.8;
+  // The two smaller rooms have their own transverse floor laying. The quiet
+  // palette stays shared, while the direction change makes each room legible.
+  const floorAreas=[
+    {minX:bounds.minX,maxX:2.2,minZ:bounds.minZ,maxZ:bounds.maxZ,alongZ:true},
+    {minX:2.2,maxX:bounds.maxX,minZ:bounds.minZ,maxZ:0,alongZ:false},
+    {minX:2.2,maxX:bounds.maxX,minZ:0,maxZ:bounds.maxZ,alongZ:false},
+  ];
+  for(const area of floorAreas) {
+    const acrossMin=area.alongZ?area.minX:area.minZ,acrossMax=area.alongZ?area.maxX:area.maxZ;
+    const alongMin=area.alongZ?area.minZ:area.minX,alongMax=area.alongZ?area.maxZ:area.maxX;
+    let boardEdge=acrossMin;
+    while(boardEdge<acrossMax-.001) {
+      let boardWidth=Math.min(acrossMax-boardEdge,.34+random()*.13);
+      if(acrossMax-boardEdge-boardWidth<.18)boardWidth=acrossMax-boardEdge;
+      const across=boardEdge+boardWidth/2;boardEdge+=boardWidth;
+      let edge=alongMin,length=.8+random()*2.3;
+      while(edge<alongMax-.001) {
+        let end=Math.min(alongMax,edge+length);
+        if(alongMax-end<.5)end=alongMax;
+        const along=(edge+end)/2;
+        const tint=new THREE.Color('#977851').lerp(new THREE.Color('#a78a62'),random()).getHex();
+        box(interior,floorWood,area.alongZ?across:along,floor-.026,area.alongZ?along:across,
+          area.alongZ?boardWidth-.008:end-edge-.01,.052,area.alongZ?end-edge-.01:boardWidth-.008,tint,[],.006);
+        floorBoards++;edge=end;length=2.1+random()*1.7;
+      }
     }
   }
   // The shell and room partitions follow the architectural collision boxes.
@@ -154,16 +135,29 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
     const height = wall.maxY - floor, alongX = w > d, length = alongX ? w : d;
     const front = alongX && Math.abs(wall.maxZ - bounds.maxZ) < .01;
     const low = Math.min(.6, height), parent = front ? frontFacade : outer;
-    box(outer, stone, x, floor + low / 2, z, w, low, d, '#777c6d');
+    box(outer, stone, x, floor + low / 2, z, w, low, d, '#696d61');
     box(parent, plaster, x, floor + low + (height - low) / 2, z, alongX ? w : w * .94, height - low, alongX ? d * .94 : d, choose('plaster'));
-    box(parent, wood, x, floor + height + .025, z, alongX?w+.025:.44, .14, alongX?.44:d+.025, '#60432f');
+    box(parent, wood, x, floor + height + .025, z, alongX?w+.025:.46, .14, alongX?.46:d+.025, '#65452f',[],.04);
     // A pale, inset cut surface makes even edge-on partitions legible from above.
-    box(parent, wood, x, floor + height + .099, z, alongX?w-.06:.34,.012,alongX?.34:d-.06,'#b49a71',[],.006);
-    box(outer, wood, x, floor + low + .035, z, w + .02, .11, d + .05, '#6b4a32');
+    box(parent, wood, x, floor + height + .099, z, alongX?w-.08:.33,.012,alongX?.33:d-.08,'#a1845e',[],.006);
+    box(outer, wood, x, floor + low + .035, z, w + .02, .16, d + .08, '#6b4a32',[],.03);
     const posts = Math.max(1, Math.ceil(length / 2.35));
     for (let i = 0; i <= posts; i++) {
       const offset = -length / 2 + Math.min(length - .075, Math.max(.075, i * length / posts));
-      box(parent, wood, x + (alongX ? offset : 0), floor + height * .5, z + (alongX ? 0 : offset), alongX ? .15 : w + .08, height, alongX ? d + .08 : .15, '#65452e');
+      box(parent, wood, x + (alongX ? offset : 0), floor + height * .5, z + (alongX ? 0 : offset), alongX ? .21 : w + .1, height, alongX ? d + .1 : .21, i%2?'#705036':'#67472f',[],.04);
+    }
+    // Short diagonal timber braces give the shell the same heavy joinery as
+    // the Tripo inn. Leave every glazed opening and every doorway unobscured.
+    const external=Math.abs(x)>7.6||Math.abs(z)>5.6;
+    if(external) for(let i=0;i<posts;i++) {
+      const a=-length/2+Math.max(.075,i*length/posts), b=-length/2+Math.min(length-.075,(i+1)*length/posts);
+      const run=Math.min(1.1,b-a-.36);
+      if(run<.5)continue;
+      const sign=i%2?-1:1;
+      const offset=(sign>0?a:b)+sign*run/2,px=x+(alongX?offset:0),pz=z+(alongX?0:offset);
+      if(def.windows.some(window=>Math.abs((alongX?window.z:window.x)-(alongX?z:x))<.5&&Math.abs((alongX?window.x:window.z)-(alongX?px:pz))<window.width/2+run/2+.22))continue;
+      const rise=.98,tilt=sign*Math.atan2(run,rise),span=Math.hypot(run,rise);
+      box(parent,wood,px,floor+2.49,pz,alongX?.16:w+.065,span,alongX?d+.065:.16,'#79583b',alongX?[0,0,-tilt]:[tilt,0,0],.028);
     }
     // Both stone courses use irregular widths and offset joints; the masonry
     // stays within the wall ends so no stone protrudes into a doorway.
@@ -174,24 +168,28 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
         let end = Math.min(length / 2, edge + step);
         if (length / 2 - end < .2) end = length / 2;
         const position = (edge + end) / 2;
-        box(outer, stone, x + (alongX ? position : 0), floor + .15 + row * .28, z + (alongX ? 0 : position), alongX ? end - edge - .025 : w + .035 + random()*.02, .235+random()*.025, alongX ? d + .035 + random()*.02 : end - edge - .025, choose('stone'), [], .04);
+        box(outer, stone, x + (alongX ? position : 0), floor + .15 + row * .28, z + (alongX ? 0 : position), alongX ? end - edge - .035 : w + .045 + random()*.02, .225+random()*.035, alongX ? d + .045 + random()*.02 : end - edge - .035, choose('stone'), [], .055);
         edge = end; step = .67 + random() * .4;
       }
     }
   }
-  function portal(x, z, doorWidth, alongX, parent = outer) {
-    for (const side of [-1, 1]) box(parent, wood, x + (alongX ? side * (doorWidth / 2 + .08) : 0), floor + 1.46, z + (alongX ? 0 : side * (doorWidth / 2 + .08)), alongX ? .14 : .38, 2.92, alongX ? .38 : .14, '#725035');
-    box(parent, wood, x, floor + 2.91, z, alongX ? doorWidth + .22 : .48, .19, alongX ? .48 : doorWidth + .22, '#a08052');
-    // A flush cross-grain sill remains visible when the front cutaway hides the frame.
-    box(interior,wood,x,floor+.004,z,alongX?doorWidth:.46,.012,alongX?.46:doorWidth,'#8e7655',[],.005);
+  function portal(x, z, doorWidth, alongX, parent = outer, openTop = false) {
+    // Interior cutaways deliberately have no beam over the opening: the gap
+    // must read as a passage from above, independently of lighting or shadows.
+    if(!openTop)box(parent,wood,x,floor+2.91,z,alongX?doorWidth+.34:.52,.22,alongX?.52:doorWidth+.34,'#78583b',[],.045);
+    const sillRotation=alongX?[0,Math.PI/2,0]:[];
+    box(interior,wood,x,floor+.004,z,.72,.016,doorWidth,'#b39a70',sillRotation,.005);
     for(const side of [-1,1]) {
-      const px=x+(alongX?side*(doorWidth/2+.1):0),pz=z+(alongX?0:side*(doorWidth/2+.1));
-      box(parent,wood,px,floor+1.48,pz,alongX?.18:.46,2.78,alongX?.46:.18,'#9b815b',[],.025);
+      const px=x+(alongX?side*(doorWidth/2+.18):0),pz=z+(alongX?0:side*(doorWidth/2+.18));
+      box(parent,wood,px,floor+1.47,pz,alongX?.3:.54,2.94,alongX?.54:.3,'#78563a',[],.04);
+      box(parent,wood,px,floor+2.99,pz,alongX?.32:.56,.1,alongX?.56:.32,'#b09871',[],.02);
+      // Worn raised arris on the jamb, kept entirely outside the clear opening.
+      box(parent,wood,px,floor+1.49,pz,alongX?.23:.565,2.73,alongX?.565:.23,'#94734f',[],.035);
     }
     for(const side of [-1,1]) {
-      const px=x+(alongX?side*(doorWidth/2+.10):0),pz=z+(alongX?0:side*(doorWidth/2+.10));
-      box(parent,stone,px,floor+.19,pz,alongX?.18:.43,.38,alongX?.43:.18,'#a59f88',[],.04);
-      for(const y of [.58,2.45])box(parent,iron,px,floor+y,pz,alongX?.155:.405,.07,alongX?.405:.155,'#4b5149',[],.01);
+      const px=x+(alongX?side*(doorWidth/2+.18):0),pz=z+(alongX?0:side*(doorWidth/2+.18));
+      box(parent,stone,px,floor+.19,pz,alongX?.32:.55,.38,alongX?.55:.32,'#a7a18c',[],.05);
+      for(const y of [.58,2.45])box(parent,iron,px,floor+y,pz,alongX?.31:.57,.075,alongX?.57:.31,'#4c493c',[],.015);
     }
   }
   for (const entrance of def.entrances) {
@@ -203,7 +201,7 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
       box(outer, stone, alongX ? entrance.center : entrance.boundary + sign * step.offset, step.height / 2, alongX ? entrance.boundary + sign * step.offset : entrance.center, alongX ? doorWidth + step.extra : step.reach, step.height, alongX ? step.reach : doorWidth + step.extra, '#918b78');
     }
   }
-  for (const doorway of def.interiorDoorways) portal(doorway.x, doorway.z, doorway.width, doorway.axis === 'x', interior);
+  for (const doorway of def.interiorDoorways) portal(doorway.x, doorway.z, doorway.width, doorway.axis === 'x', interior, true);
   function windowPanel(plan) {
     const holder = new THREE.Group(); holder.name = 'Waldhaus · bleiverglastes Fenster'; outer.add(holder);
     holder.position.set(plan.x, 0, plan.z);
@@ -211,17 +209,18 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
     const w = plan.width ?? 1.38, h = plan.height ?? 1.3, y = floor + (plan.sillHeight ?? 1.27) + h / 2;
     box(holder, wood, 0, y, -.015, w+.16, h+.14, .13, '#42382b');
     box(holder, wood, 0, y, .025, w, h, .16, '#6d5238');
-    for(const side of [-1,1])box(holder,wood,side*(w/2-.05),y,.17,.1,h+.05,.15,'#b19564');
-    box(holder,wood,0,y+h/2+.06,.15,w+.22,.12,.24,'#9f8456');
-    box(holder, glass, 0, y, .135, w - .24, h - .25, .055, '#92a898');
-    for (const side of [-1, 0, 1]) box(holder, wood, side * (w / 2 - .12), y, .19, .055, h - .2, .06, '#aa8050');
-    box(holder, wood, 0, y, .19, w - .22, .06, .06, '#aa8050');
+    for(const side of [-1,1])box(holder,wood,side*(w/2-.05),y,.17,.13,h+.05,.17,'#9e7c50',[],.025);
+    box(holder,wood,0,y+h/2+.06,.15,w+.24,.16,.28,'#937048',[],.035);
+    box(holder, glass, 0, y, .135, w - .24, h - .25, .055, '#82968b');
+    for (const side of [-1, 0, 1]) box(holder, wood, side * (w / 2 - .12), y, .19, .055, h - .2, .06, '#977348');
+    box(holder, wood, 0, y, .19, w - .22, .06, .06, '#977348');
     for (const side of [-1, 1]) {
       const x = side * (w / 2 + .19);
-      box(holder, wood, x, y, .06, .35, h - .08, .1, '#65724b');
-      for (const offset of [-.35, .35]) box(holder, iron, x, y + offset * h / 1.3, .125, .31, .055, .035, '#4b4e40');
+      box(holder, wood, x, y, .035, .36, h - .08, .1, '#48533a');
+      for(let plank=0;plank<3;plank++)box(holder,wood,x+(plank-1)*.11,y,.09,.103,h-.12,.065,plank===1?'#70764e':'#647047',[],.016);
+      for (const offset of [-.35, .35]) box(holder, iron, x, y + offset * h / 1.3, .14, .31, .055, .035, '#44483b');
     }
-    box(holder, stone, 0, y - h / 2 - .05, .12, w + .24, .16, .43, '#aaa18a');
+    box(holder, stone, 0, y - h / 2 - .05, .12, w + .26, .18, .45, '#b1a58b',[],.04);
   }
   for (const window of def.windows) windowPanel(window);
   // Sparse low planting hugs the outside foundation, away from every doorway.
