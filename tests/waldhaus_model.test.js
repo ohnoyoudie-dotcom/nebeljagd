@@ -64,6 +64,19 @@ test('Interior doors read as open wall gaps from above and from the game camera'
         const ray = new Raycaster(camera, direction.clone().normalize(), .001, direction.length());
         assert.equal(ray.intersectObject(model.group, true).length, 0,
           `interior opening must stay visually open from the game camera at yaw ${rotation}`);
+
+        // A clear wall cap alone is insufficient: the oblique camera must also
+        // see the far side of the actual threshold, below the 3 m tall jambs.
+        const threshold = model.group.localToWorld(new Vector3(
+          door.x + (door.axis === 'x' ? -door.width / 2 + .2 : 0),
+          WALDHAUS_DEFINITION.floorHeight + .025,
+          door.z + (door.axis === 'z' ? -door.width / 2 + .2 : 0)));
+        const thresholdCamera = threshold.clone().add(new Vector3(0, 29, 18));
+        const thresholdDirection = threshold.clone().sub(thresholdCamera);
+        const thresholdRay = new Raycaster(thresholdCamera, thresholdDirection.clone().normalize(),
+          .001, thresholdDirection.length());
+        assert.equal(thresholdRay.intersectObject(model.group, true).length, 0,
+          `the threshold floor must be visible through the room doorway at yaw ${rotation}`);
       }
     } finally { model.dispose(); }
   }

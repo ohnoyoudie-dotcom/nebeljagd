@@ -1323,8 +1323,8 @@
       "variant": "waldhaus",
       "label": "Waldhaus",
       "file": "assets/catalog/house-waldhaus.webp",
-      "bytes": 9214,
-      "sha256": "615c1bb9aaa46a9e5da1d0f54362a658aa0056a7a3f81ce98e356d9e899dfb02",
+      "bytes": 9192,
+      "sha256": "da7534aedd0f5508711c5bce4950f24d9e5135fbcaed761d62f3a8da6f04aa0a",
       "renderedBounds": {
         "min": [
           1351.7106409072876,
@@ -1333,7 +1333,7 @@
         ],
         "max": [
           1368.342043876648,
-          3.2877941131591797,
+          3.2877931594848633,
           6.75649881362915
         ],
         "span": 18

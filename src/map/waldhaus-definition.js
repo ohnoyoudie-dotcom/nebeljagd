@@ -16,9 +16,9 @@ const architecturalWalls = [
   box('north facade east', -2.5, 7.7, -6, -5.7),
   box('south facade west', -7.7, -4.9, 5.7, 6),
   box('south facade east', -2.3, 7.7, 5.7, 6),
-  box('room divider north', 2.05, 2.35, -5.7, -4),
-  box('room divider middle', 2.05, 2.35, -2, 2),
-  box('room divider south', 2.05, 2.35, 4, 5.7),
+  box('room divider north', 2.05, 2.35, -5.7, -4.3),
+  box('room divider middle', 2.05, 2.35, -1.7, 1.7),
+  box('room divider south', 2.05, 2.35, 4.3, 5.7),
   box('side room partition', 2.35, 7.7, -.15, .15),
 ];
 const freeze = value => {
@@ -51,8 +51,8 @@ export const WALDHAUS_DEFINITION = freeze({
       innerBoundary: -5.7, boundary: -6, depth: .8 },
   ],
   interiorDoorways: [
-    { name: 'Durchgang Nebenraum 1', x: 2.2, z: -3, width: 2, axis: 'z' },
-    { name: 'Durchgang Nebenraum 2', x: 2.2, z: 3, width: 2, axis: 'z' },
+    { name: 'Durchgang Nebenraum 1', x: 2.2, z: -3, width: 2.6, axis: 'z' },
+    { name: 'Durchgang Nebenraum 2', x: 2.2, z: 3, width: 2.6, axis: 'z' },
   ],
   // Closed glazed windows are architectural details, not extra passages.
   windows: [
