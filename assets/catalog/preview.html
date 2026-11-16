@@ -31,7 +31,11 @@ window.captureVariant=(kind,variant)=>{
  // Isolate actual meshes for this capture, then restore their visibility.
  const hiddenMeshes=[],isolationBounds=new THREE.Box3(),isolationCentre=new THREE.Vector3();root.updateMatrixWorld(true);
  root.traverseVisible(part=>{if(!part.isMesh||part===plane)return;isolationBounds.setFromObject(part);if(isolationBounds.isEmpty())return;isolationBounds.getCenter(isolationCentre);if(Math.abs(isolationCentre.x-x)>=40||Math.abs(isolationCentre.z)>=40){hiddenMeshes.push(part);part.visible=false;}});
+ const sunlight=variant==='waldhaus'?{position:sun.position.clone(),target:sun.target.position.clone()}:null;
  try {
+ // The Waldhaus floor light uses the same world-space sun as the game.
+ // Keep the lighting of all other catalog previews unchanged.
+ if(sunlight){sun.position.set(x-22,42,20);sun.target.position.set(x,0,0);sun.target.updateMatrixWorld();}
  const heights={tree:2.8,house:1.3,flower:.3,grass:.6,rock:.8,bush:.45,ruin:1,mound:1.1,wall:.5,fence:.55,crate:.3,wagon:.5,barrel:.45,well:1.1,shrine:1.1,heart:.55,chest:.45,bow:.6,sword:.6,fireStaff:.65,iceStaff:.65};
  focus.set(x,framing?.[1]??heights[kind],0);
  window.lastPreviewBounds=null;
@@ -45,7 +49,7 @@ window.captureVariant=(kind,variant)=>{
  camera.position.copy(focus).add(new THREE.Vector3(span*.70,span*.95,span*1.05));camera.lookAt(focus);
  plane.position.set(x,-.025,0);plane.scale.setScalar(framing?span*.38:kind==='house'?11:kind==='ruin'?7:span*.38);
  renderer.render(scene,camera);return renderer.domElement.toDataURL('image/webp',.88);
- } finally { for(const mesh of hiddenMeshes)mesh.visible=true; }
+ } finally { for(const mesh of hiddenMeshes)mesh.visible=true;if(sunlight){sun.position.copy(sunlight.position);sun.target.position.copy(sunlight.target);sun.target.updateMatrixWorld();} }
 };
 window.previewReady=true;
 </script></body></html>

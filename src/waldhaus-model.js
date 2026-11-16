@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { WALDHAUS_DEFINITION } from './map/waldhaus-definition.js';
+import { createWaldhausWindowLight } from './waldhaus-window-light.js';
 
 const palettes = {
   stone: ['#7f8172', '#91917f', '#888b79', '#9a9883', '#7a8171'],
@@ -67,7 +68,7 @@ function surface(kind) {
 
 /** Architecture only: all footprint, door and window locations belong to the
  * shared collision plan. The wall height is independent of the floor area. */
-export function createWaldhausModel() {
+export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirection } = {}) {
   const def = WALDHAUS_DEFINITION, random = seeded(), floor = def.floorHeight;
   const group = new THREE.Group(), outer = new THREE.Group(), roof = new THREE.Group();
   const frontFacade = new THREE.Group(), interior = new THREE.Group();
@@ -93,7 +94,7 @@ export function createWaldhausModel() {
     const position = geo.attributes.position, normal = geo.attributes.normal, uv = geo.attributes.uv;
     if (uv) for (let i = 0; i < position.count; i++) {
       const ax = Math.abs(normal.getX(i)), ay = Math.abs(normal.getY(i)), az = Math.abs(normal.getZ(i));
-      if (ay >= ax && ay >= az) uv.setXY(i, position.getX(i) * .65, position.getZ(i) * .65);
+      if (ay >= ax && ay >= az) uv.setXY(i, (position.getX(i) + (material === floorWood ? x : 0)) * .65, (position.getZ(i) + (material === floorWood ? z : 0)) * .65);
       else if (ax > az) uv.setXY(i, position.getZ(i) * .65, position.getY(i) * .65);
       else uv.setXY(i, position.getX(i) * .65, position.getY(i) * .65);
     }
@@ -108,7 +109,9 @@ export function createWaldhausModel() {
         const px=geo.attributes.position.getX(i/3),pz=geo.attributes.position.getZ(i/3);
         let distance=Infinity;
         for(const wall of def.architecturalWalls) distance=Math.min(distance,Math.hypot(Math.max(wall.minX-px,0,px-wall.maxX),Math.max(wall.minZ-pz,0,pz-wall.maxZ)));
-        shade=.76+.24*THREE.MathUtils.smoothstep(distance,.04,.65);
+        shade=.83+.17*THREE.MathUtils.smoothstep(distance,.04,.65);
+        // Soft continuous wear varies across the room, never along an entire plank.
+        shade*=.975+.025*Math.sin(px*.91+pz*.37)*Math.cos(pz*.73-px*.23);
       }
       colors[i] = color.r*shade; colors[i + 1] = color.g*shade; colors[i + 2] = color.b*shade;
     }
@@ -138,7 +141,7 @@ export function createWaldhausModel() {
       let end = Math.min(bounds.maxZ, edge + length);
       if (bounds.maxZ - end < .5) end = bounds.maxZ;
       const z = (edge + end) / 2, variation = random();
-      const tint = new THREE.Color(variation<.08?'#79664e':'#987c59').lerp(new THREE.Color('#aa8d65'), variation).getHex();
+      const tint = new THREE.Color('#9b805e').lerp(new THREE.Color('#a38966'), variation).getHex();
       box(interior, floorWood, x, floor - .026, z, boardWidth - .007, .052, end - edge - .009, tint, [], .005);
       floorBoards++;
       edge = end; length = 2.2 + random() * 1.8;
@@ -153,9 +156,9 @@ export function createWaldhausModel() {
     const low = Math.min(.6, height), parent = front ? frontFacade : outer;
     box(outer, stone, x, floor + low / 2, z, w, low, d, '#777c6d');
     box(parent, plaster, x, floor + low + (height - low) / 2, z, alongX ? w : w * .94, height - low, alongX ? d * .94 : d, choose('plaster'));
-    box(parent, wood, x, floor + height + .025, z, w + .025, .14, d + .07, '#60432f');
+    box(parent, wood, x, floor + height + .025, z, alongX?w+.025:.44, .14, alongX?.44:d+.025, '#60432f');
     // A pale, inset cut surface makes even edge-on partitions legible from above.
-    box(parent, wood, x, floor + height + .099, z, alongX?w-.06:w*.72,.012,alongX?d*.72:d-.06,'#b49a71',[],.006);
+    box(parent, wood, x, floor + height + .099, z, alongX?w-.06:.34,.012,alongX?.34:d-.06,'#b49a71',[],.006);
     box(outer, wood, x, floor + low + .035, z, w + .02, .11, d + .05, '#6b4a32');
     const posts = Math.max(1, Math.ceil(length / 2.35));
     for (let i = 0; i <= posts; i++) {
@@ -178,7 +181,13 @@ export function createWaldhausModel() {
   }
   function portal(x, z, doorWidth, alongX, parent = outer) {
     for (const side of [-1, 1]) box(parent, wood, x + (alongX ? side * (doorWidth / 2 + .08) : 0), floor + 1.46, z + (alongX ? 0 : side * (doorWidth / 2 + .08)), alongX ? .14 : .38, 2.92, alongX ? .38 : .14, '#725035');
-    box(parent, wood, x, floor + 2.91, z, alongX ? doorWidth + .22 : .38, .19, alongX ? .38 : doorWidth + .22, '#a08052');
+    box(parent, wood, x, floor + 2.91, z, alongX ? doorWidth + .22 : .48, .19, alongX ? .48 : doorWidth + .22, '#a08052');
+    // A flush cross-grain sill remains visible when the front cutaway hides the frame.
+    box(interior,wood,x,floor+.004,z,alongX?doorWidth:.46,.012,alongX?.46:doorWidth,'#8e7655',[],.005);
+    for(const side of [-1,1]) {
+      const px=x+(alongX?side*(doorWidth/2+.1):0),pz=z+(alongX?0:side*(doorWidth/2+.1));
+      box(parent,wood,px,floor+1.48,pz,alongX?.18:.46,2.78,alongX?.46:.18,'#9b815b',[],.025);
+    }
     for(const side of [-1,1]) {
       const px=x+(alongX?side*(doorWidth/2+.10):0),pz=z+(alongX?0:side*(doorWidth/2+.10));
       box(parent,stone,px,floor+.19,pz,alongX?.18:.43,.38,alongX?.43:.18,'#a59f88',[],.04);
@@ -254,6 +263,8 @@ export function createWaldhausModel() {
     const mesh = new THREE.Mesh(merged, material); mesh.name = parent.name + ' · ' + material.name;
     mesh.castShadow = mesh.receiveShadow = true; parent.add(mesh);
   }
+  const windowLight = createWaldhausWindowLight({ rotation, worldRotation, sunDirection });
+  interior.add(windowLight.group);
   let drawCalls = 0, triangles = 0;
   group.traverse(node => { if (node.isMesh) { drawCalls++; triangles += (node.geometry.index?.count ?? node.geometry.attributes.position.count) / 3; } });
   const stats = { drawCalls, triangles, parts, floorBoards, rooms: def.rooms.length, entrances: def.entrances.length };
@@ -261,7 +272,11 @@ export function createWaldhausModel() {
   let disposed = false;
   return { group, roof, frontFacade, interior, stats, dispose() {
     if (disposed) return; disposed = true;
-    const geometries = new Set(); group.traverse(node => { if (node.geometry) geometries.add(node.geometry); });
-    geometries.forEach(geo => geo.dispose()); materials.forEach(material => material.dispose()); textures.forEach(texture => texture.dispose()); group.removeFromParent();
+    const geometries = new Set(), allMaterials = new Set(materials.values());
+    group.traverse(node => {
+      if (node.geometry) geometries.add(node.geometry);
+      if (node.material) for (const material of [node.material].flat()) allMaterials.add(material);
+    });
+    geometries.forEach(geo => geo.dispose()); allMaterials.forEach(material => material.dispose()); textures.forEach(texture => texture.dispose()); group.removeFromParent();
   } };
 }

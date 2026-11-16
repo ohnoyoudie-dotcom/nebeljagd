@@ -52,12 +52,19 @@ test('Waldhaus rooms contain no baked-in furniture or decorations', () => {
   } finally { model.dispose(); }
 });
 
-test('Waldhaus releases each shared material and geometry once', () => {
-  const model = createWaldhausModel(), resources = new Set();
-  model.group.traverse(node => { if (node.isMesh) { resources.add(node.geometry); resources.add(node.material); } });
-  let disposed = 0;
-  resources.forEach(resource => resource.addEventListener('dispose', () => disposed++));
-  model.dispose();
-  model.dispose();
-  assert.equal(disposed, resources.size);
+test('Waldhaus releases each shared resource and window-light material exactly once', () => {
+  for (const rotation of [0, Math.PI / 2]) {
+    const model = createWaldhausModel({ rotation }), resources = new Set();
+    model.group.traverse(node => {
+      if (!node.isMesh) return;
+      resources.add(node.geometry);
+      for (const material of [node.material].flat()) resources.add(material);
+    });
+    assert.ok([...resources].some(resource => resource.isShaderMaterial), 'include the integrated window-light resources');
+    const disposals = new Map([...resources].map(resource => [resource, 0]));
+    resources.forEach(resource => resource.addEventListener('dispose', () => disposals.set(resource, disposals.get(resource) + 1)));
+    model.dispose();
+    model.dispose();
+    for (const [resource, count] of disposals) assert.equal(count, 1, `${resource.name || resource.type} must be disposed exactly once`);
+  }
 });
