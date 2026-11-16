@@ -12,7 +12,7 @@ test('Waldhaus produces finite, compact geometry without a browser canvas', () =
       for (const value of node.geometry.attributes.position.array) assert.ok(Number.isFinite(value));
     });
     const bounds = new Box3().setFromObject(model.group);
-    assert.ok(bounds.min.x >= -WALDHAUS_DEFINITION.footprint.halfWidth - .05 && bounds.max.x <= WALDHAUS_DEFINITION.footprint.halfWidth + .05, 'wall trim must stay near the shared footprint');
+    assert.ok(bounds.min.x >= -WALDHAUS_DEFINITION.footprint.halfWidth - .4 && bounds.max.x <= WALDHAUS_DEFINITION.footprint.halfWidth + .4, 'low exterior planting must stay within the foundation margin');
     assert.ok(bounds.min.z >= -WALDHAUS_DEFINITION.footprint.halfDepth - .8 && bounds.max.z <= WALDHAUS_DEFINITION.footprint.halfDepth + .8, 'only the two threshold steps extend beyond the floor');
     assert.ok(bounds.max.y < WALDHAUS_DEFINITION.floorHeight + WALDHAUS_DEFINITION.wallHeight + .11, 'larger floor area must not scale up wall height');
     assert.ok(model.stats.drawCalls <= 20, 'architecture should stay batched by material');

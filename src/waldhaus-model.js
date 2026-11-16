@@ -20,7 +20,7 @@ function surface(kind) {
   const random = seeded();
   context.fillStyle = kind === 'stone' ? '#d3d0c2' : '#e2d5bd';
   context.fillRect(0, 0, 256, 256);
-  if (kind === 'wood') {
+  if (kind === 'wood' || kind === 'floor') {
     for (let i = 0; i < 90; i++) {
       const x = random() * 256;
       context.strokeStyle = `rgba(47,30,16,${.035 + random() * .09})`;
@@ -33,6 +33,19 @@ function surface(kind) {
       context.strokeStyle = '#5e432e30'; context.lineWidth = 1;
       for (let ring = 0; ring < 3; ring++) {
         context.beginPath(); context.ellipse(x, y, 2 + ring * 2, 6 + ring * 4, .07, 0, Math.PI * 2); context.stroke();
+      }
+    }
+    if (kind === 'floor') {
+      for (let i = 0; i < 24; i++) {
+        const x=random()*256, y=random()*256;
+        const fade=context.createRadialGradient(x,y,0,x,y,12+random()*20);
+        fade.addColorStop(0, i%4 ? '#eadcc52a' : '#473a2422'); fade.addColorStop(1,'#ac967100');
+        context.fillStyle=fade;context.fillRect(x-35,y-35,70,70);
+      }
+      for(let i=0;i<32;i++) {
+        context.strokeStyle=i%3?'#eadcc52b':'#59462f24';context.lineWidth=.6;
+        const x=random()*256,y=random()*256;
+        context.beginPath();context.moveTo(x,y);context.lineTo(x+(random()-.5)*3,y+4+random()*15);context.stroke();
       }
     }
   } else if (kind === 'plaster') {
@@ -71,6 +84,8 @@ export function createWaldhausModel() {
     material.name = 'Waldhaus · ' + id; materials.set(id, material); return material;
   };
   const wood = mat('Holz', 'wood'), stone = mat('Stein', 'stone'), plaster = mat('Kalkputz', 'plaster');
+  const floorWood = mat('Abgenutzte Dielen', 'floor', {roughness:.98});
+  const foliage = mat('Moos und niedrige Außenpflanzen', null, {side:THREE.DoubleSide});
   const iron = mat('Eisen', null, { metalness: .65, roughness: .55 });
   const glass = mat('Glas', null, { emissive: '#75816b', emissiveIntensity: .12, metalness: .15, roughness: .4 });
   let parts = 0, floorBoards = 0;
@@ -87,7 +102,16 @@ export function createWaldhausModel() {
     if (geo.index) { const indexed = geo; geo = indexed.toNonIndexed(); indexed.dispose(); }
     color.set(tint);
     const colors = new Float32Array(geo.attributes.position.count * 3);
-    for (let i = 0; i < colors.length; i += 3) { colors[i] = color.r; colors[i + 1] = color.g; colors[i + 2] = color.b; }
+    for (let i = 0; i < colors.length; i += 3) {
+      let shade=1;
+      if(material===floorWood) {
+        const px=geo.attributes.position.getX(i/3),pz=geo.attributes.position.getZ(i/3);
+        let distance=Infinity;
+        for(const wall of def.architecturalWalls) distance=Math.min(distance,Math.hypot(Math.max(wall.minX-px,0,px-wall.maxX),Math.max(wall.minZ-pz,0,pz-wall.maxZ)));
+        shade=.76+.24*THREE.MathUtils.smoothstep(distance,.04,.65);
+      }
+      colors[i] = color.r*shade; colors[i + 1] = color.g*shade; colors[i + 2] = color.b*shade;
+    }
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     if (!batches.has(parent)) batches.set(parent, new Map());
     const byMaterial = batches.get(parent);
@@ -103,17 +127,19 @@ export function createWaldhausModel() {
   box(outer, stone, centerX, floor * .42, centerZ, width, .12, depth, '#6c7063');
   // Narrow boards have separate, staggered end joints. Close tones keep the
   // grain and joinery readable without the old checkerboard appearance.
-  const columns = Math.ceil(width / .29), boardWidth = width / columns;
-  for (let column = 0; column < columns; column++) {
-    const x = bounds.minX + (column + .5) * boardWidth;
+  let boardEdge=bounds.minX;
+  while (boardEdge < bounds.maxX-.001) {
+    let boardWidth=Math.min(bounds.maxX-boardEdge,.29+random()*.13);
+    if(bounds.maxX-boardEdge-boardWidth<.18)boardWidth=bounds.maxX-boardEdge;
+    const x=boardEdge+boardWidth/2;boardEdge+=boardWidth;
     let edge = bounds.minZ;
     let length = .75 + random() * 2.2;
     while (edge < bounds.maxZ - .001) {
       let end = Math.min(bounds.maxZ, edge + length);
       if (bounds.maxZ - end < .5) end = bounds.maxZ;
       const z = (edge + end) / 2, variation = random();
-      const tint = new THREE.Color('#997047').lerp(new THREE.Color('#ad8259'), variation).getHex();
-      box(interior, wood, x, floor - .026, z, boardWidth - .007, .052, end - edge - .009, tint, [], .005);
+      const tint = new THREE.Color(variation<.08?'#79664e':'#987c59').lerp(new THREE.Color('#aa8d65'), variation).getHex();
+      box(interior, floorWood, x, floor - .026, z, boardWidth - .007, .052, end - edge - .009, tint, [], .005);
       floorBoards++;
       edge = end; length = 2.2 + random() * 1.8;
     }
@@ -128,6 +154,8 @@ export function createWaldhausModel() {
     box(outer, stone, x, floor + low / 2, z, w, low, d, '#777c6d');
     box(parent, plaster, x, floor + low + (height - low) / 2, z, alongX ? w : w * .94, height - low, alongX ? d * .94 : d, choose('plaster'));
     box(parent, wood, x, floor + height + .025, z, w + .025, .14, d + .07, '#60432f');
+    // A pale, inset cut surface makes even edge-on partitions legible from above.
+    box(parent, wood, x, floor + height + .099, z, alongX?w-.06:w*.72,.012,alongX?d*.72:d-.06,'#b49a71',[],.006);
     box(outer, wood, x, floor + low + .035, z, w + .02, .11, d + .05, '#6b4a32');
     const posts = Math.max(1, Math.ceil(length / 2.35));
     for (let i = 0; i <= posts; i++) {
@@ -143,14 +171,19 @@ export function createWaldhausModel() {
         let end = Math.min(length / 2, edge + step);
         if (length / 2 - end < .2) end = length / 2;
         const position = (edge + end) / 2;
-        box(outer, stone, x + (alongX ? position : 0), floor + .15 + row * .28, z + (alongX ? 0 : position), alongX ? end - edge - .025 : w + .055, .25, alongX ? d + .055 : end - edge - .025, choose('stone'), [], .04);
+        box(outer, stone, x + (alongX ? position : 0), floor + .15 + row * .28, z + (alongX ? 0 : position), alongX ? end - edge - .025 : w + .035 + random()*.02, .235+random()*.025, alongX ? d + .035 + random()*.02 : end - edge - .025, choose('stone'), [], .04);
         edge = end; step = .67 + random() * .4;
       }
     }
   }
   function portal(x, z, doorWidth, alongX, parent = outer) {
     for (const side of [-1, 1]) box(parent, wood, x + (alongX ? side * (doorWidth / 2 + .08) : 0), floor + 1.46, z + (alongX ? 0 : side * (doorWidth / 2 + .08)), alongX ? .14 : .38, 2.92, alongX ? .38 : .14, '#725035');
-    box(parent, wood, x, floor + 2.91, z, alongX ? doorWidth + .22 : .38, .19, alongX ? .38 : doorWidth + .22, '#825c3d');
+    box(parent, wood, x, floor + 2.91, z, alongX ? doorWidth + .22 : .38, .19, alongX ? .38 : doorWidth + .22, '#a08052');
+    for(const side of [-1,1]) {
+      const px=x+(alongX?side*(doorWidth/2+.10):0),pz=z+(alongX?0:side*(doorWidth/2+.10));
+      box(parent,stone,px,floor+.19,pz,alongX?.18:.43,.38,alongX?.43:.18,'#a59f88',[],.04);
+      for(const y of [.58,2.45])box(parent,iron,px,floor+y,pz,alongX?.155:.405,.07,alongX?.405:.155,'#4b5149',[],.01);
+    }
   }
   for (const entrance of def.entrances) {
     const alongX = entrance.side === 'north' || entrance.side === 'south';
@@ -158,7 +191,7 @@ export function createWaldhausModel() {
     portal(alongX ? entrance.center : wallCenter, alongX ? wallCenter : entrance.center, doorWidth, alongX, entrance.side === 'south' ? frontFacade : outer);
     const sign = entrance.side === 'north' || entrance.side === 'west' ? -1 : 1;
     for (const step of [{ offset: .31, height: .12, reach: .64, extra: 0 }, { offset: .63, height: .07, reach: .25, extra: .16 }]) {
-      box(outer, stone, alongX ? entrance.center : entrance.boundary + sign * step.offset, step.height / 2, alongX ? entrance.boundary + sign * step.offset : entrance.center, alongX ? doorWidth + step.extra : step.reach, step.height, alongX ? step.reach : doorWidth + step.extra, '#999986');
+      box(outer, stone, alongX ? entrance.center : entrance.boundary + sign * step.offset, step.height / 2, alongX ? entrance.boundary + sign * step.offset : entrance.center, alongX ? doorWidth + step.extra : step.reach, step.height, alongX ? step.reach : doorWidth + step.extra, '#918b78');
     }
   }
   for (const doorway of def.interiorDoorways) portal(doorway.x, doorway.z, doorway.width, doorway.axis === 'x', interior);
@@ -167,18 +200,40 @@ export function createWaldhausModel() {
     holder.position.set(plan.x, 0, plan.z);
     holder.rotation.y = { north: 0, east: -Math.PI / 2, south: Math.PI, west: Math.PI / 2 }[plan.side];
     const w = plan.width ?? 1.38, h = plan.height ?? 1.3, y = floor + (plan.sillHeight ?? 1.27) + h / 2;
-    box(holder, wood, 0, y, 0, w, h, .12, '#4d3829');
-    box(holder, glass, 0, y, .075, w - .24, h - .25, .055, '#92a898');
-    for (const side of [-1, 0, 1]) box(holder, wood, side * (w / 2 - .12), y, .12, .055, h - .2, .06, '#aa8050');
-    box(holder, wood, 0, y, .12, w - .22, .06, .06, '#aa8050');
+    box(holder, wood, 0, y, -.015, w+.16, h+.14, .13, '#42382b');
+    box(holder, wood, 0, y, .025, w, h, .16, '#6d5238');
+    for(const side of [-1,1])box(holder,wood,side*(w/2-.05),y,.17,.1,h+.05,.15,'#b19564');
+    box(holder,wood,0,y+h/2+.06,.15,w+.22,.12,.24,'#9f8456');
+    box(holder, glass, 0, y, .135, w - .24, h - .25, .055, '#92a898');
+    for (const side of [-1, 0, 1]) box(holder, wood, side * (w / 2 - .12), y, .19, .055, h - .2, .06, '#aa8050');
+    box(holder, wood, 0, y, .19, w - .22, .06, .06, '#aa8050');
     for (const side of [-1, 1]) {
       const x = side * (w / 2 + .19);
       box(holder, wood, x, y, .06, .35, h - .08, .1, '#65724b');
       for (const offset of [-.35, .35]) box(holder, iron, x, y + offset * h / 1.3, .125, .31, .055, .035, '#4b4e40');
     }
-    box(holder, stone, 0, y - h / 2 - .05, .12, w + .24, .13, .28, '#9b9b82');
+    box(holder, stone, 0, y - h / 2 - .05, .12, w + .24, .16, .43, '#aaa18a');
   }
   for (const window of def.windows) windowPanel(window);
+  // Sparse low planting hugs the outside foundation, away from every doorway.
+  // These are shallow architectural dressing, never interior or collision props.
+  const plantRandom=seeded();
+  for(const side of [-1,1])for(const z of [-4.5,-1.9,2.6,4.8]) {
+    if(plantRandom()<.3)continue;
+    const x=side*(def.footprint.halfWidth+.11);
+    for(let j=0;j<5;j++) {
+      const px=x+side*plantRandom()*.12,pz=z+(plantRandom()-.5)*.6;
+      const h=.08+plantRandom()*.12,geo=new THREE.SphereGeometry(1,6,3);
+      geo.scale(.075+plantRandom()*.06,h,.07+plantRandom()*.09);
+      geometry(outer,foliage,geo,px,h*.55,pz,j%2?'#677346':'#7c8451');
+    }
+    box(outer,stone,x,.035,z,.16,.07,.26,'#747664',[0,plantRandom(),0],.03);
+  }
+  // Moss appears in small irregular patches on selected low exterior stones.
+  for(const side of [-1,1])for(const z of [-3.4,.8,4.1]) {
+    const geo=new THREE.SphereGeometry(1,7,4);geo.scale(.018,.055,.14);
+    geometry(outer,foliage,geo,side*(def.footprint.halfWidth+.035),.19,z,'#63704c');
+  }
   // Window-local transforms are baked into the material batches; only the
   // front cutaway remains separately controllable at runtime.
   group.updateMatrixWorld(true);
