@@ -16,22 +16,24 @@ function placement(rotation,scale) {
  };
 }
 
-test('castle is one fixed 70m by 60m plan with two great halls and a traversable corridor loop',()=>{
+test('castle is one fixed 140m by 120m plan with two great halls and a traversable corridor loop',()=>{
  assert.equal(HOUSE_BUILDER_VARIANTS.find(v=>v.id==='schlossanlage').fixedLayout,true);
  assert.equal(castle.fixedLayout,true);
- assert.deepEqual(castle.footprint,{halfWidth:35,halfDepth:30});
+ assert.deepEqual(castle.footprint,{halfWidth:70,halfDepth:60});
  assert.equal(castle.rooms.filter(r=>r.role==='great-hall').length,2);
- assert.equal(castle.rooms.filter(r=>r.role==='chamber').length,10);
+ assert.equal(castle.rooms.filter(r=>r.role==='chamber').length,19);
  assert.equal(castle.rooms.filter(r=>r.role==='gate').length,2);
- assert.equal(castle.rooms.filter(r=>r.role==='corridor').length,4);
+ assert.equal(castle.rooms.filter(r=>r.role==='corridor').length,6);
  assert.equal(castle.entrances.filter(e=>e.exterior).length,2);
- assert.equal(castle.entrances.filter(e=>e.courtyard).length,4);
+ assert.equal(castle.entrances.filter(e=>e.courtyard).length,8);
  assert.ok(Object.isFrozen(castle)&&Object.isFrozen(castle.walls)&&Object.isFrozen(castle.floorAreas));
  for(const houseRooms of [1,2,3])for(const houseLayout of [0,1,2])for(const houseEntrances of ['single','double']) {
   assert.equal(getHouseDefinition({variant:'schlossanlage',houseRooms,houseLayout,houseEntrances}),castle);
  }
+ assert.equal(castle.courtyards.length,2);
+ assert.equal(castle.footprint.halfWidth*castle.footprint.halfDepth*4,70*60*4,'fourfold footprint without scaling walls or doors');
  const index=createCollisionIndex([],castle.walls);
- for(let i=1;i<castle.qaRoutes.loop.length;i++)assert.equal(index.traceSegment(point(castle.qaRoutes.loop[i-1]),point(castle.qaRoutes.loop[i]),.42),null,'complete ring remains open');
+ for(const loop of castle.qaRoutes.loops)for(let i=1;i<loop.length;i++)assert.equal(index.traceSegment(point(loop[i-1]),point(loop[i]),.42),null,'both courtyard loops and outer ring remain open');
 });
 
 test('castle exterior gates, courtyard transitions and room doors stay capsule-clear when rotated and scaled',()=>{
@@ -55,9 +57,9 @@ test('castle exterior gates, courtyard transitions and room doors stay capsule-c
 });
 
 test('every castle room is reachable from the south gate without having to cross the courtyard',()=>{
- const index=createCollisionIndex([],castle.walls),queue=[[0,28]],seen=new Set(['0,28']);
+ const index=createCollisionIndex([],castle.walls),queue=[[0,58]],seen=new Set(['0,58']);
  function walkable(x,z) {
-  if(x<-34||x>34||z<-29||z>29)return false;
+  if(x<-69||x>69||z<-59||z>59)return false;
   if(!castle.footprintAreas.some(a=>x>=a.minX&&x<=a.maxX&&z>=a.minZ&&z<=a.maxZ))return false;
   const p=point([x,z]),before={...p};index.resolve(p,.42);
   return Math.hypot(p.x-before.x,p.z-before.z)<1e-7;
@@ -73,12 +75,12 @@ test('every castle room is reachable from the south gate without having to cross
   const x=Math.round((room.minX+room.maxX)/2),z=Math.round((room.minZ+room.maxZ)/2);
   assert.ok(seen.has(`${x},${z}`),`${room.name}: room centre reachable inside compound`);
  }
- assert.ok(seen.has('0,-28'),'secondary gate connected to main gate');
+ assert.ok(seen.has('0,-58'),'secondary gate connected to main gate');
 });
 
-test('castle floors cover the wings once, preserve outdoor courtyard and ramp only through real door openings',()=>{
+test('castle stone floors cover the wings once, preserve both outdoor courts and ramp only through real door openings',()=>{
  const areas=castle.floorAreas;
- assert.equal(areas.reduce((sum,a)=>sum+(a.maxX-a.minX)*(a.maxZ-a.minZ),0),70*60-34*24);
+ assert.equal(areas.reduce((sum,a)=>sum+(a.maxX-a.minX)*(a.maxZ-a.minZ),0),140*120-2*34*54);
  for(let i=0;i<areas.length;i++)for(let j=i+1;j<areas.length;j++) {
   const a=areas[i],b=areas[j];
   assert.ok(Math.min(a.maxX,b.maxX)<=Math.max(a.minX,b.minX)||Math.min(a.maxZ,b.maxZ)<=Math.max(a.minZ,b.minZ),'floor rectangles do not overlap');
@@ -86,9 +88,9 @@ test('castle floors cover the wings once, preserve outdoor courtyard and ramp on
  for(const room of castle.rooms) {
   const x=(room.minX+room.maxX)/2,z=(room.minZ+room.maxZ)/2;
   assert.equal(factor(x,z),1,room.name);
-  assert.ok(['stone','wood'].includes(room.material));
+  assert.equal(room.material,'stone');
  }
- for(const [x,z] of [[0,0],[-10,-7],[10,7],[0,-10],[15,5]]) {
+ for(const [x,z] of castle.qaRoutes.courtyards.flatMap(([x,z])=>[[x,z],[x-9,z-18],[x+9,z+18]])) {
   assert.equal(factor(x,z),null,'courtyard is outdoor ground');
   assert.ok(!castle.rooms.some(r=>inside(x,z,r)),'courtyard never counts as a sheltered room');
  }
@@ -115,5 +117,36 @@ test('castle stone walls stop movement and low projectiles without invisible obs
   const from={x,y:1,z,[axis]:(axis==='z'?wall.minZ:wall.minX)-1},to={x,y:1,z,[axis]:(axis==='z'?wall.maxZ:wall.maxX)+1};
   assert.ok(index.traceSegment(from,to,.06),`${wall.name}: projectile blocked`);
   assert.equal(index.traceSegment({...from,y:castle.height+.3},{...to,y:castle.height+.3},.06),null,`${wall.name}: open above visible walls`);
+ }
+});
+
+
+test('courtyard paving stays separate from indoor floors and barred windows remain stone-wall openings',()=>{
+ assert.deepEqual(castle.courtyardPavingAreas.map(a=>[a.minX,a.maxX,a.minZ,a.maxZ]),castle.courtyards.map(a=>[a.minX,a.maxX,a.minZ,a.maxZ]));
+ assert.ok(castle.courtyardPavingAreas.every(a=>a.material==='stone'&&a.outdoor===true));
+ assert.ok(castle.floorAreas.every(a=>a.material==='stone'));
+ assert.ok(castle.architecturalWalls.every(w=>w.material==='stone'));
+ for(const window of castle.windows) {
+  assert.equal(window.glazed,false);assert.equal(window.barred,true);
+  assert.ok(window.sillHeight>=1&&window.sillHeight+window.height<castle.wallHeight);
+  const alongX=['north','south'].includes(window.side),normal=['north','west'].includes(window.side)?-1:1;
+  const centre=window.boundary+normal*window.wallThickness/2;
+  const parent=castle.architecturalWalls.find(w=>alongX?centre>=w.minZ&&centre<=w.maxZ&&window.center-window.width/2>w.minX&&window.center+window.width/2<w.maxX:centre>=w.minX&&centre<=w.maxX&&window.center-window.width/2>w.minZ&&window.center+window.width/2<w.maxZ);
+  assert.ok(parent,window.name+' has a complete host stone wall, away from doorway gaps');
+ }
+});
+
+test('torch mounts illuminate covered galleries without occupying doorways or courtyards',()=>{
+ assert.ok(castle.torches.length>=30&&castle.torches.length<=48);
+ const ids=new Set();
+ for(const torch of castle.torches) {
+  assert.ok(!ids.has(torch.id));ids.add(torch.id);
+  const [nx,nz]=torch.normal;assert.equal(Math.abs(nx)+Math.abs(nz),1);
+  const x=torch.x+nx*.6,z=torch.z+nz*.6;
+  assert.equal(factor(x,z),1,'torch faces a covered floor');
+  assert.ok(!castle.courtyards.some(c=>inside(x,z,c)));
+  const index=createCollisionIndex([],castle.walls),p={x,y:1,z},before={...p};index.resolve(p,.42);
+  assert.ok(Math.hypot(p.x-before.x,p.z-before.z)<1e-7,'mounted torch opens into a clear gallery');
+  for(const door of castle.interiorDoorways)assert.ok(Math.hypot(torch.x-door.x,torch.z-door.z)>door.width/2+1.1,'torch does not crowd an interior doorway');
  }
 });

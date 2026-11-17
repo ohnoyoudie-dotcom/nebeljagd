@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {makeWorldObject, normalizeWorldmap, isObjectPlaceable} from '../src/map/objects.js';
 import {getVariantAsset, getVariantPreviewSvg} from '../src/map/asset-catalog.js';
 import {getHouseDefinition} from '../src/map/house-builder.js';
+import {getCastleMaterialColors,CASTLE_STYLE_LABELS,CASTLE_FLOOR_LABELS,CASTLE_WALL_LABELS} from '../src/map/castle-colors.js';
 import {getBuilderHousePreviewSvg, builderHouseSymbolKey} from '../src/map/house-map-symbol.js';
 import {validateWorldmap} from '../src/map/model.js';
 import {removeNonTripoObjects} from '../src/map/tripo-object-cleanup.js';
@@ -45,23 +46,53 @@ test('castle creation drops ordinary house partitions and imports reject setting
   assert.deepEqual(castleRule.then.not.anyOf.map(rule=>rule.required[0]).sort(),['houseEntrances','houseLayout','houseRooms']);
 });
 
-test('castle SVG reflects the actual open courtyard, stone floors and all doorways without labels or executable imported text',()=>{
+test('castle SVG distinguishes two outdoor paved courts, stone rooms, barred apertures and torch positions',()=>{
   const object=castle(),def=getHouseDefinition(object),svg=getBuilderHousePreviewSvg(object);
   assert.equal((svg.match(/data-waldhaus-wall=/g)??[]).length,def.architecturalWalls.length);
   assert.equal((svg.match(/data-waldhaus-room=/g)??[]).length,def.rooms.length);
   assert.equal((svg.match(/data-waldhaus-entrance=/g)??[]).length,def.entrances.length);
   assert.equal((svg.match(/data-castle-doorway=/g)??[]).length,def.interiorDoorways.length);
-  // No floor or wall rectangle may cover the open heart of the courtyard.
-  for(const rect of svg.matchAll(/<rect x="(-?[\d.]+)" y="(-?[\d.]+)" width="([\d.]+)" height="([\d.]+)"/g)) {
-    const [,x,z,w,d]=rect.map(Number);
-    assert.ok(!(x<0&&x+w>0&&z<0&&z+d>0),'courtyard centre is unpainted');
+  assert.equal((svg.match(/data-castle-courtyard=/g)??[]).length,2);
+  assert.equal((svg.match(/data-castle-window="barred"/g)??[]).length,def.windows.length);
+  assert.equal((svg.match(/data-castle-grille=/g)??[]).length,def.windows.length);
+  assert.equal((svg.match(/data-castle-torch=/g)??[]).length,def.torches.length);
+  assert.equal((svg.match(/data-castle-floor-joints=/g)??[]).length,def.rooms.length);
+  assert.ok(def.floorAreas.every(area=>area.material==='stone'));
+  for(const court of def.courtyards) {
+    const cx=(court.minX+court.maxX)/2,cz=(court.minZ+court.maxZ)/2;
+    const rectangles=[...svg.matchAll(/<rect x="(-?[\d.]+)" y="(-?[\d.]+)" width="([\d.]+)" height="([\d.]+)" ([^>]*)>/g)];
+    const contains=match=>{const [,x,z,w,d]=match.slice(0,5).map(Number);return x<cx&&x+w>cx&&z<cz&&z+d>cz;};
+    assert.ok(rectangles.some(match=>contains(match)&&match[5].includes('data-castle-courtyard')),'each court has its separate outdoor paving');
+    assert.ok(!rectangles.some(match=>contains(match)&&/data-house-foundation|data-waldhaus-room|data-waldhaus-wall/.test(match[5])),'courtyard is not a covered room or raised foundation');
   }
+  const stone=getCastleMaterialColors(object);
+  assert.ok(svg.includes(`data-waldhaus-wall="true" fill="${stone.wall}"`));
+  assert.notEqual(stone.wall,stone.floor);
+  assert.doesNotMatch(svg,/data-castle-plaster|#a2c6c3|#b49160/);
+  const sage=getBuilderHousePreviewSvg({...object,houseWallColor:'sage'}),clay=getBuilderHousePreviewSvg({...object,houseWallColor:'clay'});
+  assert.notEqual(sage.match(/data-waldhaus-wall="true" fill="([^"]+)"/)[1],clay.match(/data-waldhaus-wall="true" fill="([^"]+)"/)[1]);
   assert.notEqual(svg,getBuilderHousePreviewSvg({...object,houseSeed:28,houseStoneColor:'slate'}));
   assert.notEqual(builderHouseSymbolKey(object),builderHouseSymbolKey({...object,houseWallColor:'sage'}));
-  const sage=getBuilderHousePreviewSvg({...object,houseWallColor:'sage'}),clay=getBuilderHousePreviewSvg({...object,houseWallColor:'clay'});
-  assert.ok((sage.match(/data-castle-plaster=/g)??[]).length>0);
-  assert.notEqual(sage.match(/data-castle-plaster="true" fill="([^"]+)"/)[1],clay.match(/data-castle-plaster="true" fill="([^"]+)"/)[1]);
   assert.equal(svg,getBuilderHousePreviewSvg(JSON.parse(JSON.stringify(object))));
   assert.doesNotMatch(svg,/<text|<script|foreignObject/);
   assert.doesNotMatch(getBuilderHousePreviewSvg({...object,houseStyle:'"><script>',houseStoneColor:'"><script>',houseWallColor:'"><script>'}),/<script/);
+  assert.ok(svg.length<65000,'reusable joint patterns keep the fourfold larger plan compact');
+});
+
+test('castle material controls retain legacy saved IDs while only describing restrained stone palettes',()=>{
+  assert.deepEqual(Object.keys(CASTLE_STYLE_LABELS),['natural','lime','ochre','dark']);
+  assert.deepEqual(Object.keys(CASTLE_FLOOR_LABELS),['natural','sand','slate','moss']);
+  assert.deepEqual(Object.keys(CASTLE_WALL_LABELS),['style','chalk','sand','sage','clay']);
+  assert.doesNotMatch(Object.values({...CASTLE_STYLE_LABELS,...CASTLE_FLOOR_LABELS,...CASTLE_WALL_LABELS}).join(' '),/Holz|Putz|Fachwerk|Glas/);
+  const base=getCastleMaterialColors();
+  assert.deepEqual(getCastleMaterialColors({houseStyle:'constructor',houseWallColor:'__proto__',houseStoneColor:'<script>'}),base);
+  for(const houseStyle of Object.keys(CASTLE_STYLE_LABELS)) {
+    const palette=getCastleMaterialColors({houseStyle});
+    assert.notEqual(palette.wall,palette.floor);
+    for(const value of Object.values(palette))assert.match(value,/^#[0-9a-f]{6}$/);
+  }
+  assert.equal(getCastleMaterialColors({houseStoneColor:'slate'}).wall,base.wall);
+  assert.notEqual(getCastleMaterialColors({houseStoneColor:'slate'}).floor,base.floor);
+  assert.equal(getCastleMaterialColors({houseWallColor:'clay'}).floor,base.floor);
+  assert.notEqual(getCastleMaterialColors({houseWallColor:'clay'}).wall,base.wall);
 });

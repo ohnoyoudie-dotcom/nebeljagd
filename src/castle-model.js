@@ -1,9 +1,8 @@
 import * as THREE from 'three';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { getHouseAppearance } from './map/house-builder.js';
-import { getHouseMaterialColors } from './map/house-colors.js';
-import { createWaldhausSurface } from './waldhaus-materials.js';
-import { createWaldhausStoneSegment, WALDHAUS_STONE_LENGTH } from './waldhaus-stone.js';
+import { getCastleMaterialColors } from './map/castle-colors.js';
+import { createCastleSurface } from './castle-materials.js';
+import { createCastleTorches } from './castle-torches.js';
 
 const seeded = seed => { let state=seed;return () => {state=(Math.imul(state,1664525)+1013904223)|0;return (state>>>0)/4294967296;}; };
 
@@ -61,169 +60,152 @@ function dressedBlock(seed=0, slab=false) {
   geometry.computeBoundingBox();geometry.computeBoundingSphere();return geometry;
 }
 
-/** Empty, roofless castle architecture. All walkable space and wall openings
- * are supplied by the shared editor/collision plan, including the open court. */
-export function createCastleModel({definition:def,stoneMaterial,houseStyle,houseSeed,houseStoneColor,houseWallColor}={}) {
+/** Roofless stone architecture, with actual grilled window apertures and two
+ * ground-level paved courts. The plan supplies all movement and doorway data. */
+export function createCastleModel({definition:def,houseStyle,houseSeed,houseStoneColor,houseWallColor}={}) {
   if(!def||def.architecture!=='castle')throw new TypeError('Castle model needs the shared castle definition.');
-  const appearance=getHouseAppearance({houseStyle,houseSeed}),colors=getHouseMaterialColors({houseStoneColor,houseWallColor});
-  const random=seeded(appearance.seed),floor=def.floorHeight,stoneTint=new THREE.Color(colors.stone.color),woodTint=new THREE.Color(appearance.woodTint);
-  const wallTint=new THREE.Color(colors.wall.color??appearance.plasterTint);
+  const appearance=getHouseAppearance({houseStyle,houseSeed}),palette=getCastleMaterialColors({houseStyle,houseStoneColor,houseWallColor});
+  const random=seeded(appearance.seed),floor=def.floorHeight;
   const group=new THREE.Group(),outer=new THREE.Group(),roof=new THREE.Group(),frontFacade=new THREE.Group(),interior=new THREE.Group();
-  group.name=def.label;outer.name='Schlossanlage · verwittertes Mauerwerk';interior.name='Schlossanlage · Säle und Wandelgänge';
+  group.name=def.label;outer.name='Schlossanlage · dunkler Naturstein';interior.name='Schlossanlage · Schieferböden und Galerien';
   roof.name='Schlossanlage · offener Dachschnitt';roof.visible=false;frontFacade.name='Schlossanlage · offene Vorderfassade';group.add(outer,roof,frontFacade,interior);
-  const materials=new Set(),textures=new Set(),geometries=new Set(),batches=new Map();
+  const materials=new Set(),textures=new Set(),geometries=new Set(),batches=new Map(),staticMeshes=[];
   const makeMaterial=(name,kind,options={})=>{
-    const maps=kind?createWaldhausSurface(kind):{};for(const texture of Object.values(maps))if(texture)textures.add(texture);
-    const material=new THREE.MeshStandardMaterial({roughness:.95,...maps,...(kind?{bumpScale:kind==='wood'?.045:.07}:{}),...options});
-    material.name='Schlossanlage · '+name;materials.add(material);return material;
+    const maps=kind?createCastleSurface(kind):{};Object.values(maps).forEach(texture=>textures.add(texture));
+    const material=new THREE.MeshStandardMaterial({roughness:.98,...maps,...(kind?{bumpScale:kind==='wall'?.10:.022}:{}),...options});
+    material.name='Schlossanlage · '+name;material.userData.castleSurface=kind??'metal';materials.add(material);return material;
   };
-  const stone=makeMaterial('behauener Feldstein','stone'),paving=makeMaterial('abgetretene Kalksteinplatten','stone',{bumpScale:.045}),wood=makeMaterial('dunkles Eichenholz','wood'),plaster=makeMaterial('Kalkputz','plaster'),mortar=makeMaterial('vertiefte Fugen',null),iron=makeMaterial('geschwärztes Eisen',null,{metalness:.7,roughness:.6}),glass=makeMaterial('rauchiges Bleiglas',null,{metalness:.1,roughness:.38});
-  const blocks=Array.from({length:3},(_,i)=>dressedBlock(i)),slabs=Array.from({length:2},(_,i)=>dressedBlock(i,true));
-  const cube=new THREE.BoxGeometry(1,1,1);[...blocks,...slabs,cube].forEach(geo=>geometries.add(geo));
-  const dummy=new THREE.Object3D(),tint=new THREE.Color();let parts=0,stones=0,floorTiles=0;
+  const stone=makeMaterial('rauer grauer Bruchstein','wall'),paving=makeMaterial('glatte abgetretene Schieferplatten','floor',{roughness:.94}),trim=makeMaterial('behauene Einfassungen','wall',{bumpScale:.045}),mortar=makeMaterial('tiefe Steinmörtelfugen',null),iron=makeMaterial('geschmiedete Fenstergitter',null,{metalness:.76,roughness:.65});
+  const blocks=Array.from({length:3},(_,i)=>dressedBlock(i)),slabs=Array.from({length:2},(_,i)=>dressedBlock(i,true)),cube=new THREE.BoxGeometry(1,1,1);
+  [...blocks,...slabs,cube].forEach(geo=>geometries.add(geo));
+  const dummy=new THREE.Object3D(),tint=new THREE.Color();let parts=0,stones=0,floorTiles=0,windowApertures=0;
   function box(parent,material,x,y,z,w,h,d,color,rotation=0,shape=blocks[parts%3]) {
-    if(w<=0||h<=0||d<=0)return;
+    if(w<=.0001||h<=.0001||d<=.0001)return;
     const key=parent.uuid+':'+material.uuid+':'+shape.uuid;
     if(!batches.has(key))batches.set(key,{parent,material,shape,instances:[]});
-    tint.set(color);
-    if(material===stone||material===paving)tint.multiply(stoneTint);
-    if(material===wood)tint.multiply(woodTint);
-    if(material===plaster)tint.multiply(wallTint);
-    dummy.position.set(x,y,z);dummy.rotation.set(0,rotation,0);dummy.scale.set(w,h,d);dummy.updateMatrix();
+    tint.set(color);dummy.position.set(x,y,z);dummy.rotation.set(0,rotation,0);dummy.scale.set(w,h,d);dummy.updateMatrix();
     batches.get(key).instances.push({matrix:dummy.matrix.clone(),color:tint.clone()});parts++;
   }
-  const pick=(a,b)=>new THREE.Color(a).lerp(new THREE.Color(b),random()).getHex();
-  // Stone floors are laid in irregular, staggered courses rather than a huge
-  // repeated grid. Only covered floor rectangles receive a foundation.
-  for(const area of def.floorAreas) {
+  const varied=(base,amount=.12)=>new THREE.Color(base).multiplyScalar(1-amount*.5+random()*amount);
+  const baseMortar=new THREE.Color(palette.wall).multiplyScalar(.64);
+  function pavedArea(area,top,outdoor=false) {
     const width=area.maxX-area.minX,depth=area.maxZ-area.minZ;
-    box(interior,mortar,(area.minX+area.maxX)/2,floor-.11,(area.minZ+area.maxZ)/2,width,.13,depth,'#726c59',0,cube);
-    if(area.material==='wood') {
-      const alongZ=area.alongZ!==false,acrossMin=alongZ?area.minX:area.minZ,acrossMax=alongZ?area.maxX:area.maxZ;
-      const alongMin=alongZ?area.minZ:area.minX,alongMax=alongZ?area.maxZ:area.maxX;
-      for(let edge=acrossMin;edge<acrossMax-.001;) {
-        const width=Math.min(.42+random()*.16,acrossMax-edge),across=edge+width/2;edge+=width;
-        for(let start=alongMin;start<alongMax-.001;) {
-          let length=Math.min((start===alongMin?1:2)+random()*2.4,alongMax-start);if(alongMax-start-length<.35)length=alongMax-start;
-          const along=start+length/2;start+=length;
-          box(interior,wood,alongZ?across:along,floor-.025,alongZ?along:across,alongZ?width-.012:length-.014,.05,alongZ?length-.014:width-.012,pick('#827052','#9b8460'),0,cube);floorTiles++;
-        }
+    const tint=new THREE.Color(palette.floor).multiplyScalar(outdoor?.81:area.pattern==='flagstone'?1.07:1);
+    box(interior,mortar,(area.minX+area.maxX)/2,top-(outdoor?.053:.075),(area.minZ+area.maxZ)/2,width,.10,depth,new THREE.Color(palette.floor).multiplyScalar(.73),0,cube);
+    // Every paving tile keeps metre-sized detail even on the fourfold grounds.
+    // Staggered rows, subtle colours and small joints avoid a regular brick grid.
+    let rowIndex=0;
+    for(let z=area.minZ;z<area.maxZ-.001;rowIndex++) {
+      let row=Math.min((outdoor?1.55:1.12)+random()*.32,area.maxZ-z);if(area.maxZ-z-row<.4)row=area.maxZ-z;
+      for(let x=area.minX;x<area.maxX-.001;) {
+        let span=Math.min((x===area.minX?(rowIndex%2?.72:1.42):1.5)+random()*.6,area.maxX-x);if(area.maxX-x-span<.4)span=area.maxX-x;
+        const cx=x+span/2,cz=z+row/2,c=varied(tint,outdoor?.16:.10);
+        box(interior,paving,cx,top-.032,cz,span-.018,.064,row-.018,c,0,slabs[floorTiles%2]);floorTiles++;x+=span;
       }
-    } else {
-      for(let z=area.minZ;z<area.maxZ-.001;) {
-        const row=Math.min(1.1+random()*.35,area.maxZ-z),cz=z+row/2;
-        for(let x=area.minX;x<area.maxX-.001;) {
-          let span=Math.min((x===area.minX?.6:1.25)+random()*.75,area.maxX-x);if(area.maxX-x-span<.35)span=area.maxX-x;
-          const cx=x+span/2;
-          const distance=Math.min(cx-area.minX,area.maxX-cx,cz-area.minZ,area.maxZ-cz);
-          const c=new THREE.Color(pick('#a19a80','#b5ac91')).multiplyScalar(distance<.7?.88:1);
-          box(interior,paving,cx,floor-.035,cz,span-.025,.07,row-.025,c,0,slabs[floorTiles%2]);floorTiles++;x+=span;
-        }
-        z+=row;
-      }
+      z+=row;
     }
   }
-  // Borrow only the original wall material maps. The owning environment kit
-  // remains alive when an individual castle is removed from the scene.
-  const sourceMaterial=stoneMaterial?.clone()??makeMaterial('Steinsockel Vorschau','stone');
-  sourceMaterial.color.multiply(stoneTint);sourceMaterial.name='Schlossanlage · originale Tripo-Sockel';materials.add(sourceMaterial);
-  const basePieces=[];
+  for(const area of def.floorAreas)pavedArea(area,floor);
+  for(const area of def.courtyardPavingAreas??[])pavedArea(area,.008,true);
+  // Restrained stone inlays articulate large halls without adding furniture or
+  // a raised obstacle. They follow each hall, not the underlying floor tiling.
+  for(const room of def.rooms.filter(r=>['great-hall','gate','hall','central-hall'].includes(r.role))) {
+    const inset=.65,x0=room.minX+inset,x1=room.maxX-inset,z0=room.minZ+inset,z1=room.maxZ-inset;
+    const colour=new THREE.Color(palette.floor).multiplyScalar(.76);
+    for(const z of [z0,z1])box(interior,paving,(x0+x1)/2,floor+.002,z,x1-x0,.004,.17,colour,0,cube);
+    for(const x of [x0,x1])box(interior,paving,x,floor+.002,(z0+z1)/2,.17,.004,z1-z0,colour,0,cube);
+  }
+  function matchingWindows(wall,alongX) {
+    const from=alongX?wall.minX:wall.minZ,to=alongX?wall.maxX:wall.maxZ;
+    const min=alongX?wall.minZ:wall.minX,max=alongX?wall.maxZ:wall.maxX;
+    return def.windows.filter(window=>['north','south'].includes(window.side)===alongX&&window.boundary>=min-.05&&window.boundary<=max+.05&&window.center-window.width/2>=from-.001&&window.center+window.width/2<=to+.001);
+  }
+  function openSpans(from,to,holes) {
+    const spans=[];let edge=from;
+    for(const [a,b]of holes.sort((a,b)=>a[0]-b[0])) {if(a>edge)spans.push([edge,a]);edge=Math.max(edge,b);}
+    if(edge<to)spans.push([edge,to]);return spans;
+  }
   for(const wall of def.architecturalWalls) {
-    const w=wall.maxX-wall.minX,d=wall.maxZ-wall.minZ,alongX=w>d,length=alongX?w:d,thickness=alongX?d:w;
-    const cx=(wall.minX+wall.maxX)/2,cz=(wall.minZ+wall.maxZ)/2,height=wall.maxY-floor;
-    const bearing=alongX?0:Math.PI/2;
-    // The highly sculpted source stones are reserved for the exposed outer
-    // north/south plinths; the rest uses the same full-scale dressed masonry.
-    const originalBase=alongX&&wall.external&&(Math.abs(cz)>def.footprint.halfDepth-1);
-    box(outer,mortar,cx,floor+height/2,cz,w-.06,height-.02,d-.06,'#605e50',0,cube);
-    if(originalBase)for(let start=0;start<length-.001;start+=WALDHAUS_STONE_LENGTH) {
-      const span=Math.min(WALDHAUS_STONE_LENGTH,length-start),geo=createWaldhausStoneSegment(span);
-      geo.scale(1,1,thickness/.36);geo.translate(cx-length/2+start+WALDHAUS_STONE_LENGTH/2,floor,cz);basePieces.push(geo);
+    const w=wall.maxX-wall.minX,d=wall.maxZ-wall.minZ,alongX=w>d,thickness=alongX?d:w;
+    const from=alongX?wall.minX:wall.minZ,to=alongX?wall.maxX:wall.maxZ,fixed=alongX?(wall.minZ+wall.maxZ)/2:(wall.minX+wall.maxX)/2;
+    const height=wall.maxY-floor,bearing=alongX?0:Math.PI/2,windows=matchingWindows(wall,alongX);
+    windowApertures+=windows.length;
+    // Split both the mortar core AND the visible blocks around true openings.
+    // A dark decal in front of an opaque wall is deliberately not a window.
+    const yEdges=[0,height-.16];
+    for(let y=.52;y<height-.16;y+=.52) {
+      const apertureEdge=windows.flatMap(window=>[window.sillHeight,window.sillHeight+window.height]).find(edge=>Math.abs(edge-y)<.12);
+      yEdges.push(apertureEdge??y);
     }
-    const base=originalBase?.6:0,available=height-base-.17,courses=Math.max(1,Math.round(available/.49)),courseHeight=available/courses;
-    for(let row=0;row<courses;row++) {
-      const y=floor+base+(row+.5)*courseHeight;
-      for(let offset=0;offset<length-.001;) {
-        let span=Math.min((offset===0?.65:1.35)+random()*.65,length-offset);if(length-offset-span<.38)span=length-offset;
-        const center=-length/2+offset+span/2,depth=thickness-.025+random()*.015;
-        box(outer,stone,cx+(alongX?center:0),y,cz+(alongX?0:center),span-.035,courseHeight-.028,depth,pick('#9b957f','#b5aa8f'),bearing);stones++;offset+=span;
+    for(const window of windows)yEdges.push(window.sillHeight,window.sillHeight+window.height);
+    const levels=[...new Set(yEdges.filter(y=>y>=0&&y<=height-.16).map(y=>Math.round(y*1000)/1000))].sort((a,b)=>a-b);
+    for(let row=0;row<levels.length-1;row++) {
+      const low=levels[row],high=levels[row+1],cy=floor+(low+high)/2;
+      const holes=windows.filter(window=>(low+high)/2>window.sillHeight&&(low+high)/2<window.sillHeight+window.height).map(window=>[window.center-window.width/2,window.center+window.width/2]);
+      for(const [a,b]of openSpans(from,to,holes)) {
+        box(outer,mortar,alongX?(a+b)/2:fixed,cy,alongX?fixed:(a+b)/2,alongX?b-a:thickness-.05,high-low,alongX?thickness-.05:b-a,baseMortar,0,cube);
+        for(let edge=a;edge<b-.001;) {
+          let span=Math.min((edge===a?(row%2?.7:1.2):1.42)+random()*.58,b-edge);if(b-edge-span<.42)span=b-edge;
+          const center=edge+span/2;
+          box(outer,stone,alongX?center:fixed,cy,alongX?fixed:center,span-.026,Math.max(.015,high-low-.023),thickness-.012,varied(palette.wall,.16),bearing);stones++;edge+=span;
+        }
       }
     }
-    // Individually cut coping pieces make wall direction and open door gaps
-    // legible at the overhead game camera without a continuous timber outline.
-    for(let offset=0;offset<length-.001;) {
-      const span=Math.min(1.12+random()*.3,length-offset),center=-length/2+offset+span/2;
-      box(outer,stone,cx+(alongX?center:0),floor+height-.07,cz+(alongX?0:center),span-.018,.16,thickness+.025,pick('#b3ab91','#c1b89d'),bearing,slabs[0]);offset+=span;
-    }
-  }
-  if(basePieces.length) {
-    const geo=mergeGeometries(basePieces,false);basePieces.forEach(piece=>piece.dispose());geometries.add(geo);
-    const mesh=new THREE.Mesh(geo,sourceMaterial);mesh.name='Schlossanlage · originale verwitterte Sockelsteine';mesh.castShadow=mesh.receiveShadow=true;outer.add(mesh);
-  }
-  // The chamber walls carry restrained limewash panels framed by heavy oak.
-  // Panels lie on an existing wall face; they never create new collision.
-  for(const area of def.floorAreas.filter(a=>a.material==='wood')) {
-    for(const wall of def.architecturalWalls) {
-      const w=wall.maxX-wall.minX,d=wall.maxZ-wall.minZ,alongX=w>d;
-      const from=alongX?Math.max(wall.minX,area.minX+.1):Math.max(wall.minZ,area.minZ+.1);
-      const to=alongX?Math.min(wall.maxX,area.maxX-.1):Math.min(wall.maxZ,area.maxZ-.1);
-      if(to-from<1.8)continue;
-      const fixed=(alongX?wall.minZ+wall.maxZ:wall.minX+wall.maxX)/2;
-      const min=alongX?area.minZ:area.minX,max=alongX?area.maxZ:area.maxX;
-      let sign;if(Math.abs(fixed-min)<.6)sign=1;else if(Math.abs(fixed-max)<.6)sign=-1;else continue;
-      const face=fixed+sign*((alongX?d:w)/2+.015),span=to-from-.18,center=(from+to)/2;
-      box(outer,plaster,alongX?center:face,floor+1.72,alongX?face:center,alongX?span:.026,1.48,alongX?.026:span,'#c4bda6',0,cube);
-      for(const y of [.94,2.52])box(outer,wood,alongX?center:face+sign*.022,floor+y,alongX?face+sign*.022:center,alongX?span+.05:.1,.12,alongX?.1:span+.05,'#63503c',0,cube);
-      const bays=Math.ceil(span/2.5);
-      for(let i=0;i<=bays;i++){const p=center-span/2+i*span/bays;box(outer,wood,alongX?p:face+sign*.02,floor+1.72,alongX?face+sign*.02:p,alongX?.13:.1,1.65,alongX?.1:.13,'#69553c',0,cube);}
+    for(let edge=from;edge<to-.001;) {
+      const span=Math.min(1.22+random()*.25,to-edge),center=edge+span/2;
+      box(outer,trim,alongX?center:fixed,floor+height-.07,alongX?fixed:center,span-.012,.16,thickness+.035,varied(palette.trim,.055),bearing,slabs[0]);edge+=span;
     }
   }
   function portal(x,z,width,alongX,depth) {
-    const bearing=alongX?0:Math.PI/2,clearHalf=width/2;
-    // Both the frame and its base are outside the plan's useful door width.
+    const bearing=alongX?0:Math.PI/2,height=def.wallHeight;
     for(const sign of [-1,1]) {
-      const p=sign*(clearHalf+.22),px=x+(alongX?p:0),pz=z+(alongX?0:p);
-      for(let row=0;row<6;row++)box(outer,stone,px,floor+(row+.5)*.49,pz,.42,.47,depth+.045,pick('#b6ab90','#cbc0a2'),bearing);
-      box(outer,stone,px,floor+3.015,pz,.48,.13,depth+.085,'#c3b89a',bearing);
+      const p=sign*(width/2+.245),px=x+(alongX?p:0),pz=z+(alongX?0:p),rows=Math.ceil(height/.51),step=height/rows;
+      for(let row=0;row<rows;row++)box(outer,trim,px,floor+(row+.5)*step,pz,.47,step-.018,depth+.035,varied(palette.trim,.07),bearing);
+      box(outer,trim,px,floor+height+.015,pz,.50,.11,depth+.06,palette.trim,bearing,slabs[0]);
     }
-    box(interior,paving,x,floor-.018,z,alongX?width:depth,.044,alongX?depth:width,'#c4b99a',0,slabs[0]);
-    // Flush dark band separates the threshold from the surrounding paving.
-    for(const side of [-1,1])box(interior,stone,x+(alongX?0:side*(depth/2-.04)),floor-.009,z+(alongX?side*(depth/2-.04):0),alongX?width:.055,.023,alongX?.055:width,'#827a67',0,cube);
+    box(interior,paving,x,floor-.019,z,alongX?width:depth,.040,alongX?depth:width,varied(palette.trim,.035),0,slabs[0]);
+    for(const side of [-1,1])box(interior,stone,x+(alongX?0:side*(depth/2-.04)),floor-.009,z+(alongX?side*(depth/2-.04):0),alongX?width:.045,.022,alongX?.045:width,new THREE.Color(palette.floor).multiplyScalar(.7),0,cube);
   }
-  for(const door of def.interiorDoorways)portal(door.x,door.z,door.width,door.axis==='x',door.depth??.5);
+  for(const door of def.interiorDoorways)portal(door.x,door.z,door.width,door.axis==='x',door.depth??.6);
   for(const entry of def.entrances) {
-    const alongX=['north','south'].includes(entry.side),wallCenter=(entry.boundary+entry.innerBoundary)/2;
-    portal(alongX?entry.center:wallCenter,alongX?wallCenter:entry.center,entry.max-entry.min,alongX,Math.abs(entry.boundary-entry.innerBoundary));
-    const sign=['north','west'].includes(entry.side)?-1:1;
-    // Two shallow slabs match the movement ramp, including courtyard doors.
-    for(const [offset,height,depth]of [[.22,.12,.42],[.55,.06,.26]])box(outer,paving,
-      alongX?entry.center:entry.boundary+sign*offset,height/2,alongX?entry.boundary+sign*offset:entry.center,
-      alongX?entry.max-entry.min:depth,height,alongX?depth:entry.max-entry.min,'#afa58c',0,slabs[0]);
+    const alongX=['north','south'].includes(entry.side),fixed=(entry.boundary+entry.innerBoundary)/2,sign=['north','west'].includes(entry.side)?-1:1;
+    portal(alongX?entry.center:fixed,alongX?fixed:entry.center,entry.max-entry.min,alongX,Math.abs(entry.boundary-entry.innerBoundary));
+    const depth=entry.depth??.9;
+    // Three broad, shallow stone treads are always below the physical ramp.
+    for(let i=0;i<3;i++) {
+      const span=depth/3,height=floor*(1-(i+1)/3)+.008,offset=(i+.5)*span;
+      box(outer,paving,alongX?entry.center:entry.boundary+sign*offset,height/2,alongX?entry.boundary+sign*offset:entry.center,alongX?entry.max-entry.min:span-.008,height,alongX?span-.008:entry.max-entry.min,varied(palette.trim,.04),0,slabs[0]);
+    }
   }
   for(const window of def.windows) {
-    const alongX=['north','south'].includes(window.side),rotation=alongX?0:Math.PI/2;
-    // The shared window boundary is the interior wall face. Positive depth
-    // must point into its room, not bury glazing and mullions inside masonry.
-    const sign=['north','west'].includes(window.side)?1:-1,width=window.width??1.4,height=window.height??1.35;
-    const fixed=window.boundary,center=window.center,y=floor+(window.sillHeight??1.05)+height/2;
-    const panel=(material,offsetX,offsetY,offsetDepth,w,h,d,color)=>box(outer,material,
-      alongX?center+offsetX:fixed+sign*offsetDepth,y+offsetY,alongX?fixed+sign*offsetDepth:center+offsetX,w,h,d,color,rotation,cube);
-    panel(wood,0,0,.035,width+.18,height+.18,.12,'#3f3b30');
-    panel(glass,0,0,.105,width-.12,height-.1,.035,'#697e77');
-    for(const side of [-1,1])panel(stone,side*(width/2+.13),0,.06,.21,height+.38,.25,'#b6ac91');
-    for(const side of [-1,1])panel(stone,0,side*(height/2+.12),.09,width+.44,.22,.34,'#bdb293');
-    for(const offset of [-width*.24,width*.24])panel(iron,offset,0,.14,.035,height-.1,.045,'#4b4b3f');
-    panel(iron,0,0,.14,width-.12,.035,.045,'#4b4b3f');
+    const alongX=['north','south'].includes(window.side),bearing=alongX?0:Math.PI/2,inward=['north','west'].includes(window.side)?1:-1;
+    const thickness=window.wallThickness??def.wallThickness,width=window.width,height=window.height;
+    const fixed=window.boundary-inward*thickness/2,center=window.center,bottom=floor+window.sillHeight,top=bottom+height;
+    const panel=(material,offsetX,y,depth,w,h,d,color,shape=blocks[0])=>box(outer,material,alongX?center+offsetX:fixed+depth, y,alongX?fixed+depth:center+offsetX,w,h,d,color,bearing,shape);
+    // Full-depth stone reveals frame an empty aperture, readable from either
+    // side. No glass, shutter, timber backing, or opaque interior panel.
+    for(const side of [-1,1])for(let row=0;row<3;row++)panel(trim,side*(width/2+.12),bottom+(row+.5)*height/3,0,.23,height/3-.015,thickness+.035,varied(palette.trim,.06));
+    panel(trim,0,bottom-.11,0,width+.48,.20,thickness+.22,palette.trim,slabs[0]);
+    panel(trim,0,top+.12,0,width+.48,.22,thickness+.12,palette.trim,slabs[0]);
+    // Individual forged bars and cross ties leave genuine air between them.
+    for(const fraction of [-.32,0,.32]) {
+      panel(iron,width*fraction,(bottom+top)/2,0,.055,height+.06,.065,palette.iron,cube);
+      panel(iron,width*fraction,bottom+height*.48,0,.09,.085,.085,new THREE.Color(palette.iron).multiplyScalar(1.25),cube);
+    }
+    for(const fraction of [.28,.72])panel(iron,0,bottom+height*fraction,0,width+.025,.045,.06,palette.iron,cube);
   }
   for(const {parent,material,shape,instances}of batches.values()) {
     const mesh=new THREE.InstancedMesh(shape,material,instances.length);mesh.name=material.name;
     instances.forEach(({matrix,color},index)=>{mesh.setMatrixAt(index,matrix);mesh.setColorAt(index,color);});
-    mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;
-    mesh.castShadow=material!==glass;mesh.receiveShadow=true;mesh.computeBoundingBox();mesh.computeBoundingSphere();parent.add(mesh);
+    mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;
+    mesh.castShadow=mesh.receiveShadow=true;mesh.computeBoundingBox();mesh.computeBoundingSphere();parent.add(mesh);staticMeshes.push(mesh);
   }
-  let triangles=0,drawCalls=0;group.traverse(node=>{if(node.isMesh){drawCalls++;triangles+=(node.geometry.index?.count??node.geometry.attributes.position.count)/3*(node.isInstancedMesh?node.count:1);}});
-  const stats={drawCalls,triangles,parts,stones,floorTiles,rooms:def.roomCount??def.rooms.length,entrances:def.entrances.length};
-  group.userData.castle={...stats,style:'weathered-stone-courtyard-castle',variant:def.variant,floorHeight:floor,houseSeed:appearance.seed,houseStyle:appearance.style,houseStoneColor:colors.stone.id,houseWallColor:colors.wall.id};
+  let triangles=0,drawCalls=0;for(const mesh of staticMeshes){drawCalls++;triangles+=(mesh.geometry.index?.count??mesh.geometry.attributes.position.count)/3*mesh.count;}
+  const torches=createCastleTorches({definition:def,seed:appearance.seed});group.add(torches.group);
+  const stats={drawCalls:drawCalls+torches.stats.drawCalls,triangles:triangles+torches.stats.triangles,staticDrawCalls:drawCalls,staticTriangles:triangles,parts,stones,floorTiles,rooms:def.roomCount??def.rooms.length,entrances:def.entrances.length,windows:windowApertures,torches:torches.stats};
+  group.userData.castle={...stats,style:'dark-stone-two-courtyard-castle',variant:def.variant,floorHeight:floor,houseSeed:appearance.seed,houseStyle:appearance.style,houseStoneColor,houseWallColor};
   let disposed=false;
-  return {group,roof,frontFacade,interior,stats,dispose(){if(disposed)return;disposed=true;group.traverse(node=>{if(node.isInstancedMesh)node.dispose();});geometries.forEach(geo=>geo.dispose());materials.forEach(material=>material.dispose());textures.forEach(texture=>texture.dispose());group.removeFromParent();}};
+  return {group,roof,frontFacade,interior,stats,update(dt,time,playerLocal,options){if(!disposed)torches.update(dt,time,playerLocal,options);},dispose(){
+    if(disposed)return;disposed=true;torches.dispose();staticMeshes.forEach(mesh=>mesh.dispose());geometries.forEach(geo=>geo.dispose());materials.forEach(material=>material.dispose());textures.forEach(texture=>texture.dispose());group.removeFromParent();
+  }};
 }

@@ -320,6 +320,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   prototypes.set('shrine:magic', [{ geometry: shrineStone, material: granite, castShadow: true }, { geometry: shrineCrystal, material: crystalMaterial, castShadow: false }]);
 
   const chunks = new Map(), batches = new Map(), circles = [], walls = [], structures = [], trees = [], grassPatches = [], houses = [], destructibles = [], projectileObstacles = [];
+  const castleModels = [];
   const matrix = new THREE.Object3D(), tempColor = new THREE.Color(), groundColor = new THREE.Color();
   const fringeExcluded = createGroundGrassExclusion(map);
   const allowFringe = (x,z) => isLandPoint(map,[x,z]) && !fringeExcluded(x,z);
@@ -387,9 +388,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     if (object.kind === 'house' && isBuilderHouse(variant)) {
       const definition=getHouseDefinition(object),createModel=definition.architecture==='castle'?createCastleModel:createWaldhausModel;
-      const {group,roof,frontFacade,interior}=createModel({definition, rotation:object.rotation, houseStyle:object.houseStyle, houseSeed:object.houseSeed,
+      const model=createModel({definition, rotation:object.rotation, houseStyle:object.houseStyle, houseSeed:object.houseSeed,
         houseStoneColor:object.houseStoneColor,houseWallColor:object.houseWallColor,
         stoneMaterial:kitModels.get('wall:kit-tripo-wall').parts[0].material});
+      const {group,roof,frontFacade,interior}=model;
       group.name=`${definition.label} · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;
       group.position.set(x,groundHeightAt(x,z),z);group.rotation.y=object.rotation;group.scale.setScalar(scale);
       chunkFor(x,z).group.add(group);
@@ -401,6 +403,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
         localFloorAreas:definition.footprintAreas,localInteriorAreas:definition.footprintAreas,
         rooms:definition.rooms,kit:true,procedural:true};
       structure.record=record;houses.push(record);
+      if(definition.architecture==='castle') {
+        structure.castleModel=model;castleModels.push(model);
+        structure.torchOptions={quality:mode,visible:true,isVisible:point=>!debrisVisible||debrisVisible(structure.toWorld(point),{concealed:false})};
+      }
       continue;
     }
     if (kit && object.kind === 'house') {
@@ -747,6 +753,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const structure of structures) {
       if (!structure.house) continue;
       const p = structure.toLocal(player), bounds = structure.record.localInterior;
+      if(structure.castleModel?.update) {
+        structure.torchOptions.quality=mode;
+        structure.torchOptions.visible=structure.group.visible&&structure.group.parent?.visible!==false;
+        structure.castleModel.update(dt,time,p,structure.torchOptions);
+      }
       const areas = structure.record.localInteriorAreas;
       const inside = areas ? areas.some(area => p.x >= area.minX && p.x <= area.maxX && p.z >= area.minZ && p.z <= area.maxZ) : bounds ? p.x > bounds.minX && p.x < bounds.maxX && p.z > bounds.minZ && p.z < bounds.maxZ : Math.abs(p.x) < 7.78 && Math.abs(p.z) < 6.78;
       if (inside) shelter = structure.record.name;
@@ -759,9 +770,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, resetCanopyFade, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
     setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
-    dispose() { debris.dispose(); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene], treeGeometries); },
+    dispose() { debris.dispose(); castleModels.forEach(model=>model.dispose()); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene], treeGeometries); },
     get shelter() { return shelter; },
-    get stats() { return { debris: debris.stats, canopyFade: { localPlayerOnly: true, minimumOpacity: TREE_CANOPY_STYLE.minimumOpacity,
+    get stats() {
+      const torchStats=castleModels.map(model=>model.group.getObjectByName('Schlossanlage · Fackeln')?.userData.castleTorches).filter(Boolean);
+      return { debris: debris.stats, castleTorches:{mounts:torchStats.reduce((n,s)=>n+s.mounts,0),activeMounts:torchStats.reduce((n,s)=>n+s.activeMounts,0),pointLights:0,elapsed:Math.max(0,...torchStats.map(s=>s.elapsed))}, canopyFade: { localPlayerOnly: true, minimumOpacity: TREE_CANOPY_STYLE.minimumOpacity,
         enterSeconds: TREE_CANOPY_STYLE.enterSeconds, leaveSeconds: TREE_CANOPY_STYLE.leaveSeconds,
         affectedTrees: [...canopies.values()].filter(canopy => canopy && canopy.opacity < TREE_CANOPY_STYLE.opaqueThreshold).length,
         activeBatches: canopyBatches.filter(entry => entry.fade.visible && entry.fade.parent.visible).length,

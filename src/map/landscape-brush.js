@@ -107,7 +107,8 @@ export function createLandscapePlacementGuard(map) {
         // Preserve the small open house's floor and entrance, without applying
         // the much larger footprint of the original procedural cottages.
         if (builder?.footprintAreas) {
-          if (builder.footprintAreas.some(a => rectDistance(p,a.minX,a.maxX,a.minZ,a.maxZ)<margin)) return 'structure';
+          const pavedAreas = [...builder.footprintAreas, ...(builder.courtyardPavingAreas ?? [])];
+          if (pavedAreas.some(a => rectDistance(p,a.minX,a.maxX,a.minZ,a.maxZ)<margin)) return 'structure';
           if (builder.entrances.some(e => {
             const horizontal=e.side==='north'||e.side==='south',sign=e.side==='north'||e.side==='west'?-1:1;
             const a=Math.min(e.boundary,e.boundary+sign*e.depth),b=Math.max(e.boundary,e.boundary+sign*e.depth);

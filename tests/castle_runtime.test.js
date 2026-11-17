@@ -16,11 +16,14 @@ const castle = () => {
   return definition;
 };
 
-test('Castle foundations exclude only covered wings from ground vegetation at arbitrary rotation and scale', () => {
+test('Castle wings and paved outdoor courts exclude vegetation at arbitrary rotation and scale', () => {
   const definition = castle();
   assert.equal(getEnvironmentKitDefinition('house', 'schlossanlage'), definition);
   for (const [rotation, scale] of [[0, 1], [Math.PI / 2, 1.1], [Math.PI / 3, .8]]) {
     const map = createLobbyMap();
+    const boundary=[[-220,-220],[220,-220],[220,220],[-220,220]];
+    map.bounds={minX:-220,maxX:220,minZ:-220,maxZ:220};
+    map.island.points=boundary;map.regions[0].points=structuredClone(boundary);
     map.objects = [makeWorldObject('house', [4, -3], {variant:'schlossanlage', rotation, scale})];
     const snapshot = structuredClone(map);
     const excluded = createGroundGrassExclusion(map, {padding:0});
@@ -36,11 +39,14 @@ test('Castle foundations exclude only covered wings from ground vegetation at ar
       assert.equal(guard.reason(world(x, z), .1, 'grass'), 'structure', room.name);
       assert.ok(Math.abs(spatial.groundAt(...world(x, z)) - plateau) < 1e-8, room.name);
     }
-    const [cx, cz] = definition.qaRoutes.courtyard;
-    for (const [x, z] of [[cx,cz], [cx-3,cz+3], [cx+3,cz-3]]) {
+    assert.equal(definition.courtyards.length,2,'The expanded compound has two separate outdoor courts');
+    for (const court of definition.courtyards) {
+      const cx=(court.minX+court.maxX)/2,cz=(court.minZ+court.maxZ)/2;
+      for (const [x, z] of [[cx,cz], [cx-3,cz+3], [cx+3,cz-3]]) {
       assert.equal(houseFloorFactorAt(x, z, definition.floorBounds, definition.interior, definition.entrances, definition.footprintAreas), null, 'The courtyard has no invisible floor');
-      assert.equal(excluded(...world(x, z)), false, 'The outdoor courtyard can keep its grass');
-      assert.equal(guard.reason(world(x, z), .1, 'grass'), null, 'The courtyard remains editable with the landscape brush');
+      assert.equal(excluded(...world(x, z)), true, 'Outdoor paving excludes grass without making the court a sheltered room');
+      assert.equal(guard.reason(world(x, z), .1, 'grass'), 'structure', 'Landscape grass cannot grow through the outdoor paving');
+      }
     }
     assert.deepEqual(map, snapshot, 'Runtime queries must not alter the authored map');
   }
@@ -70,7 +76,7 @@ test('Castle stone walls stop movement and low projectiles without invisible ove
   for (const wall of definition.walls) {
     assert.equal(wall.type,'house-wall');
     const index = createCollisionIndex([], [wall]);
-    const position = {x:(wall.minX+wall.maxX)/2, y:1, z:(wall.minZ+wall.maxZ)/2};
+    const position = {x:(wall.minX+wall.maxX)/2, y:(wall.minY+wall.maxY)/2, z:(wall.minZ+wall.maxZ)/2};
     const before = {...position};
     index.resolve(position,.42);
     assert.ok(Math.hypot(position.x-before.x,position.z-before.z)>.42,wall.name);

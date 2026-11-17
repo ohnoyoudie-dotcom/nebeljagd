@@ -19,8 +19,9 @@ import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
 import { createGitHubMapSync, githubSyncAvailable } from './github-map-sync.js';
 import { createPlacementRotationControl } from './placement-rotation.js';
-import { isBuilderHouse, getHouseDefinition } from './house-builder.js';
+import { isBuilderHouse, getHouseDefinition, HOUSE_STYLES } from './house-builder.js';
 import { HOUSE_STONE_COLORS, HOUSE_WALL_COLORS } from './house-colors.js';
+import { CASTLE_STYLE_LABELS, CASTLE_FLOOR_LABELS, CASTLE_WALL_LABELS } from './castle-colors.js';
 import { getBuilderHousePreviewSvg } from './house-map-symbol.js';
 import './editor.css';
 
@@ -1252,7 +1253,7 @@ function renderAssetPreview(prefix, kind, variant) {
   $(`${prefix}-preview-image`).innerHTML = svg;
   $(`${prefix}-preview-title`).textContent = asset?.label ?? getObjectDefinition(kind).label;
   $(`${prefix}-preview-source`).textContent = castle ? 'Schlossanlage · Grundrissvorschau' : builder ? 'Hausbaukasten · Grundrissvorschau' : asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
-  $(`${prefix}-preview-note`).textContent = castle ? 'Große Säle und verbundene Gänge rund um einen offenen Innenhof. Zwei Außenzugänge; Räume bleiben frei einrichtbar.' : builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
+  $(`${prefix}-preview-note`).textContent = castle ? 'Zwei große Innenhöfe, verbundene Steingänge und Säle. Fackeln und offene Gitterfenster gehören zur Anlage; Räume bleiben frei einrichtbar.' : builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
 }
 
 function houseOptions(prefix) {
@@ -1278,6 +1279,16 @@ function syncHouseControls(prefix, object, restore = false) {
   const original = getHouseDefinition(object);
   const fixedLayout = Boolean(original.fixedLayout);
   const originalRooms = original.roomCount ?? original.rooms.length;
+  const castle = original.architecture === 'castle';
+  for (const [field, label, normalLabel, labels, normalOptions] of [
+    ['style', 'Steincharakter', 'Fassadenstil', CASTLE_STYLE_LABELS, HOUSE_STYLES],
+    ['stone-color', 'Bodenstein', 'Naturstein', CASTLE_FLOOR_LABELS, HOUSE_STONE_COLORS],
+    ['wall-color', 'Mauerstein', 'Wände', CASTLE_WALL_LABELS, HOUSE_WALL_COLORS],
+  ]) {
+    const input = $(`${prefix}-house-${field}`), labelNode = input.closest('label').firstChild;
+    labelNode.textContent = castle ? label : normalLabel;
+    for (const option of input.options) option.textContent = castle ? labels[option.value] : normalOptions.find(item=>item.id===option.value)?.label ?? option.textContent;
+  }
   panel.dataset.fixedLayout = String(fixedLayout);
   for (const field of ['rooms', 'entrances']) {
     const input = $(`${prefix}-house-${field}`);
@@ -1309,7 +1320,10 @@ function syncHouseControls(prefix, object, restore = false) {
   const size = prefix === 'object' ? Number($('object-scale').value) || object.scale || 1 : 1;
   const metres = value => (value * size).toLocaleString('de-DE', {maximumFractionDigits: 1});
   const dimensions = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m`;
-  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · 2 große Säle · Rundgänge · offener Innenhof · 2 Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
+  const courtCount = def.courtyards?.length ?? 1;
+  const hallCount = def.rooms.filter(room=>room.role==='great-hall').length;
+  const outerEntrances = def.entrances.filter(entry=>entry.exterior).length;
+  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · ${hallCount} große Säle · ${courtCount} ${courtCount===1?'Innenhof':'Innenhöfe'} · ${outerEntrances} Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
 }
 function varyHouse(prefix) {
   const input = $(`${prefix}-house-seed`), previous = Number(input.value);

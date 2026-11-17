@@ -10,7 +10,7 @@ import { createLobbyMap } from '../src/lobby-map.js';
 import { makeWorldObject } from '../src/map/objects.js';
 
 test('Every builder variant uses its real foundation size and floor, including rotated placements',()=>{
- for(const {id} of HOUSE_BUILDER_VARIANTS) for(const rotation of [0,Math.PI/2]) {
+ for(const {id} of HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout)) for(const rotation of [0,Math.PI/2]) {
   const def=getHouseDefinition(id),scale=1.25;
   assert.deepEqual(getEnvironmentKitDefinition('house',id).footprint,def.footprint);
   const map=createLobbyMap();map.objects=[makeWorldObject('house',[12,-8],{variant:id,rotation,scale})];

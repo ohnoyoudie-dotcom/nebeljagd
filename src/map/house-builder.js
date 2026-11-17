@@ -17,7 +17,7 @@ export const HOUSE_BUILDER_VARIANTS = freeze([
   { id: 'waldhaus-town', label: 'Schmales Stadthaus', footprintWidth: 10, footprintDepth: 16 },
   { id: 'waldhaus-corner', label: 'Eckhaus · L-Form', footprintWidth: 16, footprintDepth: 14 },
   { id: 'waldhaus-hall', label: 'Großes Gasthaus', footprintWidth: 20, footprintDepth: 14 },
-  { id: 'schlossanlage', label: 'Schlossanlage', footprintWidth: 70, footprintDepth: 60, fixedLayout: true },
+  { id: 'schlossanlage', label: 'Schlossanlage', footprintWidth: 140, footprintDepth: 120, fixedLayout: true },
 ]);
 export const isBuilderHouse = variant => HOUSE_BUILDER_VARIANTS.some(entry => entry.id === variant);
 export function getHouseAppearance(object = {}) {

@@ -117,7 +117,9 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     const builder = object.kind === 'house' && isBuilderHouse(object.variant) ? getHouseDefinition(object) : null;
     if (builder?.footprintAreas) {
       const [x,z]=object.position,c=Math.cos(object.rotation??0),s=Math.sin(object.rotation??0);
-      for (const area of builder.footprintAreas) {
+      // Paved castle courts stay outdoors, but grass cannot grow through their
+      // ground-level flagstones. Shelter and floor-height use footprintAreas only.
+      for (const area of [...builder.footprintAreas, ...(builder.courtyardPavingAreas ?? [])]) {
         const lx=(area.minX+area.maxX)/2*scale,lz=(area.minZ+area.maxZ)/2*scale;
         const px=x+c*lx+s*lz,pz=z-s*lx+c*lz;
         const hx=(area.maxX-area.minX)/2*scale,hz=(area.maxZ-area.minZ)/2*scale,r=Math.hypot(hx,hz);
