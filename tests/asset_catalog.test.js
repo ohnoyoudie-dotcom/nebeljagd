@@ -29,10 +29,10 @@ test('every selectable map variant maps to an existing renderer and its real mod
   }
 });
 
-test('embedded thumbnails are exact, real WebP renders for every variant and stay offline', () => {
+test('embedded thumbnails are exact, real WebP renders for rendered catalogue entries and stay offline', () => {
   // The optional FBX-derived asset currently has no rendered WebP thumbnail.
   // Existing catalogue previews remain strictly checked byte-for-byte.
-  assert.equal(thumbnails.variants.length, ASSET_CATALOG.filter(asset => asset.id !== 'tree:kit-user-tree1').length);
+  assert.equal(thumbnails.variants.length, ASSET_CATALOG.filter(asset => asset.id !== 'tree:kit-user-tree1' && asset.previewKind === 'render').length);
   assert.deepEqual(thumbnails.errors, []);
   for (const record of thumbnails.variants) {
     const bytes = readFileSync(projectFile(record.file));

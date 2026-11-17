@@ -19,6 +19,8 @@ import { removeNonTripoObjects } from './tripo-object-cleanup.js';
 import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSourceLabel } from './editor-start.js';
 import { createGitHubMapSync, githubSyncAvailable } from './github-map-sync.js';
 import { createPlacementRotationControl } from './placement-rotation.js';
+import { isBuilderHouse, getHouseDefinition } from './house-builder.js';
+import { getBuilderHousePreviewSvg } from './house-map-symbol.js';
 import './editor.css';
 
 const $ = id => document.getElementById(id);
@@ -533,16 +535,18 @@ function renderProperties() {
   $('duplicate-object').disabled = selection.type === 'object' && !isObjectPlaceable(feature.kind, feature.variant);
   if (selection.type === 'object') {
     fillVariants($('object-variant'), feature.kind, feature.variant);
+    $('object-scale').value = feature.scale;
+    syncHouseControls('object', feature, true);
     renderAssetPreview('object', feature.kind, feature.variant);
     $('object-rarity-property').hidden = !WEAPON_TYPES.includes(feature.kind);
     $('object-rarity').value = 'common';
     updateRarityHint();
     $('object-rotation').value = Math.round(feature.rotation * 180 / Math.PI * 100) / 100;
-    $('object-scale').value = feature.scale;
     $('object-height-property').hidden = !isHeightAdjustable(feature);
     $('object-height').value = feature.height ?? '';
     updateObjectHeightHint();
     $('object-radius-property').hidden = !['grass', 'flower'].includes(feature.kind);
+    $('object-area-note').hidden = $('object-radius-property').hidden;
     $('object-radius').value = feature.radius ?? getObjectDefinition(feature.kind).defaultRadius ?? 1;
     $('object-radius').disabled = $('object-radius-property').hidden;
   }
@@ -578,6 +582,8 @@ function applyProperties(event) {
     if (selection.type === 'spawn') { feature.radius = Number($('feature-radius').value); feature.capacity = Number($('feature-capacity').value); }
     if (selection.type === 'object') {
       feature.variant = $('object-variant').value;
+      if (feature.kind === 'house' && isBuilderHouse(feature.variant)) Object.assign(feature, houseOptions('object'));
+      else for (const key of ['houseStyle', 'houseSeed', 'houseEntrances']) delete feature[key];
       // Preserve legacy map fields; live loot rolls its rarity each round.
       feature.rotation = Number($('object-rotation').value) * Math.PI / 180;
       feature.scale = Number($('object-scale').value);
@@ -1235,11 +1241,47 @@ function fillVariants(select, kind, value = null) {
 }
 function renderAssetPreview(prefix, kind, variant) {
   const asset = getVariantAsset(kind, variant);
-  const svg = getVariantPreviewSvg(kind, variant);
+  syncHouseControls(prefix, {kind, variant});
+  const builder = kind === 'house' && isBuilderHouse(variant);
+  const svg = builder ? getBuilderHousePreviewSvg({kind, variant, ...houseOptions(prefix)}) : getVariantPreviewSvg(kind, variant);
   $(`${prefix}-preview-image`).innerHTML = svg;
   $(`${prefix}-preview-title`).textContent = asset?.label ?? getObjectDefinition(kind).label;
-  $(`${prefix}-preview-source`).textContent = asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
-  $(`${prefix}-preview-note`).textContent = asset?.notes ?? '';
+  $(`${prefix}-preview-source`).textContent = builder ? 'Hausbaukasten · Grundrissvorschau' : asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
+  $(`${prefix}-preview-note`).textContent = builder ? 'Leere Räume zum freien Einrichten. Stil und Variation werden mit dem Haus gespeichert.' : asset?.notes ?? '';
+}
+
+function houseOptions(prefix) {
+  return {
+    houseStyle: $(`${prefix}-house-style`).value,
+    houseSeed: Number($(`${prefix}-house-seed`).value),
+    houseEntrances: $(`${prefix}-house-entrances`).value,
+  };
+}
+function syncHouseControls(prefix, object, restore = false) {
+  const active = object.kind === 'house' && isBuilderHouse(object.variant);
+  const panel = $(`${prefix}-house-builder`);
+  panel.hidden = !active;
+  for (const input of panel.querySelectorAll('input,select,button')) input.disabled = !active;
+  if (!active) return;
+  if (restore) {
+    $(`${prefix}-house-style`).value = object.houseStyle ?? 'natural';
+    $(`${prefix}-house-seed`).value = object.houseSeed ?? 87123;
+    $(`${prefix}-house-entrances`).value = object.houseEntrances ?? (getHouseDefinition(object).entrances.length > 1 ? 'double' : 'single');
+  }
+  const def = getHouseDefinition({...object, ...houseOptions(prefix)});
+  const size = prefix === 'object' ? Number($('object-scale').value) || object.scale || 1 : 1;
+  const metres = value => (value * size).toLocaleString('de-DE', {maximumFractionDigits: 1});
+  $(`${prefix}-house-info`).textContent = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m · ${def.rooms.length} ${def.rooms.length === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
+}
+function varyHouse(prefix) {
+  const input = $(`${prefix}-house-seed`), previous = Number(input.value);
+  const next = Math.floor(Math.random() * 2147483648);
+  input.value = next === previous ? (next + 1) % 2147483648 : next;
+}
+function refreshHousePreview(prefix) {
+  const kind = prefix === 'palette' ? $('palette-kind').value : selectedFeature()?.kind;
+  if (!kind) return;
+  renderAssetPreview(prefix, kind, $(`${prefix}-variant`).value);
 }
 function updateRarityHint() {
   const feature = selectedFeature();
@@ -1277,12 +1319,16 @@ function addObjectAt(point) {
   const added = makeWorldObject(kind, position, {
     variant: $('palette-variant').value, rarity: $('palette-rarity').value,
     rotation: placementRotationControl.nextRotation(kind),
+    ...(kind === 'house' && isBuilderHouse($('palette-variant').value) ? houseOptions('palette') : {}),
   });
   if (!canPaintGrass(position, map, objectFootprint(added))) return toast('Bitte genug Abstand zum Ufer halten: Das ganze Objekt muss auf Land stehen.', true);
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
     layers.showObjects = true; $('layer-objects').checked = true;
     $('feature-filter').value = 'object'; $('object-kind-filter').value = kind; $('feature-search').value = ''; listLimit = 50;
     select('object', added.id);
+    if (kind === 'house' && isBuilderHouse(added.variant) && $('palette-house-auto').checked) {
+      varyHouse('palette'); refreshHousePreview('palette');
+    }
   }
 }
 function focusSelection() {
@@ -1339,7 +1385,23 @@ barrierPanel = createBarrierPanel({ getMap: () => map, getMode: () => mode, setM
   showObjectsPane: () => landscapePanel.showPane('objects', 'barriers'),
 });
 $('palette-kind').addEventListener('change', () => { fillVariants($('palette-variant'), $('palette-kind').value); updatePaletteRarity(); renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
-$('palette-variant').addEventListener('change', () => { renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
+$('palette-variant').addEventListener('change', () => {
+  const variant = $('palette-variant').value;
+  if ($('palette-kind').value === 'house' && isBuilderHouse(variant)) {
+    $('palette-house-entrances').value = getHouseDefinition(variant).entrances.length > 1 ? 'double' : 'single';
+  }
+  renderAssetPreview('palette', $('palette-kind').value, variant); updatePlacementPreview();
+});
+for (const prefix of ['palette', 'object']) {
+  for (const field of ['style', 'entrances']) $(`${prefix}-house-${field}`).addEventListener('change', () => refreshHousePreview(prefix));
+  $(`${prefix}-house-vary`).addEventListener('click', () => {
+    if (prefix === 'object' && (pointer || !$('properties-form').reportValidity())) return;
+    varyHouse(prefix);
+    if (prefix === 'object') applyProperties({preventDefault() {}});
+    else refreshHousePreview(prefix);
+  });
+}
+$('object-scale').addEventListener('input', () => refreshHousePreview('object'));
 for (const id of ['object-height', 'object-scale', 'object-variant']) $(id).addEventListener('input', updateObjectHeightHint);
 $('object-variant').addEventListener('change', () => { const feature = selectedFeature(); if (feature) renderAssetPreview('object', feature.kind, $('object-variant').value); if (feature?.kind === 'grass') landscapePanel.setSelectedVariant($('object-variant').value); });
 $('grass-brush').addEventListener('click', () => setMode(mode === 'brush' ? 'select' : 'brush'));
@@ -1479,7 +1541,7 @@ window.nebeljagdMapTestState = () => ({
   landscape: landscapePanel?.state(),
   dirty: JSON.stringify(map) !== JSON.stringify(initialSnapshot),
   viewBox: [view.x, view.y, view.width, view.height], view: { ...view }, zoom: (map.bounds.maxX - map.bounds.minX) / view.width,
-  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value, randomRotation: placementRotationControl.isEnabled($('palette-kind').value)}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
+  zone: zoneAt(map, zoneTime), zoneTime, fileSave: { directSupported: directFileSaveSupported(), connectedFile: mapFileHandle?.name ?? null }, palette: {kind: $('palette-kind').value, variant: $('palette-variant').value, rarity: $('palette-rarity').value, randomRotation: placementRotationControl.isEnabled($('palette-kind').value), house: $('palette-house-builder').hidden ? null : {...houseOptions('palette'), autoVary: $('palette-house-auto').checked}}, visibleListRows: $('feature-list').children.length, undoCount: history.length, redoCount: future.length, layers: { ...layers }, storageAvailable,
 });
 renderAll();
 if (!storageAvailable) updateSaveStatus(); else updateSaveStatus();

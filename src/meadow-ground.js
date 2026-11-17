@@ -1,3 +1,4 @@
+import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import * as THREE from 'three';
 import { distanceToSegment } from './map/model.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
@@ -113,6 +114,17 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     let [hx, hz] = extents[object.kind];
     if (object.kind === 'mound' && object.variant === 'knoll') [hx, hz] = [3.3, 2.8];
     if (object.kind === 'chest' && object.variant === 'kit-tripo-chest') [hx, hz] = [.87, .575];
+    const builder = object.kind === 'house' && isBuilderHouse(object.variant) ? getHouseDefinition(object) : null;
+    if (builder?.footprintAreas) {
+      const [x,z]=object.position,c=Math.cos(object.rotation??0),s=Math.sin(object.rotation??0);
+      for (const area of builder.footprintAreas) {
+        const lx=(area.minX+area.maxX)/2*scale,lz=(area.minZ+area.maxZ)/2*scale;
+        const px=x+c*lx+s*lz,pz=z-s*lx+c*lz;
+        const hx=(area.maxX-area.minX)/2*scale,hz=(area.maxZ-area.minZ)/2*scale,r=Math.hypot(hx,hz);
+        insert({kind:'box',x:px,z:pz,hx,hz,c,s},px-r,pz-r,px+r,pz+r);
+      }
+      continue;
+    }
     const footprint = getEnvironmentKitDefinition(object.kind, object.variant)?.footprint;
     // Match the normalized model, including its saved rotation and scale.
     // A legacy house rectangle or an added safety margin leaves a conspicuous

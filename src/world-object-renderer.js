@@ -1,4 +1,4 @@
-import { WALDHAUS_DEFINITION } from './map/waldhaus-definition.js';
+import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import { createWaldhausModel } from './waldhaus-model.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -384,17 +384,18 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       addStructure(object, TRIPO_CHEST_MOVEMENT_WALLS, null);
       continue;
     }
-    if (object.kind === 'house' && variant === 'waldhaus') {
-      const definition=WALDHAUS_DEFINITION,{group,roof,frontFacade,interior}=createWaldhausModel({rotation:object.rotation,
+    if (object.kind === 'house' && isBuilderHouse(variant)) {
+      const definition=getHouseDefinition(object),{group,roof,frontFacade,interior}=createWaldhausModel({definition, rotation:object.rotation, houseStyle:object.houseStyle, houseSeed:object.houseSeed,
         stoneMaterial:kitModels.get('wall:kit-tripo-wall').parts[0].material});
-      group.name=`Waldhaus · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;
+      group.name=`${definition.label} · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;
       group.position.set(x,groundHeightAt(x,z),z);group.rotation.y=object.rotation;group.scale.setScalar(scale);
       chunkFor(x,z).group.add(group);
       const structure=addStructure(object,definition.walls,group,true);
-      const record={id:object.id,name:object.name||'Waldhaus',kind:'Waldhaus',variant,x,z,y:structure.y,
+      const record={id:object.id,name:object.name||definition.label,kind:definition.label,variant,x,z,y:structure.y,
         halfWidth:definition.footprint.halfWidth*scale,halfDepth:definition.footprint.halfDepth*scale,
         rotation:object.rotation,scale,floorHeight:definition.floorHeight*scale,group,roof,frontFacade,interior,
         localInterior:definition.interior,localFloorBounds:definition.floorBounds,localEntrances:definition.entrances,
+        localFloorAreas:definition.footprintAreas,localInteriorAreas:definition.footprintAreas,
         rooms:definition.rooms,kit:true,procedural:true};
       structure.record=record;houses.push(record);
       continue;
@@ -694,7 +695,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       const p = structure.toLocal({ x, z });
       if (structure.record.kit) {
         const factor = houseFloorFactorAt(p.x, p.z, structure.record.localFloorBounds,
-          structure.record.localInterior, structure.record.localEntrances);
+          structure.record.localInterior, structure.record.localEntrances, structure.record.localFloorAreas);
         if (factor !== null) return structure.y + structure.record.floorHeight * factor;
         continue;
       }
@@ -743,7 +744,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const structure of structures) {
       if (!structure.house) continue;
       const p = structure.toLocal(player), bounds = structure.record.localInterior;
-      const inside = bounds ? p.x > bounds.minX && p.x < bounds.maxX && p.z > bounds.minZ && p.z < bounds.maxZ : Math.abs(p.x) < 7.78 && Math.abs(p.z) < 6.78;
+      const areas = structure.record.localInteriorAreas;
+      const inside = areas ? areas.some(area => p.x >= area.minX && p.x <= area.maxX && p.z >= area.minZ && p.z <= area.maxZ) : bounds ? p.x > bounds.minX && p.x < bounds.maxX && p.z > bounds.minZ && p.z < bounds.maxZ : Math.abs(p.x) < 7.78 && Math.abs(p.z) < 6.78;
       if (inside) shelter = structure.record.name;
       // Permanent architectural cutaway: roofs never conceal the floor plan.
       structure.record.roof.visible = false; structure.record.frontFacade.visible = !inside; structure.record.interior.visible = true;

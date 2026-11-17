@@ -1,4 +1,4 @@
-import { WALDHAUS_DEFINITION } from './waldhaus-definition.js';
+import { HOUSE_BUILDER_VARIANTS, getHouseDefinition } from './house-builder.js';
 import { TRIPO_TAVERN_DEFINITION } from './tripo-tavern-definition.js';
 import { TRIPO_CASTLE_DEFINITION } from './tripo-castle-definition.js';
 import { TRIPO_PROP_DEFINITIONS } from './tripo-prop-definitions.js';
@@ -125,7 +125,7 @@ export const ENVIRONMENT_KIT_DEFINITIONS = freeze([...nativeDefinitions.map(defi
       { halfWidth: 2, halfDepth: .22 }, [wall(-2, 2, -.22, .22, 1.55, 'fence')]),
   ].map(definition => ({ ...definition, procedural: true, targetHeight: definition.height,
     normalization: { scale: 1, offset: [0, 0, 0] } })),
-  WALDHAUS_DEFINITION, TRIPO_TAVERN_DEFINITION, TRIPO_CASTLE_DEFINITION, TRIPO_WALL_DEFINITION, ...TRIPO_HOUSE_DEFINITIONS, ...TRIPO_PROP_DEFINITIONS, ...TRIPO_WOODLAND_DEFINITIONS]);
+  ...HOUSE_BUILDER_VARIANTS.map(variant => getHouseDefinition(variant.id)), TRIPO_TAVERN_DEFINITION, TRIPO_CASTLE_DEFINITION, TRIPO_WALL_DEFINITION, ...TRIPO_HOUSE_DEFINITIONS, ...TRIPO_PROP_DEFINITIONS, ...TRIPO_WOODLAND_DEFINITIONS]);
 
 const byId = new Map(ENVIRONMENT_KIT_DEFINITIONS.map(definition => [definition.id, definition]));
 export function getEnvironmentKitDefinition(kind, variant) { return byId.get(`${kind}:${variant}`) ?? null; }

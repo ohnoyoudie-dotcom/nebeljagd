@@ -1,3 +1,4 @@
+import { getHouseDefinition, isBuilderHouse } from './house-builder.js';
 import { distanceToSegment, isLandPoint, landBoundaryRings } from './model.js';
 import { getObjectDefinition, getObjectFootprintRadius, makeWorldObject, isObjectPlaceable } from './objects.js';
 import { BIOME_PRESETS, VEGETATION_TYPES, TERRAIN_TYPES, LANDSCAPE_LIMITS, getLandscape, vegetationSettings, terrainSettings } from './landscape.js';
@@ -98,13 +99,21 @@ export function createLandscapePlacementGuard(map) {
     for (const item of objects.near(position, Math.max(radius + .4, minDistance))) {
       const d = Math.hypot(position[0] - item.position[0], position[1] - item.position[1]);
       const scale = item.scale ?? 1, p = localPoint(position, item), margin = (radius + .35) / scale;
-      const kit = getEnvironmentKitDefinition(item.kind, item.variant);
+      const builder = item.kind === 'house' && isBuilderHouse(item.variant) ? getHouseDefinition(item) : null;
+      const kit = builder ?? getEnvironmentKitDefinition(item.kind, item.variant);
       if (kit?.solid) {
         if (kit.walls.some(body => rectDistance(p, body.minX, body.maxX, body.minZ, body.maxZ) < margin)
           || kit.circles.some(body => Math.hypot(p[0] - body.x, p[1] - body.z) < body.radius + margin)) return 'structure';
         // Preserve the small open house's floor and entrance, without applying
         // the much larger footprint of the original procedural cottages.
-        if (item.kind === 'house' && (rectDistance(p, -kit.footprint.halfWidth, kit.footprint.halfWidth,
+        if (builder?.footprintAreas) {
+          if (builder.footprintAreas.some(a => rectDistance(p,a.minX,a.maxX,a.minZ,a.maxZ)<margin)) return 'structure';
+          if (builder.entrances.some(e => {
+            const horizontal=e.side==='north'||e.side==='south',sign=e.side==='north'||e.side==='west'?-1:1;
+            const a=Math.min(e.boundary,e.boundary+sign*e.depth),b=Math.max(e.boundary,e.boundary+sign*e.depth);
+            return horizontal?rectDistance(p,e.min,e.max,a,b)<margin:rectDistance(p,a,b,e.min,e.max)<margin;
+          })) return 'structure';
+        } else if (item.kind === 'house' && (rectDistance(p, -kit.footprint.halfWidth, kit.footprint.halfWidth,
           -kit.footprint.halfDepth, kit.footprint.halfDepth) < margin
           || rectDistance(p, -kit.entranceHalfWidth, kit.entranceHalfWidth, kit.footprint.halfDepth, kit.footprint.halfDepth + 1) < margin)) return 'structure';
       } else if (item.kind === 'house') {

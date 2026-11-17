@@ -5,7 +5,7 @@ import { TRIPO_HOUSE_DEFINITIONS } from './tripo-house-definitions.js';
 import { TRIPO_PROP_DEFINITIONS } from './tripo-prop-definitions.js';
 import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
 import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
-import { WALDHAUS_DEFINITION } from './waldhaus-definition.js';
+import { HOUSE_BUILDER_VARIANTS, isBuilderHouse } from './house-builder.js';
 
 const woodlandVariants = kind => TRIPO_WOODLAND_DEFINITIONS.filter(prop => prop.kind === kind)
   .map(({ variant, label, footprint }) => ({ id: variant, label,
@@ -25,9 +25,8 @@ export const OBJECT_CATALOG = Object.freeze([
       { id: 'kit-tripo-tavern', label: 'Wirtshaus · Tripo (neu)', footprintRadius: 14.5 },
       ...TRIPO_HOUSE_DEFINITIONS.map(({ variant, label, footprint }) => ({ id: variant, label,
         footprintRadius: Math.hypot(footprint.halfWidth, footprint.halfDepth) })),
-      { id: WALDHAUS_DEFINITION.variant, label: WALDHAUS_DEFINITION.label, defaultName: WALDHAUS_DEFINITION.label,
-        footprintRadius: Math.hypot(WALDHAUS_DEFINITION.footprint.halfWidth, WALDHAUS_DEFINITION.footprint.halfDepth),
-        footprintWidth: WALDHAUS_DEFINITION.footprint.halfWidth * 2, footprintDepth: WALDHAUS_DEFINITION.footprint.halfDepth * 2 },
+      ...HOUSE_BUILDER_VARIANTS.map(({id, label, footprintWidth, footprintDepth}) => ({id, label, defaultName: label,
+        footprintWidth, footprintDepth, footprintRadius: Math.hypot(footprintWidth / 2, footprintDepth / 2)})),
       { id: 'kit-tripo-castle', label: 'Kleines Schloss · Tripo', footprintRadius: 43, retired: true }] },
   { kind: 'flower', label: 'Blumenbeet', defaultVariant: 'rei-white', defaultScale: 1, footprintRadius: 1.3, defaultRadius: 1.5,
     variants: [{ id: 'rei-white', label: 'Rei-Blumen · Weiß' }, { id: 'rei-red', label: 'Rei-Blumen · Rot' }, { id: 'rei-gold', label: 'Rei-Blumen · Gold' }] },
@@ -125,7 +124,7 @@ export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(defi
 const placementAssetIds = new Set([
   // Old GLB trees are excluded; the user's real GLB is included only if installed.
   ...(USER_TREE1_AVAILABLE ? ['tree:kit-user-tree1'] : []),
-  'house:kit-tripo-tavern', 'house:kit-tripo-house-02', 'house:waldhaus',
+  'house:kit-tripo-tavern', 'house:kit-tripo-house-02', ...HOUSE_BUILDER_VARIANTS.map(({id}) => `house:${id}`),
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
   'chest:kit-tripo-chest',
@@ -186,6 +185,8 @@ export function makeWorldObject(kind, position, options = {}) {
     rotation: options.rotation ?? 0,
     scale: options.scale ?? definition.defaultScale,
     ...(options.height !== undefined ? { height: options.height } : {}),
+    ...(kind === 'house' && isBuilderHouse(variant) ? Object.fromEntries(
+      ['houseStyle', 'houseSeed', 'houseEntrances'].filter(key => options[key] !== undefined).map(key => [key, options[key]])) : {}),
     ...(WEAPON_TYPES.includes(kind) ? { rarity: options.rarity ?? 'common' } : {}),
     ...(definition.defaultRadius ? { radius: options.radius ?? definition.defaultRadius } : {}),
   };

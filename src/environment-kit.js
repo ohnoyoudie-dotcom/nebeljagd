@@ -1,3 +1,4 @@
+import { isBuilderHouse } from './map/house-builder.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -196,7 +197,7 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
     || (getEnvironmentKitDefinition(object.kind, object.variant)?.procedural && !getEnvironmentKitDefinition(object.kind, object.variant)?.proceduralHouse)).map(object => `${object.kind}:${object.variant}`))];
   // The Waldhaus foundation reuses the original wall's PBR maps, including
   // in maps with no separately placed wall. Parse that shared source once.
-  if ((map.objects ?? []).some(object => object.kind === 'house' && object.variant === 'waldhaus')
+  if ((map.objects ?? []).some(object => object.kind === 'house' && isBuilderHouse(object.variant))
     && !wanted.includes('wall:kit-tripo-wall')) wanted.push('wall:kit-tripo-wall');
   const result = new Map();
   await Promise.all(wanted.map(async key => {

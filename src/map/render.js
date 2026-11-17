@@ -5,7 +5,8 @@ import { getEnvironmentKitDefinition } from './environment-kit-definitions.js';
 import { getObjectFootprintRadius } from './objects.js';
 import { barrierSections, getBarrierStyle } from './barriers.js';
 import { TRIPO_WOODLAND_DEFINITIONS } from './tripo-woodland-definitions.js';
-import { WALDHAUS_DEFINITION } from './waldhaus-definition.js';
+import { isBuilderHouse } from './house-builder.js';
+import { builderHouseSymbolKey, builderHouseMapSymbol } from './house-map-symbol.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
 const number = value => Math.round(value * 1000) / 1000;
@@ -63,41 +64,6 @@ function measuredHouseMapSymbol(variant, symbol) {
   return pieces.join('');
 }
 
-/** The empty architectural shell in world metres, drawn from the same room,
- * doorway and window bounds used by the playable house. */
-function waldhausMapSymbol() {
-  const house = WALDHAUS_DEFINITION, { halfWidth, halfDepth } = house.footprint;
-  const rect = (minX, minZ, maxX, maxZ, attributes) => `<rect x="${number(minX)}" y="${number(minZ)}" width="${number(maxX - minX)}" height="${number(maxZ - minZ)}" ${attributes}/>`;
-  const pieces = ['<g id="world-object-house-waldhaus">',
-    rect(-halfWidth, -halfDepth, halfWidth, halfDepth, 'fill="#74583b"')];
-  for (const [index, room] of house.rooms.entries()) {
-    pieces.push(rect(room.minX, room.minZ, room.maxX, room.maxZ,
-      `data-waldhaus-room="${escape(room.name)}" fill="${['#b49160', '#a78a61', '#9c865e'][index]}"`));
-    for (let z = room.minZ + .65; z < room.maxZ; z += .65) {
-      pieces.push(`<path d="M${number(room.minX)},${number(z)}H${number(room.maxX)}" stroke="#70563b" stroke-opacity=".32" stroke-width=".045"/>`);
-    }
-  }
-  // Light thresholds identify the two openings without closing either gap.
-  for (const entrance of house.entrances) pieces.push(rect(entrance.min,
-    Math.min(entrance.boundary, entrance.innerBoundary), entrance.max,
-    Math.max(entrance.boundary, entrance.innerBoundary),
-    `data-waldhaus-entrance="${escape(entrance.name)}" fill="#d0bb8d"`));
-  for (const wall of house.architecturalWalls) pieces.push(rect(wall.minX, wall.minZ, wall.maxX, wall.maxZ,
-    'data-waldhaus-wall="true" fill="#e2d1a4" stroke="#4e3c2b" stroke-width=".075"'));
-  // Glazing sits against the continuous walls, so windows never read as doors.
-  for (const window of house.windows) {
-    const horizontal = window.side === 'north' || window.side === 'south';
-    const x = horizontal ? window.center : window.boundary, z = horizontal ? window.boundary : window.center;
-    const halfWidth = horizontal ? window.width / 2 : .09, halfDepth = horizontal ? .09 : window.width / 2;
-    pieces.push(rect(x - halfWidth, z - halfDepth, x + halfWidth, z + halfDepth,
-      `data-waldhaus-window="${escape(window.name)}" fill="#a2c6c3" stroke="#674c32" stroke-width=".06"`));
-    const mullion = horizontal ? `M${number(x)},${number(z - halfDepth)}V${number(z + halfDepth)}`
-      : `M${number(x - halfWidth)},${number(z)}H${number(x + halfWidth)}`;
-    pieces.push(`<path d="${mullion}" stroke="#674c32" stroke-width=".05"/>`);
-  }
-  pieces.push('</g>');
-  return pieces.join('');
-}
 const objectSymbols = [
   measuredHouseMapSymbol('kit-tripo-castle', 'house-tripo-castle'),
   measuredHouseMapSymbol('kit-tripo-house-02', 'house-tripo-02'),
@@ -155,7 +121,7 @@ function objectSymbol(item) {
   if (item.kind === 'fence' && item.variant === 'kit-cross-wood') return 'fence-cross-wood';
   if (item.kind === 'house' && item.variant === 'kit-tripo-castle') return 'house-tripo-castle';
   if (item.kind === 'house' && item.variant === 'kit-tripo-house-02') return 'house-tripo-02';
-  if (item.kind === 'house' && item.variant === 'waldhaus') return 'house-waldhaus';
+  if (item.kind === 'house' && isBuilderHouse(item.variant)) return builderHouseSymbolKey(item);
   if (item.kind === 'rock' && /^kit-tripo-0[123]$/.test(item.variant)) return `rock-tripo-${item.variant.slice(-2)}`;
   if (item.kind === 'house' && item.variant === 'kit-tripo-tavern') return 'house-tripo-tavern';
   if (item.kind === 'house' && item.variant === 'kit-taverne') return 'house-taverne';
@@ -173,7 +139,7 @@ function objectSymbol(item) {
 
 function objectSvg(item) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
-  const radius = item.radius ?? (woodlandById.has(`${item.kind}:${item.variant}`) || ['kit-tripo-castle', 'kit-tripo-house-02', 'waldhaus'].includes(item.variant) ? getObjectFootprintRadius(item.kind, item.variant)
+  const radius = item.radius ?? (woodlandById.has(`${item.kind}:${item.variant}`) || (['kit-tripo-castle', 'kit-tripo-house-02'].includes(item.variant) || (item.kind === 'house' && isBuilderHouse(item.variant))) ? getObjectFootprintRadius(item.kind, item.variant)
     : item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
   const patch = item.kind === 'grass' || item.kind === 'flower';
   const tint = item.kind === 'flower' ? ({ 'rei-red': '#c77c7c', 'rei-gold': '#e0bd64' }[item.variant] ?? '#e7e4cb') : undefined;
@@ -259,7 +225,8 @@ export function renderWorldmapSvg(map, options = {}) {
     '    <pattern id="world-pattern-ash" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M8,57 30,22 54,57Z M69,88 84,59 105,88Z" fill="#514e4b" opacity=".22"/><path d="M31,24 26,41 37,47 29,57" fill="none" stroke="#ce976a" stroke-width="2" opacity=".55"/></pattern>',
     '    <pattern id="world-pattern-dune" width="115" height="95" patternUnits="userSpaceOnUse"><path d="M9,35Q28,14 50,35 M60,80Q82,57 106,80" fill="none" stroke="#a78651" stroke-width="2" opacity=".35"/></pattern>',
     ...objectSymbols.map(symbol => `    ${symbol}`),
-    ...((map.objects ?? []).some(item => item.kind === 'house' && item.variant === 'waldhaus') ? [`    ${waldhausMapSymbol()}`] : []),
+    ...new Map((map.objects ?? []).filter(item => item.kind === 'house' && isBuilderHouse(item.variant))
+      .map(item => [builderHouseSymbolKey(item), `    ${builderHouseMapSymbol(item)}`])).values(),
     ...TRIPO_WOODLAND_DEFINITIONS.filter(prop => (map.objects ?? []).some(item => `${item.kind}:${item.variant}` === prop.id)).map(woodlandSymbol),
     ...Object.entries(extraWeaponSymbols).filter(([kind]) => (map.objects ?? []).some(item => item.kind === kind))
       .map(([, symbol]) => `    ${symbol}`),

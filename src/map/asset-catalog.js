@@ -1,3 +1,5 @@
+import { HOUSE_BUILDER_VARIANTS, isBuilderHouse } from './house-builder.js';
+import { getBuilderHousePreviewSvg } from './house-map-symbol.js';
 import previews from '../../assets/catalog/previews.json' with { type: 'json' };
 import { WEAPON_TYPES } from '../loot-tiers.js';
 import { USER_TREE1_AVAILABLE } from './user-tree-asset.js';
@@ -47,6 +49,10 @@ export const ASSET_CATALOG = Object.freeze([
     'assets/derived/waldhaus-stone/geometry.json', 'assets/imported/tripo-wall/runtime/wall.glb'],
     'Geräumiges, leeres Fachwerkhaus (16 × 12 m) mit verwittertem Natursteinsockel, drei frei einrichtbaren Räumen und zwei offenen Eingängen. Interieur kann später einzeln ergänzt werden; frei platzierbar, drehbar und skalierbar.',
     { provenance: 'assets/derived/waldhaus-stone/provenance.json' }),
+  ...HOUSE_BUILDER_VARIANTS.filter(entry => entry.id !== 'waldhaus').map(({id,label}) => project('house',id,label,
+    ['src/waldhaus-model.js','src/map/house-builder.js','assets/derived/waldhaus-stone/geometry.json','assets/imported/tripo-wall/runtime/wall.glb'],
+    'Hausbaukasten mit eigenem Grundriss, frei wählbarer Fassade und einem oder zwei Eingängen. Leere Räume zum individuellen Einrichten. Vorschau: maßstäblicher Grundriss.',
+    {previewKind:'floorplan',provenance:'assets/derived/waldhaus-stone/provenance.json'})),
   project('house', 'hunter', 'Jägerhaus', ['src/houses.js', 'src/world-object-renderer.js'], 'Offenes Holzhaus mit Jägermotiv.'),
   rei('flower', 'rei-white', 'Rei-Blumen · Weiß', 'flowers.glb', 'Rei_flowersGN_sample.blend', 'Weiße Blüten als gemeinsam verschiebbares Beet.', { node: 'Rei_Flower_White', companion: 'assets/imported/rei/runtime/bed-ground.glb' }),
   rei('flower', 'rei-red', 'Rei-Blumen · Rot', 'flowers.glb', 'Rei_flowersGN_sample.blend', 'Rote Blüten als gemeinsam verschiebbares Beet.', { node: 'Rei_Flower_Red', companion: 'assets/imported/rei/runtime/bed-ground.glb' }),
@@ -156,6 +162,7 @@ export function getVariantAsset(kind, variant) { return byId.get(`${kind}:${vari
 export function getVariantPreviewSvg(kind, variant) {
   const asset = getVariantAsset(kind, variant);
   if (!asset) return '';
+  if (kind === 'house' && isBuilderHouse(variant) && asset.previewKind === 'floorplan') return getBuilderHousePreviewSvg({variant});
   if (kind === 'gravityStaff' && variant === 'kit-tripo-gravity-staff' && !previews[asset.id]) {
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 192" role="img" aria-label="Gravitationsstab Vorschau"><rect width="256" height="192" fill="#24172d"/><path d="M124 183V88" stroke="#9d8eaa" stroke-width="11" stroke-linecap="round"/><circle cx="124" cy="57" r="30" fill="#191126" stroke="#b07cff" stroke-width="5"/><ellipse cx="124" cy="57" rx="49" ry="12" fill="none" stroke="#d7a7ff" stroke-width="4" transform="rotate(-23 124 57)"/><circle cx="124" cy="57" r="13" fill="#582083"/></svg>';
   }

@@ -1,8 +1,8 @@
 /** Height fraction from ground (0) to a house's measured floor (1).
  * Coordinates, floor bounds and entrances are unscaled local x/z metres.
  */
-export function houseFloorFactorAt(x, z, bounds, interior, entrances) {
-  if (x >= bounds.minX && x <= bounds.maxX && z >= bounds.minZ && z <= bounds.maxZ) return 1;
+export function houseFloorFactorAt(x, z, bounds, interior, entrances, floorAreas) {
+  if ((floorAreas ?? [bounds]).some(area => x >= area.minX && x <= area.maxX && z >= area.minZ && z <= area.maxZ)) return 1;
   const ramps = entrances?.length ? entrances : [{
     side: 'south', min: interior.centerX - interior.entranceHalfWidth,
     max: interior.centerX + interior.entranceHalfWidth, boundary: bounds.maxZ, depth: .8,

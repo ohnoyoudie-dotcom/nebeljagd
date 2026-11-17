@@ -1,3 +1,4 @@
+import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
 import { WEAPON_TYPES, weaponStats } from './loot-tiers.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
@@ -349,6 +350,15 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         const width = (footprint ? footprint.halfWidth * 2 : 16) * object.scale * scale;
         const depth = (footprint ? footprint.halfDepth * 2 : 14) * object.scale * scale;
         ctx.fillStyle = '#dfc894'; ctx.strokeStyle = '#5a5038'; ctx.lineWidth = 1.6;
+        if (isBuilderHouse(object.variant)) {
+          const definition=getHouseDefinition(object),unit=object.scale*scale;
+          for (const area of definition.footprintAreas ?? [definition.floorBounds]) {
+            ctx.fillRect(area.minX*unit,area.minZ*unit,(area.maxX-area.minX)*unit,(area.maxZ-area.minZ)*unit);
+          }
+          ctx.strokeStyle='#5a5038';ctx.lineWidth=Math.max(1,.3*unit);
+          for(const wall of definition.architecturalWalls) ctx.strokeRect(wall.minX*unit,wall.minZ*unit,(wall.maxX-wall.minX)*unit,(wall.maxZ-wall.minZ)*unit);
+          ctx.restore(); continue;
+        }
         ctx.fillRect(-width / 2, -depth / 2, width, depth); ctx.strokeRect(-width / 2, -depth / 2, width, depth);
         ctx.strokeStyle = '#8c785455'; ctx.lineWidth = .8;
         ctx.beginPath(); ctx.moveTo(0, -depth / 2); ctx.lineTo(0, depth / 2); ctx.stroke();

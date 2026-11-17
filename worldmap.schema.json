@@ -597,6 +597,25 @@
           "minimum": 0.25,
           "maximum": 8,
           "description": "Absolute Mauer- oder Zaunhöhe in Metern. Ohne Angabe bleibt die Modellhöhe mal Größe erhalten. Ab 2 Metern wird die Sicht blockiert; Bewegung bleibt bei jeder Höhe blockiert."
+        },
+        "houseStyle": {
+          "enum": [
+            "natural",
+            "lime",
+            "ochre",
+            "dark"
+          ]
+        },
+        "houseSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "houseEntrances": {
+          "enum": [
+            "single",
+            "double"
+          ]
         }
       },
       "allOf": [
@@ -653,7 +672,11 @@
                   "kit-tripo-tavern",
                   "kit-tripo-castle",
                   "kit-tripo-house-02",
-                  "waldhaus"
+                  "waldhaus",
+                  "waldhaus-small",
+                  "waldhaus-town",
+                  "waldhaus-corner",
+                  "waldhaus-hall"
                 ]
               }
             }
@@ -1517,6 +1540,43 @@
               "variant": {
                 "enum": [
                   "kit-tripo-clockwork-staff"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "required": [
+                  "houseStyle"
+                ]
+              },
+              {
+                "required": [
+                  "houseSeed"
+                ]
+              },
+              {
+                "required": [
+                  "houseEntrances"
+                ]
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "house"
+              },
+              "variant": {
+                "enum": [
+                  "waldhaus",
+                  "waldhaus-small",
+                  "waldhaus-town",
+                  "waldhaus-corner",
+                  "waldhaus-hall"
                 ]
               }
             }

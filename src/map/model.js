@@ -1,3 +1,4 @@
+import { HOUSE_STYLES, isBuilderHouse } from './house-builder.js';
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getObjectDefinition } from './objects.js';
 import { validateLandscape } from './landscape.js';
@@ -244,6 +245,10 @@ export function validateWorldmap(map) {
     const definition = getObjectDefinition(item.kind);
     if (!definition) error(`${item.id}: Unbekannte Objektart.`);
     else if (!definition.variants.some(variant => variant.id === item.variant)) error(`${item.id}: Unbekannte Variante für ${definition.label}.`);
+    const builder = item.kind === 'house' && isBuilderHouse(item.variant);
+    if (item.houseStyle !== undefined && (!builder || !HOUSE_STYLES.some(style => style.id === item.houseStyle))) error(`${item.id}: Unbekannter Fassadenstil für den Hausbaukasten.`);
+    if (item.houseSeed !== undefined && (!builder || !Number.isInteger(item.houseSeed) || item.houseSeed < 0 || item.houseSeed > 2147483647)) error(`${item.id}: Hausvariation muss eine ganze Zahl zwischen 0 und 2147483647 sein.`);
+    if (item.houseEntrances !== undefined && (!builder || !['single', 'double'].includes(item.houseEntrances))) error(`${item.id}: Hauszugänge müssen ein oder zwei Eingänge angeben.`);
     if (item.rarity !== undefined && (typeof item.rarity !== 'string' || !Object.hasOwn(RARITIES, item.rarity) || !WEAPON_TYPES.includes(item.kind))) error(`${item.id}: Seltenheit muss einer gültigen Waffenstufe entsprechen.`);
     if (checkPoint(item.position, `Weltobjekt ${item.id}`) && islandValid && !isLandPoint(map, item.position)) error(`Weltobjekt ${item.name} liegt außerhalb der Insel oder in einer Wasserfläche.`);
     if (!finite(item.rotation) || Math.abs(item.rotation) > Math.PI * 20) error(`${item.id}: Drehung muss in Radiant zwischen -20π und 20π liegen.`);
