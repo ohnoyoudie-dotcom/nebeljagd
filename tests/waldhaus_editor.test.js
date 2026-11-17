@@ -28,7 +28,9 @@ test('Waldhaus is a named, placeable project model with the actual playable foot
   assert.equal(asset.previewKind, 'render');
   assert.ok(asset.sourcePaths.includes('src/waldhaus-model.js'));
   assert.doesNotMatch(asset.sourceLabel, /Tripo/);
-  assert.equal(asset.provenance, undefined, 'an original project house does not claim an imported asset source');
+  assert.equal(asset.provenance, 'assets/derived/waldhaus-stone/provenance.json');
+  assert.ok(asset.sourcePaths.includes('assets/imported/tripo-wall/runtime/wall.glb'),
+    'the procedural house documents its borrowed original stone material');
 });
 
 test('Waldhaus survives rotated, scaled save/import and both old-model cleanup actions', () => {

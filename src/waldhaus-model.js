@@ -4,9 +4,9 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { WALDHAUS_DEFINITION } from './map/waldhaus-definition.js';
 import { createWaldhausWindowLight } from './waldhaus-window-light.js';
 import { createWaldhausSurface } from './waldhaus-materials.js';
+import { createWaldhausStoneSegment, WALDHAUS_STONE_LENGTH } from './waldhaus-stone.js';
 
 const palettes = {
-  stone: ['#929383', '#a19e8b', '#878b7e', '#aaa18b', '#919382'],
   plaster: ['#d4c7a9', '#cebea0', '#d7c9ad'],
 };
 const seeded = () => {
@@ -15,7 +15,7 @@ const seeded = () => {
 };
 /** Architecture only: all footprint, door and window locations belong to the
  * shared collision plan. The wall height is independent of the floor area. */
-export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirection } = {}) {
+export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirection, stoneMaterial } = {}) {
   const def = WALDHAUS_DEFINITION, random = seeded(), floor = def.floorHeight;
   const group = new THREE.Group(), outer = new THREE.Group(), roof = new THREE.Group();
   const frontFacade = new THREE.Group(), interior = new THREE.Group();
@@ -34,14 +34,20 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
     material.name = 'Waldhaus · ' + id; materials.set(id, material); return material;
   };
   const wood = mat('Holz', 'wood'), stone = mat('Stein', 'stone'), plaster = mat('Kalkputz', 'plaster');
+  // Original Tripo maps belong to the loaded scenery kit. This model owns only
+  // its material clone; disposing one house must not release the shared maps.
+  const wallStone = stoneMaterial?.clone() ?? new THREE.MeshStandardMaterial({ color:'#a49a82', roughness:.95 });
+  wallStone.vertexColors = true;
+  wallStone.name = 'Waldhaus · originale verwitterte Tripo-Steine';
+  materials.set('Tripo-Sockel', wallStone);
   const floorWood = mat('Abgenutzte Dielen', 'floor', {roughness:.98});
   const foliage = mat('Moos und niedrige Außenpflanzen', null, {side:THREE.DoubleSide});
   const iron = mat('Eisen', null, { metalness: .65, roughness: .55 });
   const glass = mat('Glas', null, { emissive: '#75816b', emissiveIntensity: .12, metalness: .15, roughness: .4 });
   let parts = 0, floorBoards = 0;
-  function geometry(parent, material, geo, x, y, z, tint, rotation = [0, 0, 0], grainAxis = 'y') {
+  function geometry(parent, material, geo, x, y, z, tint, rotation = [0, 0, 0], grainAxis = 'y', preserveUV = false) {
     const position = geo.attributes.position, normal = geo.attributes.normal, uv = geo.attributes.uv;
-    if (uv) for (let i = 0; i < position.count; i++) {
+    if (uv && !preserveUV) for (let i = 0; i < position.count; i++) {
       const ax = Math.abs(normal.getX(i)), ay = Math.abs(normal.getY(i)), az = Math.abs(normal.getZ(i));
       if (ay >= ax && ay >= az) {
         const u=position.getX(i)+(material===floorWood?x:0), v=position.getZ(i)+(material===floorWood?z:0);
@@ -135,7 +141,16 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
     const height = wall.maxY - floor, alongX = w > d, length = alongX ? w : d;
     const front = alongX && Math.abs(wall.maxZ - bounds.maxZ) < .01;
     const low = Math.min(.6, height), parent = front ? frontFacade : outer;
-    box(outer, stone, x, floor + low / 2, z, w, low, d, '#696d61');
+    // A recessed mortar core closes hidden cuts without poking through the
+    // original sculpted stone recesses. Visible stones keep their X/Y scale.
+    box(outer, stone, x, floor + low / 2, z, alongX?w:.1, low, alongX?.1:d, '#625d50');
+    for(let offset=0;offset<length-.001;offset+=WALDHAUS_STONE_LENGTH) {
+      const segmentLength=Math.min(WALDHAUS_STONE_LENGTH,length-offset);
+      const center=-length/2+offset+WALDHAUS_STONE_LENGTH/2;
+      geometry(outer,wallStone,createWaldhausStoneSegment(segmentLength),
+        x+(alongX?center:0),floor,z+(alongX?0:center),'#ffffff',
+        alongX?[]:[0,-Math.PI/2,0],'y',true);
+    }
     box(parent, plaster, x, floor + low + (height - low) / 2, z, alongX ? w : w * .94, height - low, alongX ? d * .94 : d, choose('plaster'));
     box(parent, wood, x, floor + height + .025, z, alongX?w+.025:.46, .14, alongX?.46:d+.025, '#65452f',[],.04);
     // A pale, inset cut surface makes even edge-on partitions legible from above.
@@ -158,19 +173,6 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
       if(def.windows.some(window=>Math.abs((alongX?window.z:window.x)-(alongX?z:x))<.5&&Math.abs((alongX?window.x:window.z)-(alongX?px:pz))<window.width/2+run/2+.22))continue;
       const rise=.98,tilt=sign*Math.atan2(run,rise),span=Math.hypot(run,rise);
       box(parent,wood,px,floor+2.49,pz,alongX?.16:w+.065,span,alongX?d+.065:.16,'#79583b',alongX?[0,0,-tilt]:[tilt,0,0],.028);
-    }
-    // Both stone courses use irregular widths and offset joints; the masonry
-    // stays within the wall ends so no stone protrudes into a doorway.
-    for (let row = 0; row < 2; row++) {
-      let edge = -length / 2;
-      let step = .34 + random() * .55;
-      while (edge < length / 2 - .001) {
-        let end = Math.min(length / 2, edge + step);
-        if (length / 2 - end < .2) end = length / 2;
-        const position = (edge + end) / 2;
-        box(outer, stone, x + (alongX ? position : 0), floor + .15 + row * .28, z + (alongX ? 0 : position), alongX ? end - edge - .035 : w + .045 + random()*.02, .225+random()*.035, alongX ? d + .045 + random()*.02 : end - edge - .035, choose('stone'), [], .055);
-        edge = end; step = .67 + random() * .4;
-      }
     }
   }
   function portal(x, z, doorWidth, alongX, parent = outer, openTop = false) {
@@ -267,7 +269,8 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
   let drawCalls = 0, triangles = 0;
   group.traverse(node => { if (node.isMesh) { drawCalls++; triangles += (node.geometry.index?.count ?? node.geometry.attributes.position.count) / 3; } });
   const stats = { drawCalls, triangles, parts, floorBoards, rooms: def.rooms.length, entrances: def.entrances.length };
-  group.userData.waldhaus = { ...stats, style: 'weathered-timber-stone-shell', floorHeight: floor };
+  group.userData.waldhaus = { ...stats, style: 'weathered-timber-stone-shell', floorHeight: floor,
+    stoneSource: stoneMaterial ? 'tripo-wall' : 'untextured-preview' };
   let disposed = false;
   return { group, roof, frontFacade, interior, stats, dispose() {
     if (disposed) return; disposed = true;

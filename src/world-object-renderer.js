@@ -385,7 +385,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       continue;
     }
     if (object.kind === 'house' && variant === 'waldhaus') {
-      const definition=WALDHAUS_DEFINITION,{group,roof,frontFacade,interior}=createWaldhausModel({rotation:object.rotation});
+      const definition=WALDHAUS_DEFINITION,{group,roof,frontFacade,interior}=createWaldhausModel({rotation:object.rotation,
+        stoneMaterial:kitModels.get('wall:kit-tripo-wall').parts[0].material});
       group.name=`Waldhaus · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;
       group.position.set(x,groundHeightAt(x,z),z);group.rotation.y=object.rotation;group.scale.setScalar(scale);
       chunkFor(x,z).group.add(group);

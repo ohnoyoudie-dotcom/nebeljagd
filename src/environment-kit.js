@@ -194,6 +194,10 @@ function removeMirroredFaces(geometry) {
 export async function loadEnvironmentKit(map, { wind } = {}) {
   const wanted = [...new Set((map.objects ?? []).filter(object => urls[`${object.kind}:${object.variant}`]
     || (getEnvironmentKitDefinition(object.kind, object.variant)?.procedural && !getEnvironmentKitDefinition(object.kind, object.variant)?.proceduralHouse)).map(object => `${object.kind}:${object.variant}`))];
+  // The Waldhaus foundation reuses the original wall's PBR maps, including
+  // in maps with no separately placed wall. Parse that shared source once.
+  if ((map.objects ?? []).some(object => object.kind === 'house' && object.variant === 'waldhaus')
+    && !wanted.includes('wall:kit-tripo-wall')) wanted.push('wall:kit-tripo-wall');
   const result = new Map();
   await Promise.all(wanted.map(async key => {
     const [kind, variant] = key.split(':'), definition = getEnvironmentKitDefinition(kind, variant);

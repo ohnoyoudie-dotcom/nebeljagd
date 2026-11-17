@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "source": {
+    "path": "assets/imported/tripo-wall/runtime/wall.glb",
+    "sha256": "b8e49ceff639a5ee8fa353c72fcd312729ccb1a71de4caf895d1225b883fcf81",
+    "bytes": 3944784,
+    "unchanged": true
+  },
+  "material": {
+    "borrowedFrom": "wall:kit-tripo-wall",
+    "images": [
+      {
+        "name": "stone_wall_3d_model_normal",
+        "mimeType": "image/png",
+        "bytes": 2773640,
+        "sha256": "2f38e028e5351e3f830c6b8e905af8397b0622526d3564a026ae98d77cb87d5a"
+      },
+      {
+        "name": "stone_wall_3d_model_basecolor",
+        "mimeType": "image/jpeg",
+        "bytes": 622332,
+        "sha256": "fb84a3c697272c157cfab388ec92c5c561caf1e0a4b11b933281843a16bd97a3"
+      },
+      {
+        "name": "stone_wall_3d_model_rm",
+        "mimeType": "image/jpeg",
+        "bytes": 194412,
+        "sha256": "ca14bc6d9ceb7c462dfefb35f1a2e67b1a3f0e1e01293c7652c8f41c2f8a4a62"
+      }
+    ],
+    "duplicatedTextureFiles": 0,
+    "uvConvention": "glTF UVs for original GLTFLoader textures (flipY=false)"
+  },
+  "preparation": {
+    "tool": "Blender 4.3.2",
+    "script": "scripts/prepare-waldhaus-stone.py",
+    "scriptSha256": "693cc5c4c02417743b63b4a20107711e48a43fed29506f4406c3449e8f3785c6",
+    "command": "blender -b -t 3 --python scripts/prepare-waldhaus-stone.py",
+    "method": "Clip the lower 0.6 m; simplify, reclip X/Y bounds; change depth only to 0.36 m with inverse-transpose normals; export glTF attributes.",
+    "sourceStripTriangles": 6392,
+    "simplificationTarget": 1700,
+    "depthScale": 0.41926330610321344,
+    "xScale": 1,
+    "yScale": 1,
+    "providerInvoked": false,
+    "gameDevCliReceipt": null
+  },
+  "geometry": {
+    "path": "geometry.json",
+    "bytes": 190291,
+    "sha256": "11430c1ff5ba9e84d468f91ddb72898b79749c3b13138ff17380526ec0cc3fc0",
+    "vertices": 2289,
+    "triangles": 1971,
+    "triangleLimit": 2000,
+    "length": 6.0,
+    "height": 0.6,
+    "depth": 0.36
+  },
+  "validation": {
+    "sourceUnchanged": true,
+    "originalPBRReused": true,
+    "noFaceStretch": true,
+    "finiteAttributes": true,
+    "indicesValid": true,
+    "budgetPassed": true
+  }
+}
