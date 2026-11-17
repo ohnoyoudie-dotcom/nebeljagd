@@ -616,6 +616,33 @@
             "single",
             "double"
           ]
+        },
+        "houseRooms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "houseLayout": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "houseStoneColor": {
+          "enum": [
+            "natural",
+            "sand",
+            "slate",
+            "moss"
+          ]
+        },
+        "houseWallColor": {
+          "enum": [
+            "style",
+            "chalk",
+            "sand",
+            "sage",
+            "clay"
+          ]
         }
       },
       "allOf": [
@@ -1561,6 +1588,26 @@
               {
                 "required": [
                   "houseEntrances"
+                ]
+              },
+              {
+                "required": [
+                  "houseRooms"
+                ]
+              },
+              {
+                "required": [
+                  "houseLayout"
+                ]
+              },
+              {
+                "required": [
+                  "houseStoneColor"
+                ]
+              },
+              {
+                "required": [
+                  "houseWallColor"
                 ]
               }
             ]
