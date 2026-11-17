@@ -386,6 +386,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     if (object.kind === 'house' && isBuilderHouse(variant)) {
       const definition=getHouseDefinition(object),{group,roof,frontFacade,interior}=createWaldhausModel({definition, rotation:object.rotation, houseStyle:object.houseStyle, houseSeed:object.houseSeed,
+        houseStoneColor:object.houseStoneColor,houseWallColor:object.houseWallColor,
         stoneMaterial:kitModels.get('wall:kit-tripo-wall').parts[0].material});
       group.name=`${definition.label} · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;
       group.position.set(x,groundHeightAt(x,z),z);group.rotation.y=object.rotation;group.scale.setScalar(scale);

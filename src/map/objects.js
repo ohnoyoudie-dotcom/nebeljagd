@@ -186,7 +186,7 @@ export function makeWorldObject(kind, position, options = {}) {
     scale: options.scale ?? definition.defaultScale,
     ...(options.height !== undefined ? { height: options.height } : {}),
     ...(kind === 'house' && isBuilderHouse(variant) ? Object.fromEntries(
-      ['houseStyle', 'houseSeed', 'houseEntrances'].filter(key => options[key] !== undefined).map(key => [key, options[key]])) : {}),
+      ['houseStyle', 'houseSeed', 'houseEntrances', 'houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor'].filter(key => options[key] !== undefined).map(key => [key, options[key]])) : {}),
     ...(WEAPON_TYPES.includes(kind) ? { rarity: options.rarity ?? 'common' } : {}),
     ...(definition.defaultRadius ? { radius: options.radius ?? definition.defaultRadius } : {}),
   };

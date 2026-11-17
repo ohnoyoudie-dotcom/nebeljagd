@@ -1,3 +1,4 @@
+import { getHouseMaterialColors } from './map/house-colors.js';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -17,8 +18,9 @@ const seeded = (seed = 87123) => {
 /** Architecture only: all footprint, door and window locations belong to the
  * shared collision plan. The wall height is independent of the floor area. */
 export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirection, stoneMaterial,
-  definition = WALDHAUS_DEFINITION, houseStyle, houseSeed } = {}) {
+  definition = WALDHAUS_DEFINITION, houseStyle, houseSeed, houseStoneColor, houseWallColor } = {}) {
   const def = definition, appearance = getHouseAppearance({houseStyle,houseSeed});
+  const materialColors = getHouseMaterialColors({houseStoneColor,houseWallColor});
   const random = seeded(appearance.seed), floor = def.floorHeight;
   const facadeRandom = seeded(appearance.seed ^ 0x5e371);
   const legacy = appearance.seed === 87123;
@@ -52,6 +54,7 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
   // its material clone; disposing one house must not release the shared maps.
   const wallStone = stoneMaterial?.clone() ?? new THREE.MeshStandardMaterial({ color:'#a49a82', roughness:.95 });
   wallStone.vertexColors = true;
+  wallStone.color.multiply(new THREE.Color(materialColors.stone.color));
   wallStone.name = 'Waldhaus · originale verwitterte Tripo-Steine';
   materials.set('Tripo-Sockel', wallStone);
   const floorWood = mat('Abgenutzte Dielen', 'floor', {roughness:.98});
@@ -78,6 +81,7 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
     if (material === plaster) {
       color.multiply(plasterTone);
       if (appearance.style === 'lime') color.lerp(new THREE.Color('#eee5cf'), .43);
+      if (materialColors.wall.color) color.lerp(new THREE.Color(materialColors.wall.color), .88);
     }
     if (material === floorWood) color.multiply(floorTone);
     const colors = new Float32Array(geo.attributes.position.count * 3);
@@ -292,9 +296,10 @@ export function createWaldhausModel({ rotation = 0, worldRotation = 0, sunDirect
   interior.add(windowLight.group);
   let drawCalls = 0, triangles = 0;
   group.traverse(node => { if (node.isMesh) { drawCalls++; triangles += (node.geometry.index?.count ?? node.geometry.attributes.position.count) / 3; } });
-  const stats = { drawCalls, triangles, parts, floorBoards, rooms: def.rooms.length, entrances: def.entrances.length };
+  const stats = { drawCalls, triangles, parts, floorBoards, rooms: def.roomCount ?? def.rooms.length, entrances: def.entrances.length };
   group.userData.waldhaus = { ...stats, style: 'weathered-timber-stone-shell', floorHeight: floor,
-    stoneSource: stoneMaterial ? 'tripo-wall' : 'untextured-preview', variant: def.variant, houseStyle: appearance.style, houseSeed: appearance.seed };
+    stoneSource: stoneMaterial ? 'tripo-wall' : 'untextured-preview', variant: def.variant, houseStyle: appearance.style, houseSeed: appearance.seed,
+    houseStoneColor: materialColors.stone.id, houseWallColor: materialColors.wall.id };
   let disposed = false;
   return { group, roof, frontFacade, interior, stats, dispose() {
     if (disposed) return; disposed = true;

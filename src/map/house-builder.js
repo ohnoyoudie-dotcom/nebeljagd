@@ -92,15 +92,111 @@ definitions.set(corner.id,complete(corner,{areas:[rect(-8,0,-7,7,{alongZ:true}),
   rooms:[rect(-7.7,-.3,-1,6.7,{name:'Westflügel'}),rect(-7.7,.85,-6.7,-1.3,{name:'Eckzimmer'}),rect(1.15,7.7,-6.7,-1.3,{name:'Nordflügel'})],
   walls:cornerWalls,entrances:cornerEntrances,doors:[{name:'Durchgang Eckzimmer',x:-4,z:-1.15,width:2.6,axis:'x'},{name:'Durchgang Nordflügel',x:1,z:-4,width:2.6,axis:'z'}],
   windows:[window('west',3,-7.69,'Fenster Westflügel'),window('north',-4,-6.69,'Fenster Eckzimmer'),window('north',4,-6.69,'Fenster Nordflügel'),window('east',-4,7.69,'Giebelfenster')],openFloor:[-4,4]}));
+// Room plans are curated, connected partitions within the existing shell.
+// A logical L-shaped room may have two rectangles for window-light clipping.
+const roomPlans = new Map();
+function withRoomLayout(base, count, layout) {
+  const key=`${base.variant}:${count}:${layout}`;
+  if(roomPlans.has(key))return roomPlans.get(key);
+  const hx=base.footprint.halfWidth,hz=base.footprint.halfDepth;
+  const walls=base.architecturalWalls.filter(w=>w.external || (base.variant==='waldhaus' && w.name.includes('facade')));
+  const rooms=[],doors=[],floorAreas=[];
+  const room=(id,name,minX,maxX,minZ,maxZ)=>rooms.push(rect(minX,maxX,minZ,maxZ,{name,roomId:`room-${id}`}));
+  const floor=(minX,maxX,minZ,maxZ,alongZ=true)=>floorAreas.push(rect(minX,maxX,minZ,maxZ,{alongZ}));
+  const divide=(name,axis,fixed,from,to,center)=>{
+    walls.push(...splitWall(name,axis,fixed,from,to,[[center-1.3,center+1.3]]));
+    doors.push({name:`Durchgang ${name}`,x:axis==='x'?center:fixed,z:axis==='x'?fixed:center,width:2.6,axis});
+  };
+  if(base.variant==='waldhaus-corner') {
+    // Floor rectangles never overlap and never fill the south-east courtyard.
+    floor(-8,0,-7,7);floor(0,8,-7,-1,false);
+    if(count===1) {
+      room(1,'Offener Wohnraum',-7.7,0,-6.7,6.7);
+      room(1,'Offener Wohnraum',0,7.7,-6.7,-1.3);
+    } else if(count===2) {
+      const split=[-1.15,1.7,3][layout];
+      divide('Westzimmer','x',split,-7.7,-.3,-4);
+      room(1,'Westzimmer',-7.7,-.3,split+.15,6.7);
+      room(2,'Ecksaal',-7.7,0,-6.7,split-.15);
+      room(2,'Ecksaal',0,7.7,-6.7,-1.3);
+    } else if(layout===2) {
+      divide('Mittelzimmer','x',2.8,-7.7,-.3,-4);
+      divide('Nordsaal','x',-1.15,-7.7,-.3,-4);
+      room(1,'Südzimmer',-7.7,-.3,2.95,6.7);
+      room(2,'Mittelzimmer',-7.7,-.3,-1,2.65);
+      room(3,'Nordsaal',-7.7,0,-6.7,-1.3);
+      room(3,'Nordsaal',0,7.7,-6.7,-1.3);
+    } else {
+      const split=layout===0?-1.15:1.7;
+      divide('Westzimmer','x',split,-7.7,-.3,-4);
+      divide('Nordzimmer','z',1,-6.7,-1.3,-4);
+      room(1,'Westzimmer',-7.7,-.3,split+.15,6.7);
+      room(2,'Eckzimmer',-7.7,0,-6.7,split-.15);
+      room(2,'Eckzimmer',0,.85,-6.7,-1.3);
+      room(3,'Nordzimmer',1.15,7.7,-6.7,-1.3);
+    }
+  } else if(count===1) {
+    room(1,'Offener Wohnraum',-hx+.3,hx-.3,-hz+.3,hz-.3);
+    floor(-hx,hx,-hz,hz);
+  } else if(count===2 && layout===0) {
+    divide('Hinterzimmer','x',0,-hx+.3,hx-.3,0);
+    room(1,'Vorderzimmer',-hx+.3,hx-.3,.15,hz-.3);
+    room(2,'Hinterzimmer',-hx+.3,hx-.3,-hz+.3,-.15);
+    floor(-hx,hx,0,hz);floor(-hx,hx,-hz,0,false);
+  } else if(count===3 && layout===2) {
+    // Serial rooms keep the complete north/south route open at their centre.
+    const split=hz/3;
+    divide('Mittelzimmer','x',split,-hx+.3,hx-.3,0);
+    divide('Hinterzimmer','x',-split,-hx+.3,hx-.3,0);
+    room(1,'Vorderzimmer',-hx+.3,hx-.3,split+.15,hz-.3);
+    room(2,'Mittelzimmer',-hx+.3,hx-.3,-split+.15,split-.15);
+    room(3,'Hinterzimmer',-hx+.3,hx-.3,-hz+.3,-split-.15);
+    floor(-hx,hx,split,hz);floor(-hx,hx,-split,split,false);floor(-hx,hx,-hz,-split);
+  } else {
+    // Offset side rooms avoid both the central small-house entrance and the
+    // left-of-centre doors of the existing Waldhaus/gasthaus shells.
+    const left=count===2?layout===2:layout===1;
+    const entryX=base.entrances[0].center;
+    const split=left&&entryX<-1?entryX+2:(left?-1:1)*Math.max(1.8,hx*.3);
+    if(count===2) {
+      divide('Nebenraum','z',split,-hz+.3,hz-.3,0);
+      room(1,'Westzimmer',-hx+.3,split-.15,-hz+.3,hz-.3);
+      room(2,'Ostzimmer',split+.15,hx-.3,-hz+.3,hz-.3);
+      floor(-hx,split,-hz,hz);floor(split,hx,-hz,hz,false);
+    } else {
+      divide('Nebenraum hinten','z',split,-hz+.3,-.15,-hz*.5);
+      divide('Nebenraum vorn','z',split,.15,hz-.3,hz*.5);
+      // A short centre connection joins the two vertical wall halves.
+      walls.push(wall('Verbindung Raumteiler',split-.15,split+.15,-.15,.15));
+      const sideMin=left?-hx+.3:split+.15,sideMax=left?split-.15:hx-.3;
+      walls.push(wall('Nebenraumteiler',sideMin,sideMax,-.15,.15));
+      room(1,'Hauptraum',left?split+.15:-hx+.3,left?hx-.3:split-.15,-hz+.3,hz-.3);
+      room(2,'Nebenraum hinten',sideMin,sideMax,-hz+.3,-.15);
+      room(3,'Nebenraum vorn',sideMin,sideMax,.15,hz-.3);
+      const a=left?-hx:split,b=left?split:hx;
+      floor(left?split:-hx,left?hx:split,-hz,hz);
+      floor(a,b,-hz,0,false);floor(a,b,0,hz,false);
+    }
+  }
+  const result=freeze({...base,roomCount:count,layoutIndex:layout,rooms,floorAreas,
+    architecturalWalls:walls,walls,interiorDoorways:doors,
+    qaRoutes:{...base.qaRoutes,rooms:doors.map(d=>({name:d.name,
+      from:d.axis==='z'?[d.x-1.05,d.z]:[d.x,d.z-1.05],
+      to:d.axis==='z'?[d.x+1.05,d.z]:[d.x,d.z+1.05]})),clearedFurniture:[]}});
+  roomPlans.set(key,result);return result;
+}
 const cache = new Map();
 export function getHouseDefinition(objectOrVariant = 'waldhaus') {
   const object = typeof objectOrVariant==='string'?{variant:objectOrVariant}:objectOrVariant??{};
-  const base=definitions.get(object.variant);
-  if(!base)return null;
+  const original=definitions.get(object.variant);
+  if(!original)return null;
+  const explicitRooms=Number.isInteger(object.houseRooms)&&object.houseRooms>=1&&object.houseRooms<=3;
+  const explicitLayout=Number.isInteger(object.houseLayout)&&object.houseLayout>=0&&object.houseLayout<=2;
+  const base=explicitRooms||explicitLayout?withRoomLayout(original,explicitRooms?object.houseRooms:original.rooms.length,explicitLayout?object.houseLayout:0):original;
   const mode=object.houseEntrances;
   if(mode!=='single'&&mode!=='double')return base;
   if((mode==='single'&&base.entrances.length===1)||(mode==='double'&&base.entrances.length===2))return base;
-  const key=base.variant+':'+mode;if(cache.has(key))return cache.get(key);
+  const key=base.variant+':'+(base.roomCount??'legacy')+':'+(base.layoutIndex??'legacy')+':'+mode;if(cache.has(key))return cache.get(key);
   let walls=[...base.architecturalWalls],entrances=[...base.entrances];
   if(mode==='single') {
     for(const e of entrances.slice(1)) {

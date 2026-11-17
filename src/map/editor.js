@@ -20,6 +20,7 @@ import { requestedEditorStart, planEditorStart, editorVersionLabel, editorMapSou
 import { createGitHubMapSync, githubSyncAvailable } from './github-map-sync.js';
 import { createPlacementRotationControl } from './placement-rotation.js';
 import { isBuilderHouse, getHouseDefinition } from './house-builder.js';
+import { HOUSE_STONE_COLORS, HOUSE_WALL_COLORS } from './house-colors.js';
 import { getBuilderHousePreviewSvg } from './house-map-symbol.js';
 import './editor.css';
 
@@ -583,7 +584,7 @@ function applyProperties(event) {
     if (selection.type === 'object') {
       feature.variant = $('object-variant').value;
       if (feature.kind === 'house' && isBuilderHouse(feature.variant)) Object.assign(feature, houseOptions('object'));
-      else for (const key of ['houseStyle', 'houseSeed', 'houseEntrances']) delete feature[key];
+      else for (const key of ['houseStyle', 'houseSeed', 'houseEntrances', 'houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor']) delete feature[key];
       // Preserve legacy map fields; live loot rolls its rarity each round.
       feature.rotation = Number($('object-rotation').value) * Math.PI / 180;
       feature.scale = Number($('object-scale').value);
@@ -1247,15 +1248,21 @@ function renderAssetPreview(prefix, kind, variant) {
   $(`${prefix}-preview-image`).innerHTML = svg;
   $(`${prefix}-preview-title`).textContent = asset?.label ?? getObjectDefinition(kind).label;
   $(`${prefix}-preview-source`).textContent = builder ? 'Hausbaukasten · Grundrissvorschau' : asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
-  $(`${prefix}-preview-note`).textContent = builder ? 'Leere Räume zum freien Einrichten. Stil und Variation werden mit dem Haus gespeichert.' : asset?.notes ?? '';
+  $(`${prefix}-preview-note`).textContent = builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
 }
 
 function houseOptions(prefix) {
-  return {
+  const options = {
     houseStyle: $(`${prefix}-house-style`).value,
     houseSeed: Number($(`${prefix}-house-seed`).value),
     houseEntrances: $(`${prefix}-house-entrances`).value,
   };
+  for (const [field, key, numeric] of [['rooms','houseRooms',true], ['layout','houseLayout',true],
+    ['stone-color','houseStoneColor',false], ['wall-color','houseWallColor',false]]) {
+    const input = $(`${prefix}-house-${field}`);
+    if (input.dataset.explicit === 'true') options[key] = numeric ? Number(input.value) : input.value;
+  }
+  return options;
 }
 function syncHouseControls(prefix, object, restore = false) {
   const active = object.kind === 'house' && isBuilderHouse(object.variant);
@@ -1263,15 +1270,30 @@ function syncHouseControls(prefix, object, restore = false) {
   panel.hidden = !active;
   for (const input of panel.querySelectorAll('input,select,button')) input.disabled = !active;
   if (!active) return;
+  const original = getHouseDefinition(object);
+  const originalRooms = original.roomCount ?? original.rooms.length;
   if (restore) {
     $(`${prefix}-house-style`).value = object.houseStyle ?? 'natural';
     $(`${prefix}-house-seed`).value = object.houseSeed ?? 87123;
-    $(`${prefix}-house-entrances`).value = object.houseEntrances ?? (getHouseDefinition(object).entrances.length > 1 ? 'double' : 'single');
+    $(`${prefix}-house-entrances`).value = object.houseEntrances ?? (original.entrances.length > 1 ? 'double' : 'single');
+    for (const [field,key,fallback] of [['rooms','houseRooms',originalRooms], ['layout','houseLayout',0],
+      ['stone-color','houseStoneColor','natural'], ['wall-color','houseWallColor','style']]) {
+      const input = $(`${prefix}-house-${field}`);
+      input.value = object[key] ?? fallback;
+      input.dataset.explicit = String(object[key] !== undefined);
+    }
+  } else if (panel.dataset.variant !== object.variant && $(`${prefix}-house-rooms`).dataset.explicit !== 'true') {
+    $(`${prefix}-house-rooms`).value = originalRooms;
   }
+  panel.dataset.variant = object.variant;
   const def = getHouseDefinition({...object, ...houseOptions(prefix)});
+  const count = def.roomCount ?? def.rooms.length;
+  const layoutButton = $(`${prefix}-house-layout-next`);
+  layoutButton.disabled = count <= 1;
+  layoutButton.title = count <= 1 ? 'Ein offener Raum braucht keine Trennwände.' : 'Andere Aufteilung bei gleicher Raumanzahl';
   const size = prefix === 'object' ? Number($('object-scale').value) || object.scale || 1 : 1;
   const metres = value => (value * size).toLocaleString('de-DE', {maximumFractionDigits: 1});
-  $(`${prefix}-house-info`).textContent = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m · ${def.rooms.length} ${def.rooms.length === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
+  $(`${prefix}-house-info`).textContent = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
 }
 function varyHouse(prefix) {
   const input = $(`${prefix}-house-seed`), previous = Number(input.value);
@@ -1294,6 +1316,10 @@ function updatePaletteRarity() {
   $('palette-rarity').disabled = $('palette-rarity-property').hidden;
 }
 function preparePalette() {
+  for (const prefix of ['palette','object']) for (const [field, options] of [['stone-color',HOUSE_STONE_COLORS],['wall-color',HOUSE_WALL_COLORS]]) {
+    const select = $(`${prefix}-house-${field}`);
+    select.replaceChildren(...options.map(item => { const option=document.createElement('option');option.value=item.id;option.textContent=item.label;return option; }));
+  }
   $('palette-kind').replaceChildren(); $('palette-rarity').replaceChildren(); $('object-rarity').replaceChildren();
   $('object-kind-filter').innerHTML = '<option value="all">Alle Objektarten</option>';
   for (const select of [$('palette-rarity'), $('object-rarity')]) {
@@ -1394,6 +1420,22 @@ $('palette-variant').addEventListener('change', () => {
 });
 for (const prefix of ['palette', 'object']) {
   for (const field of ['style', 'entrances']) $(`${prefix}-house-${field}`).addEventListener('change', () => refreshHousePreview(prefix));
+  for (const field of ['rooms', 'stone-color', 'wall-color']) $(`${prefix}-house-${field}`).addEventListener('change', () => {
+    $(`${prefix}-house-${field}`).dataset.explicit = 'true';
+    if (field === 'rooms') {
+      const layout = $(`${prefix}-house-layout`);layout.value = 0;layout.dataset.explicit = 'true';
+    }
+    refreshHousePreview(prefix);
+  });
+  $(`${prefix}-house-layout-next`).addEventListener('click', () => {
+    if (prefix === 'object' && (pointer || !$('properties-form').reportValidity())) return;
+    const rooms = $(`${prefix}-house-rooms`), layout = $(`${prefix}-house-layout`);
+    if (Number(rooms.value) <= 1) return;
+    rooms.dataset.explicit = layout.dataset.explicit = 'true';
+    layout.value = (Number(layout.value) + 1) % 3;
+    if (prefix === 'object') applyProperties({preventDefault() {}});
+    else refreshHousePreview(prefix);
+  });
   $(`${prefix}-house-vary`).addEventListener('click', () => {
     if (prefix === 'object' && (pointer || !$('properties-form').reportValidity())) return;
     varyHouse(prefix);

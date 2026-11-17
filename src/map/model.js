@@ -1,3 +1,4 @@
+import { HOUSE_STONE_COLORS, HOUSE_WALL_COLORS } from './house-colors.js';
 import { HOUSE_STYLES, isBuilderHouse } from './house-builder.js';
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getObjectDefinition } from './objects.js';
@@ -249,6 +250,10 @@ export function validateWorldmap(map) {
     if (item.houseStyle !== undefined && (!builder || !HOUSE_STYLES.some(style => style.id === item.houseStyle))) error(`${item.id}: Unbekannter Fassadenstil für den Hausbaukasten.`);
     if (item.houseSeed !== undefined && (!builder || !Number.isInteger(item.houseSeed) || item.houseSeed < 0 || item.houseSeed > 2147483647)) error(`${item.id}: Hausvariation muss eine ganze Zahl zwischen 0 und 2147483647 sein.`);
     if (item.houseEntrances !== undefined && (!builder || !['single', 'double'].includes(item.houseEntrances))) error(`${item.id}: Hauszugänge müssen ein oder zwei Eingänge angeben.`);
+    if (item.houseRooms !== undefined && (!builder || !Number.isInteger(item.houseRooms) || item.houseRooms < 1 || item.houseRooms > 3)) error(`${item.id}: Raumanzahl muss eine ganze Zahl von 1 bis 3 sein.`);
+    if (item.houseLayout !== undefined && (!builder || !Number.isInteger(item.houseLayout) || item.houseLayout < 0 || item.houseLayout > 2)) error(`${item.id}: Grundrissvariante muss eine ganze Zahl von 0 bis 2 sein.`);
+    if (item.houseStoneColor !== undefined && (!builder || !HOUSE_STONE_COLORS.some(option => option.id === item.houseStoneColor))) error(`${item.id}: Unbekannte Natursteinfarbe.`);
+    if (item.houseWallColor !== undefined && (!builder || !HOUSE_WALL_COLORS.some(option => option.id === item.houseWallColor))) error(`${item.id}: Unbekannte Wandfarbe.`);
     if (item.rarity !== undefined && (typeof item.rarity !== 'string' || !Object.hasOwn(RARITIES, item.rarity) || !WEAPON_TYPES.includes(item.kind))) error(`${item.id}: Seltenheit muss einer gültigen Waffenstufe entsprechen.`);
     if (checkPoint(item.position, `Weltobjekt ${item.id}`) && islandValid && !isLandPoint(map, item.position)) error(`Weltobjekt ${item.name} liegt außerhalb der Insel oder in einer Wasserfläche.`);
     if (!finite(item.rotation) || Math.abs(item.rotation) > Math.PI * 20) error(`${item.id}: Drehung muss in Radiant zwischen -20π und 20π liegen.`);

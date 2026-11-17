@@ -1,3 +1,4 @@
+import { getHouseMaterialColors } from './house-colors.js';
 import { getHouseDefinition, isBuilderHouse } from './house-builder.js';
 
 const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[char]));
@@ -17,9 +18,16 @@ function appearance(object) {
 /** IDs contain only fixed variant/style enums and bounded numeric seeds. */
 export function builderHouseSymbolKey(object) {
   if (!isBuilderHouse(object.variant)) return '';
-  if (object.variant === 'waldhaus' && object.houseStyle === undefined && object.houseSeed === undefined && object.houseEntrances === undefined) return 'house-waldhaus';
+  const extras = ['houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor'];
+  const custom = extras.some(key => object[key] !== undefined);
+  if (!custom && object.variant === 'waldhaus' && object.houseStyle === undefined && object.houseSeed === undefined && object.houseEntrances === undefined) return 'house-waldhaus';
   const {style,seed} = appearance(object);
-  return `house-${object.variant}-${style}-${seed}-${getHouseDefinition(object).entrances.length === 1 ? 'single' : 'double'}`;
+  const base = `house-${object.variant}-${style}-${seed}-${getHouseDefinition(object).entrances.length === 1 ? 'single' : 'double'}`;
+  if (!custom) return base;
+  const {stone,wall} = getHouseMaterialColors(object);
+  const rooms = Number.isInteger(object.houseRooms) && object.houseRooms >= 1 && object.houseRooms <= 3 ? object.houseRooms : 'auto';
+  const layout = Number.isInteger(object.houseLayout) && object.houseLayout >= 0 && object.houseLayout <= 2 ? object.houseLayout : 0;
+  return `${base}-r${rooms}-l${layout}-s${stone.id}-w${wall.id}`;
 }
 
 /** Architectural plan generated from the same solid walls and openings as 3D. */
@@ -27,22 +35,34 @@ export function builderHouseMapSymbol(object) {
   const key = builderHouseSymbolKey(object);
   if (!key) return '';
   const house = getHouseDefinition(object), {colors: palette, seed} = appearance(object);
+  const {stone,wall:wallColor} = getHouseMaterialColors(object);
+  const wallFill = wallColor.color ?? palette.wall;
   const floorAreas = house.footprintAreas ?? [house.floorBounds];
   const pieces = [`<g id="world-object-${key}">`];
   for (const area of floorAreas) pieces.push(rect(area.minX,area.minZ,area.maxX,area.maxZ,'fill="#74583b"'));
+  const roomIds = [...new Set(house.rooms.map((room,index) => room.roomId ?? index))];
   for (const [index,room] of house.rooms.entries()) {
-    const tint = palette.floor[(index + (object.houseSeed === undefined ? 0 : seed % 3)) % palette.floor.length];
+    const logicalIndex = roomIds.indexOf(room.roomId ?? index);
+    const tint = palette.floor[(logicalIndex + (object.houseSeed === undefined ? 0 : seed % 3)) % palette.floor.length];
     pieces.push(rect(room.minX,room.minZ,room.maxX,room.maxZ,`data-waldhaus-room="${escape(room.name)}" fill="${tint}"`));
-    const alongX = index % 2 === 0;
+    const alongX = logicalIndex % 2 === 0;
     const spacing = .60 + (seed % 7) * .025;
-    if (alongX) for(let z=room.minZ+spacing;z<room.maxZ;z+=spacing) pieces.push(`<path d="M${number(room.minX)},${number(z)}H${number(room.maxX)}" stroke="${palette.timber}" stroke-opacity=".32" stroke-width=".045"/>`);
-    else for(let x=room.minX+spacing;x<room.maxX;x+=spacing) pieces.push(`<path d="M${number(x)},${number(room.minZ)}V${number(room.maxZ)}" stroke="${palette.timber}" stroke-opacity=".32" stroke-width=".045"/>`);
+    if (alongX) for(let z=room.roomId === undefined ? room.minZ+spacing : Math.ceil(room.minZ/spacing)*spacing;z<room.maxZ;z+=spacing) pieces.push(`<path d="M${number(room.minX)},${number(z)}H${number(room.maxX)}" stroke="${palette.timber}" stroke-opacity=".32" stroke-width=".045"/>`);
+    else for(let x=room.roomId === undefined ? room.minX+spacing : Math.ceil(room.minX/spacing)*spacing;x<room.maxX;x+=spacing) pieces.push(`<path d="M${number(x)},${number(room.minZ)}V${number(room.maxZ)}" stroke="${palette.timber}" stroke-opacity=".32" stroke-width=".045"/>`);
   }
   for(const entrance of house.entrances) {
     const horizontal = ['north','south'].includes(entrance.side), min = Math.min(entrance.boundary,entrance.innerBoundary), max=Math.max(entrance.boundary,entrance.innerBoundary);
     pieces.push(rect(horizontal?entrance.min:min,horizontal?min:entrance.min,horizontal?entrance.max:max,horizontal?max:entrance.max,`data-waldhaus-entrance="${escape(entrance.name)}" fill="#d0bb8d"`));
   }
-  for(const wall of house.architecturalWalls) pieces.push(rect(wall.minX,wall.minZ,wall.maxX,wall.maxZ,`data-waldhaus-wall="true" fill="${palette.wall}" stroke="${palette.timber}" stroke-width=".075"`));
+  for(const wall of house.architecturalWalls) {
+    if (object.houseStoneColor !== undefined) {
+      // A thin masonry edge remains visible around the plaster cut surface.
+      const tint = stone.id === 'natural' ? '#817b68' : stone.color;
+      pieces.push(rect(wall.minX-.065,wall.minZ-.065,wall.maxX+.065,wall.maxZ+.065,
+        `data-house-stone-color="${stone.id}" fill="${tint}" stroke="${palette.timber}" stroke-width=".035"`));
+    }
+    pieces.push(rect(wall.minX,wall.minZ,wall.maxX,wall.maxZ,`data-waldhaus-wall="true" fill="${wallFill}" stroke="${palette.timber}" stroke-width=".075"`));
+  }
   for(const window of house.windows) {
     const horizontal=['north','south'].includes(window.side), x=horizontal?window.center:window.boundary,z=horizontal?window.boundary:window.center;
     const hw=horizontal?window.width/2:.09,hd=horizontal?.09:window.width/2;
