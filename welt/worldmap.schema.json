@@ -703,7 +703,8 @@
                   "waldhaus-small",
                   "waldhaus-town",
                   "waldhaus-corner",
-                  "waldhaus-hall"
+                  "waldhaus-hall",
+                  "schlossanlage"
                 ]
               }
             }
@@ -1623,9 +1624,43 @@
                   "waldhaus-small",
                   "waldhaus-town",
                   "waldhaus-corner",
-                  "waldhaus-hall"
+                  "waldhaus-hall",
+                  "schlossanlage"
                 ]
               }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "schlossanlage"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "houseRooms"
+                  ]
+                },
+                {
+                  "required": [
+                    "houseLayout"
+                  ]
+                },
+                {
+                  "required": [
+                    "houseEntrances"
+                  ]
+                }
+              ]
             }
           }
         }
