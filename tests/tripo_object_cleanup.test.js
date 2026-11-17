@@ -21,7 +21,8 @@ test('explicit cleanup removes disallowed placements and preserves approved tree
   const savedKitTrees = ['kit-pine-high', 'kit-pine-young', 'kit-oak-green', 'kit-oak-autumn', 'kit-user-tree1'];
   assert.deepEqual(result.map.objects, objects.filter(object => isObjectPlaceable(object.kind, object.variant)
     || (object.kind === 'tree' && savedKitTrees.includes(object.variant))));
-  assert.equal(result.map.objects.length, 44);
+  assert.equal(result.map.objects.length, 45);
+  assert.ok(result.map.objects.some(object => object.variant === 'schlossanlage'));
   assert.deepEqual(result.map.objects.filter(object => object.variant.startsWith('waldhaus')).map(object => object.variant).sort(),
     ['waldhaus', 'waldhaus-corner', 'waldhaus-hall', 'waldhaus-small', 'waldhaus-town']);
   assert.deepEqual(result.map.objects.filter(object => object.kind === 'tree').map(object => object.variant),

@@ -10,9 +10,9 @@ import {TAVERN_DRESSING,shouldOmitTavernDetail} from '../src/map/tavern-dressing
 test('the environment kit keeps its published sources and the user tavern remains a separate GLB asset',async()=>{
  const root=new URL('../Blender/nebeljagd_umwelt_kit_v1/',import.meta.url);
  const manifest=JSON.parse(await readFile(new URL('manifest.json',root),'utf8'));
- assert.match(manifest.license,/CC0-1\.0/);assert.equal(ENVIRONMENT_KIT_DEFINITIONS.length,37);
+ assert.match(manifest.license,/CC0-1\.0/);assert.equal(ENVIRONMENT_KIT_DEFINITIONS.length,38);
  assert.deepEqual(ENVIRONMENT_KIT_DEFINITIONS.filter(d=>d.proceduralHouse).map(d=>d.variant).sort(),
-  ['waldhaus','waldhaus-corner','waldhaus-hall','waldhaus-small','waldhaus-town']);
+  ['schlossanlage','waldhaus','waldhaus-corner','waldhaus-hall','waldhaus-small','waldhaus-town']);
  for(const item of manifest.assets){
   const bytes=await readFile(new URL(item.file,root));
   assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256,item.file);

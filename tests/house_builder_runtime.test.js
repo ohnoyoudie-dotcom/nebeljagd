@@ -34,7 +34,7 @@ test('Every builder variant uses its real foundation size and floor, including r
 });
 
 test('Single/double exit settings give height ramps only at actual open doors',()=>{
- for(const {id} of HOUSE_BUILDER_VARIANTS) for(const mode of ['single','double']) {
+ for(const {id} of HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout)) for(const mode of ['single','double']) {
   const def=getHouseDefinition({variant:id,houseEntrances:mode});
   assert.equal(def.entrances.length,mode==='single'?1:2);
   for(const e of def.entrances) {

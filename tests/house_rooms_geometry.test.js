@@ -5,7 +5,7 @@ import { HOUSE_BUILDER_VARIANTS, getHouseDefinition } from '../src/map/house-bui
 import { createCollisionIndex } from '../src/collision.js';
 import { createWaldhausModel } from '../src/waldhaus-model.js';
 
-const configurations=HOUSE_BUILDER_VARIANTS.flatMap(({id:variant})=>[1,2,3].flatMap(houseRooms=>[0,1,2].flatMap(houseLayout=>['single','double'].map(houseEntrances=>({variant,houseRooms,houseLayout,houseEntrances})))));
+const configurations=HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout).flatMap(({id:variant})=>[1,2,3].flatMap(houseRooms=>[0,1,2].flatMap(houseLayout=>['single','double'].map(houseEntrances=>({variant,houseRooms,houseLayout,houseEntrances})))));
 const inside=(p,a)=>p[0]>a.minX&&p[0]<a.maxX&&p[1]>a.minZ&&p[1]<a.maxZ;
 const point=([x,z])=>({x,y:1,z});
 const roomAt=(def,p)=>def.rooms.find(a=>inside(p,a))?.roomId;

@@ -176,6 +176,7 @@ export function makeWorldObject(kind, position, options = {}) {
   const definition = getObjectDefinition(kind);
   if (!definition) throw new Error(`Unbekannte Objektart: ${kind}`);
   const variant = options.variant ?? definition.defaultVariant;
+  const fixedLayout = kind === 'house' && HOUSE_BUILDER_VARIANTS.find(entry => entry.id === variant)?.fixedLayout;
   return {
     id: options.id ?? `object-${kind}-${Date.now().toString(36)}-${(++objectCounter).toString(36)}`,
     name: options.name ?? definition.variants.find(entry => entry.id === variant)?.defaultName ?? definition.label,
@@ -186,7 +187,9 @@ export function makeWorldObject(kind, position, options = {}) {
     scale: options.scale ?? definition.defaultScale,
     ...(options.height !== undefined ? { height: options.height } : {}),
     ...(kind === 'house' && isBuilderHouse(variant) ? Object.fromEntries(
-      ['houseStyle', 'houseSeed', 'houseEntrances', 'houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor'].filter(key => options[key] !== undefined).map(key => [key, options[key]])) : {}),
+      ['houseStyle', 'houseSeed', 'houseEntrances', 'houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor']
+        .filter(key => options[key] !== undefined && !(fixedLayout && ['houseEntrances', 'houseRooms', 'houseLayout'].includes(key)))
+        .map(key => [key, options[key]])) : {}),
     ...(WEAPON_TYPES.includes(kind) ? { rarity: options.rarity ?? 'common' } : {}),
     ...(definition.defaultRadius ? { radius: options.radius ?? definition.defaultRadius } : {}),
   };

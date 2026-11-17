@@ -15,7 +15,7 @@ const placed=(variant='waldhaus',options={})=>makeWorldObject('house',[30,-42],{
 const mapOf=object=>({...structuredClone(base),objects:[object]});
 
 test('room counts, layouts and independent mineral colours persist through saved maps and copies without changing older houses',()=>{
-  for(const {id:variant} of HOUSE_BUILDER_VARIANTS) for(const houseRooms of [1,2,3]) for(const houseLayout of [0,1,2]) {
+  for(const {id:variant} of HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout)) for(const houseRooms of [1,2,3]) for(const houseLayout of [0,1,2]) {
     const object=placed(variant,{houseRooms,houseLayout,houseStoneColor:HOUSE_STONE_COLORS[(houseRooms+houseLayout)%4].id,
       houseWallColor:HOUSE_WALL_COLORS[(houseRooms+houseLayout)%5].id,houseStyle:'dark',houseSeed:519,houseEntrances:'double',rotation:Math.PI/2,scale:1.25});
     const map=mapOf(object),roundtrip=normalizeWorldmap(JSON.parse(JSON.stringify(map)));

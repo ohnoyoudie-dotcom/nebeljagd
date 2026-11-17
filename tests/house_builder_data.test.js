@@ -16,7 +16,7 @@ const placed=(variant,options={})=>makeWorldObject('house',[30,-42],{variant,id:
 const mapOf=objects=>({...structuredClone(base),objects});
 
 test('all five builder houses persist independent style, seed, entrances and transforms without affecting legacy maps',()=>{
-  assert.equal(HOUSE_BUILDER_VARIANTS.length,5);
+  assert.equal(HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout).length,5);
   const houseRule=schema.$defs.worldObject.allOf.find(rule=>rule.if?.properties?.kind?.const==='house');
   for(const variant of HOUSE_BUILDER_VARIANTS) for(const {id:houseStyle} of HOUSE_STYLES) for(const houseEntrances of ['single','double']) {
     assert.ok(isObjectPlaceable('house',variant.id));

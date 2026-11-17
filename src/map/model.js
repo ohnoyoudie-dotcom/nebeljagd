@@ -1,5 +1,5 @@
 import { HOUSE_STONE_COLORS, HOUSE_WALL_COLORS } from './house-colors.js';
-import { HOUSE_STYLES, isBuilderHouse } from './house-builder.js';
+import { HOUSE_STYLES, HOUSE_BUILDER_VARIANTS, isBuilderHouse } from './house-builder.js';
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getObjectDefinition } from './objects.js';
 import { validateLandscape } from './landscape.js';
@@ -247,6 +247,8 @@ export function validateWorldmap(map) {
     if (!definition) error(`${item.id}: Unbekannte Objektart.`);
     else if (!definition.variants.some(variant => variant.id === item.variant)) error(`${item.id}: Unbekannte Variante für ${definition.label}.`);
     const builder = item.kind === 'house' && isBuilderHouse(item.variant);
+    if (builder && HOUSE_BUILDER_VARIANTS.find(variant => variant.id === item.variant)?.fixedLayout &&
+      ['houseEntrances', 'houseRooms', 'houseLayout'].some(key => item[key] !== undefined)) error(`${item.id}: Die Schlossanlage hat einen festen Grundriss mit zwei Außenzugängen.`);
     if (item.houseStyle !== undefined && (!builder || !HOUSE_STYLES.some(style => style.id === item.houseStyle))) error(`${item.id}: Unbekannter Fassadenstil für den Hausbaukasten.`);
     if (item.houseSeed !== undefined && (!builder || !Number.isInteger(item.houseSeed) || item.houseSeed < 0 || item.houseSeed > 2147483647)) error(`${item.id}: Hausvariation muss eine ganze Zahl zwischen 0 und 2147483647 sein.`);
     if (item.houseEntrances !== undefined && (!builder || !['single', 'double'].includes(item.houseEntrances))) error(`${item.id}: Hauszugänge müssen ein oder zwei Eingänge angeben.`);

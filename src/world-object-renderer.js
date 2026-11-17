@@ -1,5 +1,6 @@
 import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import { createWaldhausModel } from './waldhaus-model.js';
+import { createCastleModel } from './castle-model.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -385,7 +386,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       continue;
     }
     if (object.kind === 'house' && isBuilderHouse(variant)) {
-      const definition=getHouseDefinition(object),{group,roof,frontFacade,interior}=createWaldhausModel({definition, rotation:object.rotation, houseStyle:object.houseStyle, houseSeed:object.houseSeed,
+      const definition=getHouseDefinition(object),createModel=definition.architecture==='castle'?createCastleModel:createWaldhausModel;
+      const {group,roof,frontFacade,interior}=createModel({definition, rotation:object.rotation, houseStyle:object.houseStyle, houseSeed:object.houseSeed,
         houseStoneColor:object.houseStoneColor,houseWallColor:object.houseWallColor,
         stoneMaterial:kitModels.get('wall:kit-tripo-wall').parts[0].material});
       group.name=`${definition.label} · ${object.id}`;group.userData.mapObjectId=object.id;group.userData.visionBlockerSurface=true;

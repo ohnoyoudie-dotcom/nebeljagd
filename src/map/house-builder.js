@@ -1,4 +1,5 @@
 import { WALDHAUS_DEFINITION } from './waldhaus-definition.js';
+import { CASTLE_DEFINITION } from './castle-definition.js';
 
 const freeze = value => {
   if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
@@ -16,6 +17,7 @@ export const HOUSE_BUILDER_VARIANTS = freeze([
   { id: 'waldhaus-town', label: 'Schmales Stadthaus', footprintWidth: 10, footprintDepth: 16 },
   { id: 'waldhaus-corner', label: 'Eckhaus · L-Form', footprintWidth: 16, footprintDepth: 14 },
   { id: 'waldhaus-hall', label: 'Großes Gasthaus', footprintWidth: 20, footprintDepth: 14 },
+  { id: 'schlossanlage', label: 'Schlossanlage', footprintWidth: 70, footprintDepth: 60, fixedLayout: true },
 ]);
 export const isBuilderHouse = variant => HOUSE_BUILDER_VARIANTS.some(entry => entry.id === variant);
 export function getHouseAppearance(object = {}) {
@@ -64,7 +66,7 @@ function rectangle(meta, entrances, rooms, doors, partitions, windows, areas) {
   return complete(meta,{areas:areas??[rect(-hx,hx,-hz,hz,{alongZ:true})],rooms,walls,entrances,doors,windows,openFloor:[entrances[0].center,hz-2]});
 }
 const small=HOUSE_BUILDER_VARIANTS[0],town=HOUSE_BUILDER_VARIANTS[2],corner=HOUSE_BUILDER_VARIANTS[3],hall=HOUSE_BUILDER_VARIANTS[4];
-const definitions = new Map([['waldhaus',WALDHAUS_DEFINITION]]);
+const definitions = new Map([['waldhaus',WALDHAUS_DEFINITION],['schlossanlage',CASTLE_DEFINITION]]);
 definitions.set(small.id,rectangle(small,[entrance('south',0,4,'Haupteingang')],
   [rect(-4.7,4.7,-3.7,3.7,{name:'Wohnraum'})],[],[],
   [window('north',-2.7,-3.69,'Nordfenster'),window('north',2.7,-3.69,'Nordfenster rechts'),window('west',0,-4.69,'Seitenfenster')]));
@@ -190,6 +192,7 @@ export function getHouseDefinition(objectOrVariant = 'waldhaus') {
   const object = typeof objectOrVariant==='string'?{variant:objectOrVariant}:objectOrVariant??{};
   const original=definitions.get(object.variant);
   if(!original)return null;
+  if(original.fixedLayout)return original;
   const explicitRooms=Number.isInteger(object.houseRooms)&&object.houseRooms>=1&&object.houseRooms<=3;
   const explicitLayout=Number.isInteger(object.houseLayout)&&object.houseLayout>=0&&object.houseLayout<=2;
   const base=explicitRooms||explicitLayout?withRoomLayout(original,explicitRooms?object.houseRooms:original.rooms.length,explicitLayout?object.houseLayout:0):original;

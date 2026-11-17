@@ -23,8 +23,8 @@ function raysThrough(model, definition) {
 
 test('Builder keeps the existing Waldhaus default and exposes five distinct, finite empty shells',()=>{
   assert.equal(getHouseDefinition('waldhaus'),WALDHAUS_DEFINITION);
-  assert.equal(HOUSE_BUILDER_VARIANTS.length,5);
-  for(const variant of HOUSE_BUILDER_VARIANTS) {
+  assert.equal(HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout).length,5);
+  for(const variant of HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout)) {
     const definition=getHouseDefinition(variant.id),model=createWaldhausModel({definition});
     try {
       const bounds=new Box3().setFromObject(model.group);
@@ -41,7 +41,7 @@ test('Builder keeps the existing Waldhaus default and exposes five distinct, fin
 });
 
 test('All five houses have visible and physical passages with either one or two exterior entrances',()=>{
-  for(const variant of HOUSE_BUILDER_VARIANTS)for(const houseEntrances of ['single','double']) {
+  for(const variant of HOUSE_BUILDER_VARIANTS.filter(v=>!v.fixedLayout))for(const houseEntrances of ['single','double']) {
     const definition=getHouseDefinition({variant:variant.id,houseEntrances}),model=createWaldhausModel({definition});
     try {
       assert.equal(definition.entrances.length,houseEntrances==='single'?1:2);

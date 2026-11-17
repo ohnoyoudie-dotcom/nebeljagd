@@ -583,7 +583,10 @@ function applyProperties(event) {
     if (selection.type === 'spawn') { feature.radius = Number($('feature-radius').value); feature.capacity = Number($('feature-capacity').value); }
     if (selection.type === 'object') {
       feature.variant = $('object-variant').value;
-      if (feature.kind === 'house' && isBuilderHouse(feature.variant)) Object.assign(feature, houseOptions('object'));
+      if (feature.kind === 'house' && isBuilderHouse(feature.variant)) {
+        if (getHouseDefinition(feature).fixedLayout) for (const key of ['houseEntrances', 'houseRooms', 'houseLayout']) delete feature[key];
+        Object.assign(feature, houseOptions('object'));
+      }
       else for (const key of ['houseStyle', 'houseSeed', 'houseEntrances', 'houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor']) delete feature[key];
       // Preserve legacy map fields; live loot rolls its rarity each round.
       feature.rotation = Number($('object-rotation').value) * Math.PI / 180;
@@ -1244,23 +1247,25 @@ function renderAssetPreview(prefix, kind, variant) {
   const asset = getVariantAsset(kind, variant);
   syncHouseControls(prefix, {kind, variant});
   const builder = kind === 'house' && isBuilderHouse(variant);
+  const castle = builder && getHouseDefinition(variant).architecture === 'castle';
   const svg = builder ? getBuilderHousePreviewSvg({kind, variant, ...houseOptions(prefix)}) : getVariantPreviewSvg(kind, variant);
   $(`${prefix}-preview-image`).innerHTML = svg;
   $(`${prefix}-preview-title`).textContent = asset?.label ?? getObjectDefinition(kind).label;
-  $(`${prefix}-preview-source`).textContent = builder ? 'Hausbaukasten · Grundrissvorschau' : asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
-  $(`${prefix}-preview-note`).textContent = builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
+  $(`${prefix}-preview-source`).textContent = castle ? 'Schlossanlage · Grundrissvorschau' : builder ? 'Hausbaukasten · Grundrissvorschau' : asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
+  $(`${prefix}-preview-note`).textContent = castle ? 'Große Säle und verbundene Gänge rund um einen offenen Innenhof. Zwei Außenzugänge; Räume bleiben frei einrichtbar.' : builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
 }
 
 function houseOptions(prefix) {
+  const fixedLayout = getHouseDefinition($(`${prefix}-variant`).value)?.fixedLayout;
   const options = {
     houseStyle: $(`${prefix}-house-style`).value,
     houseSeed: Number($(`${prefix}-house-seed`).value),
-    houseEntrances: $(`${prefix}-house-entrances`).value,
+    ...(!fixedLayout ? {houseEntrances: $(`${prefix}-house-entrances`).value} : {}),
   };
   for (const [field, key, numeric] of [['rooms','houseRooms',true], ['layout','houseLayout',true],
     ['stone-color','houseStoneColor',false], ['wall-color','houseWallColor',false]]) {
     const input = $(`${prefix}-house-${field}`);
-    if (input.dataset.explicit === 'true') options[key] = numeric ? Number(input.value) : input.value;
+    if (input.dataset.explicit === 'true' && !(fixedLayout && ['houseRooms', 'houseLayout'].includes(key))) options[key] = numeric ? Number(input.value) : input.value;
   }
   return options;
 }
@@ -1271,7 +1276,16 @@ function syncHouseControls(prefix, object, restore = false) {
   for (const input of panel.querySelectorAll('input,select,button')) input.disabled = !active;
   if (!active) return;
   const original = getHouseDefinition(object);
+  const fixedLayout = Boolean(original.fixedLayout);
   const originalRooms = original.roomCount ?? original.rooms.length;
+  panel.dataset.fixedLayout = String(fixedLayout);
+  for (const field of ['rooms', 'entrances']) {
+    const input = $(`${prefix}-house-${field}`);
+    input.disabled = fixedLayout;
+    input.closest('label').hidden = fixedLayout;
+  }
+  $(`${prefix}-house-layout`).disabled = fixedLayout;
+  panel.querySelector('.house-material-options summary').textContent = fixedLayout ? 'Materialfarben' : 'Materialfarben & Eingänge';
   if (restore) {
     $(`${prefix}-house-style`).value = object.houseStyle ?? 'natural';
     $(`${prefix}-house-seed`).value = object.houseSeed ?? 87123;
@@ -1289,11 +1303,13 @@ function syncHouseControls(prefix, object, restore = false) {
   const def = getHouseDefinition({...object, ...houseOptions(prefix)});
   const count = def.roomCount ?? def.rooms.length;
   const layoutButton = $(`${prefix}-house-layout-next`);
-  layoutButton.disabled = count <= 1;
+  layoutButton.hidden = fixedLayout;
+  layoutButton.disabled = fixedLayout || count <= 1;
   layoutButton.title = count <= 1 ? 'Ein offener Raum braucht keine Trennwände.' : 'Andere Aufteilung bei gleicher Raumanzahl';
   const size = prefix === 'object' ? Number($('object-scale').value) || object.scale || 1 : 1;
   const metres = value => (value * size).toLocaleString('de-DE', {maximumFractionDigits: 1});
-  $(`${prefix}-house-info`).textContent = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
+  const dimensions = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m`;
+  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · 2 große Säle · Rundgänge · offener Innenhof · 2 Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
 }
 function varyHouse(prefix) {
   const input = $(`${prefix}-house-seed`), previous = Number(input.value);

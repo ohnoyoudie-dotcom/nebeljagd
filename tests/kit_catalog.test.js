@@ -35,9 +35,9 @@ test('the twelve original environment-kit variants preserve map imports and matc
   assert.equal(vegetationSettings({ kind: 'grass', variant: 'kit-tall' }).type, 'tall');
   const newWeapons = ['shadowStaff:kit-tripo-shadow-staff', 'clockworkStaff:kit-tripo-clockwork-staff', 'earthbreakerStaff:kit-tripo-earthbreaker-staff', 'runeWallStaff:kit-tripo-rune-wall-staff', 'blinkStaff:kit-tripo-blink-staff', 'reflectionStaff:kit-tripo-reflection-staff', 'sunStaff:kit-tripo-sun-staff', 'soulStaff:kit-tripo-soul-staff', 'bow:kit-tripo-ornate-bow', 'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff', 'gravityStaff:kit-tripo-gravity-staff', 'lightningStaff:kit-tripo-lightning-staff', 'meteorStaff:kit-tripo-meteor-staff', 'hourglassStaff:kit-tripo-hourglass-staff'];
   const variants = OBJECT_CATALOG.flatMap(def => def.variants);
-  assert.equal(variants.length, 67 + newWeapons.length, 'the five builder houses, FBX tree and six woodland models remain distinct saved-map variants');
+  assert.equal(variants.length, 68 + newWeapons.length, 'the five builder houses, castle, FBX tree and six woodland models remain distinct saved-map variants');
   const treeInstalled = ASSET_CATALOG.some(asset => asset.id === 'tree:kit-user-tree1');
-  assert.equal(ASSET_CATALOG.length, 66 + newWeapons.length + Number(treeInstalled));
+  assert.equal(ASSET_CATALOG.length, 67 + newWeapons.length + Number(treeInstalled));
   for (const id of newWeapons) {
     assert.ok(variants.some(variant => variant.assetId === id), `${id} retains its own object variant`);
     assert.ok(ASSET_CATALOG.some(asset => asset.id === id), `${id} has matching asset metadata`);
