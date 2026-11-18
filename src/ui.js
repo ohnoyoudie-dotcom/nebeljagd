@@ -55,7 +55,7 @@ const portrait = `<img src="${portraitUrl}" width="64" height="64" alt="" aria-h
 const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
 const timeLabel = seconds => `${pad(seconds / 60)}:${pad(seconds % 60)}`;
 
-export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave, onArrivalTarget, onArrivalConfirm } = {}) {
+export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
   const practice = Boolean(practiceSession);
   const root = document.getElementById('ui');
   root.dataset.phase = 'ready';
@@ -80,7 +80,6 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="map-heading"><span>${icon('compass')}<strong id="mapViewLabel">UMGEBUNG</strong></span><span class="map-north" aria-label="Norden ist oben">N ↑</span></div>
       <div class="map-frame"><canvas id="minimap" width="512" height="512" aria-label="Deine Position, bekannte Orte und die sichere Zone"></canvas></div>
       <div class="map-mode-switch" role="group" aria-label="Kartenansicht"><button id="mapMode-local" type="button" aria-pressed="true">Umgebung</button><button id="mapMode-island" type="button" aria-pressed="false">Insel</button></div>
-      <div class="landing-choice" hidden id="landingChoice"><p id="landingMessage" role="status">Landestelle auf der Karte wählen</p><button id="confirmLanding" type="button">Hier landen <kbd>↵</kbd></button></div>
       <div class="map-legend" aria-label="Kartenlegende"><span><i class="map-key-self"></i>Du</span><span><i class="map-key-place"></i>Ort</span><span><i class="map-key-loot"></i>Beute</span></div>
     </aside>
 
@@ -100,7 +99,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="ability-slot" id="attackSlot"><kbd>MAUS / F</kbd><span class="ability-icon" id="attackSlotIcon">${icon('sword')}</span><strong id="attackReady">Keine Waffe</strong><span>ANGRIFF</span></div>
       <div class="ability-slot" id="rollSlot"><kbd>LEERTASTE</kbd><span class="ability-icon">${icon('roll')}</span><strong id="rollReady">Bereit</strong><span>ROLLE</span></div>
     </div>
-    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong id="arrivalTitle">Über der Insel</strong><span id="arrivalHeight">1600 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">WASD zum Fliegen · Karte für Fernziele</small><small class="touch-hint">Stick zum Fliegen · Karte für Fernziele</small></div>
+    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong id="arrivalTitle">Kometenflug</strong><span id="arrivalHeight">1600 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">WASD oder Pfeiltasten zum Steuern</small><small class="touch-hint">Mit dem Stick die Landung steuern</small></div>
     <div class="touch-controls playing-only">
       <div id="joystick" class="joystick" role="group" aria-label="Virtueller Bewegungsjoystick"><span class="joystick-cross"></span><div id="joystickKnob" class="joystick-knob">${icon('compass')}</div></div>
       <div class="touch-actions">
@@ -473,16 +472,9 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     const scaleMeters = local ? 25 : 200, scalePixels = scaleMeters * scale;
     ctx.strokeStyle = '#e6e5bd'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(12, size - 16); ctx.lineTo(12 + scalePixels, size - 16); ctx.stroke();
     ctx.fillStyle = '#f5edce'; ctx.font = '600 8px system-ui,sans-serif'; ctx.textAlign = 'left'; ctx.fillText(`${scaleMeters} m`, 12, size - 22);
-    $('mapViewLabel').textContent = state.arrival?.stage==='survey'?'LANDESTELLE WÄHLEN':local ? 'UMGEBUNG' : 'WELTKARTE';
+    $('mapViewLabel').textContent = local ? 'UMGEBUNG' : 'WELTKARTE';
     map.dataset.mode = mapMode; map.dataset.markerCount = String(mapDrawnMarkers.length);
   }
-  map.addEventListener('pointerdown', event => {
-    if(currentPhase!=='deploying'||latestState.arrival?.stage!=='survey'||!atlasProjection)return;
-    event.preventDefault();const rect=map.getBoundingClientRect();
-    onArrivalTarget?.({x:atlasProjection.centerX+((event.clientX-rect.left)/rect.width*MAP_SIZE-MAP_SIZE/2)/atlasProjection.scale,
-      z:atlasProjection.centerZ+((event.clientY-rect.top)/rect.height*MAP_SIZE-MAP_SIZE/2)/atlasProjection.scale});
-  });
-  $('confirmLanding').addEventListener('click',()=>onArrivalConfirm?.());
   for (const mode of ['local', 'island']) {
     $(`mapMode-${mode}`).addEventListener('click', () => {
       mapMode = mode;
@@ -583,18 +575,12 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     $('touchAttackCooldown').textContent = attackCooldown > 0 ? attackCooldown.toFixed(1) : '';
     const arriving = currentPhase === 'deploying';
     $('arrivalPanel').hidden = !arriving;
-    const survey=arriving && state.arrival?.stage==='survey';
     root.dataset.arrivalStage=arriving?state.arrival.stage:'';
-    $('landingChoice').hidden=!survey;
-    $('confirmLanding').disabled=!state.arrival?.valid || !survey;
-    $('landingMessage').textContent=state.arrival?.valid?'Freie Landestelle · Du entscheidest, wann es losgeht.':'Hier ist keine sichere Landung möglich. Wähle freies Land.';
     if (arriving) {
-      $('arrivalPanel').querySelector('.desktop-hint').textContent=survey?'WASD zum Fliegen · Karte für Fernziele':'WASD oder Pfeiltasten zum Steuern';
-      $('arrivalPanel').querySelector('.touch-hint').textContent=survey?'Stick zum Fliegen · Karte für Fernziele':'Mit dem Stick die Landung steuern';
       $('arrivalHeight').textContent = `${Math.ceil(state.arrival?.height || 0)} m`;
       $('arrivalProgress').style.transform = `scaleX(${state.arrival?.progress || 0})`;
-      $('arrivalTitle').textContent=survey?'Über der Insel':state.arrival?.waitingForLanding?'Freies Land suchen':'Kometenflug';
-      playerStatus.textContent = survey?'Landestelle wählen':'Als Komet unterwegs';
+      $('arrivalTitle').textContent=state.arrival?.waitingForLanding?'Freies Land suchen':'Kometenflug';
+      playerStatus.textContent = 'Als Komet unterwegs';
     }
     const nearWeapon = typeof state.nearWeapon === 'string' ? { type: state.nearWeapon } : state.nearWeapon;
     const nearChest = state.nearChest;
@@ -662,7 +648,6 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
 
   return {
     update, setPhase, toast, setWorldmap, showLevelUp, clearLevelUp,
-    getAerialAtlas:()=>({canvas:mapBackdrop,projection:atlasProjection}),
     inspectMinimap: () => ({ mode: mapMode, canvasPixels: map.width, displayWidth: map.getBoundingClientRect().width,
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),

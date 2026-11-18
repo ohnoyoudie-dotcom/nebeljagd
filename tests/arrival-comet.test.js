@@ -6,7 +6,7 @@ import { createArrival, arrivalSteeringSpeed } from '../src/arrival.js';
 
 test('unsafe landings hover, remain steerable and land once after reaching safe ground',()=>{
  for(const hz of [30,60,120]) {
-  const a=createArrival();a.start();a.dive();let landings=0;
+  const a=createArrival();a.start();let landings=0;
   for(let i=0;i<hz*12;i++)landings+=Number(a.update(1/hz,{canLand:false}).landed);
   assert.equal(landings,0);assert(a.snapshot().active&&a.snapshot().waitingForLanding);assert(a.snapshot().height>1);
   const held=a.snapshot();a.update(0,{canLand:false});assert.deepEqual(a.snapshot(),held);
@@ -28,9 +28,9 @@ test('comet resets, freezes when paused and transforms into a separately anchore
    const count=()=>{let n=0;root.traverse(()=>n++);return n;},nodes=count();
    for(let run=0;run<4;run++) {
     a.start();fx.update(.1,p,a.snapshot(),camera);assert(fx.inspect().active);assert(!fx.inspect().burst);
-    a.dive();a.update(.4);fx.update(.4,p,a.snapshot(),camera);
+    a.update(.4);fx.update(.4,p,a.snapshot(),camera);
     const before=fx.inspect();fx.update(0,p,a.snapshot(),camera);assert.deepEqual(fx.inspect(),before);
-    a.update(6.2);fx.update(.1,p,a.snapshot(),camera);assert(!fx.inspect().active);assert(fx.inspect().burst);
+    a.update(10);fx.update(.1,p,a.snapshot(),camera);assert(!fx.inspect().active);assert(fx.inspect().burst);
     const anchor=fx.inspect().burstPosition;a.update(.2);fx.update(.2,p.clone().addScalar(10),a.snapshot(),camera);assert.deepEqual(fx.inspect().burstPosition,anchor);
     a.update(1);fx.update(1,p,a.snapshot(),camera);assert(!fx.inspect().burst);assert.equal(fx.inspect().burstOpacity,0);
     assert.equal(count(),nodes);

@@ -1,18 +1,17 @@
-// Survey the whole island at altitude; the descent begins only after confirmation.
-export function createArrival({ duration = 6.2, height = 1600, impactDuration = 2.8 } = {}) {
+// Start immediately; ten seconds leave enough steering time to cross the island.
+export function createArrival({ duration = 10, height = 1600, impactDuration = 2.8 } = {}) {
   let elapsed = duration, active = false, stage = 'ground', impact = 1, startHeight = height, waitingForLanding = false;
   const snapshot = () => {
-    const progress = stage === 'survey' ? 0 : Math.min(1, elapsed / duration);
+    const progress = Math.min(1, elapsed / duration);
     const ease = progress * progress * (3 - 2 * progress);
     const altitude = active ? startHeight * (1 - ease) : 0;
     const upright = Math.min(1, altitude / 9);
     return { active, stage, progress, height: altitude, startHeight, impact, waitingForLanding,
-      diveTilt: stage === 'dive' ? Math.PI * .76 * Math.min(1, progress * 12) * upright : stage === 'survey' ? .8 : 0,
+      diveTilt: stage === 'dive' ? Math.PI * .76 * Math.min(1, progress * 12) * upright : 0,
       landing: !active && impact < .14 ? Math.sin(impact / .14 * Math.PI) : 0 };
   };
   return {
-    start(options = {}) { startHeight = options.height ?? height; elapsed = 0; active = true; stage = 'survey'; impact = 1; waitingForLanding = false; return snapshot(); },
-    dive() { if (stage !== 'survey') return false; stage = 'dive'; elapsed = 0; return true; },
+    start(options = {}) { startHeight = options.height ?? height; elapsed = 0; active = true; stage = 'dive'; impact = 1; waitingForLanding = false; return snapshot(); },
     cancel() { elapsed = duration; active = false; stage = 'ground'; impact = 1; waitingForLanding = false; },
     update(dt, { canLand = true } = {}) {
       const delta = Math.max(0, Number.isFinite(dt) ? dt : 0);
@@ -51,8 +50,13 @@ export function steerArrival(position, direction, dt, { bounds, speed = 280 } = 
 
 // Slow near the ground for precise steering; keep hovering travel usable over water.
 export function arrivalSteeringSpeed(arrival, span) {
-  if (arrival.stage === 'survey') return span * .2;
   if (arrival.waitingForLanding) return span * .12;
   const t = Math.max(0, Math.min(1, (arrival.height - 15) / 240));
   return 8 + (span * .2 - 8) * t * t * (3 - 2 * t);
+}
+
+// The ground and sea are centimetres apart but kilometres from the aerial camera.
+// A 10cm near plane loses that depth precision and makes their surfaces flicker.
+export function arrivalCameraNear(height) {
+  return Math.max(.1, Math.min(5, height * .035));
 }

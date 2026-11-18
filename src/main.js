@@ -6,8 +6,9 @@ import './style.css';
 import './lobby.css';
 import './player-hud.css';
 import './arrival-hud.css';
-import { createArrival, steerArrival, resolveArrivalTarget, arrivalSteeringSpeed } from './arrival.js';
-import { createArrivalEffects, createAerialAtlas } from './arrival-effects.js';
+import { createArrival, steerArrival, resolveArrivalTarget, arrivalSteeringSpeed, arrivalCameraNear } from './arrival.js';
+import { createArrivalEffects } from './arrival-effects.js';
+import { createAerialLandscape } from './aerial-landscape.js';
 import { createArrivalComet } from './arrival-comet.js';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
@@ -77,8 +78,6 @@ const ui = createUI({
     try { ui.toast(await importRuntimeWorldmap(file), 'success'); }
     catch (error) { ui.toast(`Karte nicht geladen: ${error.message}`, 'danger'); }
   },
-  onArrivalTarget: point => selectArrivalTarget(point),
-  onArrivalConfirm: () => beginDescent(),
   onStart: () => { if (ready) startArrival(); },
   onPause: () => { if (['playing', 'deploying'].includes(state.phase)) setPhase('paused'); },
   onResume: () => { if (state.phase === 'paused') setPhase(resumePhase); },
@@ -152,6 +151,7 @@ function zoneAt(elapsed) {
   return { ...value, countdown, progress: Math.min(1, Math.max(0, elapsed / worldStats.matchDurationSeconds)) };
 }
 const visualScale = world.visualScale;
+const aerialLandscape = createAerialLandscape(world);
 ui.setLoading?.('Die Figur wird vorbereitet …');
 const character = await createCharacter(world.root);
 character.group.scale.setScalar(1.2);
@@ -163,8 +163,6 @@ player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.sp
 const visualPlayer = player.clone();
 const arrivalEffects = createArrivalEffects(world.root, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
 const arrivalComet = createArrivalComet(world.root, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
-const aerialMap = ui.getAerialAtlas();
-const aerialAtlas = createAerialAtlas(world.root, aerialMap.canvas, aerialMap.projection, world);
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
@@ -256,18 +254,6 @@ function validLanding(point) {
     heightAt: world.heightAt,
   });
 }
-function selectArrivalTarget(point) {
-  if (state.phase !== 'deploying' || arrival.snapshot().stage !== 'survey') return;
-  const {minX,maxX,minZ,maxZ}=world.map.bounds;
-  player.x=THREE.MathUtils.clamp(point.x,minX,maxX);player.z=THREE.MathUtils.clamp(point.z,minZ,maxZ);
-  player.y=world.heightAt(player.x,player.z);landingTarget=validLanding(player);updateUI();
-}
-function beginDescent() {
-  if (state.phase !== 'deploying' || arrival.snapshot().stage !== 'survey') return;
-  landingTarget=validLanding(player);
-  if (!landingTarget) { ui.toast('Wähle eine freie Landestelle an Land.'); return; }
-  player.copy(landingTarget);state.direction=0;clearInput();arrival.dive();updateUI();
-}
 function startArrival() {
   if (lobbyMode) { setPhase('playing'); return; }
   for (let pass = 0; pass < 3; pass++) {
@@ -277,7 +263,7 @@ function startArrival() {
   player.y = world.heightAt(player.x, player.z);
   const bounds=world.map.bounds;
   const height=Math.max(900,Math.max(bounds.maxX-bounds.minX,bounds.maxZ-bounds.minZ)*1.12);
-  arrival.start({height});landingTarget=validLanding(player);arrivalCamera=true;camera=flightCamera;resize();
+  clearInput();state.direction=0;arrival.start({height});landingTarget=validLanding(player);arrivalCamera=true;camera=flightCamera;resize();
   cameraFocus.set(player.x * visualScale, (player.y + height) * visualScale, (player.z - 1.5) * visualScale);
   setPhase('deploying');
 }
@@ -509,7 +495,6 @@ window.addEventListener('keydown', (event) => {
     else if (state.phase === 'paused') setPhase(resumePhase);
     return;
   }
-  if (state.phase === 'deploying' && event.code === 'Enter') { event.preventDefault(); beginDescent(); return; }
   if (!['playing', 'deploying'].includes(state.phase)) return;
   if (['Space', 'KeyE', 'KeyF', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) {
     event.preventDefault(); keys.add(event.code);
@@ -525,7 +510,7 @@ window.addEventListener('pointermove', event => {
   }
 });
 renderer.domElement.addEventListener('pointerdown', event => {
-  if (state.phase==='deploying' && arrival.snapshot().stage==='survey') { const point=groundPointer(event);if(point)selectArrivalTarget(point);return; }
+  if (state.phase==='deploying') return;
   if (event.button !== 0 || state.phase !== 'playing' || canvasAttackPointer !== null) return;
   event.preventDefault(); canvasAttackPointer = event.pointerId; renderer.domElement.setPointerCapture(event.pointerId);
   if (event.pointerType !== 'touch') mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
@@ -578,7 +563,7 @@ window.nebeljagdTestState = () => ({
   darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
   statusIndicators:statusIndicators.inspect(),
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
-  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, arrivalEffects:arrivalEffects.inspect(), arrivalComet:arrivalComet.inspect(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
+  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, arrivalEffects:arrivalEffects.inspect(), arrivalComet:arrivalComet.inspect(), aerialLandscape:aerialLandscape.inspect(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -618,7 +603,7 @@ window.nebeljagdTestState = () => ({
   pickups: pickups.items.map(({ id, type, x, z, amount, collected, group, visual, flight }) => ({ id, type, x, z, amount, collected, visible: group.visible,
     flight, coin: visual.userData.coin ? { ...visual.userData.coin, rotation: visual.rotation.y,
       diameter: visual.userData.coin.radius * 2 * group.scale.x * visual.parent.scale.x } : null })),
-  camera: { perspective:camera.isPerspectiveCamera===true, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom, zoom: camera.zoom },
+  camera: { perspective:camera.isPerspectiveCamera===true, near:camera.near, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom, zoom: camera.zoom },
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
     frameMs: frameSamples.length ? frameSamples.reduce((sum, ms) => sum + ms, 0) / frameSamples.length : null },
@@ -730,7 +715,7 @@ function frame(now) {
   character.group.visible = !arrivalState.active;
   character.setConcealed(state.hiddenInGrass && !arrivalState.active);
   arrivalEffects.update(state.phase === 'paused' ? 0 : dt, player, arrivalState, world.biomeAt(player.x,player.z));
-  aerialAtlas.update(arrivalState.height);
+  aerialLandscape.update(arrivalState.height);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
     direction: arrivalState.stage==='dive'?0:arrivalState.active?state.direction:state.rollRemaining>0?state.direction:facingDirection(), travelDirection:state.direction, health: state.health, inDanger: state.inDanger, snowWeight: arrivalState.active ? 0 : state.snowWeight, arrival: arrivalState,
@@ -782,6 +767,7 @@ function frame(now) {
     const viewHeight=(window.innerWidth/window.innerHeight<.8?30.5:20.5)*visualScale;
     const groundFov=THREE.MathUtils.radToDeg(2*Math.atan(viewHeight/(2*cameraOffset.length())));
     flightCamera.layers.set(1);if(arrivalState.height<200)flightCamera.layers.enable(0);
+    flightCamera.near=arrivalCameraNear(arrivalState.height);
     flightCamera.fov=THREE.MathUtils.lerp(groundFov,65,blend);flightCamera.updateProjectionMatrix();
     cameraFocus.copy(cameraTarget);
     camera.position.copy(cameraFocus).add(new THREE.Vector3(0,THREE.MathUtils.lerp(29,15,blend),THREE.MathUtils.lerp(18,2.5,blend)));

@@ -49,28 +49,3 @@ export function createArrivalEffects(parent, { reducedMotion = false } = {}) {
     for(let i=0;i<8;i++){const a=i*2.399,r=(2.4+i*.13)*age;matrix.position.set(Math.cos(a)*r,Math.max(.03,(1.8+i*.12)*age-4*age*age),Math.sin(a)*r);matrix.rotation.set(age*6,a,age*4);matrix.scale.setScalar(1+i%3*.2);matrix.updateMatrix();chips.setMatrixAt(i,matrix.matrix);}chips.instanceMatrix.needsUpdate=true;
   },inspect:()=>({active:ground.visible,position:ground.position.toArray(),craterOpacity:crater.material.opacity,clouds:clouds.length}) };
 }
-
-// A single atlas provides the entire island at altitude without drawing thousands of distant props.
-export function createAerialAtlas(parent, canvas, projection, world = null) {
-  // Sample the actual biome and painted ground colours for the distant terrain.
-  // The selection map stays cartographic; the view underneath uses the game's landscape.
-  if(world){
-    const surface=document.createElement('canvas');surface.width=surface.height=384;
-    const context=surface.getContext('2d'),pixels=context.createImageData(384,384),color=new THREE.Color();
-    const span=256/projection.scale;
-    for(let row=0;row<384;row++)for(let column=0;column<384;column++){
-      const x=projection.centerX+(column/383-.5)*span,z=projection.centerZ+(row/383-.5)*span,index=(row*384+column)*4;
-      if(world.isWater(x,z)){pixels.data[index]=29;pixels.data[index+1]=66;pixels.data[index+2]=78;}
-      else {const h=Math.sin(column*12.9898+row*78.233)*43758.5453,j=(h-Math.floor(h)-.5)*span/384;world.colorAt(x+j,z-j*.73,color);color.multiplyScalar(.94);color.convertLinearToSRGB();pixels.data[index]=Math.round(color.r*255);pixels.data[index+1]=Math.round(color.g*255);pixels.data[index+2]=Math.round(color.b*255);}
-      pixels.data[index+3]=255;
-    }
-    context.putImageData(pixels,0,0);canvas=surface;
-  }
-  const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
-  const side=256/projection.scale;
-  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(side,side),new THREE.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,toneMapped:false}));
-  mesh.rotation.x=-Math.PI/2;mesh.position.set(projection.centerX,10,projection.centerZ);parent.add(mesh);
-  const ocean=new THREE.Mesh(new THREE.PlaneGeometry(side*12,side*12),new THREE.MeshBasicMaterial({color:'#1d424e',transparent:true,depthWrite:false,toneMapped:false}));ocean.rotation.x=-Math.PI/2;ocean.position.set(projection.centerX,-6,projection.centerZ);parent.add(ocean);
-  for(const node of [mesh,ocean]){node.layers.set(1);node.userData.ignoreVision=true;}
-  return {update(height){const alpha=THREE.MathUtils.smoothstep(height,70,200);mesh.visible=ocean.visible=alpha>0;mesh.material.opacity=ocean.material.opacity=alpha;}};
-}
