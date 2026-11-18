@@ -24,7 +24,6 @@ export function createArrivalEffects(parent, { reducedMotion = false } = {}) {
   const air=new THREE.Group(),ground=new THREE.Group();air.name='Anflug · Luftspuren';ground.name='Landung · Staub und vergänglicher Krater';parent.add(air,ground);
   const material=new THREE.MeshBasicMaterial({color:'#d7f2e9',transparent:true,opacity:.7,depthWrite:false,side:THREE.DoubleSide,toneMapped:false});
   const marker=new THREE.Mesh(new THREE.RingGeometry(1.2,1.28,64),material);marker.rotation.x=-Math.PI/2;air.add(marker);
-  const streaks=Array.from({length:reducedMotion?4:16},(_,i)=>{const mesh=new THREE.Mesh(new THREE.PlaneGeometry(.055,1),material.clone());mesh.userData.phase=i*.618;air.add(mesh);return mesh;});
   const dustMap=dustTexture();
   const clouds=Array.from({length:reducedMotion?10:20},(_,i)=>{
     const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:dustMap,color:'#b8a587',transparent:true,depthWrite:false,opacity:0,rotation:i*1.71}));
@@ -42,11 +41,6 @@ export function createArrivalEffects(parent, { reducedMotion = false } = {}) {
     if(wasAirborne&&!arrival.active&&arrival.impact<1){ground.position.copy(position);ground.position.y+=.065;ground.rotation.y=Math.random()*Math.PI*2;for(const cloud of clouds)cloud.material.color.set(dustColor);shock.material.color.set(dustColor);}
     wasAirborne=arrival.active;ground.visible=!arrival.active&&arrival.impact<1;
     marker.visible=arrival.height<75;marker.material.opacity=.5;
-    for(let i=0;i<streaks.length;i++){
-      const mesh=streaks[i],p=(clock*(arrival.stage==='dive'?3.5:1)+mesh.userData.phase)%1,a=i*2.399,r=.45+(i%3)*.35;
-      mesh.position.set(Math.cos(a)*r,arrival.height+.5+p*6,Math.sin(a)*r);mesh.rotation.y=a;mesh.scale.y=1+p*3;
-      mesh.material.opacity=Math.sin(p*Math.PI)*.7*Math.min(1,arrival.height/3);
-    }
     const age=arrival.impact*2.8;
     for(const cloud of clouds){const {angle,speed,lift}=cloud.userData,r=.3+speed*Math.min(age,1.1);cloud.position.set(Math.cos(angle)*r,.12+Math.sin(Math.min(1,age/1.5)*Math.PI)*lift,Math.sin(angle)*r);cloud.scale.setScalar(.6+Math.min(age,1)*2);cloud.material.opacity=Math.max(0,1-age/1.25)**1.3*.85;}
     crater.material.opacity=Math.min(1,age*12)*(1-THREE.MathUtils.smoothstep(age,1.15,2.8))*.9;

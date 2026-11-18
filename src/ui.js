@@ -100,7 +100,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="ability-slot" id="attackSlot"><kbd>MAUS / F</kbd><span class="ability-icon" id="attackSlotIcon">${icon('sword')}</span><strong id="attackReady">Keine Waffe</strong><span>ANGRIFF</span></div>
       <div class="ability-slot" id="rollSlot"><kbd>LEERTASTE</kbd><span class="ability-icon">${icon('roll')}</span><strong id="rollReady">Bereit</strong><span>ROLLE</span></div>
     </div>
-    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong id="arrivalTitle">Über der Insel</strong><span id="arrivalHeight">1600 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">Karte anklicken · WASD zum Verschieben</small><small class="touch-hint">Karte antippen · Stick zum Verschieben</small></div>
+    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong id="arrivalTitle">Über der Insel</strong><span id="arrivalHeight">1600 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">WASD zum Fliegen · Karte für Fernziele</small><small class="touch-hint">Stick zum Fliegen · Karte für Fernziele</small></div>
     <div class="touch-controls playing-only">
       <div id="joystick" class="joystick" role="group" aria-label="Virtueller Bewegungsjoystick"><span class="joystick-cross"></span><div id="joystickKnob" class="joystick-knob">${icon('compass')}</div></div>
       <div class="touch-actions">
@@ -589,10 +589,12 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     $('confirmLanding').disabled=!state.arrival?.valid || !survey;
     $('landingMessage').textContent=state.arrival?.valid?'Freie Landestelle · Du entscheidest, wann es losgeht.':'Hier ist keine sichere Landung möglich. Wähle freies Land.';
     if (arriving) {
+      $('arrivalPanel').querySelector('.desktop-hint').textContent=survey?'WASD zum Fliegen · Karte für Fernziele':'WASD oder Pfeiltasten zum Steuern';
+      $('arrivalPanel').querySelector('.touch-hint').textContent=survey?'Stick zum Fliegen · Karte für Fernziele':'Mit dem Stick die Landung steuern';
       $('arrivalHeight').textContent = `${Math.ceil(state.arrival?.height || 0)} m`;
       $('arrivalProgress').style.transform = `scaleX(${state.arrival?.progress || 0})`;
-      $('arrivalTitle').textContent=survey?'Über der Insel':'Sturzflug';
-      playerStatus.textContent = survey?'Landestelle wählen':'Im Sturzflug';
+      $('arrivalTitle').textContent=survey?'Über der Insel':state.arrival?.waitingForLanding?'Freies Land suchen':'Kometenflug';
+      playerStatus.textContent = survey?'Landestelle wählen':'Als Komet unterwegs';
     }
     const nearWeapon = typeof state.nearWeapon === 'string' ? { type: state.nearWeapon } : state.nearWeapon;
     const nearChest = state.nearChest;

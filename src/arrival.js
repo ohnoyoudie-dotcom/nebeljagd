@@ -1,24 +1,26 @@
 // Survey the whole island at altitude; the descent begins only after confirmation.
 export function createArrival({ duration = 6.2, height = 1600, impactDuration = 2.8 } = {}) {
-  let elapsed = duration, active = false, stage = 'ground', impact = 1, startHeight = height;
+  let elapsed = duration, active = false, stage = 'ground', impact = 1, startHeight = height, waitingForLanding = false;
   const snapshot = () => {
     const progress = stage === 'survey' ? 0 : Math.min(1, elapsed / duration);
     const ease = progress * progress * (3 - 2 * progress);
     const altitude = active ? startHeight * (1 - ease) : 0;
     const upright = Math.min(1, altitude / 9);
-    return { active, stage, progress, height: altitude, startHeight, impact,
+    return { active, stage, progress, height: altitude, startHeight, impact, waitingForLanding,
       diveTilt: stage === 'dive' ? Math.PI * .76 * Math.min(1, progress * 12) * upright : stage === 'survey' ? .8 : 0,
       landing: !active && impact < .14 ? Math.sin(impact / .14 * Math.PI) : 0 };
   };
   return {
-    start(options = {}) { startHeight = options.height ?? height; elapsed = 0; active = true; stage = 'survey'; impact = 1; return snapshot(); },
+    start(options = {}) { startHeight = options.height ?? height; elapsed = 0; active = true; stage = 'survey'; impact = 1; waitingForLanding = false; return snapshot(); },
     dive() { if (stage !== 'survey') return false; stage = 'dive'; elapsed = 0; return true; },
-    cancel() { elapsed = duration; active = false; stage = 'ground'; impact = 1; },
-    update(dt) {
+    cancel() { elapsed = duration; active = false; stage = 'ground'; impact = 1; waitingForLanding = false; },
+    update(dt, { canLand = true } = {}) {
       const delta = Math.max(0, Number.isFinite(dt) ? dt : 0);
       let landed = false;
       if (stage === 'dive') {
-        elapsed = Math.min(duration, elapsed + delta);
+        const limit = canLand ? duration : Math.max(elapsed, duration * .95);
+        elapsed = Math.min(limit, elapsed + delta);
+        waitingForLanding = !canLand && elapsed >= limit;
         if (elapsed >= duration - 1e-8) { elapsed = duration; active = false; stage = 'ground'; impact = 0; landed = true; }
       } else if (!active) impact = Math.min(1, impact + delta / impactDuration);
       return { ...snapshot(), landed };
@@ -45,4 +47,12 @@ export function steerArrival(position, direction, dt, { bounds, speed = 280 } = 
   position.x = Math.max(bounds.minX, Math.min(bounds.maxX, position.x));
   position.z = Math.max(bounds.minZ, Math.min(bounds.maxZ, position.z));
   return position;
+}
+
+// Slow near the ground for precise steering; keep hovering travel usable over water.
+export function arrivalSteeringSpeed(arrival, span) {
+  if (arrival.stage === 'survey') return span * .2;
+  if (arrival.waitingForLanding) return span * .12;
+  const t = Math.max(0, Math.min(1, (arrival.height - 15) / 240));
+  return 8 + (span * .2 - 8) * t * t * (3 - 2 * t);
 }

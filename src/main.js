@@ -6,8 +6,9 @@ import './style.css';
 import './lobby.css';
 import './player-hud.css';
 import './arrival-hud.css';
-import { createArrival, steerArrival, resolveArrivalTarget } from './arrival.js';
+import { createArrival, steerArrival, resolveArrivalTarget, arrivalSteeringSpeed } from './arrival.js';
 import { createArrivalEffects, createAerialAtlas } from './arrival-effects.js';
+import { createArrivalComet } from './arrival-comet.js';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
 import { createGeneratedWorld } from './generated-world.js';
@@ -161,6 +162,7 @@ const attackControl=document.querySelector('#attackBtn');
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
 const visualPlayer = player.clone();
 const arrivalEffects = createArrivalEffects(world.root, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+const arrivalComet = createArrivalComet(world.root, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
 const aerialMap = ui.getAerialAtlas();
 const aerialAtlas = createAerialAtlas(world.root, aerialMap.canvas, aerialMap.projection, world);
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
@@ -422,13 +424,13 @@ function simulate(dt) {
   if (state.phase === 'deploying') {
     moveDirection.set((keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + stick.x, 0,
       (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) + stick.y);
-    if (arrival.snapshot().stage === 'survey' && moveDirection.lengthSq() > .001) {
+    if (moveDirection.lengthSq() > .001) {
       steerArrival(player, moveDirection, dt, { bounds:world.map.bounds,
-        speed:Math.max(world.map.bounds.maxX-world.map.bounds.minX,world.map.bounds.maxZ-world.map.bounds.minZ)*.2 });
+        speed:arrivalSteeringSpeed(arrival.snapshot(), Math.max(world.map.bounds.maxX-world.map.bounds.minX,world.map.bounds.maxZ-world.map.bounds.minZ)) });
       player.y=world.heightAt(player.x,player.z);landingTarget=validLanding(player);
       state.direction=Math.atan2(moveDirection.x,moveDirection.z);
     }
-    if (arrival.update(dt).landed) { camera=groundCamera;arrivalCamera=false;resize();setPhase('playing');ui.toast('Gelandet · Finde eine Waffe und bleib vor dem Nebel.'); }
+    if (arrival.update(dt, { canLand: Boolean(landingTarget) }).landed) { player.copy(landingTarget); camera=groundCamera;arrivalCamera=false;resize();setPhase('playing');ui.toast('Gelandet · Finde eine Waffe und bleib vor dem Nebel.'); }
     return;
   }
   if (state.phase !== 'playing') return;
@@ -576,7 +578,7 @@ window.nebeljagdTestState = () => ({
   darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
   statusIndicators:statusIndicators.inspect(),
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
-  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, arrivalEffects:arrivalEffects.inspect(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
+  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, arrivalEffects:arrivalEffects.inspect(), arrivalComet:arrivalComet.inspect(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -603,7 +605,7 @@ window.nebeljagdTestState = () => ({
     aura: aura?.inspect() ?? null })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
-    arrivalTilt: character.group.userData.arrivalTilt || 0,
+    arrivalTilt: character.group.userData.arrivalTilt || 0, visible: character.group.visible,
     levelUpGlowMaterials: character.inspectLevelUpGlow(),
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
     snowSinkMeters: character.group.userData.snowSinkMeters ?? 0,
@@ -725,6 +727,7 @@ function frame(now) {
     ui.toast(state.hiddenInGrass ? (lobbyMode ? 'Im hohen Gras verborgen.' : 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.') : 'Du verlässt das dichte Gras.');
     lastConcealment = state.hiddenInGrass;
   }
+  character.group.visible = !arrivalState.active;
   character.setConcealed(state.hiddenInGrass && !arrivalState.active);
   arrivalEffects.update(state.phase === 'paused' ? 0 : dt, player, arrivalState, world.biomeAt(player.x,player.z));
   aerialAtlas.update(arrivalState.height);
@@ -781,15 +784,16 @@ function frame(now) {
     flightCamera.layers.set(1);if(arrivalState.height<200)flightCamera.layers.enable(0);
     flightCamera.fov=THREE.MathUtils.lerp(groundFov,65,blend);flightCamera.updateProjectionMatrix();
     cameraFocus.copy(cameraTarget);
-    camera.position.copy(cameraFocus).add(new THREE.Vector3(0,THREE.MathUtils.lerp(29,24,blend),THREE.MathUtils.lerp(18,2.4,blend)));
+    camera.position.copy(cameraFocus).add(new THREE.Vector3(0,THREE.MathUtils.lerp(29,15,blend),THREE.MathUtils.lerp(18,2.5,blend)));
   } else { cameraFocus.lerp(cameraTarget,1-Math.exp(-dt*4));camera.position.copy(cameraFocus).add(cameraOffset); }
   camera.lookAt(cameraFocus);
+  arrivalComet.update(state.phase === 'paused' ? 0 : dt, player, arrivalState, camera);
   sun.target.position.set(player.x*visualScale,player.y*visualScale,player.z*visualScale);
   sun.position.copy(sun.target.position).add(sunlightOffset);
   sun.target.updateMatrixWorld();
   // Weapon teleports can move the avatar during this frame. Follow the final position.
   visualPlayer.copy(player); visualPlayer.y += arrivalState.height;
-  healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level });
+  healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level, local: !arrivalState.active, visible: !arrivalState.active });
   healthBars.update(camera, { isVisible, dt: playDelta });
   statusIndicators.update(camera,{width:window.innerWidth,height:window.innerHeight,phase:state.phase});
   damageFeedback.update(playDelta, camera);
