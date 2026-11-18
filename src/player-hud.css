@@ -1,0 +1,57 @@
+/* In-world HUD: warm metal, deep teal and clear combat information. */
+#ui{--hud-bg:linear-gradient(135deg,rgba(15,32,34,.96),rgba(19,39,40,.91));--hud-line:rgba(191,176,126,.42);--hud-text:#f3efda}
+#ui .player-panel,#ui .weapon-status,#ui .zone-panel,#ui .map-panel,#ui .inventory{background:var(--hud-bg);border:1px solid var(--hud-line);box-shadow:0 8px 28px #0005,inset 0 1px 0 #fff1;backdrop-filter:blur(8px);color:var(--hud-text)}
+#ui .brand-lockup{top:24px;left:26px;opacity:.85;transform:scale(.82);transform-origin:top left}
+#ui .player-panel{left:26px;bottom:26px;width:324px;padding:14px;gap:12px;border-radius:5px 16px 5px 5px;min-height:94px}
+#ui .portrait{width:58px;height:66px;flex:0 0 58px;border-color:#a99b6a;border-radius:5px;background:#0c2428}
+#ui .portrait img{width:100%;height:100%;object-fit:cover}
+#ui .player-name-row strong{font-size:13px;letter-spacing:.04em}
+#ui #healthValue{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+#ui #healthValue small{font-size:12px;color:#b9c5b7}
+#ui .player-health-row{gap:9px;margin-top:7px}
+#ui .player-level{width:30px;height:31px;min-width:30px;font-size:17px!important;background:linear-gradient(145deg,#8a7141,#372e20);color:#fff0b6;border:1px solid #d8bb74;filter:drop-shadow(0 2px 4px #0008)}
+#ui .health-track{height:14px;border:1px solid #071e1f;border-radius:3px;background:#594d57;box-shadow:0 0 0 1px #68877855}
+#ui #healthFill{background:linear-gradient(#a9dd79,#69b86a);box-shadow:0 0 10px #89c66a33}
+#ui .player-status{font-size:10px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ui .inventory{left:26px;right:auto;bottom:130px;border-radius:5px;padding:5px 10px;gap:7px;min-height:30px}
+#ui .inventory-icon{width:20px;height:20px}#ui .inventory strong{font-size:16px}#ui .inventory>span:last-child{font-size:10px}
+#ui .weapon-status{right:26px;bottom:26px;left:auto;width:286px;min-height:94px;border-radius:16px 5px 5px 5px;padding:13px;gap:13px;border-bottom:3px solid var(--rarity-color,#7b8e82)}
+#ui .weapon-status-icon{width:54px;height:60px;flex:0 0 54px;border:1px solid var(--rarity-color,#7b8e82);border-radius:7px;background:linear-gradient(150deg,#ffffff12,#0003);color:var(--rarity-color,#b9c6b7)}
+#ui .weapon-status-icon .icon{width:34px;height:34px}#ui .weapon-status-copy{min-width:0}
+#ui #weaponTier{font-size:9px;letter-spacing:.15em}#ui #weaponName{font-size:16px;line-height:1.3;white-space:normal}
+#ui #weaponDetail{font-size:10px;line-height:1.5;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;color:#b8c7be}
+#ui .zone-panel{top:22px;width:248px;border-radius:5px 5px 12px 12px;padding:12px 18px;min-height:74px}
+#ui #zoneTime{font-size:29px;font-variant-numeric:tabular-nums;letter-spacing:.04em}#ui .zone-copy .eyebrow{font-size:8px;letter-spacing:.15em}#ui #zoneRadius{font-size:12px;color:#bacabd}
+#ui .map-panel{top:76px;right:26px;width:204px;padding:9px;border-radius:9px}#ui .map-heading{margin-bottom:7px}#ui .map-frame{border-radius:5px}#ui .map-mode-switch button{min-height:30px;font-size:10px}#ui .map-legend{font-size:9px;gap:14px}
+#ui .top-tools{top:22px;right:26px}#ui .icon-button{width:42px;height:42px;border-radius:8px;background:var(--hud-bg);border:1px solid var(--hud-line)}
+.ability-dock{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;gap:9px;pointer-events:none}
+.ability-slot{--ability-color:#c9d8c5;position:relative;width:96px;height:94px;display:flex;align-items:center;flex-direction:column;justify-content:center;gap:2px;background:var(--hud-bg);border:1px solid var(--hud-line);border-radius:10px 10px 5px 5px;box-shadow:0 8px 25px #0005;overflow:hidden;isolation:isolate}
+.ability-slot:before{content:'';position:absolute;inset:0;background:#91b0b13b;transform:scaleY(var(--remaining,0));transform-origin:bottom;z-index:-1;transition:transform .08s linear}
+.ability-slot kbd{font:8px system-ui;letter-spacing:.05em;color:#cbbd91;border:0;background:none;box-shadow:none;padding:0;height:auto}
+.ability-icon .icon{width:30px;height:30px;color:var(--ability-color)}.ability-slot strong{font:600 10px system-ui;color:#edf1df;font-variant-numeric:tabular-nums}.ability-slot>span:last-child{font:8px system-ui;letter-spacing:.16em;color:#92ada6}.ability-slot.unavailable{opacity:.55}.ability-slot.cooling .ability-icon{opacity:.4}
+#ui .desktop-controls{bottom:132px;background:transparent;border:0;box-shadow:none;font-size:10px;opacity:.75;gap:6px;white-space:nowrap}
+#ui .desktop-controls kbd{font-size:9px;min-width:18px;height:21px}#ui .desktop-controls .space-key{font-size:8px}
+#ui .pickup-prompt{bottom:180px;border-radius:9px;max-width:min(500px,90vw)}#ui .toast{bottom:238px;max-width:min(460px,85vw);font-size:12px}
+.arrival-panel{position:absolute;left:50%;bottom:190px;transform:translateX(-50%);width:280px;padding:17px 20px;background:var(--hud-bg);border:1px solid #9ab9a966;border-radius:12px;color:var(--hud-text);box-shadow:0 12px 45px #0004;pointer-events:none}
+.arrival-panel[hidden]{display:none}.arrival-eyebrow{font:8px system-ui;letter-spacing:.2em;color:#cbbb8c}.arrival-panel>div:not(.arrival-track){display:flex;justify-content:space-between;align-items:center;margin:8px 0}.arrival-panel strong{font-size:22px}.arrival-panel #arrivalHeight{font:600 18px system-ui;color:#a7dbca;font-variant-numeric:tabular-nums}.arrival-track{height:3px;background:#ffffff16;margin:10px 0}.arrival-track i{display:block;width:100%;height:100%;background:#a8d9c8;transform-origin:left}.arrival-panel small{font-size:10px;color:#b8c7be}
+#ui[data-phase=deploying] .desktop-controls{visibility:hidden}#ui[data-phase=deploying] .weapon-status{opacity:.6}
+.touch-cooldown{position:absolute;font-size:22px;font-variant-numeric:tabular-nums;top:26px;left:0;right:0;text-align:center;pointer-events:none;text-shadow:0 2px 4px #000}.touch-cooldown:not(:empty)~*{opacity:.3}
+@media(min-width:801px) and (pointer:fine){#ui .touch-controls{display:none}}
+@media(max-width:1100px) and (pointer:fine){#ui .player-panel{width:278px;left:16px}#ui .weapon-status{width:240px;right:16px}.ability-slot{width:76px}#ui .desktop-controls{font-size:9px;gap:3px}#ui .brand-title{font-size:19px}}
+@media(pointer:coarse),(max-width:800px){
+ #ui .brand-lockup{display:none}#ui .player-panel{top:96px;bottom:auto;left:16px;width:270px;min-height:80px;padding:10px;gap:9px}#ui .portrait{width:46px;height:56px;flex-basis:46px}
+ #ui .inventory{left:16px;top:185px;bottom:auto;min-height:27px;padding:3px 8px}#ui .weapon-status{left:16px;right:auto;top:221px;bottom:auto;width:250px;min-height:72px;padding:9px;gap:9px}#ui .weapon-status-icon{width:42px;height:48px;flex-basis:42px}#ui #weaponName{font-size:14px}
+ #ui .zone-panel{top:16px;width:236px;min-height:66px;padding:9px 14px}#ui #zoneTime{font-size:24px}#ui .map-panel{right:16px;top:76px;width:180px}#ui .top-tools{top:16px;right:16px}
+ #ui .ability-dock,#ui .desktop-controls{display:none}#ui .touch-controls{display:block}#ui .touch-actions{display:grid;right:24px;bottom:30px;gap:14px}#ui .touch-actions button{width:78px;height:78px;border:1px solid #b7bd9c88;background:var(--hud-bg);box-shadow:0 5px 20px #0005}#ui #attackBtn{width:94px;height:94px;border:2px solid #c7b77d}#ui .joystick{left:28px;bottom:32px;width:128px;height:128px}
+ #ui .pickup-prompt{bottom:190px}#ui .toast{bottom:255px}.arrival-panel{bottom:210px}#ui .danger-warning{top:10px}
+}
+@media(max-width:600px){
+ #ui .zone-panel{left:12px;transform:none;width:216px;top:12px;min-height:65px}#ui .top-tools{right:12px;top:12px}#ui .map-panel{right:12px;top:88px;width:126px;padding:6px}#ui .map-heading strong{font-size:8px}#ui .map-heading .icon{width:12px;height:12px}#ui .map-heading{gap:2px}#ui .map-mode-switch{gap:3px}#ui .map-mode-switch button{font-size:8px;padding:3px;min-height:28px}#ui .map-legend{display:none}
+ #ui .player-panel{top:88px;left:12px;width:calc(100vw - 158px);min-height:88px;padding:10px}#ui .portrait{display:none}#ui .player-info{width:100%}#ui .player-name-row strong{font-size:11px}#ui #healthValue{font-size:16px}#ui .player-status{font-size:9px}#ui .player-level{width:26px;min-width:26px;height:28px}
+ #ui .inventory{top:185px;left:12px}#ui .weapon-status{top:222px;left:12px;width:218px;min-height:66px}#ui #weaponName{font-size:13px}#ui .weapon-status-icon{width:34px;height:42px;flex-basis:34px}#ui #weaponDetail{font-size:9px}
+ #ui .joystick{left:18px;bottom:max(26px,env(safe-area-inset-bottom));width:110px;height:110px}#ui .touch-actions{right:18px;bottom:max(26px,env(safe-area-inset-bottom));gap:10px}#ui .touch-actions button{width:66px;height:66px}#ui #attackBtn{width:80px;height:80px}.arrival-panel{bottom:220px;width:246px}#ui .pickup-prompt{bottom:185px;font-size:10px;max-width:94vw}#ui .toast{bottom:315px;font-size:11px}#ui .danger-warning{top:300px;max-width:90vw;font-size:11px}
+}
+@media(max-height:600px) and (min-width:601px){#ui .player-panel{top:82px}#ui .weapon-status{top:174px;width:220px}#ui .inventory{top:250px}#ui .map-panel{width:130px;top:66px}.arrival-panel{bottom:125px;width:240px}#ui .toast{bottom:140px}#ui .pickup-prompt{bottom:110px}#ui .joystick{width:104px;height:104px;bottom:20px}#ui .touch-actions{bottom:20px}}
+
+#ui .map-frame{aspect-ratio:1;height:auto}#ui #minimap{width:100%;height:auto;aspect-ratio:1;display:block}
+@media(min-width:801px) and (min-height:601px){.arrival-panel{bottom:auto;top:116px;padding:12px 18px}.arrival-panel strong{font-size:19px}}

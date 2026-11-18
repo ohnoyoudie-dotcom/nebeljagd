@@ -19,7 +19,8 @@ export async function createCharacter(scene) {
   group.name = 'Nebeljäger · Tripo';
   const presentationPivot = new THREE.Group();
   const pelvisHeight = .94;
-  group.add(presentationPivot);
+  const arrivalPivot = new THREE.Group();
+  group.add(arrivalPivot); arrivalPivot.add(presentationPivot);
   // Keep normalization outside the imported hierarchy: animation tracks may
   // animate the scene/armature, but must never overwrite its metre scale.
   const model = new THREE.Group();
@@ -153,8 +154,10 @@ export async function createCharacter(scene) {
     ...animator.snapshot(),
   };
 
-  function update(dt, time, { moving = false, speed = 5.6, direction = 0, travelDirection = direction, inDanger = false, snowWeight = 0, snowSurfaceY = null } = {}) {
-    restoreAnimatedPose(); directionalGait.restore();
+  const arrivalPose = new Map();
+  function restoreArrivalPose() { for (const [bone, rotation] of arrivalPose) bone.quaternion.copy(rotation); arrivalPose.clear(); }
+  function update(dt, time, { moving = false, speed = 5.6, direction = 0, travelDirection = direction, inDanger = false, snowWeight = 0, snowSurfaceY = null, arrival = null } = {}) {
+    restoreArrivalPose(); restoreAnimatedPose(); directionalGait.restore();
     const delta = Math.max(0, Math.min(dt, 0.1));
     const smoothing = 1 - Math.exp(-delta * 12);
     const targetSnowSink = THREE.MathUtils.clamp(snowWeight, 0, 1) * .22;
@@ -203,6 +206,18 @@ export async function createCharacter(scene) {
     opacity = appearance.bodyOpacity;
     group.userData.localSilhouetteOpacity = appearance.baselineOpacity + appearance.fillOpacity;
     group.userData.concealmentOpacity = opacity;
+    arrivalPivot.position.y = (arrival?.height || 0) / group.scale.y;
+    arrivalPivot.rotation.x = arrival?.active ? -.18 * Math.sin(arrival.progress * Math.PI) : 0;
+    if (arrival?.landing) presentationPivot.position.y -= arrival.landing * .22;
+    if (arrival?.active) {
+      for (const chain of [...Object.values(armBones), ...Object.values(legBones)]) for (const bone of chain) if (bone) arrivalPose.set(bone, bone.quaternion.clone());
+      // Imported animation is evaluated afresh each frame; this overlay never alters the asset.
+      for (const [side, chain] of Object.entries(armBones)) {
+        if (chain[0]) chain[0].rotation.z += (side === 'left' ? -.45 : .45);
+        if (chain[1]) chain[1].rotation.x -= .3;
+      }
+      for (const chain of Object.values(legBones)) if (chain[1]) chain[1].rotation.x += .25;
+    }
   }
 
   return {
@@ -210,11 +225,11 @@ export async function createCharacter(scene) {
     // Original skin meshes only; concealment overlays and held gear are excluded.
     effectMeshes: Object.freeze([...meshes]),
     resetMotion(direction = group.rotation.y) {
-      setLevelUpGlow(0);
+      setLevelUpGlow(0); arrivalPivot.position.set(0,0,0); arrivalPivot.rotation.set(0,0,0);
       concealed = false; opacity = 1; concealmentAppearance.reset();
       group.userData.hiddenFromOtherPlayers = false;
       group.userData.concealmentOpacity = 1; group.userData.localSilhouetteOpacity = .045;
-      restoreAnimatedPose(); directionalGait.restore(); animator.reset();
+      restoreArrivalPose(); restoreAnimatedPose(); directionalGait.restore(); animator.reset();
       locomotion.reset(); attackRemaining = 0; snowSink = 0; snowClipStrength.value = 0; snowClipHeight.value = -10000;
       if (Number.isFinite(direction)) group.rotation.y = direction;
       presentationPivot.rotation.set(0, 0, 0); presentationPivot.position.y = pelvisHeight;

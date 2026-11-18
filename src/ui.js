@@ -95,12 +95,17 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     <div class="weapon-status playing-only" id="weaponStatus" aria-label="Ausgerüstete Waffe: Leer" aria-live="polite"><span class="weapon-status-icon" id="weaponIcon">${icon('shield')}</span><span class="weapon-status-copy"><small id="weaponTier">WAFFE</small><strong id="weaponName">Leer</strong><span id="weaponDetail"></span></span></div>
     <button id="pickupPrompt" class="pickup-prompt playing-only" aria-label="Waffe mit E aufnehmen" hidden>${icon('hand')}<span class="pickup-key"><kbd>E</kbd><span id="pickupAction">aufnehmen</span></span><strong id="pickupItem">Bogen</strong></button>
     <div class="desktop-controls playing-only"><span class="key-cluster"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>Bewegen</span><i></i><kbd class="space-key">LEERTASTE</kbd><span>Rolle</span><i></i><kbd>F</kbd><span>Angriff</span><i></i><kbd>E</kbd><span>Wechseln / öffnen</span></div>
+    <div class="ability-dock playing-only" aria-label="Fähigkeiten und Abklingzeiten">
+      <div class="ability-slot" id="attackSlot"><kbd>MAUS / F</kbd><span class="ability-icon" id="attackSlotIcon">${icon('sword')}</span><strong id="attackReady">Keine Waffe</strong><span>ANGRIFF</span></div>
+      <div class="ability-slot" id="rollSlot"><kbd>LEERTASTE</kbd><span class="ability-icon">${icon('roll')}</span><strong id="rollReady">Bereit</strong><span>ROLLE</span></div>
+    </div>
+    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong>Im Anflug</strong><span id="arrivalHeight">24 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">WASD / Pfeile · Landung steuern</small><small class="touch-hint">Linker Stick · Landung steuern</small></div>
     <div class="touch-controls playing-only">
       <div id="joystick" class="joystick" role="group" aria-label="Virtueller Bewegungsjoystick"><span class="joystick-cross"></span><div id="joystickKnob" class="joystick-knob">${icon('compass')}</div></div>
       <div class="touch-actions">
         <button id="pickupBtn" class="pickup-button" aria-label="Waffe aufheben" hidden>${icon('hand')}<span>AUFHEBEN</span></button>
-        <button id="dashBtn" class="dash-button" aria-label="Rolle ausführen">${icon('roll')}<span>ROLLE</span></button>
-        <button id="attackBtn" class="attack-button" aria-label="Angriff" disabled>${icon('sword')}<span>ANGRIFF</span></button>
+        <button id="dashBtn" class="dash-button" aria-label="Rolle ausführen">${icon('roll')}<span>ROLLE</span><b id="touchRollCooldown" class="touch-cooldown"></b></button>
+        <button id="attackBtn" class="attack-button" aria-label="Angriff" disabled>${icon('sword')}<span>ANGRIFF</span><b id="touchAttackCooldown" class="touch-cooldown"></b></button>
       </div>
     </div>
 
@@ -113,10 +118,10 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="intro-card">
         <div class="intro-eyebrow"><span></span>MAGEBRAWL · MAGIE DER ELEMENTE</div>
         <h1 id="introTitle">Die Insel<br><em>ruft.</em></h1>
-        <p class="intro-description">Erkunde offene Häuser und alte Ruinen. Finde Gold und seltene Waffen in Truhen. Hinter Mauern, Bäumen und hohem Gras bleibst du verborgen — deine Sicht reicht nur in die Nähe.</p>
+        <p class="intro-description">Stürze dich in die Inselwelt. Steuere deine Landung, finde deine erste Waffe und entdecke verborgene Schätze. Nutze Häuser und hohes Gras als Deckung, während der Nebel näher rückt.</p>
         <div class="intro-world-summary"><strong id="worldName">Deine Spielwelt</strong><span id="worldStats">Die Welt wird vorbereitet …</span></div>
         <div class="intro-features"><span>${icon('leaf')}Erkunden</span><span>${icon('chest')}Schätze finden</span><span>${icon('shield')}Überleben</span></div>
-        <button id="startBtn" class="primary-button"><span>Insel betreten</span>${icon('arrow')}</button>
+        <button id="startBtn" class="primary-button"><span>Absprung starten</span>${icon('arrow')}</button>
         ${practice ? '<button class="lobby-intro-exit lobby-leave" type="button">Zurück zur Startseite</button>' : ''}
         <div class="world-map-actions"><button id="loadMapBtn" class="map-load-button" type="button" disabled>Eigene Karte laden</button><a href="./map-editor.html" target="_blank" rel="noopener">Im Karteneditor gestalten ${icon('arrow')}</a></div>
         <input id="worldMapFile" type="file" accept=".json,application/json" hidden>
@@ -149,6 +154,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     sessionLabel.textContent = practiceSession.role === 'teacher' ? 'Vorschau für die Lehrkraft' : `Kurscode ${practiceSession.room.code}`;
     root.querySelector('.brand-lockup > div:last-child').append(sessionLabel);
     root.querySelector('.intro-eyebrow').textContent = 'DEIN PLATZ ZUM AUSPROBIEREN';
+    $('startBtn span').textContent = 'Übungswiese betreten';
     $('introTitle').innerHTML = 'Die Wiese<br><em>wartet.</em>';
     root.querySelector('.intro-description').textContent = 'Eine große grüne Wiese für deine ersten Schritte. Probiere Schwert und Zauberstäbe an Übungsgegnern aus, öffne Truhen und entdecke Gegenstände. Du kannst in Ruhe üben und jederzeit alles zurücksetzen.';
     root.querySelector('.intro-features').innerHTML = `<span>${icon('leaf')}Bewegen</span><span>${icon('sword')}Waffen testen</span><span>${icon('chest')}Entdecken</span>`;
@@ -239,14 +245,14 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   });
 
   function setPhase(phase) {
-    if (!['ready', 'playing', 'paused', 'dead'].includes(phase)) return;
+    if (!['ready', 'deploying', 'playing', 'paused', 'dead'].includes(phase)) return;
     clearLevelUp();
     currentPhase = phase;
     root.dataset.phase = phase;
     $('startScreen').hidden = phase !== 'ready';
     $('pauseScreen').hidden = phase !== 'paused';
     $('deathScreen').hidden = phase !== 'dead';
-    $('pauseBtn').disabled = phase !== 'playing';
+    $('pauseBtn').disabled = !['playing', 'deploying'].includes(phase);
     if (phase === 'dead') {
       $('finalTime').textContent = timeLabel(latestState.elapsed || 0);
       $('finalGold').textContent = String(latestState.gold || 0);
@@ -544,6 +550,8 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       weaponIcon.innerHTML = icon(weaponType || 'shield');
       weaponStatus.setAttribute('aria-label', weaponType ? `${weapon.name}, ${weapon.rarityLabel}, ${weapon.damage} Schaden` : 'Keine Waffe ausgerüstet');
       attackButton.querySelector('.icon').outerHTML = icon(weaponType || 'sword');
+      $('attackSlotIcon').innerHTML = icon(weaponType || 'sword');
+      $('attackSlot').style.setProperty('--ability-color', weapon.color);
       const attackLabel = { clockworkStaff:'Halten, freie Stelle wählen, loslassen · Uhrwerkwächter beschwören', shadowStaff:'Halten, Schattenfeld zielen, loslassen · verdunkelt im Feld und noch 2 Sekunden danach', earthbreakerStaff:'Felswelle zielen und loslassen', runeWallStaff:'Halten, freie Stelle für die Mauer wählen, loslassen', blinkStaff:'Halten für mehr Reichweite, kleinen Landekreis wählen, loslassen zum Teleportieren', reflectionStaff:'Schutzkuppel aktivieren · lässt direkte Geschosse abprallen', sunStaff: 'Halten, Sonnenfläche wählen, loslassen · Lichtstrahl deckt auf und blendet', soulStaff: 'Seelenflamme werfen · drei Treffer besiegeln das Urteil', meteorStaff: 'Halten für mehr Reichweite, mit Stick oder Maus zielen, loslassen · wachsender Meteor', bow: 'Zielen und loslassen', sword: 'Mit dem Schwert angreifen',
         fireStaff: 'Feuerzauber wirken', iceStaff: 'Eiszauber wirken',
         poisonStaff: 'Halten für mehr Wurfweite, mit Stick oder Maus zielen, loslassen', moonStaff: 'Mondsichel werfen · kehrt zurück', starStaff: 'Sternenblitz wirken', lightningStaff: 'Halten, Gewitterfläche wählen, loslassen · Blitze betäuben' }[weaponType];
@@ -555,6 +563,23 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     const attackCooldown = Math.max(0, state.attackCooldown ?? 0);
     attackButton.disabled = !WEAPON_TYPES.includes(weaponType) || attackCooldown > 0 || currentPhase !== 'playing';
     attackButton.classList.toggle('on-cooldown', attackCooldown > 0);
+    const cooldownText = value => value > 0 ? `${value.toFixed(1)} s` : 'Bereit';
+    for (const [id, value, total, enabled] of [['roll', dashCooldown, state.rollCooldownDuration || 2.5, true], ['attack', attackCooldown, weapon.cooldown || 1, WEAPON_TYPES.includes(weaponType)]]) {
+      const slot = $(id + 'Slot');
+      slot.style.setProperty('--remaining', Math.min(1, value / total));
+      slot.classList.toggle('cooling', value > 0);
+      slot.classList.toggle('unavailable', !enabled || currentPhase !== 'playing');
+      $(id + 'Ready').textContent = !enabled ? 'Keine Waffe' : currentPhase === 'deploying' ? 'Nach Landung' : cooldownText(value);
+    }
+    $('touchRollCooldown').textContent = dashCooldown > 0 ? dashCooldown.toFixed(1) : '';
+    $('touchAttackCooldown').textContent = attackCooldown > 0 ? attackCooldown.toFixed(1) : '';
+    const arriving = currentPhase === 'deploying';
+    $('arrivalPanel').hidden = !arriving;
+    if (arriving) {
+      $('arrivalHeight').textContent = `${Math.ceil(state.arrival?.height || 0)} m`;
+      $('arrivalProgress').style.transform = `scaleX(${state.arrival?.progress || 0})`;
+      playerStatus.textContent = 'Im Anflug · Landung steuern';
+    }
     const nearWeapon = typeof state.nearWeapon === 'string' ? { type: state.nearWeapon } : state.nearWeapon;
     const nearChest = state.nearChest;
     const nearby = nearChest && (!nearWeapon || (nearChest.distance ?? Infinity) < (nearWeapon.distance ?? Infinity)) ? nearChest : nearWeapon;
@@ -625,7 +650,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),
     joystick: $('joystick'), joystickKnob: $('joystickKnob'), dashButton, attackButton, interactButton,
-    setLoading(message) { $('startBtn').disabled = Boolean(message); $('loadMapBtn').disabled = practice || Boolean(message); $('startBtn').querySelector('span').textContent = message || (practice ? 'Übungswiese betreten' : 'Insel betreten'); },
+    setLoading(message) { $('startBtn').disabled = Boolean(message); $('loadMapBtn').disabled = practice || Boolean(message); $('startBtn').querySelector('span').textContent = message || (practice ? 'Übungswiese betreten' : 'Absprung starten'); },
     showError(message) { $('errorMessage').textContent = message; $('errorScreen').hidden = false; },
   };
 }

@@ -4,6 +4,9 @@ import { aimKind, touchAimVector, directionTo } from './aim-input.js';
 import * as THREE from 'three';
 import './style.css';
 import './lobby.css';
+import './player-hud.css';
+import { createArrival, steerArrival } from './arrival.js';
+import { createArrivalEffects } from './arrival-effects.js';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
 import { createGeneratedWorld } from './generated-world.js';
@@ -59,6 +62,9 @@ let aimDirection = null;
 let mouseAimPointer = null;
 let canvasAttackPointer = null;
 const frameSamples = [];
+const arrival = createArrival();
+let resumePhase = 'playing';
+let arrivalCamera = false;
 
 const ui = createUI({
   practiceSession: lobbySession,
@@ -68,9 +74,9 @@ const ui = createUI({
     try { ui.toast(await importRuntimeWorldmap(file), 'success'); }
     catch (error) { ui.toast(`Karte nicht geladen: ${error.message}`, 'danger'); }
   },
-  onStart: () => { if (ready) { setPhase('playing'); ui.toast(lobbyMode ? 'Willkommen auf der Übungswiese! Heb eine Waffe auf und probiere sie an den Übungsgegnern aus.' : 'Willkommen auf der großen Nebelinsel. Erkunde die Landschaften und bleib vor dem Nebel.'); } },
-  onPause: () => { if (state.phase === 'playing') setPhase('paused'); },
-  onResume: () => { if (state.phase === 'paused') setPhase('playing'); },
+  onStart: () => { if (ready) startArrival(); },
+  onPause: () => { if (['playing', 'deploying'].includes(state.phase)) setPhase('paused'); },
+  onResume: () => { if (state.phase === 'paused') setPhase(resumePhase); },
   onRestart: () => { if (ready) reset(); },
   onDash: () => roll(),
   onAttack: event => attackWeapon(event),
@@ -145,12 +151,14 @@ character.group.scale.setScalar(1.2);
 const player = character.group.position;
 const attackControl=document.querySelector('#attackBtn');
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
+const visualPlayer = player.clone();
+const arrivalEffects = createArrivalEffects(world.root, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
 world.setDebrisVisibility?.(isVisible);
 const healthBars = createHealthBars(world.root);
-healthBars.add('player', { position: player, health: state.health, maxHealth: state.maxHealth,
+healthBars.add('player', { position: visualPlayer, health: state.health, maxHealth: state.maxHealth,
   level: state.level, local: true, height: 2.9 });
 const levelUpEffect = createLevelUpEffect(world.root, { onGlow: character.setLevelUpGlow });
 const damageFeedback = createDamageFeedback(world.root, {
@@ -229,7 +237,20 @@ function clearInput() {
   if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
 }
 
+function startArrival() {
+  if (lobbyMode) { setPhase('playing'); return; }
+  for (let pass = 0; pass < 3; pass++) {
+    world.resolveMovement(player, .42); practiceActors.resolvePlayerMovement(player, .42);
+  }
+  world.resolveMovement(player, .42);
+  player.y = world.heightAt(player.x, player.z);
+  arrival.start(); arrivalCamera = true;
+  cameraFocus.set(player.x * visualScale, (player.y + 12) * visualScale, (player.z - 1.5) * visualScale);
+  setPhase('deploying');
+}
+
 function setPhase(phase) {
+  if (phase === 'paused' && state.phase !== 'paused') resumePhase = state.phase;
   state.phase = phase;
   if (phase !== 'playing') { levelUpEffect.reset(); healthBars.clearLevelPulses(); cancelAttackAim(); canvasAttackPointer = null; }
   clearInput();
@@ -256,7 +277,7 @@ function reset() {
   character.resetMotion?.(state.direction);
   playerGrassStrength = 0; playerGrassDirX = Math.sin(state.direction); playerGrassDirZ = Math.cos(state.direction);
   lastConcealment = false; lastShelter = null; currentZone = zoneAt(0);
-  setPhase('playing');
+  arrival.cancel(); startArrival();
   ui.toast(lobbyMode ? 'Die Übungswiese ist zurückgesetzt. Alle Gegenstände sind wieder da.' : 'Ein neuer Streifzug beginnt.');
 }
 
@@ -366,7 +387,20 @@ function releaseWeapon(event){
 }
 
 function simulate(dt) {
+  if (state.phase === 'deploying') {
+    moveDirection.set((keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + stick.x, 0,
+      (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) + stick.y);
+    steerArrival(player, moveDirection, dt, {
+      resolve: p => { world.resolveMovement(p, .42); practiceActors.resolvePlayerMovement(p, .42); },
+      safe: p => world.isLand(p.x,p.z) && !world.isWater(p.x,p.z),
+    });
+    player.y = world.heightAt(player.x, player.z);
+    if (moveDirection.lengthSq() > .01) state.direction = Math.atan2(moveDirection.x, moveDirection.z);
+    if (arrival.update(dt).landed) { setPhase('playing'); ui.toast('Gelandet · Finde eine Waffe und bleib vor dem Nebel.'); }
+    return;
+  }
   if (state.phase !== 'playing') return;
+  arrival.update(dt);
   state.elapsed += dt;
   combat.update(dt);
   state.rollCooldown = Math.max(0, state.rollCooldown - dt);
@@ -417,7 +451,7 @@ function onCollect(item) {
 
 function updateUI() {
   const nearby = nearbyInteraction();
-  ui.update({ ...state, touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
+  ui.update({ ...state, arrival: arrival.snapshot(), touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
     zoneProgress: currentZone.progress, zoneShrinking: currentZone.shrinking,
     rollCooldownDuration: ROLL_COOLDOWN, equippedWeapon: weapons.equipped,
     equippedItem: weapons.equippedItem, nearWeapon: nearby.weapon, nearChest: nearby.chest, attackCooldown: weapons.attackCooldown,
@@ -437,11 +471,11 @@ function updateUI() {
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Escape') {
     if(state.phase==='playing'&&aimDrag){cancelAttackAim();return;}
-    if (state.phase === 'playing') setPhase('paused');
-    else if (state.phase === 'paused') setPhase('playing');
+    if (['playing', 'deploying'].includes(state.phase)) setPhase('paused');
+    else if (state.phase === 'paused') setPhase(resumePhase);
     return;
   }
-  if (state.phase !== 'playing') return;
+  if (!['playing', 'deploying'].includes(state.phase)) return;
   if (['Space', 'KeyE', 'KeyF', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) {
     event.preventDefault(); keys.add(event.code);
   }
@@ -468,10 +502,10 @@ for (const name of ['pointercancel', 'lostpointercapture']) renderer.domElement.
 });
 window.addEventListener('blur', () => {
   clearInput();
-  if (state.phase === 'playing') setPhase('paused');
+  if (['playing', 'deploying'].includes(state.phase)) setPhase('paused');
 });
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden && state.phase === 'playing') setPhase('paused');
+  if (document.hidden && ['playing', 'deploying'].includes(state.phase)) setPhase('paused');
 });
 window.addEventListener('resize', resize);
 
@@ -484,7 +518,7 @@ function moveStick(event) {
   if (ui.joystickKnob) ui.joystickKnob.style.transform = `translate(-50%, -50%) translate(${stick.x * limit}px, ${stick.y * limit}px)`;
 }
 ui.joystick.addEventListener('pointerdown', (event) => {
-  if (state.phase !== 'playing' || inputPointer !== null) return;
+  if (!['playing', 'deploying'].includes(state.phase) || inputPointer !== null) return;
   event.preventDefault(); inputPointer = event.pointerId;
   ui.joystick.setPointerCapture(event.pointerId); moveStick(event);
 });
@@ -499,7 +533,7 @@ for (const eventName of ['pointerup', 'pointercancel', 'lostpointercapture']) {
 
 document.querySelector('#game').addEventListener('webglcontextlost', (event) => {
   event.preventDefault();
-  if (state.phase === 'playing') setPhase('paused');
+  if (['playing', 'deploying'].includes(state.phase)) setPhase('paused');
   ui.showError('Die Grafikverbindung wurde unterbrochen. Lade die Seite neu, um die Insel erneut zu betreten.');
 });
 
@@ -508,6 +542,7 @@ window.nebeljagdTestState = () => ({
   darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
   statusIndicators:statusIndicators.inspect(),
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
+  arrival: arrival.snapshot(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -596,6 +631,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
     direction = state.direction } = {}) => {
+    arrival.cancel(); arrivalCamera=false; camera.zoom=1; camera.updateProjectionMatrix();
     clearInput();aimDirection=null;mouseAimPointer=null;
     player.set(x, world.heightAt(x, z), z);
     world.resolveMovement(player, .42);
@@ -653,10 +689,13 @@ function frame(now) {
     ui.toast(state.hiddenInGrass ? (lobbyMode ? 'Im hohen Gras verborgen.' : 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.') : 'Du verlässt das dichte Gras.');
     lastConcealment = state.hiddenInGrass;
   }
-  character.setConcealed(state.hiddenInGrass);
+  const arrivalState = arrival.snapshot();
+  character.setConcealed(state.hiddenInGrass && !arrivalState.active);
+  visualPlayer.copy(player); visualPlayer.y += arrivalState.height;
+  arrivalEffects.update(state.phase === 'paused' ? 0 : dt, player, arrivalState);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
-    direction: state.rollRemaining>0?state.direction:facingDirection(), travelDirection:state.direction, health: state.health, inDanger: state.inDanger, snowWeight: state.snowWeight,
+    direction: state.rollRemaining>0?state.direction:facingDirection(), travelDirection:state.direction, health: state.health, inDanger: state.inDanger, snowWeight: arrivalState.active ? 0 : state.snowWeight, arrival: arrivalState,
     snowSurfaceY: world.snowSurfaceAt?.(player.x, player.z) ?? player.y });
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
@@ -699,7 +738,12 @@ function frame(now) {
   pickups.update(playDelta, time, state.phase === 'playing' ? player : inactivePlayer,
     { health: state.health, maxHealth: state.maxHealth, onCollect, viewerPosition: player });
   zone?.update(time, currentZone.radius, state.inDanger, player);
-  cameraTarget.set(player.x * visualScale, player.y * visualScale, (player.z - 1.5) * visualScale);
+  cameraTarget.set(player.x * visualScale, (player.y + arrivalState.height * .5) * visualScale, (player.z - 1.5) * visualScale);
+  if (arrivalCamera) {
+    camera.zoom = 1 / (1 + arrivalState.height * .045);
+    camera.updateProjectionMatrix();
+    if (!arrivalState.active && arrivalState.impact >= 1) arrivalCamera = false;
+  }
   cameraFocus.lerp(cameraTarget, 1 - Math.exp(-dt * 4));
   camera.position.copy(cameraFocus).add(cameraOffset); camera.lookAt(cameraFocus);
   sun.position.copy(cameraFocus).add(sunlightOffset);
