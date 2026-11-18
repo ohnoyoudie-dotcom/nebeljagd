@@ -82,3 +82,25 @@ test('Tripo chests obey visibility and wall reachability, and never silently use
   assert.equal(blocked.interact({ x: 2, z: 4 }), null);
   blocked.dispose();
 });
+
+test('Seltene Truhe is the preserved uploaded model with its own hinge and defaults to the rune mechanic', () => {
+  const report = JSON.parse(read('assets/imported/tripo-rare-chest/inspection.json'));
+  assert.equal(sha(read(report.source.path)), report.source.sha256);
+  const {bytes,doc}=glb(report.runtime.path);
+  assert.equal(sha(bytes),report.runtime.sha256);
+  assert.ok(bytes.length<1024*1024 && report.runtime.triangles<16000);
+  assert.equal(report.normalization.widthMeters,2);
+  assert.deepEqual(report.runtime.externalUris,[]);
+  const manifest=JSON.parse(read('assets/imported/tripo-rare-chest/runtime-manifest.json'));
+  for(const f of manifest.files){const data=read('assets/imported/tripo-rare-chest/'+f.path);assert.equal(data.length,f.bytes);assert.equal(sha(data),f.sha256);}
+  const triangles=doc.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+doc.accessors[p.indices].count/3,0);
+  assert.equal(triangles,report.runtime.triangles);
+  assert.ok(Math.abs(doc.nodes.find(n=>n.name==='chest-lid').translation[1]-.88)<1e-6);
+  const definitions=[{...placement,variant:'kit-tripo-rare-chest'}, {...placement,id:'normal'}];
+  assert.throws(()=>createChests(new THREE.Scene(),{placements:definitions,tripoPrototype:prototype()}),/seltene/);
+  const c=createChests(new THREE.Scene(),{placements:definitions,tripoPrototype:prototype(),rareTripoPrototype:prototype()});
+  assert.equal(c.items[0].runic,true);assert.equal(c.items[1].runic,false);
+  assert.equal(c.items[0].model,'tripo');assert.equal(c.items[0].group.scale.x,1.2);
+  c.interact({x:2,y:0,z:4.5});assert.equal(c.items[0].opened,false);
+  c.dispose();
+});

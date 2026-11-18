@@ -114,6 +114,7 @@ export function createGroundGrassExclusion(map, { padding = .55 } = {}) {
     let [hx, hz] = extents[object.kind];
     if (object.kind === 'mound' && object.variant === 'knoll') [hx, hz] = [3.3, 2.8];
     if (object.kind === 'chest' && object.variant === 'kit-tripo-chest') [hx, hz] = [.87, .575];
+    if (object.kind === 'chest' && object.variant === 'kit-tripo-rare-chest') [hx, hz] = [1.01, .66];
     const builder = object.kind === 'house' && isBuilderHouse(object.variant) ? getHouseDefinition(object) : null;
     if (builder?.footprintAreas) {
       const [x,z]=object.position,c=Math.cos(object.rotation??0),s=Math.sin(object.rotation??0);

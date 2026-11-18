@@ -63,6 +63,9 @@ export const TRIPO_PROP_DEFINITIONS = [
 // The chest renderer owns its animated model and loot interaction separately.
 // Only the fixed base stops movement: including it in sight/projectile queries
 // would make the chest occlude its own E interaction and spawned contents.
+export const RARE_CHEST_MOVEMENT_WALLS = [
+  box(-1.01, 1.01, -.66, .66, 1.42, 'chest', { movementOnly: true }),
+];
 export const TRIPO_CHEST_MOVEMENT_WALLS = [
   box(-.87, .87, -.575, .575, .98, 'chest', { movementOnly: true }),
 ];

@@ -45,7 +45,7 @@ test('fresh authoring retires old scenery, shrine, ruins and GLB crates while ke
 test('individual placement offers approved assets including the five builder houses; old trees remain legacy objects', () => {
   const expected = ['house:kit-tripo-tavern', 'house:kit-tripo-house-02', 'house:waldhaus-small', 'house:waldhaus', 'house:waldhaus-town', 'house:waldhaus-corner', 'house:waldhaus-hall', 'house:schlossanlage',
     'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
-    'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest',
+    'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well', 'chest:kit-tripo-chest', 'chest:kit-tripo-rare-chest',
     'bow:kit-tripo-ornate-bow', 'sword:kit-tripo-sword', 'fireStaff:kit-tripo-lava-staff', 'iceStaff:kit-tripo-crystal-staff',
     'poisonStaff:kit-tripo-poison-staff', 'moonStaff:kit-tripo-moon-staff', 'starStaff:kit-tripo-star-staff',
     'lightningStaff:kit-tripo-lightning-staff', 'shadowStaff:kit-tripo-shadow-staff', 'clockworkStaff:kit-tripo-clockwork-staff', 'earthbreakerStaff:kit-tripo-earthbreaker-staff', 'runeWallStaff:kit-tripo-rune-wall-staff', 'blinkStaff:kit-tripo-blink-staff', 'reflectionStaff:kit-tripo-reflection-staff', 'sunStaff:kit-tripo-sun-staff', 'soulStaff:kit-tripo-soul-staff', 'meteorStaff:kit-tripo-meteor-staff', 'hourglassStaff:kit-tripo-hourglass-staff', 'gravityStaff:kit-tripo-gravity-staff', 'stump:kit-tripo-stump-01', 'stump:kit-tripo-stump-02',

@@ -25,7 +25,7 @@ import { createUI } from './ui.js';
 import { createVision } from './vision.js';
 import { createCombat } from './combat.js';
 import { createChests } from './chests.js';
-import { loadTripoChest } from './tripo-chest.js';
+import { loadTripoChest, loadRareTripoChest } from './tripo-chest.js';
 import { createHealthBars } from './health-bars.js';
 import { createPracticeActors } from './practice-actors.js';
 import { createSnowFootprints } from './snow-footprints.js';
@@ -201,6 +201,7 @@ const weapons = createWeapons(world.root, character.group, world, character,
     projectilePrototypes: await loadProjectileModels(), gravityTextures: await loadGravityTextures(), stormTexture: await loadStormTexture() });
 const chests = createChests(world.root, { placements: world.map.objects, heightAt: world.heightAt, world, isVisible, revealSceneryThroughFog: false,
   tripoPrototype: await loadTripoChest(world.map.objects),
+  rareTripoPrototype: await loadRareTripoChest(world.map.objects),
   onDrop: (item, launch) => {
     if (item.kind === 'gold' || item.type === 'gold') pickups.addDrop(item, launch);
     else weapons.addDrop(item, launch);
@@ -520,7 +521,7 @@ window.nebeljagdTestState = () => ({
   snowFootprints: snowFootprints.inspect(),
   damageFeedback: damageFeedback.inspect(), minimap: ui.inspectMinimap?.(),
   levelUpEffect: levelUpEffect.inspect(),
-  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid, texturedInteriorSurfaces }) => ({ id, x, z, opened, variant, model, texturedInteriorSurfaces, lidRotation: lid.rotation.x, visible: group.visible })),
+  chests: chests.items.map(({ id, x, z, opened, group, variant, model, lid, texturedInteriorSurfaces, runic, charge, chargeRadius, elapsed }) => ({ id, x, z, opened, variant, model, texturedInteriorSurfaces, runic, charge:{...charge},chargeRadius,openingElapsed:elapsed,lidRotation: lid.rotation.x, visible: group.visible })),
   world: { mapId: world.map.id, mapName: world.map.name, source: documentSource.source, bounds: world.map.bounds, stats: world.stats, biome: world.biomeAt(player.x, player.z), groundHeight: world.groundHeightAt(player.x, player.z), isWater: world.isWater(player.x, player.z), objects: world.map.objects,
     treeCount: world.trees.length, trees: world.trees, grassPatches: world.grassPatches,
     destructibles: world.destructibles?.map(({ id, name, kind, x, z, health, maxHealth, destroyed }) => ({ id, name, kind, x, z, health, maxHealth, destroyed })) ?? [],
@@ -688,7 +689,7 @@ function frame(now) {
   });
   practiceActors.appendFootprintSources?.(footprintSources);
   snowFootprints.update(state.elapsed, footprintSources);
-  chests.update(playDelta, time, player);
+  chests.update(playDelta, time, player,{canCharge:state.phase==='playing'&&state.health>0});
   weapons.update(playDelta, time, player, facingDirection());
   if(playDelta>0)refreshAttackAim();
   if (state.phase === 'playing') {

@@ -134,7 +134,7 @@ test('legacy cottages keep grass at the stone plinth with only the actual porch 
 });
 
 test('chests do not create a large empty rectangle around their base', () => {
-  for (const [variant, hx, hz] of [['wood', .86, .63], ['kit-tripo-chest', .87, .575]]) {
+  for (const [variant, hx, hz] of [['wood', .86, .63], ['kit-tripo-chest', .87, .575], ['kit-tripo-rare-chest', 1.01, .66]]) {
     const excluded = createGroundGrassExclusion({ objects: [{ kind: 'chest', variant, position: [0, 0], rotation: 0, scale: 1 }] });
     assert.equal(excluded(hx + .02, 0), false);
     assert.equal(excluded(0, hz + .02), false);

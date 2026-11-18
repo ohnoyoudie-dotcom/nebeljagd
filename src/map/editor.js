@@ -1,3 +1,4 @@
+import { chestOpening } from '../runic-chest.js';
 import { freshPlaytestUrl } from './playtest-url.js';
 import { WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
@@ -540,6 +541,8 @@ function renderProperties() {
     $('object-scale').value = feature.scale;
     syncHouseControls('object', feature, true);
     renderAssetPreview('object', feature.kind, feature.variant);
+    $('object-chest-property').hidden=feature.kind!=='chest';
+    $('object-chest-opening').value=chestOpening(feature);
     $('object-rarity-property').hidden = !WEAPON_TYPES.includes(feature.kind);
     $('object-rarity').value = 'common';
     updateRarityHint();
@@ -584,6 +587,7 @@ function applyProperties(event) {
     if (selection.type === 'spawn') { feature.radius = Number($('feature-radius').value); feature.capacity = Number($('feature-capacity').value); }
     if (selection.type === 'object') {
       feature.variant = $('object-variant').value;
+      if(feature.kind==='chest')feature.chestOpening=$('object-chest-opening').value;
       if (feature.kind === 'house' && isBuilderHouse(feature.variant)) {
         if (getHouseDefinition(feature).fixedLayout) for (const key of ['houseEntrances', 'houseRooms', 'houseLayout']) delete feature[key];
         Object.assign(feature, houseOptions('object'));
@@ -1345,6 +1349,8 @@ function updateRarityHint() {
   $('object-rarity-hint').textContent = `${low.damage}–${high.damage} Schaden pro Treffer. Pro Runde: Weiß 55 %, Grün 27 %, Blau 12 %, Violett 5 %, Gold 1 %. Position und Modell bleiben fest.${low.burn || low.poison ? ' Auch der Elementarschaden steigt mit der Seltenheit.' : ''}`;
 }
 function updatePaletteRarity() {
+  $('palette-chest-property').hidden=$('palette-kind').value!=='chest';
+  $('palette-chest-opening').disabled=$('palette-kind').value!=='chest';
   $('palette-rarity-property').hidden = !WEAPON_TYPES.includes($('palette-kind').value);
   $('palette-rarity').disabled = $('palette-rarity-property').hidden;
 }
@@ -1377,6 +1383,7 @@ function addObjectAt(point) {
   if (!isObjectPlaceable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
   const added = makeWorldObject(kind, position, {
     variant: $('palette-variant').value, rarity: $('palette-rarity').value,
+    ...(kind==='chest'?{chestOpening:$('palette-chest-opening').value}:{}),
     rotation: placementRotationControl.nextRotation(kind),
     ...(kind === 'house' && isBuilderHouse($('palette-variant').value) ? houseOptions('palette') : {}),
   });
@@ -1446,6 +1453,7 @@ barrierPanel = createBarrierPanel({ getMap: () => map, getMode: () => mode, setM
 $('palette-kind').addEventListener('change', () => { fillVariants($('palette-variant'), $('palette-kind').value); updatePaletteRarity(); renderAssetPreview('palette', $('palette-kind').value, $('palette-variant').value); updatePlacementPreview(); });
 $('palette-variant').addEventListener('change', () => {
   const variant = $('palette-variant').value;
+  if ($('palette-kind').value === 'chest') $('palette-chest-opening').value = chestOpening({variant});
   if ($('palette-kind').value === 'house' && isBuilderHouse(variant)) {
     $('palette-house-entrances').value = getHouseDefinition(variant).entrances.length > 1 ? 'double' : 'single';
   }
@@ -1478,7 +1486,7 @@ for (const prefix of ['palette', 'object']) {
 }
 $('object-scale').addEventListener('input', () => refreshHousePreview('object'));
 for (const id of ['object-height', 'object-scale', 'object-variant']) $(id).addEventListener('input', updateObjectHeightHint);
-$('object-variant').addEventListener('change', () => { const feature = selectedFeature(); if (feature) renderAssetPreview('object', feature.kind, $('object-variant').value); if (feature?.kind === 'grass') landscapePanel.setSelectedVariant($('object-variant').value); });
+$('object-variant').addEventListener('change', () => { const feature = selectedFeature(); if (feature?.kind === 'chest') $('object-chest-opening').value = chestOpening({variant:$('object-variant').value}); if (feature) renderAssetPreview('object', feature.kind, $('object-variant').value); if (feature?.kind === 'grass') landscapePanel.setSelectedVariant($('object-variant').value); });
 $('grass-brush').addEventListener('click', () => setMode(mode === 'brush' ? 'select' : 'brush'));
 $('object-eraser').addEventListener('click', () => setMode(mode === 'erase' ? 'select' : 'erase'));
 $('eraser-radius').addEventListener('input', () => { cancelPointer(); $('eraser-radius-value').textContent = `${$('eraser-radius').value} m`; updatePlacementPreview(); });

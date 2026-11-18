@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RARITIES, WEAPON_TYPES, rollLootRarity } from './loot-tiers.js';
 import { createChestWoodMaterial } from './chest-wood.js';
+import { RUNIC_CHEST,chestOpening,createRunicCharge,stepRunicCharge,rollRunicRarity } from './runic-chest.js';
+import { createRunicChestEffects } from './runic-chest-effects.js';
 
 const TIERS = Object.keys(RARITIES);
 // The special execute weapon is explicitly placed; its quest/drop design is still open.
@@ -98,15 +100,28 @@ function chestPrototype() {
 
 export function createChests(scene, { placements = [], heightAt = () => 0, world = null,
   isVisible = () => true, onDrop = () => {}, viewDistance = 75, revealSceneryThroughFog = false,
-  tripoPrototype = null, rollRarity = rollLootRarity } = {}) {
+  tripoPrototype = null, rareTripoPrototype = null, rollRarity = rollLootRarity, rollRareRarity = rollRunicRarity } = {}) {
   if (placements.some(object => object.kind === 'chest' && object.variant === 'kit-tripo-chest') && !tripoPrototype) {
     throw new Error('Die Tripo-Truhe muss vor dem Platzieren geladen werden.');
   }
+  if (placements.some(object => object.kind === 'chest' && object.variant === 'kit-tripo-rare-chest') && !rareTripoPrototype) {
+    throw new Error('Die seltene Truhe muss vor dem Platzieren geladen werden.');
+  }
   const prototype = chestPrototype();
+  const contentsFor=(id,runic)=>{
+    const contents=chestLoot(id,runic?rollRareRarity():rollRarity());
+    if(runic)for(const drop of contents)if(drop.type==='gold')drop.amount*=2;
+    return contents;
+  };
   const items = placements.filter(object => object.kind === 'chest').map((definition, index) => {
     const [x, z] = definition.position, groundY = heightAt(x, z);
-    const isTripo = definition.variant === 'kit-tripo-chest';
-    const group = (isTripo ? tripoPrototype : prototype).clone(true); group.name = definition.name || 'Holztruhe';
+    const modelPrototype = definition.variant === 'kit-tripo-rare-chest' ? rareTripoPrototype : definition.variant === 'kit-tripo-chest' ? tripoPrototype : prototype;
+    const isTripo = modelPrototype !== prototype;
+    const runic=chestOpening(definition)==='rune',charge=createRunicCharge();
+    const chargeRadius=RUNIC_CHEST.radius*Math.max(.65,Math.min(2,definition.scale??1));
+    const effects=runic?createRunicChestEffects({x,z,y:groundY,radius:chargeRadius,heightAt}):null;
+    if(effects)scene.add(effects.group);
+    const group = modelPrototype.clone(true); group.name = definition.name || 'Holztruhe';
     group.position.set(x, groundY, z); group.rotation.y = definition.rotation ?? 0;
     group.scale.setScalar(definition.scale ?? 1); group.userData.worldObjectId = definition.id; scene.add(group);
     let texturedInteriorSurfaces = 0;
@@ -115,8 +130,8 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
       x, z, groundY, scale: definition.scale ?? 1, rarity: definition.rarity, group,
       variant: definition.variant ?? 'wood', model: isTripo ? 'tripo' : 'procedural', texturedInteriorSurfaces,
       lid: group.getObjectByName('chest-lid'),
-      opened: false, elapsed: 0, dropped: false, opener: null, index,
-      contents: chestLoot(definition.id, rollRarity()) };
+      runic,charge,chargeRadius,effects,opened: false, elapsed: 0, dropped: false, opener: null, index,
+      contents: contentsFor(definition.id,runic) };
   });
 
   const visiblePoint = item => ({ x: item.x, y: item.groundY + .55, z: item.z });
@@ -125,27 +140,40 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
   }
   function nearest(player) {
     if (!player) return null;
-    let best = null, distance = 2.45;
+    let best = null, distance = Infinity;
     for (const item of items) {
       if (item.opened || !isVisible(visiblePoint(item))) continue;
       const d = Math.hypot(player.x - item.x, player.z - item.z);
-      if (d < distance && reachable(item, player)) { best = item; distance = d; }
+      if (d < (item.runic?item.chargeRadius:2.45) && d < distance && reachable(item, player)) { best = item; distance = d; }
     }
     return best;
   }
   function interact(player) {
     const item = nearest(player); if (!item) return null;
+    if(item.runic)return {id:item.id,type:'chest',message:'Im Runenkreis bleiben, um das Siegel zu lösen.'};
     item.opened = true; item.opener = { x: player.x, y: player.y, z: player.z };
     return { id: item.id, type: 'chest', message: 'Truhe geöffnet · Gold und Ausrüstung!' };
   }
-  function update(dt, time, player, { visible = isVisible } = {}) {
+  function update(dt, time, player, { visible = isVisible, canCharge = true } = {}) {
+    const delta=Number.isFinite(dt)?Math.max(0,dt):0;
+    // Only one seal can charge at once when an editor overlaps circles.
+    let selected=null,nearestDistance=Infinity;
+    if(canCharge&&player)for(const item of items) {
+      if(!item.runic||item.opened||!visible(visiblePoint(item))||!reachable(item,player))continue;
+      const distance=Math.hypot(player.x-item.x,player.z-item.z);
+      if(distance<item.chargeRadius+(item.charge.active?.1:0)&&distance<nearestDistance&&Math.abs((player.y??heightAt(player.x,player.z))-item.groundY)<1.2){selected=item;nearestDistance=distance;}
+    }
     for (const item of items) {
       item.group.visible = (!player || Math.hypot(player.x - item.x, player.z - item.z) < viewDistance) && (revealSceneryThroughFog || visible(visiblePoint(item)));
+      let justOpened=false;
+      if(item.runic&&!item.opened&&stepRunicCharge(item.charge,delta,selected===item)) {
+        item.opened=true;justOpened=true;item.opener={x:player.x,y:player.y,z:player.z};
+      }
       if (item.opened) {
-        item.elapsed += Math.max(0, dt);
-        const progress = Math.min(1, item.elapsed / .55);
+        item.elapsed += justOpened?0:delta;
+        const progress = Math.max(0,Math.min(1,item.runic?(item.elapsed-.18)/.75:item.elapsed/.55));
         item.lid.rotation.x = -1.9 * (1 - Math.pow(1 - progress, 3));
-        if (!item.dropped && item.elapsed >= .23) {
+        if (!item.dropped && item.elapsed >= (item.runic?.48:.23)) {
           item.dropped = true;
           const contents = item.contents;
           contents.forEach((drop, index) => onDrop({ ...drop,
@@ -153,17 +181,18 @@ export function createChests(scene, { placements = [], heightAt = () => 0, world
             origin: [item.x, item.z], sourceChest: item.id }, { pop: true }));
         }
       }
+      if(item.effects){item.effects.group.visible=item.group.visible;item.effects.update(item.charge,item.opened,item.elapsed);}
     }
   }
   return {
     items, nearest, interact, open: interact, update,
     get openedCount() { return items.filter(item => item.opened).length; },
     reset() { for (const item of items) { item.opened = false; item.elapsed = 0; item.dropped = false;
-      item.opener = null; item.lid.rotation.x = 0; item.contents = chestLoot(item.id, rollRarity()); } },
+      item.opener = null; item.lid.rotation.x = 0; item.contents = contentsFor(item.id,item.runic);Object.assign(item.charge,createRunicCharge());item.effects?.update(item.charge,false,0); } },
     dispose() {
-      for (const item of items) scene.remove(item.group);
+      for (const item of items) {scene.remove(item.group);item.effects?.dispose();}
       const geometries = new Set(), materials = new Set(), textures = new Set();
-      for (const asset of [prototype, tripoPrototype].filter(Boolean)) asset.traverse(node => {
+      for (const asset of [prototype, tripoPrototype, rareTripoPrototype].filter(Boolean)) asset.traverse(node => {
         if (node.geometry) geometries.add(node.geometry);
         for (const material of Array.isArray(node.material) ? node.material : node.material ? [node.material] : []) materials.add(material);
       });

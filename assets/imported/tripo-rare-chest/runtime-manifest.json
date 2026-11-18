@@ -1,0 +1,56 @@
+{
+  "name": "nebeljagd-tripo-rare-chest",
+  "version": 1,
+  "kind": "source-preserving-local-editor-test-package",
+  "source": {
+    "path": "assets/inbox/Seltene Truhe.glb",
+    "sha256": "e6255f909e756942ade87d6f0b49f0310ac69cd2b538d5f063e906d237fa0ccf"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1057,
+      "sha256": "28e32626a48a5cb4da0501d5ed694f39233a8c61df0df18fc93f34ae1f65ba10"
+    },
+    {
+      "path": "inspection.json",
+      "bytes": 2264,
+      "sha256": "ef4a21428a072ce4f9de9f0a472df335706292fc376a31274491efed60bbf99e"
+    },
+    {
+      "path": "previews/runtime-closed.png",
+      "bytes": 654567,
+      "sha256": "4220b1a9be8f15a0a7ca4f85acba69a09f0d03ad5ed70f3acf596bb43d4ed547"
+    },
+    {
+      "path": "previews/runtime-open.png",
+      "bytes": 726118,
+      "sha256": "6760ffb8f69d49af4f8c6a30f63ea6f6b2686d8f55b267d25a20f6a510b3b0a2"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 1933,
+      "sha256": "38cbfca288d869c34333fc659c11890b7a43c09832ae3bbc21ff322d88d8a163"
+    },
+    {
+      "path": "runtime/chest.glb",
+      "bytes": 808548,
+      "sha256": "f1db5e2a52103c2d02e7fda8030b721919c6b9a7f71914ae657b4c1a918dc144"
+    }
+  ],
+  "validated": {
+    "embeddedOnly": true,
+    "trianglesWithin16000": true,
+    "animatedHingePresent": true,
+    "gpuRuntimeValidated": false
+  },
+  "licenseStatus": {
+    "status": "user-provided-project-asset",
+    "commercialReceipt": null,
+    "authorization": "User requested integration of their uploaded Tripo items; no external provider job requested."
+  },
+  "pending": [
+    "GPU import and gameplay QA",
+    "User artistic review"
+  ]
+}

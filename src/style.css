@@ -121,3 +121,6 @@
 .actor-status-row{position:absolute;left:0;top:0;display:grid;gap:3px;will-change:transform;pointer-events:none}
 .actor-status-icon{display:grid;place-items:center;width:24px;height:24px;padding:2px;border:1px solid #aab2bf70;border-radius:5px;background:#121923ed;box-shadow:0 1px 3px #0009}
 .actor-status-icon svg{display:block;width:100%;height:100%}
+
+/* Automatic rune charging stays readable on touch screens as well as PC. */
+.pickup-prompt.runic-chest-progress{border-color:#65daca80;pointer-events:none;max-width:calc(100vw - 24px);white-space:normal}.pickup-prompt.runic-chest-progress .pickup-key{display:flex;color:#baf5df}.pickup-prompt.runic-chest-progress .icon{color:#69dcca}.pickup-prompt.runic-chest-progress strong{color:#e7cf9c}

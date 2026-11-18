@@ -1338,6 +1338,27 @@
         ],
         "span": 18
       }
+    },
+    {
+      "kind": "chest",
+      "variant": "kit-tripo-rare-chest",
+      "label": "Seltene Truhe",
+      "file": "assets/catalog/chest-kit-tripo-rare-chest.webp",
+      "bytes": 6356,
+      "sha256": "59fe910261f01437aa2e109d34b4235855392aaf60dabf04ea62279d55f8ff11",
+      "renderedBounds": {
+        "min": [
+          3919.0008268356323,
+          0.0003249045112170279,
+          -0.6547377109527588
+        ],
+        "max": [
+          3920.999658048153,
+          1.4218242168426514,
+          0.6571874618530273
+        ],
+        "span": 3.11535890436915
+      }
     }
   ],
   "errors": []

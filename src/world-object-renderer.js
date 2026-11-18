@@ -18,7 +18,7 @@ import { vegetationSettings } from './map/landscape.js';
 import { expandBarrierMap } from './map/barriers.js';
 import { getBarrierHeight, getBarrierHeightScale, isHeightAdjustable } from './map/barrier-height.js';
 import { loadEnvironmentKit } from './environment-kit.js';
-import { TRIPO_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
+import { TRIPO_CHEST_MOVEMENT_WALLS, RARE_CHEST_MOVEMENT_WALLS } from './map/tripo-prop-definitions.js';
 import { isLandPoint } from './map/model.js';
 import { createGroundGrassExclusion, grassBiomeProfile } from './meadow-ground.js';
 import { WEAPON_TYPES } from './loot-tiers.js';
@@ -382,8 +382,8 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     const [x, z] = object.position, scale = object.scale, variant = object.variant;
     const kit = kitModels.get(`${object.kind}:${variant}`);
     chunkFor(x, z).count++;
-    if (object.kind === 'chest' && variant === 'kit-tripo-chest') {
-      addStructure(object, TRIPO_CHEST_MOVEMENT_WALLS, null);
+    if (object.kind === 'chest' && ['kit-tripo-chest', 'kit-tripo-rare-chest'].includes(variant)) {
+      addStructure(object, variant === 'kit-tripo-rare-chest' ? RARE_CHEST_MOVEMENT_WALLS : TRIPO_CHEST_MOVEMENT_WALLS, null);
       continue;
     }
     if (object.kind === 'house' && isBuilderHouse(variant)) {

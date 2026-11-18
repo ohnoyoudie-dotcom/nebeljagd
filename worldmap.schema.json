@@ -644,6 +644,13 @@
             "sage",
             "clay"
           ]
+        },
+        "chestOpening": {
+          "enum": [
+            "instant",
+            "rune"
+          ],
+          "description": "Sofort öffnen oder seltene Beute durch Aufenthalt im Runenkreis freischalten."
         }
       },
       "allOf": [
@@ -907,7 +914,8 @@
               "variant": {
                 "enum": [
                   "wood",
-                  "kit-tripo-chest"
+                  "kit-tripo-chest",
+                  "kit-tripo-rare-chest"
                 ]
               }
             }
@@ -1683,6 +1691,20 @@
               },
               "variant": {
                 "const": "schlossanlage"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "chestOpening"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "chest"
               }
             }
           }

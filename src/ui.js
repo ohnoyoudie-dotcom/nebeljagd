@@ -559,19 +559,23 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     const nearChest = state.nearChest;
     const nearby = nearChest && (!nearWeapon || (nearChest.distance ?? Infinity) < (nearWeapon.distance ?? Infinity)) ? nearChest : nearWeapon;
     const isChest = nearby?.type === 'chest' || nearby?.kind === 'chest';
+    const runic=isChest&&nearby.runic;
     const nearType = nearby?.type || nearby?.kind;
     const canInteract = currentPhase === 'playing' && (isChest || WEAPON_TYPES.includes(nearType));
     pickupPrompt.hidden = !canInteract;
-    interactButton.hidden = !canInteract;
+    interactButton.hidden = !canInteract || runic;
+    pickupPrompt.disabled=Boolean(runic);
+    pickupPrompt.classList.toggle('runic-chest-progress',Boolean(runic));
+    pickupPrompt.querySelector('kbd').hidden=Boolean(runic);
     interactButton.disabled = !canInteract;
     const near = isChest ? { name: nearby.name || 'Holztruhe', color: '#e6bb68', rarity: 'chest', rarityLabel: '' } : describeWeapon(nearby || {});
-    const nearKey = `${nearby?.id}:${nearType}:${near.rarity}:${near.name}:${near.damage}:${weaponType}`;
+    const nearKey = `${nearby?.id}:${nearType}:${near.rarity}:${near.name}:${near.damage}:${weaponType}:${runic?Math.floor(nearby.charge.progress*100):0}`;
     if (nearKey !== lastNearWeaponType) {
       pickupItem.textContent = isChest ? near.name : `${near.name} · ${near.rarityLabel} · ${near.damage} Schaden`;
-      pickupAction.textContent = isChest ? 'öffnen' : weaponType ? 'wechseln' : 'aufnehmen';
+      pickupAction.textContent = runic ? `Im Runenkreis bleiben · ${Math.floor(nearby.charge.progress*100)} %` : isChest ? 'öffnen' : weaponType ? 'wechseln' : 'aufnehmen';
       pickupPrompt.style.setProperty('--rarity-color', near.color);
       pickupPrompt.querySelector('.icon').outerHTML = icon(isChest ? 'chest' : 'hand');
-      pickupPrompt.setAttribute('aria-label', `${near.name} mit E ${isChest ? 'öffnen' : 'aufnehmen'}`);
+      pickupPrompt.setAttribute('aria-label', runic?`${near.name}: Im Runenkreis bleiben, ${Math.floor(nearby.charge.progress*100)} Prozent`:`${near.name} mit E ${isChest ? 'öffnen' : 'aufnehmen'}`);
       interactButton.setAttribute('aria-label', `${near.name} ${isChest ? 'öffnen' : 'aufheben'}`);
       interactButton.querySelector('.icon').outerHTML = icon(isChest ? 'chest' : 'hand');
       interactButton.querySelector('span').textContent = isChest ? 'ÖFFNEN' : weaponType ? 'WECHSELN' : 'AUFHEBEN';

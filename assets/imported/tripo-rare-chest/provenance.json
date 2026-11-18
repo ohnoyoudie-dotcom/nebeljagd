@@ -1,0 +1,61 @@
+{
+  "source": {
+    "path": "assets/inbox/Seltene Truhe.glb",
+    "bytes": 67890692,
+    "sha256": "e6255f909e756942ade87d6f0b49f0310ac69cd2b538d5f063e906d237fa0ccf",
+    "triangles": 1960454,
+    "meshes": 1,
+    "materials": 1,
+    "animations": 0,
+    "externalUris": [],
+    "nodes": [
+      "tripo_node_933892de-2b05-4b53-9b64-ce4071d7662c"
+    ]
+  },
+  "runtime": {
+    "path": "assets/imported/tripo-rare-chest/runtime/chest.glb",
+    "bytes": 808548,
+    "sha256": "f1db5e2a52103c2d02e7fda8030b721919c6b9a7f71914ae657b4c1a918dc144",
+    "triangles": 11724,
+    "meshes": 2,
+    "materials": 2,
+    "animations": 0,
+    "externalUris": [],
+    "nodes": [
+      "chest-body",
+      "chest-lid-shell",
+      "chest-lid",
+      "nebeljagd-tripo-rare-chest"
+    ]
+  },
+  "sourceOrigin": "User uploaded Tripo export in project assets/inbox; integration explicitly requested.",
+  "providerJobId": null,
+  "providerInvoked": false,
+  "script": "scripts/prepare-rare-chest.py",
+  "scriptSha256": "f3676d9b8bf4376d655cfd30a5c486768709cc2856095d2dde046a84a83f345a",
+  "command": "blender -b -t 3 --python scripts/prepare-rare-chest.py",
+  "tool": "Blender 4.3.2",
+  "transform": {
+    "widthMeters": 2.0,
+    "uniformScale": 2.0420016202405433,
+    "gltfDimensions": [
+      2.0,
+      1.4216987598928148,
+      1.3140775193572007
+    ],
+    "axes": "glTF +Y up, +Z front; bottom at 0",
+    "gltfHinge": [
+      0,
+      0.88,
+      -0.59
+    ],
+    "openAngleRadians": -1.9
+  },
+  "method": "Positional weld at 0.01mm and UV-preserving collapse reduction, 512px original PBR maps, measured horizontal lid seam at 0.88m, separate rear hinge, dark wooden cavity liner and sealed lid underside.",
+  "sourcePreserved": true,
+  "license": {
+    "status": "user-provided-project-asset",
+    "commercialReceipt": null,
+    "authorization": "User requested integration of their uploaded Tripo items; no external provider job requested."
+  }
+}

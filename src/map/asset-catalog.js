@@ -123,6 +123,7 @@ export const ASSET_CATALOG = Object.freeze([
   tripo('rock', 'kit-tripo-01', 'Flacher Felsen · Tripo', 'rock-01', 'rock 3d model', 'Breiter, niedriger Naturstein; blockiert Bewegung, lässt hohe Geschosse passieren.'),
   tripo('rock', 'kit-tripo-02', 'Findling · Tripo', 'rock-02', 'rock boulder 3d model', 'Kompakter Findling mit verwitterter Oberfläche als feste Deckung.'),
   tripo('rock', 'kit-tripo-03', 'Hohe Felsgruppe · Tripo', 'rock-03', 'rock formation 3d model', 'Hohe Felsformation mit markanter Silhouette als Sicht- und Bewegungshindernis.'),
+  tripo('chest', 'kit-tripo-rare-chest', 'Seltene Truhe', 'chest', 'Seltene Truhe', 'Deine verzierte Truhe mit echtem Klappdeckel. Im Runenkreis bleiben: Das Siegel lädt immer schneller auf, öffnet sich mit einem goldenen Impuls und gibt mindestens seltene Ausrüstung sowie doppeltes Gold frei.', 'tripo-rare-chest'),
   tripo('chest', 'kit-tripo-chest', 'Schatztruhe · Tripo', 'chest', 'treasure chest 3d model', 'Texturierte Schatztruhe mit beweglichem Deckel; öffnet sich mit E und wirft Gold und Ausrüstung aus.', 'tripo-chest'),
   tripo('sword', 'kit-tripo-sword', 'Schwert · Tripo', 'sword', 'fantasy sword 3d model',
     'Dein texturiertes Tripo-Schwert. Als aufhebbare Nahkampfwaffe platzierbar; die Seltenheit bestimmt die Stärke.', 'tripo-weapons'),

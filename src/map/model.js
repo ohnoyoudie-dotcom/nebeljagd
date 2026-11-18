@@ -247,6 +247,7 @@ export function validateWorldmap(map) {
     const definition = getObjectDefinition(item.kind);
     if (!definition) error(`${item.id}: Unbekannte Objektart.`);
     else if (!definition.variants.some(variant => variant.id === item.variant)) error(`${item.id}: Unbekannte Variante für ${definition.label}.`);
+    if(item.chestOpening!==undefined&&(item.kind!=='chest'||!['instant','rune'].includes(item.chestOpening)))error(`${item.id}: Ungültige Truhenöffnung.`);
     const builder = item.kind === 'house' && isBuilderHouse(item.variant);
     if (builder && HOUSE_BUILDER_VARIANTS.find(variant => variant.id === item.variant)?.fixedLayout &&
       ['houseEntrances', 'houseRooms', 'houseLayout'].some(key => item[key] !== undefined)) error(`${item.id}: Die Schlossanlage hat einen festen Grundriss mit zwei Außenzugängen.`);

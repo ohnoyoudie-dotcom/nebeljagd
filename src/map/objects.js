@@ -55,7 +55,7 @@ export const OBJECT_CATALOG = Object.freeze([
   { kind: 'heart', label: 'Herz', defaultVariant: 'healing', defaultScale: 1, footprintRadius: .5,
     variants: [{ id: 'healing', label: 'Heilendes Herz' }] },
   { kind: 'chest', label: 'Holztruhe', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .85,
-    variants: [{ id: 'wood', label: 'Holztruhe mit Gold und Beute' }, { id: 'kit-tripo-chest', label: 'Schatztruhe · Tripo' }] },
+    variants: [{ id: 'wood', label: 'Holztruhe mit Gold und Beute' }, { id: 'kit-tripo-chest', label: 'Schatztruhe · Tripo' }, { id: 'kit-tripo-rare-chest', label: 'Seltene Truhe', defaultName: 'Seltene Truhe', footprintWidth: 2, footprintDepth: 1.32, footprintRadius: 1.2 }] },
   { kind: 'bow', label: 'Bogen', defaultVariant: 'wood', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'wood', label: 'Holzbogen' }, { id: 'kit-tripo-ornate-bow', label: 'Verzierter Bogen · Tripo' }] },
   { kind: 'sword', label: 'Schwert', defaultVariant: 'steel', defaultScale: 1, footprintRadius: .65,
@@ -127,7 +127,7 @@ const placementAssetIds = new Set([
   'house:kit-tripo-tavern', 'house:kit-tripo-house-02', ...HOUSE_BUILDER_VARIANTS.map(({id}) => `house:${id}`),
   'rock:kit-tripo-01', 'rock:kit-tripo-02', 'rock:kit-tripo-03',
   'wagon:kit-tripo-wagon', 'barrel:kit-tripo-barrel', 'well:kit-tripo-well',
-  'chest:kit-tripo-chest',
+  'chest:kit-tripo-chest', 'chest:kit-tripo-rare-chest',
   ...TRIPO_WOODLAND_DEFINITIONS.map(prop => prop.id),
   'shadowStaff:kit-tripo-shadow-staff',
   'clockworkStaff:kit-tripo-clockwork-staff',
@@ -186,6 +186,7 @@ export function makeWorldObject(kind, position, options = {}) {
     rotation: options.rotation ?? 0,
     scale: options.scale ?? definition.defaultScale,
     ...(options.height !== undefined ? { height: options.height } : {}),
+    ...(kind==='chest'&&options.chestOpening!==undefined?{chestOpening:options.chestOpening}:{}),
     ...(kind === 'house' && isBuilderHouse(variant) ? Object.fromEntries(
       ['houseStyle', 'houseSeed', 'houseEntrances', 'houseRooms', 'houseLayout', 'houseStoneColor', 'houseWallColor']
         .filter(key => options[key] !== undefined && !(fixedLayout && ['houseEntrances', 'houseRooms', 'houseLayout'].includes(key)))
