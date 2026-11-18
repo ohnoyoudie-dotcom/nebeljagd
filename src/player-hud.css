@@ -55,3 +55,7 @@
 
 #ui .map-frame{aspect-ratio:1;height:auto}#ui #minimap{width:100%;height:auto;aspect-ratio:1;display:block}
 @media(min-width:801px) and (min-height:601px){.arrival-panel{bottom:auto;top:116px;padding:12px 18px}.arrival-panel strong{font-size:19px}}
+#ui .map-frame{width:100%;min-width:0;overflow:hidden}#ui #minimap{min-width:0;max-width:100%}
+#ui .touch-actions button:disabled{opacity:.72}#ui .touch-actions .on-cooldown>.icon{opacity:.15}
+#ui .touch-cooldown{top:45%;transform:translateY(-50%);color:#f6f1d5}
+@media(max-height:600px) and (min-width:601px){#ui .inventory{top:20px;left:16px}}
