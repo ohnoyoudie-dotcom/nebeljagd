@@ -1,0 +1,13 @@
+#ui[data-arrival-stage=survey] .map-panel{top:100px;right:24px;width:min(42vw,460px);max-height:calc(100dvh - 125px);overflow:auto;padding:14px;background:#102b30f2;pointer-events:auto}
+#ui[data-arrival-stage=survey] .map-heading strong{font-size:11px;letter-spacing:.12em}
+#ui[data-arrival-stage=survey] .map-frame{max-width:min(100%,calc(100dvh - 280px));margin:auto}
+#ui[data-arrival-stage=survey] #minimap{cursor:crosshair;touch-action:none}
+#ui[data-arrival-stage=survey] .map-mode-switch,#ui[data-arrival-stage=survey] .map-legend,#ui[data-arrival-stage=survey] .zone-panel,#ui[data-arrival-stage=survey] .weapon-status,#ui[data-arrival-stage=survey] .player-panel,#ui[data-arrival-stage=survey] .inventory,#ui[data-arrival-stage=survey] .ability-dock,#ui[data-arrival-stage=survey] .touch-actions{display:none}
+#ui[data-arrival-stage=survey] .arrival-panel{top:110px;bottom:auto;left:26px;transform:none;width:280px}
+.landing-choice p{font:11px/1.5 system-ui;color:#c2d1c6;margin:12px 0}.landing-choice button{width:100%;padding:12px 16px;min-height:46px;border:1px solid #b7b17a;border-radius:6px;background:linear-gradient(140deg,#baab6b,#7c784c);color:#102b2a;font:700 14px system-ui;cursor:pointer;display:flex;justify-content:space-between;align-items:center}.landing-choice button:disabled{opacity:.45;cursor:not-allowed}.landing-choice kbd{font-size:16px;background:transparent;border:0;box-shadow:none}
+#ui[data-arrival-stage=dive] .arrival-panel small,#ui[data-arrival-stage=dive] .map-mode-switch{display:none}
+@media(max-width:700px){#ui[data-arrival-stage=survey] .map-panel{top:145px;left:50%;right:auto;transform:translateX(-50%);width:min(88vw,400px);max-height:calc(100dvh - 310px);padding:10px}#ui[data-arrival-stage=survey] .map-frame{max-width:min(100%,calc(100dvh - 440px))}#ui[data-arrival-stage=survey] .arrival-panel{top:16px;left:16px;width:calc(100vw - 90px);padding:12px}#ui[data-arrival-stage=survey] .arrival-panel .arrival-eyebrow{display:none}}
+@media(max-height:600px) and (min-width:701px){#ui[data-arrival-stage=survey] .map-panel{top:62px;width:38vw;max-height:calc(100dvh - 75px);padding:10px}#ui[data-arrival-stage=survey] .map-frame{max-width:calc(100dvh - 205px)}#ui[data-arrival-stage=survey] .arrival-panel{top:78px;width:235px}.landing-choice p{font-size:10px;margin:5px 0}.landing-choice button{min-height:36px;padding:7px}}
+
+#ui .arrival-panel #arrivalHeight{white-space:nowrap;flex:none;margin-left:10px}
+@media(max-height:600px) and (min-width:701px){#ui .arrival-panel strong{font-size:17px}}

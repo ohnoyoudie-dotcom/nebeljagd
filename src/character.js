@@ -207,13 +207,14 @@ export async function createCharacter(scene) {
     group.userData.localSilhouetteOpacity = appearance.baselineOpacity + appearance.fillOpacity;
     group.userData.concealmentOpacity = opacity;
     arrivalPivot.position.y = (arrival?.height || 0) / group.scale.y;
-    arrivalPivot.rotation.x = arrival?.active ? -.18 * Math.sin(arrival.progress * Math.PI) : 0;
+    arrivalPivot.rotation.x = arrival?.diveTilt || 0;
+    group.userData.arrivalTilt = arrivalPivot.rotation.x;
     if (arrival?.landing) presentationPivot.position.y -= arrival.landing * .22;
     if (arrival?.active) {
       for (const chain of [...Object.values(armBones), ...Object.values(legBones)]) for (const bone of chain) if (bone) arrivalPose.set(bone, bone.quaternion.clone());
       // Imported animation is evaluated afresh each frame; this overlay never alters the asset.
       for (const [side, chain] of Object.entries(armBones)) {
-        if (chain[0]) chain[0].rotation.z += (side === 'left' ? -.45 : .45);
+        if (chain[0]) chain[0].rotation.z += (side === 'left' ? -.35 : .35);
         if (chain[1]) chain[1].rotation.x -= .3;
       }
       for (const chain of Object.values(legBones)) if (chain[1]) chain[1].rotation.x += .25;

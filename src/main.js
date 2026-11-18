@@ -5,8 +5,9 @@ import * as THREE from 'three';
 import './style.css';
 import './lobby.css';
 import './player-hud.css';
-import { createArrival, steerArrival } from './arrival.js';
-import { createArrivalEffects } from './arrival-effects.js';
+import './arrival-hud.css';
+import { createArrival, steerArrival, resolveArrivalTarget } from './arrival.js';
+import { createArrivalEffects, createAerialAtlas } from './arrival-effects.js';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
 import { createGeneratedWorld } from './generated-world.js';
@@ -65,6 +66,7 @@ const frameSamples = [];
 const arrival = createArrival();
 let resumePhase = 'playing';
 let arrivalCamera = false;
+let landingTarget = null;
 
 const ui = createUI({
   practiceSession: lobbySession,
@@ -74,6 +76,8 @@ const ui = createUI({
     try { ui.toast(await importRuntimeWorldmap(file), 'success'); }
     catch (error) { ui.toast(`Karte nicht geladen: ${error.message}`, 'danger'); }
   },
+  onArrivalTarget: point => selectArrivalTarget(point),
+  onArrivalConfirm: () => beginDescent(),
   onStart: () => { if (ready) startArrival(); },
   onPause: () => { if (['playing', 'deploying'].includes(state.phase)) setPhase('paused'); },
   onResume: () => { if (state.phase === 'paused') setPhase(resumePhase); },
@@ -103,7 +107,9 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color('#718b8c');
 // The full camera view stays clear; obstacle line-of-sight still hides actors behind cover.
 scene.fog = null;
-const camera = new THREE.OrthographicCamera(-20, 20, 17, -17, 0.1, 180);
+const groundCamera = new THREE.OrthographicCamera(-20, 20, 17, -17, 0.1, 180);
+const flightCamera = new THREE.PerspectiveCamera(65, 1, .1, 10000);
+let camera = groundCamera;
 const cameraFocus = new THREE.Vector3(-8, 0, 8);
 const cameraTarget = new THREE.Vector3();
 const cameraOffset = new THREE.Vector3(0, 29, 18);
@@ -148,11 +154,15 @@ const visualScale = world.visualScale;
 ui.setLoading?.('Die Figur wird vorbereitet …');
 const character = await createCharacter(world.root);
 character.group.scale.setScalar(1.2);
+character.group.traverse(node=>node.layers.enable(1));
+scene.traverse(node=>{if(node.isLight)node.layers.enable(1);});
 const player = character.group.position;
 const attackControl=document.querySelector('#attackBtn');
 player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
 const visualPlayer = player.clone();
 const arrivalEffects = createArrivalEffects(world.root, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+const aerialMap = ui.getAerialAtlas();
+const aerialAtlas = createAerialAtlas(world.root, aerialMap.canvas, aerialMap.projection, world);
 const vision = createVision(world.root, world, { radius: 128, samples: 2048 });
 vision.update(player, 0);
 const isVisible = (position, options = { concealed: false }) => vision.isVisible(position, options);
@@ -237,6 +247,25 @@ function clearInput() {
   if (ui.joystickKnob) ui.joystickKnob.style.transform = 'translate(-50%, -50%)';
 }
 
+function validLanding(point) {
+  return resolveArrivalTarget(point, {
+    bounds: world.map.bounds, safe: p => !world.isWater(p.x,p.z,.45),
+    resolve: p => { world.resolveMovement(p,.46); practiceActors.resolvePlayerMovement(p,.46); },
+    heightAt: world.heightAt,
+  });
+}
+function selectArrivalTarget(point) {
+  if (state.phase !== 'deploying' || arrival.snapshot().stage !== 'survey') return;
+  const {minX,maxX,minZ,maxZ}=world.map.bounds;
+  player.x=THREE.MathUtils.clamp(point.x,minX,maxX);player.z=THREE.MathUtils.clamp(point.z,minZ,maxZ);
+  player.y=world.heightAt(player.x,player.z);landingTarget=validLanding(player);updateUI();
+}
+function beginDescent() {
+  if (state.phase !== 'deploying' || arrival.snapshot().stage !== 'survey') return;
+  landingTarget=validLanding(player);
+  if (!landingTarget) { ui.toast('Wähle eine freie Landestelle an Land.'); return; }
+  player.copy(landingTarget);state.direction=0;clearInput();arrival.dive();updateUI();
+}
 function startArrival() {
   if (lobbyMode) { setPhase('playing'); return; }
   for (let pass = 0; pass < 3; pass++) {
@@ -244,8 +273,10 @@ function startArrival() {
   }
   world.resolveMovement(player, .42);
   player.y = world.heightAt(player.x, player.z);
-  arrival.start(); arrivalCamera = true;
-  cameraFocus.set(player.x * visualScale, (player.y + 12) * visualScale, (player.z - 1.5) * visualScale);
+  const bounds=world.map.bounds;
+  const height=Math.max(900,Math.max(bounds.maxX-bounds.minX,bounds.maxZ-bounds.minZ)*1.12);
+  arrival.start({height});landingTarget=validLanding(player);arrivalCamera=true;camera=flightCamera;resize();
+  cameraFocus.set(player.x * visualScale, (player.y + height) * visualScale, (player.z - 1.5) * visualScale);
   setPhase('deploying');
 }
 
@@ -301,11 +332,12 @@ function resize() {
   const aspect = width / height;
   // Slightly closer top-down framing makes characters, grass and combat easier to read.
   const viewHeight = (aspect < 0.8 ? 30.5 : 20.5) * visualScale;
-  camera.left = -viewHeight * aspect / 2;
-  camera.right = viewHeight * aspect / 2;
-  camera.top = viewHeight / 2;
-  camera.bottom = -viewHeight / 2;
-  camera.updateProjectionMatrix();
+  groundCamera.left = -viewHeight * aspect / 2;
+  groundCamera.right = viewHeight * aspect / 2;
+  groundCamera.top = viewHeight / 2;
+  groundCamera.bottom = -viewHeight / 2;
+  groundCamera.updateProjectionMatrix();
+  flightCamera.aspect=aspect;flightCamera.updateProjectionMatrix();
   renderer.setSize(width, height);
 }
 
@@ -390,13 +422,13 @@ function simulate(dt) {
   if (state.phase === 'deploying') {
     moveDirection.set((keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) + stick.x, 0,
       (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) + stick.y);
-    steerArrival(player, moveDirection, dt, {
-      resolve: p => { world.resolveMovement(p, .42); practiceActors.resolvePlayerMovement(p, .42); },
-      safe: p => world.isLand(p.x,p.z) && !world.isWater(p.x,p.z),
-    });
-    player.y = world.heightAt(player.x, player.z);
-    if (moveDirection.lengthSq() > .01) state.direction = Math.atan2(moveDirection.x, moveDirection.z);
-    if (arrival.update(dt).landed) { setPhase('playing'); ui.toast('Gelandet · Finde eine Waffe und bleib vor dem Nebel.'); }
+    if (arrival.snapshot().stage === 'survey' && moveDirection.lengthSq() > .001) {
+      steerArrival(player, moveDirection, dt, { bounds:world.map.bounds,
+        speed:Math.max(world.map.bounds.maxX-world.map.bounds.minX,world.map.bounds.maxZ-world.map.bounds.minZ)*.2 });
+      player.y=world.heightAt(player.x,player.z);landingTarget=validLanding(player);
+      state.direction=Math.atan2(moveDirection.x,moveDirection.z);
+    }
+    if (arrival.update(dt).landed) { camera=groundCamera;arrivalCamera=false;resize();setPhase('playing');ui.toast('Gelandet · Finde eine Waffe und bleib vor dem Nebel.'); }
     return;
   }
   if (state.phase !== 'playing') return;
@@ -451,7 +483,7 @@ function onCollect(item) {
 
 function updateUI() {
   const nearby = nearbyInteraction();
-  ui.update({ ...state, arrival: arrival.snapshot(), touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
+  ui.update({ ...state, arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
     zoneProgress: currentZone.progress, zoneShrinking: currentZone.shrinking,
     rollCooldownDuration: ROLL_COOLDOWN, equippedWeapon: weapons.equipped,
     equippedItem: weapons.equippedItem, nearWeapon: nearby.weapon, nearChest: nearby.chest, attackCooldown: weapons.attackCooldown,
@@ -475,6 +507,7 @@ window.addEventListener('keydown', (event) => {
     else if (state.phase === 'paused') setPhase(resumePhase);
     return;
   }
+  if (state.phase === 'deploying' && event.code === 'Enter') { event.preventDefault(); beginDescent(); return; }
   if (!['playing', 'deploying'].includes(state.phase)) return;
   if (['Space', 'KeyE', 'KeyF', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) {
     event.preventDefault(); keys.add(event.code);
@@ -490,6 +523,7 @@ window.addEventListener('pointermove', event => {
   }
 });
 renderer.domElement.addEventListener('pointerdown', event => {
+  if (state.phase==='deploying' && arrival.snapshot().stage==='survey') { const point=groundPointer(event);if(point)selectArrivalTarget(point);return; }
   if (event.button !== 0 || state.phase !== 'playing' || canvasAttackPointer !== null) return;
   event.preventDefault(); canvasAttackPointer = event.pointerId; renderer.domElement.setPointerCapture(event.pointerId);
   if (event.pointerType !== 'touch') mouseAimPointer = { clientX: event.clientX, clientY: event.clientY };
@@ -542,7 +576,7 @@ window.nebeljagdTestState = () => ({
   darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
   statusIndicators:statusIndicators.inspect(),
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
-  arrival: arrival.snapshot(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
+  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, arrivalEffects:arrivalEffects.inspect(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -569,6 +603,7 @@ window.nebeljagdTestState = () => ({
     aura: aura?.inspect() ?? null })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
+    arrivalTilt: character.group.userData.arrivalTilt || 0,
     levelUpGlowMaterials: character.inspectLevelUpGlow(),
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
     snowSinkMeters: character.group.userData.snowSinkMeters ?? 0,
@@ -581,7 +616,7 @@ window.nebeljagdTestState = () => ({
   pickups: pickups.items.map(({ id, type, x, z, amount, collected, group, visual, flight }) => ({ id, type, x, z, amount, collected, visible: group.visible,
     flight, coin: visual.userData.coin ? { ...visual.userData.coin, rotation: visual.rotation.y,
       diameter: visual.userData.coin.radius * 2 * group.scale.x * visual.parent.scale.x } : null })),
-  camera: { position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom, zoom: camera.zoom },
+  camera: { perspective:camera.isPerspectiveCamera===true, position: { x: camera.position.x, y: camera.position.y, z: camera.position.z }, focus: { x: cameraFocus.x, y: cameraFocus.y, z: cameraFocus.z }, orthographicHeight: camera.top - camera.bottom, zoom: camera.zoom },
   rendering: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
     geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures,
     frameMs: frameSamples.length ? frameSamples.reduce((sum, ms) => sum + ms, 0) / frameSamples.length : null },
@@ -631,7 +666,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
   window.nebeljagdInspectVisibility = point => vision.isVisible(point, { concealed: false });
   window.nebeljagdInspect = ({ x = player.x, z = player.z, elapsed = state.elapsed, health = state.health,
     direction = state.direction } = {}) => {
-    arrival.cancel(); arrivalCamera=false; camera.zoom=1; camera.updateProjectionMatrix();
+    arrival.cancel(); arrivalCamera=false; camera=groundCamera; camera.zoom=1; resize();
     clearInput();aimDirection=null;mouseAimPointer=null;
     player.set(x, world.heightAt(x, z), z);
     world.resolveMovement(player, .42);
@@ -678,8 +713,9 @@ function frame(now) {
   world.update(dt, time, player, currentZone.radius, state.phase === 'playing' ? dt : 0);
   vision.setSightLimit(effectiveSightRadius(localCombatTarget),{smoke:localCombatTarget.darkenedRemaining>0});
   vision.update(player, time);
-  state.shelter = world.shelter;
-  state.hiddenInGrass = localCombatTarget.revealRemaining <= 0 && world.concealmentAt(player.x, player.z) > 0.01;
+  const arrivalState = arrival.snapshot();
+  state.shelter = arrivalState.active ? null : world.shelter;
+  state.hiddenInGrass = !arrivalState.active && localCombatTarget.revealRemaining <= 0 && world.concealmentAt(player.x, player.z) > 0.01;
   if (state.shelter !== lastShelter) {
     if (state.shelter) ui.toast(`Du betrittst ${state.shelter}. Wände bieten Deckung vor fremden Blicken.`, 'success');
     else if (lastShelter) ui.toast('Du verlässt das Haus.');
@@ -689,12 +725,12 @@ function frame(now) {
     ui.toast(state.hiddenInGrass ? (lobbyMode ? 'Im hohen Gras verborgen.' : 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.') : 'Du verlässt das dichte Gras.');
     lastConcealment = state.hiddenInGrass;
   }
-  const arrivalState = arrival.snapshot();
   character.setConcealed(state.hiddenInGrass && !arrivalState.active);
-  arrivalEffects.update(state.phase === 'paused' ? 0 : dt, player, arrivalState);
+  arrivalEffects.update(state.phase === 'paused' ? 0 : dt, player, arrivalState, world.biomeAt(player.x,player.z));
+  aerialAtlas.update(arrivalState.height);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
-    direction: state.rollRemaining>0?state.direction:facingDirection(), travelDirection:state.direction, health: state.health, inDanger: state.inDanger, snowWeight: arrivalState.active ? 0 : state.snowWeight, arrival: arrivalState,
+    direction: arrivalState.stage==='dive'?0:arrivalState.active?state.direction:state.rollRemaining>0?state.direction:facingDirection(), travelDirection:state.direction, health: state.health, inDanger: state.inDanger, snowWeight: arrivalState.active ? 0 : state.snowWeight, arrival: arrivalState,
     snowSurfaceY: world.snowSurfaceAt?.(player.x, player.z) ?? player.y });
   const playDelta = state.phase === 'playing' ? dt : 0;
   practiceActors.update(playDelta, time, player);
@@ -737,16 +773,19 @@ function frame(now) {
   pickups.update(playDelta, time, state.phase === 'playing' ? player : inactivePlayer,
     { health: state.health, maxHealth: state.maxHealth, onCollect, viewerPosition: player });
   zone?.update(time, currentZone.radius, state.inDanger, player);
-  cameraTarget.set(player.x * visualScale, (player.y + arrivalState.height * .5) * visualScale, (player.z - 1.5) * visualScale);
+  cameraTarget.set(player.x * visualScale, (player.y + arrivalState.height) * visualScale, (player.z - 1.5) * visualScale);
   if (arrivalCamera) {
-    camera.zoom = 1 / (1 + arrivalState.height * .045);
-    camera.updateProjectionMatrix();
-    if (!arrivalState.active && arrivalState.impact >= 1) arrivalCamera = false;
-  }
-  cameraFocus.lerp(cameraTarget, 1 - Math.exp(-dt * 4));
-  camera.position.copy(cameraFocus).add(cameraOffset); camera.lookAt(cameraFocus);
-  sun.position.copy(cameraFocus).add(sunlightOffset);
-  sun.target.position.copy(cameraFocus);
+    const blend=THREE.MathUtils.smoothstep(arrivalState.height,0,140);
+    const viewHeight=(window.innerWidth/window.innerHeight<.8?30.5:20.5)*visualScale;
+    const groundFov=THREE.MathUtils.radToDeg(2*Math.atan(viewHeight/(2*cameraOffset.length())));
+    flightCamera.layers.set(1);if(arrivalState.height<200)flightCamera.layers.enable(0);
+    flightCamera.fov=THREE.MathUtils.lerp(groundFov,65,blend);flightCamera.updateProjectionMatrix();
+    cameraFocus.copy(cameraTarget);
+    camera.position.copy(cameraFocus).add(new THREE.Vector3(0,THREE.MathUtils.lerp(29,24,blend),THREE.MathUtils.lerp(18,2.4,blend)));
+  } else { cameraFocus.lerp(cameraTarget,1-Math.exp(-dt*4));camera.position.copy(cameraFocus).add(cameraOffset); }
+  camera.lookAt(cameraFocus);
+  sun.target.position.set(player.x*visualScale,player.y*visualScale,player.z*visualScale);
+  sun.position.copy(sun.target.position).add(sunlightOffset);
   sun.target.updateMatrixWorld();
   // Weapon teleports can move the avatar during this frame. Follow the final position.
   visualPlayer.copy(player); visualPlayer.y += arrivalState.height;

@@ -55,7 +55,7 @@ const portrait = `<img src="${portraitUrl}" width="64" height="64" alt="" aria-h
 const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
 const timeLabel = seconds => `${pad(seconds / 60)}:${pad(seconds % 60)}`;
 
-export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
+export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave, onArrivalTarget, onArrivalConfirm } = {}) {
   const practice = Boolean(practiceSession);
   const root = document.getElementById('ui');
   root.dataset.phase = 'ready';
@@ -80,6 +80,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="map-heading"><span>${icon('compass')}<strong id="mapViewLabel">UMGEBUNG</strong></span><span class="map-north" aria-label="Norden ist oben">N ↑</span></div>
       <div class="map-frame"><canvas id="minimap" width="512" height="512" aria-label="Deine Position, bekannte Orte und die sichere Zone"></canvas></div>
       <div class="map-mode-switch" role="group" aria-label="Kartenansicht"><button id="mapMode-local" type="button" aria-pressed="true">Umgebung</button><button id="mapMode-island" type="button" aria-pressed="false">Insel</button></div>
+      <div class="landing-choice" hidden id="landingChoice"><p id="landingMessage" role="status">Landestelle auf der Karte wählen</p><button id="confirmLanding" type="button">Hier landen <kbd>↵</kbd></button></div>
       <div class="map-legend" aria-label="Kartenlegende"><span><i class="map-key-self"></i>Du</span><span><i class="map-key-place"></i>Ort</span><span><i class="map-key-loot"></i>Beute</span></div>
     </aside>
 
@@ -99,7 +100,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="ability-slot" id="attackSlot"><kbd>MAUS / F</kbd><span class="ability-icon" id="attackSlotIcon">${icon('sword')}</span><strong id="attackReady">Keine Waffe</strong><span>ANGRIFF</span></div>
       <div class="ability-slot" id="rollSlot"><kbd>LEERTASTE</kbd><span class="ability-icon">${icon('roll')}</span><strong id="rollReady">Bereit</strong><span>ROLLE</span></div>
     </div>
-    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong>Im Anflug</strong><span id="arrivalHeight">24 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">WASD / Pfeile · Landung steuern</small><small class="touch-hint">Linker Stick · Landung steuern</small></div>
+    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong id="arrivalTitle">Über der Insel</strong><span id="arrivalHeight">1600 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">Karte anklicken · WASD zum Verschieben</small><small class="touch-hint">Karte antippen · Stick zum Verschieben</small></div>
     <div class="touch-controls playing-only">
       <div id="joystick" class="joystick" role="group" aria-label="Virtueller Bewegungsjoystick"><span class="joystick-cross"></span><div id="joystickKnob" class="joystick-knob">${icon('compass')}</div></div>
       <div class="touch-actions">
@@ -415,8 +416,8 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     atlasProjection = makeMapProjection((minX + maxX) / 2, (minZ + maxZ) / 2, Math.max(maxX - minX, maxZ - minZ), 12);
     mapProjection = atlasProjection;
     landmarkObjects.push(...(data.objects || []).filter(object => ['house', 'ruin', 'shrine'].includes(object.kind)));
-    mapBackdrop = document.createElement('canvas'); mapBackdrop.width = mapBackdrop.height = 512;
-    const ctx = mapBackdrop.getContext('2d'); ctx.setTransform(2, 0, 0, 2, 0, 0); drawGeography(ctx, false);
+    mapBackdrop = document.createElement('canvas'); mapBackdrop.width = mapBackdrop.height = 1024;
+    const ctx = mapBackdrop.getContext('2d'); ctx.setTransform(4, 0, 0, 4, 0, 0); drawGeography(ctx, false);
     $('worldName').textContent = data.name || 'Deine Spielwelt';
     const area = (getWorldmapStats(data).landAreaM2 / 1e6).toLocaleString('de-DE', { maximumFractionDigits: 2 });
     $('worldStats').textContent = practice ? `${maxX - minX} × ${maxZ - minZ} Meter · Schwert, Feuerstab und Eisstab · Übungsgegner` : `${area} km² · ${(data.regions || []).length} Landschaften · ${landmarkObjects.filter(item => item.kind === 'house').length} begehbare Häuser`;
@@ -428,7 +429,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     ctx.setTransform(map.width / size, 0, 0, map.height / size, 0, 0);
     ctx.clearRect(0, 0, size, size); mapDrawnMarkers = []; mapPlayerPixel = null;
     if (!mapBackdrop || !atlasProjection || !worldmap) { ctx.fillStyle = '#1d424e'; ctx.fillRect(0, 0, size, size); return; }
-    const local = mapMode === 'local';
+    const local = mapMode === 'local' && !state.arrival?.active;
     const viewer = state.player || { x: worldmap.gameplay?.spawnPosition?.[0] ?? 0, z: worldmap.gameplay?.spawnPosition?.[1] ?? 0 };
     mapProjection = local ? makeMapProjection(viewer.x, viewer.z, LOCAL_SPAN) : atlasProjection;
     if (local) drawGeography(ctx, true); else ctx.drawImage(mapBackdrop, 0, 0, size, size);
@@ -461,7 +462,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       const px = Math.max(10, Math.min(size - 10, rawX)), py = Math.max(10, Math.min(size - 10, rawY));
       ctx.save(); ctx.translate(px, py);
       ctx.fillStyle = '#072d3b99'; ctx.beginPath(); ctx.arc(0, 0, 10.5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = '#baf7ff'; ctx.lineWidth = 1.4; ctx.stroke();
+      ctx.strokeStyle = state.arrival?.active && !state.arrival.valid ? '#ff8b75' : '#baf7ff'; ctx.lineWidth = 1.4; ctx.stroke();
       ctx.rotate(-(state.player.direction ?? state.direction ?? Math.PI));
       ctx.beginPath(); ctx.moveTo(0, 8); ctx.lineTo(5.5, -5.5); ctx.lineTo(0, -2.6); ctx.lineTo(-5.5, -5.5); ctx.closePath();
       ctx.fillStyle = '#d7fbff'; ctx.shadowColor = '#85efff'; ctx.shadowBlur = 5; ctx.fill(); ctx.shadowBlur = 0;
@@ -472,9 +473,16 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     const scaleMeters = local ? 25 : 200, scalePixels = scaleMeters * scale;
     ctx.strokeStyle = '#e6e5bd'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(12, size - 16); ctx.lineTo(12 + scalePixels, size - 16); ctx.stroke();
     ctx.fillStyle = '#f5edce'; ctx.font = '600 8px system-ui,sans-serif'; ctx.textAlign = 'left'; ctx.fillText(`${scaleMeters} m`, 12, size - 22);
-    $('mapViewLabel').textContent = local ? 'UMGEBUNG' : 'WELTKARTE';
+    $('mapViewLabel').textContent = state.arrival?.stage==='survey'?'LANDESTELLE WÄHLEN':local ? 'UMGEBUNG' : 'WELTKARTE';
     map.dataset.mode = mapMode; map.dataset.markerCount = String(mapDrawnMarkers.length);
   }
+  map.addEventListener('pointerdown', event => {
+    if(currentPhase!=='deploying'||latestState.arrival?.stage!=='survey'||!atlasProjection)return;
+    event.preventDefault();const rect=map.getBoundingClientRect();
+    onArrivalTarget?.({x:atlasProjection.centerX+((event.clientX-rect.left)/rect.width*MAP_SIZE-MAP_SIZE/2)/atlasProjection.scale,
+      z:atlasProjection.centerZ+((event.clientY-rect.top)/rect.height*MAP_SIZE-MAP_SIZE/2)/atlasProjection.scale});
+  });
+  $('confirmLanding').addEventListener('click',()=>onArrivalConfirm?.());
   for (const mode of ['local', 'island']) {
     $(`mapMode-${mode}`).addEventListener('click', () => {
       mapMode = mode;
@@ -575,10 +583,16 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     $('touchAttackCooldown').textContent = attackCooldown > 0 ? attackCooldown.toFixed(1) : '';
     const arriving = currentPhase === 'deploying';
     $('arrivalPanel').hidden = !arriving;
+    const survey=arriving && state.arrival?.stage==='survey';
+    root.dataset.arrivalStage=arriving?state.arrival.stage:'';
+    $('landingChoice').hidden=!survey;
+    $('confirmLanding').disabled=!state.arrival?.valid || !survey;
+    $('landingMessage').textContent=state.arrival?.valid?'Freie Landestelle · Du entscheidest, wann es losgeht.':'Hier ist keine sichere Landung möglich. Wähle freies Land.';
     if (arriving) {
       $('arrivalHeight').textContent = `${Math.ceil(state.arrival?.height || 0)} m`;
       $('arrivalProgress').style.transform = `scaleX(${state.arrival?.progress || 0})`;
-      playerStatus.textContent = 'Im Anflug · Landung steuern';
+      $('arrivalTitle').textContent=survey?'Über der Insel':'Sturzflug';
+      playerStatus.textContent = survey?'Landestelle wählen':'Im Sturzflug';
     }
     const nearWeapon = typeof state.nearWeapon === 'string' ? { type: state.nearWeapon } : state.nearWeapon;
     const nearChest = state.nearChest;
@@ -646,6 +660,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
 
   return {
     update, setPhase, toast, setWorldmap, showLevelUp, clearLevelUp,
+    getAerialAtlas:()=>({canvas:mapBackdrop,projection:atlasProjection}),
     inspectMinimap: () => ({ mode: mapMode, canvasPixels: map.width, displayWidth: map.getBoundingClientRect().width,
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),
