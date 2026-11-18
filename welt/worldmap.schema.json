@@ -603,7 +603,8 @@
             "natural",
             "lime",
             "ochre",
-            "dark"
+            "dark",
+            "sandstone"
           ]
         },
         "houseSeed": {
@@ -1661,6 +1662,28 @@
                   ]
                 }
               ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "houseStyle": {
+                "const": "sandstone"
+              }
+            },
+            "required": [
+              "houseStyle"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "house"
+              },
+              "variant": {
+                "const": "schlossanlage"
+              }
             }
           }
         }
