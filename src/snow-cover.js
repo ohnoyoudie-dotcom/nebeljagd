@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createGroundGrassExclusion } from './meadow-ground.js';
+import { createCastleGroundMask } from './map/castle-ground.js';
 
 const CHUNK_SIZE = 10;
 const MAX_OBJECT_CAPS = 512;
@@ -68,6 +69,8 @@ function snowPatchGeometry() {
  * Broad overlapping pillows form the base; occasional elongated instances read
  * as wind drifts. Gameplay collision stays on the original terrain. */
 export function createSnowCover(root, { map, heightAt, spatial, quality = 'high' }) {
+  const snowExcluded=createCastleGroundMask(map,{padding:1});
+  const weightAt=(x,z)=>snowExcluded(x,z)?0:snowWeight(spatial,x,z);
   const group = new THREE.Group();
   group.name = 'Magebrawl · natürliche volumige Schneedecke';
   root.add(group);
@@ -131,7 +134,7 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
     const definition = capDefinitions[object.kind];
     if (!definition || !Array.isArray(object.position) || capItems.length >= MAX_OBJECT_CAPS) continue;
     const [x, z] = object.position;
-    const weight = snowWeight(spatial, x, z);
+    const weight = weightAt(x, z);
     if (weight < .52) continue;
     const scale = Number.isFinite(object.scale) ? object.scale : 1;
     const seedX = Math.round(x * 10), seedZ = Math.round(z * 10);
@@ -174,7 +177,7 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
   let visibleChunks = 0, visibleInstances = 0, visibleDriftInstances = 0, createdChunks = 0;
 
   function surfaceHeightAt(x, z) {
-    const weight = snowWeight(spatial, x, z);
+    const weight = weightAt(x, z);
     const broad = broadDrift(x, z);
     const fine = fineDrift(x, z);
     return heightAt(x, z) + weight * (.19 + broad * .045 + fine * .012);
@@ -192,7 +195,7 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
       const x = cx * CHUNK_SIZE + (ix + .08 + hash(gx, gz, 13) * .84) * step;
       const z = cz * CHUNK_SIZE + (iz + .08 + hash(gx, gz, 29) * .84) * step;
       if (!spatial.isLand?.(x, z) || spatial.isWater?.(x, z) || excluded(x, z)) continue;
-      const weight = snowWeight(spatial, x, z);
+      const weight = weightAt(x, z);
       if (weight < .34) continue;
       const coverage = THREE.MathUtils.smoothstep(weight, .34, .86);
       if (hash(gx, gz, 47) > THREE.MathUtils.lerp(.55, .995, coverage)) continue;
@@ -301,7 +304,7 @@ ${shader.fragmentShader}`.replace('#include <color_fragment>', `#include <color_
   return {
     update,
     surfaceHeightAt,
-    weightAt(x, z) { return snowWeight(spatial, x, z); },
+    weightAt,
     setQuality(value) {
       const next = value === 'low' ? 'low' : 'high';
       if (next !== mode) { mode = next; clear(); }

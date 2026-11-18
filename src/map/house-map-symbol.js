@@ -48,8 +48,11 @@ export function builderHouseMapSymbol(object) {
   const pavingPattern = `castle-paving-${key}`, courtyardPattern = `castle-court-paving-${key}`;
   if(castle) {
     pieces.push(`<defs><pattern id="${pavingPattern}" width="4.8" height="3.4" patternUnits="userSpaceOnUse"><path d="M0,0H4.8M0,1.7H4.8M0,0V1.7M2.4,0V1.7M1.2,1.7V3.4M3.6,1.7V3.4" stroke="${castleColors.iron}" stroke-opacity=".35" stroke-width=".065" fill="none"/></pattern><pattern id="${courtyardPattern}" width="1.6" height="1" patternUnits="userSpaceOnUse"><path d="M0,0H1.6M0,.5H1.6M0,0V.5M.8,0V.5M.4,.5V1M1.2,.5V1" stroke="${castleColors.iron}" stroke-opacity=".25" stroke-width=".05" fill="none"/></pattern></defs>`);
+    for(const court of house.courtyards ?? []) {
+      pieces.push(rect(court.minX,court.minZ,court.maxX,court.maxZ,`data-castle-courtyard="true" data-castle-ground="grass" fill="#65834c"`));
+    }
     for(const area of house.courtyardPavingAreas ?? []) {
-      pieces.push(rect(area.minX,area.minZ,area.maxX,area.maxZ,`data-castle-courtyard="true" fill="${shade(castleColors.floor,.87)}"`));
+      pieces.push(rect(area.minX,area.minZ,area.maxX,area.maxZ,`data-castle-court-edge="true" fill="${shade(castleColors.floor,.87)}"`));
       pieces.push(rect(area.minX,area.minZ,area.maxX,area.maxZ,`fill="url(#${courtyardPattern})"`));
     }
   }
@@ -69,6 +72,13 @@ export function builderHouseMapSymbol(object) {
     const spacing = .60 + (seed % 7) * .025;
     if (alongX) for(let z=room.roomId === undefined ? room.minZ+spacing : Math.ceil(room.minZ/spacing)*spacing;z<room.maxZ;z+=spacing) pieces.push(`<path d="M${number(room.minX)},${number(z)}H${number(room.maxX)}" stroke="${palette.timber}" stroke-opacity=".32" stroke-width=".045"/>`);
     else for(let x=room.roomId === undefined ? room.minX+spacing : Math.ceil(room.minX/spacing)*spacing;x<room.maxX;x+=spacing) pieces.push(`<path d="M${number(x)},${number(room.minZ)}V${number(room.maxZ)}" stroke="${palette.timber}" stroke-opacity=".32" stroke-width=".045"/>`);
+  }
+  if(castle) for(const tower of house.towers??[]) {
+    const points=tower.footprintPoints.map(([x,z])=>`${number(x)},${number(z)}`).join(' ');
+    // An open outline describes the octagonal upper tower without concealing
+    // the ground-floor room or its highlighted passage beneath it.
+    pieces.push(`<polygon data-castle-tower="${escape(tower.id)}" points="${points}" fill="none" stroke="${castleColors.trim}" stroke-width=".85"/>`);
+    pieces.push(`<polygon points="${points}" fill="none" stroke="${castleColors.iron}" stroke-width=".13" stroke-dasharray=".95 .45"/>`);
   }
   for(const entrance of house.entrances) {
     const horizontal = ['north','south'].includes(entrance.side), min = Math.min(entrance.boundary,entrance.innerBoundary), max=Math.max(entrance.boundary,entrance.innerBoundary);

@@ -32,6 +32,7 @@ function hash(seed, salt = 0) {
 }
 
 export function snowWeightAt(world, x, z) {
+  if(typeof world.snowWeightAt==='function')return world.snowWeightAt(x,z);
   const weights = world.biomeWeightsAt?.(x, z);
   if (Array.isArray(weights)) return weights.find(item => item.biome === 'snow')?.weight ?? 0;
   return world.biomeAt?.(x, z) === 'snow' ? 1 : 0;

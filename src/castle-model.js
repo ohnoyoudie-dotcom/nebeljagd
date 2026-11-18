@@ -3,6 +3,9 @@ import { getHouseAppearance } from './map/house-builder.js';
 import { getCastleMaterialColors } from './map/castle-colors.js';
 import { createCastleSurface } from './castle-materials.js';
 import { createCastleTorches } from './castle-torches.js';
+import { createCastleCourtyards } from './castle-courtyards.js';
+import { addCastleFortifications } from './castle-fortifications.js';
+import { createCastleCutaway, installCastleSection } from './castle-cutaway.js';
 
 const seeded = seed => { let state=seed;return () => {state=(Math.imul(state,1664525)+1013904223)|0;return (state>>>0)/4294967296;}; };
 
@@ -60,15 +63,17 @@ function dressedBlock(seed=0, slab=false) {
   geometry.computeBoundingBox();geometry.computeBoundingSphere();return geometry;
 }
 
-/** Roofless stone architecture, with actual grilled window apertures and two
- * ground-level paved courts. The plan supplies all movement and doorway data. */
+/** A playable stone plan beneath a separate, sectionable fortified skyline.
+ * The shared definition supplies every physical wall, room and doorway. */
 export function createCastleModel({definition:def,houseStyle,houseSeed,houseStoneColor,houseWallColor}={}) {
   if(!def||def.architecture!=='castle')throw new TypeError('Castle model needs the shared castle definition.');
   const appearance=getHouseAppearance({houseStyle,houseSeed}),palette=getCastleMaterialColors({houseStyle,houseStoneColor,houseWallColor});
   const random=seeded(appearance.seed),floor=def.floorHeight;
-  const group=new THREE.Group(),outer=new THREE.Group(),roof=new THREE.Group(),frontFacade=new THREE.Group(),interior=new THREE.Group();
+  const group=new THREE.Group(),outer=new THREE.Group(),upper=new THREE.Group(),roof=new THREE.Group(),frontFacade=new THREE.Group(),interior=new THREE.Group();
   group.name=def.label;outer.name='Schlossanlage · dunkler Naturstein';interior.name='Schlossanlage · Schieferböden und Galerien';
-  roof.name='Schlossanlage · offener Dachschnitt';roof.visible=false;frontFacade.name='Schlossanlage · offene Vorderfassade';group.add(outer,roof,frontFacade,interior);
+  upper.name='Schlossanlage · Wehrmauern und Ecktürme';upper.userData.castleFortifications=true;
+  roof.name='Schlossanlage · offener Dachschnitt';roof.visible=false;frontFacade.name='Schlossanlage · offene Vorderfassade';group.add(outer,upper,roof,frontFacade,interior);
+  const cutaway=createCastleCutaway({definition:def,group:upper});
   const materials=new Set(),textures=new Set(),geometries=new Set(),batches=new Map(),staticMeshes=[];
   const makeMaterial=(name,kind,options={})=>{
     const maps=kind?createCastleSurface(kind):{};Object.values(maps).forEach(texture=>textures.add(texture));
@@ -76,6 +81,12 @@ export function createCastleModel({definition:def,houseStyle,houseSeed,houseSton
     material.name='Schlossanlage · '+name;material.userData.castleSurface=kind??'metal';materials.add(material);return material;
   };
   const stone=makeMaterial('rauer grauer Bruchstein','wall'),paving=makeMaterial('glatte abgetretene Schieferplatten','floor',{roughness:.94}),trim=makeMaterial('behauene Einfassungen','wall',{bumpScale:.045}),mortar=makeMaterial('tiefe Steinmörtelfugen',null),iron=makeMaterial('geschmiedete Fenstergitter',null,{metalness:.76,roughness:.65});
+  const upperMaterial=material=>{const copy=material.clone();copy.name=material.name+' · obere Wehrarchitektur';materials.add(copy);return installCastleSection(copy,cutaway.uniform);};
+  const upperMaterials={stone:upperMaterial(stone),paving:upperMaterial(paving),trim:upperMaterial(trim),mortar:upperMaterial(mortar),iron:upperMaterial(iron),
+    banner:installCastleSection(makeMaterial('gefaltete Außenbanner',null,{roughness:.96,side:THREE.DoubleSide}),cutaway.uniform)};
+  const depthMaterial=installCastleSection(new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking}),cutaway.uniform);
+  const distanceMaterial=installCastleSection(new THREE.MeshDistanceMaterial(),cutaway.uniform);
+  materials.add(depthMaterial);materials.add(distanceMaterial);
   const blocks=Array.from({length:3},(_,i)=>dressedBlock(i)),slabs=Array.from({length:2},(_,i)=>dressedBlock(i,true)),cube=new THREE.BoxGeometry(1,1,1);
   [...blocks,...slabs,cube].forEach(geo=>geometries.add(geo));
   const dummy=new THREE.Object3D(),tint=new THREE.Color();let parts=0,stones=0,floorTiles=0,windowApertures=0;
@@ -83,7 +94,7 @@ export function createCastleModel({definition:def,houseStyle,houseSeed,houseSton
     if(w<=.0001||h<=.0001||d<=.0001)return;
     const key=parent.uuid+':'+material.uuid+':'+shape.uuid;
     if(!batches.has(key))batches.set(key,{parent,material,shape,instances:[]});
-    tint.set(color);dummy.position.set(x,y,z);dummy.rotation.set(0,rotation,0);dummy.scale.set(w,h,d);dummy.updateMatrix();
+    tint.set(color);dummy.position.set(x,y,z);dummy.rotation.set(...(Array.isArray(rotation)?rotation:[0,rotation,0]));dummy.scale.set(w,h,d);dummy.updateMatrix();
     batches.get(key).instances.push({matrix:dummy.matrix.clone(),color:tint.clone()});parts++;
   }
   const varied=(base,amount=.12)=>new THREE.Color(base).multiplyScalar(1-amount*.5+random()*amount);
@@ -194,18 +205,21 @@ export function createCastleModel({definition:def,houseStyle,houseSeed,houseSton
     }
     for(const fraction of [.28,.72])panel(iron,0,bottom+height*fraction,0,width+.025,.045,.06,palette.iron,cube);
   }
+  const fortifications=addCastleFortifications({definition:def,group:upper,box,materials:upperMaterials,shapes:{blocks,slabs,cube},geometries,palette,random});
+  stones+=fortifications.stones;
   for(const {parent,material,shape,instances}of batches.values()) {
     const mesh=new THREE.InstancedMesh(shape,material,instances.length);mesh.name=material.name;
     instances.forEach(({matrix,color},index)=>{mesh.setMatrixAt(index,matrix);mesh.setColorAt(index,color);});
     mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;
+    if(parent===upper){mesh.userData.castleUpper=true;mesh.customDepthMaterial=depthMaterial;mesh.customDistanceMaterial=distanceMaterial;}
     mesh.castShadow=mesh.receiveShadow=true;mesh.computeBoundingBox();mesh.computeBoundingSphere();parent.add(mesh);staticMeshes.push(mesh);
   }
   let triangles=0,drawCalls=0;for(const mesh of staticMeshes){drawCalls++;triangles+=(mesh.geometry.index?.count??mesh.geometry.attributes.position.count)/3*mesh.count;}
-  const torches=createCastleTorches({definition:def,seed:appearance.seed});group.add(torches.group);
-  const stats={drawCalls:drawCalls+torches.stats.drawCalls,triangles:triangles+torches.stats.triangles,staticDrawCalls:drawCalls,staticTriangles:triangles,parts,stones,floorTiles,rooms:def.roomCount??def.rooms.length,entrances:def.entrances.length,windows:windowApertures,torches:torches.stats};
-  group.userData.castle={...stats,style:'dark-stone-two-courtyard-castle',variant:def.variant,floorHeight:floor,houseSeed:appearance.seed,houseStyle:appearance.style,houseStoneColor,houseWallColor};
+  const torches=createCastleTorches({definition:def,seed:appearance.seed}),courtyards=createCastleCourtyards({definition:def});group.add(courtyards.group,torches.group);
+  const stats={drawCalls:drawCalls+torches.stats.drawCalls+courtyards.stats.drawCalls,triangles:triangles+torches.stats.triangles+courtyards.stats.triangles,staticDrawCalls:drawCalls,staticTriangles:triangles,parts,stones,floorTiles,rooms:def.roomCount??def.rooms.length,entrances:def.entrances.length,windows:windowApertures,torches:torches.stats,courtyards:courtyards.stats,fortifications};
+  group.userData.castle={...stats,style:'fortified-stone-castle-green-courts',variant:def.variant,floorHeight:floor,houseSeed:appearance.seed,houseStyle:appearance.style,houseStoneColor,houseWallColor,cutaway:cutaway.stats};
   let disposed=false;
-  return {group,roof,frontFacade,interior,stats,update(dt,time,playerLocal,options){if(!disposed)torches.update(dt,time,playerLocal,options);},dispose(){
-    if(disposed)return;disposed=true;torches.dispose();staticMeshes.forEach(mesh=>mesh.dispose());geometries.forEach(geo=>geo.dispose());materials.forEach(material=>material.dispose());textures.forEach(texture=>texture.dispose());group.removeFromParent();
+  return {group,roof,frontFacade,interior,stats,get cutaway(){return cutaway.stats;},update(dt,time,playerLocal,options){if(!disposed){cutaway.update(dt,playerLocal);torches.update(dt,time,playerLocal,options);}},dispose(){
+    if(disposed)return;disposed=true;torches.dispose();courtyards.dispose();staticMeshes.forEach(mesh=>mesh.dispose());geometries.forEach(geo=>geo.dispose());materials.forEach(material=>material.dispose());textures.forEach(texture=>texture.dispose());group.removeFromParent();
   }};
 }

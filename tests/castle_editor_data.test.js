@@ -46,13 +46,16 @@ test('castle creation drops ordinary house partitions and imports reject setting
   assert.deepEqual(castleRule.then.not.anyOf.map(rule=>rule.required[0]).sort(),['houseEntrances','houseLayout','houseRooms']);
 });
 
-test('castle SVG distinguishes two outdoor paved courts, stone rooms, barred apertures and torch positions',()=>{
+test('castle SVG distinguishes green court centres, narrow stone borders, tower silhouettes and clear room access',()=>{
   const object=castle(),def=getHouseDefinition(object),svg=getBuilderHousePreviewSvg(object);
   assert.equal((svg.match(/data-waldhaus-wall=/g)??[]).length,def.architecturalWalls.length);
   assert.equal((svg.match(/data-waldhaus-room=/g)??[]).length,def.rooms.length);
   assert.equal((svg.match(/data-waldhaus-entrance=/g)??[]).length,def.entrances.length);
   assert.equal((svg.match(/data-castle-doorway=/g)??[]).length,def.interiorDoorways.length);
   assert.equal((svg.match(/data-castle-courtyard=/g)??[]).length,2);
+  assert.equal((svg.match(/data-castle-ground="grass"/g)??[]).length,2);
+  assert.equal((svg.match(/data-castle-court-edge=/g)??[]).length,def.courtyardPavingAreas.length);
+  assert.equal((svg.match(/data-castle-tower=/g)??[]).length,4);
   assert.equal((svg.match(/data-castle-window="barred"/g)??[]).length,def.windows.length);
   assert.equal((svg.match(/data-castle-grille=/g)??[]).length,def.windows.length);
   assert.equal((svg.match(/data-castle-torch=/g)??[]).length,def.torches.length);
@@ -62,7 +65,8 @@ test('castle SVG distinguishes two outdoor paved courts, stone rooms, barred ape
     const cx=(court.minX+court.maxX)/2,cz=(court.minZ+court.maxZ)/2;
     const rectangles=[...svg.matchAll(/<rect x="(-?[\d.]+)" y="(-?[\d.]+)" width="([\d.]+)" height="([\d.]+)" ([^>]*)>/g)];
     const contains=match=>{const [,x,z,w,d]=match.slice(0,5).map(Number);return x<cx&&x+w>cx&&z<cz&&z+d>cz;};
-    assert.ok(rectangles.some(match=>contains(match)&&match[5].includes('data-castle-courtyard')),'each court has its separate outdoor paving');
+    assert.ok(rectangles.some(match=>contains(match)&&match[5].includes('data-castle-ground="grass"')&&match[5].includes('fill="#65834c"')),'each court has a green outdoor lawn');
+    assert.ok(!rectangles.some(match=>contains(match)&&match[5].includes('data-castle-court-edge')),'stone edging does not cover the lawn centre');
     assert.ok(!rectangles.some(match=>contains(match)&&/data-house-foundation|data-waldhaus-room|data-waldhaus-wall/.test(match[5])),'courtyard is not a covered room or raised foundation');
   }
   const stone=getCastleMaterialColors(object);

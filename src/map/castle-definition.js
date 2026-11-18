@@ -1,17 +1,18 @@
-/** Human-scale stone architecture on a 140 × 120 metre footprint. The two
- * courtyards stay outdoors, with separate low stone paving instead of an indoor floor. */
+/** Human-scale interiors below imposing exterior fortifications, on the same
+ * 140 × 120 metre footprint. The two courtyards remain open green ground. */
 const freeze = value => {
   if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
   return value;
 };
 const rect = (minX,maxX,minZ,maxZ,extra={}) => ({minX,maxX,minZ,maxZ,...extra});
-const floorHeight=.18,wallHeight=3,outerThickness=.8,innerThickness=.6;
+const floorHeight=.18,wallHeight=3,exteriorWallHeight=7.5,towerHeight=12.2,outerThickness=.8,innerThickness=.6;
 const walls=[],doors=[],rooms=[],floors=[],windows=[],torches=[];
 function wall(name,axis,fixed,from,to,holes=[],external=false,thickness=external?outerThickness:innerThickness) {
   let edge=from;
   for(const [a,b] of [...holes,[to,to]].sort((a,b)=>a[0]-b[0])) {
     if(a>edge) walls.push(rect(...(axis==='x'?[edge,a,fixed-thickness/2,fixed+thickness/2]:[fixed-thickness/2,fixed+thickness/2,edge,a]),
-      {name:`${name} ${walls.length}`,minY:0,maxY:floorHeight+wallHeight,type:'house-wall',material:'stone',external}));
+      {name:`${name} ${walls.length}`,minY:0,maxY:floorHeight+wallHeight,type:'house-wall',material:'stone',external,
+        outerPerimeter:external&&Math.abs(fixed)>(axis==='x'?59:69)}));
     edge=Math.max(edge,b);
   }
 }
@@ -28,11 +29,20 @@ const courtyards=[
   rect(-43,-9,-27,27,{id:'west-court',name:'Westlicher Innenhof'}),
   rect(9,43,-27,27,{id:'east-court',name:'Östlicher Innenhof'}),
 ];
+const courtyardLawnAreas=courtyards.map(c=>rect(c.minX+1,c.maxX-1,c.minZ+1,c.maxZ-1,
+  {id:`${c.id}-lawn`,courtyardId:c.id,material:'grass',outdoor:true}));
+// Four disjoint one-metre borders protect the stone thresholds without paving
+// over the living courtyard ground. Neither surface becomes an indoor floor.
+const courtyardPavingAreas=courtyards.flatMap(c=>[
+  rect(c.minX,c.maxX,c.minZ,c.minZ+1),rect(c.minX,c.maxX,c.maxZ-1,c.maxZ),
+  rect(c.minX,c.minX+1,c.minZ+1,c.maxZ-1),rect(c.maxX-1,c.maxX,c.minZ+1,c.maxZ-1),
+].map((a,i)=>({...a,id:`${c.id}-border-${i}`,courtyardId:c.id,material:'stone',pattern:'cobble',outdoor:true})));
 const entrances=[
   entrance('Südtor','south',0,60,59.2,5.6,true),
   entrance('Nordtor','north',0,-60,-59.2,5,true),
 ];
-// Outer walls stay the same readable cutaway height as the original castle.
+// The lower wall architecture remains at the readable interior cutaway height.
+// Its independent physical exterior height does not shrink with the camera.
 wall('Westfassade','z',-69.6,-60,60,[],true);
 wall('Ostfassade','z',69.6,-60,60,[],true);
 wall('Nordfassade','x',-59.6,-69.2,69.2,[[-2.5,2.5]],true);
@@ -122,6 +132,31 @@ room('central-north','Nördliche Mittelgalerie',-8.2,8.2,-27,-10.3,'corridor');
 room('central-cross','Große Mittelhalle',-8.2,8.2,-9.7,9.7,'hall');
 room('central-south','Südliche Mittelgalerie',-8.2,8.2,10.3,27,'corridor');
 floor(-9,9,-27,-10,'slate','corridor');floor(-9,9,-10,10,'flagstone','hall');floor(-9,9,10,27,'slate','corridor');
+// The tower ground floors are genuine connected rooms, not closed decorative
+// cylinders. Square stone plinths carry the octagonal upper stages. A shallow
+// entry niche preserves every existing rear-room doorway and its approach.
+const towers=[];
+for(const north of [true,false])for(const sign of [-1,1]) {
+  const cardinal=`${north?'north':'south'}${sign<0?'west':'east'}`;
+  const name=`${north?'Nord':'Süd'}${sign<0?'west':'ost'}turm`;
+  const partition=sign*(north?56:57),cx=sign*(north?63:63.5),cz=north?-53:53.5;
+  const baseBounds=rect(sign<0?-70:partition,sign<0?partition:70,north?-60:47,north?-46:60);
+  const groundBounds=rect(sign<0?-69.2:partition+.3,sign<0?partition-.3:69.2,north?-59.2:47.3,north?-46.3:59.2);
+  const priorId=north?`${sign<0?'Nordwest':'Nordost'}-rear`:`south-${sign<0?0:6}-rear`;
+  const remaining=rooms.find(r=>r.roomId===priorId);
+  if(sign<0)remaining.minX=partition+.3;else remaining.maxX=partition-.3;
+  wall(`${name} Erdgeschosswand`,'z',partition,north?-59.2:49.2,north?-48.2:59.2,[[cz-1.8,cz+1.8]]);
+  doorway(`${name} Zugang`,'z',partition,cz,3.6);
+  const roomId=`tower-${cardinal}`;
+  room(roomId,`${name} · Erdgeschoss`,groundBounds.minX,groundBounds.maxX,groundBounds.minZ,groundBounds.maxZ,'tower');
+  const radius=north?7.25:6.7;
+  const footprintPoints=Array.from({length:8},(_,i)=>{
+    const angle=Math.PI/8+i*Math.PI/4;return[cx+Math.cos(angle)*radius,cz+Math.sin(angle)*radius];
+  });
+  towers.push({id:`castle-${cardinal}-tower`,name,x:cx,z:cz,radius,height:towerHeight,wallThickness:.6,capHeight:towerHeight-1.1,capThickness:.24,baseBounds,groundBounds,
+    roomId,footprintPoints,entrance:{name:`${name} Zugang`,axis:'z',x:partition,z:cz,width:3.6,depth:innerThickness}});
+}
+const mainGate={name:'Großes Südtor',x:0,z:59.6,side:'south',width:5.6,height:8.8,springHeight:4,archRise:2.8,depth:1.8};
 // Window boundary is the room-facing wall surface. Renderers carve the actual
 // opening and add iron bars; the shared wall collider keeps a barred aperture
 // impassable to players and projectiles without turning it into another gate.
@@ -160,21 +195,72 @@ const entryRoute=e=>{
 };
 const courtyardPoints=courtyards.map(c=>[(c.minX+c.maxX)/2,(c.minZ+c.maxZ)/2]);
 const outerLoop=[[-46,-30],[46,-30],[46,30],[-46,30],[-46,-30]];
+// Visual wall cutaway never changes movement, sight or projectile cover. Only
+// the actual perimeter gets a high collider; courtyard walls remain readable.
+const physicalWalls=walls.map(w=>({...w,maxY:w.outerPerimeter?floorHeight+exteriorWallHeight:w.maxY}));
+const overhead=(name,minX,maxX,minZ,maxZ,minY,maxY)=>physicalWalls.push(rect(minX,maxX,minZ,maxZ,
+  {name,minY,maxY,type:'house-wall',material:'stone',projectileOnly:true}));
+for(const tower of towers) {
+  const b=tower.baseBounds;
+  for(const z of [b.minZ+.35,b.maxZ-.35])overhead(`${tower.name} Sockelband waagerecht ${z}`,
+    b.minX+.35,b.maxX-.35,z-.35,z+.35,floorHeight+wallHeight,floorHeight+wallHeight+.26);
+  for(const x of [b.minX+.35,b.maxX-.35])overhead(`${tower.name} Sockelband senkrecht ${x}`,
+    x-.35,x+.35,b.minZ+.70,b.maxZ-.70,floorHeight+wallHeight,floorHeight+wallHeight+.26);
+  // Collision uses short axis-aligned slices of each diagonal face, rather
+  // than one large box through the hollow octagonal tower or its door below.
+  for(let side=0;side<8;side++) {
+    const a=tower.footprintPoints[side],b=tower.footprintPoints[(side+1)%8],dx=b[0]-a[0],dz=b[1]-a[1];
+    const count=Math.abs(dx)<1e-7||Math.abs(dz)<1e-7?1:Math.ceil(Math.hypot(dx,dz)/.4);
+    const pad=tower.wallThickness/2;
+    for(let i=0;i<count;i++) {
+      const ax=a[0]+dx*i/count,bx=a[0]+dx*(i+1)/count,az=a[1]+dz*i/count,bz=a[1]+dz*(i+1)/count;
+      overhead(`${tower.name} Obergeschosswand ${side}-${i}`,Math.min(ax,bx)-pad,Math.max(ax,bx)+pad,
+        Math.min(az,bz)-pad,Math.max(az,bz)+pad,floorHeight+wallHeight,floorHeight+towerHeight);
+    }
+  }
+  // A high stone terrace cap is projectile cover, never an invisible obstacle
+  // on the accessible ground floor. Polygon scan strips preserve cut corners.
+  const xs=tower.footprintPoints.map(p=>p[0]),minX=Math.min(...xs),maxX=Math.max(...xs),count=Math.ceil((maxX-minX)/.4);
+  for(let i=0;i<count;i++) {
+    const x0=minX+(maxX-minX)*i/count,x1=minX+(maxX-minX)*(i+1)/count,cx=(x0+x1)/2,zs=[];
+    for(let side=0;side<8;side++) {
+      const a=tower.footprintPoints[side],b=tower.footprintPoints[(side+1)%8];
+      if((a[0]<=cx&&b[0]>=cx||b[0]<=cx&&a[0]>=cx)&&Math.abs(a[0]-b[0])>1e-7)
+        zs.push(a[1]+(b[1]-a[1])*(cx-a[0])/(b[0]-a[0]));
+    }
+    overhead(`${tower.name} Wehrterrasse ${i}`,x0,x1,Math.min(...zs),Math.max(...zs),
+      floorHeight+tower.capHeight-tower.capThickness/2,floorHeight+tower.capHeight+tower.capThickness/2);
+  }
+}
+for(const side of [-1,1]) {
+  const x=mainGate.x+side*(mainGate.width/2+.43);
+  overhead(`Großes Südtor Oberpfeiler ${side}`,x-.43,x+.43,mainGate.z-mainGate.depth/2,mainGate.z+mainGate.depth/2,
+    floorHeight+wallHeight,floorHeight+mainGate.height-.7);
+}
+// The main opening stays clear up to its curved arch, including at head height.
+for(let i=0,count=28;i<count;i++) {
+  const x0=-mainGate.width/2+mainGate.width*i/count,x1=-mainGate.width/2+mainGate.width*(i+1)/count,x=(x0+x1)/2;
+  const opening=mainGate.springHeight+Math.sqrt(Math.max(0,mainGate.archRise**2-x*x));
+  overhead(`Großes Südtor Bogen ${i}`,mainGate.x+x0,mainGate.x+x1,mainGate.z-mainGate.depth/2,mainGate.z+mainGate.depth/2,
+    floorHeight+opening,floorHeight+mainGate.height);
+}
 export const CASTLE_DEFINITION=freeze({
   id:'house:schlossanlage',kind:'house',variant:'schlossanlage',label:'Schlossanlage',asset:'schlossanlage',file:null,
   procedural:true,proceduralHouse:true,architecture:'castle',fixedLayout:true,textured:true,roofless:true,solid:true,
-  height:floorHeight+wallHeight,targetHeight:floorHeight+wallHeight,normalization:{scale:1,offset:[0,0,0]},
+  height:floorHeight+towerHeight,targetHeight:floorHeight+towerHeight,normalization:{scale:1,offset:[0,0,0]},
   footprint:{halfWidth:70,halfDepth:60},terrain:{padding:1.2,maxTriangleEdge:1},
-  floorHeight,wallHeight,wallThickness:outerThickness,insideHalfWidth:69.2,insideHalfDepth:59.2,entranceHalfWidth:2.8,
+  floorHeight,wallHeight,exteriorWallHeight,towerHeight,cutawayHeight:wallHeight,cutawayBounds:rect(-70,70,-60,60),
+  towers,mainGate,wallThickness:outerThickness,insideHalfWidth:69.2,insideHalfDepth:59.2,entranceHalfWidth:2.8,
   interior:{halfWidth:69.2,halfDepth:59.2,minX:-69.2,maxX:69.2,minZ:-59.2,maxZ:59.2,centerX:0,centerZ:0,entranceHalfWidth:2.8},
   floorBounds:rect(-70,70,-60,60),
   footprintAreas:[rect(-70,70,-60,-27),rect(-70,70,27,60),rect(-70,-43,-27,27),rect(-9,9,-27,27),rect(43,70,-27,27)],
   floorAreas:floors,courtyardBounds:courtyards[0],courtyards,
-  courtyardPavingAreas:courtyards.map(c=>({...c,material:'stone',pattern:'cobble',outdoor:true})),rooms,roomCount:rooms.length,
-  entrances,interiorDoorways:doors,windows,torches:torches.slice(0,48),circles:[],architecturalWalls:walls,walls,
+  courtyardPavingAreas,courtyardLawnAreas,rooms,roomCount:rooms.length,
+  entrances,interiorDoorways:doors,windows,torches:torches.slice(0,48),circles:[],architecturalWalls:walls,walls:physicalWalls,
   qaRoutes:{openFloor:[0,53],courtyard:courtyardPoints[0],courtyards:courtyardPoints,
     entrances:entrances.filter(e=>e.exterior).map(entryRoute),courtyardEntrances:entrances.filter(e=>e.courtyard).map(entryRoute),
     rooms:doors.map(d=>({name:d.name,from:d.axis==='z'?[d.x-1.5,d.z]:[d.x,d.z-1.5],to:d.axis==='z'?[d.x+1.5,d.z]:[d.x,d.z+1.5]})),
+    towers:towers.map(t=>({name:t.entrance.name,from:[t.entrance.x+(t.x<0?1.5:-1.5),t.z],to:[t.entrance.x+(t.x<0?-1.5:1.5),t.z]})),
     loop:outerLoop,loops:[outerLoop,[[0,-30],[-46,-30],[-46,30],[0,30],[0,-30]],[[0,-30],[46,-30],[46,30],[0,30],[0,-30]]],
     clearedFurniture:[]},
 });

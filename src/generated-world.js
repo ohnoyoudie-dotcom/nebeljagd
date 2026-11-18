@@ -7,6 +7,7 @@ import { createTerrainArtwork, pathVergeOffset } from './terrain-art.js';
 import { createTerrainPaintMaterial, TERRAIN_PAINT_BUDGET } from './terrain-paint-renderer.js';
 import { createMeadowGround } from './meadow-ground.js';
 import { createSnowCover } from './snow-cover.js';
+import { createCastleGroundMask } from './map/castle-ground.js';
 import { createPathBorderStones } from './path-border-stones.js';
 import { emitTerrainTriangles } from './terrain-triangulation.js';
 
@@ -39,6 +40,8 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   const started = performance.now();
   const root = new THREE.Group(); root.name = `Welt aus worldmap.json · ${map.id}`; scene.add(root);
   const spatial = createWorldSpatialModel(map);
+  const castleSnowExclusion=createCastleGroundMask(map,{padding:1});
+  const castleLawn=createCastleGroundMask(map,{lawnsOnly:true});
   const chunks = new Map(), terrainChunks = [], surfaceCells = new Map(), triangles = [];
   const sampleCache = new Map(), color = new THREE.Color();
   let mode = quality, lastCull = -Infinity, lastCullX = Infinity, lastCullZ = Infinity, visibleTerrainChunks = 0;
@@ -66,7 +69,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   const groundTexture = terrainArtwork.ground;
   const groundMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, map: groundTexture,
     bumpMap: groundTexture, bumpScale: .007, roughness: .98, side: THREE.DoubleSide });
-  const snowWeightAt = (x, z) => spatial.biomeWeightsAt(x, z).find(item => item.biome === 'snow')?.weight ?? 0;
+  const snowWeightAt = (x, z) => castleSnowExclusion(x,z)?0:spatial.biomeWeightsAt(x, z).find(item => item.biome === 'snow')?.weight ?? 0;
   const boundsHaveSnow = bounds => {
     for (let ix = 0; ix < 3; ix++) for (let iz = 0; iz < 3; iz++) {
       const x = THREE.MathUtils.lerp(bounds.minX, bounds.maxX, ix / 2);
@@ -87,7 +90,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     const painted = spatial.terrainPaint.overlapping(bounds).length > 0;
     const snow = boundsHaveSnow(bounds);
     const paint = painted || snow
-      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt, terrainArtwork.soilDetail, terrainArtwork.stoneCenters)
+      ? createTerrainPaintMaterial(groundMaterial, spatial.terrainPaint, bounds, terrainArtwork.paving, snowWeightAt, terrainArtwork.soilDetail, terrainArtwork.stoneCenters, castleSnowExclusion)
       : null;
     const mesh = new THREE.Mesh(geometry, paint?.material ?? groundMaterial); mesh.name = `Geländeabschnitt ${chunk.key}`; mesh.receiveShadow = true; root.add(mesh);
     terrainChunks.push({ mesh, x: chunk.x, z: chunk.z, paint });
@@ -210,7 +213,13 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   const objects = await createWorldObjectRenderer(root, { map, heightAt: surfaceHeightAt, groundHeightAt: surfaceHeightAt,
     colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt, quality, chunkSize: CHUNK });
-  const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: spatial.colorAt, spatial, quality });
+  // A castle's cultivated lawns use the same grass system as the landscape,
+  // with green blades even over snow/sand. Authored biomes and elevation remain
+  // untouched; the override applies only inside the two lawn rectangles.
+  const lawnWeights=[{biome:'forest',weight:1}],lawnColor=new THREE.Color('#52733d');
+  const grassSpatial={...spatial,biomeWeightsAt:(x,z)=>castleLawn(x,z)?lawnWeights:spatial.biomeWeightsAt(x,z)};
+  const grassColorAt=(x,z,target=new THREE.Color())=>castleLawn(x,z)?target.copy(lawnColor):spatial.colorAt(x,z,target);
+  const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: grassColorAt, spatial:grassSpatial, quality });
   const snowCover = createSnowCover(root, { map, heightAt: surfaceHeightAt, spatial, quality });
   const materialSet = new Set(); root.traverse(child => { if (child.material) for (const material of Array.isArray(child.material) ? child.material : [child.material]) materialSet.add(material); });
   for (const material of materialSet) {
@@ -269,7 +278,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   return {
     root, map, visualScale: 1, spawn, bounds: map.bounds,
     worldRadius: Math.max(...map.island.points.map(p => Math.hypot(...p))),
-    heightAt, groundHeightAt: surfaceHeightAt, snowSurfaceAt: snowCover.surfaceHeightAt, resolveMovement, traceProjectile: objects.traceProjectile,
+    heightAt, groundHeightAt: surfaceHeightAt, snowSurfaceAt: snowCover.surfaceHeightAt, snowWeightAt:snowCover.weightAt, resolveMovement, traceProjectile: objects.traceProjectile,
     isWater: spatial.isWater, isLand: spatial.isLand, colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt,
     trees: objects.trees, grassPatches: objects.grassPatches, houses: objects.houses, destructibles: objects.destructibles,
     projectileObstacles: objects.projectileObstacles, importedAssets: objects.importedAssets,

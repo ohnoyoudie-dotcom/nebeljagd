@@ -406,6 +406,12 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       if(definition.architecture==='castle') {
         structure.castleModel=model;castleModels.push(model);
         structure.torchOptions={quality:mode,visible:true,isVisible:point=>!debrisVisible||debrisVisible(structure.toWorld(point),{concealed:false})};
+        // Tall towers and exterior buttresses may project beyond the collision
+        // plan. Keep their sector present while any visible masonry is nearby,
+        // including rotated/scaled placements near a sector boundary.
+        const visualBounds=new THREE.Box3().setFromObject(group),chunk=chunkFor(x,z);
+        if(!visualBounds.isEmpty())chunk.cullRadius=Math.max(chunk.cullRadius,
+          ...[visualBounds.min.x,visualBounds.max.x].flatMap(px=>[visualBounds.min.z,visualBounds.max.z].map(pz=>Math.hypot(px-chunk.x,pz-chunk.z)+1)));
       }
       continue;
     }
@@ -727,7 +733,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     }
     return result;
   }
-  let visibleChunks = 0, lastCull = -Infinity, lastPlayer = new THREE.Vector3(Infinity, 0, Infinity);
+  let visibleChunks = 0, lastCull = -Infinity, lastPlayer = new THREE.Vector3(Infinity, 0, Infinity), initializing = true;
   function update(dt, time, player) {
     debris.update(dt, debrisVisible);
     timeUniform.value = time; playerUniform.value.copy(player); vegetation.update(time, player); wind.update(time);
@@ -753,7 +759,10 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     for (const structure of structures) {
       if (!structure.house) continue;
       const p = structure.toLocal(player), bounds = structure.record.localInterior;
-      if(structure.castleModel?.update) {
+      // The construction-only update below uses a placeholder position. The
+      // first real observer must initialize the castle view, particularly while
+      // the ready screen is paused with a zero simulation delta.
+      if(structure.castleModel?.update&&!initializing) {
         structure.torchOptions.quality=mode;
         structure.torchOptions.visible=structure.group.visible&&structure.group.parent?.visible!==false;
         structure.castleModel.update(dt,time,p,structure.torchOptions);
@@ -767,6 +776,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   }
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
+  initializing=false;
   return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, resetCanopyFade, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
     setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
@@ -774,7 +784,9 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     get shelter() { return shelter; },
     get stats() {
       const torchStats=castleModels.map(model=>model.group.getObjectByName('Schlossanlage · Fackeln')?.userData.castleTorches).filter(Boolean);
-      return { debris: debris.stats, castleTorches:{mounts:torchStats.reduce((n,s)=>n+s.mounts,0),activeMounts:torchStats.reduce((n,s)=>n+s.activeMounts,0),pointLights:0,elapsed:Math.max(0,...torchStats.map(s=>s.elapsed))}, canopyFade: { localPlayerOnly: true, minimumOpacity: TREE_CANOPY_STYLE.minimumOpacity,
+      return { debris: debris.stats,
+        castleFortifications:castleModels.map(model=>({id:model.group.userData.mapObjectId,scale:model.group.scale.x,...model.cutaway})),
+        castleTorches:{mounts:torchStats.reduce((n,s)=>n+s.mounts,0),activeMounts:torchStats.reduce((n,s)=>n+s.activeMounts,0),pointLights:0,elapsed:Math.max(0,...torchStats.map(s=>s.elapsed))}, canopyFade: { localPlayerOnly: true, minimumOpacity: TREE_CANOPY_STYLE.minimumOpacity,
         enterSeconds: TREE_CANOPY_STYLE.enterSeconds, leaveSeconds: TREE_CANOPY_STYLE.leaveSeconds,
         affectedTrees: [...canopies.values()].filter(canopy => canopy && canopy.opacity < TREE_CANOPY_STYLE.opaqueThreshold).length,
         activeBatches: canopyBatches.filter(entry => entry.fade.visible && entry.fade.parent.visible).length,

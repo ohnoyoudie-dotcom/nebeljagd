@@ -8,6 +8,7 @@ import { houseFloorFactorAt } from '../src/map/house-floor.js';
 const point=([x,z],y=1.2)=>({x,y,z});
 const inside=(x,z,a)=>x>a.minX&&x<a.maxX&&z>a.minZ&&z<a.maxZ;
 const factor=(x,z)=>houseFloorFactorAt(x,z,castle.floorBounds,castle.interior,castle.entrances,castle.footprintAreas);
+const movementWalls=castle.walls.filter(w=>!w.projectileOnly);
 function placement(rotation,scale) {
  const c=Math.cos(rotation),s=Math.sin(rotation),origin={x:41,y:2,z:-18};
  return {
@@ -24,6 +25,7 @@ test('castle is one fixed 140m by 120m plan with two great halls and a traversab
  assert.equal(castle.rooms.filter(r=>r.role==='chamber').length,19);
  assert.equal(castle.rooms.filter(r=>r.role==='gate').length,2);
  assert.equal(castle.rooms.filter(r=>r.role==='corridor').length,6);
+ assert.equal(castle.rooms.filter(r=>r.role==='tower').length,4);
  assert.equal(castle.entrances.filter(e=>e.exterior).length,2);
  assert.equal(castle.entrances.filter(e=>e.courtyard).length,8);
  assert.ok(Object.isFrozen(castle)&&Object.isFrozen(castle.walls)&&Object.isFrozen(castle.floorAreas));
@@ -32,12 +34,12 @@ test('castle is one fixed 140m by 120m plan with two great halls and a traversab
  }
  assert.equal(castle.courtyards.length,2);
  assert.equal(castle.footprint.halfWidth*castle.footprint.halfDepth*4,70*60*4,'fourfold footprint without scaling walls or doors');
- const index=createCollisionIndex([],castle.walls);
+ const index=createCollisionIndex([],movementWalls);
  for(const loop of castle.qaRoutes.loops)for(let i=1;i<loop.length;i++)assert.equal(index.traceSegment(point(loop[i-1]),point(loop[i]),.42),null,'both courtyard loops and outer ring remain open');
 });
 
 test('castle exterior gates, courtyard transitions and room doors stay capsule-clear when rotated and scaled',()=>{
- const index=createCollisionIndex([],castle.walls),snapshot=JSON.stringify(castle);
+ const index=createCollisionIndex([],movementWalls),snapshot=JSON.stringify(castle);
  const routes=[...castle.qaRoutes.entrances,...castle.qaRoutes.courtyardEntrances,...castle.qaRoutes.rooms];
  for(const [rotation,scale] of [[0,1],[Math.PI/2,1.25],[Math.PI/3,.8]]) {
   const {toWorld,toLocal}=placement(rotation,scale);
@@ -57,7 +59,7 @@ test('castle exterior gates, courtyard transitions and room doors stay capsule-c
 });
 
 test('every castle room is reachable from the south gate without having to cross the courtyard',()=>{
- const index=createCollisionIndex([],castle.walls),queue=[[0,58]],seen=new Set(['0,58']);
+ const index=createCollisionIndex([],movementWalls),queue=[[0,58]],seen=new Set(['0,58']);
  function walkable(x,z) {
   if(x<-69||x>69||z<-59||z>59)return false;
   if(!castle.footprintAreas.some(a=>x>=a.minX&&x<=a.maxX&&z>=a.minZ&&z<=a.maxZ))return false;
@@ -106,23 +108,35 @@ test('castle stone floors cover the wings once, preserve both outdoor courts and
  }
 });
 
-test('castle stone walls stop movement and low projectiles without invisible obstacles above their cutaway height',()=>{
+test('castle stone walls stop movement and projectiles up to their physical height independently of the visible cutaway',()=>{
  const index=createCollisionIndex([],castle.walls);
+ const movement=createCollisionIndex([],movementWalls);
  assert.ok(castle.walls.every(w=>w.type==='house-wall'&&!w.fixtureId));
- for(const wall of castle.walls) {
+ for(const wall of movementWalls) {
   const x=(wall.minX+wall.maxX)/2,z=(wall.minZ+wall.maxZ)/2,p={x,y:1,z};
-  index.resolve(p,.42);
+  movement.resolve(p,.42);
   assert.ok(Math.hypot(p.x-x,p.z-z)>.42,wall.name);
   const axis=wall.maxX-wall.minX>wall.maxZ-wall.minZ?'z':'x';
   const from={x,y:1,z,[axis]:(axis==='z'?wall.minZ:wall.minX)-1},to={x,y:1,z,[axis]:(axis==='z'?wall.maxZ:wall.maxX)+1};
   assert.ok(index.traceSegment(from,to,.06),`${wall.name}: projectile blocked`);
-  assert.equal(index.traceSegment({...from,y:castle.height+.3},{...to,y:castle.height+.3},.06),null,`${wall.name}: open above visible walls`);
+  assert.equal(index.traceSegment({...from,y:castle.height+.3},{...to,y:castle.height+.3},.06),null,`${wall.name}: open above all architecture`);
  }
 });
 
 
-test('courtyard paving stays separate from indoor floors and barred windows remain stone-wall openings',()=>{
- assert.deepEqual(castle.courtyardPavingAreas.map(a=>[a.minX,a.maxX,a.minZ,a.maxZ]),castle.courtyards.map(a=>[a.minX,a.maxX,a.minZ,a.maxZ]));
+test('green court centres stay outdoors while one-metre stone borders and barred windows retain their own surfaces',()=>{
+ assert.equal(castle.courtyardPavingAreas.length,8);
+ assert.equal(castle.courtyardLawnAreas.length,2);
+ for(const court of castle.courtyards) {
+  const lawn=castle.courtyardLawnAreas.find(a=>a.courtyardId===court.id),border=castle.courtyardPavingAreas.filter(a=>a.courtyardId===court.id);
+  assert.deepEqual([lawn.minX,lawn.maxX,lawn.minZ,lawn.maxZ],[court.minX+1,court.maxX-1,court.minZ+1,court.maxZ-1]);
+  assert.equal(lawn.material,'grass');assert.equal(lawn.outdoor,true);assert.equal(border.length,4);
+  const areas=[lawn,...border],area=a=>(a.maxX-a.minX)*(a.maxZ-a.minZ);
+  assert.equal(areas.reduce((sum,a)=>sum+area(a),0),area(court),'lawn and border cover the court exactly once');
+  for(let i=0;i<areas.length;i++)for(let j=i+1;j<areas.length;j++) {
+   const a=areas[i],b=areas[j];assert.ok(Math.min(a.maxX,b.maxX)<=Math.max(a.minX,b.minX)||Math.min(a.maxZ,b.maxZ)<=Math.max(a.minZ,b.minZ));
+  }
+ }
  assert.ok(castle.courtyardPavingAreas.every(a=>a.material==='stone'&&a.outdoor===true));
  assert.ok(castle.floorAreas.every(a=>a.material==='stone'));
  assert.ok(castle.architecturalWalls.every(w=>w.material==='stone'));
@@ -145,8 +159,33 @@ test('torch mounts illuminate covered galleries without occupying doorways or co
   const x=torch.x+nx*.6,z=torch.z+nz*.6;
   assert.equal(factor(x,z),1,'torch faces a covered floor');
   assert.ok(!castle.courtyards.some(c=>inside(x,z,c)));
-  const index=createCollisionIndex([],castle.walls),p={x,y:1,z},before={...p};index.resolve(p,.42);
+  const index=createCollisionIndex([],movementWalls),p={x,y:1,z},before={...p};index.resolve(p,.42);
   assert.ok(Math.hypot(p.x-before.x,p.z-before.z)<1e-7,'mounted torch opens into a clear gallery');
   for(const door of castle.interiorDoorways)assert.ok(Math.hypot(torch.x-door.x,torch.z-door.z)>door.width/2+1.1,'torch does not crowd an interior doorway');
  }
+});
+
+test('four corner towers have reachable ground floors and high octagonal cover without invisible lower-floor obstacles',()=>{
+ assert.equal(castle.towers.length,4);assert.equal(castle.qaRoutes.towers.length,4);
+ assert.equal(castle.exteriorWallHeight,7.5);assert.equal(castle.towerHeight,12.2);
+ assert.deepEqual(castle.cutawayBounds,{minX:-70,maxX:70,minZ:-60,maxZ:60});
+ const movement=createCollisionIndex([],movementWalls),projectiles=createCollisionIndex([],castle.walls);
+ for(const tower of castle.towers) {
+  assert.equal(tower.footprintPoints.length,8);assert.equal(tower.height,12.2);
+  for(const [x,z] of tower.footprintPoints)assert.ok(inside(x,z,tower.baseBounds),'octagonal upper stage stays on its stone plinth');
+  assert.ok(tower.baseBounds.minX>=-70&&tower.baseBounds.maxX<=70&&tower.baseBounds.minZ>=-60&&tower.baseBounds.maxZ<=60);
+  const room=castle.rooms.find(r=>r.roomId===tower.roomId);assert.equal(room.role,'tower');
+  assert.equal(factor(tower.x,tower.z),1);const p=point([tower.x,tower.z]);movement.resolve(p,.42);assert.deepEqual(p,point([tower.x,tower.z]));
+  const direction=tower.x<0?1:-1,from=point([tower.x,tower.z],9),to=point([tower.x+direction*12,tower.z],9);
+  assert.ok(projectiles.traceSegment(from,to,.06),'upper octagonal wall catches elevated projectiles');
+  assert.ok(projectiles.traceSegment(point([tower.x,tower.z],14),point([tower.x,tower.z],10),.06),'upper terrace catches descending projectiles');
+  assert.equal(projectiles.traceSegment(point([tower.x,tower.z],4),point([tower.x,tower.z],2.5),.06),null,'hollow plinth band does not create an invisible low ceiling');
+ }
+ const low=point([0,62],1.6),behind=point([0,57],1.6);
+ assert.equal(projectiles.traceSegment(low,behind,.06),null,'the main arch leaves ground-level passage open');
+ assert.equal(projectiles.traceSegment({...low,y:5},{...behind,y:5},.06),null,'curved arch opening remains free above the player');
+ assert.ok(projectiles.traceSegment({...low,y:7.6},{...behind,y:7.6},.06),'solid arch crown blocks elevated shots');
+ assert.ok(castle.walls.filter(w=>w.projectileOnly).every(w=>w.minY>=castle.floorHeight+castle.cutawayHeight));
+ for(const w of castle.architecturalWalls)assert.equal(w.maxY,castle.floorHeight+castle.cutawayHeight);
+ for(const w of movementWalls.filter(w=>w.outerPerimeter))assert.equal(w.maxY,castle.floorHeight+castle.exteriorWallHeight);
 });

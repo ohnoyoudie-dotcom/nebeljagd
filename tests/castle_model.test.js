@@ -18,8 +18,10 @@ test('Expanded castle keeps metre-sized all-stone architecture within bounded in
     assert.ok(bounds.max.y<=definition.height+.12);
     assert.equal(model.roof.visible,false);assert.equal(model.frontFacade.children.length,0);
     assert.equal(model.stats.rooms,definition.rooms.length);assert.equal(model.stats.entrances,definition.entrances.length);
-    assert.ok(model.stats.drawCalls<=24);assert.ok(model.stats.staticTriangles<410000);
-    assert.equal(model.stats.triangles,model.stats.staticTriangles+model.stats.torches.triangles);
+    assert.ok(bounds.max.y>=12,'The exterior has a genuinely tall tower silhouette');
+    assert.ok(model.stats.drawCalls<=38);assert.ok(model.stats.staticTriangles<670000);
+    assert.equal(model.stats.triangles,model.stats.staticTriangles+model.stats.torches.triangles+model.stats.courtyards.triangles);
+    assert.equal(model.stats.fortifications.towers,4);assert.equal(model.stats.fortifications.banners,4);
     assert.equal(model.stats.windows,definition.windows.length);
     const unique=new Set();
     model.group.traverse(node=>{
@@ -28,7 +30,7 @@ test('Expanded castle keeps metre-sized all-stone architecture within bounded in
       for(const v of node.geometry.attributes.position.array)assert.ok(Number.isFinite(v));
       if(node.isInstancedMesh)for(const v of node.instanceMatrix.array)assert.ok(Number.isFinite(v));
     });
-    assert.ok(unique.size<=12,'stonework, paving and torches share instanced shapes');
+    assert.ok(unique.size<=16,'masonry, terrace caps and all seventeen arch stones share instanced shapes');
   }finally{model.dispose();}
 });
 
@@ -44,28 +46,29 @@ test('Both courtyard loops and all castle doors stay visually open at movement/p
       assert.equal(new Raycaster(from,delta.clone().normalize(),.001,delta.length()).intersectObject(model.group,true).length,0,`${route.name}: ${height}m, ${offset}m`);
     }
     for(const door of definition.interiorDoorways) {
-      assert.equal(new Raycaster(new Vector3(door.x,7,door.z),new Vector3(0,-1,0),0,7-definition.floorHeight-.025).intersectObject(model.group,true).length,0,'doorways have no hidden overhead lintel');
+      const lower=model.group.children.filter(node=>!node.userData.castleFortifications);
+      assert.equal(new Raycaster(new Vector3(door.x,7,door.z),new Vector3(0,-1,0),0,7-definition.floorHeight-.025).intersectObjects(lower,true).length,0,'indoor cutaway doorways have no hidden overhead lintel');
     }
   }finally{model.dispose();}
 });
 
-test('Both outdoor courts have low stone paving while every room retains the indoor floor height',()=>{
+test('Both courts have green centres and narrow stone borders while rooms retain their stone floor height',()=>{
   const model=create();model.group.updateMatrixWorld(true);
   try {
-    for(const court of definition.courtyards) {
+    for(const court of definition.courtyardPavingAreas) {
       const cx=(court.minX+court.maxX)/2,cz=(court.minZ+court.maxZ)/2,matrix=new Matrix4();let groutTop=null;
       model.group.traverse(mesh=>{if(!mesh.isInstancedMesh||!mesh.material.name.includes('Steinmörtel'))return;
         for(let i=0;i<mesh.count;i++){mesh.getMatrixAt(i,matrix);const e=matrix.elements;
           if(Math.abs(e[12]-cx)<.001&&Math.abs(e[14]-cz)<.001&&Math.abs(e[0]-(court.maxX-court.minX))<.001&&Math.abs(e[10]-(court.maxZ-court.minZ))<.001)groutTop=e[13]+e[5]/2;}
       });
-      assert.ok(groutTop>=.003&&groutTop<=.008,'continuous mineral grout covers terrain beneath every outdoor tile joint');
+      assert.ok(groutTop>=.003&&groutTop<=.008,'continuous mineral grout covers every narrow border joint');
     }
     for(const court of definition.courtyards)for(const [dx,dz]of [[0,0],[-4,-5],[4,5]]) {
       const x=(court.minX+court.maxX)/2+dx,z=(court.minZ+court.maxZ)/2+dz;
       const hits=new Raycaster(new Vector3(x,6,z),new Vector3(0,-1,0),0,8).intersectObject(model.group,true);
-      assert.ok(hits.length,'paved courts have no grass floor');
-      assert.ok(hits[0].point.y<=.012&&hits[0].point.y>=-.03,'outdoor paving stays at natural terrain height without a roof');
-      assert.match(hits[0].object.material.name,/Schiefer|Steinmörtel/);
+      assert.ok(hits.length,'every court has a consistently green surface');
+      assert.ok(hits[0].point.y<=.004&&hits[0].point.y>=0,'lawns stay at outdoor terrain height without a roof');
+      assert.equal(hits[0].object.material.userData.castleSurface,'grass');
     }
     for(const room of definition.rooms) {
       const origin=new Vector3((room.minX+room.maxX)/2,1,(room.minZ+room.maxZ)/2);
@@ -122,7 +125,7 @@ test('Castle disposal frees static and animated owned resources exactly once and
   const map=new Texture(),normalMap=new Texture(),source=new MeshStandardMaterial({map,normalMap});
   const borrowed=[source,map,normalMap],released=new Set();borrowed.forEach(resource=>resource.addEventListener('dispose',()=>released.add(resource)));
   const model=create({stoneMaterial:source}),owned=new Set(),instances=[];
-  model.group.traverse(mesh=>{if(mesh.isMesh){owned.add(mesh.geometry);for(const material of [mesh.material].flat())owned.add(material);if(mesh.isInstancedMesh)instances.push(mesh);}});
+  model.group.traverse(mesh=>{if(mesh.isMesh){owned.add(mesh.geometry);for(const material of [mesh.material,mesh.customDepthMaterial,mesh.customDistanceMaterial].flat().filter(Boolean))owned.add(material);if(mesh.isInstancedMesh)instances.push(mesh);}});
   const events=new Map();for(const resource of [...owned,...instances])resource.addEventListener('dispose',()=>events.set(resource,(events.get(resource)??0)+1));
   model.update(.1,.1,{x:0,y:0,z:0});model.dispose();model.dispose();model.update(.1,.2,{x:0,y:0,z:0});
   for(const resource of [...owned,...instances])assert.equal(events.get(resource),1);

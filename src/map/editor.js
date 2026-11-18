@@ -1253,7 +1253,7 @@ function renderAssetPreview(prefix, kind, variant) {
   $(`${prefix}-preview-image`).innerHTML = svg;
   $(`${prefix}-preview-title`).textContent = asset?.label ?? getObjectDefinition(kind).label;
   $(`${prefix}-preview-source`).textContent = castle ? 'Schlossanlage · Grundrissvorschau' : builder ? 'Hausbaukasten · Grundrissvorschau' : asset?.sourceLabel ?? 'Vorhandenes Spielmodell';
-  $(`${prefix}-preview-note`).textContent = castle ? 'Zwei große Innenhöfe, verbundene Steingänge und Säle. Fackeln und offene Gitterfenster gehören zur Anlage; Räume bleiben frei einrichtbar.' : builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
+  $(`${prefix}-preview-note`).textContent = castle ? 'Hohe Außenmauern und vier Ecktürme um zwei grüne Höfe. Beim Betreten wird der Blick auf Räume und Durchgänge frei. Mit Fackeln und offenen Gitterfenstern; Räume bleiben frei einrichtbar.' : builder ? 'Grundriss, Farben und Variation werden mit dem Haus gespeichert. Räume bleiben frei einrichtbar.' : asset?.notes ?? '';
 }
 
 function houseOptions(prefix) {
@@ -1321,9 +1321,9 @@ function syncHouseControls(prefix, object, restore = false) {
   const metres = value => (value * size).toLocaleString('de-DE', {maximumFractionDigits: 1});
   const dimensions = `${metres(def.footprint.halfWidth * 2)} × ${metres(def.footprint.halfDepth * 2)} m`;
   const courtCount = def.courtyards?.length ?? 1;
-  const hallCount = def.rooms.filter(room=>room.role==='great-hall').length;
+  const towerCount = def.towers?.length ?? 0;
   const outerEntrances = def.entrances.filter(entry=>entry.exterior).length;
-  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · ${hallCount} große Säle · ${courtCount} ${courtCount===1?'Innenhof':'Innenhöfe'} · ${outerEntrances} Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
+  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · ${towerCount} Ecktürme · ${courtCount} ${courtCount===1?'grüner Innenhof':'grüne Innenhöfe'} · ${outerEntrances} Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
 }
 function varyHouse(prefix) {
   const input = $(`${prefix}-house-seed`), previous = Number(input.value);

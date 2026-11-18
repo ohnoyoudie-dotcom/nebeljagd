@@ -1,4 +1,5 @@
 import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
+import { getCastleMaterialColors } from './map/castle-colors.js';
 import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
 import { WEAPON_TYPES, weaponStats } from './loot-tiers.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
@@ -352,10 +353,31 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
         ctx.fillStyle = '#dfc894'; ctx.strokeStyle = '#5a5038'; ctx.lineWidth = 1.6;
         if (isBuilderHouse(object.variant)) {
           const definition=getHouseDefinition(object),unit=object.scale*scale;
+          const castle=definition.architecture==='castle',stone=castle?getCastleMaterialColors(object):null;
+          if(castle) {
+            ctx.fillStyle='#65834c';
+            for(const court of definition.courtyards??[]) ctx.fillRect(court.minX*unit,court.minZ*unit,(court.maxX-court.minX)*unit,(court.maxZ-court.minZ)*unit);
+            ctx.fillStyle=stone.floor;
+            for(const edge of definition.courtyardPavingAreas??[]) ctx.fillRect(edge.minX*unit,edge.minZ*unit,(edge.maxX-edge.minX)*unit,(edge.maxZ-edge.minZ)*unit);
+          }
           for (const area of definition.footprintAreas ?? [definition.floorBounds]) {
             ctx.fillRect(area.minX*unit,area.minZ*unit,(area.maxX-area.minX)*unit,(area.maxZ-area.minZ)*unit);
           }
-          ctx.strokeStyle='#5a5038';ctx.lineWidth=Math.max(1,.3*unit);
+          if(castle) {
+            ctx.strokeStyle=stone.trim;ctx.lineWidth=Math.max(1,.7*unit);
+            for(const tower of definition.towers??[]) {
+              ctx.beginPath();
+              tower.footprintPoints.forEach(([x,z],index)=>index?ctx.lineTo(x*unit,z*unit):ctx.moveTo(x*unit,z*unit));
+              ctx.closePath();ctx.stroke();
+            }
+            // Keep entrances readable through the upper-tower silhouette.
+            ctx.fillStyle=stone.trim;
+            for(const door of definition.interiorDoorways) {
+              const horizontal=door.axis==='x',hx=horizontal?door.width/2:.6,hz=horizontal?.6:door.width/2;
+              ctx.fillRect((door.x-hx)*unit,(door.z-hz)*unit,hx*2*unit,hz*2*unit);
+            }
+          }
+          ctx.strokeStyle=castle?stone.wall:'#5a5038';ctx.lineWidth=Math.max(1,.3*unit);
           for(const wall of definition.architecturalWalls) ctx.strokeRect(wall.minX*unit,wall.minZ*unit,(wall.maxX-wall.minX)*unit,(wall.maxZ-wall.minZ)*unit);
           ctx.restore(); continue;
         }
