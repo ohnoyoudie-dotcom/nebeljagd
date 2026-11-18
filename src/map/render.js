@@ -114,7 +114,14 @@ function woodlandSymbol(prop) {
   return `    <g id="world-object-${prop.variant}">${body}</g>`;
 }
 
+const extraChestSymbols = {
+  'chest-tripo': '<g id="world-object-chest-tripo"><rect x="-.86" y="-.575" width="1.72" height="1.15" rx=".12" fill="#98623a" stroke="#332d27" stroke-width=".08"/><path d="M-.53,-.55V.55M.53,-.55V.55" stroke="#4b4941" stroke-width=".16"/><path d="M-.8,.25H.8" stroke="#392d23" stroke-width=".07"/><rect x="-.12" y=".22" width=".24" height=".25" rx=".03" fill="#d1b273"/></g>',
+  'chest-rare': '<g id="world-object-chest-rare"><rect x="-1" y="-.657" width="2" height="1.314" rx=".14" fill="#50392f" stroke="#f1cb72" stroke-width=".1"/><path d="M-.64,-.59V.59M.64,-.59V.59" stroke="#242c30" stroke-width=".2"/><path d="M-.93,-.4V-.59H-.73M.73,-.59H.93V-.4M-.93,.4V.59H-.73M.73,.59H.93V.4" fill="none" stroke="#e5bc62" stroke-width=".12"/><circle r=".34" fill="#172f36" stroke="#e6be65" stroke-width=".09"/><path d="M0,-.23 .2,0 0,.23-.2,0Z" fill="#7ff4de" stroke="#e2fff1" stroke-width=".035"/><path d="M-.88,.4H-.36M.36,.4H.88" stroke="#e5bc62" stroke-width=".06"/></g>',
+};
+
 function objectSymbol(item) {
+  if (item.kind === 'chest' && item.variant === 'kit-tripo-rare-chest') return 'chest-rare';
+  if (item.kind === 'chest' && item.variant === 'kit-tripo-chest') return 'chest-tripo';
   if (woodlandById.has(`${item.kind}:${item.variant}`)) return item.variant;
   if (item.kind === 'wall' && item.variant === 'kit-tripo-wall') return 'wall-tripo';
   if (item.kind === 'wall' && item.variant === 'kit-cut-stone') return 'wall-cut-stone';
@@ -137,7 +144,7 @@ function objectSymbol(item) {
   return item.kind;
 }
 
-function objectSvg(item) {
+function objectSvg(item, interactive = true) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
   const radius = item.radius ?? (woodlandById.has(`${item.kind}:${item.variant}`) || (['kit-tripo-castle', 'kit-tripo-house-02'].includes(item.variant) || (item.kind === 'house' && isBuilderHouse(item.variant))) ? getObjectFootprintRadius(item.kind, item.variant)
     : item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
@@ -148,9 +155,24 @@ function objectSvg(item) {
   const transform = `translate(${number(item.position[0])} ${number(item.position[1])}) rotate(${number(-item.rotation * 180 / Math.PI)}) scale(${number(item.scale)})`;
   if (item.kind === 'grass' && item.vegetation) {
     const settings = item.vegetation, tint = escape(settings.color ?? '#6e934d');
-    return `    <g ${feature('object', item.id)} data-object-kind="grass" data-object-variant="${escape(item.variant)}" transform="${transform}"><title>${escape(item.name)} · Höhe ${number((settings.height ?? 1) * 100)} % · Dichte ${number((settings.density ?? 1) * 100)} %</title><circle r="${number(radius)}" fill="${tint}" fill-opacity="${number(.12 + .6 * (settings.density ?? 1))}" stroke="${tint}" stroke-width=".15" stroke-dasharray=".5 .4"/><path d="M-.6,.5-.4,-.6-.2,.5M.1,.4 .3,-.8 .5,.4" transform="scale(${number(radius * .55)})" fill="none" stroke="#d4dca0" stroke-width=".15" pointer-events="none"/></g>`;
+    return `    <g ${interactive ? feature('object', item.id) : ''} data-object-kind="grass" data-object-variant="${escape(item.variant)}" transform="${transform}"><title>${escape(item.name)} · Höhe ${number((settings.height ?? 1) * 100)} % · Dichte ${number((settings.density ?? 1) * 100)} %</title><circle r="${number(radius)}" fill="${tint}" fill-opacity="${number(.12 + .6 * (settings.density ?? 1))}" stroke="${tint}" stroke-width=".15" stroke-dasharray=".5 .4"/><path d="M-.6,.5-.4,-.6-.2,.5M.1,.4 .3,-.8 .5,.4" transform="scale(${number(radius * .55)})" fill="none" stroke="#d4dca0" stroke-width=".15" pointer-events="none"/></g>`;
   }
-  return `    <g ${feature('object', item.id)} data-object-kind="${item.kind}" data-object-variant="${escape(item.variant)}"${tier ? ` data-rarity="${tier.id}"` : ''} transform="${transform}"><title>${escape(item.name)}${tier ? ` · ${tier.label}` : ''} · ${escape(item.id)}</title>${halo}<circle r="${number(Math.max(.8, radius))}" fill="transparent" pointer-events="all"/><use href="#world-object-${objectSymbol(item)}"${patch ? ` transform="scale(${number(radius)})"` : ''}${tint ? ` color="${tint}"` : ''}/></g>`;
+  return `    <g ${interactive ? feature('object', item.id) : ''} data-object-kind="${item.kind}" data-object-variant="${escape(item.variant)}"${tier ? ` data-rarity="${tier.id}"` : ''} transform="${transform}"><title>${escape(item.name)}${tier ? ` · ${tier.label}` : ''} · ${escape(item.id)}</title>${halo}${interactive ? `<circle r="${number(Math.max(.8, radius))}" fill="transparent" pointer-events="all"/>` : ''}<use href="#world-object-${objectSymbol(item)}"${patch ? ` transform="scale(${number(radius)})"` : ''}${tint ? ` color="${tint}"` : ''}/></g>`;
+}
+
+/** Use the same geometry as placed map symbols, with private definitions so
+ * unplaced house variants/staffs work and cannot shadow saved SVG definitions. */
+export function renderObjectPlacementPreview(item) {
+  const key = objectSymbol(item);
+  const woodland = woodlandById.get(`${item.kind}:${item.variant}`);
+  const definition = item.kind === 'house' && isBuilderHouse(item.variant) ? builderHouseMapSymbol(item)
+    : woodland ? woodlandSymbol(woodland) : extraWeaponSymbols[item.kind] ?? extraChestSymbols[key]
+      ?? objectSymbols.find(symbol => symbol.includes(`id="world-object-${key}"`));
+  if (!definition) return '';
+  const markup = `<defs>${definition}</defs>${objectSvg(item, false)}`;
+  return `<g data-placement-symbol="${escape(key)}" pointer-events="none" opacity=".85">${markup
+    .replace(/id="([^"]+)"/g, 'id="placement-$1"')
+    .replace(/href="#/g, 'href="#placement-').replace(/url\(#/g, 'url(#placement-')}</g>`;
 }
 
 /** One selectable, editable centreline. Visible strokes use exactly the solid
@@ -225,6 +247,7 @@ export function renderWorldmapSvg(map, options = {}) {
     '    <pattern id="world-pattern-ash" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M8,57 30,22 54,57Z M69,88 84,59 105,88Z" fill="#514e4b" opacity=".22"/><path d="M31,24 26,41 37,47 29,57" fill="none" stroke="#ce976a" stroke-width="2" opacity=".55"/></pattern>',
     '    <pattern id="world-pattern-dune" width="115" height="95" patternUnits="userSpaceOnUse"><path d="M9,35Q28,14 50,35 M60,80Q82,57 106,80" fill="none" stroke="#a78651" stroke-width="2" opacity=".35"/></pattern>',
     ...objectSymbols.map(symbol => `    ${symbol}`),
+    ...Object.entries(extraChestSymbols).filter(([key]) => (map.objects ?? []).some(item => objectSymbol(item) === key)).map(([, symbol]) => `    ${symbol}`),
     ...new Map((map.objects ?? []).filter(item => item.kind === 'house' && isBuilderHouse(item.variant))
       .map(item => [builderHouseSymbolKey(item), `    ${builderHouseMapSymbol(item)}`])).values(),
     ...TRIPO_WOODLAND_DEFINITIONS.filter(prop => (map.objects ?? []).some(item => `${item.kind}:${item.variant}` === prop.id)).map(woodlandSymbol),

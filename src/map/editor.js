@@ -3,7 +3,7 @@ import { freshPlaytestUrl } from './playtest-url.js';
 import { WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
 import defaultMap from '../../worldmap.json';
 import { validateWorldmap, validateStartRiverEdit, getWorldmapStats, zoneAt, isLandPoint, pointInPolygon } from './model.js';
-import { renderWorldmapSvg, barrierSvg } from './render.js';
+import { renderWorldmapSvg, barrierSvg, renderObjectPlacementPreview } from './render.js';
 import { makeBarrier, barrierLength } from './barriers.js';
 import { createBarrierPanel } from './barrier-panel.js';
 import { barrierHeightHint, isHeightAdjustable } from './barrier-height.js';
@@ -329,6 +329,17 @@ function objectFootprint(object) {
   const radius = object.radius ?? (object.kind === 'tree' ? 3 : getObjectFootprintRadius(object.kind, object.variant));
   return radius * object.scale;
 }
+let pendingPlacement = null;
+function nextPlacementObject(position) {
+  const kind = $('palette-kind').value, variant = $('palette-variant').value;
+  const options = { variant, rarity: $('palette-rarity').value,
+    ...(kind === 'chest' ? {chestOpening: $('palette-chest-opening').value} : {}),
+    ...(kind === 'house' && isBuilderHouse(variant) ? houseOptions('palette') : {}) };
+  const key = JSON.stringify([kind, options, placementRotationControl.isEnabled(kind)]);
+  if (pendingPlacement?.key !== key) pendingPlacement = {key, object: makeWorldObject(kind, position,
+    {...options, rotation: placementRotationControl.nextRotation(kind)})};
+  return {...pendingPlacement.object, position:[...position]};
+}
 function updatePlacementPreview() {
   const svg = $('map-stage').firstElementChild;
   svg?.querySelector('#placement-preview')?.remove();
@@ -345,13 +356,14 @@ function updatePlacementPreview() {
     svg.append(cursor); return;
   }
   if (!svg || !placementModes.includes(mode) || !hoverPoint || spaceHeld) return;
-  const definition = getObjectDefinition($('palette-kind').value);
   const point = mode === 'place' ? snapped(hoverPoint) : hoverPoint;
-  const radius = mode === 'erase' ? Number($('eraser-radius').value) : mode !== 'place' ? landscapePanel?.radius(mode) ?? 4 : definition.defaultRadius ?? getObjectFootprintRadius(definition.kind, $('palette-variant').value);
+  const previewObject = mode === 'place' ? nextPlacementObject(point) : null;
+  const radius = mode === 'erase' ? Number($('eraser-radius').value) : mode !== 'place' ? landscapePanel?.radius(mode) ?? 4 : objectFootprint(previewObject);
   const circle = document.createElementNS(SVG_NS, 'circle');
   const valid = ['erase','terrainErase'].includes(mode) || (['brush', 'place'].includes(mode) ? canPaintGrass(point, map, radius) : isLandPoint(map, point));
   const pixel = 1 / (svg.getScreenCTM()?.a || 1);
-  circle.id = 'placement-preview';
+  const preview = document.createElementNS(SVG_NS, 'g'); preview.id = 'placement-preview';
+  preview.setAttribute('pointer-events', 'none'); preview.dataset.valid = String(valid);
   circle.setAttribute('cx', point[0]); circle.setAttribute('cy', point[1]);
   circle.setAttribute('r', mode !== 'place' ? radius : Math.max(radius, pixel * 7));
   circle.setAttribute('fill', ['erase','terrainErase'].includes(mode) ? '#d88e7c' : valid ? landscapePanel?.color(mode) ?? '#b9d488' : '#d89486');
@@ -360,7 +372,15 @@ function updatePlacementPreview() {
   circle.setAttribute('stroke-width', '1.5'); circle.setAttribute('vector-effect', 'non-scaling-stroke');
   circle.setAttribute('pointer-events', 'none');
   if (mode !== 'place') circle.setAttribute('stroke-dasharray', '5 3');
-  svg.append(circle);
+  preview.append(circle);
+  if (previewObject) {
+    pendingPlacement.symbol ??= renderObjectPlacementPreview({...previewObject, position:[0,0]});
+    const fragment = new DOMParser().parseFromString(`<svg xmlns="${SVG_NS}">${pendingPlacement.symbol}</svg>`, 'image/svg+xml');
+    const symbol = document.importNode(fragment.documentElement.firstElementChild, true);
+    symbol.setAttribute('transform', `translate(${point[0]} ${point[1]})`);
+    preview.append(symbol);
+  }
+  svg.append(preview);
   if (mode === 'terrainErase') {
     const targets = eraseLandscapeAt(map, point, point, radius, 'surface');
     const marks = document.createElementNS(SVG_NS, 'g'); marks.id = 'eraser-target-preview';
@@ -1187,6 +1207,7 @@ function resetMap() {
   remember(previous); renderAll(); toast('Ausgangskarte geladen. Der vorige Stand bleibt unter „Zurück“ erhalten.');
 }
 function setMode(next) {
+  pendingPlacement = null;
   cancelPointer();
   mode = next;
   if (placementModes.includes(mode)) {
@@ -1341,6 +1362,7 @@ function refreshHousePreview(prefix) {
   const kind = prefix === 'palette' ? $('palette-kind').value : selectedFeature()?.kind;
   if (!kind) return;
   renderAssetPreview(prefix, kind, $(`${prefix}-variant`).value);
+  if (prefix === 'palette') updatePlacementPreview();
 }
 function updateRarityHint() {
   const feature = selectedFeature();
@@ -1381,14 +1403,10 @@ function addObjectAt(point) {
   if (!isLandPoint(map, position)) return toast('Bitte einen Punkt auf der Insel wählen.', true);
   const kind = $('palette-kind').value;
   if (!isObjectPlaceable(kind, $('palette-variant').value)) return toast('Dieses Modell ist für neue Platzierungen nicht mehr verfügbar.', true);
-  const added = makeWorldObject(kind, position, {
-    variant: $('palette-variant').value, rarity: $('palette-rarity').value,
-    ...(kind==='chest'?{chestOpening:$('palette-chest-opening').value}:{}),
-    rotation: placementRotationControl.nextRotation(kind),
-    ...(kind === 'house' && isBuilderHouse($('palette-variant').value) ? houseOptions('palette') : {}),
-  });
+  const added = nextPlacementObject(position);
   if (!canPaintGrass(position, map, objectFootprint(added))) return toast('Bitte genug Abstand zum Ufer halten: Das ganze Objekt muss auf Land stehen.', true);
   if (commit(candidate => { candidate.objects.push(added); }, `${getObjectDefinition(kind).label} gesetzt. Weitere Klicks setzen weitere Objekte; Esc beendet.`)) {
+    pendingPlacement = null;
     layers.showObjects = true; $('layer-objects').checked = true;
     $('feature-filter').value = 'object'; $('object-kind-filter').value = kind; $('feature-search').value = ''; listLimit = 50;
     select('object', added.id);
@@ -1443,6 +1461,7 @@ window.addEventListener('message', event => {
 });
 preparePalette();
 const placementRotationControl = createPlacementRotationControl(document);
+$('palette-random-rotation').addEventListener('change', updatePlacementPreview);
 landscapePanel = createLandscapePanel({ getMap: () => map, getMode: () => mode, setMode, commit, toast,
   getPosition: () => selectedFeature()?.position ?? hoverPoint ?? map.gameplay.spawnPosition ?? map.zone.center,
   refreshCursor: () => updatePlacementPreview(),
