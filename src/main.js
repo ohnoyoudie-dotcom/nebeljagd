@@ -691,7 +691,6 @@ function frame(now) {
   }
   const arrivalState = arrival.snapshot();
   character.setConcealed(state.hiddenInGrass && !arrivalState.active);
-  visualPlayer.copy(player); visualPlayer.y += arrivalState.height;
   arrivalEffects.update(state.phase === 'paused' ? 0 : dt, player, arrivalState);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
   character.update(state.phase === 'paused' ? 0 : dt, time, { moving: state.moving, speed: state.actualSpeed || 0,
@@ -749,6 +748,8 @@ function frame(now) {
   sun.position.copy(cameraFocus).add(sunlightOffset);
   sun.target.position.copy(cameraFocus);
   sun.target.updateMatrixWorld();
+  // Weapon teleports can move the avatar during this frame. Follow the final position.
+  visualPlayer.copy(player); visualPlayer.y += arrivalState.height;
   healthBars.set('player', { health: state.health, maxHealth: state.maxHealth, level: state.level });
   healthBars.update(camera, { isVisible, dt: playDelta });
   statusIndicators.update(camera,{width:window.innerWidth,height:window.innerHeight,phase:state.phase});
