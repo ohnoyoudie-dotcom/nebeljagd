@@ -41,7 +41,6 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   const root = new THREE.Group(); root.name = `Welt aus worldmap.json · ${map.id}`; scene.add(root);
   const spatial = createWorldSpatialModel(map);
   const castleSnowExclusion=createCastleGroundMask(map,{padding:1});
-  const castleLawn=createCastleGroundMask(map,{lawnsOnly:true});
   const chunks = new Map(), terrainChunks = [], surfaceCells = new Map(), triangles = [];
   const sampleCache = new Map(), color = new THREE.Color();
   let mode = quality, lastCull = -Infinity, lastCullX = Infinity, lastCullZ = Infinity, visibleTerrainChunks = 0;
@@ -213,13 +212,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   const objects = await createWorldObjectRenderer(root, { map, heightAt: surfaceHeightAt, groundHeightAt: surfaceHeightAt,
     colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt, quality, chunkSize: CHUNK });
-  // A castle's cultivated lawns use the same grass system as the landscape,
-  // with green blades even over snow/sand. Authored biomes and elevation remain
-  // untouched; the override applies only inside the two lawn rectangles.
-  const lawnWeights=[{biome:'forest',weight:1}],lawnColor=new THREE.Color('#52733d');
-  const grassSpatial={...spatial,biomeWeightsAt:(x,z)=>castleLawn(x,z)?lawnWeights:spatial.biomeWeightsAt(x,z)};
-  const grassColorAt=(x,z,target=new THREE.Color())=>castleLawn(x,z)?target.copy(lawnColor):spatial.colorAt(x,z,target);
-  const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: grassColorAt, spatial:grassSpatial, quality });
+  const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: spatial.colorAt, spatial, quality });
   const snowCover = createSnowCover(root, { map, heightAt: surfaceHeightAt, spatial, quality });
   const materialSet = new Set(); root.traverse(child => { if (child.material) for (const material of Array.isArray(child.material) ? child.material : [child.material]) materialSet.add(material); });
   for (const material of materialSet) {

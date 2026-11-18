@@ -355,8 +355,6 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
           const definition=getHouseDefinition(object),unit=object.scale*scale;
           const castle=definition.architecture==='castle',stone=castle?getCastleMaterialColors(object):null;
           if(castle) {
-            ctx.fillStyle='#65834c';
-            for(const court of definition.courtyards??[]) ctx.fillRect(court.minX*unit,court.minZ*unit,(court.maxX-court.minX)*unit,(court.maxZ-court.minZ)*unit);
             ctx.fillStyle=stone.floor;
             for(const edge of definition.courtyardPavingAreas??[]) ctx.fillRect(edge.minX*unit,edge.minZ*unit,(edge.maxX-edge.minX)*unit,(edge.maxZ-edge.minZ)*unit);
           }

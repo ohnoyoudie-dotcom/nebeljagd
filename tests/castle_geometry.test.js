@@ -126,11 +126,11 @@ test('castle stone walls stop movement and projectiles up to their physical heig
 
 test('green court centres stay outdoors while one-metre stone borders and barred windows retain their own surfaces',()=>{
  assert.equal(castle.courtyardPavingAreas.length,8);
- assert.equal(castle.courtyardLawnAreas.length,2);
+ assert.equal(castle.courtyardGroundAreas.length,2);
  for(const court of castle.courtyards) {
-  const lawn=castle.courtyardLawnAreas.find(a=>a.courtyardId===court.id),border=castle.courtyardPavingAreas.filter(a=>a.courtyardId===court.id);
+  const lawn=castle.courtyardGroundAreas.find(a=>a.courtyardId===court.id),border=castle.courtyardPavingAreas.filter(a=>a.courtyardId===court.id);
   assert.deepEqual([lawn.minX,lawn.maxX,lawn.minZ,lawn.maxZ],[court.minX+1,court.maxX-1,court.minZ+1,court.maxZ-1]);
-  assert.equal(lawn.material,'grass');assert.equal(lawn.outdoor,true);assert.equal(border.length,4);
+  assert.equal(lawn.material,'terrain');assert.equal(lawn.outdoor,true);assert.equal(border.length,4);
   const areas=[lawn,...border],area=a=>(a.maxX-a.minX)*(a.maxZ-a.minZ);
   assert.equal(areas.reduce((sum,a)=>sum+area(a),0),area(court),'lawn and border cover the court exactly once');
   for(let i=0;i<areas.length;i++)for(let j=i+1;j<areas.length;j++) {

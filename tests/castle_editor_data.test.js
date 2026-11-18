@@ -46,14 +46,14 @@ test('castle creation drops ordinary house partitions and imports reject setting
   assert.deepEqual(castleRule.then.not.anyOf.map(rule=>rule.required[0]).sort(),['houseEntrances','houseLayout','houseRooms']);
 });
 
-test('castle SVG distinguishes green court centres, narrow stone borders, tower silhouettes and clear room access',()=>{
+test('castle SVG distinguishes transparent court centres, narrow stone borders, tower silhouettes and clear room access',()=>{
   const object=castle(),def=getHouseDefinition(object),svg=getBuilderHousePreviewSvg(object);
   assert.equal((svg.match(/data-waldhaus-wall=/g)??[]).length,def.architecturalWalls.length);
   assert.equal((svg.match(/data-waldhaus-room=/g)??[]).length,def.rooms.length);
   assert.equal((svg.match(/data-waldhaus-entrance=/g)??[]).length,def.entrances.length);
   assert.equal((svg.match(/data-castle-doorway=/g)??[]).length,def.interiorDoorways.length);
   assert.equal((svg.match(/data-castle-courtyard=/g)??[]).length,2);
-  assert.equal((svg.match(/data-castle-ground="grass"/g)??[]).length,2);
+  assert.equal((svg.match(/data-castle-ground="terrain"/g)??[]).length,2);
   assert.equal((svg.match(/data-castle-court-edge=/g)??[]).length,def.courtyardPavingAreas.length);
   assert.equal((svg.match(/data-castle-tower=/g)??[]).length,4);
   assert.equal((svg.match(/data-castle-window="barred"/g)??[]).length,def.windows.length);
@@ -65,7 +65,7 @@ test('castle SVG distinguishes green court centres, narrow stone borders, tower 
     const cx=(court.minX+court.maxX)/2,cz=(court.minZ+court.maxZ)/2;
     const rectangles=[...svg.matchAll(/<rect x="(-?[\d.]+)" y="(-?[\d.]+)" width="([\d.]+)" height="([\d.]+)" ([^>]*)>/g)];
     const contains=match=>{const [,x,z,w,d]=match.slice(0,5).map(Number);return x<cx&&x+w>cx&&z<cz&&z+d>cz;};
-    assert.ok(rectangles.some(match=>contains(match)&&match[5].includes('data-castle-ground="grass"')&&match[5].includes('fill="#65834c"')),'each court has a green outdoor lawn');
+    assert.ok(rectangles.some(match=>contains(match)&&match[5].includes('data-castle-ground="terrain"')&&match[5].includes('fill="none"')),'each court leaves the map visible');
     assert.ok(!rectangles.some(match=>contains(match)&&match[5].includes('data-castle-court-edge')),'stone edging does not cover the lawn centre');
     assert.ok(!rectangles.some(match=>contains(match)&&/data-house-foundation|data-waldhaus-room|data-waldhaus-wall/.test(match[5])),'courtyard is not a covered room or raised foundation');
   }
@@ -84,7 +84,7 @@ test('castle SVG distinguishes green court centres, narrow stone borders, tower 
 });
 
 test('castle material controls retain legacy saved IDs while only describing restrained stone palettes',()=>{
-  assert.deepEqual(Object.keys(CASTLE_STYLE_LABELS),['natural','lime','ochre','dark']);
+  assert.deepEqual(Object.keys(CASTLE_STYLE_LABELS),['natural','lime','ochre','dark','sandstone']);
   assert.deepEqual(Object.keys(CASTLE_FLOOR_LABELS),['natural','sand','slate','moss']);
   assert.deepEqual(Object.keys(CASTLE_WALL_LABELS),['style','chalk','sand','sage','clay']);
   assert.doesNotMatch(Object.values({...CASTLE_STYLE_LABELS,...CASTLE_FLOOR_LABELS,...CASTLE_WALL_LABELS}).join(' '),/Holz|Putz|Fachwerk|Glas/);
@@ -99,4 +99,19 @@ test('castle material controls retain legacy saved IDs while only describing res
   assert.notEqual(getCastleMaterialColors({houseStoneColor:'slate'}).floor,base.floor);
   assert.equal(getCastleMaterialColors({houseWallColor:'clay'}).floor,base.floor);
   assert.notEqual(getCastleMaterialColors({houseWallColor:'clay'}).wall,base.wall);
+});
+
+
+test('Sandstone is a distinct castle-only saved style with warmer walls and a darker floor',()=>{
+  const object=castle({houseStyle:'sandstone'}),map=mapOf(object);
+  assert.deepEqual(validateWorldmap(map).errors,[]);
+  assert.deepEqual(normalizeWorldmap(JSON.parse(JSON.stringify(map))),map);
+  const palette=getCastleMaterialColors(object);
+  assert.notEqual(palette.wall,getCastleMaterialColors().wall);
+  const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+  const [r,g,b]=rgb(palette.wall);
+  assert.ok(r>g&&g>b);assert.ok(rgb(palette.floor).every((v,i)=>v<rgb(palette.wall)[i]));
+  assert.notEqual(builderHouseSymbolKey(object),builderHouseSymbolKey({...object,houseStyle:'natural'}));
+  assert.ok(getBuilderHousePreviewSvg(object).includes(palette.wall));
+  assert.ok(validateWorldmap(mapOf({...object,variant:'waldhaus'})).errors.length>0);
 });

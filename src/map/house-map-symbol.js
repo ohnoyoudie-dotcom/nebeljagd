@@ -13,9 +13,9 @@ const colors = {
   dark: {wall:'#a5a399', timber:'#3d3731', floor:['#887966','#827361','#796c5b']},
 };
 function appearance(object) {
-  const style = Object.hasOwn(colors, object.houseStyle) ? object.houseStyle : 'natural';
+  const style = object.variant==='schlossanlage'&&object.houseStyle==='sandstone'?'sandstone':Object.hasOwn(colors, object.houseStyle) ? object.houseStyle : 'natural';
   const seed = Number.isInteger(object.houseSeed) && object.houseSeed >= 0 && object.houseSeed <= 2147483647 ? object.houseSeed : 87123;
-  return {style, seed, colors:colors[style]};
+  return {style, seed, colors:colors[style]??colors.natural};
 }
 /** IDs contain only fixed variant/style enums and bounded numeric seeds. */
 export function builderHouseSymbolKey(object) {
@@ -49,7 +49,7 @@ export function builderHouseMapSymbol(object) {
   if(castle) {
     pieces.push(`<defs><pattern id="${pavingPattern}" width="4.8" height="3.4" patternUnits="userSpaceOnUse"><path d="M0,0H4.8M0,1.7H4.8M0,0V1.7M2.4,0V1.7M1.2,1.7V3.4M3.6,1.7V3.4" stroke="${castleColors.iron}" stroke-opacity=".35" stroke-width=".065" fill="none"/></pattern><pattern id="${courtyardPattern}" width="1.6" height="1" patternUnits="userSpaceOnUse"><path d="M0,0H1.6M0,.5H1.6M0,0V.5M.8,0V.5M.4,.5V1M1.2,.5V1" stroke="${castleColors.iron}" stroke-opacity=".25" stroke-width=".05" fill="none"/></pattern></defs>`);
     for(const court of house.courtyards ?? []) {
-      pieces.push(rect(court.minX,court.minZ,court.maxX,court.maxZ,`data-castle-courtyard="true" data-castle-ground="grass" fill="#65834c"`));
+      pieces.push(rect(court.minX,court.minZ,court.maxX,court.maxZ,`data-castle-courtyard="true" data-castle-ground="terrain" fill="none"`));
     }
     for(const area of house.courtyardPavingAreas ?? []) {
       pieces.push(rect(area.minX,area.minZ,area.maxX,area.maxZ,`data-castle-court-edge="true" fill="${shade(castleColors.floor,.87)}"`));

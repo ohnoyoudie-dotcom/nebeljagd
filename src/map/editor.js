@@ -1287,7 +1287,10 @@ function syncHouseControls(prefix, object, restore = false) {
   ]) {
     const input = $(`${prefix}-house-${field}`), labelNode = input.closest('label').firstChild;
     labelNode.textContent = castle ? label : normalLabel;
-    for (const option of input.options) option.textContent = castle ? labels[option.value] : normalOptions.find(item=>item.id===option.value)?.label ?? option.textContent;
+    const previous=input.value;
+    const options=castle?Object.entries(labels).map(([id,label])=>({id,label})):normalOptions;
+    input.replaceChildren(...options.map(item=>{const option=document.createElement('option');option.value=item.id;option.textContent=item.label;return option;}));
+    input.value=options.some(item=>item.id===previous)?previous:options[0].id;
   }
   panel.dataset.fixedLayout = String(fixedLayout);
   for (const field of ['rooms', 'entrances']) {
@@ -1323,7 +1326,7 @@ function syncHouseControls(prefix, object, restore = false) {
   const courtCount = def.courtyards?.length ?? 1;
   const towerCount = def.towers?.length ?? 0;
   const outerEntrances = def.entrances.filter(entry=>entry.exterior).length;
-  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · ${towerCount} Ecktürme · ${courtCount} ${courtCount===1?'grüner Innenhof':'grüne Innenhöfe'} · ${outerEntrances} Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
+  $(`${prefix}-house-info`).textContent = fixedLayout ? `${dimensions} · ${towerCount} Ecktürme · ${courtCount} ${courtCount===1?'offener Innenhof':'offene Innenhöfe'} · ${outerEntrances} Außenzugänge` : `${dimensions} · ${count} ${count === 1 ? 'Raum' : 'Räume'} · ${def.entrances.length} ${def.entrances.length === 1 ? 'Eingang' : 'Eingänge'}`;
 }
 function varyHouse(prefix) {
   const input = $(`${prefix}-house-seed`), previous = Number(input.value);

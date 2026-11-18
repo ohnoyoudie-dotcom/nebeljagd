@@ -52,7 +52,7 @@ test('Both courtyard loops and all castle doors stay visually open at movement/p
   }finally{model.dispose();}
 });
 
-test('Both courts have green centres and narrow stone borders while rooms retain their stone floor height',()=>{
+test('Both courts have open centres and narrow stone borders while rooms retain their stone floor height',()=>{
   const model=create();model.group.updateMatrixWorld(true);
   try {
     for(const court of definition.courtyardPavingAreas) {
@@ -66,9 +66,7 @@ test('Both courts have green centres and narrow stone borders while rooms retain
     for(const court of definition.courtyards)for(const [dx,dz]of [[0,0],[-4,-5],[4,5]]) {
       const x=(court.minX+court.maxX)/2+dx,z=(court.minZ+court.maxZ)/2+dz;
       const hits=new Raycaster(new Vector3(x,6,z),new Vector3(0,-1,0),0,8).intersectObject(model.group,true);
-      assert.ok(hits.length,'every court has a consistently green surface');
-      assert.ok(hits[0].point.y<=.004&&hits[0].point.y>=0,'lawns stay at outdoor terrain height without a roof');
-      assert.equal(hits[0].object.material.userData.castleSurface,'grass');
+      assert.equal(hits.length,0,'the courtyard is a real opening onto map terrain');
     }
     for(const room of definition.rooms) {
       const origin=new Vector3((room.minX+room.maxX)/2,1,(room.minZ+room.maxZ)/2);

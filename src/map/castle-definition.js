@@ -1,5 +1,5 @@
 /** Human-scale interiors below imposing exterior fortifications, on the same
- * 140 × 120 metre footprint. The two courtyards remain open green ground. */
+ * 140 × 120 metre footprint. The two courtyards remain open natural terrain. */
 const freeze = value => {
   if (value && typeof value === 'object') { Object.values(value).forEach(freeze); Object.freeze(value); }
   return value;
@@ -29,8 +29,8 @@ const courtyards=[
   rect(-43,-9,-27,27,{id:'west-court',name:'Westlicher Innenhof'}),
   rect(9,43,-27,27,{id:'east-court',name:'Östlicher Innenhof'}),
 ];
-const courtyardLawnAreas=courtyards.map(c=>rect(c.minX+1,c.maxX-1,c.minZ+1,c.maxZ-1,
-  {id:`${c.id}-lawn`,courtyardId:c.id,material:'grass',outdoor:true}));
+const courtyardGroundAreas=courtyards.map(c=>rect(c.minX+1,c.maxX-1,c.minZ+1,c.maxZ-1,
+  {id:`${c.id}-lawn`,courtyardId:c.id,material:'terrain',outdoor:true}));
 // Four disjoint one-metre borders protect the stone thresholds without paving
 // over the living courtyard ground. Neither surface becomes an indoor floor.
 const courtyardPavingAreas=courtyards.flatMap(c=>[
@@ -255,7 +255,7 @@ export const CASTLE_DEFINITION=freeze({
   floorBounds:rect(-70,70,-60,60),
   footprintAreas:[rect(-70,70,-60,-27),rect(-70,70,27,60),rect(-70,-43,-27,27),rect(-9,9,-27,27),rect(43,70,-27,27)],
   floorAreas:floors,courtyardBounds:courtyards[0],courtyards,
-  courtyardPavingAreas,courtyardLawnAreas,rooms,roomCount:rooms.length,
+  courtyardPavingAreas,courtyardGroundAreas,rooms,roomCount:rooms.length,
   entrances,interiorDoorways:doors,windows,torches:torches.slice(0,48),circles:[],architecturalWalls:walls,walls:physicalWalls,
   qaRoutes:{openFloor:[0,53],courtyard:courtyardPoints[0],courtyards:courtyardPoints,
     entrances:entrances.filter(e=>e.exterior).map(entryRoute),courtyardEntrances:entrances.filter(e=>e.courtyard).map(entryRoute),

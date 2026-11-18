@@ -217,7 +217,7 @@ export function createCastleModel({definition:def,houseStyle,houseSeed,houseSton
   let triangles=0,drawCalls=0;for(const mesh of staticMeshes){drawCalls++;triangles+=(mesh.geometry.index?.count??mesh.geometry.attributes.position.count)/3*mesh.count;}
   const torches=createCastleTorches({definition:def,seed:appearance.seed}),courtyards=createCastleCourtyards({definition:def});group.add(courtyards.group,torches.group);
   const stats={drawCalls:drawCalls+torches.stats.drawCalls+courtyards.stats.drawCalls,triangles:triangles+torches.stats.triangles+courtyards.stats.triangles,staticDrawCalls:drawCalls,staticTriangles:triangles,parts,stones,floorTiles,rooms:def.roomCount??def.rooms.length,entrances:def.entrances.length,windows:windowApertures,torches:torches.stats,courtyards:courtyards.stats,fortifications};
-  group.userData.castle={...stats,style:'fortified-stone-castle-green-courts',variant:def.variant,floorHeight:floor,houseSeed:appearance.seed,houseStyle:appearance.style,houseStoneColor,houseWallColor,cutaway:cutaway.stats};
+  group.userData.castle={...stats,style:'fortified-stone-castle-open-courts',variant:def.variant,floorHeight:floor,houseSeed:appearance.seed,houseStyle,houseStoneColor,houseWallColor,cutaway:cutaway.stats};
   let disposed=false;
   return {group,roof,frontFacade,interior,stats,get cutaway(){return cutaway.stats;},update(dt,time,playerLocal,options){if(!disposed){cutaway.update(dt,playerLocal);torches.update(dt,time,playerLocal,options);}},dispose(){
     if(disposed)return;disposed=true;torches.dispose();courtyards.dispose();staticMeshes.forEach(mesh=>mesh.dispose());geometries.forEach(geo=>geo.dispose());materials.forEach(material=>material.dispose());textures.forEach(texture=>texture.dispose());group.removeFromParent();
