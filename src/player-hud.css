@@ -51,14 +51,16 @@
  #ui .inventory{top:185px;left:12px}#ui .weapon-status{top:222px;left:12px;width:218px;min-height:66px}#ui #weaponName{font-size:13px}#ui .weapon-status-icon{width:34px;height:42px;flex-basis:34px}#ui #weaponDetail{font-size:9px}
  #ui .joystick{left:18px;bottom:max(26px,env(safe-area-inset-bottom));width:110px;height:110px}#ui .touch-actions{right:18px;bottom:max(26px,env(safe-area-inset-bottom));gap:10px}#ui .touch-actions button{width:66px;height:66px}#ui #attackBtn{width:80px;height:80px}.arrival-panel{bottom:220px;width:246px}#ui .pickup-prompt{bottom:185px;font-size:10px;max-width:94vw}#ui .toast{bottom:315px;font-size:11px}#ui .danger-warning{top:300px;max-width:90vw;font-size:11px}
 }
-@media(max-height:600px) and (min-width:601px){#ui .player-panel{top:82px}#ui .weapon-status{top:174px;width:220px}#ui .inventory{top:250px}#ui .map-panel{width:130px;top:66px}.arrival-panel{bottom:125px;width:240px}#ui .toast{bottom:140px}#ui .pickup-prompt{bottom:110px}#ui .joystick{width:104px;height:104px;bottom:20px}#ui .touch-actions{bottom:20px}}
+@media(max-height:600px) and (min-width:601px) and (pointer:coarse){#ui .player-panel{top:82px}#ui .weapon-status{top:174px;width:220px}#ui .inventory{top:250px}#ui .map-panel{width:130px;top:66px}.arrival-panel{bottom:125px;width:240px}#ui .toast{bottom:140px}#ui .pickup-prompt{bottom:110px}#ui .joystick{width:104px;height:104px;bottom:20px}#ui .touch-actions{bottom:20px}}
 
 #ui .map-frame{aspect-ratio:1;height:auto}#ui #minimap{width:100%;height:auto;aspect-ratio:1;display:block}
 @media(min-width:801px) and (min-height:601px){.arrival-panel{bottom:auto;top:116px;padding:12px 18px}.arrival-panel strong{font-size:19px}}
 #ui .map-frame{width:100%;min-width:0;overflow:hidden}#ui #minimap{min-width:0;max-width:100%}
 #ui .touch-actions button:disabled{opacity:.72}#ui .touch-actions .on-cooldown>.icon{opacity:.15}
 #ui .touch-cooldown{top:45%;transform:translateY(-50%);color:#f6f1d5}
-@media(max-height:600px) and (min-width:601px){#ui .inventory{top:20px;left:16px}}
+@media(max-height:600px) and (min-width:601px) and (pointer:coarse){#ui .inventory{top:20px;left:16px}}
 /* The old landscape grid reserved a fixed map column wider than this panel. */
 #ui .map-panel{display:block}
 @media(max-height:600px) and (min-width:601px){#ui .map-mode-switch{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:3px;margin-top:6px}#ui .map-mode-switch button{padding:2px;font-size:8px;min-height:28px}}
+
+@media(max-height:600px) and (min-width:801px) and (pointer:fine){#ui .map-panel{width:130px;top:66px}#ui .map-legend,#ui .desktop-controls{display:none}}
