@@ -44,6 +44,7 @@ export function createAerialLandscape(world) {
     // Individual grass blades and local snow microdetail have no aerial silhouette.
     if (/^Geländeabschnitt |dichte animierte Wiese|natürliche volumige Schneedecke/.test(source.name)) continue;
     const node = source.clone(true); node.visible = true;
+    if (source.name === 'Meer um die Nebelinsel') node.scale.multiplyScalar(4);
     node.traverse(child=>{
       child.layers.set(1); child.userData.ignoreVision = true;
       child.castShadow = child.receiveShadow = false;

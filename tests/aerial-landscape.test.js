@@ -27,3 +27,8 @@ test('terrain batches preserve the original coastline vertices while reducing di
  assert(originals.every(m=>!m.visible&&m.material===material));assert(terrain.material.depthWrite);
  let disposed=false;terrain.geometry.addEventListener('dispose',()=>disposed=true);far.dispose();assert(disposed);
 });
+
+test('wide aerial views have enough ocean coverage without changing the playable sea',()=>{
+ const root=new Group(),sea=new Mesh(new BoxGeometry(),new MeshStandardMaterial());sea.name='Meer um die Nebelinsel';root.add(sea);
+ const far=createAerialLandscape({root});far.update(1600);const distantSea=root.children.at(-1).children[0];assert.equal(distantSea.scale.x,4);assert.equal(sea.scale.x,1);assert.equal(distantSea.geometry,sea.geometry);far.dispose();
+});

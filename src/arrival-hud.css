@@ -7,3 +7,9 @@
 #ui[data-arrival-stage=dive] .arrival-panel{max-width:calc(100vw - 32px)}
 #ui .arrival-panel #arrivalHeight{white-space:nowrap;flex:none;margin-left:10px}
 @media(max-height:600px) and (min-width:701px){#ui .arrival-panel strong{font-size:17px}}
+@media(max-height:600px) and (min-width:601px){
+ #ui[data-arrival-stage=dive] .arrival-panel{top:94px;bottom:auto;left:18px;transform:none;width:230px;padding:10px}
+ #ui[data-arrival-stage=dive] .arrival-eyebrow{display:none}
+ #ui[data-arrival-stage=dive] .arrival-panel>div:not(.arrival-track){margin:6px 0}
+ #ui[data-arrival-stage=dive] .arrival-track{margin:8px 0}
+}
