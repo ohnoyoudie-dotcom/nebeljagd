@@ -6,6 +6,10 @@ export const OBSTACLE_BIOMES = ['auto','forest','snow','desert','swamp'];
 export const OBSTACLE_COLORS = {forest:'#506044',snow:'#bdcbd0',desert:'#ae8050',swamp:'#424c3b',woodland:'#263f2c'};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const key=(x,z)=>`${x},${z}`;
+// World-anchored broad relief: reproducible after export and across adjoining
+// brush strokes. The editor height is the baseline, not a flat upper plane.
+export function obstacleRelief(x,z){return 1+.24*Math.sin(x*.115+Math.sin(z*.071))+.14*Math.cos(z*.157-x*.049)+.055*Math.sin(x*.39+z*.21);}
+
 export function obstacleBiome(biome) { return ['snow'].includes(biome)?'snow':['desert','dunes','sand'].includes(biome)?'desert':['marsh','swamp','mud'].includes(biome)?'swamp':'forest'; }
 export function validateTerrainObstacles(strokes,bounds){
  const errors=[];
@@ -63,7 +67,7 @@ export function createObstacleSurface(strokes=[],{isLand=()=>true,isWater=()=>fa
    strokeD=Math.max(strokeD,e.s.radius-segmentDistance(x,z,e.a,e.b)+ripple);
   }apply();
   if(!isLand(x,z)||isWater(x,z))d=Math.min(d,-.25);
-  return {x,z,d,h,style,biome:biome==='auto'?obstacleBiome(biomeAt(x,z)):biome};
+  return {x,z,d,h:h*obstacleRelief(x,z),style,biome:biome==='auto'?obstacleBiome(biomeAt(x,z)):biome};
  };
  const samples=new Map();
  function vertex(ix,iz){const k=key(ix,iz);if(!samples.has(k))samples.set(k,raw(ix*g,iz*g));return samples.get(k);}
@@ -73,7 +77,7 @@ export function createObstacleSurface(strokes=[],{isLand=()=>true,isWater=()=>fa
   for(let i=0;i<3;i++){
    const a=vs[i],b=vs[(i+1)%3];if(a.d>0)polygon.push(a);
    if((a.d>0)!==(b.d>0)){
-    const t=a.d/(a.d-b.d),p={x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,d:0,h:a.d>0?a.h:b.h,style:a.d>0?a.style:b.style,biome:a.d>0?a.biome:b.biome};polygon.push(p);crossings.push(p);
+    const t=a.d/(a.d-b.d),p={x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,d:0,h:a.h+(b.h-a.h)*t,style:a.d>0?a.style:b.style,biome:a.d>0?a.biome:b.biome};polygon.push(p);crossings.push(p);
    }
   }
   if(crossings.length===2)edges.push(crossings);

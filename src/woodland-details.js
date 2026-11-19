@@ -18,7 +18,7 @@ export function woodlandDetailPlacements(map,{spatial,ridgeSurface=null}={}){
   const kind=seed>.72?'mushroom':'flower',count=kind==='mushroom'?2+Math.floor(seed*4):4+Math.floor(seed*6);
   for(let i=0;i<count;i++){
    const a=random(cx+i,cz,551)*Math.PI*2,d=Math.sqrt(random(cx,cz+i,912))*(kind==='mushroom'?.65:1.2),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
-   if(!spatial.isLand(px,pz)||spatial.isWater(px,pz)||excluded(px,pz)||ridgeSurface?.sample(px,pz).d>1.5)continue;
+   if(!spatial.isLand(px,pz)||spatial.isWater(px,pz)||excluded(px,pz))continue;
    // Painted roads can be authored as soil stamps rather than path polylines.
    const covered=spatial.terrainPaint?.near(px,pz).some(s=>!['meadow','forest'].includes(s.type)&&Math.hypot(px-s.position[0],pz-s.position[1])<s.radius*.9);
    if(covered)continue;

@@ -251,7 +251,7 @@ async function createGrassPreview(root, { map, groundHeightAt = () => 0, colorAt
 
 /** Explicit object records are the only source of world props. Blades and flowers
  * within one editable patch are instanced details of that asset, not hidden map entries. */
-export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, biomeAt = () => null, biomeWeightsAt, quality = 'high', chunkSize = 64, previewOnly = false }) {
+export async function createWorldObjectRenderer(root, { map, heightAt, groundHeightAt = heightAt, colorAt, biomeAt = () => null, biomeWeightsAt, quality = 'high', chunkSize = 64, previewOnly = false, cutaway = null }) {
   if (previewOnly) return createGrassPreview(root, { map, groundHeightAt, colorAt, quality });
   const authoredObjectCount = map.objects?.length ?? 0;
   const barrierCount = map.barriers?.length ?? 0;
@@ -636,6 +636,11 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
     }
   }
+  // Include trunks, rocks and buildings in the same local aperture as cliffs;
+  // a faded crown alone still leaves an elevated trunk hiding the avatar.
+  if(cutaway)for(const chunk of chunks.values())chunk.group.traverse(node=>{
+    for(const material of Array.isArray(node.material)?node.material:node.material?[node.material]:[])cutaway.apply(material);
+  });
   for (const tree of trees) tree.canopy = canopies.get(tree.id) ?? null;
   function updateCanopyBatches() {
     for (const entry of canopyBatches) {
@@ -643,6 +648,15 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       entry.fade.geometry = entry.mesh.geometry;
       entry.fade.visible = entry.mesh.visible && entry.canopies.some(canopy => canopy && canopy.opacity < TREE_CANOPY_STYLE.opaqueThreshold);
     }
+  }
+  let viewManaged=false;
+  const canopyCamera=new THREE.Vector3();
+  function updateViewOcclusion(player,camera,dt,enabled=true){
+    viewManaged=true;
+    if(!enabled){resetCanopyFade();return;}
+    camera.getWorldPosition(canopyCamera);root.worldToLocal(canopyCamera);
+    for(const canopy of canopies.values())if(canopy)updateTreeCanopy(canopy,player,dt,canopyCamera);
+    updateCanopyBatches();
   }
   function resetCanopyFade() {
     for (const canopy of canopies.values()) if (canopy) {
@@ -753,7 +767,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
       }
       lastCull = time; lastPlayer.copy(player);
     }
-    for (const canopy of canopies.values()) if (canopy) updateTreeCanopy(canopy, player, dt);
+    if(!viewManaged)for (const canopy of canopies.values()) if (canopy) updateTreeCanopy(canopy, player, dt);
     updateCanopyBatches();
     shelter = null;
     for (const structure of structures) {
@@ -777,7 +791,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
   function setQuality(value) { mode = value === 'low' ? 'low' : 'high'; vegetation.setQuality(mode); lastCull = -Infinity; }
   update(0, 0, new THREE.Vector3(30, groundHeightAt(30, -42), -42));
   initializing=false;
-  return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, resetCanopyFade, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
+  return { trees, grassPatches, houses, destructibles, destroyDestructible, resetDestructibles, resetCanopyFade, updateViewOcclusion, projectileObstacles, importedAssets, resolveMovement, traceProjectile, heightAtHouse, concealmentAt, update, setQuality, wind,
     setDebrisVisibility(callback) { debrisVisible = callback; },
     setGrassInteractors(values){ wind.setInteractors(values); },
     dispose() { debris.dispose(); castleModels.forEach(model=>model.dispose()); disposeScenery([...chunks.values()].map(chunk => chunk.group), prototypes, [treeHost, houseHost, tree01.scene, tree02.scene, bush.scene, flowers.scene, bed.scene], treeGeometries); },

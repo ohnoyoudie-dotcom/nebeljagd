@@ -59,3 +59,27 @@ test('joined cliff normals consistently face outwards without alternating dark s
   }
  });assert.ok(checked>50);r.dispose();
 });
+
+
+test('baseline height produces broad deterministic relief shared by props and projectile collision',()=>{
+ const source=stroke('high',[[-30,0],[30,0]],{height:8,radius:10});
+ const r=runtime([source]),again=runtime([JSON.parse(JSON.stringify(source))]);
+ const heights=[];
+ for(let x=-24;x<=24;x+=3){
+  const h=r.decorationHeightAt(x,0);heights.push(h);
+  assert.equal(h,again.decorationHeightAt(x,0));
+  assert.ok(h>4&&h<12);
+  assert.ok(r.traceProjectile({x,y:h-.4,z:0},{x:x+.01,y:h-.4,z:0}));
+  assert.equal(r.traceProjectile({x,y:h+.4,z:0},{x:x+.01,y:h+.4,z:0}),null);
+ }
+ assert.ok(Math.max(...heights)-Math.min(...heights)>3,'visible hills and dips, not tiny ripples');
+ assert.equal(r.decorationHeightAt(0,30),0);
+ assert.ok(r.treePlacements.some(o=>o.kind==='tree'));
+ for(const o of r.treePlacements)assert.ok(r.decorationHeightAt(...o.position)>0);
+ // Every rendered cap vertex and the surface sampling used to ground props
+ // agree, including interpolated clipping vertices along the boundary.
+ for(const tri of r.surface.triangles)for(const p of tri){
+  assert.ok(Math.abs(r.surface.sample(p.x,p.z).h-p.h)<1e-6);
+ }
+ r.dispose();again.dispose();
+});

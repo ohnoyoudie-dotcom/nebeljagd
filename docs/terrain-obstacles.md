@@ -57,3 +57,23 @@ Einstellung `landscape.woodlandDetails` bleibt beim Speichern erhalten. Die
 Dekoration ist standardmäßig aktiv, ohne die bestehende Projektkarte umzuschreiben.
 Instanzgruppen werden nur in der Umgebung gerendert und aus der Fernansicht
 weggelassen. Dichte gemalte Waldflächen sind auf insgesamt 40.000 m² begrenzt.
+
+## Höhenprofil und Sicht auf die eigene Figur
+
+„Grundhöhe“ steuert die mittlere Höhe. Breite, weltverankerte Erhebungen und
+Senken variieren diese Höhe um höchstens etwa 44 Prozent. Das Profil ist nach
+Neuladen, Export und in angrenzenden Pinselstrichen identisch. Geometrie,
+Projektilprüfung und Objektaufstellung verwenden dieselbe abgetastete Höhe.
+Auch dichter Wald steht auf erhöhtem Terrain. Felsplateaus erhalten passende
+Bäume und Unterholz; manuell gesetzte Objekte stehen ebenfalls auf der Kappe.
+Die Kappe bleibt für Spielfiguren gesperrt, auch beim Teleportieren.
+
+Direkt zwischen Kamera und eigener Figur wird eine kleine weich auslaufende
+Sichtöffnung in verdeckenden Felsflächen und Objekten (auch Stämmen) ausgespart. Außerhalb der Öffnung bleibt
+der Fels unverändert. Baumkronen berücksichtigen zusätzlich die Kamerasichtlinie
+und ihre tatsächliche Höhe, auch auf einem Plateau. Das verändert weder
+Kollision noch die taktische Sicht auf andere Figuren. Wasser und Küstenform
+bleiben unverändert.
+
+Zusätzliche Browserprüfung: `python3 tests/terrain_relief_smoke.py` gegen die
+fertig gebauten Dateien, mit Bildern von vorn, hinter und seitlich am Felsen.

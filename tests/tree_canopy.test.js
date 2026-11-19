@@ -132,3 +132,16 @@ test('the imported inner crown can fade without receiving leaf tint or snow fros
   assert.equal(treeCanopyBounds([core]), null, 'only real leaf bounds define the crown footprint');
   source.geometry.dispose(); core.geometry.dispose();
 });
+
+
+test('camera ray fades an elevated crown in front of the avatar, but not one behind or to the side',()=>{
+ const crown=new THREE.Box3(new THREE.Vector3(-2,2,-2),new THREE.Vector3(2,7,2));
+ const create=z=>createTreeCanopy(crown,{x:0,y:6,z,rotation:0,scale:[1,1,1]});
+ const front=create(7),behind=create(-7),side=create(7);side.footprint.center[0]=12;
+ const player={x:0,y:0,z:0},camera={x:0,y:29,z:18};
+ for(let i=0;i<12;i++)for(const c of [front,behind,side])updateTreeCanopy(c,player,1/60,camera);
+ assert.ok(front.opacity<.09,'raised crown clears before a fast traversal is over');
+ assert.equal(behind.opacity,1);assert.equal(side.opacity,1);
+ for(let i=0;i<180;i++)updateTreeCanopy(front,{x:15,y:0,z:0},1/60,{x:15,y:29,z:18});
+ assert.equal(front.opacity,1);
+});

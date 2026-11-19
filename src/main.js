@@ -647,7 +647,7 @@ if (new URLSearchParams(location.search).has('inspect')) {
   window.nebeljagdInspectTerrain = ({from,to,position,radius=.42}={}) => {
     const resolved=position?{...position}:null;if(resolved)world.resolveMovement(resolved,radius);
     const hit=from&&to?world.traceProjectile(from,to,.06):null;
-    return{resolved,hit:hit?{type:hit.type,t:hit.t,point:hit.point}:null,stats:world.stats.terrainObstacles};
+    return{resolved,decorationHeight:position?world.terrainDecorationHeightAt?.(position.x,position.z):null,hit:hit?{type:hit.type,t:hit.t,point:hit.point}:null,stats:world.stats.terrainObstacles};
   };
   window.nebeljagdInspectStoneBarrier = ({damage=0}={}) => {
     const body=world.temporaryObstacles?.list()[0];if(!body)return null;
@@ -788,6 +788,7 @@ function frame(now) {
   cameraTarget.set(player.x * visualScale, (player.y + arrivalState.height) * visualScale, (player.z - 1.5) * visualScale);
   cameraFocus.lerp(cameraTarget,1-Math.exp(-dt*4));camera.position.copy(cameraFocus).add(cameraOffset);
   camera.lookAt(cameraFocus);
+  world.updateViewOcclusion?.(player,camera,dt,!arrivalState.active&&['playing','paused'].includes(state.phase));
   sun.target.position.set(player.x*visualScale,player.y*visualScale,player.z*visualScale);
   sun.position.copy(sun.target.position).add(sunlightOffset);
   sun.target.updateMatrixWorld();

@@ -27,10 +27,23 @@ export function createTreeCanopy(bounds, placement) {
       minY: placement.y + bounds.min.y * sy, maxY: placement.y + bounds.max.y * sy } };
 }
 
-export function updateTreeCanopy(canopy, player, dt) {
+export function updateTreeCanopy(canopy, player, dt, camera = null) {
   const footprint = canopy.footprint, dx = player.x - footprint.center[0], dz = player.z - footprint.center[1];
   const cos = Math.cos(footprint.rotation), sin = Math.sin(footprint.rotation);
-  const distance = Math.hypot((cos * dx - sin * dz) / footprint.radiusX, (sin * dx + cos * dz) / footprint.radiusZ);
+  let distance = Math.hypot((cos * dx - sin * dz) / footprint.radiusX, (sin * dx + cos * dz) / footprint.radiusZ);
+  // Intersect the avatar-to-camera ray with the actual elevated crown slab.
+  // This also catches a tree on a cliff while the avatar walks behind it.
+  if(camera && camera.y>player.y+.9){
+    const head=player.y+.9,dy=camera.y-head;
+    const lo=THREE.MathUtils.clamp((footprint.minY-head)/dy,0,1),hi=THREE.MathUtils.clamp((footprint.maxY-head)/dy,0,1);
+    if(hi>lo){
+      const vx=camera.x-player.x,vz=camera.z-player.z;
+      const ax=(cos*dx-sin*dz)/footprint.radiusX,az=(sin*dx+cos*dz)/footprint.radiusZ;
+      const bx=(cos*vx-sin*vz)/footprint.radiusX,bz=(sin*vx+cos*vz)/footprint.radiusZ;
+      const t=THREE.MathUtils.clamp(-(ax*bx+az*bz)/(bx*bx+bz*bz||1),lo,hi);
+      distance=Math.min(distance,Math.hypot(ax+bx*t,az+bz*t));
+    }
+  }
   // Start at the crown's edge before a fast-moving player disappears beneath
   // it; reach full coverage just inside, without delaying the slower restore.
   const coverage = player.y + .9 < footprint.maxY

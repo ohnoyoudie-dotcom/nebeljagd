@@ -214,9 +214,9 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     if (pieces.length) { const geometry = mergeGeometries(pieces); pieces.forEach(p => p.dispose()); const mesh = new THREE.Mesh(geometry, bridgeMaterial); mesh.name = `${path.name} · begehbare Holzbrücke`; mesh.castShadow = mesh.receiveShadow = true; root.add(mesh); bridgeMeshes.push({ mesh, x: path.points[0][0], z: path.points[0][1] }); }
   }
   const ridges=createTerrainObstacles(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,isLand:spatial.isLand,isWater:spatial.isWater});
-  const objects = await createWorldObjectRenderer(root, { map: ridges.treePlacements.length?{...map,objects:[...(map.objects??[]),...ridges.treePlacements]}:map, heightAt: surfaceHeightAt, groundHeightAt: surfaceHeightAt,
-    colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt, quality, chunkSize: CHUNK });
-  const woodlandDetails=createWoodlandDetails(root,{map:ridges.treePlacements.length?{...map,objects:[...(map.objects??[]),...ridges.treePlacements]}:map,spatial,heightAt:surfaceHeightAt,ridgeSurface:ridges.surface});
+  const objects = await createWorldObjectRenderer(root, { map: ridges.treePlacements.length?{...map,objects:[...(map.objects??[]),...ridges.treePlacements]}:map, heightAt: ridges.decorationHeightAt, groundHeightAt: ridges.decorationHeightAt,
+    cutaway:ridges.cutaway, colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt, quality, chunkSize: CHUNK });
+  const woodlandDetails=createWoodlandDetails(root,{map:ridges.treePlacements.length?{...map,objects:[...(map.objects??[]),...ridges.treePlacements]}:map,spatial,heightAt:ridges.decorationHeightAt,ridgeSurface:ridges.surface});
   const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: spatial.colorAt, spatial, quality });
   const snowCover = createSnowCover(root, { map, heightAt: surfaceHeightAt, spatial, quality });
   const materialSet = new Set(); root.traverse(child => { if (child.material) for (const material of Array.isArray(child.material) ? child.material : [child.material]) materialSet.add(material); });
@@ -288,6 +288,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   return {
     root, map, visualScale: 1, spawn, bounds: map.bounds,
     worldRadius: Math.max(...map.island.points.map(p => Math.hypot(...p))),
+    terrainDecorationHeightAt:ridges.decorationHeightAt,
     heightAt, groundHeightAt: surfaceHeightAt, snowSurfaceAt: snowCover.surfaceHeightAt, snowWeightAt:snowCover.weightAt, resolveMovement, traceProjectile(start,end,radius=.06,accepts=null){
       const objectHit=objects.traceProjectile(start,end,radius,accepts),ridgeHit=ridges.traceProjectile(start,end,radius,accepts);
       return ridgeHit&&(!objectHit||ridgeHit.t<objectHit.t)?ridgeHit:objectHit;
@@ -296,7 +297,8 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     trees: objects.trees, grassPatches: objects.grassPatches, houses: objects.houses, destructibles: objects.destructibles,
     projectileObstacles: [...objects.projectileObstacles,...ridges.obstacles], importedAssets: objects.importedAssets,
     concealmentAt: objects.concealmentAt,
-    resetCanopyFade: objects.resetCanopyFade,
+    resetCanopyFade(){objects.resetCanopyFade();ridges.cutaway.reset();},
+    updateViewOcclusion(player,camera,dt,enabled=true){ridges.updateView(player,camera,enabled);objects.updateViewOcclusion?.(player,camera,dt,enabled);},
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
     setDebrisVisibility: objects.setDebrisVisibility,
     update,
