@@ -1,3 +1,4 @@
+import { islandPoint } from './map-arrival.js';
 import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import { getCastleMaterialColors } from './map/castle-colors.js';
 import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
@@ -55,7 +56,7 @@ const portrait = `<img src="${portraitUrl}" width="64" height="64" alt="" aria-h
 const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
 const timeLabel = seconds => `${pad(seconds / 60)}:${pad(seconds % 60)}`;
 
-export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
+export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestart, onDash, onAttack, onAttackMove, onAttackRelease, onAttackCancel, onInteract, onQualityChange, onMapImport, practiceSession, onLeave } = {}) {
   const practice = Boolean(practiceSession);
   const root = document.getElementById('ui');
   root.dataset.phase = 'ready';
@@ -99,7 +100,11 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="ability-slot" id="attackSlot"><kbd>MAUS / F</kbd><span class="ability-icon" id="attackSlotIcon">${icon('sword')}</span><strong id="attackReady">Keine Waffe</strong><span>ANGRIFF</span></div>
       <div class="ability-slot" id="rollSlot"><kbd>LEERTASTE</kbd><span class="ability-icon">${icon('roll')}</span><strong id="rollReady">Bereit</strong><span>ROLLE</span></div>
     </div>
-    <div class="arrival-panel" id="arrivalPanel" hidden><span class="arrival-eyebrow">DEIN ABENTEUER BEGINNT</span><div><strong id="arrivalTitle">Kometenflug</strong><span id="arrivalHeight">1600 m</span></div><div class="arrival-track"><i id="arrivalProgress"></i></div><small class="desktop-hint">WASD oder Pfeiltasten zum Steuern</small><small class="touch-hint">Mit dem Stick die Landung steuern</small></div>
+    <section id="arrivalPanel" class="spawn-selection" hidden aria-labelledby="arrivalTitle">
+      <header class="spawn-heading"><div><span class="spawn-eyebrow">MAGEBRAWL · DEIN START AUF DER INSEL</span><h2 id="arrivalTitle">Wähle deinen Startpunkt</h2></div><button id="arrivalPauseBtn" class="icon-button" type="button" aria-label="Startauswahl pausieren">${icon('pause')}</button></header>
+      <div class="spawn-map-wrap"><canvas id="arrivalMap" width="1024" height="1024" tabindex="0" aria-label="Startpunkt auf der Insel wählen. Klicken oder tippen; alternativ Pfeiltasten und Enter." aria-describedby="arrivalHint"></canvas><span class="spawn-north">N ↑</span></div>
+      <footer class="spawn-footer"><div class="spawn-countdown"><strong id="arrivalCountdown">8</strong><span id="arrivalCountdownLabel">SEKUNDEN BIS ZUM START</span></div><p id="arrivalHint" role="status">Klicke oder tippe auf freies Land. Dein markierter Startpunkt wird automatisch übernommen.</p><div class="arrival-track"><i id="arrivalProgress"></i></div><span class="spawn-legend"><i></i> Dein Startpunkt <span>·</span> Auswahl bis zum Ende des Countdowns änderbar</span></footer>
+    </section>
     <div class="touch-controls playing-only">
       <div id="joystick" class="joystick" role="group" aria-label="Virtueller Bewegungsjoystick"><span class="joystick-cross"></span><div id="joystickKnob" class="joystick-knob">${icon('compass')}</div></div>
       <div class="touch-actions">
@@ -118,10 +123,10 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       <div class="intro-card">
         <div class="intro-eyebrow"><span></span>MAGEBRAWL · MAGIE DER ELEMENTE</div>
         <h1 id="introTitle">Die Insel<br><em>ruft.</em></h1>
-        <p class="intro-description">Stürze dich in die Inselwelt. Steuere deine Landung, finde deine erste Waffe und entdecke verborgene Schätze. Nutze Häuser und hohes Gras als Deckung, während der Nebel näher rückt.</p>
+        <p class="intro-description">Wähle deinen Startpunkt auf der Insel und teleportiere dich ins Abenteuer. Finde deine erste Waffe und entdecke verborgene Schätze. Nutze Häuser und hohes Gras als Deckung, während der Nebel näher rückt.</p>
         <div class="intro-world-summary"><strong id="worldName">Deine Spielwelt</strong><span id="worldStats">Die Welt wird vorbereitet …</span></div>
         <div class="intro-features"><span>${icon('leaf')}Erkunden</span><span>${icon('chest')}Schätze finden</span><span>${icon('shield')}Überleben</span></div>
-        <button id="startBtn" class="primary-button"><span>Absprung starten</span>${icon('arrow')}</button>
+        <button id="startBtn" class="primary-button"><span>Spiel starten</span>${icon('arrow')}</button>
         ${practice ? '<button class="lobby-intro-exit lobby-leave" type="button">Zurück zur Startseite</button>' : ''}
         <div class="world-map-actions"><button id="loadMapBtn" class="map-load-button" type="button" disabled>Eigene Karte laden</button><a href="./map-editor.html" target="_blank" rel="noopener">Im Karteneditor gestalten ${icon('arrow')}</a></div>
         <input id="worldMapFile" type="file" accept=".json,application/json" hidden>
@@ -207,6 +212,53 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
   let worldmap = null;
   let mapBackdrop = null;
   let mapProjection = null;
+  let arrivalFeedback = '';
+  let arrivalWasActive = false;
+  let keyboardPoint = null;
+  const arrivalMap = $('arrivalMap');
+  const arrivalContext = arrivalMap.getContext('2d');
+  $('arrivalPauseBtn').addEventListener('click', () => onPause?.());
+  function chooseStart(point) {
+    if (currentPhase !== 'deploying' || latestState.arrival?.stage !== 'select') return;
+    const accepted = point && onArrivalSelect?.(point);
+    arrivalFeedback = accepted ? 'Startpunkt gewählt. Du kannst ihn bis zum Ende des Countdowns ändern.' : 'Hier kannst du nicht starten. Wähle freies Land außerhalb von Hindernissen.';
+    $('arrivalHint').textContent = arrivalFeedback;
+    $('arrivalHint').dataset.invalid = String(!accepted);
+  }
+  arrivalMap.addEventListener('pointerup', event => {
+    if (!event.isPrimary || event.button !== 0 || !worldmap) return;
+    event.preventDefault();
+    const rect = arrivalMap.getBoundingClientRect();
+    chooseStart(islandPoint((event.clientX-rect.left)/rect.width, (event.clientY-rect.top)/rect.height, worldmap.bounds));
+  });
+  arrivalMap.addEventListener('keydown', event => {
+    if (currentPhase !== 'deploying' || latestState.arrival?.stage !== 'select') return;
+    const directions = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
+    if (directions[event.key]) {
+      event.preventDefault(); event.stopPropagation();
+      const base = keyboardPoint || latestState.arrival.target || {x:0,z:0}, d = directions[event.key];
+      keyboardPoint = {x:Math.max(worldmap.bounds.minX,Math.min(worldmap.bounds.maxX,base.x+d[0]*16)),z:Math.max(worldmap.bounds.minZ,Math.min(worldmap.bounds.maxZ,base.z+d[1]*16))};
+      drawArrivalMap(latestState);
+    } else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); chooseStart(keyboardPoint || latestState.arrival.target); }
+  });
+  function drawArrivalMap(state) {
+    if (!arrivalContext || !mapBackdrop || !atlasProjection || !state.arrival?.active) return;
+    const ctx = arrivalContext;
+    ctx.setTransform(4,0,0,4,0,0); ctx.drawImage(mapBackdrop,0,0,256,256);
+    const target = state.arrival.target;
+    if (target) {
+      const [x,y] = atlasProjection.point(target.x,target.z);
+      ctx.save();ctx.translate(x,y);
+      ctx.shadowColor='#9de9ff';ctx.shadowBlur=9;ctx.strokeStyle='#b8edff';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.arc(0,0,4.8,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;
+      ctx.fillStyle='#e7f9ff';ctx.beginPath();ctx.arc(0,0,2.2,0,Math.PI*2);ctx.fill();
+      ctx.font='600 4.5px system-ui';ctx.textAlign='center';ctx.fillText('DEIN START',0,-8);ctx.restore();
+    }
+    if (keyboardPoint && state.arrival.stage === 'select') {
+      const [x,y] = atlasProjection.point(keyboardPoint.x,keyboardPoint.z);
+      ctx.strokeStyle='#f5d899';ctx.lineWidth=.7;ctx.strokeRect(x-3,y-3,6,6);
+    }
+  }
 
   $('startBtn').addEventListener('click', () => onStart?.());
   $('pauseBtn').addEventListener('click', () => onPause?.());
@@ -577,11 +629,19 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
     $('arrivalPanel').hidden = !arriving;
     root.dataset.arrivalStage=arriving?state.arrival.stage:'';
     if (arriving) {
-      $('arrivalHeight').textContent = `${Math.ceil(state.arrival?.height || 0)} m`;
-      $('arrivalProgress').style.transform = `scaleX(${state.arrival?.progress || 0})`;
-      $('arrivalTitle').textContent=state.arrival?.waitingForLanding?'Freies Land suchen':'Kometenflug';
-      playerStatus.textContent = 'Als Komet unterwegs';
+      if (!arrivalWasActive && state.arrival.stage === 'select' && currentPhase !== 'paused') {
+        arrivalFeedback = ''; keyboardPoint = null; $('arrivalHint').dataset.invalid = 'false';
+      }
+      const selecting = state.arrival.stage === 'select';
+      $('arrivalCountdown').textContent = selecting ? String(Math.ceil(state.arrival.remaining)) : '✦';
+      $('arrivalCountdownLabel').textContent = selecting ? 'SEKUNDEN BIS ZUM START' : 'TELEPORT WIRD VORBEREITET';
+      $('arrivalProgress').style.transform = `scaleX(${selecting ? 1-state.arrival.progress : 0})`;
+      $('arrivalTitle').textContent = selecting ? 'Wähle deinen Startpunkt' : 'Dein Abenteuer beginnt';
+      $('arrivalHint').textContent = selecting ? arrivalFeedback || 'Klicke oder tippe auf freies Land. Dein markierter Startpunkt wird automatisch übernommen.' : 'Startpunkt bestätigt. Du wirst gleich auf die Insel teleportiert.';
+      arrivalMap.setAttribute('aria-disabled', String(!selecting));
+      playerStatus.textContent = 'Startpunkt wählen';
     }
+    arrivalWasActive = arriving;
     const nearWeapon = typeof state.nearWeapon === 'string' ? { type: state.nearWeapon } : state.nearWeapon;
     const nearChest = state.nearChest;
     const nearby = nearChest && (!nearWeapon || (nearChest.distance ?? Infinity) < (nearWeapon.distance ?? Infinity)) ? nearChest : nearWeapon;
@@ -609,7 +669,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       lastNearWeaponType = nearKey;
     }
     const now = performance.now();
-    if (now - lastMapTime > 90) { drawMap(state); lastMapTime = now; }
+    if (now - lastMapTime > 90) { drawMap(state); if (arriving) drawArrivalMap(state); lastMapTime = now; }
     if (state.quality && $('qualityMode')) $('qualityMode').value = state.quality;
   }
 
@@ -652,7 +712,7 @@ export function createUI({ onStart, onPause, onResume, onRestart, onDash, onAtta
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),
     joystick: $('joystick'), joystickKnob: $('joystickKnob'), dashButton, attackButton, interactButton,
-    setLoading(message) { $('startBtn').disabled = Boolean(message); $('loadMapBtn').disabled = practice || Boolean(message); $('startBtn').querySelector('span').textContent = message || (practice ? 'Übungswiese betreten' : 'Absprung starten'); },
+    setLoading(message) { $('startBtn').disabled = Boolean(message); $('loadMapBtn').disabled = practice || Boolean(message); $('startBtn').querySelector('span').textContent = message || (practice ? 'Übungswiese betreten' : 'Spiel starten'); },
     showError(message) { $('errorMessage').textContent = message; $('errorScreen').hidden = false; },
   };
 }

@@ -1,15 +1,26 @@
-#ui[data-arrival-stage=dive] .map-mode-switch,
-#ui[data-arrival-stage=dive] .weapon-status,
-#ui[data-arrival-stage=dive] .player-panel,
-#ui[data-arrival-stage=dive] .inventory,
-#ui[data-arrival-stage=dive] .ability-dock,
-#ui[data-arrival-stage=dive] .touch-actions{display:none}
-#ui[data-arrival-stage=dive] .arrival-panel{max-width:calc(100vw - 32px)}
-#ui .arrival-panel #arrivalHeight{white-space:nowrap;flex:none;margin-left:10px}
-@media(max-height:600px) and (min-width:701px){#ui .arrival-panel strong{font-size:17px}}
-@media(max-height:600px) and (min-width:601px){
- #ui[data-arrival-stage=dive] .arrival-panel{top:94px;bottom:auto;left:18px;transform:none;width:230px;padding:10px}
- #ui[data-arrival-stage=dive] .arrival-eyebrow{display:none}
- #ui[data-arrival-stage=dive] .arrival-panel>div:not(.arrival-track){margin:6px 0}
- #ui[data-arrival-stage=dive] .arrival-track{margin:8px 0}
-}
+/* A crisp island atlas replaces the costly aerial flight. */
+#ui[data-phase=deploying] .playing-only{visibility:hidden}
+#ui .spawn-selection[hidden]{display:none}
+#ui .spawn-selection{position:absolute;inset:0;z-index:40;pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;background:radial-gradient(ellipse at 50% 45%,#254545,#112b2a 75%);color:#eee5ce;opacity:1;transition:opacity .35s ease;overflow:auto}
+#ui[data-arrival-stage=teleport] .spawn-selection{opacity:0;pointer-events:none}
+.spawn-heading{width:min(100%,760px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none}
+.spawn-eyebrow{font-size:10px;letter-spacing:2px;color:#b7bd9e}
+.spawn-heading h2{font-family:Georgia,serif;font-size:clamp(22px,3vw,32px);font-weight:normal;margin:6px 0 0;color:#f3e5bd}
+#ui .spawn-heading .icon-button{position:static;flex:none}
+.spawn-map-wrap{position:relative;flex:none;width:min(660px,calc(100vw - 48px),calc(100dvh - 240px));aspect-ratio:1;border:1px solid #b5a67580;border-radius:10px;box-shadow:0 12px 48px #0005;overflow:hidden;background:#1d424e}
+#arrivalMap{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair;outline-offset:-4px}
+#arrivalMap:focus-visible{outline:2px solid #f3d99c}
+.spawn-north{position:absolute;right:14px;top:12px;font-size:11px;color:#ddd8b9;pointer-events:none}
+.spawn-footer{width:min(100%,660px);text-align:center;flex:none}
+.spawn-countdown{display:flex;align-items:center;justify-content:center;gap:10px}
+.spawn-countdown strong{font-size:27px;font-variant-numeric:tabular-nums;color:#e8d296;min-width:26px}
+.spawn-countdown span{font-size:10px;letter-spacing:1.5px}
+#arrivalHint{font-size:13px;line-height:1.5;margin:6px 0;min-height:20px;color:#c7d4c7}
+#arrivalHint[data-invalid=true]{color:#ffd1ac}
+#ui .spawn-footer .arrival-track{height:3px;margin:10px auto;background:#ffffff14;border-radius:5px;overflow:hidden}
+#ui .spawn-footer .arrival-track i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#7ecfc9,#e6d3a0);transform-origin:left}
+.spawn-legend{display:inline-flex;align-items:center;gap:7px;font-size:10px;color:#a8bbb1;flex-wrap:wrap;justify-content:center}
+.spawn-legend i{width:6px;height:6px;border-radius:50%;background:#b8edff;box-shadow:0 0 8px #b8edff88}
+@media(max-width:600px){#ui .spawn-selection{padding:20px 14px;gap:18px;justify-content:center}.spawn-map-wrap{width:min(calc(100vw - 28px),calc(100dvh - 270px))}.spawn-eyebrow{font-size:8px;letter-spacing:1.2px}.spawn-legend{font-size:9px}.spawn-heading h2{font-size:24px}}
+@media(max-height:550px) and (min-width:601px){#ui .spawn-selection{display:grid;grid-template-columns:minmax(250px,1fr) minmax(240px,340px);grid-template-rows:auto 1fr;padding:18px 28px;gap:12px 28px;align-content:center}.spawn-heading{grid-column:2;grid-row:1}.spawn-map-wrap{grid-column:1;grid-row:1/3;width:min(100%,calc(100dvh - 36px));justify-self:center}.spawn-footer{grid-column:2;grid-row:2;align-self:center}.spawn-heading h2{font-size:23px}.spawn-eyebrow{font-size:8px}.spawn-legend{line-height:1.7}}
+@media(prefers-reduced-motion:reduce){#ui .spawn-selection{transition-duration:.15s}}
