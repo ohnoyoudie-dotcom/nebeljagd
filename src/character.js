@@ -210,7 +210,8 @@ export async function createCharacter(scene) {
     arrivalPivot.rotation.x = arrival?.diveTilt || 0;
     group.userData.arrivalTilt = arrivalPivot.rotation.x;
     if (arrival?.landing) presentationPivot.position.y -= arrival.landing * .22;
-    if (arrival?.active) {
+    // Only an airborne dive uses the spread-limb pose; portal arrivals stay grounded.
+    if (arrival?.active && arrival.stage === 'dive') {
       for (const chain of [...Object.values(armBones), ...Object.values(legBones)]) for (const bone of chain) if (bone) arrivalPose.set(bone, bone.quaternion.clone());
       // Imported animation is evaluated afresh each frame; this overlay never alters the asset.
       for (const [side, chain] of Object.entries(armBones)) {

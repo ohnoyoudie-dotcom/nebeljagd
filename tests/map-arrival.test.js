@@ -50,3 +50,28 @@ test('teleport particles stay anchored, fade out and reuse their nodes over rest
     }
   }finally{if(original===undefined)delete globalThis.document;else globalThis.document=original;}
 });
+
+test('arcane aperture opens, freezes with the arrival clock, closes and disposes without a floor marker',()=>{
+  const original=globalThis.document;
+  globalThis.document={createElement:()=>({getContext:()=>({createRadialGradient:()=>({addColorStop(){}}),fillRect(){}})})};
+  try {
+    for(const reducedMotion of [false,true]) {
+      const root=new Group(),fx=createArrivalTeleport(root,{reducedMotion}),a=createMapArrival(),p=new Vector3(30,2,-42);
+      a.start(point);a.update(9.25);fx.update(p,a.snapshot());const slit=fx.inspect();
+      assert(slit.portalVisible&&slit.width<.2);
+      a.update(.35);fx.update(p,a.snapshot());const open=fx.inspect();
+      assert(open.width>.99&&open.flash>.6);assert.equal(open.style,'arcane-portal');
+      a.update(0);fx.update(p,a.snapshot());assert.deepEqual(fx.inspect(),open);
+      a.update(.5);fx.update(p,a.snapshot());assert(fx.inspect().width<.3);
+      a.update(.1);fx.update(p,a.snapshot());assert(!fx.inspect().portalVisible);
+      a.update(.45);fx.update(p,a.snapshot());assert(!fx.inspect().active);
+      assert.equal(root.children[0].children.filter(n=>n.isMesh).length,1);
+      a.start(point);a.update(9.6);fx.update(p,a.snapshot());assert(fx.inspect().active);
+      fx.reset();assert(!fx.inspect().active);
+      // Rendering is skipped during map selection; reset must re-anchor even without an intervening update.
+      a.start(point);a.update(9.6);const moved=new Vector3(90,3,70);fx.update(moved,a.snapshot());
+      assert.deepEqual(fx.inspect().position,moved.toArray());
+      fx.dispose();fx.dispose();assert.equal(root.children.length,0);
+    }
+  }finally{if(original===undefined)delete globalThis.document;else globalThis.document=original;}
+});

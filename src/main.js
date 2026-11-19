@@ -266,7 +266,7 @@ function startArrival() {
       for (let x = bounds.minX + 8; x < bounds.maxX && !landingTarget; x += 24)
         landingTarget = validLanding(new THREE.Vector3(x, 0, z));
   }
-  clearInput(); state.direction = Math.PI; arrival.start(landingTarget);
+  clearInput(); state.direction = Math.PI; arrivalTeleport.reset(); arrival.start(landingTarget);
   setPhase('deploying');
 }
 
@@ -717,7 +717,7 @@ function frame(now) {
     ui.toast(state.hiddenInGrass ? (lobbyMode ? 'Im hohen Gras verborgen.' : 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.') : 'Du verlässt das dichte Gras.');
     lastConcealment = state.hiddenInGrass;
   }
-  character.group.visible = !arrivalState.active || (arrivalState.stage === 'teleport' && arrivalState.progress > .4);
+  character.group.visible = !arrivalState.active || (arrivalState.stage === 'teleport' && arrivalState.progress >= .38);
   character.setConcealed(state.hiddenInGrass && !arrivalState.active);
   arrivalTeleport.update(player, arrivalState);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);
