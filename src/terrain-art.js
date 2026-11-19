@@ -163,14 +163,26 @@ export function createTerrainArtwork() {
   // Flat, painted blade marks: no animated grass carpet and no extra draw calls.
   const grassCanvas=canvas(size),gc=grassCanvas.getContext('2d');gc.fillStyle='#808080';gc.fillRect(0,0,size,size);
   const grassRandom=randomSource(772419);
-  for(let cluster=0;cluster<85;cluster++){
-    const cx=grassRandom()*size,cy=grassRandom()*size,angle=grassRandom()*Math.PI*2,blades=2+Math.floor(grassRandom()*5);
-    for(let blade=0;blade<blades;blade++){
-      const length=13+grassRandom()*22,spread=(blade-(blades-1)/2)*2.3,lean=(grassRandom()-.5)*5;
-      for(const ox of [-size,0,size])for(const oy of [-size,0,size]){
-        gc.save();gc.translate(cx+ox,cy+oy);gc.rotate(angle);gc.fillStyle=blade%3?'#989898':'#676767';
-        gc.beginPath();gc.moveTo(spread-1.5,2);gc.quadraticCurveTo(spread+lean-1,-length*.4,spread+lean,-length);gc.quadraticCurveTo(spread+lean+1,-length*.3,spread+1.5,2);gc.fill();gc.restore();
+  for(let cluster=0;cluster<48;cluster++){
+    const cx=grassRandom()*size,cy=grassRandom()*size,angle=grassRandom()*Math.PI*2,blades=3+Math.floor(grassRandom()*4);
+    const sizeVariation=.65+grassRandom()*.8;
+    for(const ox of [-size,0,size])for(const oy of [-size,0,size]){
+      gc.save();gc.translate(cx+ox,cy+oy);gc.rotate(angle);
+      // A soft root joins a small fan of broad, tapered painted blades.
+      const root=gc.createRadialGradient(0,0,1,0,0,13*sizeVariation);
+      root.addColorStop(0,'#62626270');root.addColorStop(1,'#80808000');gc.fillStyle=root;
+      gc.fillRect(-16*sizeVariation,-16*sizeVariation,32*sizeVariation,32*sizeVariation);
+      // Reuse the same seeded blade arrangement in each tile-edge copy.
+      const bladeRandom=randomSource(772419+cluster*127);
+      for(let blade=0;blade<blades;blade++){
+        const fan=(blade/(blades-1)-.5),length=(19+bladeRandom()*21)*sizeVariation;
+        const lean=fan*length*.95+(bladeRandom()-.5)*8,width=(1.5+bladeRandom()*2.5)*sizeVariation;
+        const tipY=-length*(1.-Math.abs(fan)*.3),tipX=lean,baseX=fan*6*sizeVariation;
+        gc.fillStyle=['#969696','#707070','#a0a0a0','#878787'][Math.floor(bladeRandom()*4)];
+        gc.beginPath();gc.moveTo(baseX-width,2);gc.quadraticCurveTo(baseX+lean*.15-width,tipY*.52,tipX,tipY);
+        gc.quadraticCurveTo(baseX+lean*.65+width,tipY*.44,baseX+width,2);gc.closePath();gc.fill();
       }
+      gc.restore();
     }
   }
   cached = { paintedGrass: texture(grassCanvas,false), soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false), stoneCenters: texture(centers,false) };

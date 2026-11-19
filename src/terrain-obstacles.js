@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { createLocalPlayerCutaway } from './local-player-cutaway.js';
+import { applyPaintedGrass } from './painted-grass.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createObstacleSurface, OBSTACLE_COLORS } from './map/terrain-obstacles.js';
 
 const palettes={forest:['#929082','#605b48'],snow:['#78858c','#535c67'],desert:['#b88650','#755432'],swamp:['#6c7563','#454b3f']};
 const hash=(x,z)=>{const n=Math.sin(x*127.1+z*311.7)*43758.5453;return n-Math.floor(n);};
-export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWater}){
+export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWater,paintedGrass=null}){
  const surface=createObstacleSurface(map.landscape?.obstacles??[],{isLand,isWater,biomeAt});
  const root=new THREE.Group();root.name='Gemalte Felsrücken';parent.add(root);
  const chunks=new Map(),color=new THREE.Color();
@@ -71,11 +72,6 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
    float rockShade=.83+cells.y*.32-fracture*.27;
    float capShade=.83+broad*.26+ridgeNoise(p.xz*3.)*.08;
    diffuseColor.rgb*=mix(capShade,rockShade,upright)+(chips-.5)*.09-seam*.07*upright;
-   // Fine, painted blade clusters only on green plateau surfaces.
-   float green=smoothstep(.01,.09,diffuseColor.g-diffuseColor.r*.94);
-   vec2 grassCell=floor(p.xz*8.);vec2 blade=fract(p.xz*8.)-.5;
-   float grass=exp(-pow((blade.x+blade.y*.3)*16.,2.))*(1.-smoothstep(.08,.45,abs(blade.y)));
-   diffuseColor.rgb*=1.-green*(1.-upright)*grass*ridgeHash(grassCell)*.15;
 
 
   `);
@@ -156,6 +152,7 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
    return{t:hi,point,normal:{x:-gx/n,y:0,z:-gz/n},collider,type:'terrainRidge'};
   }return null;
  }
+ if(paintedGrass)applyPaintedGrass(material,paintedGrass);
  cutaway.apply(material);cutaway.apply(outcropMat);cutaway.apply(stones.material);
  return{root,surface,obstacles,treePlacements,decorationHeightAt,cutaway,
  updateView:cutaway.update,

@@ -77,3 +77,12 @@ bleiben unverändert.
 
 Zusätzliche Browserprüfung: `python3 tests/terrain_relief_smoke.py` gegen die
 fertig gebauten Dateien, mit Bildern von vorn, hinter und seitlich am Felsen.
+
+## Gemalte Grasbüschel
+
+Begehbarer grüner Boden und die flachen Oberseiten der Felsplateaus verwenden
+dieselbe gekachelte Graszeichnung. Kleine Fächer aus spitz zulaufenden Halmen
+variieren in Größe und Richtung. Zwei gedrehte Maßstäbe brechen Wiederholungen
+auf. Das frühere regelmäßige Halmenraster auf den Plateaus entfällt vollständig.
+Die Zeichnung verändert nur die Farbe: keine Rillen oder zusätzliche Höhen.
+Steile Felswände, Sand und Schnee erhalten keine grünen Grasbüschel.

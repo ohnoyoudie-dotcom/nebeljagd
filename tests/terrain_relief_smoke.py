@@ -2,7 +2,7 @@
 import base64,hashlib,json,os,subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'test-results/terrain-relief';OUT.mkdir(parents=True,exist_ok=True)
+ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/os.environ.get('NEBELJAGD_REPORT_DIR','test-results/terrain-relief');OUT.mkdir(parents=True,exist_ok=True)
 BASE=os.environ.get('NEBELJAGD_URL','http://127.0.0.1:5441');ENTRY=os.environ.get('NEBELJAGD_GAME_ENTRY','magebrawl.html')
 fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {createLobbyMap} from './src/lobby-map.js';console.log(JSON.stringify(createLobbyMap()))"],cwd=ROOT))
 fixture['objects']=[{'id':'plateau-tree','name':'Baum auf Fels','kind':'tree','variant':'kit-user-tree1','position':[0,0],'rotation':0,'scale':.75}]
@@ -11,7 +11,7 @@ report={'status':'running','checks':[],'errors':[],'mapSha256':hashlib.sha256((R
 def check(s):report['checks'].append(s);print('PASS',s,flush=True)
 with sync_playwright() as pw:
  b=pw.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'])
- c=b.new_context(viewport={'width':1440,'height':1000});p=c.new_page();p.set_default_timeout(240000)
+ c=b.new_context(viewport={'width':1024,'height':768} if os.environ.get('NEBELJAGD_TOUCH') else {'width':1440,'height':1000},has_touch=bool(os.environ.get('NEBELJAGD_TOUCH')),is_mobile=bool(os.environ.get('NEBELJAGD_TOUCH')));p=c.new_page();p.set_default_timeout(240000)
  p.on('pageerror',lambda e:report['errors'].append(str(e)))
  p.on('console',lambda m:report['errors'].append(m.text) if m.type=='error' and ('Shader' in m.text or 'VALIDATE' in m.text) else None)
  try:

@@ -1,5 +1,6 @@
 import { createWoodlandDetails } from './woodland-details.js';
 import { createTerrainObstacles } from './terrain-obstacles.js';
+import { applyPaintedGrass } from './painted-grass.js';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { validateWorldmap, landBoundaryRings } from './map/model.js';
@@ -213,7 +214,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     }
     if (pieces.length) { const geometry = mergeGeometries(pieces); pieces.forEach(p => p.dispose()); const mesh = new THREE.Mesh(geometry, bridgeMaterial); mesh.name = `${path.name} · begehbare Holzbrücke`; mesh.castShadow = mesh.receiveShadow = true; root.add(mesh); bridgeMeshes.push({ mesh, x: path.points[0][0], z: path.points[0][1] }); }
   }
-  const ridges=createTerrainObstacles(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,isLand:spatial.isLand,isWater:spatial.isWater});
+  const ridges=createTerrainObstacles(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,isLand:spatial.isLand,isWater:spatial.isWater,paintedGrass:terrainArtwork.paintedGrass});
   const objects = await createWorldObjectRenderer(root, { map: ridges.treePlacements.length?{...map,objects:[...(map.objects??[]),...ridges.treePlacements]}:map, heightAt: ridges.decorationHeightAt, groundHeightAt: ridges.decorationHeightAt,
     cutaway:ridges.cutaway, colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt, quality, chunkSize: CHUNK });
   const woodlandDetails=createWoodlandDetails(root,{map:ridges.treePlacements.length?{...map,objects:[...(map.objects??[]),...ridges.treePlacements]}:map,spatial,heightAt:ridges.decorationHeightAt,ridgeSurface:ridges.surface});
@@ -229,18 +230,11 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       shader.vertexShader = `varying vec3 vGeneratedWorld;\n${shader.vertexShader}`;
       shader.vertexShader = shader.vertexShader.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>\nvec4 generatedPosition = vec4(transformed, 1.);\n#ifdef USE_INSTANCING\ngeneratedPosition = instanceMatrix * generatedPosition;\n#endif\nvGeneratedWorld = (modelMatrix * generatedPosition).xyz;`);
       shader.fragmentShader = `${CLOUD_SHADOW_GLSL}\nuniform float uGeneratedRadius; uniform vec2 uGeneratedCenter; varying vec3 vGeneratedWorld;\n${shader.fragmentShader}`;
-      if(material.userData.paintedGround){
-        shader.uniforms.uPaintedGrass={value:terrainArtwork.paintedGrass};
-        shader.fragmentShader='uniform sampler2D uPaintedGrass;\n'+shader.fragmentShader;
-        shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
-          float greenGround=smoothstep(1.04,1.25,diffuseColor.g/(max(diffuseColor.r,diffuseColor.b)+.001));
-          float bladePaint=texture2D(uPaintedGrass,vGeneratedWorld.xz/4.).r;
-          diffuseColor.rgb*=1.+(bladePaint-.502)*1.7*greenGround;
-        `);
-      }
+
       shader.fragmentShader = shader.fragmentShader.replace('#include <dithering_fragment>', `gl_FragColor.rgb *= generatedCloudLight(vGeneratedWorld.xz); float generatedMist = smoothstep(uGeneratedRadius, uGeneratedRadius + 18., distance(vGeneratedWorld.xz,uGeneratedCenter)); gl_FragColor.rgb *= mix(vec3(1.), vec3(.40,.31,.54), generatedMist);\n#include <dithering_fragment>`);
     };
     material.customProgramCacheKey = () => `${key}|generated-world-zone-cloud-2`;
+    if(material.userData.paintedGround)applyPaintedGrass(material,terrainArtwork.paintedGrass);
   }
   function heightAt(x, z) { return objects.heightAtHouse(x, z) ?? spatial.bridgeAt(x, z)?.height ?? surfaceHeightAt(x, z); }
   const spawn = map.gameplay?.spawnPosition ? { x: map.gameplay.spawnPosition[0], z: map.gameplay.spawnPosition[1] } : { x: 30, z: -42 };
