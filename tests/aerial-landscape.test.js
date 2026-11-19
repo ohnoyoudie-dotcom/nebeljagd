@@ -32,3 +32,14 @@ test('wide aerial views have enough ocean coverage without changing the playable
  const root=new Group(),sea=new Mesh(new BoxGeometry(),new MeshStandardMaterial());sea.name='Meer um die Nebelinsel';root.add(sea);
  const far=createAerialLandscape({root});far.update(1600);const distantSea=root.children.at(-1).children[0];assert.equal(distantSea.scale.x,4);assert.equal(sea.scale.x,1);assert.equal(distantSea.geometry,sea.geometry);far.dispose();
 });
+
+test('selection scenery contains real buildings but hides loot without modifying the playable world',()=>{
+ const root=new Group(),sector=new Group();sector.name='Objekte · Sektor 0';sector.visible=false;root.add(sector);
+ const house=new Mesh(new BoxGeometry(),new MeshStandardMaterial());house.name='Waldhaus · house1';sector.add(house);
+ const chest=house.clone();chest.name='Truhe · loot1';chest.userData.mapObjectId='loot1';sector.add(chest);
+ const barrels=house.clone();barrels.name='barrel:oak · 0';sector.add(barrels);
+ const far=createAerialLandscape({root,map:{objects:[{id:'house1',kind:'house'},{id:'loot1',kind:'chest'}]}},{attach:false,sceneryOnly:true});
+ far.update(200);assert.equal(root.children.length,1);const copy=far.group.children[0];
+ assert(copy.visible&&copy.children[0].visible);assert(!copy.children[1].visible&&!copy.children[2].visible);
+ assert(chest.visible&&barrels.visible);assert(!sector.visible);far.dispose();
+});

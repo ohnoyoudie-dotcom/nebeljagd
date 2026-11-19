@@ -1,4 +1,4 @@
-import { islandPoint } from './map-arrival.js';
+import { arrivalMapView, arrivalViewPoint } from './map-arrival.js';
 import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import { getCastleMaterialColors } from './map/castle-colors.js';
 import portraitUrl from '../assets/characters/player-portrait.png?url&inline';
@@ -102,8 +102,8 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
     </div>
     <section id="arrivalPanel" class="spawn-selection" hidden aria-labelledby="arrivalTitle">
       <header class="spawn-heading"><div><span class="spawn-eyebrow">MAGEBRAWL · DEIN START AUF DER INSEL</span><h2 id="arrivalTitle">Wähle deinen Startpunkt</h2></div><button id="arrivalPauseBtn" class="icon-button" type="button" aria-label="Startauswahl pausieren">${icon('pause')}</button></header>
-      <div class="spawn-map-wrap"><canvas id="arrivalMap" width="1024" height="1024" tabindex="0" aria-label="Startpunkt auf der Insel wählen. Klicken oder tippen; alternativ Pfeiltasten und Enter." aria-describedby="arrivalHint"></canvas><span class="spawn-north">N ↑</span></div>
-      <footer class="spawn-footer"><div class="spawn-countdown"><strong id="arrivalCountdown">8</strong><span id="arrivalCountdownLabel">SEKUNDEN BIS ZUM START</span></div><p id="arrivalHint" role="status">Klicke oder tippe auf freies Land. Dein markierter Startpunkt wird automatisch übernommen.</p><div class="arrival-track"><i id="arrivalProgress"></i></div><span class="spawn-legend"><i></i> Dein Startpunkt <span>·</span> Auswahl bis zum Ende des Countdowns änderbar</span></footer>
+      <div class="spawn-map-wrap"><canvas id="arrivalMap" width="1024" height="1024" tabindex="0" aria-label="Startpunkt auf der Insel wählen. Maus, Touch, WASD oder Pfeiltasten. Plus und Minus vergrößern die Landschaft." aria-describedby="arrivalHint"></canvas><span class="spawn-north">N ↑</span><div class="spawn-zoom" aria-label="Kartenvergrößerung"><button id="arrivalZoomOut" type="button" aria-label="Karte verkleinern">−</button><span id="arrivalZoomLabel">1×</span><button id="arrivalZoomIn" type="button" aria-label="Karte vergrößern">+</button></div></div>
+      <footer class="spawn-footer"><div class="spawn-countdown"><strong id="arrivalCountdown">8</strong><span id="arrivalCountdownLabel">SEKUNDEN BIS ZUM START</span></div><p id="arrivalHint" role="status">Maus, Touch oder WASD: Wähle freies Land. Mit + siehst du Häuser und Wege genauer.</p><div class="arrival-track"><i id="arrivalProgress"></i></div><span class="spawn-legend"><i></i> Dein Startpunkt <span>·</span> Auswahl bis zum Ende des Countdowns änderbar</span></footer>
     </section>
     <div class="touch-controls playing-only">
       <div id="joystick" class="joystick" role="group" aria-label="Virtueller Bewegungsjoystick"><span class="joystick-cross"></span><div id="joystickKnob" class="joystick-knob">${icon('compass')}</div></div>
@@ -214,7 +214,8 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
   let mapProjection = null;
   let arrivalFeedback = '';
   let arrivalWasActive = false;
-  let keyboardPoint = null;
+  let arrivalBackdrop=null, arrivalBackdropInfo=null, arrivalZoom=1;
+  const selectionView=()=>worldmap?arrivalMapView(worldmap.bounds,latestState.arrival?.cursor||latestState.arrival?.target,arrivalZoom):null;
   const arrivalMap = $('arrivalMap');
   const arrivalContext = arrivalMap.getContext('2d');
   $('arrivalPauseBtn').addEventListener('click', () => onPause?.());
@@ -229,34 +230,42 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
     if (!event.isPrimary || event.button !== 0 || !worldmap) return;
     event.preventDefault();
     const rect = arrivalMap.getBoundingClientRect();
-    chooseStart(islandPoint((event.clientX-rect.left)/rect.width, (event.clientY-rect.top)/rect.height, worldmap.bounds));
+    chooseStart(arrivalViewPoint((event.clientX-rect.left)/rect.width, (event.clientY-rect.top)/rect.height, selectionView()));
   });
-  arrivalMap.addEventListener('keydown', event => {
-    if (currentPhase !== 'deploying' || latestState.arrival?.stage !== 'select') return;
-    const directions = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
-    if (directions[event.key]) {
-      event.preventDefault(); event.stopPropagation();
-      const base = keyboardPoint || latestState.arrival.target || {x:0,z:0}, d = directions[event.key];
-      keyboardPoint = {x:Math.max(worldmap.bounds.minX,Math.min(worldmap.bounds.maxX,base.x+d[0]*16)),z:Math.max(worldmap.bounds.minZ,Math.min(worldmap.bounds.maxZ,base.z+d[1]*16))};
-      drawArrivalMap(latestState);
-    } else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); chooseStart(keyboardPoint || latestState.arrival.target); }
+  function zoomArrival(change) {
+    if(currentPhase!=='deploying'||latestState.arrival?.stage!=='select')return;
+    arrivalZoom=Math.max(1,Math.min(4,arrivalZoom+change));
+    $('arrivalZoomLabel').textContent=`${arrivalZoom}×`;
+    $('arrivalZoomOut').disabled=arrivalZoom===1;$('arrivalZoomIn').disabled=arrivalZoom===4;
+    drawArrivalMap(latestState);
+  }
+  $('arrivalZoomOut').addEventListener('click',()=>zoomArrival(-1));
+  $('arrivalZoomIn').addEventListener('click',()=>zoomArrival(1));
+  arrivalMap.addEventListener('wheel',event=>{event.preventDefault();zoomArrival(event.deltaY<0?1:-1);},{passive:false});
+  arrivalMap.addEventListener('keydown',event=>{
+    if(event.key==='+'||event.key==='-'){event.preventDefault();zoomArrival(event.key==='+'?1:-1);}
   });
   function drawArrivalMap(state) {
     if (!arrivalContext || !mapBackdrop || !atlasProjection || !state.arrival?.active) return;
     const ctx = arrivalContext;
-    ctx.setTransform(4,0,0,4,0,0); ctx.drawImage(mapBackdrop,0,0,256,256);
+    ctx.setTransform(4,0,0,4,0,0);
+    const view=selectionView(),point=(x,z)=>[128+(x-view.x)*256/view.span,128+(z-view.z)*256/view.span];
+    const backdrop=arrivalBackdrop||mapBackdrop;
+    const [left,top]=atlasProjection.point(view.x-view.span/2,view.z-view.span/2);
+    const pixels=backdrop.width/256,crop=view.span*atlasProjection.scale*pixels;
+    ctx.drawImage(backdrop,left*pixels,top*pixels,crop,crop,0,0,256,256);
     const target = state.arrival.target;
     if (target) {
-      const [x,y] = atlasProjection.point(target.x,target.z);
+      const [x,y] = point(target.x,target.z);
       ctx.save();ctx.translate(x,y);
       ctx.shadowColor='#9de9ff';ctx.shadowBlur=9;ctx.strokeStyle='#b8edff';ctx.lineWidth=1.2;
       ctx.beginPath();ctx.arc(0,0,4.8,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;
       ctx.fillStyle='#e7f9ff';ctx.beginPath();ctx.arc(0,0,2.2,0,Math.PI*2);ctx.fill();
       ctx.font='600 4.5px system-ui';ctx.textAlign='center';ctx.fillText('DEIN START',0,-8);ctx.restore();
     }
-    if (keyboardPoint && state.arrival.stage === 'select') {
-      const [x,y] = atlasProjection.point(keyboardPoint.x,keyboardPoint.z);
-      ctx.strokeStyle='#f5d899';ctx.lineWidth=.7;ctx.strokeRect(x-3,y-3,6,6);
+    if (state.arrival.cursor && !state.arrival.cursorValid && state.arrival.stage === 'select') {
+      const [x,y] = point(state.arrival.cursor.x,state.arrival.cursor.z);
+      ctx.strokeStyle='#ff9d80';ctx.lineWidth=.7;ctx.strokeRect(x-3,y-3,6,6);
     }
   }
 
@@ -398,7 +407,7 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
       ctx.strokeStyle = '#8bc5ce'; ctx.lineWidth = Math.max(1.2, river.width * scale); ctx.stroke();
     }
     for (const path of worldmap.paths || []) if (path.kind !== 'bridge') drawMapPath(ctx, path, local, scale);
-    if (local) for (const object of landmarkObjects) {
+    for (const object of landmarkObjects) {
       const [px, py] = mapProjection.point(...object.position);
       const footprint = object.kind === 'house' ? getEnvironmentKitDefinition('house', object.variant)?.footprint : null;
       const reach = object.kind === 'house'
@@ -629,15 +638,15 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
     $('arrivalPanel').hidden = !arriving;
     root.dataset.arrivalStage=arriving?state.arrival.stage:'';
     if (arriving) {
-      if (!arrivalWasActive && state.arrival.stage === 'select' && currentPhase !== 'paused') {
-        arrivalFeedback = ''; keyboardPoint = null; $('arrivalHint').dataset.invalid = 'false';
+      if (!arrivalWasActive && state.arrival.stage === 'select' && state.arrival.progress < .01 && currentPhase !== 'paused') {
+        arrivalFeedback = ''; arrivalZoom=1; $('arrivalZoomLabel').textContent='1×'; $('arrivalZoomOut').disabled=true; $('arrivalZoomIn').disabled=false; $('arrivalHint').dataset.invalid = 'false';
       }
       const selecting = state.arrival.stage === 'select';
       $('arrivalCountdown').textContent = selecting ? String(Math.ceil(state.arrival.remaining)) : '✦';
       $('arrivalCountdownLabel').textContent = selecting ? 'SEKUNDEN BIS ZUM START' : 'TELEPORT WIRD VORBEREITET';
       $('arrivalProgress').style.transform = `scaleX(${selecting ? 1-state.arrival.progress : 0})`;
       $('arrivalTitle').textContent = selecting ? 'Wähle deinen Startpunkt' : 'Dein Abenteuer beginnt';
-      $('arrivalHint').textContent = selecting ? arrivalFeedback || 'Klicke oder tippe auf freies Land. Dein markierter Startpunkt wird automatisch übernommen.' : 'Startpunkt bestätigt. Du wirst gleich auf die Insel teleportiert.';
+      $('arrivalHint').textContent = selecting ? arrivalFeedback || 'Maus, Touch oder WASD: Wähle freies Land. Mit + siehst du Häuser und Wege genauer.' : 'Startpunkt bestätigt. Du wirst gleich auf die Insel teleportiert.';
       arrivalMap.setAttribute('aria-disabled', String(!selecting));
       playerStatus.textContent = 'Startpunkt wählen';
     }
@@ -708,6 +717,10 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
 
   return {
     update, setPhase, toast, setWorldmap, showLevelUp, clearLevelUp,
+    updateArrivalSelection(arrival) { latestState.arrival=arrival; drawArrivalMap(latestState); },
+    setArrivalBackdrop({canvas,metadata}) { arrivalBackdrop=canvas;arrivalBackdropInfo=metadata; },
+    getArrivalZoom:()=>arrivalZoom,
+    inspectArrivalMap:()=>({...(arrivalBackdropInfo||{mode:'vector-fallback'}),zoom:arrivalZoom,view:selectionView()}),
     inspectMinimap: () => ({ mode: mapMode, canvasPixels: map.width, displayWidth: map.getBoundingClientRect().width,
       spanMeters: mapProjection?.span ?? null, center: mapProjection ? { x: mapProjection.centerX, z: mapProjection.centerZ } : null,
       player: mapPlayerPixel, markers: mapDrawnMarkers.map(item => ({ ...item })) }),

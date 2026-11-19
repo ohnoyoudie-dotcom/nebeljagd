@@ -1,3 +1,4 @@
+import { captureArrivalLandscape } from './arrival-landscape.js';
 import { createStatusIndicators } from './status-indicators.js';
 import { effectiveSightRadius } from './darkened-status.js';
 import { aimKind, touchAimVector, directionTo } from './aim-input.js';
@@ -7,7 +8,7 @@ import './lobby.css';
 import './player-hud.css';
 import './arrival-hud.css';
 import { resolveArrivalTarget } from './arrival.js';
-import { createMapArrival } from './map-arrival.js';
+import { createMapArrival, portalArrivalPose, moveArrivalCursor } from './map-arrival.js';
 import { createArrivalTeleport } from './arrival-teleport.js';
 import { createLobbyMap } from './lobby-map.js';
 import { requireLobbySession, watchLobbySession, leaveLobby } from './lobby-access.js';
@@ -66,7 +67,7 @@ let canvasAttackPointer = null;
 const frameSamples = [];
 const arrival = createMapArrival();
 let resumePhase = 'playing';
-let landingTarget = null;
+let landingTarget = null, arrivalCursor = null, arrivalCursorValid = false;
 
 const ui = createUI({
   practiceSession: lobbySession,
@@ -139,6 +140,11 @@ try {
   throw error;
 }
 ui.setWorldmap?.(world.map);
+if(!lobbyMode) {
+  ui.setLoading?.('Die Landschaft für die Startauswahl wird vorbereitet …');
+  try { ui.setArrivalBackdrop(captureArrivalLandscape(renderer,world)); }
+  catch(error) { console.warn('Landschaftsvorschau nicht verfügbar; verwende Kartenumrisse.',error); }
+}
 const worldStats = getWorldmapStats(world.map);
 function zoneAt(elapsed) {
   if (lobbyMode) return { center: [...world.map.zone.center], radius: world.map.zone.initialRadius,
@@ -250,11 +256,13 @@ function validLanding(point) {
     heightAt: world.heightAt,
   });
 }
-function selectArrivalPoint(point) {
+function selectArrivalPoint(point, refresh = true) {
   if (state.phase !== 'deploying' || arrival.snapshot().stage !== 'select') return false;
+  arrivalCursor={x:point.x,z:point.z};
   const target = validLanding(new THREE.Vector3(point.x, 0, point.z));
-  if (!target || !arrival.select(target)) return false;
-  landingTarget = target; updateUI(); return true;
+  arrivalCursorValid=Boolean(target);
+  if (!target || !arrival.select(target)) { if(refresh) updateUI(); return false; }
+  landingTarget = target; if(refresh) updateUI(); return true;
 }
 function startArrival() {
   if (lobbyMode) { setPhase('playing'); return; }
@@ -266,7 +274,8 @@ function startArrival() {
       for (let x = bounds.minX + 8; x < bounds.maxX && !landingTarget; x += 24)
         landingTarget = validLanding(new THREE.Vector3(x, 0, z));
   }
-  clearInput(); state.direction = Math.PI; arrivalTeleport.reset(); arrival.start(landingTarget);
+  arrivalCursor=landingTarget?{x:landingTarget.x,z:landingTarget.z}:{x:0,z:0};arrivalCursorValid=Boolean(landingTarget);
+  clearInput(); state.direction = 0; arrivalTeleport.reset(); arrival.start(landingTarget);
   setPhase('deploying');
 }
 
@@ -410,6 +419,11 @@ function releaseWeapon(event){
 function simulate(dt) {
   if (state.phase === 'deploying') {
     const before = arrival.snapshot().stage;
+    if(before==='select' && arrivalCursor) {
+      const dx=Number(keys.has('KeyD')||keys.has('ArrowRight'))-Number(keys.has('KeyA')||keys.has('ArrowLeft'));
+      const dz=Number(keys.has('KeyS')||keys.has('ArrowDown'))-Number(keys.has('KeyW')||keys.has('ArrowUp'));
+      if(dx||dz) selectArrivalPoint(moveArrivalCursor(arrivalCursor,dx,dz,dt,world.map.bounds,ui.getArrivalZoom()),false);
+    }
     const next = arrival.update(dt);
     if (next.stage === 'teleport' && before !== 'teleport' && landingTarget) {
       player.copy(landingTarget); cameraFocus.set(player.x * visualScale, player.y * visualScale, (player.z - 1.5) * visualScale);
@@ -470,7 +484,7 @@ function onCollect(item) {
 
 function updateUI() {
   const nearby = nearbyInteraction();
-  ui.update({ ...state, arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
+  ui.update({ ...state, arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget), cursor:arrivalCursor, cursorValid:arrivalCursorValid }, touchAiming: Boolean(aimDrag?.touch), zoneCenter: { x: currentZone.center[0], z: currentZone.center[1] }, zoneRadius: currentZone.radius, zoneCountdown: currentZone.countdown,
     zoneProgress: currentZone.progress, zoneShrinking: currentZone.shrinking,
     rollCooldownDuration: ROLL_COOLDOWN, equippedWeapon: weapons.equipped,
     equippedItem: weapons.equippedItem, nearWeapon: nearby.weapon, nearChest: nearby.chest, attackCooldown: weapons.attackCooldown,
@@ -562,7 +576,7 @@ window.nebeljagdTestState = () => ({
   darkenedStatus:{remaining:localCombatTarget.darkenedRemaining,radius:Number.isFinite(localCombatTarget.darkenedRadius)?localCombatTarget.darkenedRadius:null},
   statusIndicators:statusIndicators.inspect(),
   solarStatus: { blindRemaining: localCombatTarget.blindRemaining, revealRemaining: localCombatTarget.revealRemaining, blindRadius: Number.isFinite(localCombatTarget.blindRadius) ? localCombatTarget.blindRadius : null },
-  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget) }, arrivalTeleport:arrivalTeleport.inspect(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
+  arrival: { ...arrival.snapshot(), valid: Boolean(landingTarget), cursor:arrivalCursor, cursorValid:arrivalCursorValid }, arrivalTeleport:arrivalTeleport.inspect(), arrivalMap:ui.inspectArrivalMap(), visualPosition: { x: visualPlayer.x, y: visualPlayer.y, z: visualPlayer.z },
   renderer: 'three-webgl2', phase: state.phase, health: state.health, maxHealth: state.maxHealth,
   level: state.level, defeats: state.defeats, lastDefeat: state.lastDefeat ? { ...state.lastDefeat } : null,
   elapsed: state.elapsed, moving: state.moving, distance: state.distance,
@@ -589,7 +603,7 @@ window.nebeljagdTestState = () => ({
     aura: aura?.inspect() ?? null })),
   hiddenInGrass: Boolean(state.hiddenInGrass), hiddenFromOtherPlayers: Boolean(state.hiddenInGrass),
   character: { ...character.group.userData.characterAsset, opacity: character.group.userData.concealmentOpacity,
-    arrivalTilt: character.group.userData.arrivalTilt || 0, visible: character.group.visible,
+    arrivalTilt: character.group.userData.arrivalTilt || 0, arrivalStep:character.group.userData.arrivalStep, visible: character.group.visible,
     levelUpGlowMaterials: character.inspectLevelUpGlow(),
     locomotion: character.group.userData.locomotion, snowWeight: character.group.userData.snowWeight ?? 0,
     snowSinkMeters: character.group.userData.snowSinkMeters ?? 0,
@@ -700,6 +714,7 @@ function frame(now) {
   // The crisp map covers the world. Skip expensive 3D updates/rendering while choosing.
   if (['select','reveal'].includes(arrivalState.stage)) {
     character.group.visible = false;
+    if(state.phase==='deploying' && arrivalState.stage==='select') ui.updateArrivalSelection({...arrivalState,cursor:arrivalCursor,cursorValid:arrivalCursorValid,valid:Boolean(landingTarget)});
     uiTimer += dt; if (uiTimer > .08) { updateUI(); uiTimer = 0; }
     requestAnimationFrame(frame); return;
   }
@@ -717,7 +732,7 @@ function frame(now) {
     ui.toast(state.hiddenInGrass ? (lobbyMode ? 'Im hohen Gras verborgen.' : 'Im hohen Gras verborgen. Andere Spieler können dich nicht sehen.') : 'Du verlässt das dichte Gras.');
     lastConcealment = state.hiddenInGrass;
   }
-  character.group.visible = !arrivalState.active || (arrivalState.stage === 'teleport' && arrivalState.progress >= .38);
+  character.group.visible = portalArrivalPose(arrivalState).visible;
   character.setConcealed(state.hiddenInGrass && !arrivalState.active);
   arrivalTeleport.update(player, arrivalState);
   state.snowWeight = snowFootprints.weightAt(player.x, player.z);

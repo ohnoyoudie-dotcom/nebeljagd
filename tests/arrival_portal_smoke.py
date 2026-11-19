@@ -17,16 +17,22 @@ with sync_playwright() as p:
  print('READY',flush=True);page.click('#startBtn');page.wait_for_selector('#arrivalMap',state='visible')
  r=page.locator('#arrivalMap').bounding_box();span=1440/(232/256)
  page.mouse.click(r['x']+r['width']*(.5-100/span),r['y']+r['height']*(.5+100/span))
- page.wait_for_function('nebeljagdTestState().arrival.stage === "teleport" && nebeljagdTestState().arrival.progress >= .4')
+ page.wait_for_function('nebeljagdTestState().arrival.stage === "teleport" && nebeljagdTestState().arrival.progress >= .18')
+ page.keyboard.press('Escape');hold=page.evaluate('nebeljagdTestState()')
+ assert hold['arrivalTeleport']['portalVisible'] and not hold['character']['visible']
+ assert hold['arrivalTeleport']['width']>.95
+ page.click('#resumeBtn')
+ page.wait_for_function('nebeljagdTestState().arrival.stage === "teleport" && nebeljagdTestState().arrival.progress >= .55')
  page.keyboard.press('Escape');s=page.evaluate('nebeljagdTestState()');print('OPEN',json.dumps(s['arrivalTeleport']),flush=True)
  assert s['phase']=='paused' and s['arrivalTeleport']['portalVisible']
  assert s['arrivalTeleport']['style']=='arcane-portal' and s['character']['visible']
+ assert s['character']['arrivalStep']['walking'] and -.9<s['character']['arrivalStep']['offsetZ']<-.05
  hidden=page.add_style_tag(content='#pauseScreen{visibility:hidden!important}')
  page.screenshot(path=str(out/'portal-open.png'));hidden.evaluate('(e)=>e.remove()')
  frozen=s['arrivalTeleport'];page.wait_for_timeout(200);assert page.evaluate('nebeljagdTestState().arrivalTeleport')==frozen
  page.click('#resumeBtn');page.wait_for_function('nebeljagdTestState().phase === "playing"')
  page.wait_for_function('nebeljagdTestState().elapsed > .8')
- s=page.evaluate('nebeljagdTestState()');assert not s['arrivalTeleport']['active'];assert s['character']['visible'];assert not errors,errors
+ s=page.evaluate('nebeljagdTestState()');assert not s['arrivalTeleport']['active'];assert s['character']['visible'];assert s['character']['arrivalStep']['offsetZ']==0;assert not errors,errors
  page.screenshot(path=str(out/'portal-finished.png'))
  info=page.evaluate('JSON.parse(document.querySelector("#editor-build-info")?.textContent || "null")')
  (out/'visual-report.json').write_text(json.dumps({'status':'passed','build':info,'errors':errors,'open':frozen,'final':s['arrivalTeleport']},indent=2));print('PASS',flush=True);b.close()

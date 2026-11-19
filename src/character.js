@@ -1,3 +1,4 @@
+import { portalArrivalPose } from './map-arrival.js';
 import { createDirectionalGait } from './directional-gait.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -169,8 +170,11 @@ export async function createCharacter(scene) {
     snowClipHeight.value = snowClip > .01 && Number.isFinite(snowSurfaceY)
       ? snowSurfaceY - THREE.MathUtils.lerp(.025, .005, snowClip)
       : -10000;
+    const entry = portalArrivalPose(arrival);
+    if (arrival?.stage === 'teleport') { moving=entry.walking; speed=entry.speed; direction=0; travelDirection=0; }
     const movement = locomotion.update(delta, { moving, speed, direction: animator.rolling ? rollYaw : direction,
       travelDirection, currentYaw: group.rotation.y, rolling: animator.rolling, dead });
+    if (arrival?.stage === 'teleport') movement.walkWeight = Math.min(1,movement.walkWeight*2);
     const animation = animator.update(delta, { ...movement, frozen: dead });
     group.rotation.y = movement.yaw;
     if (animator.rolling && !dead) {
@@ -206,6 +210,8 @@ export async function createCharacter(scene) {
     opacity = appearance.bodyOpacity;
     group.userData.localSilhouetteOpacity = appearance.baselineOpacity + appearance.fillOpacity;
     group.userData.concealmentOpacity = opacity;
+    arrivalPivot.position.z = entry.offsetZ / group.scale.z;
+    group.userData.arrivalStep = { offsetZ: entry.offsetZ, walking: entry.walking };
     arrivalPivot.position.y = (arrival?.height || 0) / group.scale.y;
     arrivalPivot.rotation.x = arrival?.diveTilt || 0;
     group.userData.arrivalTilt = arrivalPivot.rotation.x;

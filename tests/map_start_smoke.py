@@ -31,14 +31,28 @@ def run():
             assert REPORT['build']['buildId'] == json.loads((ROOT/'dist/release.json').read_text())['buildId']
         def choose(x,z,touch=False):
             rect=page.locator('#arrivalMap').bounding_box()
-            bounds=state()['world']['bounds']; span=max(bounds['maxX']-bounds['minX'],bounds['maxZ']-bounds['minZ'])/(232/256)
-            px=rect['x']+rect['width']*(.5+(x-(bounds['minX']+bounds['maxX'])/2)/span)
-            py=rect['y']+rect['height']*(.5+(z-(bounds['minZ']+bounds['maxZ'])/2)/span)
+            view=state()['arrivalMap']['view']; span=view['span']
+            px=rect['x']+rect['width']*(.5+(x-view['x'])/span)
+            py=rect['y']+rect['height']*(.5+(z-view['z'])/span)
             (page.touchscreen.tap if touch else page.mouse.click)(px,py)
         page.click('#startBtn')
         page.wait_for_function('nebeljagdTestState().arrival.stage === "select"')
         assert state()['arrival']['height']==0 and state()['elapsed']==0
         assert page.locator('#confirmLanding').count()==0
+        assert state()['arrivalMap']['mode']=='rendered-world' and state()['arrivalMap']['houses']>0
+        assert state()['arrivalMap']['loot'] is False
+        cursor=state()['arrival']['cursor'];page.keyboard.down('KeyD')
+        page.wait_for_function('(x)=>nebeljagdTestState().arrival.cursor.x > x+8',arg=cursor['x']);page.keyboard.up('KeyD')
+        assert state()['arrival']['cursor']['x']>cursor['x']
+        record('WASD moves the selection globally without focusing the canvas')
+        for _ in range(3):page.click('#arrivalZoomIn')
+        assert state()['arrivalMap']['zoom']==4
+        choose(20,-100)
+        assert abs(state()['arrival']['target']['x']-20)<2 and abs(state()['arrival']['target']['z']+100)<2
+        page.screenshot(path=str(OUT/'environment-zoom.png'))
+        for _ in range(3):page.click('#arrivalZoomOut')
+        assert state()['arrivalMap']['zoom']==1
+        record('actual loaded landscape, buildings and paths render; zoomed mouse selection maps to world coordinates')
         original=state()['arrival']['target']
         choose(590,-700)
         assert state()['arrival']['target']==original
