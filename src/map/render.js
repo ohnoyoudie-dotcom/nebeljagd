@@ -1,3 +1,5 @@
+import { createObstacleSurface, obstacleSurfaceSvg } from './terrain-obstacles.js';
+import { createWorldSpatialModel } from '../generated-spatial.js';
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
 import { getWorldmapStats, validateWorldmap, pointInPolygon, landBoundaryRings } from './model.js';
 import { biomePreset } from './landscape.js';
@@ -311,6 +313,10 @@ export function renderWorldmapSvg(map, options = {}) {
     out.push('    </g>');
   }
   out.push('  </g>');
+  if(map.landscape?.obstacles?.length){
+    const spatial=createWorldSpatialModel(map);
+    out.push(obstacleSurfaceSvg(createObstacleSurface(map.landscape.obstacles,{isLand:spatial.isLand,isWater:spatial.isWater,biomeAt:spatial.biomeAt})));
+  }
   if (showGrid) out.push(`  <g id="grid" pointer-events="none"><rect x="${minX}" y="${minZ}" width="${width}" height="${height}" fill="url(#world-grid)"/></g>`);
   out.push('  <g id="spawn-areas" data-layer="spawn-areas" inkscape:groupmode="layer" inkscape:label="Startbereiche">');
   if (showSpawns) for (const spawn of map.spawnAreas) out.push(`    <g ${feature('spawn', spawn.id)}><title>${escape(spawn.name)} · ${spawn.capacity} Startplätze</title><circle cx="${number(spawn.position[0])}" cy="${number(spawn.position[1])}" r="${number(spawn.radius)}" fill="#f5edc4" fill-opacity=".08" stroke="#f3e4b0" stroke-width="1.6" stroke-dasharray="5 5"/><text x="${number(spawn.position[0])}" y="${number(spawn.position[1] + 5)}" fill="#f9edc8" font-size="13" font-weight="600" text-anchor="middle" pointer-events="none">${spawn.capacity}</text></g>`);

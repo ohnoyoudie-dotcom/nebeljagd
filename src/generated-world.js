@@ -1,3 +1,4 @@
+import { createTerrainObstacles } from './terrain-obstacles.js';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { validateWorldmap, landBoundaryRings } from './map/model.js';
@@ -212,6 +213,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   const objects = await createWorldObjectRenderer(root, { map, heightAt: surfaceHeightAt, groundHeightAt: surfaceHeightAt,
     colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt, quality, chunkSize: CHUNK });
+  const ridges=createTerrainObstacles(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,isLand:spatial.isLand,isWater:spatial.isWater});
   const meadowGround = createMeadowGround(root, { map, heightAt: surfaceHeightAt, colorAt: spatial.colorAt, spatial, quality });
   const snowCover = createSnowCover(root, { map, heightAt: surfaceHeightAt, spatial, quality });
   const materialSet = new Set(); root.traverse(child => { if (child.material) for (const material of Array.isArray(child.material) ? child.material : [child.material]) materialSet.add(material); });
@@ -233,10 +235,12 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   if (!spatial.isLand(spawn.x, spawn.z) || spatial.isWater(spawn.x, spawn.z)) { const candidate = map.spawnAreas.find(area => spatial.isLand(...area.position) && !spatial.isWater(...area.position)); spawn.x = candidate?.position[0] ?? map.zone.center[0]; spawn.z = candidate?.position[1] ?? map.zone.center[1]; }
   function resolveMovement(position, radius = .42) {
     objects.resolveMovement(position, radius);
+    ridges.resolveMovement(position, radius);
     return spatial.resolveWaterMovement(position, radius);
   }
   function update(dt, time, player, zoneRadius = map.zone.initialRadius, simulationDelta = dt) {
     timeUniform.value = time; radiusUniform.value = zoneRadius; objects.update(simulationDelta, time, player, zoneRadius); meadowGround.update(time, player); snowCover.update(time, player);
+    ridges.update(player,mode === 'low' ? 90 : 125);
     borderStones.update(player, mode === 'low' ? 90 : 125);
     for (const water of waterMeshes) water.setZoneRadius(zoneRadius);
     if (time - lastCull > .3 || Math.hypot(player.x - lastCullX, player.z - lastCullZ) > 3) {
@@ -271,10 +275,13 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   return {
     root, map, visualScale: 1, spawn, bounds: map.bounds,
     worldRadius: Math.max(...map.island.points.map(p => Math.hypot(...p))),
-    heightAt, groundHeightAt: surfaceHeightAt, snowSurfaceAt: snowCover.surfaceHeightAt, snowWeightAt:snowCover.weightAt, resolveMovement, traceProjectile: objects.traceProjectile,
+    heightAt, groundHeightAt: surfaceHeightAt, snowSurfaceAt: snowCover.surfaceHeightAt, snowWeightAt:snowCover.weightAt, resolveMovement, traceProjectile(start,end,radius=.06,accepts=null){
+      const objectHit=objects.traceProjectile(start,end,radius,accepts),ridgeHit=ridges.traceProjectile(start,end,radius,accepts);
+      return ridgeHit&&(!objectHit||ridgeHit.t<objectHit.t)?ridgeHit:objectHit;
+    },
     isWater: spatial.isWater, isLand: spatial.isLand, colorAt: spatial.colorAt, biomeAt: spatial.biomeAt, biomeWeightsAt: spatial.biomeWeightsAt,
     trees: objects.trees, grassPatches: objects.grassPatches, houses: objects.houses, destructibles: objects.destructibles,
-    projectileObstacles: objects.projectileObstacles, importedAssets: objects.importedAssets,
+    projectileObstacles: [...objects.projectileObstacles,...ridges.obstacles], importedAssets: objects.importedAssets,
     concealmentAt: objects.concealmentAt,
     resetCanopyFade: objects.resetCanopyFade,
     destroyDestructible: objects.destroyDestructible, resetDestructibles: objects.resetDestructibles,
@@ -283,7 +290,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     setGrassInteractors(values) { meadowGround.setInteractors(values); objects.setGrassInteractors?.(values); },
     setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); snowCover.setQuality(mode); lastCull = -Infinity; },
     get shelter() { return objects.shelter; },
-    get stats() { return { source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
+    get stats() { return { terrainObstacles:ridges.stats, source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
       terrainTriangles: triangles.length, generationMs, terrainArt: { ground: 'painted-woodland', mainPaths: 'earth-with-sculpted-border-stones', trailPaths: 'earth', stoneTextureSize: 512, pathWidthFromMap: true, borderStones: borderStones.stats },
       terrainPaint: { stamps: spatial.terrainPaint.length, affectedChunks: terrainChunks.filter(c => c.paint).length,
         residentChunks: terrainChunks.filter(c => c.paint?.stats.resident).length,
@@ -300,6 +307,6 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
         snowVisualDepthMeters: Math.max(0, ...terrainChunks.map(c => c.paint?.stats.snowVisualDepthMeters ?? 0)),
         maximumTextureSize: mode === 'low' ? 256 : 512, changesCollisionHeight: false },
       cloudShadows: { animated: true, worldSpace: true, maximumDimming: .27 }, meadowGround: meadowGround.inspect(), snowCover: snowCover.inspect(), ...objects.stats }; },
-    dispose() { meadowGround.dispose(); snowCover.dispose(); borderStones.dispose(); objects.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
+    dispose() { ridges.dispose(); meadowGround.dispose(); snowCover.dispose(); borderStones.dispose(); objects.dispose(); const geometries = new Set(), materials = new Set(); root.traverse(child => { if (child.geometry) geometries.add(child.geometry); if (child.material) for (const m of Array.isArray(child.material) ? child.material : [child.material]) materials.add(m); }); geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); for (const chunk of terrainChunks) chunk.paint?.dispose(); scene.remove(root); },
   };
 }

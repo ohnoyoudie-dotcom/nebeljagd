@@ -1,3 +1,4 @@
+import { validateTerrainObstacles } from './terrain-obstacles.js';
 /** Optional landscape extension v1. Old worldmap v1 files stay byte-for-byte
  * unchanged until a landscape tool is used. Numbers exposed as percentages in
  * the editor are stored as fractions; directions are radians in the x/z plane.
@@ -91,7 +92,7 @@ export function getLandscape(map) {
   const stored = record(map?.landscape) ? map.landscape : {};
   return { version: 1, terrain: stored.terrain ?? [],
     wind: { ...WIND_DEFAULTS, ...(record(stored.wind) ? stored.wind : {}) },
-    windZones: stored.windZones ?? [], biomes: stored.biomes ?? [], presets: stored.presets ?? [] };
+    windZones: stored.windZones ?? [], biomes: stored.biomes ?? [], presets: stored.presets ?? [], ...(stored.obstacles ? {obstacles:stored.obstacles} : {}) };
 }
 export function ensureLandscape(map) {
   map.landscape = getLandscape(map);
@@ -192,7 +193,8 @@ export function validateLandscape(map, { ids = new Set(), checkPoint } = {}) {
   }
   if (map?.landscape === undefined) return errors;
   const extension = map.landscape;
-  if (!shape(extension, ['version', 'terrain', 'wind', 'windZones', 'biomes', 'presets'], 'Landschaft')) return errors;
+  if (!shape(extension, ['version', 'terrain', 'wind', 'windZones', 'biomes', 'presets', 'obstacles'], 'Landschaft')) return errors;
+  if (extension.obstacles !== undefined) errors.push(...validateTerrainObstacles(extension.obstacles,map.bounds));
   if (extension.version !== 1) add('Landschaft: version muss 1 sein.');
   if (extension.wind !== undefined) wind(extension.wind, 'Wind');
   const list = key => {

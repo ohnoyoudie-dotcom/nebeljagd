@@ -58,7 +58,7 @@ export function createLandscapePanel(api) {
   sidebar.prepend(nav);
   for (const [key, label, pane] of [
     ['biomes', 'Landschaft malen', 'paint'], ['vegetation', 'Versteckgras malen', 'paint'],
-    ['terrain', 'Boden und Wege malen', 'paint'], ['objects', 'Mehrere Objekte verteilen', 'objects'],
+    ['obstacles', 'Geländehindernisse malen', 'paint'], ['terrain', 'Boden und Wege malen', 'paint'], ['objects', 'Mehrere Objekte verteilen', 'objects'],
     ['wind', 'Wind einstellen', 'more'], ['map', 'Ansicht und Dateien', 'more'],
   ]) {
     const details = document.createElement('details'); details.className = 'landscape-section';
@@ -171,6 +171,9 @@ export function createLandscapePanel(api) {
   }
   const vegetation = mount('vegetation', `<details class="biome-advanced"><summary>Gras fein einstellen</summary>${vegetationFields('vegetation')}${range('vegetation-strength', 'Pinselstärke', 0, 100, 100)}</details>`);
   $('vegetation-type').value = 'tall';
+  mount('obstacles', `<p class="tool-intro">Zusammenhängende Felsrücken malen. Überlappende Striche verbinden sich automatisch.</p>${selector('obstacle-biome','Material',[{id:'auto',label:'Automatisch nach Biom'},{id:'forest',label:'Wald · Erde und Moos'},{id:'snow',label:'Schnee · kalter Fels'},{id:'desert',label:'Wüste · Sandstein'},{id:'swamp',label:'Sumpf · dunkler Fels'}])}${range('obstacle-radius','Pinselradius',2,40,10,1,' m')}${range('obstacle-height','Höhe',2,10,4,.5,' m')}${button('obstacle-draw','Felsrücken malen')}${button('obstacle-erase','Durchgang radieren')}<p class="small-note">Der Radierer schneidet nur Felsrücken aus. Häuser, Bäume und Wege bleiben erhalten. Die Felsen blockieren im Spiel Bewegung und direkte Geschosse.</p><p id="obstacle-status" class="small-note" role="status">Ziehen zum Malen · Esc bricht ab · Rückgängig stellt den Strich wieder her.</p>`);
+  $('obstacle-draw').addEventListener('click',()=>api.setMode('obstacleDraw'));
+  $('obstacle-erase').addEventListener('click',()=>api.setMode('obstacleErase'));
   mount('terrain', `<h3>Wege zeichnen</h3>${selector('path-preset', 'Wegbelag', PATH_BRUSH_PRESETS)}${button('landscape-path-brush', 'Weg malen')}<p class="small-note">Ziehen malt einen zusammenhängenden Weg. Der Pinselradius ist die halbe Wegbreite; unter „Farbe & Übergang“ stellst du die Ränder ein.</p><h3>Bodenflächen</h3><p class="small-note">Ruhige, natürliche Bodenfarben ohne automatisch bewegtes Wiesengras.</p>${selector('terrain-type', 'Bodenart', TERRAIN_TYPES)}${button('landscape-terrain-brush', 'Boden malen')}${range('terrain-radius', 'Pinselradius', .5, 80, 8, .5, ' m')}<details class="tool-fine-settings"><summary>Farbe & Übergang</summary>${range('terrain-strength', 'Pinselstärke', 0, 100, 90)}${range('terrain-hardness', 'Randhärte', 0, 100, 65)}<label for="terrain-color">Bodenfarbe</label><input id="terrain-color" type="color" value="#527149">${range('terrain-variation', 'Farbvariation', 0, 100, 9)}</details><button type="button" class="button small" id="terrain-edit-paths">Wege zeichnen oder bearbeiten</button><p class="small-note">Je nach Belag säumen lockere, unterschiedlich große Steingruppen den Weg. Freie Abschnitte und versetzte Steine lassen die Ränder natürlich und unregelmäßig wirken. Hohes Versteckgras malst du weiterhin extra unter „Malen → Versteckgras“.</p>`);
   $('terrain-edit-paths').addEventListener('click', () => { showPane('more', 'shape'); mapTools.open = true; });
   const scatterKinds = PLACEMENT_OBJECT_CATALOG.filter(item => ['tree', 'bush', 'grass', 'rock', 'flower'].includes(item.kind));
@@ -192,7 +195,7 @@ export function createLandscapePanel(api) {
   const barrierSlot = document.createElement('div'); barrierSlot.id = 'editor-tool-panel-objects-barriers';
   panes.objects.append(barrierSlot);
   addToolChoices('paint', [
-    ['biomes', 'Landschaft', sections.biomes], ['vegetation', 'Versteckgras', sections.vegetation], ['terrain', 'Boden & Wege', sections.terrain],
+    ['biomes', 'Landschaft', sections.biomes], ['vegetation', 'Versteckgras', sections.vegetation], ['terrain', 'Boden & Wege', sections.terrain], ['obstacles', 'Hindernisse', sections.obstacles],
   ]);
   addToolChoices('objects', [
     ['place', 'Einzeln', document.querySelector('.object-palette')], ['barriers', 'Mauern & Zäune', barrierSlot],
@@ -286,6 +289,7 @@ export function createLandscapePanel(api) {
   for (const [type,label] of [['terrain','Gemalte Bodenflächen'],['wind','Windzonen']]) { $('feature-filter').querySelector(`option[value="${type}"]`)?.remove(); const option=document.createElement('option');option.value=type;option.textContent=label;$('feature-filter').append(option); }
 
   function sync() {
+    for(const [id,mode] of [['obstacle-draw','obstacleDraw'],['obstacle-erase','obstacleErase']]){const active=api.getMode()===mode;$(id).classList.toggle('active',active);$(id).setAttribute('aria-pressed',String(active));}
     const landscape=getLandscape(api.getMap()),windKey=JSON.stringify(landscape.wind);
     if(windKey!==lastWind){writeWind(landscape.wind);lastWind=windKey;}
     const biomeValue=$('biome-preset').value; $('biome-preset').innerHTML=options(BIOME_PRESETS);
@@ -327,11 +331,11 @@ export function createLandscapePanel(api) {
     return null;
   }
   function createZone(position){return{id:uid('wind-zone'),name:'Lokale Windzone',position:[...position],radius:num('wind-zone-radius'),strength:pct('wind-zone-strength'),falloff:pct('wind-zone-falloff'),direction:radians('wind-zone-direction')};}
-  function radius(mode){return num(mode==='brush'?'brush-radius':mode==='scatter'?'scatter-radius':mode==='biome'?'biome-radius':mode==='windzone'?'wind-zone-radius':mode==='terrainErase'?'surface-eraser-radius':'terrain-radius');}
+  function radius(mode){if(mode.startsWith('obstacle'))return num('obstacle-radius');return num(mode==='brush'?'brush-radius':mode==='scatter'?'scatter-radius':mode==='biome'?'biome-radius':mode==='windzone'?'wind-zone-radius':mode==='terrainErase'?'surface-eraser-radius':'terrain-radius');}
   writeVegetation(VEGETATION_TYPES.find(type=>type.id==='tall').settings);writeWind(getLandscape(api.getMap()).wind);
-  return {sync,refresh,showPane,renderSelected,applySelected,createStroke,createZone,radius,readVegetation,
+  return {obstacleSettings:()=>({radius:num('obstacle-radius'),height:num('obstacle-height'),biome:$('obstacle-biome').value}),sync,refresh,showPane,renderSelected,applySelected,createStroke,createZone,radius,readVegetation,
     setSelectedVariant: variant => {writeVegetation(VEGETATION_TYPES.find(type=>type.id===(variant==='kit-tall'?'tall':variant))?.settings ?? VEGETATION_TYPES[0].settings,'object-vegetation'); refresh();},
     color:mode=>mode==='terrain'||mode==='terrainErase'?$('terrain-color').value:mode==='windzone'?'#91bed2':mode==='biome'?(currentBiome().terrain?.color ?? '#78a866'):readVegetation().color,
     state:()=>({activePane,activeTools:{...activeTools},eraseTarget:$('erase-target').value,vegetation:readVegetation(),terrain:readTerrain(),scatter:readScatter(),wind:readWind(),biome:$('biome-preset').value,biomeSoftness:pct('biome-softness'),preview:preview.stats}),
-    status:message=>{$('landscape-status').textContent=message;if(api.getMode()==='terrainErase')$('surface-erase-status').textContent=message;},dispose:()=>preview.dispose()};
+    status:message=>{if(api.getMode().startsWith('obstacle'))$('obstacle-status').textContent=message;$('landscape-status').textContent=message;if(api.getMode()==='terrainErase')$('surface-erase-status').textContent=message;},dispose:()=>preview.dispose()};
 }

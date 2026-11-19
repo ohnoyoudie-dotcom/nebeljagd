@@ -644,6 +644,11 @@ if (new URLSearchParams(location.search).has('inspect')) {
   };
   window.nebeljagdCaptureFrame = () => { renderer.render(scene, camera); return renderer.domElement.toDataURL('image/png'); };
   window.nebeljagdInspectGuardHit = (delivery='projectile') => combat.hit(localCombatTarget,{sourceId:'inspect-enemy',type:'fireStaff',damage:12,delivery,normal:{x:0,y:0,z:1}});
+  window.nebeljagdInspectTerrain = ({from,to,position,radius=.42}={}) => {
+    const resolved=position?{...position}:null;if(resolved)world.resolveMovement(resolved,radius);
+    const hit=from&&to?world.traceProjectile(from,to,.06):null;
+    return{resolved,hit:hit?{type:hit.type,t:hit.t,point:hit.point}:null,stats:world.stats.terrainObstacles};
+  };
   window.nebeljagdInspectStoneBarrier = ({damage=0}={}) => {
     const body=world.temporaryObstacles?.list()[0];if(!body)return null;
     const target=combat.targets.get(body.objectId),center=target.position;

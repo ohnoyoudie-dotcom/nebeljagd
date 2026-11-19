@@ -272,3 +272,5 @@
 
 .house-variation-actions{display:grid;gap:6px;margin-top:8px}.house-variation-actions .button{width:100%;min-height:34px}.house-material-options{margin-top:9px;border-top:1px solid #d8dccc;padding-top:7px}.house-material-options summary{font-size:11px;color:#526149;cursor:pointer}.house-material-options[open] summary{margin-bottom:8px}.house-material-options>label{display:block;margin-top:7px}.house-material-options .property-pair{margin:0}.house-builder-controls button:disabled{opacity:.55;cursor:default}
 .house-builder-controls [hidden]{display:none!important}.house-builder-controls[data-fixed-layout=true]>.property-pair{grid-template-columns:1fr}
+
+#editor-pane-paint > .editor-tool-nav{grid-template-columns:repeat(2,minmax(0,1fr));}

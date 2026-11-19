@@ -53,10 +53,21 @@ test('runemauer allows owner vision, blocks enemy vision, is destructible withou
  s.combat.hit(shot.target,{damage:50,sourceId:'enemy',delivery:'projectile'});assert.equal(s.world.traceProjectile({x:0,y:1,z:2},{x:0,y:1,z:8}),null,'destroyed cover stops blocking immediately');
  spell.update(.01,s.player);assert.equal(spell.telemetry.visuals.phase,'dissolving');spell.update(1,s.player);assert.equal(s.combat.targets.size,1);spell.dispose();
 });
-test('wall placement rejects occupied or wet ground and revalidates when it becomes solid',()=>{
- for(const extra of [{isWater:()=>true},{heightAt:(x)=>x>1?3:0}]){const s=setup(extra),spell=createRuneWallSpell(s.scene,s.world,s.combat,'player');spell.beginAim(s.player,0);spell.update(1.5,s.player);assert.equal(spell.release(s.player),false);spell.dispose();}
+test('wall rejects fully occupied or wet ground and cuts a gap for an actor entering during warning',()=>{
+ const wet=setup({isWater:()=>true}),blocked=createRuneWallSpell(wet.scene,wet.world,wet.combat,'player');blocked.beginAim(wet.player,0);blocked.update(1.5,wet.player);assert.equal(blocked.release(wet.player),false);blocked.dispose();
  const s=setup(),spell=createRuneWallSpell(s.scene,s.world,s.combat,'player');spell.beginAim(s.player,0);spell.aimAt(s.player,{x:0,z:5});spell.update(1.5,s.player);assert.ok(spell.release(s.player));
- s.combat.addTarget({id:'entrant',position:new THREE.Vector3(0,0,5)});spell.update(.4,s.player);assert.equal(spell.telemetry.solid,false);assert.equal(s.world.temporaryObstacles.size,0);spell.dispose();
+ s.combat.addTarget({id:'entrant',position:new THREE.Vector3(0,0,5)});spell.update(.4,s.player);assert.equal(spell.telemetry.solid,true);assert.equal(s.world.temporaryObstacles.size,2);assert.equal(s.world.traceProjectile({x:0,y:1,z:3},{x:0,y:1,z:7}),null);spell.dispose();
+});
+test('wall can be aimed beyond cover and leaves a real gap around a tree in its middle',()=>{
+ const index=createCollisionIndex([{x:0,z:5,radius:.7,minY:0,maxY:6,type:'tree'}],[]),s=setup({traceProjectile:(...args)=>index.traceSegment(...args),resolveMovement:(p,r)=>index.resolve(p,r)});
+ const spell=createRuneWallSpell(s.scene,s.world,s.combat,'player');raise(s,spell);
+ assert.equal(spell.telemetry.segments.length,2);assert.equal(s.world.temporaryObstacles.size,2);
+ for(const x of [-2,2])assert.equal(s.world.traceProjectile({x,y:1,z:3},{x,y:1,z:7}).type,'runeWall');
+ assert.equal(s.world.traceProjectile({x:0,y:1,z:3},{x:0,y:1,z:7}).type,'tree');
+ // Destroying the tree later must reveal a true gap, not an invisible full wall.
+ assert.equal(s.world.traceProjectile({x:0,y:1,z:3},{x:0,y:1,z:7},.06,b=>b.type!=='tree'),null);
+ spell.update(5,s.player);assert.equal(s.world.temporaryObstacles.size,0);spell.reset();
+ raise(s,spell,{x:0,z:10});assert.equal(spell.telemetry.segments.length,1,'tree between caster and target does not cancel aiming');spell.dispose();
 });
 test('real weapon integration casts both staffs, cancels invalid aims, and preserves cooldown through swaps',()=>{
  const s=setup(),actor=new THREE.Group();s.scene.add(actor);
@@ -85,7 +96,7 @@ test('long earth wave widens gradually and the wider blue wall deploys promptly 
  assert.equal(w.world.traceProjectile({x:3.9,y:1,z:2},{x:3.9,y:1,z:8},.05),null);
  wall.update(.2,w.player);assert.equal(wall.telemetry.visuals.phase,'standing');assert.equal(wall.telemetry.visuals.stoneColor,'#6089ba');wall.dispose();
  const edge=setup({isWater:x=>x>2.8}),blocked=createRuneWallSpell(edge.scene,edge.world,edge.combat,'player');
- blocked.beginAim(edge.player,0);blocked.update(.8,edge.player);assert.equal(blocked.release(edge.player),false,'water under the newly added wall ends prevents placement');blocked.dispose();
+ blocked.beginAim(edge.player,0);blocked.update(.8,edge.player);assert.equal(blocked.release(edge.player),true,'dry portion still spawns when an end overlaps water');blocked.update(.3,edge.player);assert.ok(blocked.telemetry.segments.every(s=>s.end<=2.8));blocked.dispose();
 });
 
 test('earthbreaker immediately launches at the current caster position and does not follow subsequent movement',()=>{

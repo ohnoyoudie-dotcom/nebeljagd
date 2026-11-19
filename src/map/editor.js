@@ -1,3 +1,4 @@
+import { OBSTACLE_LIMITS } from './terrain-obstacles.js';
 import { chestOpening } from '../runic-chest.js';
 import { freshPlaytestUrl } from './playtest-url.js';
 import { WEAPON_TYPES, weaponStats } from '../loot-tiers.js';
@@ -94,7 +95,7 @@ let mapFileHandle = null;
 let persistedMapFileHandle = null;
 let githubSync = null;
 const paintModes = ['brush', 'terrain', 'scatter', 'biome'];
-const placementModes = ['place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
+const placementModes = ['obstacleDraw','obstacleErase','place', ...paintModes, 'erase', 'terrainErase', 'windzone', 'barrierDraw', 'barrierGap', 'barrierErase'];
 const layers = { showLabels: false, showSpawns: false, showGrid: false, showZone: false, showObjects: true };
 
 function compactCleanupBanner(banner, prefix) {
@@ -360,13 +361,13 @@ function updatePlacementPreview() {
   const previewObject = mode === 'place' ? nextPlacementObject(point) : null;
   const radius = mode === 'erase' ? Number($('eraser-radius').value) : mode !== 'place' ? landscapePanel?.radius(mode) ?? 4 : objectFootprint(previewObject);
   const circle = document.createElementNS(SVG_NS, 'circle');
-  const valid = ['erase','terrainErase'].includes(mode) || (['brush', 'place'].includes(mode) ? canPaintGrass(point, map, radius) : isLandPoint(map, point));
+  const valid = ['erase','terrainErase','obstacleErase'].includes(mode) || (['brush', 'place'].includes(mode) ? canPaintGrass(point, map, radius) : isLandPoint(map, point));
   const pixel = 1 / (svg.getScreenCTM()?.a || 1);
   const preview = document.createElementNS(SVG_NS, 'g'); preview.id = 'placement-preview';
   preview.setAttribute('pointer-events', 'none'); preview.dataset.valid = String(valid);
   circle.setAttribute('cx', point[0]); circle.setAttribute('cy', point[1]);
   circle.setAttribute('r', mode !== 'place' ? radius : Math.max(radius, pixel * 7));
-  circle.setAttribute('fill', ['erase','terrainErase'].includes(mode) ? '#d88e7c' : valid ? landscapePanel?.color(mode) ?? '#b9d488' : '#d89486');
+  circle.setAttribute('fill', ['erase','terrainErase','obstacleErase'].includes(mode) ? '#d88e7c' : valid ? landscapePanel?.color(mode) ?? '#b9d488' : '#d89486');
   circle.setAttribute('fill-opacity', '.25');
   circle.setAttribute('stroke', mode === 'erase' ? '#9e3e32' : valid ? '#f0e7bc' : '#f2b6a8');
   circle.setAttribute('stroke-width', '1.5'); circle.setAttribute('vector-effect', 'non-scaling-stroke');
@@ -770,6 +771,13 @@ function pointerDown(event) {
   const start = coordinateAt(event);
   if (mode === 'place' && !spaceHeld && event.button === 0) { addObjectAt(start); return; }
   const pan = mode === 'pan' || spaceHeld || event.button === 1;
+  if(mode.startsWith('obstacle')&&!pan){
+    if(!isLandPoint(map,start))return toast('Bitte auf der Insel beginnen.',true);
+    if((map.landscape?.obstacles?.length??0)>=OBSTACLE_LIMITS.strokes)return toast('Die Grenze von 512 Geländestrichen ist erreicht.',true);
+    selection=null;hoverPoint=start;
+    pointer={id:event.pointerId,previous:clone(map),obstacle:{id:'ridge-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),...landscapePanel.obstacleSettings(),erase:mode==='obstacleErase',points:[]}};
+    $('map-viewport').setPointerCapture(event.pointerId);paintObstacleSample(start);return;
+  }
   if (mode === 'barrierDraw' && !pan) {
     if (!isLandPoint(map, start)) return toast('Die Strecke bitte auf der Insel beginnen.', true);
     if (!barrierPanel.canDraw()) return;
@@ -836,6 +844,7 @@ function pointerMove(event) {
   hoverPoint = point;
   if (placementModes.includes(mode) && !pointer) updatePlacementPreview();
   if (!pointer || pointer.id !== event.pointerId) return;
+  if (pointer.obstacle) {event.preventDefault();paintObstacleSample(point);return;}
   if (pointer.barrierDraw) { event.preventDefault(); drawBarrierSample(point); return; }
   if (pointer.barrierErase) { event.preventDefault(); eraseBarrierSample(point); return; }
   if (pointer.brush) { event.preventDefault(); paintLandscapeSample(point); return; }
@@ -869,9 +878,16 @@ function pointerEnd(event, cancelled = false) {
   if (!pointer || pointer.id !== event.pointerId) return;
   if (pointer.barrierDraw && !cancelled && Number.isFinite(event.clientX)) drawBarrierSample(coordinateAt(event));
   if (pointer.barrierErase && !cancelled && Number.isFinite(event.clientX)) eraseBarrierSample(coordinateAt(event));
+  if(pointer.obstacle&&!cancelled&&Number.isFinite(event.clientX))paintObstacleSample(coordinateAt(event),true);
   const finished = pointer; pointer = null;
   if ($('map-viewport').hasPointerCapture(event.pointerId)) $('map-viewport').releasePointerCapture(event.pointerId);
   $('map-viewport').classList.remove('is-dragging');
+  if(finished.obstacle){
+    if(!cancelled&&finished.obstacle.points.length){
+      commit(candidate=>{(ensureLandscape(candidate).obstacles??=[]).push(finished.obstacle);},finished.obstacle.erase?'Durchgang ausgeschnitten.':'Felsrücken gemalt.');
+    }
+    renderAll();return;
+  }
   if (finished.barrierDraw) {
     $('barrier-stroke-preview')?.remove();
     const stroke = finished.barrierDraw;
@@ -932,6 +948,20 @@ function pointerEnd(event, cancelled = false) {
     } else if (JSON.stringify(map) !== JSON.stringify(finished.previous)) remember(finished.previous);
   }
   renderAll();
+}
+function paintObstacleSample(point,final=false){
+  const stroke=pointer?.obstacle;if(!stroke)return;
+  const p=[Math.max(map.bounds.minX,Math.min(map.bounds.maxX,point[0])),Math.max(map.bounds.minZ,Math.min(map.bounds.maxZ,point[1]))];
+  const last=stroke.points.at(-1);
+  if(stroke.points.length>=OBSTACLE_LIMITS.points){landscapePanel.status('Strichgrenze erreicht · Loslassen und einen neuen Strich beginnen.');return;}
+  if(last&&Math.hypot(p[0]-last[0],p[1]-last[1])<(final ? .05 :Math.max(.6,stroke.radius*.12)))return;
+  stroke.points.push(p);
+  const svg=$('map-stage').firstElementChild;
+  let preview=svg.querySelector('#obstacle-stroke-preview');
+  if(!preview){preview=document.createElementNS(SVG_NS,'polyline');preview.id='obstacle-stroke-preview';preview.setAttribute('pointer-events','none');svg.append(preview);}
+  preview.setAttribute('points',(stroke.points.length===1?[p,[p[0]+.01,p[1]]]:stroke.points).map(p=>p.join(',')).join(' '));
+  preview.setAttribute('stroke',stroke.erase?'#dcaa86':'#505948');preview.setAttribute('stroke-width',stroke.radius*2);preview.setAttribute('stroke-linecap','round');preview.setAttribute('stroke-linejoin','round');preview.setAttribute('fill','none');preview.setAttribute('opacity','.8');
+  landscapePanel.status(stroke.erase?'Durchgang ausschneiden · Loslassen übernimmt den Strich.':'Felsrücken zeichnen · Loslassen verbindet die Fläche.');updatePlacementPreview();
 }
 function paintLandscapeSample(point) {
   if (!pointer?.brush) return;
@@ -1240,6 +1270,7 @@ function setMode(next) {
   landscapePanel?.sync();
   barrierPanel?.sync();
   const instructions = {
+    obstacleDraw:'Felsrücken malen · Loslassen übernimmt · Esc bricht ab.',obstacleErase:'Durchgang ausschneiden · Andere Kartenobjekte bleiben stehen.',
     biome: 'Ziehe auf der Insel, um Landschaft zu malen.', terrain: 'Ziehe auf der Insel, um die Bodenfarbe zu ändern.',
     scatter: 'Ziehe auf der Insel, um Objekte zu verteilen.', windzone: 'Tippe auf die Insel, um eine Windzone zu setzen.',
     terrainErase: 'Berühre gemalte Flächen, um sie zu entfernen.', erase: 'Ziehe über die markierten Objektmittelpunkte.',

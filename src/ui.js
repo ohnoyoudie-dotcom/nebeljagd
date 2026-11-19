@@ -1,3 +1,5 @@
+import { createObstacleSurface, OBSTACLE_COLORS } from './map/terrain-obstacles.js';
+import { createWorldSpatialModel } from './generated-spatial.js';
 import { arrivalMapView, arrivalViewPoint } from './map-arrival.js';
 import { getHouseDefinition, isBuilderHouse } from './map/house-builder.js';
 import { getCastleMaterialColors } from './map/castle-colors.js';
@@ -209,6 +211,7 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
   let lastDanger = false;
   let lastWeaponType;
   let lastNearWeaponType;
+  let ridgeMapPaths=[];
   let worldmap = null;
   let mapBackdrop = null;
   let mapProjection = null;
@@ -407,6 +410,11 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
       ctx.strokeStyle = '#8bc5ce'; ctx.lineWidth = Math.max(1.2, river.width * scale); ctx.stroke();
     }
     for (const path of worldmap.paths || []) if (path.kind !== 'bridge') drawMapPath(ctx, path, local, scale);
+    if(ridgeMapPaths.length){
+      const [x,z]=mapProjection.point(0,0);ctx.save();ctx.translate(x,z);ctx.scale(scale,scale);
+      for(const [biome,path] of ridgeMapPaths){ctx.fillStyle=OBSTACLE_COLORS[biome];ctx.fill(path);}
+      ctx.restore();
+    }
     for (const object of landmarkObjects) {
       const [px, py] = mapProjection.point(...object.position);
       const footprint = object.kind === 'house' ? getEnvironmentKitDefinition('house', object.variant)?.footprint : null;
@@ -470,6 +478,12 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
     }
   }
   function setWorldmap(data) {
+    ridgeMapPaths=[];
+    if(data?.landscape?.obstacles?.length){
+      const spatial=createWorldSpatialModel(data),surface=createObstacleSurface(data.landscape.obstacles,{isLand:spatial.isLand,isWater:spatial.isWater,biomeAt:spatial.biomeAt}),paths=new Map();
+      for(const tri of surface.triangles){const b=tri[0].biome;if(!paths.has(b))paths.set(b,new Path2D());const p=paths.get(b);p.moveTo(tri[0].x,tri[0].z);p.lineTo(tri[1].x,tri[1].z);p.lineTo(tri[2].x,tri[2].z);p.closePath();}
+      ridgeMapPaths=[...paths];
+    }
     worldmap = data; mapBackdrop = null; mapProjection = null; landmarkObjects.length = 0;
     if (!data?.bounds || !data.island?.points?.length) return;
     const { minX, minZ, maxX, maxZ } = data.bounds;
