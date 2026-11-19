@@ -50,3 +50,12 @@ test('dense forest uses the same passable cuts and derives existing trees withou
  assert.equal(r.traceProjectile({x:12,y:1,z:-20},{x:12,y:1,z:20}).type,'terrainRidge');
  const sight=createSightModel({obstacles:r.obstacles,radius:40});sight.update({x:12,y:0,z:-10});assert.equal(sight.isVisible({x:12,z:10}),false);r.dispose();
 });
+
+test('joined cliff normals consistently face outwards without alternating dark seams',()=>{
+ const r=runtime([line,cut]);let checked=0;
+ r.root.traverse(mesh=>{if(mesh.name!=='Felsrücken · Erde und Biomkappe')return;const p=mesh.geometry.attributes.position,n=mesh.geometry.attributes.normal;
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),nx=n.getX(i),nz=n.getZ(i);if(y<.5||y>3.3||Math.hypot(nx,nz)<.3)continue;checked++;
+   assert.ok(r.surface.sample(x+nx*.2,z+nz*.2).d<r.surface.sample(x-nx*.2,z-nz*.2).d,'cliff normal must point towards free space');
+  }
+ });assert.ok(checked>50);r.dispose();
+});

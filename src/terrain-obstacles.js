@@ -36,7 +36,10 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
   for(let i=0;i<levels.length-1;i++){
    const t=levels[i],u=levels[i+1],v=[point(a,t),point(b,t),point(b,u),point(a,u)];
    const colors=[a,b,b,a].map((p,j)=>{const y=j<2?t:u;color.set(palettes[p.biome][y<.12?1:0]);color.multiplyScalar(.84+.2*hash(Math.floor(p.x*.7),Math.floor(p.z*.7))+y*.13);if(y>.9)color.lerp(new THREE.Color(OBSTACLE_COLORS[p.biome]),(y-.9)*6);return color.toArray();});
-   put([v[0],v[1],v[2]],[colors[0],colors[1],colors[2]]);put([v[0],v[2],v[3]],[colors[0],colors[2],colors[3]]);
+   // Marching-triangle edge order is not a contour winding. Orient every
+   // cliff face outwards before averaging shared vertex normals.
+   if(-dz*nx+dx*nz>0){put([v[0],v[1],v[2]],[colors[0],colors[1],colors[2]]);put([v[0],v[2],v[3]],[colors[0],colors[2],colors[3]]);}
+   else{put([v[0],v[2],v[1]],[colors[0],colors[2],colors[1]]);put([v[0],v[3],v[2]],[colors[0],colors[3],colors[2]]);}
   }
  }
  const material=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.96,side:THREE.DoubleSide});
