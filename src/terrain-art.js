@@ -160,10 +160,24 @@ export function createTerrainArtwork() {
     samples.data[i]=samples.data[i+1]=samples.data[i+2]=value;
   }
   sc.putImageData(samples,0,0);
-  cached = { soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false), stoneCenters: texture(centers,false) };
+  // Flat, painted blade marks: no animated grass carpet and no extra draw calls.
+  const grassCanvas=canvas(size),gc=grassCanvas.getContext('2d');gc.fillStyle='#808080';gc.fillRect(0,0,size,size);
+  const grassRandom=randomSource(772419);
+  for(let cluster=0;cluster<85;cluster++){
+    const cx=grassRandom()*size,cy=grassRandom()*size,angle=grassRandom()*Math.PI*2,blades=2+Math.floor(grassRandom()*5);
+    for(let blade=0;blade<blades;blade++){
+      const length=13+grassRandom()*22,spread=(blade-(blades-1)/2)*2.3,lean=(grassRandom()-.5)*5;
+      for(const ox of [-size,0,size])for(const oy of [-size,0,size]){
+        gc.save();gc.translate(cx+ox,cy+oy);gc.rotate(angle);gc.fillStyle=blade%3?'#989898':'#676767';
+        gc.beginPath();gc.moveTo(spread-1.5,2);gc.quadraticCurveTo(spread+lean-1,-length*.4,spread+lean,-length);gc.quadraticCurveTo(spread+lean+1,-length*.3,spread+1.5,2);gc.fill();gc.restore();
+      }
+    }
+  }
+  cached = { paintedGrass: texture(grassCanvas,false), soilDetail: texture(soil), ground: texture(ground), earth: texture(earth), paving: texture(paving), pavingBump: texture(relief, false), stoneCenters: texture(centers,false) };
   cached.stoneCenters.minFilter=cached.stoneCenters.magFilter=THREE.NearestFilter;
   cached.stoneCenters.generateMipmaps=false;
-  cached.ground.name = 'Magebrawl · gemalter Naturboden ohne Grashalme';
+  cached.ground.name = 'Magebrawl · gemalter Naturboden';
+  cached.paintedGrass.name='Magebrawl · dezente gemalte Grasstriche';
   cached.paving.name = 'Magebrawl · einzelne verwitterte Randsteine';
   cached.earth.name = 'Magebrawl · erdiger Wegsaum';
   return cached;

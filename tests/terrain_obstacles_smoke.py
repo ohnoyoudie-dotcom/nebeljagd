@@ -32,6 +32,7 @@ with sync_playwright() as pw:
   saved=p.evaluate('nebeljagdMapTestState().map');assert saved['objects']==fixture['objects'];assert saved['regions']==fixture['regions'];passed('undo and redo operate on the complete stroke without changing other content')
   p.reload(wait_until='domcontentloaded');p.wait_for_function('window.nebeljagdMapTestState');assert p.evaluate('nebeljagdMapTestState().map')==saved;passed('painted obstacles and cuts survive a real browser draft reload')
   p.click('#editor-tool-paint-obstacles');p.click('#obstacle-draw');a=point(p,[-15,20]);b=point(p,[15,20]);p.mouse.move(a['x'],a['y']);p.mouse.down();p.mouse.move(b['x'],b['y'],steps=4);p.keyboard.press('Escape');p.mouse.up();assert p.evaluate('nebeljagdMapTestState().map')==saved
+  p.evaluate("window.showSaveFilePicker=undefined")
   with p.expect_download() as exported:p.locator('#download-json').evaluate('(button)=>button.click()')
   downloaded=json.loads(Path(exported.value.path()).read_text());assert downloaded==saved;passed('Escape cancels a stroke, and JSON export preserves the complete terrain document')
   touch=browser.new_context(viewport={'width':1024,'height':900},has_touch=True,is_mobile=True);touch.add_init_script('localStorage.setItem("nebeljagd.worldmap.v1",'+json.dumps(json.dumps(fixture))+');');t=touch.new_page();t.set_default_timeout(120000);t.goto(BASE+'/map-editor.html',wait_until='domcontentloaded');t.wait_for_function('window.nebeljagdMapTestState');t.click('#editor-tool-paint-obstacles');t.click('#obstacle-draw');a=point(t,[-20,0]);b=point(t,[20,0]);cdp=touch.new_cdp_session(t);cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':a['x'],'y':a['y'],'id':1}]})
@@ -48,12 +49,19 @@ with sync_playwright() as pw:
   p.keyboard.press('Escape');(OUT/'forest-ridge.png').write_bytes(base64.b64decode(p.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]));
   # Exercise the four materials in the actual renderer, using editor-authored data.
   p.close()
-  for biome in ['snow','desert','swamp']:
-   m=json.loads(json.dumps(saved));m['landscape']['obstacles'][0]['biome']=biome
+  for biome in ['snow','desert','swamp','dense-forest']:
+   m=json.loads(json.dumps(saved));m['landscape']['obstacles'][0]['biome']='forest' if biome=='dense-forest' else biome
+   if biome=='dense-forest':m['landscape']['obstacles'][0]['style']='forest'
    q=c.new_page();q.set_default_timeout(240000);q.on('pageerror',lambda e:report['errors'].append(str(e)));q.on('console',lambda e:report['errors'].append(e.text) if e.type=='error' and 'Shader' in e.text else None)
    q.goto(BASE+'/release.json');q.evaluate('m=>localStorage.setItem("nebeljagd.worldmap.playtest.v1",JSON.stringify(m))',m)
-   q.goto(BASE+'/'+os.environ.get('NEBELJAGD_GAME_ENTRY','magebrawl.html')+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');q.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0');q.click('#startBtn');q.evaluate('nebeljagdInspect({x:0,z:11,health:100})');q.wait_for_function('nebeljagdTestState().elapsed>.2');q.keyboard.press('Escape');(OUT/(biome+'-ridge.png')).write_bytes(base64.b64decode(q.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]));q.close()
-  passed('forest, snow, sandstone and swamp ridge materials render without shader errors')
+   q.goto(BASE+'/'+os.environ.get('NEBELJAGD_GAME_ENTRY','magebrawl.html')+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');q.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0');q.click('#startBtn');q.evaluate('nebeljagdInspect({x:0,z:11,health:100})');q.wait_for_function('nebeljagdTestState().elapsed>.2');q.keyboard.press('Escape');
+   if biome=='dense-forest':
+    assert q.evaluate('nebeljagdTestState().world.stats.terrainObstacles.forestTrees')>10
+    assert q.evaluate('nebeljagdInspectTerrain({from:{x:12,y:3,z:-16},to:{x:12,y:3,z:16}}).hit') is not None
+    assert q.evaluate('nebeljagdInspectTerrain({position:{x:0,y:0,z:0}}).resolved.x')==0
+    report['woodlandDetails']=q.evaluate('nebeljagdTestState().world.stats.woodlandDetails')
+   (OUT/(biome+'-ridge.png')).write_bytes(base64.b64decode(q.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]));q.close()
+  passed('four biome materials and dense forest render without shader errors; a cut through the forest stays passable')
   m=json.loads(json.dumps(fixture));m['objects']=[{'id':'staff','name':'Runenmauerstab','kind':'runeWallStaff','variant':'kit-tripo-rune-wall-staff','position':[0,-14],'rotation':0,'scale':1,'rarity':'common'},{'id':'tree','name':'Baum im Ziel','kind':'tree','variant':'kit-user-tree1','position':[0,-7],'rotation':0,'scale':.7}]
   q=c.new_page();q.set_default_timeout(240000);q.on('pageerror',lambda e:report['errors'].append(str(e)));q.goto(BASE+'/release.json');q.evaluate('m=>localStorage.setItem("nebeljagd.worldmap.playtest.v1",JSON.stringify(m))',m);q.goto(BASE+'/'+os.environ.get('NEBELJAGD_GAME_ENTRY','magebrawl.html')+'?inspect=1&mapSource=editor&quality=low',wait_until='domcontentloaded');q.wait_for_function('window.nebeljagdInspect && nebeljagdTestState().rendering.calls>0');q.click('#startBtn');q.wait_for_function('nebeljagdTestState().equippedWeapon==="runeWallStaff"');q.evaluate('nebeljagdInspect({x:0,z:-14,direction:0})');q.wait_for_function('nebeljagdTestState().elapsed>.4');pixel=q.evaluate('nebeljagdProjectPoint({x:0,z:-7})');q.mouse.move(pixel['x'],pixel['y']);q.keyboard.down('f');q.wait_for_function('nebeljagdTestState().combat.runeWall.aimRange?.radius===14');assert q.evaluate('nebeljagdTestState().combat.runeWall.valid');assert len(q.evaluate('nebeljagdTestState().combat.runeWall.segments'))==2;q.keyboard.up('f');q.wait_for_function('nebeljagdTestState().combat.runeWall.solid');q.keyboard.press('Escape');assert q.evaluate('nebeljagdTestState().combat.runeWall.barriers')==2;(OUT/'wall-around-tree.png').write_bytes(base64.b64decode(q.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]));q.close();passed('real staff targets a tree and creates two visible solid wall sections')
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==report['mapSha256'];report['status']='passed'

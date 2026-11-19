@@ -884,7 +884,7 @@ function pointerEnd(event, cancelled = false) {
   $('map-viewport').classList.remove('is-dragging');
   if(finished.obstacle){
     if(!cancelled&&finished.obstacle.points.length){
-      commit(candidate=>{(ensureLandscape(candidate).obstacles??=[]).push(finished.obstacle);},finished.obstacle.erase?'Durchgang ausgeschnitten.':'Felsrücken gemalt.');
+      commit(candidate=>{(ensureLandscape(candidate).obstacles??=[]).push(finished.obstacle);},finished.obstacle.erase?'Durchgang ausgeschnitten.':finished.obstacle.style==='forest'?'Dichten Wald gemalt.':'Felsrücken gemalt.');
     }
     renderAll();return;
   }
@@ -961,7 +961,7 @@ function paintObstacleSample(point,final=false){
   if(!preview){preview=document.createElementNS(SVG_NS,'polyline');preview.id='obstacle-stroke-preview';preview.setAttribute('pointer-events','none');svg.append(preview);}
   preview.setAttribute('points',(stroke.points.length===1?[p,[p[0]+.01,p[1]]]:stroke.points).map(p=>p.join(',')).join(' '));
   preview.setAttribute('stroke',stroke.erase?'#dcaa86':'#505948');preview.setAttribute('stroke-width',stroke.radius*2);preview.setAttribute('stroke-linecap','round');preview.setAttribute('stroke-linejoin','round');preview.setAttribute('fill','none');preview.setAttribute('opacity','.8');
-  landscapePanel.status(stroke.erase?'Durchgang ausschneiden · Loslassen übernimmt den Strich.':'Felsrücken zeichnen · Loslassen verbindet die Fläche.');updatePlacementPreview();
+  landscapePanel.status(stroke.erase?'Durchgang ausschneiden · Loslassen übernimmt den Strich.':'Hindernisse zeichnen · Loslassen verbindet die Fläche.');updatePlacementPreview();
 }
 function paintLandscapeSample(point) {
   if (!pointer?.brush) return;

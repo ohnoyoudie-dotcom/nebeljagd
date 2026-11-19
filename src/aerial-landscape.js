@@ -61,7 +61,7 @@ export function createAerialLandscape(world, { attach = true, sceneryOnly = fals
   // Called before characters, loot, spells and tactical overlays are added.
   for (const source of [...world.root.children]) {
     // Individual grass blades and local snow microdetail have no aerial silhouette.
-    if (/^Geländeabschnitt |dichte animierte Wiese|natürliche volumige Schneedecke/.test(source.name)) continue;
+    if (/^Waldboden · Pilze|Geländeabschnitt |dichte animierte Wiese|natürliche volumige Schneedecke/.test(source.name)) continue;
     const node = source.clone(true); node.visible = true;
     if (source.name === 'Meer um die Nebelinsel') node.scale.multiplyScalar(4);
     node.traverse(child=>{

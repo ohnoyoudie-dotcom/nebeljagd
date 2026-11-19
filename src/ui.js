@@ -481,7 +481,7 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
     ridgeMapPaths=[];
     if(data?.landscape?.obstacles?.length){
       const spatial=createWorldSpatialModel(data),surface=createObstacleSurface(data.landscape.obstacles,{isLand:spatial.isLand,isWater:spatial.isWater,biomeAt:spatial.biomeAt}),paths=new Map();
-      for(const tri of surface.triangles){const b=tri[0].biome;if(!paths.has(b))paths.set(b,new Path2D());const p=paths.get(b);p.moveTo(tri[0].x,tri[0].z);p.lineTo(tri[1].x,tri[1].z);p.lineTo(tri[2].x,tri[2].z);p.closePath();}
+      for(const tri of surface.triangles){const b=tri[0].style==='forest'?'woodland':tri[0].biome;if(!paths.has(b))paths.set(b,new Path2D());const p=paths.get(b);p.moveTo(tri[0].x,tri[0].z);p.lineTo(tri[1].x,tri[1].z);p.lineTo(tri[2].x,tri[2].z);p.closePath();}
       ridgeMapPaths=[...paths];
     }
     worldmap = data; mapBackdrop = null; mapProjection = null; landmarkObjects.length = 0;

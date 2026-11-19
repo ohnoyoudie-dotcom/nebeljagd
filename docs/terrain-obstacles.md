@@ -2,12 +2,16 @@
 
 Im Editor unter **Malen → Hindernisse**: „Felsrücken malen“ ziehen, Material
 (Auto/Wald/Schnee/Wüste/Sumpf), Radius 2–40 m und Höhe 2–10 m wählen.
+Als Hindernisart stehen Felsrücken oder **Dichter Wald** zur Wahl. Der Wald
+verwendet den vorhandenen eigenen Baum sowie Tripo-Felsen, mit wechselnder
+Größe, Rotation und Biomfarbe. Bäume werden aus der Fläche abgeleitet und
+nicht als Tausende unverbundene Objekte im Kartendokument gespeichert.
 „Durchgang radieren“ schneidet nur Hindernisse aus. Jeder Strich ist ein
 Rückgängig-Schritt; Escape verwirft die laufende Geste. Maus und Touch nutzen
 dieselbe Pointer-Eingabe. Vorhandene Projektobjekte bleiben unverändert.
 
 `landscape.obstacles` ist eine optionale geordnete Liste aus Kapselstrichen.
-Ein Strich speichert `id`, `points`, `radius`, `height`, `biome`, `erase`.
+Ein Strich speichert `id`, `points`, `radius`, `height`, `biome`, `erase` und optional `style` (cliff/forest).
 Übermalen vereinigt Flächen; Radieren subtrahiert sie; erneutes Malen füllt
 sie wieder. JSON, Browserentwurf, Editor-HTML und SVG-Metadaten erhalten diese
 Daten. Alte Karten erhalten das Feld erst nach Benutzung des Pinsels.
@@ -36,3 +40,20 @@ Prüfung: `npm test`; `npm run build`; anschließend bei lokal bereitgestelltem
 Die Browserprüfung verwendet isolierte Testentwürfe und verändert die
 veröffentlichte `worldmap.json` nicht. CPU-Rendering in Chromium ist keine
 Aussage zur Bildrate auf einem physischen iPad.
+
+## Waldboden
+
+Eine dezente gekachelte Graszeichnung verändert nur die grünen Bodenmaterialien.
+Sie besteht aus kleinen, unregelmäßigen Pinselstrichen und benötigt weder
+zusätzliche Grasgeometrie noch Windanimation. Sand, Schnee und Stein bleiben
+frei von grünen Grashalmen.
+
+Pilze und kleine helle/violette Blüten entstehen deterministisch in lockeren
+Gruppen nahe vorhandener Bäume, auch am Rand gemalter dichter Wälder. Wasser,
+Wege, Hauseingänge und gepflasterte Bodenflächen werden ausgespart. Die kleinen
+Objekte sind dekorativ und ändern keine Kollision oder Beute. Im Hindernispanel
+kann „Pilze und kleine Blumen im Wald“ abgeschaltet werden; die optionale
+Einstellung `landscape.woodlandDetails` bleibt beim Speichern erhalten. Die
+Dekoration ist standardmäßig aktiv, ohne die bestehende Projektkarte umzuschreiben.
+Instanzgruppen werden nur in der Umgebung gerendert und aus der Fernansicht
+weggelassen. Dichte gemalte Waldflächen sind auf insgesamt 40.000 m² begrenzt.

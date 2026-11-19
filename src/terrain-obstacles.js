@@ -9,7 +9,7 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
  const root=new THREE.Group();root.name='Gemalte Felsrücken';parent.add(root);
  const chunks=new Map(),color=new THREE.Color();
  const relief=(x,z)=>.24*Math.sin(x*.31)*Math.cos(z*.27)+.09*Math.sin(x*.9+z*.6);
- const top=p=>heightAt(p.x,p.z)+p.h+relief(p.x,p.z);
+ const top=p=>heightAt(p.x,p.z)+(p.style==='forest'?.045:p.h+relief(p.x,p.z));
  const put=(vertices,colors)=>{
   const x=vertices.reduce((sum,p)=>sum+p[0],0)/3,z=vertices.reduce((sum,p)=>sum+p[2],0)/3,k=`${Math.floor(x/64)},${Math.floor(z/64)}`;
   if(!chunks.has(k))chunks.set(k,{positions:[],colors:[],x:(Math.floor(x/64)+.5)*64,z:(Math.floor(z/64)+.5)*64});
@@ -19,12 +19,20 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
   const vertices=tri.map(p=>[p.x,top(p),p.z]),colors=tri.map(p=>{color.set(OBSTACLE_COLORS[p.biome]);color.multiplyScalar(.94+hash(Math.floor(p.x/4),Math.floor(p.z/4))*.13);return color.toArray();});
   put([vertices[0],vertices[2],vertices[1]],[colors[0],colors[2],colors[1]]);
  }
+ const boundaryNormals=new Map(),pointKey=p=>p.x.toFixed(5)+','+p.z.toFixed(5);
  for(const [a,b] of surface.edges){
+  const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);if(len<.0001)continue;
+  let nx=-dz/len,nz=dx/len;if(surface.sample((a.x+b.x)/2+nx*.2,(a.z+b.z)/2+nz*.2).d>0){nx=-nx;nz=-nz;}
+  for(const p of [a,b]){const k=pointKey(p),n=boundaryNormals.get(k)??{x:0,z:0};n.x+=nx;n.z+=nz;boundaryNormals.set(k,n);}
+ }
+ for(const n of boundaryNormals.values()){const length=Math.hypot(n.x,n.z)||1;n.x/=length;n.z/=length;}
+ for(const [a,b] of surface.edges){
+  if(a.style==='forest'&&b.style==='forest')continue;
   const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);if(len<.0001)continue;
   let nx=-dz/len,nz=dx/len;const mx=(a.x+b.x)/2,mz=(a.z+b.z)/2;
   if(surface.sample(mx+nx*.2,mz+nz*.2).d>0){nx=-nx;nz=-nz;}
   const levels=[0,.10,.38,.68,.9,1];
-  const point=(p,t)=>{const bulge=Math.sin(t*Math.PI)*(.16+.13*Math.sin(p.x*.9+p.z*.7));return[p.x+nx*bulge,heightAt(p.x,p.z)-.08+(top(p)-heightAt(p.x,p.z)+.08)*t,p.z+nz*bulge];};
+  const point=(p,t)=>{const bulge=Math.sin(t*Math.PI)*(.16+.13*Math.sin(p.x*.9+p.z*.7));const normal=boundaryNormals.get(pointKey(p));return[p.x+normal.x*bulge,heightAt(p.x,p.z)-.08+(top(p)-heightAt(p.x,p.z)+.08)*t,p.z+normal.z*bulge];};
   for(let i=0;i<levels.length-1;i++){
    const t=levels[i],u=levels[i+1],v=[point(a,t),point(b,t),point(b,u),point(a,u)];
    const colors=[a,b,b,a].map((p,j)=>{const y=j<2?t:u;color.set(palettes[p.biome][y<.12?1:0]);color.multiplyScalar(.84+.2*hash(Math.floor(p.x*.7),Math.floor(p.z*.7))+y*.13);if(y>.9)color.lerp(new THREE.Color(OBSTACLE_COLORS[p.biome]),(y-.9)*6);return color.toArray();});
@@ -60,10 +68,11 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
   const mesh=new THREE.Mesh(smoothGeometry,material);mesh.name='Felsrücken · Erde und Biomkappe';mesh.castShadow=mesh.receiveShadow=true;root.add(mesh);chunk.mesh=mesh;
  }
  // Edge stones are small accents. The ridge itself is one joined surface.
- const count=Math.min(1200,Math.floor(surface.edges.length/5)),stones=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,1),new THREE.MeshStandardMaterial({roughness:.95}),count),dummy=new THREE.Object3D();
+ const rockyEdges=surface.edges.filter(([a,b])=>a.style!=='forest'||b.style!=='forest');
+ const count=Math.min(1200,Math.floor(rockyEdges.length/5)),stones=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,1),new THREE.MeshStandardMaterial({roughness:.95}),count),dummy=new THREE.Object3D();
  stones.name='Lockere Steine am Felsfuß';stones.castShadow=stones.receiveShadow=true;
  for(let i=0;i<count;i++){
-  const [a,b]=surface.edges[Math.floor(i*surface.edges.length/count)],x=(a.x+b.x)/2,z=(a.z+b.z)/2,v=hash(x,z),size=.16+v*.3;
+  const [a,b]=rockyEdges[Math.floor(i*rockyEdges.length/count)],x=(a.x+b.x)/2,z=(a.z+b.z)/2,v=hash(x,z),size=.16+v*.3;
   dummy.position.set(x,heightAt(x,z)+size*.35,z);dummy.rotation.set(v,hash(z,x)*6,v*.4);dummy.scale.set(size*1.3,size*.7,size);dummy.updateMatrix();stones.setMatrixAt(i,dummy.matrix);stones.setColorAt(i,new THREE.Color(palettes[a.biome][0]));
  }
  if(count)root.add(stones);
@@ -71,6 +80,7 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
  // independent boulders into the traversable outline.
  const outcrops=[];let spacing=0;
  for(const [a,b] of surface.edges){
+  if(a.style==='forest'&&b.style==='forest')continue;
   const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);spacing+=len;
   if(spacing<2.1||outcrops.length>=1800)continue;spacing=0;
   const x=(a.x+b.x)/2,z=(a.z+b.z)/2,seed=hash(x,z);if(seed<.22)continue;
@@ -82,8 +92,27 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
  for(let i=0;i<outcropPos.count;i++){const x=outcropPos.getX(i),y=outcropPos.getY(i),z=outcropPos.getZ(i),scale=1+.13*Math.sin(x*11+y*7+z*9);outcropPos.setXYZ(i,x*scale,y*scale,z*scale);}outcropGeometry.computeVertexNormals();
  const outcropMesh=new THREE.InstancedMesh(outcropGeometry,outcropMat,outcrops.length);outcropMesh.name='Eingelagerte Felsplatten';outcropMesh.castShadow=outcropMesh.receiveShadow=true;
  outcrops.forEach((p,i)=>{dummy.position.set(p.x-p.nx*.12,heightAt(p.x,p.z)+p.h*(.28+p.seed*.37),p.z-p.nz*.12);dummy.rotation.set(.08*Math.sin(i),Math.atan2(p.nx,p.nz),.12*Math.cos(i));dummy.scale.set(.65+p.seed*.6,.65+p.h*.18,.33);dummy.updateMatrix();outcropMesh.setMatrixAt(i,dummy.matrix);outcropMesh.setColorAt(i,new THREE.Color(palettes[p.biome][0]).multiplyScalar(.93+p.seed*.2));});
- if(outcrops.length)root.add(outcropMesh);
- const obstacles=surface.edges.map(([a,b])=>({type:'terrainRidge',objectKind:'rock',corners:[{x:a.x,z:a.z},{x:b.x,z:b.z}],minX:Math.min(a.x,b.x)-.05,maxX:Math.max(a.x,b.x)+.05,minZ:Math.min(a.z,b.z)-.05,maxZ:Math.max(a.z,b.z)+.05,minY:Math.min(heightAt(a.x,a.z),heightAt(b.x,b.z)),maxY:Math.max(top(a),top(b))}));
+ if(outcrops.length){outcropMesh.computeBoundingSphere();root.add(outcropMesh);}
+ const treePlacements=[],seen=new Set();
+ for(const tri of surface.triangles){
+  if(!tri.some(p=>p.style==='forest'))continue;
+  const x=tri.reduce((sum,p)=>sum+p.x,0)/3,z=tri.reduce((sum,p)=>sum+p.z,0)/3,ix=Math.floor(x/3.8),iz=Math.floor(z/3.8),key=ix+','+iz;
+  if(seen.has(key))continue;seen.add(key);
+  const seed=hash(ix,iz),px=(ix+.5)*3.8+(seed-.5)*1.6,pz=(iz+.5)*3.8+(hash(iz,ix+17)-.5)*1.6,s=surface.sample(px,pz);
+  if(s.d<1.2||s.style!=='forest')continue;
+  treePlacements.push({id:'ridge-tree-'+ix+'-'+iz,name:'Dichter Wald',kind:'tree',variant:'kit-user-tree1',position:[px,pz],rotation:seed*Math.PI*2,scale:(.65+hash(ix+31,iz)*.27)*(.7+s.h*.075)});
+  if(seed>.76){const rx=px+1.2,rz=pz-.9;if(surface.sample(rx,rz).d>1.4)treePlacements.push({id:'ridge-rock-'+ix+'-'+iz,name:'Fels im Unterholz',kind:'rock',variant:'kit-tripo-01',position:[rx,rz],rotation:seed*6,scale:.5+seed*.3});}
+ }
+ let edgeTravel=0,edgeIndex=0;
+ for(const [a,b] of surface.edges){
+  if(a.style!=='forest'&&b.style!=='forest')continue;
+  const len=Math.hypot(b.x-a.x,b.z-a.z);edgeTravel+=len;if(edgeTravel<1.65)continue;edgeTravel=0;
+  const x=(a.x+b.x)/2,z=(a.z+b.z)/2,seed=hash(x,z),normal=boundaryNormals.get(pointKey(a));
+  const px=x-normal.x*.9,pz=z-normal.z*.9;if(surface.sample(px,pz).d<.45)continue;
+  const rock=seed>.85;
+  treePlacements.push({id:'ridge-understory-'+edgeIndex++,name:rock?'Fels am Waldrand':'Unterholz am Waldrand',kind:rock?'rock':'bush',variant:rock?'kit-tripo-01':'rei-bush',position:[px,pz],rotation:seed*6,scale:rock?.42+seed*.2:.75+seed*.4});
+ }
+ const obstacles=surface.edges.map(([a,b])=>({type:'terrainRidge',objectKind:'rock',corners:[{x:a.x,z:a.z},{x:b.x,z:b.z}],minX:Math.min(a.x,b.x)-.05,maxX:Math.max(a.x,b.x)+.05,minZ:Math.min(a.z,b.z)-.05,maxZ:Math.max(a.z,b.z)+.05,minY:Math.min(heightAt(a.x,a.z),heightAt(b.x,b.z)),maxY:Math.max(a.style==='forest'?heightAt(a.x,a.z)+a.h:top(a),b.style==='forest'?heightAt(b.x,b.z)+b.h:top(b))}));
  function resolveMovement(p,radius=.42){
   if(!surface.triangles.length)return p;
   for(let i=0;i<10;i++){
@@ -111,5 +140,5 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
    return{t:hi,point,normal:{x:-gx/n,y:0,z:-gz/n},collider,type:'terrainRidge'};
   }return null;
  }
- return{root,surface,obstacles,resolveMovement,traceProjectile,update(player,range=125){for(const c of chunks.values())c.mesh.visible=Math.hypot(c.x-player.x,c.z-player.z)<range+64;},stats:{strokes:map.landscape?.obstacles?.length??0,triangles:surface.triangles.length,chunks:chunks.size},dispose(){root.traverse(o=>{o.geometry?.dispose();});material.dispose();outcropMat.dispose();if(!outcrops.length)outcropGeometry.dispose();stones.material.dispose();if(!count)stones.geometry.dispose();root.removeFromParent();}};
+ return{root,surface,obstacles,treePlacements,resolveMovement,traceProjectile,update(player,range=125){for(const c of chunks.values())c.mesh.visible=Math.hypot(c.x-player.x,c.z-player.z)<range+64;},stats:{forestTrees:treePlacements.filter(o=>o.kind==='tree').length,strokes:map.landscape?.obstacles?.length??0,triangles:surface.triangles.length,chunks:chunks.size},dispose(){root.traverse(o=>{o.geometry?.dispose();});material.dispose();outcropMat.dispose();if(!outcrops.length)outcropGeometry.dispose();stones.material.dispose();if(!count)stones.geometry.dispose();root.removeFromParent();}};
 }

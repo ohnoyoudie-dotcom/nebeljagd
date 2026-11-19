@@ -2320,6 +2320,9 @@
           "items": {
             "$ref": "#/$defs/terrainObstacle"
           }
+        },
+        "woodlandDetails": {
+          "type": "boolean"
         }
       }
     },
@@ -2494,6 +2497,12 @@
         },
         "erase": {
           "type": "boolean"
+        },
+        "style": {
+          "enum": [
+            "cliff",
+            "forest"
+          ]
         }
       }
     }

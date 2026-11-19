@@ -40,3 +40,13 @@ test('terrain strokes survive normal map operations and validate malformed / exc
  assert.ok(validateTerrainObstacles(Array.from({length:513},(_,i)=>({...line,id:'ridge-'+i}))).length);
  assert.ok(validateTerrainObstacles([stroke('oversize',[[-3000,0],[3000,0]],{radius:40})]).length);
 });
+
+test('dense forest uses the same passable cuts and derives existing trees without altering saved placements',()=>{
+ const source=[{...line,style:'forest'},cut],map={objects:[],landscape:{obstacles:source}},before=JSON.stringify(map),scene=new THREE.Scene();
+ const r=createTerrainObstacles(scene,{map,heightAt:()=>0,biomeAt:()=> 'forest',isLand:()=>true,isWater:()=>false});
+ assert.ok(r.treePlacements.length>10);assert.equal(JSON.stringify(map),before);
+ assert.ok(r.treePlacements.every(o=>r.surface.sample(...o.position).d>.4));assert.ok(r.treePlacements.every(o=>Math.abs(o.position[0])>3));
+ const free={x:0,y:0,z:0};r.resolveMovement(free,.42);assert.equal(free.x,0);assert.equal(r.traceProjectile({x:0,y:1,z:-20},{x:0,y:1,z:20}),null);
+ assert.equal(r.traceProjectile({x:12,y:1,z:-20},{x:12,y:1,z:20}).type,'terrainRidge');
+ const sight=createSightModel({obstacles:r.obstacles,radius:40});sight.update({x:12,y:0,z:-10});assert.equal(sight.isVisible({x:12,z:10}),false);r.dispose();
+});
