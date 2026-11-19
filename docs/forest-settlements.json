@@ -1,0 +1,644 @@
+{
+  "baselineHash": "aff368042edc29b6d8201443afa3b9e8367d4605208e484ff0a7a53cf88febd4",
+  "seed": 19112026,
+  "settlements": [
+    {
+      "id": "lindenwacht",
+      "name": "Lindenwacht",
+      "center": [
+        -170,
+        -80
+      ],
+      "ring": 42,
+      "lots": 62,
+      "angles": [
+        11.25,
+        33.75,
+        56.25,
+        78.75,
+        101.25,
+        123.75,
+        146.25,
+        168.75,
+        191.25,
+        213.75,
+        236.25,
+        258.75,
+        281.25,
+        303.75,
+        326.25,
+        348.75
+      ],
+      "square": 12,
+      "houses": 18
+    },
+    {
+      "id": "farnhoehe",
+      "name": "Farnhöhe",
+      "center": [
+        95,
+        -435
+      ],
+      "ring": 23,
+      "lots": 39,
+      "angles": [
+        22.5,
+        67.5,
+        112.5,
+        157.5,
+        202.5,
+        247.5,
+        292.5,
+        337.5
+      ],
+      "square": 10,
+      "houses": 8
+    },
+    {
+      "id": "eichenruh",
+      "name": "Eichenruh",
+      "center": [
+        -405,
+        40
+      ],
+      "ring": 22,
+      "lots": 38,
+      "angles": [
+        22.5,
+        67.5,
+        112.5,
+        202.5,
+        247.5,
+        292.5
+      ],
+      "square": 10,
+      "houses": 5
+    },
+    {
+      "id": "moosbrunn",
+      "name": "Moosbrunn",
+      "center": [
+        -100,
+        155
+      ],
+      "ring": 22,
+      "lots": 38,
+      "angles": [
+        22.5,
+        67.5,
+        112.5,
+        202.5,
+        247.5,
+        292.5
+      ],
+      "square": 10,
+      "houses": 5
+    },
+    {
+      "id": "holzschlag",
+      "name": "Holzschlag",
+      "center": [
+        -325,
+        -190
+      ],
+      "ring": 12,
+      "lots": 27,
+      "angles": [
+        45,
+        135,
+        225
+      ],
+      "square": 7,
+      "houses": 3
+    },
+    {
+      "id": "waldrain",
+      "name": "Waldrain",
+      "center": [
+        -300,
+        170
+      ],
+      "ring": 12,
+      "lots": 27,
+      "angles": [
+        35,
+        155,
+        220
+      ],
+      "square": 7,
+      "houses": 3
+    }
+  ],
+  "plots": [
+    {
+      "id": "forest-world-lindenwacht-haus-1",
+      "threshold": [
+        -151.0504689366092,
+        -29.175071555395384
+      ],
+      "approach": [
+        -151.68256530830269,
+        -31.230054323423367
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-2",
+      "threshold": [
+        -129.44347362069863,
+        -39.618168657705176
+      ],
+      "approach": [
+        -130.87468988854778,
+        -41.22257508833425
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-4",
+      "threshold": [
+        -115.51811224029372,
+        -70.53195157260224
+      ],
+      "approach": [
+        -117.63624447052702,
+        -70.90075484705478
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-5",
+      "threshold": [
+        -116.99995624997908,
+        -91.03581312677447
+      ],
+      "approach": [
+        -119.10378742935252,
+        -90.59264908412646
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-6",
+      "threshold": [
+        -125.35921532503608,
+        -115.20493351449699
+      ],
+      "approach": [
+        -127.12439595546526,
+        -113.9774819505004
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-7",
+      "threshold": [
+        -145.87781210492253,
+        -127.10238654832216
+      ],
+      "approach": [
+        -147.00742237406357,
+        -125.2730476951156
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-8",
+      "threshold": [
+        -158.2161347047963,
+        -134.6597945648303
+      ],
+      "approach": [
+        -158.6710191615617,
+        -132.55846638222928
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-9",
+      "threshold": [
+        -182.56985673080692,
+        -133.4066694503756
+      ],
+      "approach": [
+        -182.08637559761314,
+        -131.31173604001486
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-10",
+      "threshold": [
+        -205.8576495365331,
+        -123.1005402634589
+      ],
+      "approach": [
+        -204.59652842750228,
+        -121.35925523556801
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-12",
+      "threshold": [
+        -225.84096424258783,
+        -90.68507826013484
+      ],
+      "approach": [
+        -223.73128859754945,
+        -90.27062841668946
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-13",
+      "threshold": [
+        -223.79508738031575,
+        -67.86327564972984
+      ],
+      "approach": [
+        -221.6997696252512,
+        -68.34508837819529
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-14",
+      "threshold": [
+        -213.32022916565415,
+        -46.0059818215436
+      ],
+      "approach": [
+        -211.54093804280387,
+        -47.212888238854504
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-15",
+      "threshold": [
+        -194.3349068929799,
+        -33.66561845411309
+      ],
+      "approach": [
+        -193.20238455463263,
+        -35.49315591012992
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-haus-16",
+      "threshold": [
+        -181.1512888092778,
+        -23.21828974531952
+      ],
+      "approach": [
+        -180.73515910617414,
+        -25.327634683966316
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-hof-0",
+      "threshold": [
+        -187,
+        -92.15
+      ],
+      "approach": [
+        -187,
+        -90
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-hof-1",
+      "threshold": [
+        -153,
+        -92.15
+      ],
+      "approach": [
+        -153,
+        -90
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-hof-2",
+      "threshold": [
+        -186.99227563335504,
+        -67.84999384887857
+      ],
+      "approach": [
+        -186.9888514295846,
+        -69.99999112209278
+      ]
+    },
+    {
+      "id": "forest-world-lindenwacht-hof-3",
+      "threshold": [
+        -152.99227563335504,
+        -67.84999384887857
+      ],
+      "approach": [
+        -152.9888514295846,
+        -69.99999112209278
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-1",
+      "threshold": [
+        108.08323286192936,
+        -403.45873996579263
+      ],
+      "approach": [
+        107.26899588319702,
+        -405.4485937650615
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-2",
+      "threshold": [
+        128.2111224778979,
+        -426.3045763747901
+      ],
+      "approach": [
+        126.20075943614724,
+        -427.0667708646436
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-3",
+      "threshold": [
+        127.62792160764904,
+        -443.2013205679469
+      ],
+      "approach": [
+        125.54349510382335,
+        -442.67438020116043
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-4",
+      "threshold": [
+        106.61177079409214,
+        -465.1338218065078
+      ],
+      "approach": [
+        105.82791661002989,
+        -463.1318046691865
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-5",
+      "threshold": [
+        78.75425999425731,
+        -464.08458725371366
+      ],
+      "approach": [
+        79.60498489254448,
+        -462.1100576521543
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-6",
+      "threshold": [
+        63.5303483383559,
+        -444.9699848515787
+      ],
+      "approach": [
+        65.48104059069284,
+        -444.06593853823375
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-7",
+      "threshold": [
+        65.25623604715801,
+        -421.2983184854091
+      ],
+      "approach": [
+        67.20508295466104,
+        -422.20633595832237
+      ]
+    },
+    {
+      "id": "forest-world-farnhoehe-haus-8",
+      "threshold": [
+        85.99671401968419,
+        -405.2287177296632
+      ],
+      "approach": [
+        86.84341556850573,
+        -407.20497593324467
+      ]
+    },
+    {
+      "id": "forest-world-eichenruh-haus-1",
+      "threshold": [
+        -392.2967671380706,
+        70.6212600342074
+      ],
+      "approach": [
+        -393.111004116803,
+        68.63140623493851
+      ]
+    },
+    {
+      "id": "forest-world-eichenruh-haus-2",
+      "threshold": [
+        -372.7288775221021,
+        48.34542362520988
+      ],
+      "approach": [
+        -374.7392405638528,
+        47.5832291353564
+      ]
+    },
+    {
+      "id": "forest-world-eichenruh-haus-3",
+      "threshold": [
+        -379.3125220618974,
+        24.719593191469926
+      ],
+      "approach": [
+        -381.28637358243634,
+        25.571890190682158
+      ]
+    },
+    {
+      "id": "forest-world-eichenruh-haus-5",
+      "threshold": [
+        -436.1574286401183,
+        31.323963057920608
+      ],
+      "approach": [
+        -434.1639907614231,
+        32.12938557050845
+      ]
+    },
+    {
+      "id": "forest-world-eichenruh-haus-6",
+      "threshold": [
+        -433.35807736794715,
+        54.81308945437252
+      ],
+      "approach": [
+        -431.342899506759,
+        54.06371759222582
+      ]
+    },
+    {
+      "id": "forest-world-moosbrunn-haus-1",
+      "threshold": [
+        -87.29676713807063,
+        185.6212600342074
+      ],
+      "approach": [
+        -88.11100411680297,
+        183.6314062349385
+      ]
+    },
+    {
+      "id": "forest-world-moosbrunn-haus-2",
+      "threshold": [
+        -67.7288775221021,
+        163.34542362520986
+      ],
+      "approach": [
+        -69.73924056385277,
+        162.5832291353564
+      ]
+    },
+    {
+      "id": "forest-world-moosbrunn-haus-4",
+      "threshold": [
+        -112.6764778850095,
+        126.3847582689413
+      ],
+      "approach": [
+        -111.80605055568381,
+        128.35068203764723
+      ]
+    },
+    {
+      "id": "forest-world-moosbrunn-haus-5",
+      "threshold": [
+        -130.1470260839272,
+        138.97673989549494
+      ],
+      "approach": [
+        -128.24395517267843,
+        139.97715036463188
+      ]
+    },
+    {
+      "id": "forest-world-moosbrunn-haus-6",
+      "threshold": [
+        -128.35807736794715,
+        169.81308945437254
+      ],
+      "approach": [
+        -126.34289950675901,
+        169.06371759222583
+      ]
+    },
+    {
+      "id": "forest-world-holzschlag-haus-1",
+      "threshold": [
+        -309.3497722424768,
+        -174.32913248059893
+      ],
+      "approach": [
+        -310.8746197314097,
+        -175.8448303843696
+      ]
+    },
+    {
+      "id": "forest-world-holzschlag-haus-2",
+      "threshold": [
+        -312.4714169247944,
+        -208.58510699400745
+      ],
+      "approach": [
+        -313.9419437213298,
+        -207.01665204066276
+      ]
+    },
+    {
+      "id": "forest-world-holzschlag-haus-3",
+      "threshold": [
+        -337.91600815079073,
+        -207.3606294080077
+      ],
+      "approach": [
+        -336.6375375372237,
+        -205.63204244454718
+      ]
+    },
+    {
+      "id": "forest-world-waldrain-haus-1",
+      "threshold": [
+        -287.28207239590034,
+        188.14028711690312
+      ],
+      "approach": [
+        -288.51092923119637,
+        186.37608449862307
+      ]
+    },
+    {
+      "id": "forest-world-waldrain-haus-2",
+      "threshold": [
+        -294.57893629751334,
+        148.24827815272175
+      ],
+      "approach": [
+        -295.422489279095,
+        150.22588235156053
+      ]
+    },
+    {
+      "id": "forest-world-waldrain-haus-3",
+      "threshold": [
+        -311.3681502073893,
+        151.58279780142715
+      ],
+      "approach": [
+        -310.25021679417017,
+        153.41929579587423
+      ]
+    },
+    {
+      "id": "forest-world-jaegerhaus",
+      "threshold": [
+        -56,
+        -237.15
+      ],
+      "approach": [
+        -56,
+        -235
+      ]
+    },
+    {
+      "id": "forest-world-nordwacht",
+      "threshold": [
+        260,
+        -462.15
+      ],
+      "approach": [
+        260,
+        -460
+      ]
+    },
+    {
+      "id": "forest-world-osthaus",
+      "threshold": [
+        85,
+        152.85
+      ],
+      "approach": [
+        85,
+        155
+      ]
+    }
+  ],
+  "objects": 1542,
+  "barriers": 19,
+  "houses": 45,
+  "paths": 75,
+  "groves": 40,
+  "counts": {
+    "house": 45,
+    "well": 4,
+    "tree": 1215,
+    "wagon": 15,
+    "log": 88,
+    "stump": 99,
+    "rock": 76
+  },
+  "warnings": []
+}

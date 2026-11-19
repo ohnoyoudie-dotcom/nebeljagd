@@ -23,7 +23,7 @@ export function createAerialLandscape(world, { attach = true, sceneryOnly = fals
     const key = source.customProgramCacheKey?.call(source) ?? '';
     material.customProgramCacheKey = () => `${key}|aerial-scenery`;
     material.userData = {...material.userData, ignoreVision:true};
-    material.transparent = true; material.depthWrite = source.depthWrite;
+    material.transparent = sceneryOnly ? source.transparent : true; material.depthWrite = source.depthWrite;
     material.polygonOffset = true; material.polygonOffsetFactor = 1; material.polygonOffsetUnits = 1;
     materials.set(source,{material,opacity:source.opacity});return material;
   }

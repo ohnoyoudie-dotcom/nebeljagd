@@ -43,3 +43,11 @@ test('selection scenery contains real buildings but hides loot without modifying
  assert(copy.visible&&copy.children[0].visible);assert(!copy.children[1].visible&&!copy.children[2].visible);
  assert(chest.visible&&barrels.visible);assert(!sector.visible);far.dispose();
 });
+
+test('static selection scenery draws opaque terrain before transparent roads',()=>{
+ const root=new Group(),ground=new Mesh(new BoxGeometry(),new MeshStandardMaterial());ground.name='Geländeabschnitt 0';root.add(ground);
+ const road=new Mesh(new BoxGeometry(),new MeshStandardMaterial({transparent:true,depthWrite:false}));road.name='Wegenetz · räumlicher Abschnitt';root.add(road);
+ const far=createAerialLandscape({root,map:{objects:[]}},{attach:false,sceneryOnly:true});far.update(200);
+ assert.equal(far.group.children[0].material.transparent,false);assert.equal(far.group.children[1].material.transparent,true);
+ assert.equal(far.group.children[1].material.depthWrite,false);far.dispose();
+});
