@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createObstacleSurface, OBSTACLE_COLORS } from './map/terrain-obstacles.js';
 
 const palettes={forest:['#929082','#605b48'],snow:['#78858c','#535c67'],desert:['#b88650','#755432'],swamp:['#6c7563','#454b3f']};
@@ -55,8 +56,8 @@ export function createTerrainObstacles(parent,{map,heightAt,biomeAt,isLand,isWat
   `);
  };material.customProgramCacheKey=()=> 'painted-ridge-strata-v1';
  for(const chunk of chunks.values()){
-  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(chunk.positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(chunk.colors,3));geometry.computeVertexNormals();geometry.computeBoundingSphere();
-  const mesh=new THREE.Mesh(geometry,material);mesh.name='Felsrücken · Erde und Biomkappe';mesh.castShadow=mesh.receiveShadow=true;root.add(mesh);chunk.mesh=mesh;
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(chunk.positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(chunk.colors,3));const smoothGeometry=mergeVertices(geometry,.0001);geometry.dispose();smoothGeometry.computeVertexNormals();smoothGeometry.computeBoundingSphere();
+  const mesh=new THREE.Mesh(smoothGeometry,material);mesh.name='Felsrücken · Erde und Biomkappe';mesh.castShadow=mesh.receiveShadow=true;root.add(mesh);chunk.mesh=mesh;
  }
  // Edge stones are small accents. The ridge itself is one joined surface.
  const count=Math.min(1200,Math.floor(surface.edges.length/5)),stones=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,1),new THREE.MeshStandardMaterial({roughness:.95}),count),dummy=new THREE.Object3D();
