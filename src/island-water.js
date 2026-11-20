@@ -5,7 +5,7 @@ import { SEA_LEVEL } from './generated-spatial.js';
 /** Three shared meshes, no reflection pass, textures, particles or geometry updates. */
 export function createIslandWater(root, { map, heightAt, timeUniform }) {
   const vertexShader = `varying vec2 vPosition; varying vec2 vUv;
-    void main(){vPosition=position.xz;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
+    void main(){vPosition=(modelMatrix*vec4(position,1.)).xz;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
   const seaMaterial = new THREE.ShaderMaterial({
     uniforms:{uTime:timeUniform}, vertexShader,
     fragmentShader:`uniform float uTime; varying vec2 vPosition;
@@ -13,10 +13,10 @@ export function createIslandWater(root, { map, heightAt, timeUniform }) {
         vec2 p=vPosition;float t=uTime*.18;
         float broad=sin(p.x*.027+p.y*.019+t)*sin(p.y*.032-p.x*.012-t*.7);
         float phase=p.x*.42+p.y*.27+sin(p.y*.11-t)*1.2-t;
-        float visibility=1.-smoothstep(.3,1.8,fwidth(phase));
+        float visibility=1.-smoothstep(.08,.35,fwidth(phase));
         float ripple=pow(.5+.5*sin(phase),8.)*visibility;
         vec3 color=mix(vec3(.020,.095,.120),vec3(.030,.145,.160),.5+broad*.3);
-        color+=vec3(.012,.025,.026)*ripple;
+        color+=vec3(.008,.015,.016)*ripple;
         gl_FragColor=vec4(color,1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
