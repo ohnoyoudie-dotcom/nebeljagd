@@ -33,7 +33,7 @@ function decode(content) {
   try { return new TextDecoder('utf-8', {fatal: true}).decode(Uint8Array.from(atob(content.replace(/\s/g, '')), c => c.charCodeAt(0))); }
   catch { throw failure('invalid', 'Die Onlinekarte konnte nicht gelesen werden.'); }
 }
-async function request(url, token, {method = 'GET', body, fetchImpl = fetch} = {}) {
+async function requestOnce(url, token, {method = 'GET', body, fetchImpl = fetch} = {}) {
   if (!token?.trim()) throw failure('auth', 'Bitte zuerst die GitHub-Verbindung einrichten.');
   let response;
   try {
@@ -45,12 +45,24 @@ async function request(url, token, {method = 'GET', body, fetchImpl = fetch} = {
   if (!response.ok) {
     // Never reflect response bodies or transport messages containing credentials.
     await response.body?.cancel();
+    if (response.status === 429 || response.status === 403 && (response.headers.get('x-ratelimit-remaining') === '0' || response.headers.has('retry-after'))) throw failure('rate-limit', 'GitHub pausiert Anfragen vorübergehend. Die Anmeldung bleibt erhalten; bitte später erneut versuchen.');
     if ([401, 403, 404].includes(response.status)) throw failure('auth', 'GitHub-Zugriff fehlt oder ist abgelaufen. Prüfe das Repository und „Contents: Read and write“.');
     if ([409, 422].includes(response.status)) throw failure('conflict', 'Die Onlinekarte wurde inzwischen geändert. Deine Karte wurde nicht überschrieben.');
     throw failure('network', 'GitHub konnte die Karte gerade nicht sichern. Bitte später erneut versuchen.');
   }
   try { return await response.json(); }
   catch { throw failure('network', 'GitHub hat die Speicherung nicht eindeutig bestätigt. Bitte den Stand erneut prüfen.'); }
+}
+
+async function request(url, token, options = {}) {
+  // Retry only reads. A write with a lost reply is reconciled below, never repeated.
+  for (let attempt = 0; ; attempt++) {
+    try { return await requestOnce(url, token, options); }
+    catch (error) {
+      if ((options.method ?? 'GET') !== 'GET' || error.code !== 'network' || attempt >= 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, 350));
+    }
+  }
 }
 
 export async function readGitHubMap({token, fetchImpl = fetch}) {

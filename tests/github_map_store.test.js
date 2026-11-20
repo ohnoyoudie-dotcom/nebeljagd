@@ -119,3 +119,21 @@ test('opening a connected editor selects the latest online save even with an old
   assert.equal(planMapSync({local: remote.map, project, remote, opening: true}), 'synced');
   assert.equal(planMapSync({local, project, remote, baseSha: oldSha}), 'conflict', 'connecting or saving during editing keeps conflict protection');
 });
+
+test('a temporary read failure recovers once without requesting new credentials', async () => {
+  let calls=0;
+  const remote=await readGitHubMap({token,fetchImpl:async()=>{if(++calls===1)throw new Error('offline');return json(blob(fixture()));}});
+  assert.equal(calls,2);assert.deepEqual(remote.map,fixture());
+});
+test('read retries are bounded, while expired credentials are never retried', async () => {
+  for(const code of ['network','auth']){
+    let calls=0;
+    await assert.rejects(readGitHubMap({token,fetchImpl:async()=>{calls++;if(code==='network')throw new Error(token);return json({},401);}}),e=>e.code===code&&!e.message.includes(token));
+    assert.equal(calls,code==='network'?2:1);
+  }
+});
+for(const status of [403,429])test(`temporary GitHub request limit ${status} is not an expired credential`,async()=>{
+  let calls=0;
+  await assert.rejects(readGitHubMap({token,fetchImpl:async()=>{calls++;return new Response('{}',{status,headers:{'x-ratelimit-remaining':'0','retry-after':'60'}});}}),e=>e.code==='rate-limit');
+  assert.equal(calls,1,'do not ignore the server cooldown');
+});

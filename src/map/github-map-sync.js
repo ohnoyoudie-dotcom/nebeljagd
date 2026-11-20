@@ -17,7 +17,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
   const localStorage = storage('localStorage'), sessionStorage = storage('sessionStorage');
   const banner = document.createElement('div');
   banner.className = 'online-map-status'; banner.dataset.githubSyncUi = '';
-  banner.innerHTML = `<span id="online-map-status" role="status">Online-Speichern einmalig einrichten.</span><button class="text-button" id="github-connect">Mit GitHub verbinden</button><button class="text-button" id="github-load-remote" hidden>Onlinekarte übernehmen</button><select id="github-backup-choice" aria-label="Gesicherter Kartenstand" hidden></select><button class="text-button" id="github-map-backup" hidden>Vorherige Karte sichern</button><a id="github-publication-link" href="https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/workflows/work-build-check.yml" target="_blank" rel="noopener noreferrer" hidden>Veröffentlichung ansehen</a>`;
+  banner.innerHTML = `<span id="online-map-status" role="status">Online-Speichern einmalig einrichten.</span><button class="text-button" id="github-connect">Mit GitHub verbinden</button><button class="text-button" id="github-remember-connection" hidden>Auf diesem Gerät merken</button><button class="text-button" id="github-retry" hidden>Verbindung erneut prüfen</button><button class="text-button" id="github-load-remote" hidden>Onlinekarte übernehmen</button><select id="github-backup-choice" aria-label="Gesicherter Kartenstand" hidden></select><button class="text-button" id="github-map-backup" hidden>Vorherige Karte sichern</button><a id="github-publication-link" href="https://github.com/ohnoyoudie-dotcom/nebeljagd/actions/workflows/work-build-check.yml" target="_blank" rel="noopener noreferrer" hidden>Veröffentlichung ansehen</a>`;
   document.querySelector('.editor-header').after(banner);
   const dialog = document.createElement('dialog');
   dialog.id = 'github-map-dialog'; dialog.className = 'editor-start-dialog github-map-dialog'; dialog.dataset.githubSyncUi = '';
@@ -25,7 +25,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
   dialog.innerHTML = `<form id="github-map-form"><h2 id="github-map-title">Karte online speichern</h2>
     <p>„Speichern“ sichert deine Karte direkt im Projekt. Editor, Spiel und Karte werden anschließend automatisch unter deinem gewohnten Link veröffentlicht.</p>
     <ol><li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Auf GitHub einen Fine-grained Token erstellen</a>.</li><li>Resource owner: <strong>ohnoyoudie-dotcom</strong>. Nur das Repository <strong>nebeljagd</strong> auswählen.</li><li>Unter Repository permissions nur <strong>Contents → Read and write</strong> hinzufügen. Den erzeugten Token hier einsetzen.</li></ol>
-    <label for="github-map-token">GitHub-Token</label><input id="github-map-token" type="password" autocomplete="off" spellcheck="false" required>
+    <label for="github-map-token">GitHub-Token</label><input id="github-map-token" type="password" autocomplete="off" spellcheck="false">
     <label class="github-remember"><input id="github-map-remember" type="checkbox"> Verbindung auf diesem Gerät merken</label>
     <p class="small-note">Mit dieser Option bleibt der Token in diesem Browser gespeichert. Er wird ausschließlich an die GitHub-API gesendet. Ohne diese Option gilt die Verbindung für diesen Tab. Abgelaufene Tokens kannst du hier ersetzen.</p>
     <p id="github-map-error" role="alert" hidden></p>
@@ -37,12 +37,13 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
   let metadata = {};
   try { metadata = JSON.parse(read(localStorage, STATE) || '{}') || {}; } catch {}
   let baseSha = metadata.baseSha, savedHash = metadata.savedHash, pendingHash = metadata.pendingHash;
+  let problem = null;
   let busy = false, conflict = false, wantsSave = false, timer = null, lastSavedDocument = null;
   const persistState = () => put(localStorage, STATE, JSON.stringify({baseSha, savedHash, pendingHash}));
   const status = text => { $('online-map-status').textContent = text; };
   const setBusy = value => {
     busy = value;
-    for (const id of ['export-json', 'github-map-submit', 'github-map-disconnect', 'github-load-remote', 'github-connect']) $(id).disabled = value;
+    for (const id of ['export-json', 'github-map-submit', 'github-map-disconnect', 'github-load-remote', 'github-connect', 'github-retry', 'github-remember-connection']) $(id).disabled = value;
   };
   function backups() {
     const keys = [];
@@ -66,7 +67,8 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
     connectionLabel();
   }
   function connectionLabel() {
-    $('github-connect').textContent = token ? 'GitHub-Verbindung' : 'Mit GitHub verbinden';
+    $('github-connect').textContent = token ? problem === 'auth' ? 'GitHub-Zugriff prüfen' : read(localStorage, AUTH) === token ? 'GitHub · Gerät gemerkt' : 'GitHub · nur dieser Tab' : 'Mit GitHub verbinden';
+    $('github-remember-connection').hidden = !token || read(localStorage, AUTH) === token || problem === 'auth';
     $('github-map-disconnect').hidden = !token;
     $('github-map-backup').hidden = !read(localStorage, BACKUP);
     const keys = backups();
@@ -79,7 +81,14 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
     $('github-backup-choice').hidden = keys.length < 2;
     $('export-json').title = 'Karte online speichern und automatisch veröffentlichen';
   }
+  function clearProblem() {
+    problem = null; $('github-retry').hidden = true; $('github-map-error').hidden = true;
+    connectionLabel();
+  }
   function fail(error) {
+    problem = error?.code || 'network';
+    $('github-retry').hidden = !token || !['network','rate-limit'].includes(problem);
+    connectionLabel();
     const message = error?.name === 'MapSyncError' ? error.message : 'Online-Speichern ist gerade nicht möglich. Deine Karte bleibt im Browser erhalten.';
     status(message);
     $('github-map-error').textContent = message; $('github-map-error').hidden = false;
@@ -110,7 +119,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
           const release = await response.json();
           if (token && release.files?.['worldmap.json']?.sha256 === hash && pendingHash === hash) {
             pendingHash = null; persistState();
-            if (!busy && !conflict) status(JSON.stringify(getMap()) === lastSavedDocument
+            if (!busy && !conflict && !problem) status(JSON.stringify(getMap()) === lastSavedDocument
               ? 'Karte online gespeichert und veröffentlicht.' : 'Neue Änderungen im Browser · „Speichern“ veröffentlicht sie.');
             return;
           }
@@ -118,7 +127,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
       } catch { /* A release check never changes the map or retries a PUT. */ }
       if (!token || pendingHash !== hash) return;
       if (Date.now() < deadline && pendingHash === hash) timer = setTimeout(poll, 15000);
-      else if (!busy && !conflict && pendingHash === hash) status('Karte auf GitHub gesichert · Veröffentlichung noch nicht bestätigt.');
+      else if (!busy && !conflict && !problem && pendingHash === hash) status('Karte auf GitHub gesichert · Veröffentlichung noch nicht bestätigt.');
     }
     void poll();
   }
@@ -149,11 +158,14 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
       conflict = true; $('github-load-remote').hidden = false;
       status('Online gibt es eine andere Karte. Dein eigener Stand bleibt geöffnet.');
     }
+    clearProblem();
     return remote;
   }
   function showConnection(saveAfter = false) {
     wantsSave = saveAfter;
-    $('github-map-submit').textContent = saveAfter ? 'Verbinden und speichern' : 'Verbinden';
+    $('github-map-submit').textContent = saveAfter ? 'Verbinden und speichern' : token ? 'Verbindung prüfen und übernehmen' : 'Verbinden';
+    $('github-map-token').required = !token;
+    $('github-map-token').placeholder = token ? 'Nur ausfüllen, wenn du den Token ersetzen möchtest' : '';
     $('github-map-remember').checked = Boolean(read(localStorage, AUTH));
     $('github-map-token').value = '';
     $('github-map-error').hidden = true;
@@ -180,7 +192,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
         }
         await rememberRemote(await writeGitHubMap({token, map: snapshot, expectedSha: baseSha}));
       }
-      onSaved?.();
+      clearProblem(); onSaved?.();
       status(JSON.stringify(getMap()) === JSON.stringify(snapshot)
         ? 'Auf GitHub gesichert · Veröffentlichung läuft automatisch.'
         : 'Stand auf GitHub gesichert · weitere Änderungen noch im Browser.');
@@ -190,27 +202,45 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
   }
   $('github-map-form').addEventListener('submit', async event => {
     event.preventDefault(); if (busy) return;
-    const credential = $('github-map-token').value.trim();
+    const credential = $('github-map-token').value.trim() || token;
+    const previousToken = token;
     if (!credential) return;
     const remember = $('github-map-remember').checked;
     $('github-map-token').value = '';
-    remove(localStorage, AUTH); remove(sessionStorage, AUTH);
+    // Keep the working credential until its replacement has been checked.
     setBusy(true); token = credential;
     try {
       await reconcile();
-      remove(localStorage, AUTH); remove(sessionStorage, AUTH);
       const stored = put(remember ? localStorage : sessionStorage, AUTH, token);
+      if (stored) remove(remember ? sessionStorage : localStorage, AUTH);
       connectionLabel(); dialog.close();
       if (!stored) notify('Verbindung gilt nur für diese geöffnete Seite; der Browserspeicher ist nicht verfügbar.', true);
-    } catch (error) { token = ''; connectionLabel(); fail(error); }
+    } catch (error) { token = previousToken; connectionLabel(); fail(error); }
     finally { setBusy(false); }
-    if (token && wantsSave && !conflict) { wantsSave = false; await save(); }
-    else if (token) watchPublication();
+    if (!problem && token && wantsSave && !conflict) { wantsSave = false; await save(); }
+    else if (!problem && token) watchPublication();
   });
+  $('github-remember-connection').addEventListener('click', () => {
+    if (!token || busy) return;
+    // Clicking this explicitly labelled control is the user's persistence opt-in.
+    if (!put(localStorage, AUTH, token)) return notify('Der Browser konnte die Verbindung nicht dauerhaft speichern. Sie bleibt für diesen Tab erhalten.', true);
+    remove(sessionStorage, AUTH); connectionLabel();
+    notify('Verbindung auf diesem Gerät gemerkt. Beim nächsten Öffnen wird sie wiederverwendet.');
+  });
+  async function retryConnection() {
+    if (!token || busy || !canSave() || !['network','rate-limit'].includes(problem)) return;
+    setBusy(true); status('Verbindung wird erneut geprüft …');
+    try { await reconcile(); }
+    catch (error) { fail(error); }
+    finally { setBusy(false); watchPublication(); }
+  }
+  $('github-retry').addEventListener('click', () => { void retryConnection(); });
+  window.addEventListener('online', () => { if (problem === 'network') void retryConnection(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && problem === 'network') void retryConnection(); });
   $('github-connect').addEventListener('click', () => showConnection());
   $('github-map-close').addEventListener('click', () => dialog.close());
   $('github-map-disconnect').addEventListener('click', () => {
-    token = ''; wantsSave = false; conflict = false; clearTimeout(timer);
+    token = ''; wantsSave = false; conflict = false; clearTimeout(timer); clearProblem();
     remove(localStorage, AUTH); remove(sessionStorage, AUTH);
     $('github-load-remote').hidden = true;
     dialog.close(); connectionLabel(); status('Verbindung entfernt. Deine Karte bleibt in diesem Browser gespeichert.');
@@ -229,7 +259,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
       // aborts adoption instead of discarding the local map or an older backup.
       archiveDrafts(true);
       applyRemote(remote.map); await rememberRemote(remote);
-      onSaved?.();
+      clearProblem(); onSaved?.();
       connectionLabel(); status('Onlinekarte übernommen. Dein vorheriger Stand bleibt unter „Vorherige Karte sichern“ erhalten.');
       notify('Onlinekarte geladen. Dein vorheriger Stand ist separat gesichert und auch über „Rückgängig“ erreichbar.');
     } catch (error) { fail(error); }
@@ -241,7 +271,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
     void reconcile({opening: true}).catch(fail).finally(() => { setBusy(false); watchPublication(); });
   }
   return {save, changed() {
-    if (token && !busy && !conflict) status(JSON.stringify(getMap()) === lastSavedDocument
+    if (token && !busy && !conflict && !problem) status(JSON.stringify(getMap()) === lastSavedDocument
       ? pendingHash ? 'Auf GitHub gesichert · Veröffentlichung läuft automatisch.' : 'Karte online gespeichert und veröffentlicht.'
       : 'Änderungen im Browser gesichert · „Speichern“ veröffentlicht sie.');
   }};

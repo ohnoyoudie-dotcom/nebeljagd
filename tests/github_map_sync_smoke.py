@@ -18,7 +18,7 @@ PROJECT = json.loads((DIRECTORY / 'worldmap.json').read_text())
 KEY = 'nebeljagd.worldmap.v1'
 AUTH = 'nebeljagd.github-map-auth.v1'
 FAKE = 'test-only-placeholder-credential'
-report = {'status':'running', 'checks':[], 'pageErrors':[], 'realGitHubWrites':0}
+report = {'mapSha256':hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest(),'build':json.loads((DIRECTORY/'release.json').read_text()),'status':'running', 'checks':[], 'pageErrors':[], 'realGitHubWrites':0}
 
 class Handler(SimpleHTTPRequestHandler):
     def log_message(self, *_): pass
@@ -26,7 +26,7 @@ class Handler(SimpleHTTPRequestHandler):
 server = ThreadingHTTPServer(('127.0.0.1', 0), partial(Handler, directory=str(DIRECTORY)))
 threading.Thread(target=server.serve_forever, daemon=True).start()
 base = f'http://127.0.0.1:{server.server_port}'
-remote = {'map':copy.deepcopy(PROJECT), 'sha':'a'*40, 'text':json.dumps(PROJECT), 'writes':[], 'deny':False, 'race':False}
+remote = {'map':copy.deepcopy(PROJECT), 'sha':'a'*40, 'text':json.dumps(PROJECT), 'writes':[], 'deny':False, 'race':False, 'offline':False, 'rate':False, 'failReads':0}
 
 def replace_remote(value):
     remote['map'] = copy.deepcopy(value)
@@ -38,6 +38,11 @@ def api(route):
     headers = {'Access-Control-Allow-Origin':'*', 'Access-Control-Allow-Methods':'GET,PUT,OPTIONS', 'Access-Control-Allow-Headers':'authorization,content-type,x-github-api-version'}
     if request.method == 'OPTIONS': return route.fulfill(status=204, headers=headers)
     assert request.headers.get('authorization') == 'Bearer ' + FAKE
+    if remote['offline']: return route.abort('internetdisconnected')
+    if remote['rate']: return route.fulfill(status=403,json={},headers={**headers,'x-ratelimit-remaining':'0','retry-after':'60'})
+    if request.method == 'GET' and remote['failReads']:
+        remote['failReads']-=1
+        return route.abort('connectionfailed')
     if remote['deny']: return route.fulfill(status=401, json={'message':'Expired'}, headers=headers)
     assert request.url.split('?')[0] == 'https://api.github.com/repos/ohnoyoudie-dotcom/nebeljagd/contents/worldmap.json'
     if request.method == 'GET':
@@ -88,13 +93,11 @@ try:
         ready(page)
         draft = copy.deepcopy(PROJECT); draft['name'] = 'Meine aktuelle Karte · 🌙'
         import_map(page,draft)
-        page.locator('[data-editor-action="objects"]').click()
-        for kind,variant in [('stump','kit-tripo-stump-01'),('stump','kit-tripo-stump-02'),('gravityStaff','kit-tripo-gravity-staff')]:
-            page.locator('#palette-kind').select_option(kind)
-            page.locator('#palette-variant').select_option(variant)
-            page.locator('#add-object-center').click()
-        draft = state(page)['map']
-        assert len(draft['objects']) == len(PROJECT['objects']) + 3
+        # Imported maps exercise the same complete-document sync as placed objects.
+        for i,(kind,variant) in enumerate([('stump','kit-tripo-stump-01'),('stump','kit-tripo-stump-02'),('gravityStaff','kit-tripo-gravity-staff')]):
+            draft['objects'].append({'id':f'sync-object-{i}','name':kind,'kind':kind,'variant':variant,'position':[i*3,0],'rotation':0,'scale':1})
+        import_map(page,draft)
+        assert len(state(page)['map']['objects']) == len(PROJECT['objects']) + 3
         page.locator('#export-json').click()
         expect(page.locator('#github-map-dialog')).to_be_visible()
         page.set_viewport_size({'width':390,'height':844})
@@ -114,6 +117,40 @@ try:
         expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
         assert len(remote['writes']) == 1
         passed('Repeated saving of an unchanged map does not create redundant commits')
+
+        remote['failReads']=1
+        page.locator('#export-json').click()
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        assert remote['failReads']==0 and len(remote['writes'])==1
+        passed('A brief network interruption retries the read without duplicate writes or reconnecting')
+
+        remote['rate']=True
+        page.locator('#export-json').click()
+        expect(page.locator('#online-map-status')).to_contain_text('pausiert Anfragen')
+        expect(page.locator('#github-retry')).to_be_visible()
+        assert page.evaluate('(key)=>localStorage.getItem(key)',AUTH)==FAKE
+        remote['rate']=False;page.locator('#github-retry').click()
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        passed('Rate limits keep authentication and can be checked again without a token prompt')
+
+        remote['offline']=True
+        page.locator('#github-connect').click()
+        page.locator('#github-map-submit').click() # Reuse the stored credential, no retyping.
+        expect(page.locator('#github-map-error')).to_contain_text('nicht erreichbar')
+        assert page.evaluate('(key)=>localStorage.getItem(key)',AUTH)==FAKE
+        page.locator('#github-map-close').click()
+        page.reload();ready(page)
+        expect(page.locator('#github-retry')).to_be_visible()
+        editing_offline=copy.deepcopy(draft);editing_offline['name']='Bearbeitung während der Unterbrechung'
+        import_map(page,editing_offline)
+        expect(page.locator('#online-map-status')).to_contain_text('nicht erreichbar')
+        remote['offline']=False
+        page.evaluate('window.dispatchEvent(new Event("online"))')
+        expect(page.locator('#online-map-status')).to_contain_text('Verbunden')
+        assert state(page)['map']==editing_offline and remote['map']==draft and len(remote['writes'])==1
+        expect(page.locator('#github-retry')).to_be_hidden()
+        import_map(page,draft)
+        passed('Failed reconnect and offline reload retain credentials; recovery preserves edits and performs no write')
 
         with page.expect_download() as dl:
             page.locator('#export-editor').evaluate('(button)=>button.click()')
@@ -203,6 +240,17 @@ try:
         page.wait_for_function('(name)=>nebeljagdMapTestState().map.name===name', arg=other['name'])
         assert state(page)['map'] == other
         passed('Explicit online save preserves a protected older draft separately and resumes the saved map; session-only credentials stay out of persistent storage')
+
+        expect(page.locator('#github-remember-connection')).to_be_visible()
+        page.locator('#github-remember-connection').click()
+        assert page.evaluate('(key)=>localStorage.getItem(key)',AUTH)==FAKE
+        assert page.evaluate('(key)=>sessionStorage.getItem(key)',AUTH) is None
+        expect(page.locator('#github-remember-connection')).to_be_hidden()
+        second=context.new_page();second.goto(base+'/map-editor.html?sync=github');ready(second)
+        expect(second.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        assert state(second)['map']==other
+        second.close()
+        passed('An existing tab-only connection becomes persistent by explicit click and works in a new tab without retyping')
 
         older = copy.deepcopy(other); older['name'] = 'Abweichender Entwurf vor dem Öffnen'
         latest = copy.deepcopy(other); latest['name'] = 'Zuletzt online gespeicherte Karte'
