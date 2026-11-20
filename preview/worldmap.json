@@ -2,8 +2,8 @@
   "$schema": "./worldmap.schema.json",
   "schemaVersion": 1,
   "id": "nebeljagd-world-v1",
-  "name": "Nebelinsel · Leere schwebende Welt mit drei Biomen",
-  "description": "Leere schwebende Welt mit abgerundeten Inseln und drei natürlich ineinandergreifenden Biomen: Schnee im Nordwesten, Wald/Wiese im Inneren und Wüste im Osten und Süden. Freie Baugrundlage ohne gesetzte Objekte.",
+  "name": "Nebelinsel · Leere Inselwelt mit drei Biomen",
+  "description": "Ruhiges Meer mit abgerundeten Inseln und drei natürlich ineinandergreifenden Biomen: Schnee im Nordwesten, Wald/Wiese im Inneren und Wüste im Osten und Süden. Freie Baugrundlage ohne gesetzte Objekte.",
   "coordinateSystem": {
     "units": "meters",
     "horizontalAxes": [
@@ -2781,7 +2781,7 @@
     "presets": [],
     "obstacles": [],
     "woodlandDetails": false,
-    "worldEdge": "floating"
+    "worldEdge": "water"
   },
   "barriers": [],
   "waterAreas": [],
