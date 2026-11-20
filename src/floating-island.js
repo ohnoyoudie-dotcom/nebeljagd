@@ -47,7 +47,7 @@ export function createFloatingIsland(root, { map, heightAt, biomeAt, timeUniform
     shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
       float grain=skyFbm(vCliff.xz*.42+vCliff.y*.19);
       float strata=sin(vCliff.y*.85+skyNoise(vCliff.xz*.1)*4.);
-      diffuseColor.rgb*=.86+grain*.24+strata*.035;
+      diffuseColor.rgb*=.62+grain*.60+strata*.055;
       diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.17,.24,.29),smoothstep(7.,34.,-vCliff.y)*.65);`);
   };
   material.customProgramCacheKey=()=> 'floating-cliff-1';
@@ -63,7 +63,21 @@ export function createFloatingIsland(root, { map, heightAt, biomeAt, timeUniform
     const tint=new THREE.Color('#344e5d').lerp(new THREE.Color('#678087'),(ridge+1.3)/2.6);c.push(tint.r,tint.g,tint.b);
   }
   floorGeo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));floorGeo.computeVertexNormals();
-  const floor=new THREE.Mesh(floorGeo,new THREE.MeshBasicMaterial({vertexColors:true}));floor.position.set(centerX,0,centerZ);floor.name='Ferne Berglandschaft unter der Insel';group.add(floor);
+  const floorMaterial=new THREE.MeshBasicMaterial({vertexColors:true});
+  floorMaterial.onBeforeCompile=shader=>{
+    shader.vertexShader='varying vec2 vDistantLand;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvDistantLand=position.xz;');
+    shader.fragmentShader='varying vec2 vDistantLand;\n'+noise+shader.fragmentShader;
+    shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+      vec2 q=vDistantLand*.14;
+      float hills=skyFbm(q+skyNoise(q*.37)*2.);
+      float slope=skyFbm(q+vec2(.12,.08))-skyFbm(q-vec2(.12,.08));
+      vec3 distantForest=vec3(.22,.32,.31),distantStone=vec3(.48,.53,.51);
+      vec3 terrain=mix(distantForest,distantStone,smoothstep(.40,.68,hills));
+      terrain*=clamp(.86+slope*3.,.65,1.15);
+      diffuseColor.rgb=mix(terrain,vec3(.39,.49,.55),.46);`);
+  };
+  floorMaterial.customProgramCacheKey=()=> 'distant-landscape-1';
+  const floor=new THREE.Mesh(floorGeo,floorMaterial);floor.position.set(centerX,0,centerZ);floor.name='Ferne Berglandschaft unter der Insel';group.add(floor);
   const mist=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,
     uniforms:{uTime:timeUniform},vertexShader:'varying vec2 vMist;void main(){vMist=(modelMatrix*vec4(position,1.)).xz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
     fragmentShader:`varying vec2 vMist;uniform float uTime;${noise}

@@ -33,7 +33,7 @@ with sync_playwright() as pw:
   assert all(s['world']['stats']['woodlandDetails'][k]==0 for k in ['flowers','mushrooms','stones'])
   assert p.evaluate('JSON.parse(document.querySelector("#editor-build-info").textContent).buildId')==report['build']['buildId']
   (OUT/'empty-game.png').write_bytes(base64.b64decode(p.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]))
-  p.evaluate('nebeljagdInspect({x:70,z:780})');p.wait_for_timeout(1800)
+  p.evaluate('nebeljagdInspect({x:70,z:786})');p.wait_for_timeout(1800)
   (OUT/'floating-edge.png').write_bytes(base64.b64decode(p.evaluate('nebeljagdCaptureFrame()').split(',',1)[1]))
   report['checks'].append('game contains no scenery, loot, automatic decorations or practice enemies');print('PASS empty game without automatic objects',flush=True)
   assert not report['errors'],report['errors'];assert hashlib.sha256((ROOT/'worldmap.json').read_bytes()).hexdigest()==report['mapSha256'];report['status']='passed'
