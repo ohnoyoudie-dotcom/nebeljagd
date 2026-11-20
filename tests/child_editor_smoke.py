@@ -32,7 +32,7 @@ with sync_playwright() as pw:
   p.click('#simple-tool-land');p.click('[data-biome-choice="snow"]');before=state(p)['map'];drag(p,[-70,-40],[-40,-25]);painted=state(p)['map'];assert painted!=before
   p.click('#undo');assert state(p)['map']==before;p.click('#redo');assert state(p)['map']==painted
   p.click('#simple-tool-paths');p.click('#simple-path-cobble');drag(p,[-60,10],[-20,10]);assert any(t['type']=='cobble' for t in state(p)['map']['landscape']['terrain'])
-  p.click('#simple-tool-rocks');drag(p,[-70,60],[-40,60]);assert state(p)['map']['landscape']['obstacles'];passed('one-click tools paint landscapes, roads and obstacles; undo/redo restores exact edits')
+  p.click('#simple-tool-rocks');drag(p,[-70,60],[-40,60]);assert state(p)['map']['landscape']['obstacles'];ridge=state(p)['map'];p.click('#simple-tool-erase');assert state(p)['mode']=='obstacleErase';tap(p,-55,60);assert state(p)['map']!=ridge;p.click('#undo');assert state(p)['map']==ridge;passed('one-click tools paint landscapes, roads and obstacles; undo/redo restores exact edits')
   p.click('#simple-tool-objects');p.fill('#simple-object-search','seltene truhe');assert p.locator('.simple-asset').count()==1;p.click('.simple-asset');assert state(p)['mode']=='place';assert state(p)['view']['width']<=200
   tap(p,0,0);assert state(p)['map']['objects'][-1]['variant']=='kit-tripo-rare-chest'
   p.click('#simple-tool-move');drag(p,[0,0],[15,15]);obj=state(p)['map']['objects'][-1];assert obj['position']!=[0,0];expect(p.locator('.inspector')).to_be_visible()

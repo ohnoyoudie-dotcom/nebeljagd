@@ -2,6 +2,8 @@
 
 Der Einstieg zeigt sechs Werkzeuge: Landschaft, Wege, Hindernisse, Objekte,
 Verschieben und Radieren. Die Auswahl aktiviert den passenden Pinsel sofort.
+Der Radierer wählt abhängig vom vorherigen Werkzeug Landschaft, Gras, Objekte
+oder Felsen/dichten Wald vor; die Auswahl bleibt manuell änderbar.
 Unter Objekte ersetzt eine durchsuchbare Bildbibliothek die abhängigen Menüs.
 Die Gruppen Natur, Häuser, Deko, Beute und Waffen enthalten alle freigegebenen
 Modelle. Ein Klick auf ein Bild aktiviert dessen Platzierung; erneute Klicks auf

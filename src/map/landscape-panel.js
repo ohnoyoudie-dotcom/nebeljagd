@@ -87,20 +87,22 @@ export function createLandscapePanel(api) {
     section.dataset.landscapeGenerated = 'true'; section.innerHTML = html; sections[key].append(section); return section;
   };
   const eraserSettings = document.createElement('section'); eraserSettings.className = 'tool-section landscape-controls eraser-settings';
-  eraserSettings.innerHTML = `<h2>Was soll weg?</h2>${selector('erase-target', 'Radieren', [{ id:'surface', label:'Gemalte Landschaft' }, { id:'grass', label:'Nur Grasflächen' }, { id:'objects', label:'Objekte' }])}${range('surface-eraser-radius', 'Radierergröße', .5, 80, 16, .5, ' m')}<div id="surface-erase-controls">${button('landscape-terrain-erase', 'Landschaft radieren')}<p class="small-note">Berührte gemalte Flächen verschwinden ganz. Der ursprüngliche Inselboden kommt wieder zum Vorschein. Gesetztes Gras und Gegenstände bleiben stehen.</p><p id="surface-erase-status" class="small-note" role="status">Ziehe über eine gemalte Fläche. „Rückgängig“ holt sie zurück.</p></div>`;
+  eraserSettings.innerHTML = `<h2>Was soll weg?</h2>${selector('erase-target', 'Radieren', [{ id:'surface', label:'Gemalte Landschaft' }, { id:'grass', label:'Nur Grasflächen' }, { id:'objects', label:'Objekte' }, { id:'obstacles', label:'Felsen & dichter Wald' }])}${range('surface-eraser-radius', 'Radierergröße', .5, 80, 16, .5, ' m')}<div id="surface-erase-controls">${button('landscape-terrain-erase', 'Landschaft radieren')}<p class="small-note">Berührte gemalte Flächen verschwinden ganz. Der ursprüngliche Inselboden kommt wieder zum Vorschein. Gesetztes Gras und Gegenstände bleiben stehen.</p><p id="surface-erase-status" class="small-note" role="status">Ziehe über eine gemalte Fläche. „Rückgängig“ holt sie zurück.</p></div>`;
   panes.erase.prepend(eraserSettings);
   const objectEraser = document.querySelector('.eraser-section');
   for (const element of objectEraser.querySelectorAll('.section-heading, label, select, input, .small-note:not(#eraser-status)')) element.hidden = true;
   function activateEraser() {
-    const surface = $('erase-target').value === 'surface';
-    $('surface-eraser-radius').max = surface ? '80' : '24';
-    $('surface-eraser-radius').value = Math.min(Number($('surface-eraser-radius').value), surface ? 80 : 24);
+    const surface = $('erase-target').value === 'surface', obstacles = $('erase-target').value === 'obstacles';
+    const min=obstacles?2:.5,max=surface?80:obstacles?40:24;
+    $('surface-eraser-radius').min=String(min);$('surface-eraser-radius').max=String(max);
+    $('surface-eraser-radius').value=Math.max(min,Math.min(Number($('surface-eraser-radius').value),max));
+    if(obstacles)$('obstacle-radius').value=$('surface-eraser-radius').value;
     $('surface-eraser-radius-value').textContent = `${$('surface-eraser-radius').value} m`;
     $('eraser-filter').value = $('erase-target').value === 'grass' ? 'grass' : 'all';
     $('eraser-radius').value = $('surface-eraser-radius').value;
     $('eraser-radius-value').textContent = `${$('eraser-radius').value} m`;
-    objectEraser.hidden = surface; $('surface-erase-controls').hidden = !surface;
-    api.setMode(surface ? 'terrainErase' : 'erase');
+    objectEraser.hidden = surface || obstacles; $('surface-erase-controls').hidden = !surface;
+    api.setMode(surface ? 'terrainErase' : obstacles ? 'obstacleErase' : 'erase');
   }
   function showPane(key, tool = null) {
     activePane = key;
@@ -160,6 +162,7 @@ export function createLandscapePanel(api) {
   });
   $('erase-target').addEventListener('change', activateEraser);
   $('surface-eraser-radius').addEventListener('input', () => {
+    if($('erase-target').value==='obstacles')$('obstacle-radius').value=$('surface-eraser-radius').value;
     $('eraser-radius').value = $('surface-eraser-radius').value;
     $('eraser-radius-value').textContent = `${$('eraser-radius').value} m`;
     $('eraser-radius').dispatchEvent(new Event('input')); api.refreshCursor();

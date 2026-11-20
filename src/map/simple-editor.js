@@ -24,6 +24,7 @@ export function createSimpleEditor(api){
  const tips={land:'Wähle eine Landschaft. Ziehe dann auf der Insel, um zu malen.',paths:'Wähle einen Weg. Ziehe auf der Insel, um ihn zu zeichnen.',rocks:'Male Felsen oder dichten Wald. Hier kommen Spieler nicht durch.',objects:'Wähle ein Bild. Tippe danach auf die Insel, um das Objekt zu setzen.',move:'Ziehe ein Objekt an seinen neuen Platz. Ziehe auf freier Fläche, um die Karte zu bewegen.',erase:'Wähle, was weg soll. Ziehe darüber. Rückgängig holt es zurück.'};
  function activate(id){
   const tool=SIMPLE_TOOLS.find(t=>t[0]===id);if(!tool)return;
+  if(id==='erase')$('erase-target').value=api.getMode().startsWith('obstacle')?'obstacles':api.getMode()==='brush'?'grass':['objects','move'].includes(current)?'objects':'surface';
   current=id;document.body.classList.remove('advanced-tools');
   if(tool[2])api.showPane(tool[2],tool[3]);
   if(id==='paths')$('landscape-path-brush').click();else if(tool[4])api.setMode(id==='objects'&&!chosen?'select':tool[4]);
@@ -88,7 +89,7 @@ export function createSimpleEditor(api){
  $('tool-select').lastChild.textContent=' Verschieben';$('tool-pan').lastChild.textContent=' Karte schieben';
  function sync(){
   const mode=api.getMode(), feature=api.selected();
-  for(const b of nav.children){const id=b.id.replace('simple-tool-','');const modeMatch=id==='move'?(['select','pan'].includes(mode)&&!(current==='objects'&&!chosen)):id==='erase'?['erase','terrainErase'].includes(mode):id==='rocks'?mode.startsWith('obstacle'):id==='land'?['biome','brush'].includes(mode):id==='objects'?(mode==='place'||(current==='objects'&&!chosen&&mode==='select')):mode==='terrain';b.setAttribute('aria-pressed',String(!document.body.classList.contains('advanced-tools')&&modeMatch));}
+  for(const b of nav.children){const id=b.id.replace('simple-tool-','');const modeMatch=id==='move'?(['select','pan'].includes(mode)&&!(current==='objects'&&!chosen)):id==='erase'?(['erase','terrainErase'].includes(mode)||(mode==='obstacleErase'&&current==='erase')):id==='rocks'?(mode.startsWith('obstacle')&&current!=='erase'):id==='land'?['biome','brush'].includes(mode):id==='objects'?(mode==='place'||(current==='objects'&&!chosen&&mode==='select')):mode==='terrain';b.setAttribute('aria-pressed',String(!document.body.classList.contains('advanced-tools')&&modeMatch));}
   for(const b of grid.querySelectorAll('[data-asset-key]'))b.setAttribute('aria-pressed',String(b.dataset.assetKey===chosen));
   for(const b of roadCards.children)b.setAttribute('aria-pressed',String(b.dataset.pathPreset===$('path-preset').value));
   if(selectedId!==feature?.id){document.body.classList.remove('selection-expanded');detailed.setAttribute('aria-expanded','false');selectedId=feature?.id;}
