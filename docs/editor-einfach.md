@@ -7,8 +7,9 @@ oder Felsen/dichten Wald vor; die Auswahl bleibt manuell änderbar.
 Unter Objekte ersetzt eine durchsuchbare Bildbibliothek die abhängigen Menüs.
 Die Gruppen Natur, Häuser, Deko, Beute und Waffen enthalten alle freigegebenen
 Modelle. Ein Klick auf ein Bild aktiviert dessen Platzierung; erneute Klicks auf
-der Karte setzen weitere Exemplare. Die Kamera passt bei Bedarf den Zoom an die
-Objektgröße an. „Ganze Insel“ stellt die Übersicht wieder her.
+der Karte setzen weitere Exemplare. Beim Auswählen und Wechseln von Objekten
+bleiben Zoom und Kartenausschnitt unverändert. Gezoomt wird nur mit Mausrad oder
+Plus/Minus; „Ganze Insel“ stellt die Übersicht wieder her.
 
 „Verschieben“ erlaubt das Ziehen von Objekten. Auf freier Fläche bewegt es die
 Ansicht. Insel- und Biomumrisse lassen sich dabei nicht versehentlich verformen.

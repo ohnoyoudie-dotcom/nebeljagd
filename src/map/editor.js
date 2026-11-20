@@ -1678,10 +1678,7 @@ simpleEditor = createSimpleEditor({
       else object.scale=Math.max(Number($('object-scale').min)||.1,Math.min(Number($('object-scale').max)||6,Math.round(object.scale*(action==='larger'?1.15:1/1.15)*100)/100));
     },action==='rotate'?'Objekt gedreht.':'Größe geändert.');
   },
-  preparePlacement(kind,variant) {
-    const width=Math.max(70,getObjectFootprintRadius(kind,variant)*8);
-    if(view.width>width*1.4||view.width<width*.6)zoomBy(width/view.width);
-  },
+
 });
 let buildInfo = null;
 try { buildInfo = JSON.parse($('editor-build-info')?.textContent || 'null'); } catch {}

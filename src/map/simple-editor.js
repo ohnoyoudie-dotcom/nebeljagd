@@ -72,7 +72,7 @@ export function createSimpleEditor(api){
  function choose(item){
   $('palette-kind').value=item.kind;change($('palette-kind'));$('palette-variant').value=item.variant;change($('palette-variant'));
   chosen=`${item.kind}:${item.variant}`;chosenView.replaceChildren(node('strong','',item.label),node('span','','Bereit zum Platzieren · Mehrmals tippen setzt mehrere Exemplare.'));
-  api.setMode('place');api.preparePlacement(item.kind,item.variant);sync();
+  api.setMode('place');sync();
  }
  search.addEventListener('input',renderLibrary);renderLibrary();
  extra(palette,['palette-house-builder','palette-chest-property','palette-rarity-property','palette-placement-rotation'],'Objekt anpassen');

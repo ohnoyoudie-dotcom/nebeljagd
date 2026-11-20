@@ -29,17 +29,28 @@ with sync_playwright() as pw:
   report['build']=p.evaluate('JSON.parse(document.querySelector("#editor-build-info").textContent)')
   assert state(p)['map']==source;assert p.locator('.simple-tools button:visible').count()==6
   assert state(p)['mode']=='biome';p.screenshot(path=str(OUT/'desktop-land.png'));load_fixture(p)
+  # Library selection must never move or resize the user's chosen view.
+  p.click('#simple-tool-objects')
+  for manual in [False,True]:
+   if manual:
+    p.click('#zoom-in');p.click('#zoom-in');p.click('#tool-pan');drag(p,[-60,-50],[-40,-30]);p.click('#simple-tool-objects')
+   fixed=state(p)['view'];original=state(p)['map']
+   for query,selector in [('seltene truhe','#simple-asset-chest-kit-tripo-rare-chest'),('Schlossanlage','#simple-asset-house-schlossanlage'),('Farn','#simple-asset-nature-forest-fern'),('seltene truhe','#simple-asset-chest-kit-tripo-rare-chest')]:
+    p.fill('#simple-object-search',query);p.click(selector);assert state(p)['view']==fixed;assert state(p)['map']==original
+  p.click('#fit-map');passed('small/large object switches preserve both overview and manually zoomed/panned viewport without modifying map')
   p.click('#simple-tool-land');p.click('[data-biome-choice="snow"]');before=state(p)['map'];drag(p,[-70,-40],[-40,-25]);painted=state(p)['map'];assert painted!=before
   p.click('#undo');assert state(p)['map']==before;p.click('#redo');assert state(p)['map']==painted
   p.click('#simple-tool-paths');p.click('#simple-path-cobble');drag(p,[-60,10],[-20,10]);assert any(t['type']=='cobble' for t in state(p)['map']['landscape']['terrain'])
   p.click('#simple-tool-rocks');drag(p,[-70,60],[-40,60]);assert state(p)['map']['landscape']['obstacles'];ridge=state(p)['map'];p.click('#simple-tool-erase');assert state(p)['mode']=='obstacleErase';tap(p,-55,60);assert state(p)['map']!=ridge;p.click('#undo');assert state(p)['map']==ridge;passed('one-click tools paint landscapes, roads and obstacles; undo/redo restores exact edits')
-  p.click('#simple-tool-objects');p.fill('#simple-object-search','seltene truhe');assert p.locator('.simple-asset').count()==1;p.click('.simple-asset');assert state(p)['mode']=='place';assert state(p)['view']['width']<=200
+  p.click('#simple-tool-objects');
+  for _ in range(5):p.click('#zoom-in')
+  fixed=state(p)['view'];p.fill('#simple-object-search','seltene truhe');assert p.locator('.simple-asset').count()==1;p.click('.simple-asset');assert state(p)['mode']=='place';assert state(p)['view']==fixed
   tap(p,0,0);assert state(p)['map']['objects'][-1]['variant']=='kit-tripo-rare-chest'
   p.click('#simple-tool-move');drag(p,[0,0],[15,15]);obj=state(p)['map']['objects'][-1];assert obj['position']!=[0,0];expect(p.locator('.inspector')).to_be_visible()
   angle=obj['rotation'];p.click('#simple-selection-rotate');assert state(p)['map']['objects'][-1]['rotation']!=angle
   scale=state(p)['map']['objects'][-1]['scale'];p.click('#simple-selection-larger');assert state(p)['map']['objects'][-1]['scale']>scale
   p.click('#simple-selection-copy');assert len(state(p)['map']['objects'])==2;p.click('#simple-selection-delete');assert len(state(p)['map']['objects'])==1;p.click('#undo');assert len(state(p)['map']['objects'])==2
-  tap(p,15,15);p.screenshot(path=str(OUT/'desktop-selection.png'));passed('picture search, automatic placement zoom, moving, rotate/resize, duplicate/delete and undo')
+  tap(p,15,15);p.screenshot(path=str(OUT/'desktop-selection.png'));passed('picture search, stable placement view, moving, rotate/resize, duplicate/delete and undo')
   p.click('#simple-tool-objects');p.fill('#simple-object-search','waldhaus');p.click('#simple-asset-house-waldhaus');p.locator('.object-palette > .simple-extra-toggle').click();p.select_option('#palette-house-rooms','2');tap(p,-35,-25);assert state(p)['map']['objects'][-1]['houseRooms']==2
   p.fill('#simple-object-search','zzzunbekannt');expect(p.locator('.simple-library-empty')).to_be_visible();p.click('#simple-reset-search');assert p.locator('.simple-asset').count()>50
   p.click('#simple-group-weapons');assert p.locator('.simple-asset').count()>10;p.screenshot(path=str(OUT/'desktop-library.png'));passed('house customization preserved; all model families searchable with a useful empty state')
@@ -60,7 +71,9 @@ with sync_playwright() as pw:
    exported=OUT/'reopened-editor.html';d.value.save_as(exported);q=b.new_page();q.on('pageerror',lambda e:report['errors'].append(str(e)));q.route('**/*',lambda route:route.fulfill(status=200,content_type='text/html',body=exported.read_bytes()) if route.request.url==BASE+'/exported-qa.html' else route.abort());q.goto(BASE+'/exported-qa.html');ready(q);assert state(q)['map']==saved;assert q.locator('.simple-tools').count()==1;q.click('#simple-tool-objects');q.fill('#simple-object-search','sonnenstab');assert q.locator('.simple-asset').count()==1;q.close();passed('self-contained exported HTML reopens without external resources, preserving controls, model library and authored data')
   # Actual touch events on a portrait tablet viewport.
   context=b.new_context(viewport={'width':820,'height':1180},has_touch=True,is_mobile=True);t=context.new_page();t.set_default_timeout(45000);t.on('pageerror',lambda e:report['errors'].append(str(e)));t.goto(BASE+'/map-editor.html');ready(t);load_fixture(t)
-  t.tap('#simple-tool-objects');t.fill('#simple-object-search','Felsgruppe Wald');t.tap('.simple-asset');q=point(t,0,0);t.touchscreen.tap(q['x'],q['y']);assert len(state(t)['map']['objects'])==1
+  t.tap('#simple-tool-objects');
+  for _ in range(5):t.tap('#zoom-in')
+  fixed=state(t)['view'];t.fill('#simple-object-search','Felsgruppe Wald');t.tap('.simple-asset');assert state(t)['view']==fixed;q=point(t,0,0);t.touchscreen.tap(q['x'],q['y']);assert len(state(t)['map']['objects'])==1
   t.tap('#simple-tool-move');q=point(t,0,0);r=point(t,15,8);cdp=context.new_cdp_session(t);cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':q['x'],'y':q['y']}]});cdp.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':r['x'],'y':r['y']}]});cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]});assert state(t)['map']['objects'][0]['position']!=[0,0]
   assert t.evaluate('document.documentElement.scrollWidth<=innerWidth');t.screenshot(path=str(OUT/'ipad.png'));passed('portrait iPad viewport supports touch placement and dragging without horizontal page overflow')
   t.set_viewport_size({'width':390,'height':844});t.tap('#simple-tool-land');assert t.evaluate('document.documentElement.scrollWidth<=innerWidth');assert t.locator('#map-viewport').bounding_box()['height']>=250;t.screenshot(path=str(OUT/'phone.png'));context.close()
