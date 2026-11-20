@@ -35,7 +35,7 @@ def replace_remote(value):
 
 def api(route):
     request = route.request
-    headers = {'Access-Control-Allow-Origin':'*', 'Access-Control-Allow-Methods':'GET,PUT,OPTIONS', 'Access-Control-Allow-Headers':'authorization,content-type,x-github-api-version'}
+    headers = {'Access-Control-Allow-Origin':'*', 'Access-Control-Expose-Headers':'x-ratelimit-remaining,retry-after', 'Access-Control-Allow-Methods':'GET,PUT,OPTIONS', 'Access-Control-Allow-Headers':'authorization,content-type,x-github-api-version'}
     if request.method == 'OPTIONS': return route.fulfill(status=204, headers=headers)
     assert request.headers.get('authorization') == 'Bearer ' + FAKE
     if remote['offline']: return route.abort('internetdisconnected')
