@@ -3,7 +3,7 @@ import { outerLandRings, waterBoundaryRings, isLandPoint } from './map/model.js'
 import { SEA_LEVEL } from './generated-spatial.js';
 
 /** Three shared meshes, no reflection pass, textures, particles or geometry updates. */
-export function createIslandWater(root, { map, heightAt, timeUniform, colorAt = null }) {
+export function createIslandWater(root, { map, heightAt, timeUniform, colorAt = null, groundTexture = null }) {
   const vertexShader = `varying vec2 vPosition; varying vec2 vUv;
     void main(){vPosition=(modelMatrix*vec4(position,1.)).xz;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`;
   const seaMaterial = new THREE.ShaderMaterial({
@@ -26,7 +26,7 @@ export function createIslandWater(root, { map, heightAt, timeUniform, colorAt = 
   const seaGeometry=new THREE.PlaneGeometry((maxX-minX)*3,(maxZ-minZ)*3);
   seaGeometry.rotateX(-Math.PI/2);seaGeometry.translate((minX+maxX)/2,SEA_LEVEL,(minZ+maxZ)/2);
   const sea=new THREE.Mesh(seaGeometry,seaMaterial);sea.name='Meer um die Nebelinsel';sea.userData.ignoreVision=true;root.add(sea);
-  const bank=[],bankIndices=[],bankColors=[],ribbon=[],uvs=[],ribbonIndices=[];
+  const bank=[],bankIndices=[],bankColors=[],bankUvs=[],ribbon=[],uvs=[],ribbonIndices=[];
   const tint=new THREE.Color(),wetSand=new THREE.Color('#71867a');
   const rings=[...outerLandRings(map).map(points=>({points,hole:false})),...waterBoundaryRings(map).map(points=>({points,hole:true}))];
   for(const {points,hole} of rings){
@@ -42,16 +42,18 @@ export function createIslandWater(root, { map, heightAt, timeUniform, colorAt = 
       // Trim shallow water at opposite banks instead of painting over narrow islands.
       let width=9+Math.sin(x*.09+z*.07)*1.3;
       for(let d=.3;d<width;d+=.4)if(isLandPoint(map,[x+nx*d,z+nz*d])){width=Math.max(.15,d-.4);break;}
-      const beach=Math.min(2.8,width*.3);
-      bank.push(x,heightAt(x,z)-.025,z,x+nx*beach,SEA_LEVEL-.22,z+nz*beach);
+      const beach=Math.min(1.6+.45*Math.sin(x*.19+z*.13),width*.3);
+      bank.push(x,heightAt(x,z),z,x+nx*beach,SEA_LEVEL-.22,z+nz*beach);
+      bankUvs.push(x/4,z/4,(x+nx*beach)/4,(z+nz*beach)/4);
       colorAt?colorAt(x,z,tint):tint.set('#b4aa7f');bankColors.push(...tint.toArray(),...tint.lerp(wetSand,.65).multiplyScalar(.8).toArray());
       ribbon.push(x,SEA_LEVEL+.012,z,x+nx*width,SEA_LEVEL+.012,z+nz*width);uvs.push(0,beach/width,1,beach/width);
       if(i<ring.length){const a=start+i*2,b=rs+i*2;bankIndices.push(a,a+1,a+2,a+1,a+3,a+2);ribbonIndices.push(b,b+1,b+2,b+1,b+3,b+2);}
     }
   }
   const geometry=(positions,indices)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();return g;};
-  const bankMesh=new THREE.Mesh(geometry(bank,bankIndices),new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,side:THREE.DoubleSide}));
+  const bankMesh=new THREE.Mesh(geometry(bank,bankIndices),new THREE.MeshStandardMaterial({vertexColors:true,map:groundTexture,roughness:1,side:THREE.DoubleSide}));
   bankMesh.geometry.setAttribute('color',new THREE.Float32BufferAttribute(bankColors,3));
+  bankMesh.geometry.setAttribute('uv',new THREE.Float32BufferAttribute(bankUvs,2));
   bankMesh.name='Ufer · sanft abfallender Strand';bankMesh.userData.ignoreVision=true;root.add(bankMesh);
   const shoreGeometry=geometry(ribbon,ribbonIndices);shoreGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
   const shoreMaterial=new THREE.ShaderMaterial({uniforms:{uTime:timeUniform},vertexShader,transparent:true,depthWrite:false,side:THREE.DoubleSide,forceSinglePass:true,

@@ -119,7 +119,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   if(map.landscape?.worldEdge==='floating') {
     worldEdge=createFloatingIsland(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,timeUniform});
   } else {
-    worldEdge=createIslandWater(root,{map,heightAt:surfaceHeightAt,timeUniform,colorAt:spatial.baseColorAt});
+    worldEdge=createIslandWater(root,{map,heightAt:surfaceHeightAt,timeUniform,colorAt:spatial.baseColorAt,groundTexture});
   }
   const waterMeshes = [];
   for (const river of map.rivers) {
