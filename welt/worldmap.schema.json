@@ -547,7 +547,8 @@
             "earthbreakerStaff",
             "runeWallStaff",
             "shadowStaff",
-            "clockworkStaff"
+            "clockworkStaff",
+            "nature"
           ]
         },
         "variant": {
@@ -1709,6 +1710,55 @@
             "properties": {
               "kind": {
                 "const": "chest"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "nature"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "enum": [
+                  "forest-boulders",
+                  "forest-ridge",
+                  "forest-rubble",
+                  "snow-boulders",
+                  "snow-ridge",
+                  "snow-rubble",
+                  "desert-boulders",
+                  "desert-ridge",
+                  "desert-rubble",
+                  "forest-fern",
+                  "forest-shrub",
+                  "dry-scrub",
+                  "cactus-tall",
+                  "cactus-cluster",
+                  "dead-tree",
+                  "exposed-roots",
+                  "forest-arch",
+                  "forest-pillar",
+                  "forest-ruin",
+                  "snow-arch",
+                  "snow-pillar",
+                  "snow-ruin",
+                  "desert-arch",
+                  "desert-pillar",
+                  "desert-ruin",
+                  "wood-signpost",
+                  "path-lantern",
+                  "plank-walkway",
+                  "broken-fence"
+                ]
               }
             }
           }
