@@ -107,6 +107,10 @@
         },
         "spawnPosition": {
           "$ref": "#/$defs/point"
+        },
+        "practiceActors": {
+          "type": "boolean",
+          "description": "Automatische lokale Übungsgegner; false lässt eine leere Baukarte auch im Spiel frei."
         }
       }
     },
@@ -2323,6 +2327,13 @@
         },
         "woodlandDetails": {
           "type": "boolean"
+        },
+        "worldEdge": {
+          "enum": [
+            "water",
+            "floating"
+          ],
+          "description": "Wasser oder schwebende Insel über einer nebligen Tiefe. Ohne Angabe bleibt Wasser aktiv."
         }
       }
     },
