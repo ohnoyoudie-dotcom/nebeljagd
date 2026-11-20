@@ -137,3 +137,18 @@ for(const status of [403,429])test(`temporary GitHub request limit ${status} is 
   await assert.rejects(readGitHubMap({token,fetchImpl:async()=>{calls++;return new Response('{}',{status,headers:{'x-ratelimit-remaining':'0','retry-after':'60'}});}}),e=>e.code==='rate-limit');
   assert.equal(calls,1,'do not ignore the server cooldown');
 });
+
+test('readable maps with denied writes report write permissions, not an expired login',async()=>{
+  const remote=await readGitHubMap({token,fetchImpl:async()=>json(blob(fixture()))});
+  let calls=0;
+  await assert.rejects(writeGitHubMap({token,map:fixture(),expectedSha:remote.sha,fetchImpl:async()=>{calls++;return json({message:'Resource not accessible by personal access token'},403);}}),e=>e.code==='auth'&&e.message.includes('HTTP 403 · Speichern')&&e.message.includes('Read and write')&&!e.message.includes('abgelaufen'));
+  assert.equal(calls,1);
+});
+test('diagnostics distinguish invalid login, inaccessible map and repository rules without leaking responses',async()=>{
+  for(const [status,body,expected] of [[401,{message:token},'HTTP 401 · Lesen'],[404,{message:token},'HTTP 404 · Lesen'],[403,{message:'Changes must be made through a pull request '+token},'GitHub-Regel']]){
+    await assert.rejects(readGitHubMap({token,fetchImpl:async()=>json(body,status)}),e=>e.message.includes(expected)&&!e.message.includes(token));
+  }
+});
+test('secondary rate limits are recognized without exposed response headers',async()=>{
+  await assert.rejects(readGitHubMap({token,fetchImpl:async()=>json({message:'You have exceeded a secondary rate limit.'},403)}),e=>e.code==='rate-limit');
+});
