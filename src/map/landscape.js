@@ -92,7 +92,7 @@ export function getLandscape(map) {
   const stored = record(map?.landscape) ? map.landscape : {};
   return { version: 1, terrain: stored.terrain ?? [],
     wind: { ...WIND_DEFAULTS, ...(record(stored.wind) ? stored.wind : {}) },
-    windZones: stored.windZones ?? [], biomes: stored.biomes ?? [], presets: stored.presets ?? [], ...(stored.obstacles ? {obstacles:stored.obstacles} : {}), ...(stored.woodlandDetails!==undefined?{woodlandDetails:stored.woodlandDetails}:{}) };
+    windZones: stored.windZones ?? [], biomes: stored.biomes ?? [], presets: stored.presets ?? [], ...(stored.worldEdge ? {worldEdge:stored.worldEdge} : {}), ...(stored.obstacles ? {obstacles:stored.obstacles} : {}), ...(stored.woodlandDetails!==undefined?{woodlandDetails:stored.woodlandDetails}:{}) };
 }
 export function ensureLandscape(map) {
   map.landscape = getLandscape(map);
@@ -193,8 +193,9 @@ export function validateLandscape(map, { ids = new Set(), checkPoint } = {}) {
   }
   if (map?.landscape === undefined) return errors;
   const extension = map.landscape;
-  if (!shape(extension, ['version', 'terrain', 'wind', 'windZones', 'biomes', 'presets', 'obstacles', 'woodlandDetails'], 'Landschaft')) return errors;
+  if (!shape(extension, ['version', 'terrain', 'wind', 'windZones', 'biomes', 'presets', 'obstacles', 'woodlandDetails', 'worldEdge'], 'Landschaft')) return errors;
   flag(extension.woodlandDetails,'Walddetails');
+  if(extension.worldEdge!==undefined&&!['water','floating'].includes(extension.worldEdge)) add('Weltrand: water oder floating erwartet.');
   if (extension.obstacles !== undefined) errors.push(...validateTerrainObstacles(extension.obstacles,map.bounds));
   if (extension.version !== 1) add('Landschaft: version muss 1 sein.');
   if (extension.wind !== undefined) wind(extension.wind, 'Wind');

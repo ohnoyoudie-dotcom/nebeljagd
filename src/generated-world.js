@@ -1,3 +1,4 @@
+import { createFloatingIsland } from './floating-island.js';
 import { createWoodlandDetails } from './woodland-details.js';
 import { createTerrainObstacles } from './terrain-obstacles.js';
 import { applyPaintedGrass } from './painted-grass.js';
@@ -66,7 +67,9 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     }
   }
   const terrainSource = triangulateWorldLand(map).map(triangle => triangle.map(point => vertex(...point)));
-  emitTerrainTriangles(terrainSource, { depth: 6, vertex, shouldRefine: spatial.refineTerrainTriangle, emit: addTriangle });
+  // Rounded coastlines carry more source triangles; retain the same overall
+  // terrain budget instead of multiplying ground geometry by four.
+  emitTerrainTriangles(terrainSource, { depth: terrainSource.length > 200 ? 5 : 6, vertex, shouldRefine: spatial.refineTerrainTriangle, emit: addTriangle });
   const terrainArtwork = createTerrainArtwork();
   const groundTexture = terrainArtwork.ground;
   const groundMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff', vertexColors: true, map: groundTexture,
@@ -111,20 +114,25 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   }
   // The rendered terrain and player use the same interpolated triangle heights.
   sampleCache.clear(); chunks.clear();
-  const sea = new THREE.Mesh(new THREE.PlaneGeometry((map.bounds.maxX - map.bounds.minX) * 3, (map.bounds.maxZ - map.bounds.minZ) * 3),
-    new THREE.MeshStandardMaterial({ color: '#376e83', roughness: .49, metalness: .12 }));
-  sea.rotation.x = -Math.PI / 2; sea.position.set((map.bounds.minX + map.bounds.maxX) / 2, SEA_LEVEL, (map.bounds.minZ + map.bounds.maxZ) / 2); sea.name = 'Meer um die Nebelinsel'; root.add(sea);
-  const shorePositions = [], shoreIndices = [];
-  for (const ring of landBoundaryRings(map)) {
-    const start = shorePositions.length / 3;
-    for (let i = 0; i <= ring.length; i++) {
-      const [x, z] = ring[i % ring.length];
-      shorePositions.push(x, spatial.groundAt(x, z) - .03, z, x, -1.2, z);
-      if (i < ring.length) { const a = start + i * 2; shoreIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  let worldEdge = {mode:'water'};
+  if(map.landscape?.worldEdge==='floating') {
+    worldEdge=createFloatingIsland(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,timeUniform});
+  } else {
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry((map.bounds.maxX - map.bounds.minX) * 3, (map.bounds.maxZ - map.bounds.minZ) * 3),
+      new THREE.MeshStandardMaterial({ color: '#376e83', roughness: .49, metalness: .12 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((map.bounds.minX + map.bounds.maxX) / 2, SEA_LEVEL, (map.bounds.minZ + map.bounds.maxZ) / 2); sea.name = 'Meer um die Nebelinsel'; root.add(sea);
+    const shorePositions = [], shoreIndices = [];
+    for (const ring of landBoundaryRings(map)) {
+      const start = shorePositions.length / 3;
+      for (let i = 0; i <= ring.length; i++) {
+        const [x, z] = ring[i % ring.length];
+        shorePositions.push(x, spatial.groundAt(x, z) - .03, z, x, -1.2, z);
+        if (i < ring.length) { const a = start + i * 2; shoreIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      }
     }
+    const shoreGeo = new THREE.BufferGeometry(); shoreGeo.setAttribute('position', new THREE.Float32BufferAttribute(shorePositions, 3)); shoreGeo.setIndex(shoreIndices); shoreGeo.computeVertexNormals();
+    root.add(new THREE.Mesh(shoreGeo, new THREE.MeshStandardMaterial({ color: '#b4aa7f', side: THREE.DoubleSide, roughness: .98 })));
   }
-  const shoreGeo = new THREE.BufferGeometry(); shoreGeo.setAttribute('position', new THREE.Float32BufferAttribute(shorePositions, 3)); shoreGeo.setIndex(shoreIndices); shoreGeo.computeVertexNormals();
-  root.add(new THREE.Mesh(shoreGeo, new THREE.MeshStandardMaterial({ color: '#b4aa7f', side: THREE.DoubleSide, roughness: .98 })));
   const waterMeshes = [];
   for (const river of map.rivers) {
     // Inlets share the lagoon/ocean plane: no raised, differently coloured
@@ -299,7 +307,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
     setGrassInteractors(values) { meadowGround.setInteractors(values); objects.setGrassInteractors?.(values); },
     setQuality(value) { mode = value === 'low' ? 'low' : 'high'; objects.setQuality(mode); meadowGround.setQuality(mode); snowCover.setQuality(mode); lastCull = -Infinity; },
     get shelter() { return objects.shelter; },
-    get stats() { return { woodlandDetails:woodlandDetails.stats, paintedGrass:true, terrainObstacles:ridges.stats, source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
+    get stats() { return { worldEdge, woodlandDetails:woodlandDetails.stats, paintedGrass:true, terrainObstacles:ridges.stats, source: 'worldmap.json', mapId: map.id, terrainChunks: terrainChunks.length, visibleTerrainChunks,
       terrainTriangles: triangles.length, generationMs, terrainArt: { ground: 'painted-woodland', mainPaths: 'earth-with-sculpted-border-stones', trailPaths: 'earth', stoneTextureSize: 512, pathWidthFromMap: true, borderStones: borderStones.stats },
       terrainPaint: { stamps: spatial.terrainPaint.length, affectedChunks: terrainChunks.filter(c => c.paint).length,
         residentChunks: terrainChunks.filter(c => c.paint?.stats.resident).length,

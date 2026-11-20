@@ -2327,6 +2327,13 @@
         },
         "woodlandDetails": {
           "type": "boolean"
+        },
+        "worldEdge": {
+          "enum": [
+            "water",
+            "floating"
+          ],
+          "description": "Wasser oder schwebende Insel über einer nebligen Tiefe. Ohne Angabe bleibt Wasser aktiv."
         }
       }
     },

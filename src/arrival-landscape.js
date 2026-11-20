@@ -11,7 +11,7 @@ export function captureArrivalLandscape(renderer, world) {
   target.texture.colorSpace=THREE.SRGBColorSpace;
   const previous=renderer.getRenderTarget(),previousAutoClear=renderer.autoClear;
   try {
-    const scene=new THREE.Scene();scene.background=new THREE.Color('#1d424e');
+    const scene=new THREE.Scene();scene.background=new THREE.Color(world.map.landscape?.worldEdge==='floating'?'#344e5d':'#1d424e');
     scene.add(scenery.group);scenery.update(200);
     const sky=new THREE.HemisphereLight('#e4efff','#8c8269',2.1);
     const sun=new THREE.DirectionalLight('#fff0d5',2.3);sun.position.set(-200,500,-160);

@@ -107,7 +107,7 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color('#718b8c');
 // The full camera view stays clear; obstacle line-of-sight still hides actors behind cover.
 scene.fog = null;
-const groundCamera = new THREE.OrthographicCamera(-20, 20, 17, -17, 0.1, 180);
+const groundCamera = new THREE.OrthographicCamera(-20, 20, 17, -17, 0.1, 600);
 let camera = groundCamera;
 const cameraFocus = new THREE.Vector3(-8, 0, 8);
 const cameraTarget = new THREE.Vector3();
