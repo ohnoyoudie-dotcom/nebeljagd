@@ -97,7 +97,8 @@ try:
         for i,(kind,variant) in enumerate([('stump','kit-tripo-stump-01'),('stump','kit-tripo-stump-02'),('gravityStaff','kit-tripo-gravity-staff')]):
             draft['objects'].append({'id':f'sync-object-{i}','name':kind,'kind':kind,'variant':variant,'position':[i*3,0],'rotation':0,'scale':1})
         import_map(page,draft)
-        assert len(state(page)['map']['objects']) == len(PROJECT['objects']) + 3
+        draft = state(page)['map']
+        assert len(draft['objects']) == len(PROJECT['objects']) + 3
         page.locator('#export-json').click()
         expect(page.locator('#github-map-dialog')).to_be_visible()
         page.set_viewport_size({'width':390,'height':844})
