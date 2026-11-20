@@ -52,7 +52,7 @@ Pilze und kleine helle/violette Blüten entstehen deterministisch in lockeren
 Gruppen nahe vorhandener Bäume, auch am Rand gemalter dichter Wälder. Wasser,
 Wege, Hauseingänge und gepflasterte Bodenflächen werden ausgespart. Die kleinen
 Objekte sind dekorativ und ändern keine Kollision oder Beute. Im Hindernispanel
-kann „Pilze und kleine Blumen im Wald“ abgeschaltet werden; die optionale
+kann „Blumen, Pilze und kleine Steine auf Grünflächen“ abgeschaltet werden; die optionale
 Einstellung `landscape.woodlandDetails` bleibt beim Speichern erhalten. Die
 Dekoration ist standardmäßig aktiv, ohne die bestehende Projektkarte umzuschreiben.
 Instanzgruppen werden nur in der Umgebung gerendert und aus der Fernansicht
@@ -86,3 +86,9 @@ variieren in Größe und Richtung. Zwei gedrehte Maßstäbe brechen Wiederholung
 auf. Das frühere regelmäßige Halmenraster auf den Plateaus entfällt vollständig.
 Die Zeichnung verändert nur die Farbe: keine Rillen oder zusätzliche Höhen.
 Steile Felswände, Sand und Schnee erhalten keine grünen Grasbüschel.
+
+Offene grüne Rasenflächen erhalten ebenfalls wenige lockere Gruppen, auch ohne
+Bäume. Pro unregelmäßig versetztem 12-m-Bereich bleibt die Platzierung häufig
+ganz aus. Blumen überwiegen, Pilze sind vor allem im Wald und Sumpf häufiger.
+Einzelne flache Kiesel ergänzen die Gruppen; sie sind rein dekorativ. Alle Details
+meiden Wege, Wasser, Gebäude und die unmittelbaren Kanten erhöhter Plateaus.
