@@ -1,3 +1,4 @@
+import { NATURE_KIT_DEFINITIONS } from './nature-kit-definitions.js';
 import { WEAPON_TYPES } from '../loot-tiers.js';
 import { RETIRED_SCENERY_KINDS } from './retired-scenery.js';
 import { TRIPO_WALL_DEFINITION } from './tripo-wall-definition.js';
@@ -14,6 +15,8 @@ const woodlandVariants = kind => TRIPO_WOODLAND_DEFINITIONS.filter(prop => prop.
 
 /** Shared, local-only asset catalogue for both the map editor and 3D generator. */
 export const OBJECT_CATALOG = Object.freeze([
+  {kind: 'nature', label: 'Landschaftsdetails', defaultVariant: 'forest-boulders', defaultScale: 1, footprintRadius: 2,
+    variants: NATURE_KIT_DEFINITIONS.map(d=>({id:d.variant,label:d.label,defaultName:d.label,footprintWidth:d.footprint.halfWidth*2,footprintDepth:d.footprint.halfDepth*2,footprintRadius:Math.hypot(d.footprint.halfWidth,d.footprint.halfDepth)}))},
   { kind: 'tree', label: 'Baum', defaultVariant: 'oak', defaultScale: 1, footprintRadius: .65,
     variants: [{ id: 'oak', label: 'Eiche', retired: true }, { id: 'birch', label: 'Birke', retired: true }, { id: 'pine', label: 'Kiefer', retired: true }, { id: 'rei-tree01', label: 'Rei-Laubbaum 1', retired: true }, { id: 'rei-tree02', label: 'Rei-Laubbaum 2', retired: true },
       { id: 'kit-pine-high', label: 'Große Kiefer · GLB' }, { id: 'kit-pine-young', label: 'Junge Kiefer · GLB' },
@@ -122,6 +125,7 @@ export const AUTHORING_OBJECT_CATALOG = Object.freeze(OBJECT_CATALOG.filter(defi
 /** Only approved models are placeable. Previous GLB trees remain readable in
  * saved maps, but are not offered in the editor until a valid replacement exists. */
 const placementAssetIds = new Set([
+  ...NATURE_KIT_DEFINITIONS.map(d=>d.id),
   // Old GLB trees are excluded; the user's real GLB is included only if installed.
   ...(USER_TREE1_AVAILABLE ? ['tree:kit-user-tree1'] : []),
   'house:kit-tripo-tavern', 'house:kit-tripo-house-02', ...HOUSE_BUILDER_VARIANTS.map(({id}) => `house:${id}`),

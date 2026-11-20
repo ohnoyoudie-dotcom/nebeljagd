@@ -239,7 +239,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
       shader.vertexShader = shader.vertexShader.replace('#include <worldpos_vertex>', `#include <worldpos_vertex>\nvec4 generatedPosition = vec4(transformed, 1.);\n#ifdef USE_INSTANCING\ngeneratedPosition = instanceMatrix * generatedPosition;\n#endif\nvGeneratedWorld = (modelMatrix * generatedPosition).xyz;`);
       shader.fragmentShader = `${CLOUD_SHADOW_GLSL}\nuniform float uGeneratedRadius; uniform vec2 uGeneratedCenter; varying vec3 vGeneratedWorld;\n${shader.fragmentShader}`;
 
-      shader.fragmentShader = shader.fragmentShader.replace('#include <dithering_fragment>', `gl_FragColor.rgb *= generatedCloudLight(vGeneratedWorld.xz); float generatedMist = smoothstep(uGeneratedRadius, uGeneratedRadius + 18., distance(vGeneratedWorld.xz,uGeneratedCenter)); gl_FragColor.rgb *= mix(vec3(1.), vec3(.40,.31,.54), generatedMist);\n#include <dithering_fragment>`);
+      shader.fragmentShader = shader.fragmentShader.replace('#include <dithering_fragment>', `gl_FragColor.rgb *= generatedCloudLight(vGeneratedWorld.xz); float generatedMist = smoothstep(uGeneratedRadius, uGeneratedRadius + 18., distance(vGeneratedWorld.xz,uGeneratedCenter)); gl_FragColor.rgb *= mix(vec3(1.), vec3(.72,.84,.86), generatedMist);\n#include <dithering_fragment>`);
     };
     material.customProgramCacheKey = () => `${key}|generated-world-zone-cloud-2`;
     if(material.userData.paintedGround)applyPaintedGrass(material,terrainArtwork.paintedGrass);

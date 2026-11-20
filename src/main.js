@@ -1,3 +1,5 @@
+import { advanceZoneExposure } from './zone-exposure.js';
+import { createPlayerFootprintRing } from './player-footprint-ring.js';
 import { captureArrivalLandscape } from './arrival-landscape.js';
 import { createStatusIndicators } from './status-indicators.js';
 import { effectiveSightRadius } from './darkened-status.js';
@@ -52,7 +54,7 @@ const requestedQuality = new URLSearchParams(location.search).get('quality');
 const deviceProfile = { iPad, coarsePointer, devicePixelRatio: window.devicePixelRatio || 1 };
 const state = {
   phase: 'ready', ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0,
-  gold: 0, inDanger: false, moving: false, distance: 0, snowWeight: 0,
+  gold: 0, inDanger: false, mistExposure: 0, moving: false, distance: 0, snowWeight: 0,
   rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
   quality: initialGraphicsQuality({ requestedQuality, coarsePointer, iPad }),
 };
@@ -234,12 +236,13 @@ const grassInteractors = [];
 const footprintSources = [];
 let playerGrassStrength = 0, playerGrassDirX = 0, playerGrassDirZ = 1;
 vision.register();
-const zone = lobbyMode ? null : createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius });
+const zone = lobbyMode ? null : createZone(world.root, { bounds: world.map.bounds, center: world.map.zone.center, initialRadius: world.map.zone.initialRadius, heightAt:world.heightAt });
 const inactivePlayer = new THREE.Vector3(1000, 0, 1000);
 const moveDirection = new THREE.Vector3();
 const lastPosition = new THREE.Vector3();
 const rollDirection = new THREE.Vector3(0, 0, -1);
 const sunlightOffset = new THREE.Vector3(-22, 42, 20);
+const playerFootprint=createPlayerFootprintRing(world.root,{heightAt:(x,z)=>Math.max(world.heightAt(x,z),world.snowSurfaceAt?.(x,z)??-Infinity)});
 let currentZone = zoneAt(0);
 let lastShelter = null;
 let lastConcealment = false;
@@ -292,7 +295,7 @@ function setPhase(phase) {
 
 function reset() {
   aimDirection=null;mouseAimPointer=null;
-  Object.assign(state, { ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0, gold: 0, inDanger: false,
+  Object.assign(state, { ...createProgressionState(), health: startingHealth, lastDefeat: null, elapsed: 0, gold: 0, inDanger: false, mistExposure: 0,
     distance: 0, moving: false, actualSpeed: 0, snowWeight: 0, rollCooldown: 0, rollRemaining: 0, direction: Math.PI,
     hiddenInGrass: false, shelter: null });
   player.set(world.spawn.x, world.heightAt(world.spawn.x, world.spawn.z), world.spawn.z);
@@ -466,7 +469,9 @@ function simulate(dt) {
   if (state.inDanger && !wasInDanger) ui.toast('Der Nebel zehrt an deiner Kraft. Zurück in den Kreis!', 'danger');
   if (!state.inDanger && wasInDanger) ui.toast('Du bist wieder in Sicherheit.', 'success');
   const previousHealth = state.health;
-  state.health = lobbyMode ? state.maxHealth : Math.max(0, state.health - (state.inDanger ? world.map.zone.damagePerSecond * dt : 0));
+  const exposure=advanceZoneExposure(state.mistExposure,dt,state.inDanger,world.map.zone.damagePerSecond);
+  state.mistExposure=exposure.exposure;
+  state.health = lobbyMode ? state.maxHealth : Math.max(0, state.health - exposure.damage);
   if (state.health < previousHealth) damageFeedback.addHit({ targetId: 'player', damage: previousHealth - state.health, type: 'zone' },
     { id: 'player', position: player, local: true });
   if (state.health === 0) setPhase('dead');
@@ -612,7 +617,8 @@ window.nebeljagdTestState = () => ({
   concealment: world.concealmentAt(player.x, player.z), shelter: state.shelter ?? null,
   houses: world.houses.map(({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight, roof, interior, frontFacade }) => ({ id, name, x, y, z, halfWidth, halfDepth, rotation, scale, floorHeight,
     roofVisible: roof.visible, interiorVisible: interior.visible, frontFacadeVisible: frontFacade.visible, frontFacadeParts: frontFacade.children.length })),
-  zone: { ...currentZone, inDanger: state.inDanger },
+  zone: { ...currentZone, inDanger: state.inDanger, exposure:state.mistExposure, visual:zone?.inspect() },
+  footprint:playerFootprint.inspect(),
   pickups: pickups.items.map(({ id, type, x, z, amount, collected, group, visual, flight }) => ({ id, type, x, z, amount, collected, visible: group.visible,
     flight, coin: visual.userData.coin ? { ...visual.userData.coin, rotation: visual.rotation.y,
       diameter: visual.userData.coin.radius * 2 * group.scale.x * visual.parent.scale.x } : null })),
@@ -785,6 +791,7 @@ function frame(now) {
   pickups.update(playDelta, time, state.phase === 'playing' ? player : inactivePlayer,
     { health: state.health, maxHealth: state.maxHealth, onCollect, viewerPosition: player });
   zone?.update(time, currentZone.radius, state.inDanger, player);
+  playerFootprint.update(player,facingDirection(),!arrivalState.active&&state.health>0&&['playing','paused'].includes(state.phase));
   cameraTarget.set(player.x * visualScale, (player.y + arrivalState.height) * visualScale, (player.z - 1.5) * visualScale);
   cameraFocus.lerp(cameraTarget,1-Math.exp(-dt*4));camera.position.copy(cameraFocus).add(cameraOffset);
   camera.lookAt(cameraFocus);

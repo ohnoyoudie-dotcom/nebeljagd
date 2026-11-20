@@ -11,7 +11,7 @@ const scene=new THREE.Scene();scene.background=new THREE.Color('#d9dfd7');
 const captureScale=Math.max(1,Math.min(8,Number(new URLSearchParams(location.search).get('scale'))||1));
 const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(256*captureScale,192*captureScale);renderer.setPixelRatio(1);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;document.body.append(renderer.domElement);
 scene.add(new THREE.HemisphereLight('#eef6ff','#808566',2.4));const sun=new THREE.DirectionalLight('#fff3d7',3);sun.position.set(30,40,30);scene.add(sun);
-const definitions=OBJECT_CATALOG.flatMap(item=>item.variants.map(variant=>({kind:item.kind,variant:variant.id,label:variant.label})));
+const definitions=OBJECT_CATALOG.filter(item=>!new URLSearchParams(location.search).get('kind')||item.kind===new URLSearchParams(location.search).get('kind')).flatMap(item=>item.variants.map(variant=>({kind:item.kind,variant:variant.id,label:variant.label})));
 const objects=definitions.map((item,index)=>makeWorldObject(item.kind,[index*80,0],{id:`preview-${item.kind}-${item.variant}`,variant:item.variant,name:item.label,rarity:'common'}));
 const root=new THREE.Group();scene.add(root);const scenery=await createWorldObjectRenderer(root,{map:{objects},heightAt:()=>0,groundHeightAt:()=>0,quality:'high'});
 const actor=new THREE.Group();root.add(actor);const world={heightAt:()=>0,bounds:5000,traceProjectile:()=>null};
@@ -40,9 +40,9 @@ window.captureVariant=(kind,variant)=>{
  const heights={tree:2.8,house:1.3,flower:.3,grass:.6,rock:.8,bush:.45,ruin:1,mound:1.1,wall:.5,fence:.55,crate:.3,wagon:.5,barrel:.45,well:1.1,shrine:1.1,heart:.55,chest:.45,bow:.6,sword:.6,fireStaff:.65,iceStaff:.65};
  focus.set(x,framing?.[1]??heights[kind],0);
  window.lastPreviewBounds=null;
- if(variant.startsWith('kit-')||variant==='waldhaus'){
+ if(kind==='nature'||variant.startsWith('kit-')||variant==='waldhaus'){
   const bounds=new THREE.Box3(),partBounds=new THREE.Box3(),centre=new THREE.Vector3();root.updateMatrixWorld(true);
-  root.traverseVisible(part=>{if(!part.isMesh||part===plane)return;partBounds.setFromObject(part);if(partBounds.isEmpty())return;partBounds.getCenter(centre);if(Math.abs(centre.x-x)<40&&Math.abs(centre.z)<40)bounds.union(partBounds);});
+  root.traverseVisible(part=>{if(!part.isMesh||part===plane)return;partBounds.setFromObject(part);if(partBounds.isEmpty()||partBounds.max.y<-.5)return;partBounds.getCenter(centre);if(Math.abs(centre.x-x)<40&&Math.abs(centre.z)<40)bounds.union(partBounds);});
   if(bounds.isEmpty()||bounds.max.y-bounds.min.y<.15)throw Error(`No actual runtime geometry for ${kind}:${variant}`);
   const size=bounds.getSize(new THREE.Vector3());if(variant!=='waldhaus'){bounds.getCenter(focus);span=Math.max(2,size.length()*1.12);}window.lastPreviewBounds={min:bounds.min.toArray(),max:bounds.max.toArray(),span};
  }

@@ -7,6 +7,7 @@ import base64
 import hashlib
 import json
 import os
+from urllib.parse import urlencode
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -15,8 +16,10 @@ URL = os.environ.get('NEBELJAGD_URL', 'http://127.0.0.1:5190').rstrip('/')
 OUT = ROOT / 'assets/catalog'
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--only-prefix', nargs='+', help='Capture only variant IDs with any of these prefixes and preserve every other thumbnail exactly.')
+parser.add_argument("--kind", help="Load only one object kind, preserving all other thumbnails.")
 args = parser.parse_args()
-manifest = json.loads((OUT / 'preview-manifest.json').read_text()) if args.only_prefix else {}
+partial = bool(args.only_prefix or args.kind)
+manifest = json.loads((OUT / 'preview-manifest.json').read_text()) if partial else {}
 errors = []
 captured = []
 with sync_playwright() as playwright:
@@ -27,12 +30,12 @@ with sync_playwright() as playwright:
     page.on('console', lambda message: errors.append(message.text) if message.type == 'error' else None)
     page.route('**/@vite/client', lambda route: route.fulfill(status=200, content_type='application/javascript', body='export {};'))
     print('Opening preview', flush=True)
-    page.goto(URL + '/assets/catalog/preview.html', wait_until='domcontentloaded')
+    page.goto(URL + '/assets/catalog/preview.html' + ('?' + urlencode({'kind': args.kind}) if args.kind else ''), wait_until='domcontentloaded')
     print('Waiting for models', flush=True)
     page.wait_for_function('window.previewReady', timeout=90000)
     print('Models ready', flush=True)
     variants = page.evaluate('window.previewVariants')
-    previews = json.loads((OUT / 'previews.json').read_text()) if args.only_prefix else {}
+    previews = json.loads((OUT / 'previews.json').read_text()) if partial else {}
     entries = manifest.get('variants', [])
     for variant in variants:
         if args.only_prefix and not variant['variant'].startswith(tuple(args.only_prefix)):

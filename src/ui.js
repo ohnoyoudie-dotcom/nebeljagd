@@ -63,7 +63,7 @@ export function createUI({ onStart, onArrivalSelect, onPause, onResume, onRestar
   const root = document.getElementById('ui');
   root.dataset.phase = 'ready';
   root.innerHTML = `
-    <div class="world-vignette" aria-hidden="true"></div>
+    <div class="world-vignette" aria-hidden="true"></div><div class="zone-tint playing-only" aria-hidden="true"></div>
     <header class="brand-lockup">
       <div class="brand-mark">${icon('leaf')}</div>
       <div><div class="brand-title">MAGEBRAWL</div><div class="brand-subtitle">MAGIE DER ELEMENTE</div></div>

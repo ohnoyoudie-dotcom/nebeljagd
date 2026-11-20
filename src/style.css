@@ -124,3 +124,7 @@
 
 /* Automatic rune charging stays readable on touch screens as well as PC. */
 .pickup-prompt.runic-chest-progress{border-color:#65daca80;pointer-events:none;max-width:calc(100vw - 24px);white-space:normal}.pickup-prompt.runic-chest-progress .pickup-key{display:flex;color:#baf5df}.pickup-prompt.runic-chest-progress .icon{color:#69dcca}.pickup-prompt.runic-chest-progress strong{color:#e7cf9c}
+
+/* Bounded atmospheric tint: clear centre, no blur and no hit to UI contrast. */
+.zone-tint{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .65s ease;background:radial-gradient(ellipse at 50% 48%,transparent 28%,rgba(20,72,83,.035) 50%,rgba(14,65,83,.14) 76%,rgba(12,52,73,.29) 100%)}
+.in-danger .zone-tint{opacity:1}.in-danger .world-vignette{box-shadow:none}#ui[data-phase=dead] .zone-tint{opacity:0}

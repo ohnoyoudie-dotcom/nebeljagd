@@ -1,3 +1,4 @@
+import { NATURE_KIT_DEFINITIONS } from './nature-kit-definitions.js';
 import { HOUSE_BUILDER_VARIANTS, isBuilderHouse } from './house-builder.js';
 import { getBuilderHousePreviewSvg } from './house-map-symbol.js';
 import previews from '../../assets/catalog/previews.json' with { type: 'json' };
@@ -38,6 +39,7 @@ const tripo = (kind, variant, label, filename, original, notes, packageName = 't
 });
 
 export const ASSET_CATALOG = Object.freeze([
+  ...NATURE_KIT_DEFINITIONS.map(d=>project('nature',d.variant,d.label,['src/nature-kit.js','src/map/nature-kit-definitions.js'],d.solid?'Landschaftsmodell mit fester Kollision.':'Begehbare Landschaftsdekoration.')),
   project('tree', 'oak', 'Eiche', ['src/vegetation.js', 'src/world-object-renderer.js'], 'Breite Laubkrone und dunkler Stamm.'),
   project('tree', 'birch', 'Birke', ['src/vegetation.js', 'src/world-object-renderer.js'], 'Heller Stamm und leichte Laubkrone.'),
   project('tree', 'pine', 'Kiefer', ['src/vegetation.js', 'src/world-object-renderer.js'], 'Hoher Nadelbaum mit gestuften Ästen.'),

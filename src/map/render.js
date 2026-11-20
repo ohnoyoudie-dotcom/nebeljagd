@@ -1,3 +1,5 @@
+import { NATURE_KIT_DEFINITIONS } from './nature-kit-definitions.js';
+import { natureMapSymbol } from './nature-kit-symbols.js';
 import { createObstacleSurface, obstacleSurfaceSvg } from './terrain-obstacles.js';
 import { createWorldSpatialModel } from '../generated-spatial.js';
 import { RARITIES, WEAPON_TYPES } from '../loot-tiers.js';
@@ -16,7 +18,7 @@ const points = list => list.map(([x, z]) => `${number(x)},${number(z)}`).join(' 
 const ringPath = list => `M${list.map(([x, z]) => `${number(x)},${number(z)}`).join('L')}Z`;
 const feature = (type, id) => `id="feature-${type}-${escape(id)}" data-feature-type="${type}" data-feature-id="${escape(id)}"`;
 const biomePattern = { snow: 'mountain', forest: 'forest', meadow: 'meadow', heath: 'heath', marsh: 'marsh', volcanic: 'ash', dunes: 'dune' };
-const objectLayerOrder = { grass: 0, flower: 1, rock: 2, stump: 2, log: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8, poisonStaff: 8, moonStaff: 8, starStaff: 8 };
+const objectLayerOrder = { nature: 2, grass: 0, flower: 1, rock: 2, stump: 2, log: 2, mound: 2, wall: 2, fence: 2, ruin: 3, house: 4, tree: 5, bush: 6, shrine: 7, crate: 7, wagon: 7, barrel: 7, well: 7, heart: 8, chest: 8, bow: 8, sword: 8, fireStaff: 8, iceStaff: 8, poisonStaff: 8, moonStaff: 8, starStaff: 8 };
 const objectHitRadius = { tree: 2.8, house: 11, flower: 1.5, grass: 3.5, rock: 1.8, mound: 6.5, wall: 1.7, fence: 1.7, crate: .6, wagon: 1.7, barrel: .65, well: 1.5, bush: 1.5, ruin: 7, shrine: 2, heart: 1.5, chest: 1.5, bow: 1.5, sword: 1.5, fireStaff: 1.5, iceStaff: 1.5, poisonStaff: 1.5, moonStaff: 1.5, starStaff: 1.5 };
 
 // Add these definitions only when their models are actually placed, keeping
@@ -122,6 +124,7 @@ const extraChestSymbols = {
 };
 
 function objectSymbol(item) {
+  if(item.kind==='nature')return `nature-${item.variant}`;
   if (item.kind === 'chest' && item.variant === 'kit-tripo-rare-chest') return 'chest-rare';
   if (item.kind === 'chest' && item.variant === 'kit-tripo-chest') return 'chest-tripo';
   if (woodlandById.has(`${item.kind}:${item.variant}`)) return item.variant;
@@ -148,7 +151,7 @@ function objectSymbol(item) {
 
 function objectSvg(item, interactive = true) {
   if (!Object.hasOwn(objectLayerOrder, item.kind)) return '';
-  const radius = item.radius ?? (woodlandById.has(`${item.kind}:${item.variant}`) || (['kit-tripo-castle', 'kit-tripo-house-02'].includes(item.variant) || (item.kind === 'house' && isBuilderHouse(item.variant))) ? getObjectFootprintRadius(item.kind, item.variant)
+  const radius = item.radius ?? (item.kind==='nature' || woodlandById.has(`${item.kind}:${item.variant}`) || (['kit-tripo-castle', 'kit-tripo-house-02'].includes(item.variant) || (item.kind === 'house' && isBuilderHouse(item.variant))) ? getObjectFootprintRadius(item.kind, item.variant)
     : item.kind === 'mound' && item.variant === 'knoll' ? 3.91 : ['kit-taverne', 'kit-tripo-tavern'].includes(item.variant) ? 14.5 : item.variant === 'kit-timber' ? 2.45 : item.variant === 'kit-arch' ? 1.5 : objectHitRadius[item.kind]);
   const patch = item.kind === 'grass' || item.kind === 'flower';
   const tint = item.kind === 'flower' ? ({ 'rei-red': '#c77c7c', 'rei-gold': '#e0bd64' }[item.variant] ?? '#e7e4cb') : undefined;
@@ -167,7 +170,7 @@ function objectSvg(item, interactive = true) {
 export function renderObjectPlacementPreview(item) {
   const key = objectSymbol(item);
   const woodland = woodlandById.get(`${item.kind}:${item.variant}`);
-  const definition = item.kind === 'house' && isBuilderHouse(item.variant) ? builderHouseMapSymbol(item)
+  const definition = item.kind === 'nature' ? natureMapSymbol(item.variant) : item.kind === 'house' && isBuilderHouse(item.variant) ? builderHouseMapSymbol(item)
     : woodland ? woodlandSymbol(woodland) : extraWeaponSymbols[item.kind] ?? extraChestSymbols[key]
       ?? objectSymbols.find(symbol => symbol.includes(`id="world-object-${key}"`));
   if (!definition) return '';
@@ -248,6 +251,7 @@ export function renderWorldmapSvg(map, options = {}) {
     '    <pattern id="world-pattern-marsh" width="105" height="95" patternUnits="userSpaceOnUse"><path d="M13,42Q27,49 42,42 M18,35V19 M26,36V12 M34,35V23 M65,83Q78,89 93,83" fill="none" stroke="#246a69" stroke-width="2" opacity=".4"/></pattern>',
     '    <pattern id="world-pattern-ash" width="115" height="100" patternUnits="userSpaceOnUse"><path d="M8,57 30,22 54,57Z M69,88 84,59 105,88Z" fill="#514e4b" opacity=".22"/><path d="M31,24 26,41 37,47 29,57" fill="none" stroke="#ce976a" stroke-width="2" opacity=".55"/></pattern>',
     '    <pattern id="world-pattern-dune" width="115" height="95" patternUnits="userSpaceOnUse"><path d="M9,35Q28,14 50,35 M60,80Q82,57 106,80" fill="none" stroke="#a78651" stroke-width="2" opacity=".35"/></pattern>',
+    ...NATURE_KIT_DEFINITIONS.filter(d=>(map.objects??[]).some(o=>o.kind==='nature'&&o.variant===d.variant)).map(d=>natureMapSymbol(d.variant)),
     ...objectSymbols.map(symbol => `    ${symbol}`),
     ...Object.entries(extraChestSymbols).filter(([key]) => (map.objects ?? []).some(item => objectSymbol(item) === key)).map(([, symbol]) => `    ${symbol}`),
     ...new Map((map.objects ?? []).filter(item => item.kind === 'house' && isBuilderHouse(item.variant))

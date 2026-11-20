@@ -1,3 +1,4 @@
+import { createNatureModelParts } from './nature-kit.js';
 import { isBuilderHouse } from './map/house-builder.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -203,7 +204,7 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
   await Promise.all(wanted.map(async key => {
     const [kind, variant] = key.split(':'), definition = getEnvironmentKitDefinition(kind, variant);
     if (definition.procedural) {
-      result.set(key, { ...definition, parts: createBarrierModelParts(variant), embedded: true });
+      result.set(key, { ...definition, parts: definition.natureKit ? createNatureModelParts(variant) : createBarrierModelParts(variant), embedded: true });
       return;
     }
     const gltf = await new GLTFLoader().loadAsync(urls[key]); gltf.scene.updateWorldMatrix(true, true);

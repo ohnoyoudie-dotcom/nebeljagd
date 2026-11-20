@@ -1,3 +1,4 @@
+import { NATURE_KIT_DEFINITIONS } from './nature-kit-definitions.js';
 import { HOUSE_BUILDER_VARIANTS, getHouseDefinition } from './house-builder.js';
 import { TRIPO_TAVERN_DEFINITION } from './tripo-tavern-definition.js';
 import { TRIPO_CASTLE_DEFINITION } from './tripo-castle-definition.js';
@@ -115,6 +116,7 @@ export const ENVIRONMENT_KIT_DEFINITIONS = freeze([...nativeDefinitions.map(defi
       entranceHalfWidth: interior.entranceHalfWidth, floorHeight: y(definition.floorHeight),
       floorBounds: { minX: x(-definition.footprint.halfWidth), maxX: x(definition.footprint.halfWidth), minZ: z(-definition.footprint.halfDepth), maxZ: z(definition.footprint.halfDepth) } } : {}) };
 }),
+  ...NATURE_KIT_DEFINITIONS,
   USER_TREE1_DEFINITION,
   // Original procedural modules already use runtime metres. Keep them outside
   // the GLB normalization table and share their exact dimensions with the editor.

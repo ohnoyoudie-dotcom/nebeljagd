@@ -1359,6 +1359,615 @@
         ],
         "span": 3.11535890436915
       }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-boulders",
+      "label": "Felsgruppe · Wald",
+      "file": "assets/catalog/nature-forest-boulders.webp",
+      "bytes": 2298,
+      "sha256": "2b9c2339fdedbba2561404dded81b4e8eceb5d7fc57f21b58f64079d583c4e6b",
+      "renderedBounds": {
+        "min": [
+          -2.277526378631592,
+          -1,
+          -1.3103615045547485
+        ],
+        "max": [
+          2.1110525131225586,
+          2.421185741201043,
+          1.197911262512207
+        ],
+        "span": 6.8361820888261775
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-ridge",
+      "label": "Felsvorsprung · Wald",
+      "file": "assets/catalog/nature-forest-ridge.webp",
+      "bytes": 2400,
+      "sha256": "5719c68667d9b4565a12a1d328bad986c8d19403f18b802cf125dc5c7e2ee57b",
+      "renderedBounds": {
+        "min": [
+          76.79167127609253,
+          0.029999999329447746,
+          -1.1644827127456665
+        ],
+        "max": [
+          83.0448853969574,
+          3.512735376134515,
+          1.3133504390716553
+        ],
+        "span": 8.48334680227477
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-rubble",
+      "label": "Geröll · Wald",
+      "file": "assets/catalog/nature-forest-rubble.webp",
+      "bytes": 2634,
+      "sha256": "a93a3592b935ddfedc9ca8a2e7fb06e1381da85a1100c70bb3760f7a2fb3b96b",
+      "renderedBounds": {
+        "min": [
+          158.4134839773178,
+          0.02440784778445959,
+          -0.7439162731170654
+        ],
+        "max": [
+          161.4793256521225,
+          0.5597502086311579,
+          1.2273355722427368
+        ],
+        "span": 4.126073076928913
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "snow-boulders",
+      "label": "Felsgruppe · Schnee",
+      "file": "assets/catalog/nature-snow-boulders.webp",
+      "bytes": 2162,
+      "sha256": "6e7079c630f00df41463bb7fb6d58e2ac914e704f3a464207ca6a7fbc060ee20",
+      "renderedBounds": {
+        "min": [
+          237.83785843849182,
+          0.02440784778445959,
+          -1.3777060508728027
+        ],
+        "max": [
+          242.11404514312744,
+          2.421185741201043,
+          1.2197951078414917
+        ],
+        "span": 6.213459731888027
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "snow-ridge",
+      "label": "Felsvorsprung · Schnee",
+      "file": "assets/catalog/nature-snow-ridge.webp",
+      "bytes": 2364,
+      "sha256": "21208cb4fd787127d39fc66bf58d4755812cae0d55499e00f9ed94281ddac6b9",
+      "renderedBounds": {
+        "min": [
+          316.75895833969116,
+          0.029999999329447746,
+          -1.2201279401779175
+        ],
+        "max": [
+          322.88237023353577,
+          3.5149273965507746,
+          1.068735957145691
+        ],
+        "span": 8.297060246504218
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "snow-rubble",
+      "label": "Geröll · Schnee",
+      "file": "assets/catalog/nature-snow-rubble.webp",
+      "bytes": 2140,
+      "sha256": "85403f44b56b8a7b8101c3cc8369bdc162bcaa0453fd96262dfea3f437a26761",
+      "renderedBounds": {
+        "min": [
+          398.15615475177765,
+          0.02440784778445959,
+          -1.29728364944458
+        ],
+        "max": [
+          401.82621014118195,
+          0.5202335212379694,
+          1.2857964038848877
+        ],
+        "span": 5.057076237001964
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "desert-boulders",
+      "label": "Felsgruppe · Sandstein",
+      "file": "assets/catalog/nature-desert-boulders.webp",
+      "bytes": 2430,
+      "sha256": "9db674db8977e9b0fa0a4be5f1034ee2162e3c192966d3788decfa662cd617cf",
+      "renderedBounds": {
+        "min": [
+          477.7195158004761,
+          0.02440784778445959,
+          -1.3014047145843506
+        ],
+        "max": [
+          482.6337585449219,
+          2.421185741201043,
+          1.209649920463562
+        ],
+        "span": 6.738614881898853
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "desert-ridge",
+      "label": "Felsvorsprung · Sandstein",
+      "file": "assets/catalog/nature-desert-ridge.webp",
+      "bytes": 2676,
+      "sha256": "b71f577605aa8635bb08de12cba815f91f2d41ebbd75d00eec9e92c1dec2ddb7",
+      "renderedBounds": {
+        "min": [
+          556.7512488365173,
+          0.029999999329447746,
+          -1.1672072410583496
+        ],
+        "max": [
+          562.9692709445953,
+          3.5142047498375177,
+          1.2951667308807373
+        ],
+        "span": 8.445926405554927
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "desert-rubble",
+      "label": "Geröll · Sandstein",
+      "file": "assets/catalog/nature-desert-rubble.webp",
+      "bytes": 2438,
+      "sha256": "ba694f7095c7b41e706e4be415bcaf8d0e9a94673e879e5b62cbe5346538dc79",
+      "renderedBounds": {
+        "min": [
+          638.6331255435944,
+          0.02440784778445959,
+          -1.3197451829910278
+        ],
+        "max": [
+          641.6946132183075,
+          0.543207535520196,
+          1.4018815755844116
+        ],
+        "span": 4.624543894542621
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-fern",
+      "label": "Farnbüschel",
+      "file": "assets/catalog/nature-forest-fern.webp",
+      "bytes": 3960,
+      "sha256": "9ef35d3ff11d4133b1134e2db60b02c8f95d4a0b2e43a363e5f0b7e7a981f756",
+      "renderedBounds": {
+        "min": [
+          719.266363620758,
+          0.04296799935400486,
+          -0.8486073017120361
+        ],
+        "max": [
+          720.9128575921059,
+          0.7093010637909174,
+          0.9280415773391724
+        ],
+        "span": 2.8137251998491393
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-shrub",
+      "label": "Laubgebüsch",
+      "file": "assets/catalog/nature-forest-shrub.webp",
+      "bytes": 2996,
+      "sha256": "4838edf2d9c647eb35886f9ed021e672a78f2f7ae950506dc31cfaf6d392bc38",
+      "renderedBounds": {
+        "min": [
+          798.9343883991241,
+          0.009999999776482582,
+          -0.9063426852226257
+        ],
+        "max": [
+          801.0153197050095,
+          1.4481064174324274,
+          0.9098720550537109
+        ],
+        "span": 3.487691716301367
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "dry-scrub",
+      "label": "Trockene Sträucher",
+      "file": "assets/catalog/nature-dry-scrub.webp",
+      "bytes": 3226,
+      "sha256": "47fff7713cbfb8985165e057636ab31def8b27813716b1362f0226bd50a8c6c1",
+      "renderedBounds": {
+        "min": [
+          878.895379781723,
+          0.000834902748465538,
+          -0.8198786973953247
+        ],
+        "max": [
+          881.1492568254471,
+          1.0837215278297663,
+          0.8004676699638367
+        ],
+        "span": 3.3371729296844594
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "cactus-tall",
+      "label": "Kaktus · Verzweigt",
+      "file": "assets/catalog/nature-cactus-tall.webp",
+      "bytes": 2588,
+      "sha256": "b19d94d86441cd05eee4fa98d69796a83529d576fb1877c7f921fe3a12d82fe6",
+      "renderedBounds": {
+        "min": [
+          959.0786603093147,
+          0.1897066179662943,
+          -0.3500464856624603
+        ],
+        "max": [
+          960.9354075193405,
+          3.361999997869134,
+          0.35003823041915894
+        ],
+        "span": 4.190817026642348
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "cactus-cluster",
+      "label": "Kakteen · Kleine Gruppe",
+      "file": "assets/catalog/nature-cactus-cluster.webp",
+      "bytes": 2804,
+      "sha256": "bf624e9fb692247456063795387e4c80955537372067edee2d22c662d809f34b",
+      "renderedBounds": {
+        "min": [
+          1038.9552941322327,
+          0.16193118132650852,
+          -0.5106542110443115
+        ],
+        "max": [
+          1040.9954075217247,
+          1.3024000022560358,
+          0.5901901721954346
+        ],
+        "span": 2.8935455514955573
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "dead-tree",
+      "label": "Dürrer Baum",
+      "file": "assets/catalog/nature-dead-tree.webp",
+      "bytes": 3020,
+      "sha256": "309e5adc60dee093f45f8232c5b0ca096487df0504abc892dd74e8cf24f1e4d6",
+      "renderedBounds": {
+        "min": [
+          1118.6399250030518,
+          0.025859208777546883,
+          -1.1033588647842407
+        ],
+        "max": [
+          1121.4052933454514,
+          4.762461910024285,
+          1.0725932121276855
+        ],
+        "span": 6.60870562493358
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "exposed-roots",
+      "label": "Wurzelstock · Freiliegende Wurzeln",
+      "file": "assets/catalog/nature-exposed-roots.webp",
+      "bytes": 2522,
+      "sha256": "e27d20c0ae2a016d1a71fd203d74f3da20decf8d1e23d8b6b9b1455d8675c9ad",
+      "renderedBounds": {
+        "min": [
+          1198.6637653112411,
+          -0.005343819968402386,
+          -1.1033588647842407
+        ],
+        "max": [
+          1201.3560128211975,
+          1.178581366315484,
+          1.0725932121276855
+        ],
+        "span": 4.097523167377891
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-arch",
+      "label": "Verwitterter Torbogen · Moosstein",
+      "file": "assets/catalog/nature-forest-arch.webp",
+      "bytes": 3298,
+      "sha256": "e6133b7430f49b5eb3f7125fbfd13040ea0c15fa29f288ef62539f9089086f96",
+      "renderedBounds": {
+        "min": [
+          1277.312654018402,
+          0.02440841030329466,
+          -0.5824399590492249
+        ],
+        "max": [
+          1282.5597670078278,
+          4.100000152364373,
+          1.136989712715149
+        ],
+        "span": 7.686422276782181
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-pillar",
+      "label": "Säulenreste · Moosstein",
+      "file": "assets/catalog/nature-forest-pillar.webp",
+      "bytes": 2460,
+      "sha256": "e97a6a1e1a5000c58ef19d779e9c23ffdffab7e52da362b5b1dbe16273c44bd1",
+      "renderedBounds": {
+        "min": [
+          1358.9249999523163,
+          0.009999993816018016,
+          -0.7250000238418579
+        ],
+        "max": [
+          1361.2572510242462,
+          2.6199998948723078,
+          0.8561006784439087
+        ],
+        "span": 4.301641955869735
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "forest-ruin",
+      "label": "Mauerrest · Moosstein",
+      "file": "assets/catalog/nature-forest-ruin.webp",
+      "bytes": 3132,
+      "sha256": "989616d06006e952d1fbfd183dd4985a5107d7d7d5b962aa7478c4d80198b247",
+      "renderedBounds": {
+        "min": [
+          1437.7832980155945,
+          0.02440841030329466,
+          -0.7550408244132996
+        ],
+        "max": [
+          1441.7732436656952,
+          1.7849999759346247,
+          1.1187363862991333
+        ],
+        "span": 5.3162130506439516
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "snow-arch",
+      "label": "Verwitterter Torbogen · Froststein",
+      "file": "assets/catalog/nature-snow-arch.webp",
+      "bytes": 3082,
+      "sha256": "69569fd7249d63451e5d32fc5ccef48543af639a8443a95f6157cdf6f1f9acd1",
+      "renderedBounds": {
+        "min": [
+          1517.306354522705,
+          0.02440841030329466,
+          -0.5832286477088928
+        ],
+        "max": [
+          1522.561050415039,
+          4.100000152364373,
+          1.1280044317245483
+        ],
+        "span": 7.69062462658279
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "snow-pillar",
+      "label": "Säulenreste · Froststein",
+      "file": "assets/catalog/nature-snow-pillar.webp",
+      "bytes": 2316,
+      "sha256": "9744fa13ea16981a578c6c8253805dce86a6d3ef57bbc3881d31b8db3a6df0b2",
+      "renderedBounds": {
+        "min": [
+          1598.9249999523163,
+          0.009999993816018016,
+          -0.7250000238418579
+        ],
+        "max": [
+          1601.2651787996292,
+          2.6199998948723078,
+          0.8778806924819946
+        ],
+        "span": 4.317126132892215
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "snow-ruin",
+      "label": "Mauerrest · Froststein",
+      "file": "assets/catalog/nature-snow-ruin.webp",
+      "bytes": 2674,
+      "sha256": "9255ec2c98d1771171fac05a34b711512a4008058829bdbc04b1b14b90f17b04",
+      "renderedBounds": {
+        "min": [
+          1678.152331829071,
+          0.02440841030329466,
+          -0.6863437294960022
+        ],
+        "max": [
+          1681.891827583313,
+          1.7849999759346247,
+          0.7625717520713806
+        ],
+        "span": 4.905404025452421
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "desert-arch",
+      "label": "Verwitterter Torbogen · Sandstein",
+      "file": "assets/catalog/nature-desert-arch.webp",
+      "bytes": 3406,
+      "sha256": "46839abe602ea9e2e6b78edbd7a4b81b483ba5c45a2cdbcd3115ae03867a62f4",
+      "renderedBounds": {
+        "min": [
+          1757.3233003616333,
+          0.02440841030329466,
+          -0.5821369290351868
+        ],
+        "max": [
+          1762.5595750808716,
+          4.100000152364373,
+          1.1429733037948608
+        ],
+        "span": 7.678743711642939
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "desert-pillar",
+      "label": "Säulenreste · Sandstein",
+      "file": "assets/catalog/nature-desert-pillar.webp",
+      "bytes": 2666,
+      "sha256": "739fa9cb9ff743f37af85ee19ee40f0e4e09586855311da5d8e1447f11cf25bf",
+      "renderedBounds": {
+        "min": [
+          1838.9249999523163,
+          0.009999993816018016,
+          -0.7250000238418579
+        ],
+        "max": [
+          1841.273327589035,
+          2.6199998948723078,
+          0.8673800826072693
+        ],
+        "span": 4.317802143836382
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "desert-ruin",
+      "label": "Mauerrest · Sandstein",
+      "file": "assets/catalog/nature-desert-ruin.webp",
+      "bytes": 3040,
+      "sha256": "a8bc74272a60a82f7c50c68eb7224eef3d523ef398dfc9d9c806ccdc42bab08d",
+      "renderedBounds": {
+        "min": [
+          1918.1504131555557,
+          0.02440841030329466,
+          -0.7076330184936523
+        ],
+        "max": [
+          1921.8756353855133,
+          1.7849999759346247,
+          0.7767508625984192
+        ],
+        "span": 4.905083293516766
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "wood-signpost",
+      "label": "Wegweiser · Holz",
+      "file": "assets/catalog/nature-wood-signpost.webp",
+      "bytes": 2284,
+      "sha256": "4442865a74c80c03e049196e6829a833832aa9b5db8c57fe3408a2a2fd61b9af",
+      "renderedBounds": {
+        "min": [
+          1999.1282025575638,
+          0.010000047460199113,
+          -0.22834840416908264
+        ],
+        "max": [
+          2000.8717974424362,
+          2.359999904409051,
+          0.22834840416908264
+        ],
+        "span": 3.317014664825714
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "path-lantern",
+      "label": "Weglaterne · Warmes Licht",
+      "file": "assets/catalog/nature-path-lantern.webp",
+      "bytes": 1874,
+      "sha256": "6460e4451273cb572c8c111bb9839aafcb0c432316897618fabaa67e1ca2c1a0",
+      "renderedBounds": {
+        "min": [
+          2079.641671150923,
+          0.009999999776482582,
+          -0.24500000476837158
+        ],
+        "max": [
+          2080.650000035763,
+          2.7599999997764826,
+          0.24500000476837158
+        ],
+        "span": 3.326103422346188
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "plank-walkway",
+      "label": "Holzsteg · Bodenelement",
+      "file": "assets/catalog/nature-plank-walkway.webp",
+      "bytes": 3540,
+      "sha256": "38753ca9bf9d55acb90312a1533e5f01f137bd8a71d62d34dcfc188ea4e8fe03",
+      "renderedBounds": {
+        "min": [
+          2158.8687094449997,
+          0.034999996423721313,
+          -2.0610733032226562
+        ],
+        "max": [
+          2161.147109389305,
+          0.20300000347197056,
+          1.9960834980010986
+        ],
+        "span": 5.214902287674206
+      }
+    },
+    {
+      "kind": "nature",
+      "variant": "broken-fence",
+      "label": "Zaunrest · Gebrochen",
+      "file": "assets/catalog/nature-broken-fence.webp",
+      "bytes": 2390,
+      "sha256": "ecf2a9328ee16b4e980dc96097d0e2094f026054ba2ff031cbafc7c620777bb4",
+      "renderedBounds": {
+        "min": [
+          2238.38183426857,
+          0.004444894380867481,
+          -0.11276311427354813
+        ],
+        "max": [
+          2241.618046283722,
+          1.4613581988960505,
+          0.522072434425354
+        ],
+        "span": 4.038012523823848
+      }
     }
   ],
   "errors": []

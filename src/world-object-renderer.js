@@ -288,7 +288,7 @@ export async function createWorldObjectRenderer(root, { map, heightAt, groundHei
     wind.apply(near.material, { response: .65, height: variant === 'pine' ? 7.2 : 6.8 });
     prototypes.set(`tree:${variant}`, [{ geometry: trunk.geometry, material: trunk.material, castShadow: true, treePart: 'bark' }, { geometry: near.geometry, lowGeometry: far.geometry, material: near.material, castShadow: true, foliage: true, treePart: 'foliage' }]);
   }
-  const importedAssets = { loaded: true, loadedGLBs: 5 + [...kitModels.values()].filter(model => !model.procedural).length, trees: 0, bushes: 0, flowers: 0, beds: 0, placements: [], sources: ['Rei_treeLeavesGN.glb', 'Rei_treeLeavesGN_samples.glb', 'Rei_flowersGN_sample.blend', 'grassGN3_3_v2_Rei.glb', ...[...kitModels.values()].map(model => model.procedural ? 'src/barrier-models.js' : `${model.asset}.glb`)], grassSourceContainsBlades: false,
+  const importedAssets = { loaded: true, loadedGLBs: 5 + [...kitModels.values()].filter(model => !model.procedural).length, trees: 0, bushes: 0, flowers: 0, beds: 0, placements: [], sources: ['Rei_treeLeavesGN.glb', 'Rei_treeLeavesGN_samples.glb', 'Rei_flowersGN_sample.blend', 'grassGN3_3_v2_Rei.glb', ...[...kitModels.values()].map(model => model.procedural ? (model.natureKit ? 'src/nature-kit.js' : 'src/barrier-models.js') : `${model.asset}.glb`)], grassSourceContainsBlades: false,
     environmentKit: [...kitModels.values()].map(model => ({ id: model.id, asset: model.asset, procedural: Boolean(model.procedural), targetHeight: model.targetHeight, height: model.height, parts: model.parts.length,
       roofRemoved: model.roofRemoved, reducedDressing: model.reducedDressing, omittedDetailMeshes: model.omittedDetailMeshes })) };
   const stems = new Map();
