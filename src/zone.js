@@ -28,6 +28,7 @@ export function createZone(scene,{center=[0,0],initialRadius=32,heightAt=()=>0}=
  }`});
  const segments=128;
  function mesh(material,name){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array((segments+1)*6),3));g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array((segments+1)*4),2));const ids=[];for(let i=0;i<segments;i++){const a=i*2;ids.push(a,a+2,a+1,a+1,a+2,a+3);}g.setIndex(ids);const m=new THREE.Mesh(g,material);m.name=name;m.frustumCulled=false;m.userData.ignoreVision=true;material.userData.ignoreVision=true;group.add(m);return m;}
+ // A slight outward flare gives the wisps volume even at grazing camera angles.
  const wall=mesh(wallMaterial,'Schlieren · vom Boden nach oben'),seam=mesh(seamMaterial,'Klare sichere Kreisgrenze');wall.renderOrder=4;seam.renderOrder=5;
  let lastRadius=-1,lastX=Infinity,lastZ=Infinity,lastBuild=-Infinity,builds=0;
  function update(time,radius,inDanger,player={x:center[0],z:center[1]}){
@@ -36,7 +37,7 @@ export function createZone(scene,{center=[0,0],initialRadius=32,heightAt=()=>0}=
   const full=radius<35,half=full?Math.PI:Math.min(Math.PI,95/radius),angle=Math.atan2(player.z-center[1],player.x-center[0]);uniforms.uFull.value=full?1:0;
   for(let i=0;i<=segments;i++){
    const a=angle-half+2*half*i/segments,c=Math.cos(a),s=Math.sin(a),x=center[0]+c*radius,z=center[1]+s*radius,y=heightAt(x,z);
-   for(let j=0;j<2;j++){wall.geometry.attributes.position.setXYZ(i*2+j,x,y+.04+j*7,z);wall.geometry.attributes.uv.setXY(i*2+j,i/segments,j);
+   for(let j=0;j<2;j++){wall.geometry.attributes.position.setXYZ(i*2+j,x+c*j*1.6,y+.04+j*7,z+s*j*1.6);wall.geometry.attributes.uv.setXY(i*2+j,i/segments,j);
     const r=radius+(j?1:-1)*.55,px=center[0]+c*r,pz=center[1]+s*r;seam.geometry.attributes.position.setXYZ(i*2+j,px,heightAt(px,pz)+.09,pz);seam.geometry.attributes.uv.setXY(i*2+j,i/segments,j);}
   }
   for(const m of [wall,seam]){m.geometry.attributes.position.needsUpdate=true;m.geometry.attributes.uv.needsUpdate=true;}
