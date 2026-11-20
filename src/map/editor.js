@@ -325,6 +325,7 @@ function renderMap(rebuild = true) {
   appendSelection(svg);
   updatePlacementPreview();
   $('zoom-label').textContent = `${Math.round(zoom * 100)} %`;
+  $('map-viewport').dataset.closeView = String(view.width < 450);
   $('map-viewport').classList.toggle('is-pan', mode === 'pan' || spaceHeld);
   $('map-viewport').classList.toggle('is-placing', placementModes.includes(mode) && !spaceHeld);
   $('zone-clock').textContent = `${Math.floor(zoneTime / 60).toString().padStart(2, '0')}:${Math.floor(zoneTime % 60).toString().padStart(2, '0')}`;

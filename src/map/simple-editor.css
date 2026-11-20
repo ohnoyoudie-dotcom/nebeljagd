@@ -51,3 +51,6 @@
 .simple-editor .basic-tools #tool-select{display:none}.simple-editor .basic-tools .tool-grid{grid-template-columns:1fr}
 .simple-editor:not(.advanced-tools) #obstacle-erase{min-height:44px;font-size:13px}
 .simple-editor #simple-grass{font-size:12px}
+
+/* Biome pictograms are an overview aid, never pretend to be placed trees. */
+.simple-editor #map-viewport[data-close-view=true] #map-stage polygon[fill^="url(#world-pattern-"]{display:none}
