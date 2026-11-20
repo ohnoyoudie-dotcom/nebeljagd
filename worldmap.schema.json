@@ -107,6 +107,10 @@
         },
         "spawnPosition": {
           "$ref": "#/$defs/point"
+        },
+        "practiceActors": {
+          "type": "boolean",
+          "description": "Automatische lokale Übungsgegner; false lässt eine leere Baukarte auch im Spiel frei."
         }
       }
     },

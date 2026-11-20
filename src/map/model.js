@@ -160,6 +160,7 @@ export function validateWorldmap(map) {
     return true;
   }
   const game = map.gameplay;
+  if (game?.practiceActors !== undefined && typeof game.practiceActors !== 'boolean') error('gameplay.practiceActors muss ein Wahrheitswert sein.');
   if (!object(game) || !Number.isInteger(game.targetPlayers) || game.targetPlayers < 1 || game.targetPlayers > 1000 || !finite(game.walkSpeedMetersPerSecond) || game.walkSpeedMetersPerSecond <= 0 || game.walkSpeedMetersPerSecond > 100) error('gameplay benötigt 1–1000 Zielspieler und eine positive Laufgeschwindigkeit bis 100 m/s.');
   const islandValid = common(map.island, 'Insel') && points(map.island, 'Insel', true);
   if (map.islets !== undefined && (!Array.isArray(map.islets) || map.islets.length > 50)) error('islets muss eine Liste mit höchstens 50 zusätzlichen Landflächen sein.');

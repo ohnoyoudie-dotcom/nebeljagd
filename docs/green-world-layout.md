@@ -1,4 +1,6 @@
-# Grünwald: Häuserblöcke, Wege und Geländehindernisse
+# Grünwald: archivierter Entwurf
+
+Auf Wunsch wurde die aktuelle Projektkarte anschließend vollständig geleert. Dieser Entwurf ist unter `docs/map-backups/worldmap-2026-11-20-before-clear.json` gesichert. Die folgenden Angaben beschreiben den früheren Ausbau.
 
 Der neue Entwurf ersetzt ausschließlich den bisherigen automatischen Ausbau mit IDs `forest-world-`. Die 50 vorher handgesetzten Objekte, 88 Bodenmalereien, Küsten, Biome, Brücken und Spielregeln bleiben erhalten. Es wird kein Browserentwurf überschrieben.
 

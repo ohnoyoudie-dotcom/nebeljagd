@@ -79,7 +79,8 @@ export function createPracticeActors(scene, { world, combat, healthBars, vision 
   }
 
   const actors = [];
-  for (const [index, offset] of [[-5, 9], [5, 12], [12, 4]].entries()) {
+  const practiceSites = world.map?.gameplay?.practiceActors === false ? [] : [[-5, 9], [5, 12], [12, 4]];
+  for (const [index, offset] of practiceSites.entries()) {
     const site = chooseSite(offset); if (!site) continue;
     const group = new THREE.Group(); group.name = `Übungsgegner ${index + 1}`;
     group.position.set(site.x, world.heightAt?.(site.x, site.z) ?? 0, site.z); root.add(group);

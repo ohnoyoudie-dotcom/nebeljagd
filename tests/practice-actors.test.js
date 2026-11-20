@@ -4,9 +4,9 @@ import * as THREE from 'three';
 import { createCombat } from '../src/combat.js';
 import { createPracticeActors } from '../src/practice-actors.js';
 
-function fixture() {
+function fixture(practiceActors = true) {
   const combat = createCombat(), bars = new Map();
-  const world = { spawn: { x: 0, z: 0 }, houses: [], heightAt: () => 0, isLand: () => true,
+  const world = { map: { gameplay: { practiceActors } }, spawn: { x: 0, z: 0 }, houses: [], heightAt: () => 0, isLand: () => true,
     isWater: () => false, concealmentAt: () => 0, resolveMovement: position => position };
   let canSee = true;
   const healthBars = { add: (id, value) => bars.set(id, value),
@@ -14,6 +14,17 @@ function fixture() {
   const actors = createPracticeActors(new THREE.Scene(), { world, combat, healthBars, vision: { isVisible: () => canSee } });
   return { actors, combat, bars, world, setVisible: value => { canSee = value; } };
 }
+
+test('an explicitly empty building map has no automatic practice actors, targets or health bars, including after reset', () => {
+  const { actors, combat, bars } = fixture(false);
+  actors.update(.1, .1); actors.reset();
+  assert.deepEqual(actors.inspect(), []);
+  assert.equal(combat.targets.size, 0); assert.equal(bars.size, 0);
+  const position = new THREE.Vector3(5, 0, 12);
+  actors.resolvePlayerMovement(position, .42);
+  assert.deepEqual(position.toArray(), [5, 0, 12]);
+  actors.dispose();
+});
 
 test('ice really slows practice patrol distance and burn reduces its displayed health', () => {
   const { actors, combat, bars } = fixture();
