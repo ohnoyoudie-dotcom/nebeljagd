@@ -1,10 +1,11 @@
+import { createIslandWater } from './island-water.js';
 import { createFloatingIsland } from './floating-island.js';
 import { createWoodlandDetails } from './woodland-details.js';
 import { createTerrainObstacles } from './terrain-obstacles.js';
 import { applyPaintedGrass } from './painted-grass.js';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { validateWorldmap, landBoundaryRings } from './map/model.js';
+import { validateWorldmap } from './map/model.js';
 import { createRiverWater } from './water.js';
 import { createWorldObjectRenderer } from './world-object-renderer.js';
 import { createTerrainArtwork, pathVergeOffset } from './terrain-art.js';
@@ -15,7 +16,7 @@ import { createCastleGroundMask } from './map/castle-ground.js';
 import { createPathBorderStones } from './path-border-stones.js';
 import { emitTerrainTriangles } from './terrain-triangulation.js';
 
-import { createWorldSpatialModel, triangulateWorldLand, SEA_LEVEL } from './generated-spatial.js';
+import { createWorldSpatialModel, triangulateWorldLand } from './generated-spatial.js';
 export { createWorldSpatialModel } from './generated-spatial.js';
 
 const CHUNK = 64;
@@ -118,20 +119,7 @@ export async function createGeneratedWorld(scene, { map, quality = 'high' } = {}
   if(map.landscape?.worldEdge==='floating') {
     worldEdge=createFloatingIsland(root,{map,heightAt:surfaceHeightAt,biomeAt:spatial.biomeAt,timeUniform});
   } else {
-    const sea = new THREE.Mesh(new THREE.PlaneGeometry((map.bounds.maxX - map.bounds.minX) * 3, (map.bounds.maxZ - map.bounds.minZ) * 3),
-      new THREE.MeshStandardMaterial({ color: '#376e83', roughness: .49, metalness: .12 }));
-    sea.rotation.x = -Math.PI / 2; sea.position.set((map.bounds.minX + map.bounds.maxX) / 2, SEA_LEVEL, (map.bounds.minZ + map.bounds.maxZ) / 2); sea.name = 'Meer um die Nebelinsel'; root.add(sea);
-    const shorePositions = [], shoreIndices = [];
-    for (const ring of landBoundaryRings(map)) {
-      const start = shorePositions.length / 3;
-      for (let i = 0; i <= ring.length; i++) {
-        const [x, z] = ring[i % ring.length];
-        shorePositions.push(x, spatial.groundAt(x, z) - .03, z, x, -1.2, z);
-        if (i < ring.length) { const a = start + i * 2; shoreIndices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
-      }
-    }
-    const shoreGeo = new THREE.BufferGeometry(); shoreGeo.setAttribute('position', new THREE.Float32BufferAttribute(shorePositions, 3)); shoreGeo.setIndex(shoreIndices); shoreGeo.computeVertexNormals();
-    root.add(new THREE.Mesh(shoreGeo, new THREE.MeshStandardMaterial({ color: '#b4aa7f', side: THREE.DoubleSide, roughness: .98 })));
+    worldEdge=createIslandWater(root,{map,heightAt:surfaceHeightAt,timeUniform});
   }
   const waterMeshes = [];
   for (const river of map.rivers) {
