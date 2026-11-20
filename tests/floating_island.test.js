@@ -29,7 +29,7 @@ test('floating cliffs meet all land outlines and background stays below play are
   const [cliff,floor,clouds]=root.children[0].children;
   assert.ok([...cliff.geometry.attributes.position.array].every(Number.isFinite));
   const p=cliff.geometry.attributes.position;
-  for(let i=0;i<p.count;i+=6){assert.ok(Math.abs(p.getY(i)-1.975)<1e-5);assert.ok(p.getY(i+5)<-70);}
+  for(let i=0;i<p.count;i+=6){assert.ok(Math.abs(p.getY(i)-1.975)<1e-5);assert.ok(p.getY(i+5)<-29);}
   floor.geometry.computeBoundingBox();assert.ok(floor.geometry.boundingBox.max.y < -150);
   assert.equal(clouds.material.uniforms.uTime,time);assert.equal(clouds.material.depthWrite,false);
   assert.ok(cliff.userData.ignoreVision&&clouds.userData.ignoreVision);

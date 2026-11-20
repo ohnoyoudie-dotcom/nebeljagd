@@ -31,10 +31,10 @@ export function createFloatingIsland(root, { map, heightAt, biomeAt, timeUniform
       const color=new THREE.Color(palette[biomeAt(x,z)]??palette.forest);
       // The cap is precisely on the coastline, followed by broken strata and
       // an inward taper. No raised border or invisible walkable apron.
-      const levels=[[0,heightAt(x,z)-.025],[.25,-3.5],[1.2+variation*.4,-12+variation*2],[4+variation,-29+variation*3],[11+variation*2,-58+variation*5],[19+variation*2,-86+variation*7]];
+      const levels=[[0,heightAt(x,z)-.025],[.2,-2.5],[.8+variation*.3,-6+variation*.7],[2.5+variation*.6,-12+variation],[10+variation,-22+variation*2],[30+variation*2,-34+variation*3]];
       for(let j=0;j<levels.length;j++) {
         const [inset,y]=levels[j];positions.push(x+nx*inset,y,z+nz*inset);
-        const tint=color.clone().multiplyScalar((.96-j*.095)*(1+variation*.07));colors.push(tint.r,tint.g,tint.b);
+        const tint=color.clone().multiplyScalar((.88-j*.085)*(1+variation*.07));colors.push(tint.r,tint.g,tint.b);
         if(j<levels.length-1){const a=base+i*6+j,b=base+((i+1)%samples.length)*6+j;indices.push(a,b,a+1,b,b+1,a+1);}
       }
     }
@@ -48,7 +48,7 @@ export function createFloatingIsland(root, { map, heightAt, biomeAt, timeUniform
       float grain=skyFbm(vCliff.xz*.42+vCliff.y*.19);
       float strata=sin(vCliff.y*.85+skyNoise(vCliff.xz*.1)*4.);
       diffuseColor.rgb*=.86+grain*.24+strata*.035;
-      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.17,.24,.29),smoothstep(30.,90.,-vCliff.y)*.65);`);
+      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.17,.24,.29),smoothstep(7.,34.,-vCliff.y)*.65);`);
   };
   material.customProgramCacheKey=()=> 'floating-cliff-1';
   const cliff=new THREE.Mesh(geometry,material);cliff.name='Küstenfelsen · geschichteter Inselunterbau';cliff.receiveShadow=true;group.add(cliff);
@@ -77,5 +77,5 @@ export function createFloatingIsland(root, { map, heightAt, biomeAt, timeUniform
   const clouds=new THREE.Mesh(new THREE.PlaneGeometry(width,depth),mist);clouds.rotation.x=-Math.PI/2;clouds.position.set(centerX,-75,centerZ);clouds.name='Langsam ziehender Tiefennebel';group.add(clouds);
   // Atmospheric background does not reveal enemies or interact with tactical sight.
   group.traverse(node=>{node.userData.ignoreVision=true;if(node.material)node.material.userData.ignoreVision=true;});
-  return {mode:'floating',coastVertices:positions.length/3,cliffDepth:86,backgroundDepth:190};
+  return {mode:'floating',coastVertices:positions.length/3,cliffDepth:34,backgroundDepth:190};
 }
