@@ -13,7 +13,12 @@ for(const reverse of [false,true])test(`calm sea keeps shore ribbons on water, i
   assert.equal(root.children.length,3);assert.equal(root.children[0].material.uniforms.uTime,time);assert.equal(root.children[2].material.uniforms.uTime,time);
   assert.equal(root.children[2].material.depthWrite,false);assert.equal(root.children[2].material.forceSinglePass,true);
   const p=root.children[2].geometry.attributes.position;
-  for(let i=1;i<10;i+=2)assert.equal(pointInPolygon([p.getX(i),p.getZ(i)],outer),false);
-  for(let i=11;i<20;i+=2)assert.equal(pointInPolygon([p.getX(i),p.getZ(i)],hole),true);
+  for(let i=1;i<p.count;i+=2){
+    const q=[p.getX(i),p.getZ(i)];
+    assert.ok(!pointInPolygon(q,outer)||pointInPolygon(q,hole));
+  }
+  const bank=root.children[1].geometry.attributes.position;
+  for(let i=0;i<bank.count;i+=2){assert.ok(bank.getY(i)>bank.getY(i+1));assert.ok(Math.hypot(bank.getX(i)-bank.getX(i+1),bank.getZ(i)-bank.getZ(i+1))>0);}
+  assert.equal(stats.shoreProfile,'sloped-shallow-gradient');
   for(const mesh of root.children){assert.ok([...mesh.geometry.attributes.position.array].every(Number.isFinite));assert.equal(mesh.castShadow,false);assert.equal(mesh.userData.ignoreVision,true);mesh.geometry.dispose();mesh.material.dispose();}
 });

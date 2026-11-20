@@ -23,6 +23,7 @@ with sync_playwright() as pw:
   p.evaluate('nebeljagdInspect({x:70,z:786})');p.wait_for_function('nebeljagdTestState().elapsed>.2')
   p.wait_for_timeout(1600)
   state=p.evaluate('nebeljagdTestState()');edge=state['world']['stats']['worldEdge'];assert edge['mode']=='water' and edge['style']=='calm-stylized'
+  assert edge['shoreProfile']=='sloped-shallow-gradient'
   assert edge['meshes']==3 and edge['reflectionPasses']==0 and edge['particles']==0 and edge['seaTriangles']==2
   assert state['world']['objects']==source['objects'];assert state['world']['landscape']==source['landscape']
   assert p.evaluate('JSON.parse(document.querySelector("#editor-build-info").textContent).buildId')==report['build']['buildId']
