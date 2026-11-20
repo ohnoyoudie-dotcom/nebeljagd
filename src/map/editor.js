@@ -1,3 +1,4 @@
+import { createSimpleEditor, resetSimpleEditorDOM } from './simple-editor.js';
 import { OBSTACLE_LIMITS } from './terrain-obstacles.js';
 import { chestOpening } from '../runic-chest.js';
 import { freshPlaytestUrl } from './playtest-url.js';
@@ -26,7 +27,9 @@ import { HOUSE_STONE_COLORS, HOUSE_WALL_COLORS } from './house-colors.js';
 import { CASTLE_STYLE_LABELS, CASTLE_FLOOR_LABELS, CASTLE_WALL_LABELS } from './castle-colors.js';
 import { getBuilderHousePreviewSvg } from './house-map-symbol.js';
 import './editor.css';
+import './simple-editor.css';
 
+resetSimpleEditorDOM();
 const $ = id => document.getElementById(id);
 document.body.dataset.fileMode = location.protocol === 'file:' ? 'true' : 'false';
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -90,6 +93,7 @@ let zoneTime = 0;
 let listLimit = 50;
 let hoverPoint = null;
 let landscapePanel = null;
+let simpleEditor = null;
 let barrierPanel = null;
 let mapFileHandle = null;
 let persistedMapFileHandle = null;
@@ -212,20 +216,20 @@ function updateSaveStatus({ saved = false } = {}) {
     return;
   }
   if (saved && mapFileHandle) {
-    $('save-status').textContent = `JSON gespeichert · ${mapFileHandle.name}`;
+    $('save-status').textContent = `Datei gespeichert · ${mapFileHandle.name}`;
     return;
   }
   if (mapFileHandle) {
     $('save-status').textContent = browserDraftCurrent
-      ? `Im Browser gespeichert · JSON-Datei ${mapFileHandle.name} noch nicht aktualisiert`
-      : `JSON-Datei ${mapFileHandle.name} noch nicht aktualisiert · Strg+S`;
+      ? `Hier gespeichert · Datei ${mapFileHandle.name} noch nicht aktualisiert`
+      : `Datei ${mapFileHandle.name} noch nicht aktualisiert · Strg+S`;
     return;
   }
   $('save-status').textContent = browserDraftCurrent
-    ? 'Automatisch im Browser gespeichert · JSON-Sicherung empfohlen'
+    ? 'Hier automatisch gespeichert · Mit „Speichern“ als Datei sichern'
     : storageAvailable
-      ? 'Karte geöffnet · Änderungen werden automatisch im Browser gespeichert'
-      : 'Browserspeicher nicht verfügbar · bitte als JSON sichern';
+      ? 'Änderungen werden in diesem Browser automatisch gespeichert'
+      : 'Automatisches Speichern nicht möglich · bitte „Speichern“ nutzen';
 }
 function saveDraft() {
   if (restoredDraft !== null || unreadableDraftPending) {
@@ -542,6 +546,7 @@ function renderProperties() {
   $('properties-form').hidden = !feature;
   landscapePanel?.renderSelected(feature, selection?.type);
   barrierPanel?.renderSelected(feature, selection?.type);
+  simpleEditor?.sync();
   if (!feature) return;
   $('selection-title').textContent = feature.name;
   $('selection-kind').textContent = selection.type === 'object' ? getObjectDefinition(feature.kind).label : kindNames[selection.type];
@@ -826,7 +831,8 @@ function pointerDown(event) {
     paintLandscapeSample(start); return;
   }
   const handle = event.target.closest?.('[data-map-handle]');
-  const hit = event.target.closest?.('[data-feature-type][data-feature-id]');
+  let hit = event.target.closest?.('[data-feature-type][data-feature-id]');
+  if (hit && simpleEditor && !simpleEditor.allowsSelection(hit.dataset.featureType)) hit = null;
   if (!pan && handle && selection) {
     selection.vertex = Number(handle.dataset.mapHandle);
     renderProperties(); renderMap();
@@ -1281,6 +1287,7 @@ function setMode(next) {
     barrierErase: 'Ziehe über Mauer- oder Zaunstrecken. Jede berührte Strecke wird ganz entfernt.',
   };
   $('canvas-instruction').textContent = instructions[mode] ?? instructions.select;
+  simpleEditor?.sync();
   renderMap();
 }
 
@@ -1657,6 +1664,24 @@ $('start-restore-draft').addEventListener('click', () => {
 startDialog.addEventListener('cancel', event => {
   event.preventDefault(); startDialog.close(); $('map-viewport').focus();
 });
+simpleEditor = createSimpleEditor({
+  showPane: (pane,tool) => landscapePanel.showPane(pane,tool), getMode: () => mode, setMode,
+  selected: selectedFeature, selectionType: () => selection?.type,
+  duplicate: duplicateObject, remove: deleteFeature,
+  clearUnsafeSelection() { if(['island','islet','region','waterArea','spawn'].includes(selection?.type)){selection=null;renderProperties();renderMap();} },
+  transform(action) {
+    if(selection?.type!=='object')return;
+    commit(candidate => {
+      const object=selectedFeature(candidate);
+      if(action==='rotate')object.rotation=(object.rotation+Math.PI/4)%(Math.PI*2);
+      else object.scale=Math.max(Number($('object-scale').min)||.1,Math.min(Number($('object-scale').max)||6,Math.round(object.scale*(action==='larger'?1.15:1/1.15)*100)/100));
+    },action==='rotate'?'Objekt gedreht.':'Größe geändert.');
+  },
+  preparePlacement(kind,variant) {
+    const width=Math.max(70,getObjectFootprintRadius(kind,variant)*8);
+    if(view.width>width*1.4||view.width<width*.6)zoomBy(width/view.width);
+  },
+});
 let buildInfo = null;
 try { buildInfo = JSON.parse($('editor-build-info')?.textContent || 'null'); } catch {}
 $('editor-build-version').textContent = editorVersionLabel(buildInfo);
@@ -1666,7 +1691,7 @@ if (buildInfo?.builtAt) {
 }
 updatePendingDraftBanner();
 window.nebeljagdMapTestState = () => ({
-  map: clone(map), data: clone(map), selection: clone(selection), mode,
+  map: clone(map), data: clone(map), selection: clone(selection), mode, simple: simpleEditor?.state(),
   startup: { source: mapSource, buildId: buildInfo?.buildId ?? null, pendingDraft: Boolean(restoredDraft || unreadableDraftPending) },
   brush: { radius: Number($('brush-radius').value), activeStroke: Boolean(pointer?.brush), pendingObjects: pointer?.brush?.objects.length ?? 0 },
   eraser: { radius: Number($('eraser-radius').value), filter: $('eraser-filter').value, activeStroke: Boolean(pointer?.eraser), pendingObjects: pointer?.eraser?.objects.length ?? 0 },
