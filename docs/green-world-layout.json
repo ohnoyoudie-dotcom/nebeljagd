@@ -1,0 +1,1705 @@
+{
+  "seed": 20112026,
+  "baselineHash": "aff368042edc29b6d8201443afa3b9e8367d4605208e484ff0a7a53cf88febd4",
+  "preservedObjects": 50,
+  "objects": 1045,
+  "counts": {
+    "house": 44,
+    "chest": 52,
+    "barrel": 80,
+    "crate": 52,
+    "well": 4,
+    "wagon": 6,
+    "tree": 650,
+    "rock": 92,
+    "log": 27,
+    "stump": 38
+  },
+  "houses": 44,
+  "paths": 110,
+  "plots": [
+    {
+      "id": "green-world-lindenwacht-block-0-0-haus-0",
+      "threshold": [
+        -240.5,
+        -139.65
+      ],
+      "approach": [
+        -240.5,
+        -137.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -240.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-0-haus-0",
+      "threshold": [
+        -240.5,
+        -155.35
+      ],
+      "approach": [
+        -240.5,
+        -157.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -240.5,
+        -170
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-1-haus-0",
+      "threshold": [
+        -248.5,
+        -111.35
+      ],
+      "approach": [
+        -248.5,
+        -113.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -248.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-1-haus-1",
+      "threshold": [
+        -226.5,
+        -97.65
+      ],
+      "approach": [
+        -226.5,
+        -95.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -226.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-2-haus-0",
+      "threshold": [
+        -248.5,
+        -48.65
+      ],
+      "approach": [
+        -248.5,
+        -46.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -248.5,
+        -35
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-2-haus-0",
+      "threshold": [
+        -248.5,
+        -66.35
+      ],
+      "approach": [
+        -248.5,
+        -68.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -248.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-2-haus-1",
+      "threshold": [
+        -226.5,
+        -62.35
+      ],
+      "approach": [
+        -226.5,
+        -64.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -226.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-0-3-haus-0",
+      "threshold": [
+        -233.9,
+        -19.35
+      ],
+      "approach": [
+        -233.9,
+        -21.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -233.9,
+        -35
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-0-haus-0",
+      "threshold": [
+        -203.5,
+        -156.35
+      ],
+      "approach": [
+        -203.5,
+        -158.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -203.5,
+        -170
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-0-haus-0",
+      "threshold": [
+        -203.5,
+        -138.65
+      ],
+      "approach": [
+        -203.5,
+        -136.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -203.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-0-haus-1",
+      "threshold": [
+        -181.5,
+        -142.65
+      ],
+      "approach": [
+        -181.5,
+        -140.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -181.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-1-haus-0",
+      "threshold": [
+        -203.5,
+        -93.65
+      ],
+      "approach": [
+        -203.5,
+        -91.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -203.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-1-haus-1",
+      "threshold": [
+        -181.5,
+        -107.35
+      ],
+      "approach": [
+        -181.5,
+        -109.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -181.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-1-haus-1",
+      "threshold": [
+        -181.5,
+        -97.65
+      ],
+      "approach": [
+        -181.5,
+        -95.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -181.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-2-haus-0",
+      "threshold": [
+        -188.5,
+        -65.35
+      ],
+      "approach": [
+        -188.5,
+        -67.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -188.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-3-haus-0",
+      "threshold": [
+        -203.5,
+        -3.6500000000000004
+      ],
+      "approach": [
+        -203.5,
+        -1.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -203.5,
+        10
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-3-haus-1",
+      "threshold": [
+        -181.5,
+        -17.35
+      ],
+      "approach": [
+        -181.5,
+        -19.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -181.5,
+        -35
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-1-3-haus-1",
+      "threshold": [
+        -181.5,
+        -7.65
+      ],
+      "approach": [
+        -181.5,
+        -5.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -181.5,
+        10
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-0-haus-0",
+      "threshold": [
+        -158.5,
+        -138.65
+      ],
+      "approach": [
+        -158.5,
+        -136.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -158.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-0-haus-1",
+      "threshold": [
+        -136.5,
+        -152.35
+      ],
+      "approach": [
+        -136.5,
+        -154.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -136.5,
+        -170
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-1-haus-0",
+      "threshold": [
+        -144.5,
+        -110.35
+      ],
+      "approach": [
+        -144.5,
+        -112.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -144.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-1-haus-0",
+      "threshold": [
+        -144.5,
+        -94.65
+      ],
+      "approach": [
+        -144.5,
+        -92.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -144.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-2-haus-0",
+      "threshold": [
+        -158.5,
+        -48.65
+      ],
+      "approach": [
+        -158.5,
+        -46.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -158.5,
+        -35
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-2-haus-1",
+      "threshold": [
+        -136.5,
+        -62.35
+      ],
+      "approach": [
+        -136.5,
+        -64.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -136.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-2-3-haus-1",
+      "threshold": [
+        -136.5,
+        -7.65
+      ],
+      "approach": [
+        -136.5,
+        -5.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -136.5,
+        10
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-0-haus-0",
+      "threshold": [
+        -98.9,
+        -154.35
+      ],
+      "approach": [
+        -98.9,
+        -156.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -98.9,
+        -170
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-1-haus-0",
+      "threshold": [
+        -113.5,
+        -93.65
+      ],
+      "approach": [
+        -113.5,
+        -91.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -113.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-1-haus-0",
+      "threshold": [
+        -113.5,
+        -111.35
+      ],
+      "approach": [
+        -113.5,
+        -113.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -113.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-1-haus-1",
+      "threshold": [
+        -91.5,
+        -107.35
+      ],
+      "approach": [
+        -91.5,
+        -109.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -91.5,
+        -125
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-2-haus-0",
+      "threshold": [
+        -113.5,
+        -66.35
+      ],
+      "approach": [
+        -113.5,
+        -68.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -113.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-2-haus-1",
+      "threshold": [
+        -91.5,
+        -52.65
+      ],
+      "approach": [
+        -91.5,
+        -50.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -91.5,
+        -35
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-2-haus-1",
+      "threshold": [
+        -91.5,
+        -62.35
+      ],
+      "approach": [
+        -91.5,
+        -64.5
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -91.5,
+        -80
+      ]
+    },
+    {
+      "id": "green-world-lindenwacht-block-3-3-haus-0",
+      "threshold": [
+        -106.5,
+        -4.65
+      ],
+      "approach": [
+        -106.5,
+        -2.5
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -106.5,
+        10
+      ]
+    },
+    {
+      "id": "green-world-farnhoehe-block-0-0-haus-0",
+      "threshold": [
+        80,
+        -445.15
+      ],
+      "approach": [
+        80,
+        -443
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        80,
+        -435
+      ]
+    },
+    {
+      "id": "green-world-farnhoehe-block-0-1-haus-0",
+      "threshold": [
+        80,
+        -424.85
+      ],
+      "approach": [
+        80,
+        -427
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        80,
+        -435
+      ]
+    },
+    {
+      "id": "green-world-farnhoehe-block-0-1-haus-0",
+      "threshold": [
+        80,
+        -415.15
+      ],
+      "approach": [
+        80,
+        -413
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        80,
+        -405
+      ]
+    },
+    {
+      "id": "green-world-farnhoehe-block-1-0-haus-0",
+      "threshold": [
+        110,
+        -454.85
+      ],
+      "approach": [
+        110,
+        -457
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        110,
+        -465
+      ]
+    },
+    {
+      "id": "green-world-farnhoehe-block-1-1-haus-0",
+      "threshold": [
+        110,
+        -415.15
+      ],
+      "approach": [
+        110,
+        -413
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        110,
+        -405
+      ]
+    },
+    {
+      "id": "green-world-eichenruh-block-0-0-haus-0",
+      "threshold": [
+        -420,
+        29.85
+      ],
+      "approach": [
+        -420,
+        32
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -420,
+        40
+      ]
+    },
+    {
+      "id": "green-world-eichenruh-block-0-0-haus-0",
+      "threshold": [
+        -420,
+        20.15
+      ],
+      "approach": [
+        -420,
+        18
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -420,
+        10
+      ]
+    },
+    {
+      "id": "green-world-eichenruh-block-0-1-haus-0",
+      "threshold": [
+        -420,
+        50.15
+      ],
+      "approach": [
+        -420,
+        48
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -420,
+        40
+      ]
+    },
+    {
+      "id": "green-world-eichenruh-block-1-0-haus-0",
+      "threshold": [
+        -390,
+        20.15
+      ],
+      "approach": [
+        -390,
+        18
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -390,
+        10
+      ]
+    },
+    {
+      "id": "green-world-eichenruh-block-1-1-haus-0",
+      "threshold": [
+        -390,
+        59.85
+      ],
+      "approach": [
+        -390,
+        62
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -390,
+        70
+      ]
+    },
+    {
+      "id": "green-world-eichenruh-block-1-1-haus-0",
+      "threshold": [
+        -390,
+        50.15
+      ],
+      "approach": [
+        -390,
+        48
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -390,
+        40
+      ]
+    },
+    {
+      "id": "green-world-moosbrunn-block-0-0-haus-0",
+      "threshold": [
+        -115,
+        144.85
+      ],
+      "approach": [
+        -115,
+        147
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -115,
+        155
+      ]
+    },
+    {
+      "id": "green-world-moosbrunn-block-0-1-haus-0",
+      "threshold": [
+        -115,
+        165.15
+      ],
+      "approach": [
+        -115,
+        163
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -115,
+        155
+      ]
+    },
+    {
+      "id": "green-world-moosbrunn-block-1-1-haus-0",
+      "threshold": [
+        -85,
+        174.85
+      ],
+      "approach": [
+        -85,
+        177
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -85,
+        185
+      ]
+    },
+    {
+      "id": "green-world-holzschlag-block-1-0-haus-0",
+      "threshold": [
+        -310,
+        -209.85
+      ],
+      "approach": [
+        -310,
+        -212
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -310,
+        -220
+      ]
+    },
+    {
+      "id": "green-world-holzschlag-block-1-1-haus-0",
+      "threshold": [
+        -310,
+        -170.15
+      ],
+      "approach": [
+        -310,
+        -168
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -310,
+        -160
+      ]
+    },
+    {
+      "id": "green-world-waldrain-block-0-0-haus-0",
+      "threshold": [
+        -315,
+        159.85
+      ],
+      "approach": [
+        -315,
+        162
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -315,
+        167.5
+      ]
+    },
+    {
+      "id": "green-world-waldrain-block-0-0-haus-0",
+      "threshold": [
+        -315,
+        150.15
+      ],
+      "approach": [
+        -315,
+        148
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -315,
+        140
+      ]
+    },
+    {
+      "id": "green-world-waldrain-block-0-1-haus-0",
+      "threshold": [
+        -315,
+        180.15
+      ],
+      "approach": [
+        -315,
+        178
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -315,
+        170
+      ]
+    },
+    {
+      "id": "green-world-waldrain-block-1-0-haus-0",
+      "threshold": [
+        -285,
+        150.15
+      ],
+      "approach": [
+        -285,
+        148
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -285,
+        140
+      ]
+    },
+    {
+      "id": "green-world-waldrain-block-1-1-haus-0",
+      "threshold": [
+        -285,
+        189.85
+      ],
+      "approach": [
+        -285,
+        192
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        -285,
+        200
+      ]
+    },
+    {
+      "id": "green-world-waldrain-block-1-1-haus-0",
+      "threshold": [
+        -285,
+        180.15
+      ],
+      "approach": [
+        -285,
+        178
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "street": [
+        -285,
+        170
+      ]
+    },
+    {
+      "id": "green-world-nordwacht",
+      "threshold": [
+        260,
+        -462.15
+      ],
+      "approach": [
+        260,
+        -460
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        260,
+        -455
+      ]
+    },
+    {
+      "id": "green-world-osthaus",
+      "threshold": [
+        85,
+        152.85
+      ],
+      "approach": [
+        85,
+        155
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "street": [
+        85,
+        160
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "lindenwacht-block-0-0",
+      "place": "lindenwacht",
+      "bounds": [
+        -260,
+        -170,
+        -215,
+        -125
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-0-0-haus-0"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-0-1",
+      "place": "lindenwacht",
+      "bounds": [
+        -260,
+        -125,
+        -215,
+        -80
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-0-1-haus-0",
+        "green-world-lindenwacht-block-0-1-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-0-2",
+      "place": "lindenwacht",
+      "bounds": [
+        -260,
+        -80,
+        -215,
+        -35
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-0-2-haus-0",
+        "green-world-lindenwacht-block-0-2-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-0-3",
+      "place": "lindenwacht",
+      "bounds": [
+        -260,
+        -35,
+        -215,
+        10
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-0-3-haus-0"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-1-0",
+      "place": "lindenwacht",
+      "bounds": [
+        -215,
+        -170,
+        -170,
+        -125
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-1-0-haus-0",
+        "green-world-lindenwacht-block-1-0-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-1-1",
+      "place": "lindenwacht",
+      "bounds": [
+        -215,
+        -125,
+        -170,
+        -80
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-1-1-haus-0",
+        "green-world-lindenwacht-block-1-1-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-1-2",
+      "place": "lindenwacht",
+      "bounds": [
+        -215,
+        -80,
+        -170,
+        -35
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-1-2-haus-0"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-1-3",
+      "place": "lindenwacht",
+      "bounds": [
+        -215,
+        -35,
+        -170,
+        10
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-1-3-haus-0",
+        "green-world-lindenwacht-block-1-3-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-2-0",
+      "place": "lindenwacht",
+      "bounds": [
+        -170,
+        -170,
+        -125,
+        -125
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-2-0-haus-0",
+        "green-world-lindenwacht-block-2-0-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-2-1",
+      "place": "lindenwacht",
+      "bounds": [
+        -170,
+        -125,
+        -125,
+        -80
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-2-1-haus-0"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-2-2",
+      "place": "lindenwacht",
+      "bounds": [
+        -170,
+        -80,
+        -125,
+        -35
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-2-2-haus-0",
+        "green-world-lindenwacht-block-2-2-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-2-3",
+      "place": "lindenwacht",
+      "bounds": [
+        -170,
+        -35,
+        -125,
+        10
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-2-3-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-3-0",
+      "place": "lindenwacht",
+      "bounds": [
+        -125,
+        -170,
+        -80,
+        -125
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-3-0-haus-0"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-3-1",
+      "place": "lindenwacht",
+      "bounds": [
+        -125,
+        -125,
+        -80,
+        -80
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-3-1-haus-0",
+        "green-world-lindenwacht-block-3-1-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-3-2",
+      "place": "lindenwacht",
+      "bounds": [
+        -125,
+        -80,
+        -80,
+        -35
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-3-2-haus-0",
+        "green-world-lindenwacht-block-3-2-haus-1"
+      ]
+    },
+    {
+      "id": "lindenwacht-block-3-3",
+      "place": "lindenwacht",
+      "bounds": [
+        -125,
+        -35,
+        -80,
+        10
+      ],
+      "houses": [
+        "green-world-lindenwacht-block-3-3-haus-0"
+      ]
+    },
+    {
+      "id": "farnhoehe-block-0-0",
+      "place": "farnhoehe",
+      "bounds": [
+        65,
+        -465,
+        95,
+        -435
+      ],
+      "houses": [
+        "green-world-farnhoehe-block-0-0-haus-0"
+      ]
+    },
+    {
+      "id": "farnhoehe-block-0-1",
+      "place": "farnhoehe",
+      "bounds": [
+        65,
+        -435,
+        95,
+        -405
+      ],
+      "houses": [
+        "green-world-farnhoehe-block-0-1-haus-0"
+      ]
+    },
+    {
+      "id": "farnhoehe-block-1-0",
+      "place": "farnhoehe",
+      "bounds": [
+        95,
+        -465,
+        125,
+        -435
+      ],
+      "houses": [
+        "green-world-farnhoehe-block-1-0-haus-0"
+      ]
+    },
+    {
+      "id": "farnhoehe-block-1-1",
+      "place": "farnhoehe",
+      "bounds": [
+        95,
+        -435,
+        125,
+        -405
+      ],
+      "houses": [
+        "green-world-farnhoehe-block-1-1-haus-0"
+      ]
+    },
+    {
+      "id": "eichenruh-block-0-0",
+      "place": "eichenruh",
+      "bounds": [
+        -435,
+        10,
+        -405,
+        40
+      ],
+      "houses": [
+        "green-world-eichenruh-block-0-0-haus-0"
+      ]
+    },
+    {
+      "id": "eichenruh-block-0-1",
+      "place": "eichenruh",
+      "bounds": [
+        -435,
+        40,
+        -405,
+        70
+      ],
+      "houses": [
+        "green-world-eichenruh-block-0-1-haus-0"
+      ]
+    },
+    {
+      "id": "eichenruh-block-1-0",
+      "place": "eichenruh",
+      "bounds": [
+        -405,
+        10,
+        -375,
+        40
+      ],
+      "houses": [
+        "green-world-eichenruh-block-1-0-haus-0"
+      ]
+    },
+    {
+      "id": "eichenruh-block-1-1",
+      "place": "eichenruh",
+      "bounds": [
+        -405,
+        40,
+        -375,
+        70
+      ],
+      "houses": [
+        "green-world-eichenruh-block-1-1-haus-0"
+      ]
+    },
+    {
+      "id": "moosbrunn-block-0-0",
+      "place": "moosbrunn",
+      "bounds": [
+        -130,
+        125,
+        -100,
+        155
+      ],
+      "houses": [
+        "green-world-moosbrunn-block-0-0-haus-0"
+      ]
+    },
+    {
+      "id": "moosbrunn-block-0-1",
+      "place": "moosbrunn",
+      "bounds": [
+        -130,
+        155,
+        -100,
+        185
+      ],
+      "houses": [
+        "green-world-moosbrunn-block-0-1-haus-0"
+      ]
+    },
+    {
+      "id": "moosbrunn-block-1-0",
+      "place": "moosbrunn",
+      "bounds": [
+        -100,
+        125,
+        -70,
+        155
+      ],
+      "houses": []
+    },
+    {
+      "id": "moosbrunn-block-1-1",
+      "place": "moosbrunn",
+      "bounds": [
+        -100,
+        155,
+        -70,
+        185
+      ],
+      "houses": [
+        "green-world-moosbrunn-block-1-1-haus-0"
+      ]
+    },
+    {
+      "id": "holzschlag-block-0-0",
+      "place": "holzschlag",
+      "bounds": [
+        -355,
+        -220,
+        -325,
+        -190
+      ],
+      "houses": []
+    },
+    {
+      "id": "holzschlag-block-0-1",
+      "place": "holzschlag",
+      "bounds": [
+        -355,
+        -190,
+        -325,
+        -160
+      ],
+      "houses": []
+    },
+    {
+      "id": "holzschlag-block-1-0",
+      "place": "holzschlag",
+      "bounds": [
+        -325,
+        -220,
+        -295,
+        -190
+      ],
+      "houses": [
+        "green-world-holzschlag-block-1-0-haus-0"
+      ]
+    },
+    {
+      "id": "holzschlag-block-1-1",
+      "place": "holzschlag",
+      "bounds": [
+        -325,
+        -190,
+        -295,
+        -160
+      ],
+      "houses": [
+        "green-world-holzschlag-block-1-1-haus-0"
+      ]
+    },
+    {
+      "id": "waldrain-block-0-0",
+      "place": "waldrain",
+      "bounds": [
+        -330,
+        140,
+        -300,
+        170
+      ],
+      "houses": [
+        "green-world-waldrain-block-0-0-haus-0"
+      ]
+    },
+    {
+      "id": "waldrain-block-0-1",
+      "place": "waldrain",
+      "bounds": [
+        -330,
+        170,
+        -300,
+        200
+      ],
+      "houses": [
+        "green-world-waldrain-block-0-1-haus-0"
+      ]
+    },
+    {
+      "id": "waldrain-block-1-0",
+      "place": "waldrain",
+      "bounds": [
+        -300,
+        140,
+        -270,
+        170
+      ],
+      "houses": [
+        "green-world-waldrain-block-1-0-haus-0"
+      ]
+    },
+    {
+      "id": "waldrain-block-1-1",
+      "place": "waldrain",
+      "bounds": [
+        -300,
+        170,
+        -270,
+        200
+      ],
+      "houses": [
+        "green-world-waldrain-block-1-1-haus-0"
+      ]
+    }
+  ],
+  "settlements": [
+    {
+      "id": "lindenwacht",
+      "name": "Lindenwacht",
+      "center": [
+        -170,
+        -80
+      ],
+      "step": 45,
+      "cells": 4
+    },
+    {
+      "id": "farnhoehe",
+      "name": "Farnhöhe",
+      "center": [
+        95,
+        -435
+      ],
+      "step": 30,
+      "cells": 2
+    },
+    {
+      "id": "eichenruh",
+      "name": "Eichenruh",
+      "center": [
+        -405,
+        40
+      ],
+      "step": 30,
+      "cells": 2
+    },
+    {
+      "id": "moosbrunn",
+      "name": "Moosbrunn",
+      "center": [
+        -100,
+        155
+      ],
+      "step": 30,
+      "cells": 2
+    },
+    {
+      "id": "holzschlag",
+      "name": "Holzschlag",
+      "center": [
+        -325,
+        -190
+      ],
+      "step": 30,
+      "cells": 2
+    },
+    {
+      "id": "waldrain",
+      "name": "Waldrain",
+      "center": [
+        -300,
+        170
+      ],
+      "step": 30,
+      "cells": 2
+    }
+  ],
+  "obstacles": 26,
+  "obstacleCells": 36203,
+  "rareChests": 9,
+  "normalChests": 43,
+  "loot": [
+    "green-world-chest-1",
+    "green-world-chest-2",
+    "green-world-chest-3",
+    "green-world-chest-4",
+    "green-world-chest-5",
+    "green-world-chest-6",
+    "green-world-chest-7",
+    "green-world-chest-8",
+    "green-world-chest-9",
+    "green-world-chest-10",
+    "green-world-chest-14",
+    "green-world-chest-18",
+    "green-world-chest-22",
+    "green-world-chest-26",
+    "green-world-chest-30",
+    "green-world-chest-34",
+    "green-world-chest-38",
+    "green-world-chest-42",
+    "green-world-chest-46",
+    "green-world-chest-50",
+    "green-world-chest-54",
+    "green-world-chest-58",
+    "green-world-chest-62",
+    "green-world-chest-66",
+    "green-world-chest-70",
+    "green-world-chest-74",
+    "green-world-chest-78",
+    "green-world-chest-82",
+    "green-world-chest-86",
+    "green-world-chest-90",
+    "green-world-chest-94",
+    "green-world-chest-98",
+    "green-world-chest-102",
+    "green-world-chest-106",
+    "green-world-chest-110",
+    "green-world-chest-114",
+    "green-world-chest-118",
+    "green-world-chest-122",
+    "green-world-chest-126",
+    "green-world-chest-130",
+    "green-world-chest-134",
+    "green-world-chest-138",
+    "green-world-chest-142",
+    "green-world-chest-146",
+    "green-world-chest-150",
+    "green-world-chest-154",
+    "green-world-chest-158",
+    "green-world-chest-165",
+    "green-world-chest-169",
+    "green-world-chest-173",
+    "green-world-chest-177",
+    "green-world-chest-181"
+  ],
+  "checks": {
+    "roadBuffer": 5,
+    "rareChestClearance": 5.5,
+    "mainStreetWidth": 10,
+    "sideStreetWidth": 7
+  },
+  "warnings": []
+}

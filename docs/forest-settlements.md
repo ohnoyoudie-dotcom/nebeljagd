@@ -1,4 +1,6 @@
-# Waldbereich – bebaute Projektkarte
+# Waldbereich – erster Entwurf (abgelöst)
+
+Der aktuelle Grünwald wurde auf Wunsch mit Häuserblöcken, Geländehindernissen und Beute neu aufgebaut. Siehe [aktuellen Entwurf](green-world-layout.md). Die folgende Beschreibung dokumentiert den früheren Rundweg-Entwurf und seine Testfixture.
 
 Die gespeicherte `worldmap.json` enthält eine zusammenhängende Waldwelt aus vorhandenen Editor-Modellen. Alle neuen Elemente sind normale, einzeln verschiebbare Objekte, Wege und Bodenflächen; es gibt keine Laufzeit-Zufallsplatzierung.
 

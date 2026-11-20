@@ -1,14 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { createVegetationWind } from '../src/vegetation-wind.js';
 import { buildVegetationPatch, vegetationTint, MAX_GRASS_INSTANCES } from '../src/vegetation-patches.js';
 import { vegetationSettings } from '../src/map/landscape.js';
-import { isTreeFoliagePart, USER_TREE_WIND_RESPONSE } from '../src/map/tree-wind.js';
+import { isTreeFoliagePart, isTreeCrownSupportPart, USER_TREE_WIND_RESPONSE } from '../src/map/tree-wind.js';
 
 const object = { id:'test-grass',kind:'grass',variant:'tall',position:[10,-30],radius:3.5,scale:1,rotation:.3 };
 const configured = changes => ({...object,vegetation:{...vegetationSettings(object),...changes}});
 const windMap = (wind={},windZones=[]) => ({landscape:{version:1,wind,windZones}});
+
+test('the actual Tree1 asset omits only brown crown support shells, keeping trunk, branches and masked leaves', () => {
+  const bytes = readFileSync(new URL('../assets/imported/user-trees/styled/tree1-woodland.glb', import.meta.url));
+  const gltf = JSON.parse(bytes.toString('utf8', 20, 20 + bytes.readUInt32LE(12)));
+  const parts = gltf.nodes.filter(node => node.mesh !== undefined).map(node => ({
+    ...node, isMesh: true, name: THREE.PropertyBinding.sanitizeNodeName(node.name),
+  }));
+  const omitted = parts.filter(mesh => isTreeCrownSupportPart('tree', 'kit-user-tree1', mesh));
+  assert.equal(omitted.length, 1);
+  assert.match(omitted[0].name, /Äste/);
+  const kept = parts.filter(mesh => !isTreeCrownSupportPart('tree', 'kit-user-tree1', mesh));
+  assert.equal(kept.length, 2);
+  assert.ok(kept.some(mesh => /Stamm/.test(mesh.name)));
+  assert.ok(kept.some(mesh => gltf.meshes[mesh.mesh].primitives.some(part => gltf.materials[part.material].alphaMode === 'MASK')));
+  assert.equal(isTreeCrownSupportPart('tree', 'kit-oak-green', omitted[0]), false);
+  assert.equal(isTreeCrownSupportPart('house', 'kit-user-tree1', omitted[0]), false);
+});
 
 test('meadow patches reduce instance counts while editable height remains independent of width', () => {
  const legacy=buildVegetationPatch(object);

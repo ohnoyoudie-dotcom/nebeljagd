@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { getEnvironmentKitDefinition } from './map/environment-kit-definitions.js';
-import { isTreeFoliagePart, USER_TREE_WIND_RESPONSE } from './map/tree-wind.js';
+import { isTreeFoliagePart, isTreeCrownSupportPart, USER_TREE_WIND_RESPONSE } from './map/tree-wind.js';
 import { USER_TREE1_URL } from './map/user-tree-asset.js';
 import { shouldOmitTavernDetail, TAVERN_DRESSING } from './map/tavern-dressing.js';
 import { createBarrierModelParts } from './barrier-models.js';
@@ -235,6 +235,9 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
       };
       gltf.scene.traverse(mesh => {
         if (!mesh.isMesh) return;
+        // Omit the imported brown crown scaffolding, not the real branches.
+        // This shared loader keeps editor previews and gameplay consistent.
+        if (isTreeCrownSupportPart(kind, variant, mesh)) return;
         const geometry = mesh.geometry.clone().applyMatrix4(mesh.matrixWorld).applyMatrix4(transform);
         geometry.computeBoundingBox(); geometry.computeBoundingSphere();
         const leaf = isTreeFoliagePart(kind, mesh);
@@ -242,9 +245,6 @@ export async function loadEnvironmentKit(map, { wind } = {}) {
           ? mesh.material.map(source => copyMaterial(source, leaf))
           : copyMaterial(mesh.material, leaf);
         parts.push({ geometry, material, castShadow: true, interior: false, frontFacade: false, vegetationTint: false,
-          // This authored part contains the solid inner crown masses. The real
-          // trunk and slim branches live in “Stamm” and must remain opaque.
-          canopyCore: key === 'tree:kit-user-tree1' && /(?:^|[·_\s])Äste(?:$|[_\s])/i.test(mesh.name),
           treePart: kind === 'tree' ? leaf ? 'foliage' : 'bark' : undefined });
       });
       gltf.scene.traverse(mesh => {

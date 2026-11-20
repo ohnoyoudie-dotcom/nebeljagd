@@ -136,8 +136,9 @@ function summarizeClusters(placements) {
 export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(map), diagnostics = {}) {
   const placements = [], occupied = new Map(), routes = map.paths ?? [];
   Object.assign(diagnostics, { gapCount: 0, gaps: [], suppressed: { crossing: 0, paintInterior: 0, overlap: 0 } });
-  function append(points, source, owner = null) {
+  function append(points, source, owner = null, budget = BORDER_STONE_RULES.maximum) {
     if (points.length < 2) return;
+    const capacity = Math.min(BORDER_STONE_RULES.maximum, placements.length + budget);
     const segments = []; let total = 0;
     for (let i = 1; i < points.length; i++) {
       const a = points[i - 1], b = points[i], dx = b[0] - a[0], dz = b[1] - a[1], length = Math.hypot(dx, dz);
@@ -154,7 +155,7 @@ export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(
       return { x: segment.a[0] + segment.dx * t, z: segment.a[1] + segment.dz * t,
         dx: segment.dx / segment.length, dz: segment.dz / segment.length };
     };
-    while (clusterStart < total && placements.length < BORDER_STONE_RULES.maximum) {
+    while (clusterStart < total && placements.length < capacity) {
       const startPoint = at(clusterStart), clusterStyle = owner ? owner.kind === 'main' ? 'cobble' : 'earth' : paintStyle(index, startPoint.x, startPoint.z);
       const clusterProfile = profiles[clusterStyle], groupChoice = hash(seed, ordinal, 11);
       // Select counts, not a repeating length of curb: lone remnants, small
@@ -166,7 +167,7 @@ export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(
       const largeMember = Math.floor(hash(seed,ordinal,23) * targetCount);
       const smallMember = (largeMember + 1 + Math.floor(hash(seed,ordinal,29) * Math.max(1,targetCount-1))) % targetCount;
       let edge = clusterStart, clusterEnd = clusterStart;
-      for (let member = 0; member < targetCount && edge < total && placements.length < BORDER_STONE_RULES.maximum; member++) {
+      for (let member = 0; member < targetCount && edge < total && placements.length < capacity; member++) {
         const anchor = at(edge), style = owner ? clusterStyle : paintStyle(index,anchor.x,anchor.z), profile = profiles[style];
         const random = hash(seed,ordinal * 17 + member,31);
         const size = targetCount >= 4 && member === largeMember ? .86 + random * .14
@@ -213,12 +214,23 @@ export function buildBorderStonePlacements(map, index = createTerrainPaintIndex(
       clusterStart = gapEnd; ordinal++;
     }
   }
+  const contours = [];
   for (const path of routes.filter(p => p.kind === 'main' || p.kind === 'trail')) for (const side of [-1, 1]) {
-    append(path.points.map(([x, z], i) => {
+    contours.push({ points: path.points.map(([x, z], i) => {
       const offset = pathVergeOffset(path.points, i, path.width); return [x + offset[0] * side, z + offset[1] * side];
-    }), 'route', path);
+    }), source: 'route', owner: path });
   }
-  for (const points of paintEdges(index)) append(points, 'paint');
+  for (const points of paintEdges(index)) contours.push({ points, source: 'paint' });
+  // A larger town must not spend the entire budget before the hand-painted
+  // paths are visited. Reserve a small share for each contour, then apportion
+  // the remaining fixed budget by length. Small maps keep their usual clusters.
+  for (const contour of contours) contour.length = contour.points.slice(1).reduce((sum, p, i) =>
+    sum + Math.hypot(p[0] - contour.points[i][0], p[1] - contour.points[i][1]), 0);
+  const totalLength = contours.reduce((sum, contour) => sum + contour.length, 0) || 1;
+  const reserve = Math.min(8, Math.floor(BORDER_STONE_RULES.maximum / Math.max(1, contours.length)));
+  const remaining = BORDER_STONE_RULES.maximum - reserve * contours.length;
+  for (const contour of contours) append(contour.points, contour.source, contour.owner,
+    reserve + Math.floor(remaining * contour.length / totalLength));
   Object.assign(diagnostics,summarizeClusters(placements));
   return placements;
 }

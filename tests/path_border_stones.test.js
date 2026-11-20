@@ -182,7 +182,17 @@ test('route borders follow bends and leave all road and bridge junctions clear',
 test('all border themes share the fixed global geometry budget', () => {
   const stones = buildBorderStonePlacements({ paths: [path('main', 0, 10000), path('trail', 20, 10000)] });
   assert.equal(stones.length, BORDER_STONE_RULES.maximum);
+  assert.deepEqual([...new Set(stones.map(stone => stone.style))].sort(), ['cobble', 'earth']);
   assert.ok(stones.every(p => Number.isFinite(p.x) && Number.isFinite(p.z)));
+});
+
+test('large road networks cannot starve the smaller hand-painted path borders', () => {
+  const map = { paths: [path('main', 0, 10000), path('trail', 20, 10000)],
+    landscape: { terrain: Array.from({ length: 24 }, (_, i) => stamp(i * .8, -20, 'forest')) } };
+  const stones = buildBorderStonePlacements(map);
+  assert.ok(stones.length <= BORDER_STONE_RULES.maximum);
+  assert.ok(stones.some(stone => stone.source === 'paint' && stone.style === 'forest'));
+  assert.deepEqual([...new Set(stones.map(stone => stone.style))].sort(), ['cobble', 'earth', 'forest']);
 });
 
 test('stone instances align with actual sloping ground, filter water, cull and dispose once', () => {
