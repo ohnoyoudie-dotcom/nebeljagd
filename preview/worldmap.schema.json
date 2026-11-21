@@ -762,6 +762,7 @@
               "variant": {
                 "enum": [
                   "tall",
+                  "wheat",
                   "short",
                   "kit-tall"
                 ]
@@ -1774,6 +1775,7 @@
           "enum": [
             "short",
             "meadow",
+            "wheat",
             "tall",
             "dry",
             "forest",
@@ -2180,6 +2182,7 @@
               "variant": {
                 "enum": [
                   "tall",
+                  "wheat",
                   "short",
                   "kit-tall"
                 ]
