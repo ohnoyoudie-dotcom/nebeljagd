@@ -43,11 +43,19 @@ async function requestOnce(url, token, {method = 'GET', body, fetchImpl = fetch}
       ...(body ? {body: JSON.stringify(body)} : {})});
   } catch { throw failure('network', 'GitHub ist gerade nicht erreichbar. Deine Karte bleibt im Browser erhalten.'); }
   if (!response.ok) {
-    // Never reflect response bodies or transport messages containing credentials.
-    await response.body?.cancel();
-    if (response.status === 429 || response.status === 403 && (response.headers.get('x-ratelimit-remaining') === '0' || response.headers.has('retry-after'))) throw failure('rate-limit', 'GitHub pausiert Anfragen vorübergehend. Die Anmeldung bleibt erhalten; bitte später erneut versuchen.');
-    if ([401, 403, 404].includes(response.status)) throw failure('auth', 'GitHub-Zugriff fehlt oder ist abgelaufen. Prüfe das Repository und „Contents: Read and write“.');
-    if ([409, 422].includes(response.status)) throw failure('conflict', 'Die Onlinekarte wurde inzwischen geändert. Deine Karte wurde nicht überschrieben.');
+    // Classify only known reasons; never display raw API bodies or credentials.
+    let reason = '';
+    try { const body = await response.json(); if (typeof body?.message === 'string') reason = body.message.toLowerCase(); } catch {}
+    const action = method === 'PUT' ? 'Speichern' : 'Lesen';
+    const detail = `HTTP ${response.status} · ${action}`;
+    if (response.status === 429 || response.status === 403 && (response.headers.get('x-ratelimit-remaining') === '0' || response.headers.has('retry-after') || reason.includes('rate limit'))) throw failure('rate-limit', `GitHub pausiert Anfragen vorübergehend (${detail}). Die Anmeldung bleibt erhalten; bitte später erneut versuchen.`);
+    if (response.status === 401) throw failure('auth', `GitHub akzeptiert den Token nicht (${detail}). Er ist möglicherweise abgelaufen, widerrufen oder unvollständig kopiert.`);
+    if ([403,409,422].includes(response.status) && /protected branch|repository rule|pull request|signed commit/.test(reason)) throw failure('auth', `Eine GitHub-Regel blockiert die direkte Speicherung auf dem Zweig work (${detail}). Ein neuer Token allein behebt diese Regel nicht.`);
+    if (response.status === 403) throw failure('auth', method === 'PUT'
+      ? `GitHub verweigert den Schreibzugriff (${detail}). Prüfe beim verwendeten Token: Repository nebeljagd freigegeben, Contents → Read and write, anschließend die Berechtigungsänderung auf GitHub speichern. Verbinden allein prüft nur den Lesezugriff.`
+      : `GitHub verweigert den Lesezugriff (${detail}). Prüfe die Freigabe für ohnoyoudie-dotcom/nebeljagd und eine eventuell ausstehende Token-Genehmigung.`);
+    if (response.status === 404) throw failure('auth', `Die Karte ist für diesen Token nicht erreichbar (${detail}). Prüfe die Repository-Auswahl ohnoyoudie-dotcom/nebeljagd. Der verwendete Pfad ist worldmap.json im Zweig work.`);
+    if ([409, 422].includes(response.status)) throw failure('conflict', `Die Onlinekarte wurde inzwischen geändert (${detail}). Deine Karte wurde nicht überschrieben.`);
     throw failure('network', 'GitHub konnte die Karte gerade nicht sichern. Bitte später erneut versuchen.');
   }
   try { return await response.json(); }

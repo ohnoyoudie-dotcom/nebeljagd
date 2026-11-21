@@ -20,3 +20,12 @@ Abgelaufene oder widerrufene GitHub-Tokens können nicht automatisch verlängert
 werden. Bei einem echten Zugriffsfehler muss der Eigentümer den Token im Editor
 ersetzen. Token bleiben aus Karten, Exporten, Berichten und ausgeliefertem Code
 heraus. Browserprüfungen verwenden ausschließlich eine simulierte GitHub-API.
+
+Die Fehlermeldung nennt HTTP-Status und Vorgang (Lesen/Speichern). HTTP 401
+bedeutet eine nicht akzeptierte Anmeldung, HTTP 403 beim Speichern einen
+abgelehnten Schreibzugriff und HTTP 404 einen für diesen Token nicht erreichbaren
+Kartenpfad. Bekannte Repository-Regeln und sekundäre Rate-Limits werden getrennt
+erkannt. Rohantworten und Token werden nicht angezeigt. Ein erfolgreicher
+Lesezugriff beim Verbinden bestätigt keine Schreibberechtigung. Bestehende
+Fine-grained Tokens lassen sich auf GitHub bearbeiten; Berechtigungsänderungen
+müssen dort gespeichert werden.

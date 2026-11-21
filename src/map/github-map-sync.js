@@ -28,6 +28,7 @@ export function createGitHubMapSync({getMap, project, applyRemote, canSave, down
     <label for="github-map-token">GitHub-Token</label><input id="github-map-token" type="password" autocomplete="off" spellcheck="false">
     <label class="github-remember"><input id="github-map-remember" type="checkbox"> Verbindung auf diesem Gerät merken</label>
     <p class="small-note">Mit dieser Option bleibt der Token in diesem Browser gespeichert. Er wird ausschließlich an die GitHub-API gesendet. Ohne diese Option gilt die Verbindung für diesen Tab. Abgelaufene Tokens kannst du hier ersetzen.</p>
+    <p class="small-note">Verbinden prüft den Lesezugriff. Falls erst das Speichern scheitert: <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">den verwendeten Token auf GitHub bearbeiten</a>, unter Permissions → Edit die Berechtigung Contents auf Read and write stellen und die Änderung auf GitHub speichern. Dafür ist normalerweise kein neuer Token nötig.</p>
     <p id="github-map-error" role="alert" hidden></p>
     <div class="editor-start-actions"><button id="github-map-submit" type="submit" class="button primary">Verbinden</button><button id="github-map-close" type="button" class="button quiet">Schließen</button><button id="github-map-disconnect" type="button" class="text-button" hidden>Verbindung entfernen</button></div>
     </form>`;

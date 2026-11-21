@@ -26,7 +26,7 @@ class Handler(SimpleHTTPRequestHandler):
 server = ThreadingHTTPServer(('127.0.0.1', 0), partial(Handler, directory=str(DIRECTORY)))
 threading.Thread(target=server.serve_forever, daemon=True).start()
 base = f'http://127.0.0.1:{server.server_port}'
-remote = {'map':copy.deepcopy(PROJECT), 'sha':'a'*40, 'text':json.dumps(PROJECT), 'writes':[], 'deny':False, 'race':False, 'offline':False, 'rate':False, 'failReads':0}
+remote = {'map':copy.deepcopy(PROJECT), 'sha':'a'*40, 'text':json.dumps(PROJECT), 'writes':[], 'deny':False, 'race':False, 'offline':False, 'rate':False, 'failReads':0,'denyWrite':False}
 
 def replace_remote(value):
     remote['map'] = copy.deepcopy(value)
@@ -49,6 +49,7 @@ def api(route):
         assert request.url.endswith('?ref=work')
         return route.fulfill(json={'type':'file', 'size':len(remote['text'].encode()), 'sha':remote['sha'], 'encoding':'base64', 'content':base64.b64encode(remote['text'].encode()).decode()}, headers=headers)
     assert request.method == 'PUT'
+    if remote['denyWrite']: return route.fulfill(status=403,json={'message':'Resource not accessible by personal access token'},headers=headers)
     body = request.post_data_json
     assert body['branch'] == 'work'
     if body['sha'] != remote['sha'] or remote['race']:
@@ -153,6 +154,19 @@ try:
         import_map(page,draft)
         passed('Failed reconnect and offline reload retain credentials; recovery preserves edits and performs no write')
 
+        read_only_edit=copy.deepcopy(draft);read_only_edit['name']='Änderung mit fehlendem Schreibrecht'
+        import_map(page,read_only_edit);remote['denyWrite']=True
+        page.locator('#export-json').click()
+        expect(page.locator('#online-map-status')).to_contain_text('HTTP 403 · Speichern')
+        expect(page.locator('#online-map-status')).to_contain_text('Contents → Read and write')
+        assert state(page)['map']==read_only_edit and remote['map']==draft
+        assert page.evaluate('(key)=>localStorage.getItem(key)',AUTH)==FAKE
+        assert len(remote['writes'])==1
+        remote['denyWrite']=False;import_map(page,draft)
+        page.locator('#export-json').click()
+        expect(page.locator('#online-map-status')).to_have_text('Karte online gespeichert und veröffentlicht.')
+        passed('A token that can read but cannot write shows the precise save-permission error, retaining credentials and every edit')
+
         with page.expect_download() as dl:
             page.locator('#export-editor').evaluate('(button)=>button.click()')
         exported = OUT / 'snapshot.html'; dl.value.save_as(exported)
@@ -214,7 +228,7 @@ try:
 
         remote['deny'] = True
         page.reload(); ready(page)
-        expect(page.locator('#online-map-status')).to_contain_text('GitHub-Zugriff fehlt')
+        expect(page.locator('#online-map-status')).to_contain_text('HTTP 401 · Lesen')
         assert state(page)['map'] == race
         page.locator('#github-connect').click()
         page.locator('#github-map-disconnect').click()
