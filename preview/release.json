@@ -1,29 +1,29 @@
 {
-  "buildId": "1a42eb4b0ffa",
-  "builtAt": "2026-11-22T10:30:26.965Z",
-  "sourceCommit": "fb4e71e1bb6fe0e3906cacb42532616f6a862c45",
+  "buildId": "da8c60ea6837",
+  "builtAt": "2026-11-22T11:25:12.035Z",
+  "sourceCommit": "1f03456f5f1483fafee472b032d36700e0321e51",
   "mapSha256": "068806b4b4c1e10835997a5a74174429c668649a08a050c6b1a5b07a6ea9cc4b",
-  "sourceBaseCommit": "fb4e71e1bb6fe0e3906cacb42532616f6a862c45",
+  "sourceBaseCommit": "1f03456f5f1483fafee472b032d36700e0321e51",
   "files": {
     "editor.html": {
       "bytes": 8087,
-      "sha256": "4e731c713e22af5a540ecd3d4b981abeeb6516cab32e9d0dad8743dced88498e"
+      "sha256": "494f00cea0a695f10c906199dc38fc74002c071c0da921276934c0862e371c01"
     },
     "map-editor.html": {
-      "bytes": 50019997,
-      "sha256": "b717c5d73145bb364614b4d4cb5c0f90ad70976feb14b8267861f23e3ae73e49"
+      "bytes": 50021000,
+      "sha256": "0aa580af75ca510412e543a2fa64b9caa1683be0babc38238a1ec4e989377053"
     },
     "magebrawl.html": {
-      "bytes": 84811948,
-      "sha256": "8471b8f9fc694fea17dfa938cb7c76718818da5c01f02e1611a964a1f7c558b7"
+      "bytes": 84812500,
+      "sha256": "c6627ccc707f278154e7122e32f64a7f5af45806a6b199623ad6867d437887f3"
     },
     "nebeljagd.html": {
       "bytes": 784,
-      "sha256": "c2dccce9475867765407c53feef58a09ef016a73ebed44cf95a7348cc45f0591"
+      "sha256": "e52d877ecefb40df6dc42ae7da68feae79be79f684c45cde36930cab90d14e46"
     },
     "avatar-preview.html": {
       "bytes": 13225892,
-      "sha256": "ce582e7052ec0a80e0294d33dbec2c47a01fb0d95602a8d36465f001fdedf82f"
+      "sha256": "bb35e0bc99c1ec329fa23247008c300dc6ddb6bb91dabac025d0f402a1e20ad6"
     },
     "worldmap.json": {
       "bytes": 45713,
@@ -38,12 +38,12 @@
       "sha256": "03746e3b08ca588f61538d8bdd9fcecdd8a66bc27610288712bfa468c4bd7e94"
     },
     "magebrawl-welt-und-editor.zip": {
-      "bytes": 104198968,
-      "sha256": "6023b705df5b28c92868320bb12797a41e8c874ee0d45b66acdd44e84d101d7c"
+      "bytes": 104200197,
+      "sha256": "62870ef4827a75345ffaad08c0576837cc461e28aed188b87c4951aea343f970"
     },
     "index.html": {
-      "bytes": 84811948,
-      "sha256": "8471b8f9fc694fea17dfa938cb7c76718818da5c01f02e1611a964a1f7c558b7"
+      "bytes": 84812500,
+      "sha256": "c6627ccc707f278154e7122e32f64a7f5af45806a6b199623ad6867d437887f3"
     }
   },
   "name": "Magebrawl – aktuelle Spielwelt und Editor",
